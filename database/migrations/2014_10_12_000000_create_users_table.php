@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('password');
             $table->enum('type', User::TYPES);
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }

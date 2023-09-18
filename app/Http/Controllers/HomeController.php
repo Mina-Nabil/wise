@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Users\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class HomeController extends Controller
+{
+    public function index()
+    {
+        return view('welcome');
+    }
+
+    public function login(Request $request)
+    {
+        /** @var User */
+        $user = Auth::user();
+        if ($user) return redirect('/');
+
+        return view('login', ["msg" =>  $request->input('msg')]);
+    }
+
+    public function authenticate(LoginRequest $request)
+    {
+        $res = User::login(...$request->validated());
+        if ($res === true) {
+            return redirect('/');
+        } else {
+            return redirect('login')->withInput(['msg' => $res]);
+        }
+    }
+}
