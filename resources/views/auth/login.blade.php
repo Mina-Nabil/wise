@@ -30,23 +30,6 @@
 
     <div class="loginwrapper">
         <div class="lg-inner-column">
-            <div class="left-column relative z-[1]">
-                <div class="max-w-[520px] pt-20 ltr:pl-20 rtl:pr-20">
-                    <a href="index.html">
-                        <img src="assets/images/logo/logo.svg" alt="" class="mb-10 dark_logo">
-                        <img src="assets/images/logo/logo-white.svg" alt="" class="mb-10 white_logo">
-                    </a>
-                    <h4>
-                        Unlock your Project
-                        <span class="text-slate-800 dark:text-slate-400 font-bold">
-                            performance
-                        </span>
-                    </h4>
-                </div>
-                <div class="absolute left-0 2xl:bottom-[-160px] bottom-[-130px] h-full w-full z-[-1]">
-                    <img src="assets/images/auth/ils1.svg" alt="" class=" h-full w-full object-contain">
-                </div>
-            </div>
             <div class="right-column  relative">
                 <div class="inner-content h-full flex flex-col bg-white dark:bg-slate-800">
                     <div class="auth-box h-full flex flex-col justify-center">
@@ -60,36 +43,43 @@
                             <h4 class="font-medium">Sign in</h4>
                             <div class="text-slate-500 text-base">
                                 Sign in to your account to start using Wise
-                                {{ old('msg') }}
-                                
+                                @if (session('msg'))
+                                    <div class="alert alert-danger">
+                                        {{ session('msg') }}
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <!-- BEGIN: Login Form -->
                         <form class="space-y-4" action="{{ url('/login') }}" method="POST">
                             @csrf
-                            @method('POST')
                             <div class="formGroup"> <!-- Typo corrected from "fromGroup" to "formGroup" -->
-                                <label class="block capitalize form-label">Email</label>
+                                <label class="block capitalize form-label">Username</label>
                                 <div class="relative">
-                                    <input type="email" name="email" class="form-control py-2" placeholder="Enter Email">
+                                    <input type="text" name="username" class="form-control py-2"
+                                        placeholder="Enter username">
                                 </div>
                             </div>
                             <div class="formGroup"> <!-- Typo corrected from "fromGroup" to "formGroup" -->
-                                <label class="block capitalize form-label">Password</label> <!-- Typo corrected from "passwrod" to "Password" -->
+                                <label class="block capitalize form-label">Password</label>
+                                <!-- Typo corrected from "passwrod" to "Password" -->
                                 <div class="relative">
-                                    <input type="password" name="password" class="form-control py-2" placeholder="Enter Password">
+                                    <input type="password" name="password" class="form-control py-2"
+                                        placeholder="Enter Password">
                                 </div>
                             </div>
                             <div class="flex justify-between">
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="checkbox" class="hidden"> <!-- Typo corrected from "hiddens" to "hidden" -->
-                                    <span class="text-slate-500 dark:text-slate-400 text-sm leading-6 capitalize">Keep me signed in</span>
+                                    <input type="checkbox" class="hidden">
+                                    <!-- Typo corrected from "hiddens" to "hidden" -->
+                                    <span class="text-slate-500 dark:text-slate-400 text-sm leading-6 capitalize">Keep
+                                        me signed in</span>
                                 </label>
-                                <a class="text-sm text-slate-800 dark:text-slate-400 leading-6 font-medium" href="forget-password-one.html">Forgot Password?</a>
+                                <a class="text-sm text-slate-800 dark:text-slate-400 leading-6 font-medium"
+                                    href="forget-password-one.html">Forgot Password?</a>
                             </div>
-                            <button class="btn btn-dark block w-full text-center">Sign in</button>
+                            <button class="btn btn-dark block w-full text-center" type="submit">Sign in</button>
                         </form>
-                        
                         <!-- END: Login Form -->
                     </div>
                     <div class="auth-footer text-center">
