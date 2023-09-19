@@ -20,7 +20,7 @@ class HomeController extends Controller
         $user = Auth::user();
         if ($user) return redirect('/');
 
-        return view('login', ["msg" =>  $request->input('msg')]);
+        return view('auth.login', ["msg" =>  $request->input('msg')]);
     }
 
     public function authenticate(LoginRequest $request)
