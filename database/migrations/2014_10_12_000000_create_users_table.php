@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('type', User::TYPES);
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

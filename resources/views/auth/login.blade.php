@@ -9,12 +9,10 @@
     <link rel="icon" type="image/png" href="assets/images/logo/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/rt-plugins.css">
     <link href="https://unpkg.com/aos@2.3.0/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="">
     <link rel="stylesheet" href="assets/css/app.css">
     <!-- START : Theme Config js-->
     <script src="assets/js/settings.js" sync></script>
@@ -44,29 +42,33 @@
                             <div class="text-slate-500 text-base">
                                 Sign in to your account to start using Wise
                                 @if (session('msg'))
-                                    <div class="alert alert-danger">
-                                        {{ session('msg') }}
-                                    </div>
+                                <div class="alert alert-danger">
+                                    {{ session('msg') }}
+                                </div>
                                 @endif
                             </div>
                         </div>
                         <!-- BEGIN: Login Form -->
-                        <form class="space-y-4" action="{{ url('/login') }}" method="POST">
+                        <form class="space-y-4" method="POST">
                             @csrf
-                            <div class="formGroup"> <!-- Typo corrected from "fromGroup" to "formGroup" -->
+                            <div class="formGroup">
+                                <!-- Typo corrected from "fromGroup" to "formGroup" -->
                                 <label class="block capitalize form-label">Username</label>
                                 <div class="relative">
-                                    <input type="text" name="username" class="form-control py-2"
-                                        placeholder="Enter username">
+                                    <input type="text" name="username" class="form-control py-2" placeholder="Enter username">
                                 </div>
+
+                                <div class="danger">{{$errors->first('username')}}</div>
+
                             </div>
-                            <div class="formGroup"> <!-- Typo corrected from "fromGroup" to "formGroup" -->
+                            <div class="formGroup">
+                                <!-- Typo corrected from "fromGroup" to "formGroup" -->
                                 <label class="block capitalize form-label">Password</label>
                                 <!-- Typo corrected from "passwrod" to "Password" -->
                                 <div class="relative">
-                                    <input type="password" name="password" class="form-control py-2"
-                                        placeholder="Enter Password">
+                                    <input type="password" name="password" class="form-control py-2" placeholder="Enter Password">
                                 </div>
+                                <div class="danger">{{$errors->first('password')}}</div>
                             </div>
                             <div class="flex justify-between">
                                 <label class="flex items-center cursor-pointer">
@@ -75,8 +77,7 @@
                                     <span class="text-slate-500 dark:text-slate-400 text-sm leading-6 capitalize">Keep
                                         me signed in</span>
                                 </label>
-                                <a class="text-sm text-slate-800 dark:text-slate-400 leading-6 font-medium"
-                                    href="forget-password-one.html">Forgot Password?</a>
+                                <a class="text-sm text-slate-800 dark:text-slate-400 leading-6 font-medium" href="forget-password-one.html">Forgot Password?</a>
                             </div>
                             <button class="btn btn-dark block w-full text-center" type="submit">Sign in</button>
                         </form>

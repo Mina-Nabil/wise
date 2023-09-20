@@ -18,11 +18,11 @@ use Illuminate\Support\Facades\Route;
 //login routes
 Route::middleware('auth', 'active')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
+    Route::get('/cars', function () {
+        return view('cars.index');
+    });
 });
 
-Route::get('/login', [HomeController::class, 'login'])->name('login');
 Route::post('/login', [HomeController::class, 'authenticate']);
+Route::get('/login', [HomeController::class, 'login'])->name('login');
 
-Route::get('/cars', function () {
-    return view('cars.index');
-});

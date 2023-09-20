@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -80,7 +82,7 @@ class User extends Authenticatable
                 "email"         =>  $email,
                 "phone"         =>  $phone,
                 "type"          =>  $type,
-                "password"      =>  encrypt($password)
+                "password"      =>  bcrypt($password)
             ]);
             $user->save();
             return $user;
@@ -96,13 +98,14 @@ class User extends Authenticatable
      */
     public static function login($username, $password): string|bool
     {
-        $user = self::where("username", $username)->first();
-        if ($user == null) return "Username not found";
 
+        $user = self::where("username", $username)->first();
+        Log::info($user);
+        if ($user == null) return "Username not found";
         if (Auth::attempt([
             "username"  =>  $user->username,
             "password"  =>  $password
-        ], true)) {
+        ])) {
             return true;
         } else return "Incorrect password";
     }
@@ -137,5 +140,11 @@ class User extends Authenticatable
     public function logs()
     {
         return $this->hasMany(AppLog::class);
+    }
+
+    //auth
+    public function getAuthPassword()
+    {
+        return $this->password;
     }
 }
