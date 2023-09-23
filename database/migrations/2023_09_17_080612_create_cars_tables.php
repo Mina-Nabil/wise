@@ -19,25 +19,29 @@ return new class extends Migration
     {
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
         });
 
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->foreignIdFor(Country::class);
+            $table->softDeletes();
         });
 
         Schema::create('car_models', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Brand::class);
             $table->string('name'); //5008
+            $table->softDeletes();
         });
 
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(CarModel::class);
             $table->string('category'); 
+            $table->text('desc');
+            $table->softDeletes();
         });
 
         Schema::create('car_prices', function (Blueprint $table) {
@@ -45,6 +49,8 @@ return new class extends Migration
             $table->foreignIdFor(Car::class);
             $table->unsignedInteger('model_year'); 
             $table->double('price'); 
+            $table->text('desc');
+            $table->timestamps();
         });
     }
 

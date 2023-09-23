@@ -50,7 +50,12 @@ class User extends Authenticatable
             $this->username     = $username;
             $this->type         = $type;
 
-            return $this->save();
+            if ($this->save()) {
+                AppLog::info('User updated', "User $username updated");
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception $e) {
             AppLog::error("Updating user failed", $e->getMessage());
             report($e);
@@ -62,7 +67,11 @@ class User extends Authenticatable
     {
         try {
             $this->password = encrypt($password);
-            return $this->save();
+            if ($this->save()) {
+                AppLog::info("Password updated", "New password for $this->username");
+            } else {
+                return false;
+            }
         } catch (Exception $e) {
             AppLog::error("Changing user password failed", $e->getMessage());
             report($e);
@@ -85,6 +94,7 @@ class User extends Authenticatable
                 "password"      =>  bcrypt($password)
             ]);
             $user->save();
+            AppLog::info('User created', "User $username created");
             return $user;
         } catch (Exception $e) {
             AppLog::error("Adding user failed", $e->getMessage());
@@ -106,6 +116,7 @@ class User extends Authenticatable
             "username"  =>  $user->username,
             "password"  =>  $password
         ])) {
+            AppLog::info('User logged in');
             return true;
         } else return "Incorrect password";
     }

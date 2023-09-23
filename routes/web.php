@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CarsController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,9 +19,15 @@ use Illuminate\Support\Facades\Route;
 //login routes
 Route::middleware('auth', 'active')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
-    Route::get('/cars', function () {
-        return view('cars.index');
-    });
+
+    //Cars routes
+    Route::get('/cars', [CarsController::class, 'index']);
+    Route::post('/cars', [CarsController::class, 'setCar']);
+    Route::get('/cars/delete/{id}', [CarsController::class, 'deleteCar']);
+    Route::post('/cars/model', [CarsController::class, 'setCarModel']);
+    Route::get('/cars/model/delete/{id}', [CarsController::class, 'deleteCarModel']);
+    Route::post('/cars/brand', [CarsController::class, 'setBrand']);
+    Route::get('/cars/brands/delete/{id}', [CarsController::class, 'deleteBrand']);
 });
 
 Route::post('/login', [HomeController::class, 'authenticate']);

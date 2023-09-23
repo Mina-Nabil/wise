@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 
@@ -58,9 +59,15 @@ trait CanBeDisabled
     {
         $this->is_active = $state;
         try {
-            return $this->save();
+            if ($this->save()) {
+                AppLog::info("Object " . ($state ? 'Activated' : 'De-activated'), self::class . " $this->id status changed");
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception $e) {
             report($e);
+            AppLog::error("Changing status failed", $e->getMessage());
             return false;
         }
     }

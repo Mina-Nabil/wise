@@ -5,14 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\SetUserRequest;
 use App\Models\Users\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
 
     public function index()
     {
-        Gate::authorize('viewAny-user');
+        $this->authorize('viewAny', User::class);
 
         $data['users'] = User::all();
         $data['types'] = User::TYPES;
@@ -24,7 +23,7 @@ class UserController extends Controller
     {
         /** @var User */
         $user = User::findOrFail($id);
-        Gate::authorize('view-user', $user);
+        $this->authorize('view', $user);
 
         $data['users'] = User::all();
         $data['types'] = User::TYPES;
@@ -34,7 +33,7 @@ class UserController extends Controller
 
     public function create()
     {
-        Gate::authorize('create-user');
+        $this->authorize('create', User::class);
         $data['types'] = User::TYPES;
         return view('users.profile', $data);
     }
@@ -89,9 +88,22 @@ class UserController extends Controller
         ]);
         /** @var User */
         $user = User::findOrFail($validated['id']);
-        Gate::authorize('update-user', $user);
+        $this->authorize('update', $user);
         $res = $user->changePassword($validated['password']);
 
+        if ($res) {
+            return redirect()->action([self::class, 'show', [$user->id]]);
+        } else {
+            return redirect()->action([self::class, 'create'])->withInput(['edit_error' => 'Failed to edit user. Please check application logs']);
+        }
+    }
+
+    public function toggleStatus($id)
+    {
+        /** @var User */
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
+        $res = $user->toggle();
         if ($res) {
             return redirect()->action([self::class, 'show', [$user->id]]);
         } else {
