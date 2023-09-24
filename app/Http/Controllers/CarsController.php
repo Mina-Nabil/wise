@@ -15,7 +15,8 @@ class CarsController extends Controller
     ///Main Cars Page
     public function index()
     {
-        return view('cars.index');
+        $cars = Car::with('car_model', 'car_model.brand')->get();
+        return view('cars.index', ['cars'   =>  $cars]);
     }
     ////Prices Functions
     public function setCarPrices(SetPriceRequest $request)
