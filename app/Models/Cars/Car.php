@@ -2,6 +2,7 @@
 
 namespace App\Models\Cars;
 
+use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -50,15 +51,21 @@ class Car extends Model
         }
     }
 
+    /**
+     * @param array $prices array of 'model_year', 'price' and 'desc' values
+     */
     public function setPrices(array $prices)
     {
         try {
             DB::transaction(function () use ($prices) {
                 $this->car_prices()->delete();
                 $this->car_prices()->createMany($prices);
+                AppLog::info('Prices update', "Car($this->id) price updated");
             });
+            return true;
         } catch (Exception $e) {
             report($e);
+            AppLog::error('Prices update failed', $e->getMessage());
             return false;
         }
     }

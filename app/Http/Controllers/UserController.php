@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\SetUserRequest;
 use App\Models\Users\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -109,5 +110,13 @@ class UserController extends Controller
         } else {
             return redirect()->action([self::class, 'create'])->withInput(['edit_error' => 'Failed to edit user. Please check application logs']);
         }
+    }
+
+
+    public function testNotf()
+    {
+        /** @var User */
+        $user = Auth::user();
+        $user->pushNotification('Test', "Test succeeded", '/cars');
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CarsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +29,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/cars/model/delete/{id}', [CarsController::class, 'deleteCarModel']);
     Route::post('/cars/brand', [CarsController::class, 'setBrand']);
     Route::get('/cars/brands/delete/{id}', [CarsController::class, 'deleteBrand']);
+    Route::get('/test/notf', [UserController::class, 'testNotf']);
 });
 
 Route::post('/login', [HomeController::class, 'authenticate']);

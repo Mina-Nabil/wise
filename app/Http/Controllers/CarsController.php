@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Cars\SetBrandRequest;
 use App\Http\Requests\Cars\SetCarRequest;
+use App\Http\Requests\Cars\SetPriceRequest;
 use App\Models\Cars\Brand;
 use App\Models\Cars\Car;
 use App\Models\Cars\CarModel;
@@ -17,6 +18,13 @@ class CarsController extends Controller
         return view('cars.index');
     }
     ////Prices Functions
+    public function setCarPrices(SetPriceRequest $request)
+    {
+        $data = $request->validated();
+        /** @var Car */
+        $car = Car::findOrFail($data['car_id']);
+        $car->setPrices($data);
+    }
 
     ////Cars Functions
     public function setCar(SetCarRequest $request)

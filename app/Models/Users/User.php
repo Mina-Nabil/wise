@@ -2,6 +2,7 @@
 
 namespace App\Models\Users;
 
+use App\Events\AppNotification;
 use App\Traits\CanBeDisabled;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -60,6 +61,25 @@ class User extends Authenticatable
             AppLog::error("Updating user failed", $e->getMessage());
             report($e);
             return false;
+        }
+    }
+
+    public function pushNotification($title, $message, $route)
+    {
+        try {
+            $this->notifications()->create([
+                "sender_id" =>  Auth::user() ? Auth::id() : null,
+                "title"     =>  $title,
+                "route"     =>  $route
+            ]);
+
+            event(new AppNotification([
+                "title"     =>  $title,
+                "message"   =>  $message,
+                "route"     =>  $route
+            ], $this));
+        } catch (Exception $e) {
+            report($e);
         }
     }
 
@@ -142,10 +162,20 @@ class User extends Authenticatable
         return $this->type == self::TYPE_SALES;
     }
 
+    public function getNotfChannelAttribute()
+    {
+        return "user$this->id-channel";
+    }
+
     //relations
     public function notes()
     {
         return $this->hasMany(Note::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 
     public function logs()
