@@ -7,6 +7,7 @@ use App\Models\Users\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
@@ -20,19 +21,23 @@ class HomeController extends Controller
         /** @var User */
         $user = Auth::user();
         if ($user) return redirect('/');
+        return view('auth.login');
+    }
 
-        return view('auth.login', ["msg" =>  $request->input('msg')]);
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->action([self::class, 'login']);
     }
 
     public function authenticate(LoginRequest $request)
     {
 
         $res = User::login(...$request->validated());
-        Log::debug($res);
         if ($res === true) {
-            return redirect('/');
+            return redirect('/cars');
         } else {
-            return redirect('login')->withInput(['msg' => $res]);
+            return redirect('login')->with(['alert_msg' => $res]);
         }
     }
 }

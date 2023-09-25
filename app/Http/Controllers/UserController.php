@@ -28,6 +28,7 @@ class UserController extends Controller
 
         $data['users'] = User::all();
         $data['types'] = User::TYPES;
+        $data['user'] = $user;
 
         return view('users.profile', $data);
     }
@@ -55,7 +56,7 @@ class UserController extends Controller
         if (is_a($newUser, User::class)) {
             return redirect()->action([self::class, 'index']);
         } else {
-            return redirect()->action([self::class, 'create'])->withInput(['insert_error' => 'Failed to create user. Please check application logs']);
+            return redirect()->action([self::class, 'create'])->with(['alert_msg' => 'Failed to create user. Please check application logs']);
         }
     }
 
@@ -77,7 +78,7 @@ class UserController extends Controller
         if ($res) {
             return redirect()->action([self::class, 'show', [$user->id]]);
         } else {
-            return redirect()->action([self::class, 'create'])->withInput(['edit_error' => 'Failed to edit user. Please check application logs']);
+            return redirect()->action([self::class, 'create'])->with(['alert_msg' => 'Failed to edit user. Please check application logs']);
         }
     }
 
@@ -95,7 +96,7 @@ class UserController extends Controller
         if ($res) {
             return redirect()->action([self::class, 'show', [$user->id]]);
         } else {
-            return redirect()->action([self::class, 'create'])->withInput(['edit_error' => 'Failed to edit user. Please check application logs']);
+            return redirect()->action([self::class, 'create'])->with(['alert_msg' => 'Failed to edit user. Please check application logs']);
         }
     }
 
@@ -108,7 +109,7 @@ class UserController extends Controller
         if ($res) {
             return redirect()->action([self::class, 'show', [$user->id]]);
         } else {
-            return redirect()->action([self::class, 'create'])->withInput(['edit_error' => 'Failed to edit user. Please check application logs']);
+            return redirect()->action([self::class, 'create'])->with(['alert_msg' => 'Failed to edit user. Please check application logs']);
         }
     }
 

@@ -13,7 +13,7 @@ class Country extends Model
     use HasFactory;
 
     protected $fillable = ['name'];
-    protected $timestamps = false;
+    public $timestamps = false;
 
     ////static function 
     public static function newCountry($name)

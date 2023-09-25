@@ -14,7 +14,7 @@ class CarModel extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['name', 'brand_id'];
-    protected $timestamps = false;
+    public $timestamps = false;
 
     ///static functions 
     public static function newCarModel($name, $brand_id)

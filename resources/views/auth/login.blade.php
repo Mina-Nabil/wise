@@ -41,9 +41,9 @@
                             <h4 class="font-medium">Sign in</h4>
                             <div class="text-slate-500 text-base">
                                 Sign in to your account to start using Wise
-                                @if (session('msg'))
+                                @if (session('alert_msg'))
                                 <div class="alert alert-danger">
-                                    {{ session('msg') }}
+                                    {{ session('alert_msg') }}
                                 </div>
                                 @endif
                             </div>

@@ -18,6 +18,15 @@ class CarsController extends Controller
         $cars = Car::with('car_model', 'car_model.brand')->get();
         return view('cars.index', ['cars'   =>  $cars]);
     }
+
+    public function importCars(Request $request)
+    {
+        $request->validate([
+            'cars_file'     =>  "required|file|mimetypes:application/vnd.ms-excel,text/csv"
+        ]);
+        Car::importData($request->cars_file);
+
+    }
     ////Prices Functions
     public function setCarPrices(SetPriceRequest $request)
     {
@@ -39,8 +48,8 @@ class CarsController extends Controller
             $res = Car::newCar($data['car_model_id'], $data['category'], $data['desc']);
         }
 
-        return redirect()->action([self::class, 'index'])->withInput(
-            ['msg'  => ($res) ? "Car data saved successfully" : "Something went wrong. Please check logs"]
+        return redirect()->action([self::class, 'index'])->with(
+            ['alert_msg'  => ($res) ? "Car data saved successfully" : "Something went wrong. Please check logs"]
         );
     }
 
@@ -50,8 +59,8 @@ class CarsController extends Controller
         $car = Car::findOrFail($id);
         $this->authorize('delete', $car);
         $res = $car->delete();
-        return redirect()->action([self::class, 'index'])->withInput(
-            ['msg'  => ($res) ? "Car deleted" : "Unable to delete"]
+        return redirect()->action([self::class, 'index'])->with(
+            ['alert_msg'  => ($res) ? "Car deleted" : "Unable to delete"]
         );
     }
 
@@ -67,8 +76,8 @@ class CarsController extends Controller
             $res = CarModel::newCarModel($data['name'], $data['brand_id']);
         }
 
-        return redirect()->action([self::class, 'index'])->withInput(
-            ['msg'  => ($res) ? "Car model data saved successfully" : "Something went wrong. Please check logs"]
+        return redirect()->action([self::class, 'index'])->with(
+            ['alert_msg'  => ($res) ? "Car model data saved successfully" : "Something went wrong. Please check logs"]
         );
     }
 
@@ -78,8 +87,8 @@ class CarsController extends Controller
         $model = CarModel::findOrFail($id);
         $this->authorize('delete', $model);
         $res = $model->delete();
-        return redirect()->action([self::class, 'index'])->withInput(
-            ['msg'  => ($res) ? "Car model deleted" : "Unable to delete"]
+        return redirect()->action([self::class, 'index'])->with(
+            ['alert_msg'  => ($res) ? "Car model deleted" : "Unable to delete"]
         );
     }
 
@@ -96,8 +105,8 @@ class CarsController extends Controller
             $res = Brand::newBrand($data['name'], $data['country_id']);
         }
 
-        return redirect()->action([self::class, 'index'])->withInput(
-            ['msg'  => ($res) ? "Brand data saved successfully" : "Something went wrong. Please check logs"]
+        return redirect()->action([self::class, 'index'])->with(
+            ['alert_msg'  => ($res) ? "Brand data saved successfully" : "Something went wrong. Please check logs"]
         );
     }
 
@@ -107,8 +116,8 @@ class CarsController extends Controller
         $brand = Brand::findOrFail($id);
         $this->authorize('delete', $brand);
         $res = $brand->delete();
-        return redirect()->action([self::class, 'index'])->withInput(
-            ['msg'  => ($res) ? "Brand deleted" : "Unable to delete"]
+        return redirect()->action([self::class, 'index'])->with(
+            ['alert_msg'  => ($res) ? "Brand deleted" : "Unable to delete"]
         );
     }
 }

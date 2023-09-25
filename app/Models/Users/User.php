@@ -130,7 +130,6 @@ class User extends Authenticatable
     {
 
         $user = self::where("username", $username)->first();
-        Log::info($user);
         if ($user == null) return "Username not found";
         if (Auth::attempt([
             "username"  =>  $user->username,
@@ -164,7 +163,7 @@ class User extends Authenticatable
 
     public function getNotfChannelAttribute()
     {
-        return "user$this->id-channel";
+        return "user6-channel";
     }
 
     //relations

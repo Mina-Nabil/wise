@@ -3,6 +3,7 @@
 namespace App\Models\Cars;
 
 use App\Models\Users\AppLog;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,11 +11,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Car extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $timestamps = false;
+    public $timestamps = false;
     protected $fillable = [
         'car_model_id', 'category', 'desc'
     ];
@@ -33,6 +37,71 @@ class Car extends Model
         } catch (Exception $e) {
             report($e);
             return false;
+        }
+    }
+
+    public static function importData($file)
+    {
+        $spreadsheet = IOFactory::load($file);
+        if (!$spreadsheet)
+            throw new Exception("Failed to read files content");
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+        $highestCol = $activeSheet->getHighestDataColumn();
+        $highestColIndex = Coordinate::columnIndexFromString($highestCol);
+
+        for ($i = 3; $i <= $highestRow; $i++) {
+            $category = $activeSheet->getCell('D' . $i)->getValue();
+            //skip if no car category found
+            if (!$category) continue;
+
+            $brand_cell = $activeSheet->getCell('B' . $i)->getValue();
+
+            if ($brand_cell) {
+                $brand = Brand::firstOrCreate([
+                    "country_id"    =>  1,
+                    "name"          => $brand_cell
+                ]);
+            }
+
+            //skip if no brand found
+            if (!$brand) continue;
+
+            $model_cell = $activeSheet->getCell('C' . $i)->getValue();
+            if ($model_cell) {
+                $car_model = CarModel::firstOrCreate([
+                    "brand_id"    =>  $brand->id,
+                    "name"          => $model_cell
+                ]);
+            }
+
+            //skip if no car model found
+            if (!$car_model) continue;
+
+            $car = Car::firstOrCreate([
+                'car_model_id'  => $car_model->id,
+                'category' => $category,
+                'desc' => "Imported from file on " . (new Carbon())->format('Y-m-d H:i:s')
+            ]);
+            Log::debug("Highest col: " .  $highestColIndex);
+            for ($p_i = 5; $p_i <= $highestColIndex; $p_i++) {
+                Log::debug("Reading prices");
+                $cellCharFromIndex = Coordinate::stringFromColumnIndex($p_i);
+                $price = $activeSheet->getCell($cellCharFromIndex . $i)->getValue();
+                $year = $activeSheet->getCell($cellCharFromIndex . '2')->getValue();
+                Log::debug("Year: " . $year);
+                Log::debug("Price: " . $price);
+
+                if (is_numeric($price)) {
+                    Log::debug("Saving price");
+                $car->car_prices()->updateOrCreate([
+                        "model_year"  =>  $year
+                    ], [
+                        "price" =>  $price,
+                        'desc' => "Imported from file on " . (new Carbon())->format('Y-m-d H:i:s')
+                    ]);
+                }
+            }
         }
     }
 
@@ -77,6 +146,40 @@ class Car extends Model
         return $query->with('car_prices');
     }
 
+    public function scopeTableData($query)
+    {
+        return $query->select('cars.*', 'cars_model.name as car_model_name', 'brands.name as brand_name')
+            ->join('cars_model', 'cars_model.id', '=', 'cars.car_model_id')
+            ->join('brands', 'brands.id', '=', 'cars_model.brand_id');
+    }
+
+    public function scopeSearchBy($query, $text)
+    {
+        //must include table data scope before this one
+        return $query->where(function ($query) use ($text) {
+            $query->where('cars.category', 'LIKE', "%$text$")
+                ->orWhere('car_model_name', 'LIKE', "%$text$")
+                ->orWhere('brand_name', 'LIKE', "%$text$");
+        });
+    }
+
+    public function scopeSortByCar($query, $sort = 'asc')
+    {
+        //must include table data scope before this one
+        return $query->orderBy('cars.category', $sort);
+    }
+
+    public function scopeSortByModel($query, $sort = 'asc')
+    {
+        //must include table data scope before this one
+        return $query->orderBy('car_model_name', $sort);
+    }
+
+    public function scopeSortByBrand($query, $sort = 'asc')
+    {
+        //must include table data scope before this one
+        return $query->orderBy('brand_name', $sort);
+    }
 
     ///relations
     public function car_prices(): HasMany

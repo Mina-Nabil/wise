@@ -137,6 +137,7 @@
             </div>
 
         </div>
+        @can('create', App\Models\Users\User::class)
         <div class="md:grid-col-12">
             <div class="card h-full">
                 <header class="card-header">
@@ -260,5 +261,6 @@
 
             </div>
         </div>
+        @endcan
     </div>
 @endsection

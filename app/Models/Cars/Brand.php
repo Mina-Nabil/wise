@@ -15,7 +15,7 @@ class Brand extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['name', 'country_id'];
-    protected $timestamps = false;
+    public $timestamps = false;
 
     ///static functions 
     public static function newBrand($name, $country_id)

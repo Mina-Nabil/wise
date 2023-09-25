@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth', 'active')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
 
+    //Users routes
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{id}', [UserController::class, 'show']);
+
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);
     Route::post('/cars', [CarsController::class, 'setCar']);
@@ -34,4 +38,5 @@ Route::middleware('auth', 'active')->group(function () {
 
 Route::post('/login', [HomeController::class, 'authenticate']);
 Route::get('/login', [HomeController::class, 'login'])->name('login');
+Route::get('/logout', [HomeController::class, 'logout'])->name('logout');
 
