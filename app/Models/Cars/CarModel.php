@@ -46,6 +46,12 @@ class CarModel extends Model
         }
     }
 
+    public function scopeGetBrandModels($query, $brand_id)
+    {
+        return $query->where('brand_id', $brand_id);
+    }
+
+
 
     /////relations
     public function cars(): HasMany

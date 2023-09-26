@@ -19,17 +19,15 @@ class Car extends Model
 {
     use HasFactory, SoftDeletes;
     public $timestamps = false;
-    protected $fillable = [
-        'car_model_id', 'category', 'desc'
-    ];
+    protected $fillable = ['car_model_id', 'category', 'desc'];
 
     ///static functions
     public static function newCar(int $car_model_id, string $category, string $desc = null)
     {
         $newCar = new self([
-            "car_model_id"  =>  $car_model_id,
-            "category"      =>  $category,
-            "desc"          =>  $desc,
+            'car_model_id' => $car_model_id,
+            'category' => $category,
+            'desc' => $desc,
         ]);
         try {
             $newCar->save();
@@ -43,8 +41,9 @@ class Car extends Model
     public static function importData($file)
     {
         $spreadsheet = IOFactory::load($file);
-        if (!$spreadsheet)
-            throw new Exception("Failed to read files content");
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
         $activeSheet = $spreadsheet->getActiveSheet();
         $highestRow = $activeSheet->getHighestDataRow();
         $highestCol = $activeSheet->getHighestDataColumn();
@@ -53,53 +52,62 @@ class Car extends Model
         for ($i = 3; $i <= $highestRow; $i++) {
             $category = $activeSheet->getCell('D' . $i)->getValue();
             //skip if no car category found
-            if (!$category) continue;
+            if (!$category) {
+                continue;
+            }
 
             $brand_cell = $activeSheet->getCell('B' . $i)->getValue();
 
             if ($brand_cell) {
                 $brand = Brand::firstOrCreate([
-                    "country_id"    =>  1,
-                    "name"          => $brand_cell
+                    'country_id' => 1,
+                    'name' => $brand_cell,
                 ]);
             }
 
             //skip if no brand found
-            if (!$brand) continue;
+            if (!$brand) {
+                continue;
+            }
 
             $model_cell = $activeSheet->getCell('C' . $i)->getValue();
             if ($model_cell) {
                 $car_model = CarModel::firstOrCreate([
-                    "brand_id"    =>  $brand->id,
-                    "name"          => $model_cell
+                    'brand_id' => $brand->id,
+                    'name' => $model_cell,
                 ]);
             }
 
             //skip if no car model found
-            if (!$car_model) continue;
+            if (!$car_model) {
+                continue;
+            }
 
             $car = Car::firstOrCreate([
-                'car_model_id'  => $car_model->id,
+                'car_model_id' => $car_model->id,
                 'category' => $category,
-                'desc' => "Imported from file on " . (new Carbon())->format('Y-m-d H:i:s')
+                'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
             ]);
-            Log::debug("Highest col: " .  $highestColIndex);
+            Log::debug('Highest col: ' . $highestColIndex);
             for ($p_i = 5; $p_i <= $highestColIndex; $p_i++) {
-                Log::debug("Reading prices");
+                Log::debug('Reading prices');
                 $cellCharFromIndex = Coordinate::stringFromColumnIndex($p_i);
                 $price = $activeSheet->getCell($cellCharFromIndex . $i)->getValue();
                 $year = $activeSheet->getCell($cellCharFromIndex . '2')->getValue();
-                Log::debug("Year: " . $year);
-                Log::debug("Price: " . $price);
+                Log::debug('Year: ' . $year);
+                Log::debug('Price: ' . $price);
 
                 if (is_numeric($price)) {
-                    Log::debug("Saving price");
-                $car->car_prices()->updateOrCreate([
-                        "model_year"  =>  $year
-                    ], [
-                        "price" =>  $price,
-                        'desc' => "Imported from file on " . (new Carbon())->format('Y-m-d H:i:s')
-                    ]);
+                    Log::debug('Saving price');
+                    $car->car_prices()->updateOrCreate(
+                        [
+                            'model_year' => $year,
+                        ],
+                        [
+                            'price' => $price,
+                            'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
+                        ],
+                    );
                 }
             }
         }
@@ -109,9 +117,9 @@ class Car extends Model
     public function editInfo(int $car_model_id, string $category, string $desc = null)
     {
         $this->update([
-            "car_model_id"  =>  $car_model_id,
-            "category"      =>  $category,
-            "desc"          =>  $desc,
+            'car_model_id' => $car_model_id,
+            'category' => $category,
+            'desc' => $desc,
         ]);
         try {
             return $this->save();
@@ -148,18 +156,19 @@ class Car extends Model
 
     public function scopeTableData($query)
     {
-        return $query->select('cars.*', 'cars_model.name as car_model_name', 'brands.name as brand_name')
-            ->join('cars_model', 'cars_model.id', '=', 'cars.car_model_id')
-            ->join('brands', 'brands.id', '=', 'cars_model.brand_id');
+        return $query
+            ->select('cars.*', 'car_models.name as car_model_name', 'brands.name as brand_name')
+            ->join('car_models', 'car_models.id', '=', 'cars.car_model_id')
+            ->join('brands', 'brands.id', '=', 'car_models.brand_id');
     }
 
     public function scopeSearchBy($query, $text)
     {
-        //must include table data scope before this one
         return $query->where(function ($query) use ($text) {
-            $query->where('cars.category', 'LIKE', "%$text$")
-                ->orWhere('car_model_name', 'LIKE', "%$text$")
-                ->orWhere('brand_name', 'LIKE', "%$text$");
+            $query
+                ->where('cars.category', 'LIKE', "%$text%")
+                ->orWhere('car_models.name', 'LIKE', "%$text%")
+                ->orWhere('brands.name', 'LIKE', "%$text%");
         });
     }
 

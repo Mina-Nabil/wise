@@ -54,10 +54,10 @@
         });
     </script>
     @endauth
-
+    @livewireStyles
 </head>
 
-<body class=" font-inter dashcode-app" id="body_class">
+<body class=" font-inter dashcode-app" >
     <!-- [if IE]> <p class="browserupgrade"> You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security. </p> <![endif] -->
     <main class="app-wrapper">
         <!-- BEGIN: Sidebar -->
@@ -125,7 +125,7 @@
                     <!-- Apps Area -->
                     <li class="sidebar-menu-title">APPS</li>
                     <li>
-                        <a href="chat.html" class="navItem @yield('cars')">
+                        <a href="{{ url('/cars') }}" class="navItem @yield('cars')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="mingcute:car-line"></iconify-icon>
                                 <span>Cars</span>
@@ -444,7 +444,7 @@
 
 
                                     <li>
-                                        <a href="index.html">
+                                        <a href="{{ url('/cars') }}">
                                             <div class="flex space-x-2 items-start rtl:space-x-reverse">
                                                 <iconify-icon icon=mingcute:car-line class="leading-[1] text-base"> </iconify-icon>
                                                 <span class="leading-[1]">
@@ -872,6 +872,7 @@
             Swal.fire("{{session('alert_msg')}}")
         @endif  
     </script>
+    @livewireScripts
 </body>
 
 </html>

@@ -17147,9 +17147,7 @@ ul.custom-list ul {
 }
 
 /* START ADDING CLASSES HERE */
-.select2-container {
-    z-index: 10000;
-}
+
 .cust-card-header {
     padding-top: 10px;
     padding-bottom: 10px !important;
@@ -17163,26 +17161,15 @@ ul.custom-list ul {
     height: 37.5px;
     align-items: center;
     font-size: 13px;
-    font-weight: 800;
-    background-color: #4669fa;
-    border: 0;
-    padding-left: 25px;
-    padding-right: 25px;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
 }
 
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__rendered {
-    color: #fff;
-    line-height: 28px;
-}
-
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__arrow
-    b {
-    border-color: #fff transparent transparent transparent;
-}
-.select2-container--default .select2-search--dropdown .select2-search__field {
-    color: black;
+.loading-icon {
+    position: absolute;
+    transform: translateX(35%);
+    /* right: 9px; */
+    font-size: 24px;
 }
