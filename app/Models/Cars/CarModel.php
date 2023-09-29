@@ -2,6 +2,7 @@
 
 namespace App\Models\Cars;
 
+use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,6 +52,19 @@ class CarModel extends Model
         return $query->where('brand_id', $brand_id);
     }
 
+    public static function deleteModel($ModelId)
+    {
+        try {
+            $model = self::findOrFail($ModelId);
+            $model->delete();
+
+            return true; // Deletion successful
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Error deleting Model with ID {$ModelId}: {$e->getMessage()}");
+            return false;
+        }
+    }
 
 
     /////relations

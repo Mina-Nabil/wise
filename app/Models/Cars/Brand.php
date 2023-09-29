@@ -53,6 +53,19 @@ class Brand extends Model
         }
     }
 
+    public static function deleteBrand($brandId)
+    {
+        try {
+            $brand = self::findOrFail($brandId);
+            $brand->delete();
+
+            return true; // Deletion successful
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Error deleting brand with ID {$brandId}: {$e->getMessage()}");
+            return false;
+        }
+    }
 
     /////relations
     public function models(): HasMany

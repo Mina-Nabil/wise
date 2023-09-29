@@ -12,7 +12,7 @@ class CarPrice extends Model
 
     protected $table = 'car_prices';
     protected $fillable = [
-        'model_year', 'price', 'desc'
+        'car_id','model_year', 'price', 'desc'
     ];
 
     //relations
