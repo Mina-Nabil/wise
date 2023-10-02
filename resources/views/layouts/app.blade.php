@@ -28,8 +28,8 @@
         Pusher.logToConsole = true;
         @endenv
 
-        var pusher = new Pusher("f4d0f016966247f3ff50", {
-          cluster: 'eu'
+        var pusher = new Pusher("{{env('PUSHER_APP_KEY')}}", {
+          cluster: "{{env('PUSHER_APP_CLUSTER')}}"
         });
     
         var channel = pusher.subscribe('user{{ Auth::user()->id }}-channel');

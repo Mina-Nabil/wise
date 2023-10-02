@@ -163,7 +163,7 @@ class User extends Authenticatable
 
     public function getNotfChannelAttribute()
     {
-        return "user6-channel";
+        return "user$this->id-channel";
     }
 
     //relations
