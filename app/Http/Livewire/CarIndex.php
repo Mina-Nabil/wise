@@ -33,37 +33,42 @@ class CarIndex extends Component
     public $modelId;
     public $deleteThisModel;
 
-    public function openModel($id){
+    public function openModel($id)
+    {
         $this->modelId = $id;
     }
-    public function closeModel(){
+    public function closeModel()
+    {
         $this->modelId = null;
         $this->deleteThisModel = false;
     }
-    
+
     public function declineDeleteModel()
     {
         $this->deleteThisModel = false;
     }
 
-    public function openBrand($id){
+    public function openBrand($id)
+    {
         $this->brandId = $id;
     }
-    public function closeBrand(){
+    public function closeBrand()
+    {
         $this->brandId = null;
     }
 
-    public function updateThisPrice($id){
+    public function updateThisPrice($id)
+    {
         $this->showPrices($this->carPriceListId);
         $this->updateThisPriceId = $id;
-        
     }
 
-    public function declineUpdatePrice(){
+    public function declineUpdatePrice()
+    {
         $this->updateThisPriceId = null;
     }
-    public function updatePrice(){
-
+    public function updatePrice()
+    {
     }
 
 
@@ -72,7 +77,8 @@ class CarIndex extends Component
         $this->deleteThisPriceId = $id;
     }
 
-    public function declineDeletePrice(){
+    public function declineDeletePrice()
+    {
         $this->deleteThisPriceId = null;
     }
 
@@ -110,6 +116,7 @@ class CarIndex extends Component
 
     public function saveCarName()
     {
+        /** @var Car */
         $car = Car::find($this->carPriceListId);
 
         if ($car) {
@@ -130,7 +137,10 @@ class CarIndex extends Component
 
     public function editCar()
     {
+        /** @var Car */
+        $car = Car::find($this->carPriceListId);
         $this->editCarField = true;
+        $this->editCarName = $car->category;
     }
 
     public function mount()
@@ -142,18 +152,15 @@ class CarIndex extends Component
     {
         $this->validate();
 
-        CarPrice::create([
-            'car_id' => $this->carPriceListId,
-            'price' => $this->newPrice,
-            'model_year' => $this->newPriceYear,
-            'desc' => 'Added From livewire',
-        ]);
+        /** @var Car */
+        $car = Car::findOrFail($this->carPriceListId);
+        $car->addPrice($this->newPriceYear, $this->newPrice, "Added from dashboard");
         session()->flash('price_success', 'Price Added successfully.');
-
+        $this->newPriceYear = null;
+        $this->newPrice = null;
         $this->showPrices($this->carPriceListId);
     }
 
-    
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -169,12 +176,14 @@ class CarIndex extends Component
         $this->deleteThisCar = false;
     }
 
-    public function confirmDeleteBand(){
+    public function confirmDeleteBand()
+    {
 
         $this->deleteThisBrand = true;
     }
 
-    public function confirmDeleteModel(){
+    public function confirmDeleteModel()
+    {
 
         $this->deleteThisModel = true;
     }
@@ -184,14 +193,16 @@ class CarIndex extends Component
         $this->deleteThisBrand = false;
     }
 
-    public function deleteModel(){
+    public function deleteModel()
+    {
         // dd($this->deleteThisBrand);
         CarModel::deleteModel($this->modelId);
         session()->flash('cars_success', 'Model Deleted successfully.');
         return redirect('/cars');
     }
 
-    public function deleteBrand(){
+    public function deleteBrand()
+    {
         // dd($this->deleteThisBrand);
         Brand::deleteBrand($this->brandId);
         session()->flash('cars_success', 'Brand Deleted successfully.');
@@ -228,27 +239,27 @@ class CarIndex extends Component
 
 
         $cars = Car::tableData()
-                    ->searchBy($this->search)
-                    ->when($this->sortBy, function ($q) {
-                        switch ($this->sortBy) {
-                            case 'category':
-                                $q->sortByCar($this->sortDirection);
-                                break;
-                            case 'model':
-                                $q->sortByModel($this->sortDirection);
-                                break;
-                            case 'brand':
-                                $q->sortByBrand($this->sortDirection);
-                                break;
-                            // Add more cases for other columns if needed
-                        }
-                    })
-                    ->whereNull('cars.deleted_at')
-                    ->whereNull('brands.deleted_at')
-                    ->whereNull('car_models.deleted_at')
-                    ->paginate(30);
+            ->searchBy($this->search)
+            ->when($this->sortBy, function ($q) {
+                switch ($this->sortBy) {
+                    case 'category':
+                        $q->sortByCar($this->sortDirection);
+                        break;
+                    case 'model':
+                        $q->sortByModel($this->sortDirection);
+                        break;
+                    case 'brand':
+                        $q->sortByBrand($this->sortDirection);
+                        break;
+                        // Add more cases for other columns if needed
+                }
+            })
+            ->whereNull('cars.deleted_at')
+            ->whereNull('brands.deleted_at')
+            ->whereNull('car_models.deleted_at')
+            ->paginate(30);
 
-        
+
 
         $brand = null;
         $modelCount = null;
@@ -272,7 +283,7 @@ class CarIndex extends Component
         }
 
         $brands = Brand::all();
-        
+
         return view('livewire.car-index', [
             'cars' => $cars,
             'brands' => $brands,

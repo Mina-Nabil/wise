@@ -148,6 +148,25 @@ class Car extends Model
         }
     }
 
+    public function addPrice($year, $price, $desc=null)
+    {
+        try {
+            $this->car_prices()->updateOrCreate([
+                "model_year"    =>  $year,
+            ], [
+                "price"         =>  $price,
+                "desc"          =>  $desc
+            ]);
+            $this->loadMissing('car_model');
+            AppLog::info('New Price', "New price added for {$this->car_model->name} - $this->name");
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error('Prices update failed', $e->getMessage());
+            return false;
+        }
+    }
+
     //scopes
     public function scopeWithPrices($query)
     {
@@ -164,29 +183,33 @@ class Car extends Model
 
     public function scopeSearchBy($query, $text)
     {
-        return $query->where(function ($query) use ($text) {
-            $query
-                ->where('cars.category', 'LIKE', "%$text%")
-                ->orWhere('car_models.name', 'LIKE', "%$text%")
-                ->orWhere('brands.name', 'LIKE', "%$text%");
-        });
+        $words = explode(" ", $text);
+        foreach ($words as $w)
+            $query->where(function ($query) use ($w) {
+                $query
+                    ->where('cars.category', 'LIKE', "%$w%")
+                    ->orWhere('car_models.name', 'LIKE', "%$w%")
+                    ->orWhere('brands.name', 'LIKE', "%$w%");
+            });
+
+        return $query;
     }
 
+    //must include table data scope before this one
     public function scopeSortByCar($query, $sort = 'asc')
     {
-        //must include table data scope before this one
         return $query->orderBy('cars.category', $sort);
     }
 
+    //must include table data scope before this one
     public function scopeSortByModel($query, $sort = 'asc')
     {
-        //must include table data scope before this one
         return $query->orderBy('car_model_name', $sort);
     }
 
+    //must include table data scope before this one
     public function scopeSortByBrand($query, $sort = 'asc')
     {
-        //must include table data scope before this one
         return $query->orderBy('brand_name', $sort);
     }
 

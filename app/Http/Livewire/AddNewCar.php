@@ -49,9 +49,6 @@ class AddNewCar extends Component
 
     public function saveCar()
     {
-
-
-
         if ($this->addNewBrand) {
 
             $validatedData = $this->validate([

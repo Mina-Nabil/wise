@@ -12,7 +12,8 @@
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.12",
         "phpoffice/phpspreadsheet": "^1.29",
-        "pusher/pusher-php-server": "^7.2"
+        "pusher/pusher-php-server": "^7.2",
+        "sentry/sentry-laravel": "^3.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -60,7 +61,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
     },
     "minimum-stability": "stable",

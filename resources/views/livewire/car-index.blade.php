@@ -203,7 +203,7 @@
                                                                 $currentYear = date('Y');
                                                             @endphp
                                                             <option selected>Select</option>
-                                                            @for ($year = 1990; $year <= $currentYear + 2; $year++)
+                                                            @for ($year = $currentYear+2; $year >= 1990; $year--)
                                                                 <option value="{{ $year }}"
                                                                     class="dark:bg-slate-700"
                                                                     {{ $year == $currentYear ? 'selected' : '' }}>
@@ -484,7 +484,7 @@
                                         <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
                                             wire:click="openModel({{ $car->car_model->id }})">
                                             {{ $car->car_model->name }}</td>
-                                        <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                        <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"  wire:click="showPrices({{ $car->id }})">
                                             {{ $car->category }}</td>
                                         <td class="table-td ">{{ $car->desc }}</td>
                                         <td class="table-td ">
