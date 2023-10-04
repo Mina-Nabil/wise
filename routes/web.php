@@ -3,7 +3,9 @@
 use App\Http\Controllers\CarsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PoliciesController;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +26,13 @@ Route::middleware('auth', 'active')->group(function () {
     //Users routes
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
+
+    Route::get('/notifications', function(){
+        return view('users.notifications');
+    });
+    
+    Route::get('/policies', [PoliciesController::class, 'index'])->name('policies.index');
+
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);
