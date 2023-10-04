@@ -8899,6 +8899,14 @@ ToolTip And PopOver
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 400;
+    transition: opacity 3s ease-in-out; /* Transition the opacity property over 3 seconds */
+}
+
+.hide {
+    opacity: 0; /* Make the element completely transparent */
+    height: 0; /* Optionally, set the height to 0 to make it collapse */
+    padding: 0; /* Optionally, set padding to 0 to remove space */
+    overflow: hidden; /* Optionally, hide any overflow content */
 }
 
 .alert-primary {

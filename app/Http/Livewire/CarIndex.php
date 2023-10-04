@@ -8,8 +8,6 @@ use App\Models\Cars\CarPrice;
 use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Http;
-use App\Http\Controllers\CarController;
 
 class CarIndex extends Component
 {
@@ -32,6 +30,17 @@ class CarIndex extends Component
     public $deleteThisBrand;
     public $modelId;
     public $deleteThisModel;
+    public $updatedPrice;
+    public $updatedYear = null;
+    public $editBrandField;
+    public $editBrandName;
+    public $editModelField;
+    public $editModelName;
+
+    public function mount()
+    {
+        $this->prices = collect();
+    }
 
     public function openModel($id)
     {
@@ -41,6 +50,13 @@ class CarIndex extends Component
     {
         $this->modelId = null;
         $this->deleteThisModel = false;
+        $this->editModelField = false;
+    }
+
+    public function closeUpdatePrice()
+    {
+        $this->updateThisPriceId = null;
+        $this->showPrices($this->carPriceListId);
     }
 
     public function declineDeleteModel()
@@ -55,22 +71,39 @@ class CarIndex extends Component
     public function closeBrand()
     {
         $this->brandId = null;
+        $this->editBrandField = false;
     }
 
     public function updateThisPrice($id)
     {
         $this->showPrices($this->carPriceListId);
         $this->updateThisPriceId = $id;
+        $price = CarPrice::find($this->updateThisPriceId);
+        $this->updatedPrice = $price->price;
+        $this->updatedYear = $price->model_year;
     }
 
     public function declineUpdatePrice()
     {
         $this->updateThisPriceId = null;
     }
-    public function updatePrice()
-    {
-    }
 
+    public function updatePrice($id)
+    {
+        $this->validate([
+            'updatedYear'  => 'required',
+            'updatedPrice' => 'required',
+        ]);
+
+        $record = CarPrice::find($id);
+        $record->update([
+            'car_id' => $this->carPriceListId,
+            'model_year' => $this->updatedYear,
+            'price' => $this->updatedPrice,
+            'desc' => 'Updated From Livewire',
+        ]);
+        $this->closeUpdatePrice();
+    }
 
     public function deletethisPrice($id)
     {
@@ -135,6 +168,62 @@ class CarIndex extends Component
         'newPriceYear' => 'required',
     ];
 
+    // to open the field of Edit model name
+    public function editModel()
+    {
+        /** @var CarModel */
+        $model = CarModel::find($this->modelId);
+        $this->editModelField = true;
+        $this->editModelName = $model->name;
+    }
+
+    // to save the edited model name
+    public function saveModelName()
+    {
+        /** @var CarModel */
+        $this->validate([
+            'editModelName' => 'required',
+        ]);
+        $model = CarModel::find($this->modelId);
+
+        if ($model) {
+            $model->editInfo($this->editModelName, $model->brand->id);
+            $model->save();
+
+            $this->editModelField = false;
+            session()->flash('model_success', 'Brand Updated successfully.');
+            $this->openModel($this->modelId);
+        }
+    }
+
+    // to open the field of Edit brand name
+    public function editBrand()
+    {
+        /** @var Car */
+        $brand = Brand::find($this->brandId);
+        $this->editBrandField = true;
+        $this->editBrandName = $brand->name;
+    }
+
+    // to save the edited brand name
+    public function saveBrandName()
+    {
+        /** @var Brand */
+        $this->validate([
+            'editBrandName' => 'required',
+        ]);
+        $brand = Brand::find($this->brandId);
+
+        if ($brand) {
+            $brand->editInfo($this->editBrandName, $brand->country->id);
+            $brand->save();
+
+            $this->editBrandField = false;
+            session()->flash('brand_success', 'Brand Updated successfully.');
+            $this->openBrand($this->brandId);
+        }
+    }
+
     public function editCar()
     {
         /** @var Car */
@@ -143,24 +232,18 @@ class CarIndex extends Component
         $this->editCarName = $car->category;
     }
 
-    public function mount()
-    {
-        $this->prices = collect();
-    }
-
     public function submit()
     {
         $this->validate();
 
         /** @var Car */
         $car = Car::findOrFail($this->carPriceListId);
-        $car->addPrice($this->newPriceYear, $this->newPrice, "Added from dashboard");
+        $car->addPrice($this->newPriceYear, $this->newPrice, 'Added from dashboard');
         session()->flash('price_success', 'Price Added successfully.');
         $this->newPriceYear = null;
         $this->newPrice = null;
         $this->showPrices($this->carPriceListId);
     }
-
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -178,13 +261,11 @@ class CarIndex extends Component
 
     public function confirmDeleteBand()
     {
-
         $this->deleteThisBrand = true;
     }
 
     public function confirmDeleteModel()
     {
-
         $this->deleteThisModel = true;
     }
 
@@ -208,7 +289,6 @@ class CarIndex extends Component
         session()->flash('cars_success', 'Brand Deleted successfully.');
         return redirect('/cars');
     }
-
 
     public function sortByColumn($column)
     {
@@ -236,8 +316,6 @@ class CarIndex extends Component
 
     public function render()
     {
-
-
         $cars = Car::tableData()
             ->searchBy($this->search)
             ->when($this->sortBy, function ($q) {
@@ -251,15 +329,13 @@ class CarIndex extends Component
                     case 'brand':
                         $q->sortByBrand($this->sortDirection);
                         break;
-                        // Add more cases for other columns if needed
+                    // Add more cases for other columns if needed
                 }
             })
             ->whereNull('cars.deleted_at')
             ->whereNull('brands.deleted_at')
             ->whereNull('car_models.deleted_at')
             ->paginate(30);
-
-
 
         $brand = null;
         $modelCount = null;
@@ -271,9 +347,11 @@ class CarIndex extends Component
             // If $this->brandId is not empty, attempt to find the Brand model
             $brand = Brand::findOrFail($this->brandId);
             $modelCount = $brand->models->count();
-            $carsCount = $brand->models->flatMap(function ($model) {
-                return $model->cars;
-            })->count();
+            $carsCount = $brand->models
+                ->flatMap(function ($model) {
+                    return $model->cars;
+                })
+                ->count();
         }
 
         if ($this->modelId) {

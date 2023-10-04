@@ -999,3 +999,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 // END: Select Multi Rows in a Table
+
+// Use JavaScript to add the "hide" class after 3 seconds
+setTimeout(function() {
+    document.querySelector('.alert').classList.add('hide');
+  }, 3000);
+  

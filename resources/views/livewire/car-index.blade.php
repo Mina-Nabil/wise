@@ -128,17 +128,15 @@
                                                         </td>
                                                     @elseif($updateThisPriceId === $price->id)
                                                         <td class="table-td" style="padding: 5px;">
-                                                            <select id="select" class="form-control"
-                                                                name="model_year">
+                                                            <select class="form-control  @error('updatedYear') !border-danger-500 @enderror" name="model_year"
+                                                                wire:model="updatedYear">
                                                                 @php
                                                                     $currentYear = date('Y');
                                                                 @endphp
 
                                                                 @for ($year = 1990; $year <= $currentYear + 2; $year++)
                                                                     <option value="{{ $year }}"
-                                                                        {{ $year === $price->model_year ? 'selected' : '' }}
-                                                                        class="dark:bg-slate-700"
-                                                                        {{ $year == $currentYear ? 'selected' : '' }}>
+                                                                        class="dark:bg-slate-700">
                                                                         {{ $year }}
                                                                     </option>
                                                                 @endfor
@@ -147,16 +145,20 @@
 
                                                         </td>
                                                         <td class="table-td text-success-500">
-                                                            <input id="number" type="number" class="form-control"
-                                                                placeholder="Enter Price" name="price">
+                                                            <input type="number" class="form-control @error('updatedPrice') !border-danger-500 @enderror" name="price"
+                                                                placeholder="{{ $price->price }}" wire:model="updatedPrice">
                                                         </td>
                                                         <input type="hidden" name="card_id"
                                                             value="{{ $carPriceListId }}">
                                                         <td class="table-td ">
-                                                            <button wire:click="submit"
+                                                            <button wire:click="updatePrice({{ $price->id }})"
                                                                 class="btn inline-flex justify-center btn-success btn-sm">
-                                                                <iconify-icon
-                                                                    icon="material-symbols:add"></iconify-icon>
+                                                                update
+                                                            </button>
+                                                            
+                                                            <button wire:click="closeUpdatePrice" title="close"
+                                                                class="btn inline-flex justify-center btn-outline-secondary rounded-[25px] btn-sm">
+                                                                x
                                                             </button>
                                                         </td>
                                                     @else
@@ -203,7 +205,7 @@
                                                                 $currentYear = date('Y');
                                                             @endphp
                                                             <option selected>Select</option>
-                                                            @for ($year = $currentYear+2; $year >= 1990; $year--)
+                                                            @for ($year = $currentYear + 2; $year >= 1990; $year--)
                                                                 <option value="{{ $year }}"
                                                                     class="dark:bg-slate-700"
                                                                     {{ $year == $currentYear ? 'selected' : '' }}>
@@ -224,7 +226,7 @@
                                                     <td class="table-td ">
                                                         <button wire:click="submit"
                                                             class="btn inline-flex justify-center btn-success btn-sm">
-                                                            <iconify-icon icon="material-symbols:add"></iconify-icon>
+                                                            Add
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -484,7 +486,8 @@
                                         <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
                                             wire:click="openModel({{ $car->car_model->id }})">
                                             {{ $car->car_model->name }}</td>
-                                        <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"  wire:click="showPrices({{ $car->id }})">
+                                        <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                            wire:click="showPrices({{ $car->id }})">
                                             {{ $car->category }}</td>
                                         <td class="table-td ">{{ $car->desc }}</td>
                                         <td class="table-td ">
@@ -546,7 +549,22 @@
                         <div
                             class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                {{ $brand->name }}
+                                @if ($editBrandField)
+                                    <div class="relative">
+                                        <input type="text"
+                                            class="form-control !pr-9 @error('editBrandName') !border-danger-500 @enderror"
+                                            wire:model="editBrandName">
+                                        <button wire:click="saveBrandName"
+                                            class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
+                                            <iconify-icon icon="material-symbols:save"></iconify-icon>
+                                        </button>
+                                    </div>
+                                @else
+                                    {{ $brand->name }}
+                                    <p class="text-sm font-light text-slate-600 dark:text-slate-300">
+                                        {{ $brand->country->name }}</p>
+                                @endif
+
                             </h3>
                             <button type="button"
                                 class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
@@ -560,9 +578,37 @@
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
+
                         </div>
+
+
+
+                        @if (session()->has('brand_success'))
+                            <div class="p-6">
+                                <div
+                                    class="py-[18px] px-6 font-normal text-sm rounded-md bg-success-500 text-white animate-\[fade-out_350ms_ease-in-out\] alert">
+                                    <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                                        <p class="flex-1 font-Inter">
+                                            {{ session('brand_success') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif (session()->has('brand_failed'))
+                            <div class="p-6">
+                                <div class="py-[18px] px-6 font-normal text-sm rounded-md bg-danger-500 text-white">
+                                    <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                                        <p class="flex-1 font-Inter">
+                                            {{ session('brand_failed') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Modal body -->
-                        <div class="p-6  grid md:grid-cols-5 lg:grid-cols-2 gap-5">
+
+                        <div class="p-6 grid md:grid-cols-5 lg:grid-cols-2 gap-5">
                             <div class=" bg-info-500 rounded-md p-4 bg-opacity-[0.15] dark:bg-opacity-50 text-center">
                                 <div
                                     class="text-info-500 mx-auto h-10 w-10 flex flex-col items-center justify-center rounded-full bg-white text-2xl mb-4">
@@ -611,6 +657,12 @@
                         @else
                             <div
                                 class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="editBrand"
+                                    class="btn inline-flex h-12 w-12 items-center justify-center btn-light active rounded-full">
+                                    <span class="flex items-center">
+                                        <iconify-icon icon="iconamoon:edit-bold"></iconify-icon>
+                                    </span>
+                                </button>
                                 <button data-bs-dismiss="modal" wire:click="confirmDeleteBand"
                                     class="btn inline-flex justify-center btn-danger shadow-base2">
                                     Delete Brand
@@ -636,6 +688,7 @@
                         <div
                             class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-base text-white dark:text-white capitalize">
+
                                 <ul class="m-0 p-0 list-none">
                                     <li class="inline-block relative top-[3px] text-base font-Inter ">
                                         {{ $model->brand->name }}
@@ -643,7 +696,20 @@
                                             class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
                                     </li>
                                     <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                        {{ $model->name }}
+                                        @if ($editModelField)
+                                            <div class="relative">
+                                                <input type="text"
+                                                    class="form-control !pr-9 @error('editModelName') !border-danger-500 @enderror"
+                                                    wire:model="editModelName">
+                                                <button wire:click="saveModelName"
+                                                    class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
+                                                    <iconify-icon icon="material-symbols:save"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        @else
+                                            {{ $model->name }}
+                                        @endif
+                                        
                                     </li>
                                 </ul>
                             </h3>
@@ -663,10 +729,10 @@
                         <!-- Modal body -->
                         <div class="p-6 text-sm">
 
-                            
 
-                                    This Model has <b>{{ $modelCarsCount }}</b> Cars take care before taking any actions!
-                                
+
+                            This Model has <b>{{ $modelCarsCount }}</b> Cars take care before taking any actions!
+
 
                         </div>
                         <!-- Modal footer -->
@@ -690,6 +756,12 @@
                         @else
                             <div
                                 class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="editModel"
+                                    class="btn inline-flex h-12 w-12 items-center justify-center btn-light active rounded-full">
+                                    <span class="flex items-center">
+                                        <iconify-icon icon="iconamoon:edit-bold"></iconify-icon>
+                                    </span>
+                                </button>
                                 <button data-bs-dismiss="modal" wire:click="confirmDeleteModel"
                                     class="btn inline-flex justify-center btn-danger shadow-base2">
                                     Delete Model
