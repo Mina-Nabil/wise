@@ -2,16 +2,30 @@
 
 namespace App\Models\Users;
 
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-use HasFactory;
+    use HasFactory;
     protected $fillable = [
-        'sender_id', 'title', 'route', 'message'
+        'sender_id', 'title', 'route', 'message', 'seen_at'
     ];
+
+    //model functions
+    public function setAsSeen()
+    {
+        $this->seen_at = Carbon::now();
+        try {
+            return $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
 
     //mutator
     protected function route(): Attribute
@@ -19,6 +33,12 @@ use HasFactory;
         return Attribute::make(
             get: fn ($value) => url($value),
         );
+    }
+
+    //notf->is_seen (bool)
+    public function getIsSeenAttribute()
+    {
+        return $this->seen_at != null;
     }
 
     //relations
