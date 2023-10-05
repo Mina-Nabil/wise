@@ -7,6 +7,7 @@ use App\Http\Controllers\PoliciesController;
 use Illuminate\Support\Facades\Route;
 
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,11 +28,14 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
 
-    Route::get('/notifications', function(){
+    Route::get('/notifications', function () {
         return view('users.notifications');
     });
-    
+
     Route::get('/policies', [PoliciesController::class, 'index'])->name('policies.index');
+    Route::get('/policies/new', [PoliciesController::class, 'create'])->name('policies.create');
+    Route::get('/policies/{id}', [PoliciesController::class, 'show'])->name('policies.create');
+
 
 
     //Cars routes
@@ -48,4 +52,3 @@ Route::middleware('auth', 'active')->group(function () {
 Route::post('/login', [HomeController::class, 'authenticate']);
 Route::get('/login', [HomeController::class, 'login'])->name('login');
 Route::get('/logout', [HomeController::class, 'logout'])->name('logout');
-
