@@ -96,9 +96,11 @@
                                         <iconify-icon icon="ph:note-light" data-tippy-content="not active yet"
                                             data-tippy-theme="dark"></iconify-icon>
                                     </button>
-                                    <button class="action-btn" type="button">
-                                        <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                    </button>
+                                    <a href={{ route('policies.show',$policy->id) }}>
+                                        <button class="action-btn" type="button">
+                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                        </button>
+                                    </a>
                                     <button class="action-btn" type="button" wire:click="openDeletePolicy({{ $policy->id }})">
                                         <iconify-icon icon="heroicons:trash"></iconify-icon>
                                     </button>
