@@ -43,6 +43,7 @@ return new class extends Migration
             $table->enum('business', Policy::LINES_OF_BUSINESS); //line of business
             $table->string('name');
             $table->text('note')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
 
