@@ -17181,3 +17181,9 @@ ul.custom-list ul {
     /* right: 9px; */
     font-size: 24px;
 }
+
+.modal-dialog2 {
+    max-width: 800px;
+    min-width: 600px;
+    margin: 1.75rem auto;
+}
