@@ -27,6 +27,34 @@ class PolicyShow extends Component
     public $policy_business;
     public $policy_company_id;
     public $policy_note;
+    public $addedScope;
+    public $addedOperator;
+    public $addedValue;
+    public $addedRate;
+    public $addedNote;
+    public $newConditionSection = false;
+
+    public function addCondition()
+    {
+        $policy = Policy::find($this->policy->id);
+        $policy->addCondition(
+            $this->addedScope,
+            $this->addedOperator,
+            $this->addedValue,
+            '1',
+            $this->addedRate,
+            $this->addedNote
+        );
+
+        session()->flash('success', 'Condition Added successfully.');
+
+        return redirect(route('policies.show', $this->policy->id));
+    }
+
+    public function openNewConditionSection()
+    {
+        $this->newConditionSection = true;
+    }
 
     public function mount()
     {
@@ -34,8 +62,11 @@ class PolicyShow extends Component
         $policy = Policy::find($this->policyId);
         $this->policy_name = $policy->name;
         $this->policy_business = $policy->business;
-        $this->policy_company_id =$policy->company_id ;
+        $this->policy_company_id = $policy->company_id;
         $this->policy_note = $policy->note;
+
+        $this->addedScope = 'age';
+        $this->addedOperator = 'e';
 
 
         $this->linesOfBusiness = Policy::LINES_OF_BUSINESS;
@@ -92,12 +123,12 @@ class PolicyShow extends Component
         }
         $policyEdit = new Policy;
         Policy::find($this->policy->id)->editInfo(
+            $this->policy_company_id,
             $this->policy_name,
             $this->policy_business,
-            $this->policy_company_id,
             $this->policy_note
         );
-        
+
         session()->flash('success', 'Changes saved successfully!');
 
         $this->changesMade = false;
