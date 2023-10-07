@@ -39,7 +39,7 @@ return new class extends Migration
 
         Schema::create('policies', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Company::class);
+            $table->foreignIdFor(Company::class); //company_id
             $table->enum('business', Policy::LINES_OF_BUSINESS); //line of business
             $table->string('name');
             $table->text('note')->nullable();
@@ -48,7 +48,7 @@ return new class extends Migration
 
         Schema::create('policy_conditions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Policy::class);
+            $table->foreignIdFor(Policy::class); //policy_id
             $table->enum('scope', PolicyCondition::SCOPES);
             $table->enum('operator', PolicyCondition::OPERATORS);
             $table->double('value');
@@ -66,6 +66,9 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('policy_conditions');
         Schema::dropIfExists('policies');
+        Schema::dropIfExists('insurance_companies_emails');
+        Schema::dropIfExists('insurance_companies');
     }
 };

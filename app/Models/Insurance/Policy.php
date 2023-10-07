@@ -30,15 +30,17 @@ class Policy extends Model
 
     protected $table = 'policies';
     protected $fillable = [
+        'company_id',
         'name', //policy as named by the insurance company
         'business', //line of business - enum - motor,cargo..
         'note' //extra note for users - nullable
     ];
 
     ///static functions
-    public static function newPolicy($name, $business, $note = null)
+    public static function newPolicy($company_id, $name, $business, $note = null)
     {
         $newPolicy = new self([
+            "company_id" =>  $company_id,
             "name"      =>  $name,
             "business"  =>  $business,
             "note"      =>  $note

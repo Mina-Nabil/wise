@@ -70,7 +70,7 @@ class Company extends Model
             ], [
                 "contact_first_name"    =>  $first_name,
                 "contact_last_name"    =>  $last_name,
-                "is_primary"    =>  $last_name,
+                "is_primary"    =>  $is_primary,
                 "note"      =>  $note
             ]);
             if ($is_primary) {
