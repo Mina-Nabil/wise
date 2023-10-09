@@ -17,11 +17,10 @@ class PolicyShow extends Component
     public $newValues = [];
     public $newRates = [];
     public $newNotes = [];
-    public $policy;
-    public $linesOfBusiness;
-    public $scopes;
-    public $operators;
-    public $companies;
+    public $launchedPolicy;
+    // public $scopes;
+    // public $operators;
+    // public $companies;
     public $changesMade = false;
     public $policy_name;
     public $policy_business;
@@ -34,9 +33,30 @@ class PolicyShow extends Component
     public $addedNote;
     public $newConditionSection = false;
 
+    
+
+    public function openNewConditionSection()
+    {
+        $this->newConditionSection = true;
+    }
+
+    public function mount()
+    {
+        $this->launchedPolicy = Policy::find($this->policyId);
+        $policy = Policy::find($this->policyId);
+        $this->policy_name = $policy->name;
+        $this->policy_business = $policy->business;
+        $this->policy_company_id = $policy->company_id;
+        $this->policy_note = $policy->note;
+    }
+
     public function addCondition()
     {
-        $policy = Policy::find($this->policy->id);
+        // $this->validate([
+
+        // ]);
+
+        $policy = Policy::find($this->launchedPolicy->id);
         $policy->addCondition(
             $this->addedScope,
             $this->addedOperator,
@@ -46,33 +66,87 @@ class PolicyShow extends Component
             $this->addedNote
         );
 
+        // $this->selectedScopes[] = $this->addedScope;
+        // $this->selectedOperators[] = $this->addedOperator;
+        // $this->newValues[] = $this->addedValue;
+        // $this->newRates[] = $this->addedRate;
+        // $this->newNotes[] = $this->addedNote;
+
         session()->flash('success', 'Condition Added successfully.');
-
-        return redirect(route('policies.show', $this->policy->id));
+        
+        // $this->policy = Policy::find($this->policyId);
+        // return redirect(route('policies.show', $this->policy->id));
     }
 
-    public function openNewConditionSection()
+    public function markAsChanged()
     {
-        $this->newConditionSection = true;
+        $this->changesMade = true;
     }
 
-    public function mount()
+    public function deleteCondition($index)
     {
-        $this->policy = Policy::find($this->policyId);
+        // Fetch the condition by index or identifier
+        $conditionToDelete = $this->launchedPolicy->conditions[$index];
+
+        // Delete the condition
+        $conditionToDelete->delete();
+
+        // Optionally, you can add a success message or perform any other actions after deletion.
+
+        // // Refresh the Livewire component to reflect the updated conditions
+        session()->flash('success', 'Condition Deleted successfully.');
+
+    }
+
+    public function bulkEdit()
+    {
+
+        if ($this->changesMade) {
+            foreach ($this->launchedPolicy->conditions as $index => $condition) {
+                $condition->update([
+                    'scope' => $this->selectedScopes[$index],
+                    'operator' => $this->selectedOperators[$index],
+                    'value' => $this->newValues[$index],
+                    'rate' => $this->newRates[$index],
+                    'note' => $this->newNotes[$index],
+                ]);
+            }
+        }
+        $policyEdit = new Policy;
+        Policy::find($this->launchedPolicy->id)->editInfo(
+            $this->policy_company_id,
+            $this->policy_name,
+            $this->policy_business,
+            $this->policy_note
+        );
+
+        
+
+        session()->flash('success', 'Changes saved successfully!');
+
+        $this->changesMade = false;
+
+        // Optionally, you can add a success message or perform any other actions after editing.
+    }
+
+    public function render()
+    {
+        
         $policy = Policy::find($this->policyId);
-        $this->policy_name = $policy->name;
-        $this->policy_business = $policy->business;
-        $this->policy_company_id = $policy->company_id;
-        $this->policy_note = $policy->note;
+        $policy_name = $policy->name;
+        $policy_business = $policy->business;
+        $policy_company_id = $policy->company_id;
+        $policy_note = $policy->note;
 
         $this->addedScope = 'age';
         $this->addedOperator = 'e';
 
 
-        $this->linesOfBusiness = Policy::LINES_OF_BUSINESS;
-        $this->scopes = PolicyCondition::SCOPES;
-        $this->operators = PolicyCondition::OPERATORS;
-        $this->companies = Company::all();
+        $linesOfBusiness = Policy::LINES_OF_BUSINESS;
+        // dd($linesOfBusiness);
+        $scopes = PolicyCondition::SCOPES;
+        $operators = PolicyCondition::OPERATORS;
+        $companies = Company::all();
 
         // Fetch the conditions related to the policy (assuming $policy is available)
         $conditions = $policy->conditions;
@@ -85,69 +159,17 @@ class PolicyShow extends Component
             $this->newRates[] = $condition->rate;
             $this->newNotes[] = $condition->note;
         }
-    }
 
-    public function markAsChanged()
-    {
-        $this->changesMade = true;
-    }
-
-    public function deleteCondition($index)
-    {
-        // Fetch the condition by index or identifier
-        $conditionToDelete = $this->policy->conditions[$index];
-
-        // Delete the condition
-        $conditionToDelete->delete();
-
-        // Optionally, you can add a success message or perform any other actions after deletion.
-
-        // // Refresh the Livewire component to reflect the updated conditions
-        session()->flash('success', 'Condition Deleted successfully.');
-
-        return redirect(route('policies.show', $this->policy->id));
-    }
-
-    public function bulkEdit()
-    {
-        if ($this->changesMade) {
-            foreach ($this->policy->conditions as $index => $condition) {
-                $condition->update([
-                    'scope' => $this->selectedScopes[$index],
-                    'operator' => $this->selectedOperators[$index],
-                    'value' => $this->newValues[$index],
-                    'rate' => $this->newRates[$index],
-                    'note' => $this->newNotes[$index],
-                ]);
-            }
-        }
-        $policyEdit = new Policy;
-        Policy::find($this->policy->id)->editInfo(
-            $this->policy_company_id,
-            $this->policy_name,
-            $this->policy_business,
-            $this->policy_note
-        );
-
-        session()->flash('success', 'Changes saved successfully!');
-
-        $this->changesMade = false;
-
-        // Optionally, you can add a success message or perform any other actions after editing.
-    }
-
-    public function render()
-    {
         return view('livewire.policy-show', [
-            'linesOfBusiness' => $this->linesOfBusiness,
-            'companies' => $this->companies,
-            'scopes' => $this->scopes,
-            'operators' => $this->operators,
-            'policy' => $this->policy,
-            'policy_name' => $this->policy_name,
-            'policy_business' => $this->policy_business,
-            'policy_company_id' => $this->policy_company_id,
-            'policy_note' => $this->policy_note,
+            'linesOfBusiness' => $linesOfBusiness,
+            'companies' => $companies,
+            'scopes' => $scopes,
+            'operators' => $operators,
+            'policy' => $policy,
+            'policy_name' => $policy_name,
+            'policy_business' => $policy_business,
+            'policy_company_id' => $policy_company_id,
+            'policy_note' => $policy_note,
         ]);
     }
 }

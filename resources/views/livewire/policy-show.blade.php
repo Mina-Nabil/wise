@@ -1,10 +1,10 @@
 <div>
     <div class="flex justify-center">
         <div class="">
-            <div class="flex justify-between flex-wrap items-center mb-3">
+            <div class="flex justify-between flex-wrap items-center mb-3 sticky-top">
                 <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
-                    <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-                        {{ $policy->name }}
+                    <h4 onclick="launch_toast()" class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
+                        {{  $policy->name }}
 
                     </h4>
 
@@ -187,12 +187,23 @@
                                                                         style="min-height: 50px">{{ $condition->note }}</textarea>
                                                                 </td>
 
-                                                                <td class="p-1 ">
-                                                                    <button class="action-btn" type="button"
+                                                                <td class="p-1">
+                                                                    <div class=" flex justify-center">
+                                                                        <button class="action-btn m-1" type="button"
+                                                                        wire:click="deleteCondition({{ $index }})">
+                                                                        <iconify-icon icon="ion:arrow-up"></iconify-icon>
+                                                                    </button>
+                                                                    <button class="action-btn m-1" type="button"
+                                                                        wire:click="deleteCondition({{ $index }})">
+                                                                        <iconify-icon icon="ion:arrow-down"></iconify-icon>
+                                                                    </button>
+                                                                    <button class="action-btn m-1" type="button"
                                                                         wire:click="deleteCondition({{ $index }})">
                                                                         <iconify-icon
                                                                             icon="heroicons:trash"></iconify-icon>
                                                                     </button>
+                                                                    </div>
+                                                                    
                                                                 </td>
 
                                                             </tr>
@@ -261,10 +272,9 @@
                                                                 </td>
 
                                                                 <td class="p-1">
-                                                                    <button
+                                                                    <button wire:click="addCondition"
                                                                         class="btn inline-flex items-center justify-center btn-outline-success btn-sm">
-                                                                        <span class="flex items-center"
-                                                                            wire:click="addCondition">
+                                                                        <span class="flex items-center">
                                                                             add
                                                                         </span>
                                                                     </button>
@@ -286,14 +296,5 @@
         </div>
     </div>
 </div>
+<div id="toast"><div id="img">Icon</div><div id="desc">A notification message..</div></div>
 
-
-<script>
-    window.onload = function() {
-        window.addEventListener("beforeunload", function(e) {
-            if (@json($changesMade)) {
-                return null;
-            }
-        });
-    }
-</script>
