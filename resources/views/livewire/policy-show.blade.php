@@ -134,19 +134,26 @@
 
                                                                 <td class="p-1">
                                                                     <div class=" flex justify-center">
-                                                                        <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="editRow({{ $condtion->id }})" type="button">
+                                                                        <button class="toolTip onTop action-btn m-1 "
+                                                                            data-tippy-content="Edit"
+                                                                            wire:click="editRow({{ $condtion->id }})"
+                                                                            type="button">
                                                                             <iconify-icon
                                                                                 icon="iconamoon:edit-bold"></iconify-icon>
                                                                         </button>
-                                                                        <button class="toolTip onTop action-btn m-1" data-tippy-content="Move Up"  type="button">
+                                                                        <button class="toolTip onTop action-btn m-1"
+                                                                            data-tippy-content="Move Up" type="button">
                                                                             <iconify-icon
                                                                                 icon="ion:arrow-up"></iconify-icon>
                                                                         </button>
-                                                                        <button class="toolTip onTop action-btn m-1" data-tippy-content="Move Down"  type="button">
+                                                                        <button class="toolTip onTop action-btn m-1"
+                                                                            data-tippy-content="Move Down"
+                                                                            type="button">
                                                                             <iconify-icon
                                                                                 icon="ion:arrow-down"></iconify-icon>
                                                                         </button>
-                                                                        <button class="toolTip onTop action-btn m-1" data-tippy-content="Delete"  type="button">
+                                                                        <button class="toolTip onTop action-btn m-1"
+                                                                            data-tippy-content="Delete" type="button">
                                                                             <iconify-icon
                                                                                 icon="heroicons:trash"></iconify-icon>
                                                                         </button>
@@ -157,11 +164,11 @@
                                                         @else
                                                             <tr>
                                                                 <td class="p-1">
-                                                                    <select name="scope"
-                                                                        wire:model="editedScope"
+                                                                    <select name="scope" wire:model="editedScope"
                                                                         class="form-control w-full text-center">
                                                                         @foreach ($scopes as $scope)
-                                                                            <option value="{{ $scope }}" {{ ($condtion->scope === $scope ) ? 'selected' : '' }}
+                                                                            <option value="{{ $scope }}"
+                                                                                {{ $condtion->scope === $scope ? 'selected' : '' }}
                                                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                                                 {{ $scope }}
                                                                             </option>
@@ -174,7 +181,7 @@
                                                                         class="form-control w-full text-center">
                                                                         @foreach ($operators as $operator)
                                                                             <option value="{{ $operator }}"
-                                                                            {{ ($condtion->operator === $operator ) ? 'selected' : '' }}
+                                                                                {{ $condtion->operator === $operator ? 'selected' : '' }}
                                                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
 
                                                                                 @if ($operator === 'gte')
@@ -212,10 +219,15 @@
 
                                                                 <td class="p-1">
                                                                     <div class="flex justify-center">
-                                                                        <button class="toolTip onTop action-btn m-1" wire:click="editCondition({{ $condtion->id }})"  data-tippy-content="Save" type="button">
-                                                                            <iconify-icon icon="material-symbols:save"></iconify-icon>
+                                                                        <button class="toolTip onTop action-btn m-1"
+                                                                            wire:click="editCondition({{ $condtion->id }})"
+                                                                            data-tippy-content="Save" type="button">
+                                                                            <iconify-icon
+                                                                                icon="material-symbols:save"></iconify-icon>
                                                                         </button>
-                                                                        <button class="toolTip onTop action-btn m-1" data-tippy-content="Close" wire:click="closeEditRow" type="button">
+                                                                        <button class="toolTip onTop action-btn m-1"
+                                                                            data-tippy-content="Close"
+                                                                            wire:click="closeEditRow" type="button">
                                                                             <iconify-icon
                                                                                 icon="material-symbols:close"></iconify-icon>
                                                                         </button>
@@ -239,10 +251,10 @@
                                                     @else
                                                         <tr>
                                                             <td class="p-1">
-                                                                <select name="scope"
-                                                                    class="form-control w-full text-center">
+                                                                <select name="scope" wire:model="addedScope"
+                                                                    class="!border-success-500 form-control w-full text-center">
                                                                     @foreach ($scopes as $scope)
-                                                                        <option value="{{ $scope }}" wire:model="addedScope"
+                                                                        <option value="{{ $scope }}"
                                                                             class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                                             {{ $scope }}
                                                                         </option>
@@ -250,9 +262,15 @@
                                                                 </select>
                                                             </td>
 
-                                                            <td class="p-1">
-                                                                <select name="scope" wire:model="addedOperator"
-                                                                    class="form-control w-full text-center">
+                                                            <td class="p-1 text-center">
+                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand')
+                                                                    =
+                                                                    <input type="hidden" wire:model="addedOperator"
+                                                                        value="=">
+@else
+<select name="scope"
+                                                                        wire:model="addedOperator"
+                                                                        class="!border-success-500 form-control w-full text-center">
                                                                     @foreach ($operators as $operator)
                                                                         <option value="{{ $operator }}"
                                                                             {{ $operator === 'e' ? 'selected' : '' }}
@@ -269,23 +287,41 @@
 
                                                                         </option>
                                                                     @endforeach
-                                                                </select>
+                                                                    </select>
+                                                                @endif
                                                             </td>
 
                                                             <td class="p-1">
-                                                                <input type="number" wire:model="addedValue"
-                                                                    class="form-control text-center">
+                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand')
+                                                                    <select name="select2basic" id=""
+                                                                        class="select2 form-control w-full mt-2 py-2">
+                                                                        <option value="option1"
+                                                                            class=" inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                            Option 1</option>
+                                                                        <option value="option2"
+                                                                            class=" inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                            Option 2</option>
+                                                                        <option value="option3"
+                                                                            class=" inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                            Option 3</option>
+                                                                    </select>
+                                                                @else
+                                                                    <input type="number" wire:model="addedValue"
+                                                                        class="form-control text-center !border-success-500">
+                                                                @endif
 
                                                             </td>
 
                                                             <td class="p-1">
                                                                 <input type="number" wire:model="addedRate"
-                                                                    class="form-control text-center">
+                                                                    class="form-control text-center !border-success-500">
                                                             </td>
 
                                                             <td class="table-td p-1">
-                                                                <textarea class="form-control simplebar-content text-center" placeholder="Leave a note" name="note"
-                                                                    style="min-height: 50px" wire:model="addedNote"></textarea>
+                                                                <input
+                                                                    class="form-control text-center !border-success-500"
+                                                                    placeholder="Leave a note" name="note"
+                                                                    wire:model="addedNote">
                                                             </td>
 
                                                             <td class="p-1">

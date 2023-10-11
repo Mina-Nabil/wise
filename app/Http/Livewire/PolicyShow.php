@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Insurance\Policy;
+use App\Models\Cars\Brand;
 use App\Models\Insurance\PolicyCondition;
 
 use Livewire\Component;
@@ -27,11 +28,12 @@ class PolicyShow extends Component
     public $addedValue;
     public $addedRate;
     public $addedNote;
-    
+
     public $newConditionSection = false;
     public $editedRowId;
+    public $brands;
 
-    
+
 
     public function openNewConditionSection()
     {
@@ -41,9 +43,11 @@ class PolicyShow extends Component
     public function mount()
     {
         $policy = Policy::find($this->policyId);
+        $brands = Brand::all();
     }
 
-    public function editRow($id){
+    public function editRow($id)
+    {
 
         $con = PolicyCondition::find($id);
         $this->editedScope = $con->scope;
@@ -53,16 +57,16 @@ class PolicyShow extends Component
         $this->editedNote = $con->note;
 
         $this->editedRowId = $id;
-
     }
 
-    public function closeEditRow(){
+    public function closeEditRow()
+    {
 
         $this->editedRowId = null;
-        
     }
 
-    public function editCondition($id){
+    public function editCondition($id)
+    {
 
         // update this condition using these variables with validation
 
@@ -74,23 +78,33 @@ class PolicyShow extends Component
         // $this->editedNote
     }
 
-    
+    public function addCondition()
+    {
+        // $this->addedScope;
+        // $this->addedOperator;
+        // $this->addedValue;
+        // $this->addedRate;
+        // $this->addedNote;
+    }
+
+
 
     public function render()
     {
-        
+
         $policy = Policy::find($this->policyId);
         $policy_name = $policy->name;
         $policy_business = $policy->business;
         $policy_note = $policy->note;
 
-        $this->addedScope = 'age';
+        // $this->addedScope = 'age';
         $this->addedOperator = 'e';
 
 
         $linesOfBusiness = Policy::LINES_OF_BUSINESS;
         $scopes = PolicyCondition::SCOPES;
         $operators = PolicyCondition::OPERATORS;
+
 
         // Fetch the conditions related to the policy (assuming $policy is available)
         $conditions = $policy->conditions;
@@ -106,6 +120,7 @@ class PolicyShow extends Component
             'policy_note' => $policy_note,
             'conditions' => $conditions,
             'editedRowId' => $this->editedRowId,
+            'brands' => $this->brands,
         ]);
     }
 }
