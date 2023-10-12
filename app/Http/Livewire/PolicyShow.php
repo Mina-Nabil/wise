@@ -4,6 +4,8 @@ namespace App\Http\Livewire;
 
 use App\Models\Insurance\Policy;
 use App\Models\Cars\Brand;
+use App\Models\Cars\CarModel;
+use App\Models\Cars\Country;
 use App\Models\Insurance\PolicyCondition;
 
 use Livewire\Component;
@@ -18,10 +20,9 @@ class PolicyShow extends Component
     public $editedRate;
     public $editedNote;
 
-    public $policy_name;
-    public $policy_business;
-    public $policy_company_id;
-    public $policy_note;
+    public $policyName;
+    public $policyBusiness;
+    public $policyNote;
 
     public $addedScope;
     public $addedOperator;
@@ -32,8 +33,30 @@ class PolicyShow extends Component
     public $newConditionSection = false;
     public $editedRowId;
     public $brands;
+    public $models;
+    public $countries;
+
+    public $changes = false;
 
 
+    public function updated($propertyName)
+    {
+        if (in_array($propertyName, ['policyName', 'policyBusiness', 'policyNote'])) {
+            $this->changes = true;
+        }
+    }
+
+    public function save()
+    {
+        $policy = Policy::find($this->policyId);
+
+        $policy->editInfo(
+            $this->policyName,
+            $this->policyBusiness,
+            $this->policyNote
+        );
+        $this->changes = false;
+    }
 
     public function openNewConditionSection()
     {
@@ -43,7 +66,13 @@ class PolicyShow extends Component
     public function mount()
     {
         $policy = Policy::find($this->policyId);
-        $brands = Brand::all();
+        $this->policyName = $policy->name;
+        $this->policyBusiness = $policy->business;
+        $this->policyNote = $policy->note;
+        $this->brands = Brand::all();
+        $this->models = CarModel::all();
+        $this->countries = Country::all();
+        $this->addedScope = 'age';
     }
 
     public function editRow($id)
@@ -68,7 +97,7 @@ class PolicyShow extends Component
     public function editCondition($id)
     {
 
-        // update this condition using these variables with validation
+        // update this condition using these variables in debug
 
 
         // $this->editedScope
@@ -80,11 +109,14 @@ class PolicyShow extends Component
 
     public function addCondition()
     {
-        // $this->addedScope;
-        // $this->addedOperator;
-        // $this->addedValue;
-        // $this->addedRate;
-        // $this->addedNote;
+
+        dd(
+            $this->addedScope,
+            $this->addedOperator,
+            $this->addedValue,
+            $this->addedRate,
+            $this->addedNote
+        );
     }
 
 
@@ -109,18 +141,24 @@ class PolicyShow extends Component
         // Fetch the conditions related to the policy (assuming $policy is available)
         $conditions = $policy->conditions;
 
+        if ($this->addedScope === 'brand') {
+            $this->addedValue = Brand::first()->name;
+        }
+
 
         return view('livewire.policy-show', [
             'linesOfBusiness' => $linesOfBusiness,
             'scopes' => $scopes,
             'operators' => $operators,
             'policy' => $policy,
-            'policy_name' => $policy_name,
-            'policy_business' => $policy_business,
-            'policy_note' => $policy_note,
+            'policyName' => $this->policyName,
+            'policy_business' => $this->policyBusiness,
+            'policy_note' => $this->policyNote,
             'conditions' => $conditions,
             'editedRowId' => $this->editedRowId,
             'brands' => $this->brands,
+            'models' => $this->models,
+            'countries' => $this->countries,
         ]);
     }
 }

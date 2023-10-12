@@ -1,19 +1,23 @@
 <div>
     <div class="flex justify-center">
         <div class="">
-            <div class="flex justify-between flex-wrap items-center mb-3 sticky-top">
+            <div class="flex justify-between flex-wrap items-center mb-3 sticky-top"
+                style="background-color: rgb(15 23 42 / var(--tw-bg-opacity));">
                 <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
                     <h4 onclick="launch_toast()"
                         class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-                        {{ $policy->name }}
+                        {{ $policy->company->name }} - {{ $policy->name }}
 
                     </h4>
 
                     <!---->
 
                 </div>
-                <button type="submit" wire:click="bulkEdit"
-                    class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
+                @if ($changes)
+                    <button type="submit" wire:click="save"
+                        class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
+                @endif
+
 
             </div>
             @if (session()->has('success'))
@@ -40,11 +44,11 @@
                         <div class="px-4 pt-4 pb-3">
                             <div class="input-area mb-3">
                                 <label for="name" class="form-label">Policy Name</label>
-                                <input type="text" class="form-control" wire:model="policy_name">
+                                <input type="text" class="form-control" wire:model="policyName">
                             </div>
                             <div class="input-area mb-3">
                                 <label for="name" class="form-label">Business</label>
-                                <select name="business" class="form-control w-full mt-2" wire:model="policy_business">
+                                <select name="business" class="form-control w-full mt-2" wire:model="policyBusiness">
                                     @foreach ($linesOfBusiness as $line)
                                         <option {{ $line === $policy_business ? 'selected' : '' }}
                                             value="{{ $line }}"
@@ -56,7 +60,7 @@
                             </div>
                             <div class="input-area mb-3">
                                 <label for="name" class="form-label">Note</label>
-                                <textarea class="form-control" wire:model="policy_note" placeholder="Leave a note" name="note"></textarea>
+                                <textarea class="form-control" wire:model="policyNote" placeholder="Leave a note" name="note"></textarea>
                             </div>
                         </div>
                     </div>
@@ -211,7 +215,7 @@
                                                                         value="{{ $condtion->rate }}">
                                                                 </td>
 
-                                                                <td class="table-td p-1">
+                                                                <td class="table-td p-1" style="max-width: 50px;">
                                                                     <input type="text" wire:model="editedNote"
                                                                         class="form-control text-center"
                                                                         value="{{ $condtion->note }}">
@@ -263,7 +267,7 @@
                                                             </td>
 
                                                             <td class="p-1 text-center">
-                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand')
+                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand' || $addedScope === 'country')
                                                                     =
                                                                     <input type="hidden" wire:model="addedOperator"
                                                                         value="=">
@@ -292,19 +296,41 @@
                                                             </td>
 
                                                             <td class="p-1">
-                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand')
-                                                                    <select name="select2basic" id=""
-                                                                        class="select2 form-control w-full mt-2 py-2">
-                                                                        <option value="option1"
-                                                                            class=" inline-block font-Inter font-normal text-sm text-slate-600">
-                                                                            Option 1</option>
-                                                                        <option value="option2"
-                                                                            class=" inline-block font-Inter font-normal text-sm text-slate-600">
-                                                                            Option 2</option>
-                                                                        <option value="option3"
-                                                                            class=" inline-block font-Inter font-normal text-sm text-slate-600">
-                                                                            Option 3</option>
-                                                                    </select>
+                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand' || $addedScope === 'country')
+                                                                    @if ($addedScope === 'car_model')
+                                                                        <select name="select2basic"
+                                                                            wire:model="addedValue"
+                                                                            class="select2 !border-success-500 form-control w-full text-center">
+                                                                            @foreach ($models as $model)
+                                                                                <option
+                                                                                    class=" inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                                    {{ $model->name }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    @elseif($addedScope === 'brand')
+                                                                        <select name="select2basic"
+                                                                            wire:model="addedValue"
+                                                                            class="select2 !border-success-500 form-control w-full text-center">
+                                                                            @foreach ($brands as $brand)
+                                                                                <option value="{{ $brand->name }}"
+                                                                                    class=" inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                                    {{ $brand->name }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    @else
+                                                                        <select name="select2basic"
+                                                                            wire:model="addedValue"
+                                                                            class="select2 !border-success-500 form-control w-full text-center">
+                                                                            @foreach ($countries as $country)
+                                                                                <option
+                                                                                    class=" inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                                    {{ $country->name }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    @endif
                                                                 @else
                                                                     <input type="number" wire:model="addedValue"
                                                                         class="form-control text-center !border-success-500">
