@@ -164,10 +164,6 @@ class PolicyShow extends Component
         // Fetch the conditions related to the policy (assuming $policy is available)
         $conditions = $policy->conditions;
 
-        if ($this->addedScope === 'brand') {
-            $this->addedValue = Brand::first()->name;
-        }
-
 
         return view('livewire.policy-show', [
             'linesOfBusiness' => $linesOfBusiness,

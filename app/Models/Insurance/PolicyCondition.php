@@ -2,6 +2,9 @@
 
 namespace App\Models\Insurance;
 
+use App\Models\Cars\Brand;
+use App\Models\Cars\CarModel;
+use App\Models\Cars\Country;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -9,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PolicyCondition extends Model
 {
@@ -134,13 +138,38 @@ class PolicyCondition extends Model
     }
 
     //static functions
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
         static::addGlobalScope('order', function (Builder $builder) {
             $builder->orderBy('order', 'asc');
         });
     }
-    
+
+    //mutators
+    public function value(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                switch ($this->scope) {
+                    case self::SCOPE_BRAND:
+                        $brand = Brand::find($value);
+                        return $brand?->name ?? "N/A";
+                    
+                    case self::SCOPE_COUNTRY:
+                        $country = Country::find($value);
+                        return $country?->name ?? "N/A";
+                    
+                    case self::SCOPE_MODEL:
+                        $model = CarModel::find($value);
+                        return $model?->name ?? "N/A";
+                    
+                    default:
+                        return $value;
+                }
+            }
+        );
+    }
 
     //relations
     public function policy(): BelongsTo
