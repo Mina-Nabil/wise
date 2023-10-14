@@ -38,6 +38,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/policies/{id}', [PoliciesController::class, 'show'])->name('policies.show');
 
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
 
 
 
