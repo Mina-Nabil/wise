@@ -147,28 +147,24 @@ class PolicyCondition extends Model
     }
 
     //mutators
-    public function value(): Attribute
+    public function getValueNameAttribute()
     {
-        return Attribute::make(
-            get: function ($value) {
-                switch ($this->scope) {
-                    case self::SCOPE_BRAND:
-                        $brand = Brand::find($value);
-                        return $brand?->name ?? "N/A";
-                    
-                    case self::SCOPE_COUNTRY:
-                        $country = Country::find($value);
-                        return $country?->name ?? "N/A";
-                    
-                    case self::SCOPE_MODEL:
-                        $model = CarModel::find($value);
-                        return $model?->name ?? "N/A";
-                    
-                    default:
-                        return $value;
-                }
-            }
-        );
+        switch ($this->scope) {
+            case self::SCOPE_BRAND:
+                $brand = Brand::find($this->value);
+                return $brand?->name ?? "N/A";
+
+            case self::SCOPE_COUNTRY:
+                $country = Country::find($this->value);
+                return $country?->name ?? "N/A";
+
+            case self::SCOPE_MODEL:
+                $model = CarModel::find($this->value);
+                return $model?->name ?? "N/A";
+
+            default:
+                return $this->value;
+        }
     }
 
     //relations

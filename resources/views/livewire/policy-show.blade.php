@@ -136,7 +136,7 @@
                                                                         @endswitch </td>
 
                                                                 <td class="table-td">
-                                                                    {{ $condition->value }}
+                                                                    {{ $condition->value_name }}
                                                                 </td>
 
                                                                 <td class="table-td">
@@ -182,10 +182,10 @@
                                                             <tr>
                                                                 <td class="p-1">
                                                                     <select name="scope" wire:model="editedScope"
-                                                                        class="form-control w-full text-center">
+                                                                        class="form-control w-full text-center @error('editedScope') !border-danger-500 @else !border-success-500 @enderror">
                                                                         @foreach ($scopes as $scope)
                                                                             <option value="{{ $scope }}"
-                                                                                {{ $condition->scope === $scope ? 'selected' : '' }}
+                                                                                @selected($condition->scope === $scope)
                                                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                                                 {{ $scope }}
                                                                             </option>
@@ -195,10 +195,10 @@
 
                                                                 <td class="p-1">
                                                                     <select name="scope" wire:model="editedOperator"
-                                                                        class="form-control w-full text-center">
+                                                                        class="form-control w-full text-center @error('editedOperator') !border-danger-500 @else !border-success-500 @enderror">
                                                                         @foreach ($operators as $operator)
                                                                             <option value="{{ $operator }}"
-                                                                                {{ $condition->operator === $operator ? 'selected' : '' }}
+                                                                                @selected($condition->operator === $operator)
                                                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                                                 @switch($operator)
                                                                                     @case('gte')
@@ -226,7 +226,8 @@
                                                                             @foreach ($models as $model)
                                                                                 <option
                                                                                     class=" inline-block font-Inter font-normal text-sm text-slate-600"
-                                                                                    value="{{ $model->id }}">
+                                                                                    value="{{ $model->id }}"
+                                                                                    @selected($model->id === $condition->value)>
                                                                                     {{ $model->name }}
                                                                                 </option>
                                                                             @endforeach
@@ -237,32 +238,34 @@
                                                                             @foreach ($brands as $brand)
                                                                                 <option
                                                                                     class=" inline-block font-Inter font-normal text-sm text-slate-600"
-                                                                                    value="{{ $brand->id }}">
+                                                                                    value="{{ $brand->id }}"
+                                                                                    @selected($brand->id === $condition->value)>
                                                                                     {{ $brand->name }}
                                                                                 </option>
                                                                             @endforeach
                                                                         </select>
                                                                     @elseif($editedScope === 'country')
                                                                         <select wire:model="editedValue"
-                                                                            class="select2  @error('editedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
+                                                                            class="select2 @error('editedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                             @foreach ($countries as $country)
                                                                                 <option
                                                                                     class=" inline-block font-Inter font-normal text-sm text-slate-600"
-                                                                                    value="{{ $country->id }}">
+                                                                                    value="{{ $country->id }}"
+                                                                                    @selected($country->id === $condition->value)>
                                                                                     {{ $country->name }}
                                                                                 </option>
                                                                             @endforeach
                                                                         </select>
                                                                     @else
                                                                         <input type="number" wire:model="editedValue"
-                                                                            class="form-control text-center"
+                                                                            class="form-control text-center @error('editedValue') !border-danger-500 @else !border-success-500 @enderror"
                                                                             value="{{ $condition->value }}">
                                                                     @endif
                                                                 </td>
 
                                                                 <td class="p-1">
                                                                     <input type="number" wire:model="editedRate"
-                                                                        class="form-control text-center"
+                                                                        class="form-control text-center @error('editedRate') !border-danger-500 @else !border-success-500 @enderror"
                                                                         value="{{ $condition->rate }}">
                                                                 </td>
 
