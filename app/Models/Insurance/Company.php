@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
+    CONST MORPH_TYPE = 'company';
+
     use HasFactory;
 
     protected $table = 'insurance_companies';

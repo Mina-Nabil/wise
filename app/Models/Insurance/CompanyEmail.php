@@ -10,15 +10,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CompanyEmail extends Model
 {
+    CONST MORPH_TYPE = 'company_email';
+
     use HasFactory;
 
-    const TYPE_INFO = 'Info';
-    const TYPE_FINANCE = 'Finance';
-    const TYPE_OPERATIONS = 'Operations';
-    const TYPE_SALES = 'Sales';
-    const TYPE_SUPPORT = 'Support';
+    CONST TYPE_INFO = 'Info';
+    CONST TYPE_FINANCE = 'Finance';
+    CONST TYPE_OPERATIONS = 'Operations';
+    CONST TYPE_SALES = 'Sales';
+    CONST TYPE_SUPPORT = 'Support';
 
-    const TYPES = [
+    CONST TYPES = [
         self::TYPE_INFO,
         self::TYPE_FINANCE,
         self::TYPE_OPERATIONS,

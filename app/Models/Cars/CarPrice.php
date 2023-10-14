@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CarPrice extends Model
 {
+    CONST MORPH_TYPE = 'car_price';
+
     use HasFactory;
 
     protected $table = 'car_prices';

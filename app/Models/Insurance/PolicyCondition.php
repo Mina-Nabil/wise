@@ -2,21 +2,28 @@
 
 namespace App\Models\Insurance;
 
+use App\Models\Users\AppLog;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class PolicyCondition extends Model
 {
+
     use HasFactory;
 
-    CONST OP_GREATER_OR_EQUAL = 'gte';
-    CONST OP_GREATER = 'gt';
-    CONST OP_LESS_OR_EQUAL = 'lte';
-    CONST OP_LESS = 'lt';
-    CONST OP_EQUAL = 'e';
+    const MORPH_TYPE = 'policy_condition';
 
-    CONST OPERATORS = [
+    const OP_GREATER_OR_EQUAL = 'gte';
+    const OP_GREATER = 'gt';
+    const OP_LESS_OR_EQUAL = 'lte';
+    const OP_LESS = 'lt';
+    const OP_EQUAL = 'e';
+
+    const OPERATORS = [
         self::OP_EQUAL,
         self::OP_GREATER,
         self::OP_GREATER_OR_EQUAL,
@@ -24,14 +31,14 @@ class PolicyCondition extends Model
         self::OP_LESS_OR_EQUAL
     ];
 
-    CONST SCOPE_YEAR = 'year';
-    CONST SCOPE_MODEL = 'car_model';
-    CONST SCOPE_BRAND = 'brand';
-    CONST SCOPE_COUNTRY = 'country';
-    CONST SCOPE_AGE = 'age';
+    const SCOPE_YEAR = 'year';
+    const SCOPE_MODEL = 'car_model';
+    const SCOPE_BRAND = 'brand';
+    const SCOPE_COUNTRY = 'country';
+    const SCOPE_AGE = 'age';
 
 
-    CONST SCOPES = [
+    const SCOPES = [
         self::SCOPE_AGE,
         self::SCOPE_MODEL,
         self::SCOPE_BRAND,
@@ -49,9 +56,94 @@ class PolicyCondition extends Model
         'note' // extra note for users
     ];
 
+    //model functions
+    public function editInfo($scope, $op, $value, $rate, $note = null)
+    {
+        try {
+            $this->update([
+                'scope' => $scope,
+                'operator' => $op,
+                'value' => $value,
+                'rate' => $rate,
+                'note' => $note
+            ]);
+            AppLog::info("Policy condition update done");
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't update policy condition");
+            return false;
+        }
+    }
+
+    public function moveUp()
+    {
+        $this->loadMissing('policy', 'policy.conditions');
+        $sorted_conditions = $this->policy->conditions->sortByDesc('order');
+        $swap = false;
+        foreach ($sorted_conditions as $cond) {
+            if ($swap) {
+                $tmpOrder = $cond->order;
+                $cond->order = $this->order;
+                $this->order = $tmpOrder;
+                try {
+                    DB::transaction(function () use ($cond) {
+                        $cond->save();
+                        $this->save();
+                    });
+                    AppLog::info("Orders adjusted", null, $this->policy);
+                    return true;
+                } catch (Exception $e) {
+                    report($e);
+                    AppLog::error("Can't adjust order", $e->getMessage(), $this->policy);
+                    return false;
+                }
+            }
+            if ($cond->id == $this->id)
+                $swap = true;
+        }
+        return true;
+    }
+
+    public function moveDown()
+    {
+        $this->loadMissing('policy', 'policy.conditions');
+        $sorted_conditions = $this->policy->conditions->sortBy('order');
+        $swap = false;
+        foreach ($sorted_conditions as $cond) {
+            if ($swap) {
+                $tmpOrder = $cond->order;
+                $cond->order = $this->order;
+                $this->order = $tmpOrder;
+                try {
+                    DB::transaction(function () use ($cond) {
+                        $cond->save();
+                        $this->save();
+                    });
+                    AppLog::info("Orders adjusted", null, $this->policy);
+                    return true;
+                } catch (Exception $e) {
+                    report($e);
+                    AppLog::error("Can't adjust order", $e->getMessage(), $this->policy);
+                    return false;
+                }
+            }
+            if ($cond->id == $this->id)
+                $swap = true;
+        }
+        return true;
+    }
+
+    //static functions
+    protected static function boot() {
+        parent::boot();
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->orderBy('order', 'asc');
+        });
+    }
+    
 
     //relations
-    public function policy() : BelongsTo
+    public function policy(): BelongsTo
     {
         return $this->belongsTo(Policy::class);
     }

@@ -12,15 +12,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Policy extends Model
 {
+    CONST MORPH_TYPE = 'policy';
+
     use HasFactory, SoftDeletes;
 
-    const BUSINESS_MOTOR = 'Motor';
-    const BUSINESS_HEALTH = 'Health';
-    const BUSINESS_LIFE = 'Life';
-    const BUSINESS_PROPERTY = 'Property';
-    const BUSINESS_CARGO = 'Cargo';
+    CONST BUSINESS_MOTOR = 'Motor';
+    CONST BUSINESS_HEALTH = 'Health';
+    CONST BUSINESS_LIFE = 'Life';
+    CONST BUSINESS_PROPERTY = 'Property';
+    CONST BUSINESS_CARGO = 'Cargo';
 
-    const LINES_OF_BUSINESS = [
+    CONST LINES_OF_BUSINESS = [
         self::BUSINESS_MOTOR,
         self::BUSINESS_HEALTH,
         self::BUSINESS_LIFE,
@@ -79,11 +81,11 @@ class Policy extends Model
         $scope,
         $operator,
         $value,
-        $order,
         $rate,
         $note
     ): false|PolicyCondition {
         try {
+            $order = $this->conditions()->count() + 1;
             $condition = $this->conditions()->create([
                 "scope" =>  $scope,
                 "operator" =>  $operator,

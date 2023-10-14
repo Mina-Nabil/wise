@@ -7,7 +7,7 @@ use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
 use App\Models\Cars\Country;
 use App\Models\Insurance\PolicyCondition;
-
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class PolicyShow extends Component
@@ -63,6 +63,11 @@ class PolicyShow extends Component
         $this->newConditionSection = true;
     }
 
+    public function closeNewConditionSection()
+    {
+        $this->newConditionSection = false;
+    }
+
     public function mount()
     {
         $policy = Policy::find($this->policyId);
@@ -97,29 +102,47 @@ class PolicyShow extends Component
     public function editCondition($id)
     {
 
-        // update this condition using these variables in debug
+        $this->validate([
+            'editedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
+            'editedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
+            'editedValue' => 'required|numeric',
+            'editedRate' => 'required|numeric|between:0,100'
+        ]);
 
-
-        // $this->editedScope
-        // $this->editedOperator
-        // $this->editedValue
-        // $this->editedRate
-        // $this->editedNote
+        /** @var PolicyCondition */
+        $policyCondition = PolicyCondition::findOrFail($id);
+        $policyCondition->editInfo($this->editedScope, $this->editedOperator, $this->editedValue, $this->editedRate, $this->editedNote);
+        $this->closeEditRow();
     }
 
     public function addCondition()
     {
+        $this->validate([
+            'addedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
+            'addedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
+            'addedValue' => 'required|numeric',
+            'addedRate' => 'required|numeric|between:0,100'
+        ]);
 
-        dd(
-            $this->addedScope,
-            $this->addedOperator,
-            $this->addedValue,
-            $this->addedRate,
-            $this->addedNote
-        );
+        /** @var Policy */
+        $pol = Policy::findOrFail($this->policyId);
+        $pol->addCondition($this->addedScope, $this->addedOperator, $this->addedValue, $this->addedRate, $this->addedNote);
+        $this->closeNewConditionSection();
     }
 
+    public function moveConditionUp($id)
+    {
+        /** @var PolicyCondition */
+        $con = PolicyCondition::findOrFail($id);
+        $con->moveUp();
+    }
 
+    public function moveConditionDown($id)
+    {
+       /** @var PolicyCondition */
+       $con = PolicyCondition::findOrFail($id);
+       $con->moveDown();
+    }
 
     public function render()
     {

@@ -55,7 +55,6 @@ class InsuranceSeeder extends Seeder
                 $faker->randomElement(PolicyCondition::SCOPES),
                 $faker->randomElement(PolicyCondition::OPERATORS),
                 $faker->randomFloat(2, 1, 100),
-                $faker->randomNumber(2),
                 $faker->randomFloat(2, 0.1, 10),
                 $faker->text
             );

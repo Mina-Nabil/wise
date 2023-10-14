@@ -13,18 +13,20 @@ use Illuminate\Support\Facades\Auth;
 
 class Task extends Model
 {
+    CONST MORPH_TYPE = 'task';
+
     use HasFactory;
 
     protected $fillable = [];
 
-    const STATUS_NEW = 'new'; //open but not assigned to anybode
-    const STATUS_ASSIGNED = 'assigned'; //open and assigned
-    const STATUS_IN_PROGRESS = 'in_progress'; //open and assigned and the assignee set it as in-progress
-    const STATUS_PENDING = 'pending'; //waiting for external factor
-    const STATUS_COMPLETED = 'completed'; //complete successfully
-    const STATUS_CLOSED = 'closed'; //closed wkhalas
+    CONST STATUS_NEW = 'new'; //open but not assigned to anybode
+    CONST STATUS_ASSIGNED = 'assigned'; //open and assigned
+    CONST STATUS_IN_PROGRESS = 'in_progress'; //open and assigned and the assignee set it as in-progress
+    CONST STATUS_PENDING = 'pending'; //waiting for external factor
+    CONST STATUS_COMPLETED = 'completed'; //complete successfully
+    CONST STATUS_CLOSED = 'closed'; //closed wkhalas
 
-    const STATUSES = [
+    CONST STATUSES = [
         self::STATUS_NEW,
         self::STATUS_ASSIGNED,
         self::STATUS_IN_PROGRESS,

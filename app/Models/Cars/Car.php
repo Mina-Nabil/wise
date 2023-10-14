@@ -17,6 +17,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Car extends Model
 {
+    CONST MORPH_TYPE = 'car';
+
     use HasFactory, SoftDeletes;
     public $timestamps = false;
     protected $fillable = ['car_model_id', 'category', 'desc'];

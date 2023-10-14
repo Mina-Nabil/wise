@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Country extends Model
 {
+    CONST MORPH_TYPE = 'country';
+
     use HasFactory;
 
     protected $fillable = ['name'];

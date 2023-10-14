@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CarModel extends Model
 {
+    CONST MORPH_TYPE = 'car_model';
+
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['name', 'brand_id'];

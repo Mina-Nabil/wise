@@ -28,25 +28,25 @@ class AppLog extends Model
     ];
 
     //static functions
-    public static function info($title, $desc = null)
+    public static function info($title, $desc = null, Model $loggable = null)
     {
         $user = Auth::user();
-        self::addLog(self::LEVEL_INFO, $title, $desc, $user?->id);
-    }
-    
-    public static function warning($title, $desc = null)
-    {
-        $user = Auth::user();
-        self::addLog(self::LEVEL_WARNING, $title, $desc, $user?->id);
-    }
-    
-    public static function error($title, $desc = null)
-    {
-        $user = Auth::user();
-        self::addLog(self::LEVEL_ERROR, $title, $desc, $user?->id);
+        self::addLog(self::LEVEL_INFO, $title, $desc, $user?->id, $loggable);
     }
 
-    private static function addLog($level, $title, $desc, $user_id = null)
+    public static function warning($title, $desc = null, Model $loggable = null)
+    {
+        $user = Auth::user();
+        self::addLog(self::LEVEL_WARNING, $title, $desc, $user?->id, $loggable);
+    }
+
+    public static function error($title, $desc = null, Model $loggable = null)
+    {
+        $user = Auth::user();
+        self::addLog(self::LEVEL_ERROR, $title, $desc, $user?->id, $loggable);
+    }
+
+    private static function addLog($level, $title, $desc, $user_id = null, Model $loggable = null)
     {
         $newLog = new self([
             "title"     =>  $title,
@@ -56,6 +56,9 @@ class AppLog extends Model
         ]);
         try {
             $newLog->save();
+            if ($loggable) {
+                $newLog->loggable()->associate($loggable);
+            }
         } catch (Exception $e) {
             report($e);
         }
