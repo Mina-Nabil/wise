@@ -17,10 +17,18 @@ class PolicyIndex extends Component
         $this->deleteThisPolicy = $id;
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $policies = Policy::all();
-        // dd($policies);
+        $policies = Policy::tableData()
+                        ->SearchBy($this->search)
+                        ->paginate(12);
+
+
         return view('livewire.policy-index',[
             'policies' => $policies,
     ]);

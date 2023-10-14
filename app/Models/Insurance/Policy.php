@@ -104,7 +104,7 @@ class Policy extends Model
     //scopes
     public function scopeTableData($query)
     {
-        $query->join('insurance_companies', 'insurance_companies.id', '=', 'policies.insurance_company_id')
+        $query->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
             ->select('policies.*');
     }
 

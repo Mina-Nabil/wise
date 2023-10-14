@@ -4,6 +4,7 @@ use App\Http\Controllers\CarsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PoliciesController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -34,7 +35,9 @@ Route::middleware('auth', 'active')->group(function () {
 
     Route::get('/policies', [PoliciesController::class, 'index'])->name('policies.index');
     Route::get('/policies/new', [PoliciesController::class, 'create'])->name('policies.create');
-    Route::get('/policies/{id}', [PoliciesController::class, 'show'])->name('policies.create');
+    Route::get('/policies/{id}', [PoliciesController::class, 'show'])->name('policies.show');
+
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
 
 
 
