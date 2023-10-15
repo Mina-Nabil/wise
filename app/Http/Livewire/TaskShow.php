@@ -38,6 +38,11 @@ class TaskShow extends Component
         $task = Task::find($this->taskId);
 
         $task->addComment($this->newComment);
+
+        $this->dispatchBrowserEvent('toastalert', [
+            'message' => 'Comment Added!',
+            'type' => 'info', // or 'failed' or 'info'
+        ]);
     }
 
 

@@ -145,7 +145,7 @@
                                         </div>
                                         <div class="flex-1">
                                             <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1`">
-
+                                                username
                                             </div>
                                             <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">
                                                 {{ $comment->comment }}
@@ -153,7 +153,7 @@
                                         </div>
                                         <div class="">
                                             <span class="flex items-center justify-center text-sm">
-                                                3 min ago
+                                                {{ $comment->created_at->diffForHumans() }}
                                             </span>
                                         </div>
                                     </div>

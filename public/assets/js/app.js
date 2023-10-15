@@ -1005,3 +1005,33 @@ setTimeout(function() {
     document.querySelector('.alert').classList.add('hide');
   }, 3000);
   
+
+
+
+window.addEventListener('toastalert', event => {
+    var x = document.getElementById("simpleToast");
+    
+    const { message, type } = event.detail;
+    let icon = '';
+
+    if (type === 'success') {
+        x.style.backgroundColor = '#50C793';
+        icon = '<iconify-icon icon="material-symbols:check"></iconify-icon>';
+    } else if (type === 'failed') {
+        x.style.backgroundColor = '#F1595C';
+        icon = '<iconify-icon icon="ph:warning"></iconify-icon>';
+    } else if (type === 'info') {
+        x.style.backgroundColor = 'black';
+        icon = '<iconify-icon icon="material-symbols:info-outline"></iconify-icon>';
+    } else {
+        x.style.backgroundColor = 'gray';
+    }
+
+    x.innerHTML = message;
+
+    x.className = "show";
+
+    setTimeout(function () {
+        x.className = x.className.replace("show", "");
+    }, 3000);
+});
