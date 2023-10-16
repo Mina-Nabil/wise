@@ -27,11 +27,12 @@ Route::middleware('auth', 'active')->group(function () {
 
     //Users routes
     Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/{id}', [UserController::class, 'show']);
+    Route::get('/profile', [UserController::class, 'show']);
 
     Route::get('/notifications', function () {
         return view('users.notifications');
     });
+
 
     Route::get('/policies', [PoliciesController::class, 'index'])->name('policies.index');
     Route::get('/policies/new', [PoliciesController::class, 'create'])->name('policies.create');
@@ -39,8 +40,6 @@ Route::middleware('auth', 'active')->group(function () {
 
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
-
-
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);

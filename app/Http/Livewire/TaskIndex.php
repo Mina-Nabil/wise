@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Users\Task;
+use App\Models\Users\User;
 use Carbon\Carbon;
 use Livewire\WithPagination;
 
@@ -17,18 +18,59 @@ class TaskIndex extends Component
     public $filteredStatus;
     public $myTasks;
 
+    public $taskTitle;
+    public $assignedTo;
+    public $desc;
+    public $taskStatus;
+    public $due;
+
     protected $queryString = [
         'startDate' => ['except' => ''],
         'endDate' => ['except' => ''],
     ];
 
-    public function filterByStatus($status)
+    public function createTask()
     {
-        
-        $this->filteredStatus  = [$status];
+        // Call the newTask method from your model
+        $due = $this->due ? Carbon::parse($this->due) : null;
+
+        $t = Task::newTask(
+            $this->taskTitle,
+            null,
+            $this->assignedTo,
+            $due,
+            $this->desc
+        );
+
+        if ($t) {
+            $this->dispatchBrowserEvent('toastalert', [
+                'message' => 'Task Added!',
+                'type' => 'success', // or 'failed' or 'info'
+            ]);
+            $this->resetFormFields();
+        } else {
+            $this->dispatchBrowserEvent('toastalert', [
+                'message' => 'Error Adding Task!',
+                'type' => 'failed', // or 'failed' or 'info'
+            ]);
+        }
     }
 
-    public function resetStatusFilter(){
+    private function resetFormFields()
+    {
+        $this->taskTitle = null;
+        $this->assignedTo = null;
+        $this->desc = null;
+        $this->taskStatus = null;
+        $this->due = null;
+    }
+    public function filterByStatus($status)
+    {
+        $this->filteredStatus = [$status];
+    }
+
+    public function resetStatusFilter()
+    {
         $this->filteredStatus = null;
     }
 
@@ -55,6 +97,7 @@ class TaskIndex extends Component
         $statuses = Task::STATUSES;
         $startDate = Carbon::parse($this->startDate);
         $endDate = Carbon::parse($this->endDate);
+        $users = User::all();
 
         $tasks = Task::whereBetween('due', [$startDate, $endDate])
             ->when($this->filteredStatus, function ($query) {
@@ -69,6 +112,7 @@ class TaskIndex extends Component
             'tasks' => $tasks,
             'statuses' => $statuses,
             'filteredStatus' => $this->filteredStatus,
+            'users' => $users,
         ]);
     }
 }

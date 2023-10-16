@@ -132,21 +132,29 @@
                         </a>
                     </li>
                     <li>
-                        <a href="chat.html" class="navItem @yield('polices')">
+                        <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="material-symbols:policy-outline-rounded"></iconify-icon>
-                                <span>Polices</span>
+                                <span>Policies</span>
                             </span>
                         </a>
                     </li>
                     <li>
+                        <a href="{{ url('/tasks') }}" class="navItem @yield('tasks')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="ic:round-add-task"></iconify-icon>
+                                <span>Tasks</span>
+                            </span>
+                        </a>
+                    </li>
+                    {{-- <li>
                         <a href="chat.html" class="navItem @yield('customers')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
                                 <span>Cutomers</span>
                             </span>
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </div>
@@ -435,8 +443,8 @@
 
 
                                     <li>
-                                        <a href="{{ url('/cars') }}">
-                                            <div class="flex space-x-2 items-start rtl:space-x-reverse">
+                                        <a href="{{ url('/cars') }}" class="navItem @yield('cars')">
+                                            <div class="flex space-x-2 items-start rtl:space-x-reverse ">
                                                 <iconify-icon icon=mingcute:car-line class="leading-[1] text-base">
                                                 </iconify-icon>
                                                 <span class="leading-[1]">
@@ -447,7 +455,7 @@
                                     </li>
 
                                     <li>
-                                        <a href="index.html">
+                                        <a href="{{ url('/policies') }}">
                                             <div class="flex space-x-2 items-start rtl:space-x-reverse">
                                                 <iconify-icon icon=material-symbols:policy-outline-rounded class="leading-[1] text-base"> </iconify-icon>
                                                 <span class="leading-[1]">
@@ -458,6 +466,17 @@
                                     </li>
 
                                     <li>
+                                        <a href="{{ url('/tasks') }}">
+                                            <div class="flex space-x-2 items-start rtl:space-x-reverse">
+                                                <iconify-icon class="leading-[1] text-base" icon="ic:round-add-task"></iconify-icon>
+                                                <span class="leading-[1]">
+                                                    Tasks
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    {{-- <li>
                                         <a href="index.html">
                                             <div class="flex space-x-2 items-start rtl:space-x-reverse">
                                                 <iconify-icon icon=raphael:customer class="leading-[1] text-base">
@@ -467,7 +486,7 @@
                                                 </span>
                                             </div>
                                         </a>
-                                    </li>
+                                    </li> --}}
 
 
 
@@ -510,7 +529,7 @@
                                         <div class="flex items-center justify-between py-4 px-4">
                                             <h3 class="text-sm font-Inter font-medium text-slate-700 dark:text-white">
                                                 Messages</h3>
-                                            <a class="text-xs font-Inter font-normal underline text-slate-500 dark:text-white" href="#">See All</a>
+                                            <a class="text-xs font-Inter font-normal underline text-slate-500 dark:text-white" href="">See All</a>
                                         </div>
                                         <div class="divide-y divide-slate-100 dark:divide-slate-700" role="none">
                                             <div class="text-slate-600 dark:text-slate-300 block w-full px-4 py-2 text-sm">
@@ -606,7 +625,7 @@
                                         <div class="flex items-center justify-between py-4 px-4">
                                             <h3 class="text-sm font-Inter font-medium text-slate-700 dark:text-white">
                                                 Notifications</h3>
-                                            <a class="text-xs font-Inter font-normal underline text-slate-500 dark:text-white" href="#">See All</a>
+                                            <a class="text-xs font-Inter font-normal underline text-slate-500 dark:text-white" href="{{ url('/notifications') }}">See All</a>
                                         </div>
                                         @if (!auth()->user()->notifications->isEmpty())
                                             @foreach (auth()->user()->notifications->take(4) as $notification)
@@ -711,6 +730,13 @@
                                                 </a>
                                             </li>
                                             <li>
+                                                <a href="{{ url('profile') }}" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white font-inter text-sm text-slate-600
+            dark:text-white font-normal">
+                                                    <iconify-icon icon="iconamoon:profile-bold" class="relative top-[2px] text-lg ltr:mr-1 rtl:ml-1"></iconify-icon>
+                                                    <span class="font-Inter">Profile</span>
+                                                </a>
+                                            </li>
+                                            <li>
                                                 <a href="{{ url('logout') }}" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white font-inter text-sm text-slate-600
             dark:text-white font-normal">
                                                     <iconify-icon icon="heroicons-outline:login" class="relative top-[2px] text-lg ltr:mr-1 rtl:ml-1"></iconify-icon>
@@ -796,7 +822,7 @@
                         <img src="{{ asset('assets/images/users/user-1.jpg') }}" alt="" class="w-full h-full rounded-full border-2 border-slate-100">
                     </div>
                 </a>
-                <a href="#">
+                <a href="{{ url('notifications') }}">
                     <div>
                         <span class=" relative cursor-pointer rounded-full text-[20px] flex flex-col items-center justify-center mb-1 dark:text-white
           text-slate-900">

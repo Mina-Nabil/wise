@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
-@section('content')
+@section('tasks')
+    active
+@endsection
 
+@section('content')
     <livewire:task-index />
-    
 @endsection

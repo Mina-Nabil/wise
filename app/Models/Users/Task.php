@@ -13,20 +13,31 @@ use Illuminate\Support\Facades\Auth;
 
 class Task extends Model
 {
-    CONST MORPH_TYPE = 'task';
+    const MORPH_TYPE = 'task';
 
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'taskable_type',
+        'taskable_id',
+        'title',
+        'desc',
+        'open_by_id',
+        'assigned_to_id',
+        'last_action_by_id',
+        'due',
+        'status'
 
-    CONST STATUS_NEW = 'new'; //open but not assigned to anybode
-    CONST STATUS_ASSIGNED = 'assigned'; //open and assigned
-    CONST STATUS_IN_PROGRESS = 'in_progress'; //open and assigned and the assignee set it as in-progress
-    CONST STATUS_PENDING = 'pending'; //waiting for external factor
-    CONST STATUS_COMPLETED = 'completed'; //complete successfully
-    CONST STATUS_CLOSED = 'closed'; //closed wkhalas
+    ];
 
-    CONST STATUSES = [
+    const STATUS_NEW = 'new'; //open but not assigned to anybode
+    const STATUS_ASSIGNED = 'assigned'; //open and assigned
+    const STATUS_IN_PROGRESS = 'in_progress'; //open and assigned and the assignee set it as in-progress
+    const STATUS_PENDING = 'pending'; //waiting for external factor
+    const STATUS_COMPLETED = 'completed'; //complete successfully
+    const STATUS_CLOSED = 'closed'; //closed wkhalas
+
+    const STATUSES = [
         self::STATUS_NEW,
         self::STATUS_ASSIGNED,
         self::STATUS_IN_PROGRESS,
@@ -125,6 +136,45 @@ class Task extends Model
             return false;
         }
     }
+
+    public function editTask($taskId, $title, $assignToId, $due, $desc, $status)
+    {
+        try {
+            $loggedInUser = Auth::user();
+            $task = self::find($taskId);
+
+            if (!$task) {
+                return false;
+            }
+
+            $task->title = $title;
+            $task->desc = $desc;
+            if (is_string($due)) {
+                $due = Carbon::parse($due);
+            }
+            $task->due = $due ? $due->format('Y-m-d H:i') : null;
+            $task->assigned_to()->associate($assignToId);
+            $task->status = $status;
+            // You can update other properties as needed
+
+            $task->save();
+
+            // You can add comments or log the edit action if necessary
+            $task->comments()->create([
+                "comment" => "Task edited by $loggedInUser->username",
+            ]);
+
+            AppLog::info("Task edited by $loggedInUser->username");
+
+            return $task;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit task", $e->getMessage());
+            return false;
+        }
+    }
+
+
 
     public static function boot()
     {

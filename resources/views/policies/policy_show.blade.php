@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
-@section('cars')
+@section('policies')
     active
 @endsection
-
 
 @section('content')
     <livewire:policy-show :policyId="$policyId" />

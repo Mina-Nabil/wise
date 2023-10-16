@@ -4,8 +4,10 @@
     Wise · Policies
 @endsection
 
-@section('content')
+@section('policies')
+    active
+@endsection
 
+@section('content')
     <livewire:policy-index />
-    
 @endsection

@@ -1035,3 +1035,9 @@ window.addEventListener('toastalert', event => {
         x.className = x.className.replace("show", "");
     }, 3000);
 });
+
+
+document.addEventListener('livewire:load', function () {
+    // Initialize the Select2 plugin
+    $('#select2basic').select2();
+});

@@ -20,10 +20,10 @@ class UserController extends Controller
         return view('users.show', $data);
     }
 
-    public function show($id)
+    public function show()
     {
         /** @var User */
-        $user = User::findOrFail($id);
+        $user = auth()->user();
         $this->authorize('view', $user);
 
         $data['users'] = User::all();

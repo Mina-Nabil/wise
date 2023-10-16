@@ -4,6 +4,10 @@
     Wise · Policies
 @endsection
 
+@section('policies')
+    active
+@endsection
+
 @section('content')
     <div class="grid md:grid-cols-5 lg:grid-cols-2 gap-5">
         <div>
@@ -20,8 +24,7 @@
                                 <label for="largeInput" class="inline-inputLabel">L.O.B</label>
                                 <select name="business" id="basicSelect" class="form-control w-full mt-2">
                                     @foreach ($linesOfBusiness as $line)
-                                        <option value="{{ $line }}"
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $line }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ $line }}
                                         </option>
                                     @endforeach
@@ -35,8 +38,7 @@
                                 <label for="largeInput" class="inline-inputLabel">Company</label>
                                 <select name="company_id" id="select2basic" class="select2 form-control w-full mt-2 py-2">
                                     @foreach ($companies as $company)
-                                        <option value="{{ $company->id }}"
-                                            class=" inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $company->id }}" class=" inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ $company->name }}
                                         </option>
                                     @endforeach

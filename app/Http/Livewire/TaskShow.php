@@ -17,6 +17,8 @@ class TaskShow extends Component
     public $taskStatus;
     public $due;
     public $newComment;
+    public $taskableType;
+    public $changes = false;
 
     public function mount($taskId)
     {
@@ -27,6 +29,29 @@ class TaskShow extends Component
         $this->desc = $task->desc;
         $this->taskStatus = $task->status;
         $this->due = $task->due;
+        $this->taskableType = $task->taskable_type;
+    }
+
+    public function updatedTaskTitle()
+    {
+        $this->changes = true;
+    }
+
+    public function updatedAssignedTo()
+    {
+        $this->changes = true;
+    }
+    public function updatedDesc()
+    {
+        $this->changes = true;
+    }
+    public function updatedTaskStatus()
+    {
+        $this->changes = true;
+    }
+    public function updatedDue()
+    {
+        $this->changes = true;
     }
 
     public function addComment()
@@ -35,14 +60,52 @@ class TaskShow extends Component
             'newComment' => 'required',
         ]);
 
+
         $task = Task::find($this->taskId);
 
-        $task->addComment($this->newComment);
+        $com = $task->addComment($this->newComment);
 
-        $this->dispatchBrowserEvent('toastalert', [
-            'message' => 'Comment Added!',
-            'type' => 'info', // or 'failed' or 'info'
-        ]);
+        if ($com) {
+            $this->dispatchBrowserEvent('toastalert', [
+                'message' => 'Comment Added!',
+                'type' => 'success', // or 'failed' or 'info'
+            ]);
+
+            $this->newComment = null;
+        } else {
+            $this->dispatchBrowserEvent('toastalert', [
+                'message' => 'Error Adding Comment!',
+                'type' => 'failed', // or 'failed' or 'info'
+            ]);
+        }
+    }
+
+
+    public function save()
+    {
+        $task = new Task();
+        $t = $task->editTask(
+            $this->taskId,
+            $this->taskTitle,
+            $this->assignedTo,
+            $this->due,
+            $this->desc,
+            $this->taskStatus
+        );
+
+        if ($t) {
+            $this->dispatchBrowserEvent('toastalert', [
+                'message' => 'Task Updated Successfuly',
+                'type' => 'success', // or 'failed' or 'info'
+            ]);
+
+            $this->changes = false;
+        } else {
+            $this->dispatchBrowserEvent('toastalert', [
+                'message' => 'failed to update!',
+                'type' => 'failed', // or 'failed' or 'info'
+            ]);
+        }
     }
 
 
@@ -65,6 +128,7 @@ class TaskShow extends Component
             'due' => $this->due,
             'statuses' => $statuses,
             'users' => $users,
+            'taskableType' => $this->taskableType,
         ]);
     }
 }
