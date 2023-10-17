@@ -80,6 +80,9 @@ class Company extends Model
                     ["is_primary"    =>  0]
                 );
             }
+
+            return true;
+            
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't set email", $e->getMessage());

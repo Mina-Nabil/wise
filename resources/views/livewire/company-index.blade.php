@@ -38,18 +38,18 @@
 
                                 <div class="input-area">
                                     <label for="name" class="form-label">Company Name*</label>
-                                    <input id="name" type="text" class="form-control" placeholder="Company Name" wire:model.defer="newName">
+                                    <input id="name" type="text" class="form-control @error('newName') !border-danger-500 @enderror" placeholder="Company Name" wire:model.defer="newName">
                                 </div>
 
                                 <div class="input-area">
                                     <label for="name" class="form-label">Note</label>
-                                    <textarea id="name" type="text" class="form-control" placeholder="Leave a note..." wire:model.defer="newNote"></textarea>
+                                    <textarea id="name" type="text" class="form-control @error('newNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model.defer="newNote"></textarea>
                                 </div>
 
                             </div>
                             <!-- Modal footer -->
                             <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                <button wire:click="add" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-success-500">Submit</button>
+                                <button wire:click="add" data-bs-dismiss="modal" type="button" class="btn inline-flex justify-center text-white bg-success-500">Submit</button>
                             </div>
 
                         </div>
@@ -168,7 +168,8 @@
                                 Delete Company
                             </h3>
                             <button wire:click="closeDelete" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                    dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                             11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -201,10 +202,11 @@
                         <!-- Modal header -->
                         <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
-                                Delete Company
+                                {{ $companyInfo->name }}
                             </h3>
                             <button wire:click="closeEdit" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                    dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                             11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -214,13 +216,87 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
-                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
-                                Are you sure you want to delete <b></b> ?
-                            </h6>
-                        </div>
-                        <!-- Modal footer -->
-                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="delete" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">Yes, Delete</button>
+                            <div class="input-area">
+                                <label for="name" class="form-label">Company Name*</label>
+                                <input id="name" type="text" class="form-control @error('companyInfoName') !border-danger-500 @enderror" placeholder="Company Name" wire:model.defer="companyInfoName">
+                            </div>
+
+                            <div class="input-area">
+                                <label for="name" class="form-label">Note</label>
+                                <textarea id="name" type="text" class="form-control @error('companyInfoNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model.defer="companyInfoNote"></textarea>
+                            </div>
+                            <button wire:click="saveChanges" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500 btn-sm">Save Changes</button>
+
+                            <div class="card">
+                                <div class="card-body px-6 pb-6">
+                                    <div class="overflow-x-auto -mx-6">
+                                        <div class="inline-block min-w-full align-middle">
+                                            <div class="overflow-hidden ">
+                                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                                    <thead class="bg-slate-200 dark:bg-slate-700">
+                                                        <tr>
+
+                                                            <th scope="col" class=" table-th ">
+                                                                Type
+                                                            </th>
+
+                                                            <th scope="col" class=" table-th ">
+                                                                Email
+                                                            </th>
+
+                                                            <th scope="col" class=" table-th ">
+                                                                Name
+                                                            </th>
+
+                                                            <th scope="col" class=" table-th ">
+                                                                Action
+                                                            </th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                                        @foreach ($companyInfo->emails as $email)
+                                                            <tr>
+                                                                <td class="table-td">{{ $email->type }}</td>
+                                                                <td class="table-td">{{ $email->email }}</td>
+                                                                <td class="table-td ">{{ $email->contact_first_name }} {{ $email->contact_last_name }}</td>
+                                                                <td class="table-td flex">
+                                                                    <button class="action-btn m-1" data-tippy-content="Delete2" type="button" data-tippy-theme="dark">
+                                                                        <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                                    </button>
+                                                                    <button class="action-btn m-1" data-tippy-content="Delete2" type="button" data-tippy-theme="dark">
+                                                                        <iconify-icon icon="material-symbols:star"></iconify-icon>
+                                                                    </button>
+                                                                </td>
+                                                                {{-- <td class="table-td ">{{ $email->note }}</td> --}}
+                                                            </tr>
+                                                        @endforeach
+
+                                                        {{-- <td class="table-td ">{{ $email->note }}</td> --}}
+                                                    </tbody>
+                                                </table>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="input-area">
+                                <label for="name" class="form-label">New Email</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 mb-3 @error('newEmailType') !border-danger-500 @enderror" wire:model.defer="newEmailType">
+                                    <option selected="Selected" disabled="disabled" value="none" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Type</option>
+                                    @foreach ($types as $type)
+                                        <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm">{{ $type }}</option>
+                                    @endforeach
+                                </select>
+                                <input type="text" class="form-control mb-3 @error('newEmail') !border-danger-500 @enderror" placeholder="Email" wire:model.defer="newEmail">
+                                <input type="text" class="form-control mb-3 @error('newEmailFname') !border-danger-500 @enderror" placeholder="First Name"  wire:model.defer="newEmailFname">
+                                <input type="text" class="form-control mb-3 @error('newEmailLname') !border-danger-500 @enderror" placeholder="Last Name"  wire:model.defer="newEmailLname">
+                                <button class="btn inline-flex justify-center btn-light btn-sm mt-2" wire:click="addEmail">Submit</button>
+                            </div>
                         </div>
                     </div>
                 </div>
