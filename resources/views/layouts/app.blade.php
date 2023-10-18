@@ -14,6 +14,7 @@
     <!-- BEGIN: Theme CSS-->
     <link rel="stylesheet" href="{{ asset('assets/css/rt-plugins.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
+    @yield('head')
     <!-- End : Theme CSS-->
     <script src="{{ asset('assets/js/settings.js') }}" sync></script>
     @auth
@@ -844,6 +845,7 @@
     <script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/rt-plugins.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
+    @yield('body')
 
     <script>
         @if (session('alert_msg'))
