@@ -66,17 +66,10 @@ class TaskShow extends Component
         $com = $task->addComment($this->newComment);
 
         if ($com) {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Comment Added!',
-                'type' => 'success', // or 'failed' or 'info'
-            ]);
-
+            $this->alert('success', 'Comment Added!');
             $this->newComment = null;
         } else {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Error Adding Comment!',
-                'type' => 'failed', // or 'failed' or 'info'
-            ]);
+            $this->alert('failed', 'Error Adding Comment!');
         }
     }
 
@@ -94,17 +87,10 @@ class TaskShow extends Component
         );
 
         if ($t) {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Task Updated Successfuly',
-                'type' => 'success', // or 'failed' or 'info'
-            ]);
-
+            $this->alert('success', 'Task Updated Successfuly!');
             $this->changes = false;
         } else {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'failed to update!',
-                'type' => 'failed', // or 'failed' or 'info'
-            ]);
+            $this->alert('failed', 'failed to update!');
         }
     }
 

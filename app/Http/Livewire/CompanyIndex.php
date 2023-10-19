@@ -60,17 +60,10 @@ class CompanyIndex extends Component
         $success = $company->editInfo($this->companyInfoName, $this->companyInfoNote);
 
         if ($success) {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Company information updated successfully!',
-                'type' => 'success',
-            ]);
+            $this->alert('success', 'Company updated!');
             $this->editRow($this->editThisComp);
-
         } else {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Failed to update company information!',
-                'type' => 'failed',
-            ]);
+            $this->alert('failed', 'Server error!');
         }
     }
 
@@ -90,16 +83,10 @@ class CompanyIndex extends Component
         // dd($a);
 
         if ($a) {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Email Added Succesfuly!',
-                'type' => 'success',
-            ]);
+            $this->alert('success', 'Email Added Succesfuly!');
             $this->editRow($this->editThisComp);
         } else {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Failed to Add!',
-                'type' => 'failed',
-            ]);
+            $this->alert('failed', 'Failed to Add!');
         }
     }
 
@@ -112,18 +99,12 @@ class CompanyIndex extends Component
 
         $c = Company::newCompany($this->newName, $this->newNote);
         if ($c) {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Company Added Succesfuly!',
-                'type' => 'success',
-            ]);
+            $this->alert('success', 'Company Added Succesfuly!');
             $this->newName = null;
             $this->newNote = null;
             $this->companyInfo = $c->id;
         } else {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Failed to Add!',
-                'type' => 'failed',
-            ]);
+            $this->alert('failed', 'Failed to Add!');
         }
     }
 
@@ -134,16 +115,10 @@ class CompanyIndex extends Component
 
             $this->deleteInfo = null;
 
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Company Deleted Succesfuly!',
-                'type' => 'success',
-            ]);
+            $this->alert('success', 'Company Deleted Succesfuly!');
         } catch (\Exception $e) {
             $this->deleteInfo = null;
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Failed to delete!',
-                'type' => 'failed',
-            ]);
+            $this->alert('failed', 'Failed to delete!');
         }
     }
     public function render()

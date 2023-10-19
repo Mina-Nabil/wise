@@ -50,12 +50,18 @@ class PolicyShow extends Component
     {
         $policy = Policy::find($this->policyId);
 
-        $policy->editInfo(
+        $p = $policy->editInfo(
             $this->policyName,
             $this->policyBusiness,
             $this->policyNote
         );
-        $this->changes = false;
+
+        if ($p) {
+            $this->alert('success', 'Policy updated!');
+            $this->changes = false;
+        } else {
+            $this->alert('failed', 'Failed updating Policy!');
+        }
     }
 
     public function openNewConditionSection()
@@ -84,13 +90,18 @@ class PolicyShow extends Component
     {
 
         $con = PolicyCondition::find($id);
-        $this->editedScope = $con->scope;
-        $this->editedOperator = $con->operator;
-        $this->editedValue = $con->value;
-        $this->editedRate = $con->rate;
-        $this->editedNote = $con->note;
 
-        $this->editedRowId = $id;
+        if (!$con) {
+            $this->alert('failed', 'Server error!');
+        } else {
+            $this->editedScope = $con->scope;
+            $this->editedOperator = $con->operator;
+            $this->editedValue = $con->value;
+            $this->editedRate = $con->rate;
+            $this->editedNote = $con->note;
+
+            $this->editedRowId = $id;
+        }
     }
 
     public function closeEditRow()
@@ -111,8 +122,14 @@ class PolicyShow extends Component
 
         /** @var PolicyCondition */
         $policyCondition = PolicyCondition::findOrFail($id);
-        $policyCondition->editInfo($this->editedScope, $this->editedOperator, $this->editedValue, $this->editedRate, $this->editedNote);
-        $this->closeEditRow();
+        $p = $policyCondition->editInfo($this->editedScope, $this->editedOperator, $this->editedValue, $this->editedRate, $this->editedNote);
+
+        if ($p) {
+            $this->alert('success', 'Condition Updated!');
+            $this->closeEditRow();
+        } else {
+            $this->alert('failed', 'Server error!');
+        }
     }
 
     public function addCondition()
@@ -126,22 +143,42 @@ class PolicyShow extends Component
 
         /** @var Policy */
         $pol = Policy::findOrFail($this->policyId);
-        $pol->addCondition($this->addedScope, $this->addedOperator, $this->addedValue, $this->addedRate, $this->addedNote);
-        $this->closeNewConditionSection();
+        $p = $pol->addCondition($this->addedScope, $this->addedOperator, $this->addedValue, $this->addedRate, $this->addedNote);
+
+        if ($p) {
+            $this->alert('success', 'Condition Added!');
+            $this->closeNewConditionSection();
+        } else {
+            $this->alert('failed', 'Server error!');
+        }
     }
 
     public function moveConditionUp($id)
     {
         /** @var PolicyCondition */
         $con = PolicyCondition::findOrFail($id);
-        $con->moveUp();
+        $c = $con->moveUp();
+
+        if ($c) {
+            $this->alert('success', 'Condition moved Up!');
+            $this->closeNewConditionSection();
+        } else {
+            $this->alert('failed', 'Server error!');
+        }
     }
 
     public function moveConditionDown($id)
     {
-       /** @var PolicyCondition */
-       $con = PolicyCondition::findOrFail($id);
-       $con->moveDown();
+        /** @var PolicyCondition */
+        $con = PolicyCondition::findOrFail($id);
+        $c = $con->moveDown();
+
+        if ($c) {
+            $this->alert('success', 'Condition moved Down!');
+            $this->closeNewConditionSection();
+        } else {
+            $this->alert('failed', 'Server error!');
+        }
     }
 
     public function render()

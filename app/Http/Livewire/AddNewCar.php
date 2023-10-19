@@ -60,7 +60,19 @@ class AddNewCar extends Component
 
             $newBrand = Brand::newBrand($this->brandName, $this->country);
             $newCarModel  = CarModel::newCarModel($this->modelName, $newBrand->id);
-            Car::newCar($newCarModel->id, $this->categoryName, ' ');
+            $c = Car::newCar($newCarModel->id, $this->categoryName, ' ');
+
+            if ($c) {
+                $this->dispatchBrowserEvent('toastalert', [
+                    'message' => 'Added Successfuly',
+                    'type' => 'success',
+                ]);
+            } else {
+                $this->dispatchBrowserEvent('toastalert', [
+                    'message' => 'Server Error',
+                    'type' => 'failed',
+                ]);
+            }
         } elseif ($this->addNewModel) {
 
             $validatedData = $this->validate([
@@ -71,7 +83,19 @@ class AddNewCar extends Component
 
             $brandId = $this->brandId;
             $newCarModel = CarModel::newCarModel($this->modelName, $brandId);
-            Car::newCar($newCarModel->id, $this->categoryName, ' ');
+            $c = Car::newCar($newCarModel->id, $this->categoryName, ' ');
+
+            if ($c) {
+                $this->dispatchBrowserEvent('toastalert', [
+                    'message' => 'Added Successfuly',
+                    'type' => 'success',
+                ]);
+            } else {
+                $this->dispatchBrowserEvent('toastalert', [
+                    'message' => 'Server Error',
+                    'type' => 'failed',
+                ]);
+            }
         } else {
 
             $validatedData = $this->validate([
@@ -81,10 +105,20 @@ class AddNewCar extends Component
             ]);
 
             $modelId = $this->selectedCarModel;
-            Car::newCar($modelId, $this->categoryName, ' ');
-        }
+            $c = Car::newCar($modelId, $this->categoryName, ' ');
 
-        session()->flash('message', 'Car Created successfully!');
+            if ($c) {
+                $this->dispatchBrowserEvent('toastalert', [
+                    'message' => 'Added Successfuly',
+                    'type' => 'success',
+                ]);
+            } else {
+                $this->dispatchBrowserEvent('toastalert', [
+                    'message' => 'Server Error',
+                    'type' => 'failed',
+                ]);
+            }
+        }
     }
 
 

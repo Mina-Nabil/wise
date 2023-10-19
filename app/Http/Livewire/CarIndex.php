@@ -81,6 +81,9 @@ class CarIndex extends Component
         $price = CarPrice::find($this->updateThisPriceId);
         $this->updatedPrice = $price->price;
         $this->updatedYear = $price->model_year;
+        if (!$price) {
+            $this->alert('failed', 'Failed price not found!');
+        }
     }
 
     public function declineUpdatePrice()
@@ -91,18 +94,24 @@ class CarIndex extends Component
     public function updatePrice($id)
     {
         $this->validate([
-            'updatedYear'  => 'required',
+            'updatedYear' => 'required',
             'updatedPrice' => 'required',
         ]);
 
         $record = CarPrice::find($id);
-        $record->update([
+        $p = $record->update([
             'car_id' => $this->carPriceListId,
             'model_year' => $this->updatedYear,
             'price' => $this->updatedPrice,
             'desc' => 'Updated From Livewire',
         ]);
-        $this->closeUpdatePrice();
+
+        if ($p) {
+            $this->alert('success', 'Price Updated!');
+            $this->closeUpdatePrice();
+        } else {
+            $this->alert('failed', 'Failed Updating Price!');
+        }
     }
 
     public function deletethisPrice($id)
@@ -117,15 +126,15 @@ class CarIndex extends Component
 
     public function deletePrice()
     {
-        try {
-            $price = CarPrice::findOrFail($this->deleteThisPriceId);
-            $price->delete();
+        $price = CarPrice::findOrFail($this->deleteThisPriceId);
+        $p = $price->delete();
 
-            session()->flash('price_success', 'Price deleted successfully.');
-        } catch (\Exception $e) {
-            session()->flash('price_failed', 'Failed delete price.');
+        if ($p) {
+            $this->alert('success', 'Price Deleted!');
+            $this->showPrices($this->carPriceListId);
+        } else {
+            $this->alert('failed', 'Failed deleting Price!');
         }
-        $this->showPrices($this->carPriceListId);
     }
 
     public function confirmDeleteThisCar()
@@ -143,8 +152,14 @@ class CarIndex extends Component
         $car = Car::findOrFail($this->carPriceListId);
 
         $res = $car->delete();
-        $this->carPriceListId = null;
-        $this->deleteThisCar = false;
+
+        if ($res) {
+            $this->alert('success', 'Car Deleted!');
+            $this->carPriceListId = null;
+            $this->deleteThisCar = false;
+        } else {
+            $this->alert('failed', 'Failed deleting Car');
+        }
     }
 
     public function saveCarName()
@@ -154,11 +169,17 @@ class CarIndex extends Component
 
         if ($car) {
             $car->editInfo($car->car_model->id, $this->editCarName, 'Edited');
-            $car->save();
+            $c = $car->save();
 
-            $this->editCarField = false;
-            session()->flash('price_success', 'Car Updated successfully.');
-            $this->showPrices($this->carPriceListId);
+            if ($c) {
+                $this->alert('success', 'Updated Successfuly');
+                $this->editCarField = false;
+                $this->showPrices($this->carPriceListId);
+            } else {
+                $this->alert('failed', 'Server Error');
+            }
+        } else {
+            $this->alert('failed', 'Server Error');
         }
     }
 
@@ -173,8 +194,13 @@ class CarIndex extends Component
     {
         /** @var CarModel */
         $model = CarModel::find($this->modelId);
-        $this->editModelField = true;
-        $this->editModelName = $model->name;
+
+        if (!$model) {
+            $this->alert('failed', 'Server Error');
+        } else {
+            $this->editModelField = true;
+            $this->editModelName = $model->name;
+        }
     }
 
     // to save the edited model name
@@ -186,13 +212,16 @@ class CarIndex extends Component
         ]);
         $model = CarModel::find($this->modelId);
 
-        if ($model) {
+        if (!$model) {
+            $this->alert('failed', 'Server Error');
+        } else {
             $model->editInfo($this->editModelName, $model->brand->id);
             $model->save();
 
             $this->editModelField = false;
-            session()->flash('model_success', 'Brand Updated successfully.');
             $this->openModel($this->modelId);
+
+            $this->alert('success', 'Updated Successfuly!');
         }
     }
 
@@ -201,8 +230,13 @@ class CarIndex extends Component
     {
         /** @var Car */
         $brand = Brand::find($this->brandId);
-        $this->editBrandField = true;
-        $this->editBrandName = $brand->name;
+
+        if (!$brand) {
+            $this->alert('failed', 'Server Error');
+        } else {
+            $this->editBrandField = true;
+            $this->editBrandName = $brand->name;
+        }
     }
 
     // to save the edited brand name
@@ -219,8 +253,10 @@ class CarIndex extends Component
             $brand->save();
 
             $this->editBrandField = false;
-            session()->flash('brand_success', 'Brand Updated successfully.');
+            $this->alert('success', 'Updated Successfuly!');
             $this->openBrand($this->brandId);
+        } else {
+            $this->alert('failed', 'Server Error');
         }
     }
 
@@ -228,8 +264,12 @@ class CarIndex extends Component
     {
         /** @var Car */
         $car = Car::find($this->carPriceListId);
-        $this->editCarField = true;
-        $this->editCarName = $car->category;
+        if ($car) {
+            $this->editCarField = true;
+            $this->editCarName = $car->category;
+        } else {
+            $this->alert('failed', 'Server Error');
+        }
     }
 
     public function submit()
@@ -238,11 +278,21 @@ class CarIndex extends Component
 
         /** @var Car */
         $car = Car::findOrFail($this->carPriceListId);
-        $car->addPrice($this->newPriceYear, $this->newPrice, 'Added from dashboard');
-        session()->flash('price_success', 'Price Added successfully.');
-        $this->newPriceYear = null;
-        $this->newPrice = null;
-        $this->showPrices($this->carPriceListId);
+
+        if (!$car) {
+            $this->alert('failed', 'Server Error');
+        } else {
+            $c = $car->addPrice($this->newPriceYear, $this->newPrice, 'Added from dashboard');
+
+            if ($c) {
+                $this->alert('success', 'Price Added!');
+                $this->newPriceYear = null;
+                $this->newPrice = null;
+                $this->showPrices($this->carPriceListId);
+            } else {
+                $this->alert('failed', 'Server Error');
+            }
+        }
     }
 
     protected $queryString = [
@@ -276,18 +326,27 @@ class CarIndex extends Component
 
     public function deleteModel()
     {
-        // dd($this->deleteThisBrand);
-        CarModel::deleteModel($this->modelId);
-        session()->flash('cars_success', 'Model Deleted successfully.');
-        return redirect('/cars');
+        $c = CarModel::deleteModel($this->modelId);
+
+        if ($c) {
+            $this->alert('success', 'Model Deleted!');
+            return redirect('/cars');
+        } else {
+            $this->alert('failed', 'Server Error');
+        }
     }
 
     public function deleteBrand()
     {
         // dd($this->deleteThisBrand);
-        Brand::deleteBrand($this->brandId);
-        session()->flash('cars_success', 'Brand Deleted successfully.');
-        return redirect('/cars');
+        $b = Brand::deleteBrand($this->brandId);
+
+        if ($b) {
+            $this->alert('success', 'Brand Deleted!');
+            return redirect('/cars');
+        } else {
+            $this->alert('failed', 'Server Error');
+        }
     }
 
     public function sortByColumn($column)
@@ -309,9 +368,15 @@ class CarIndex extends Component
     public function showPrices($carId)
     {
         $this->carPriceListId = $carId;
-        $this->prices = Car::withPrices()
+        $p = Car::withPrices()
             ->with('car_model')
             ->find($this->carPriceListId);
+
+        if (!$p) {
+            $this->alert('failed', 'Server Error');
+        } else {
+            $this->prices = $p;
+        }
     }
 
     public function render()
@@ -329,7 +394,7 @@ class CarIndex extends Component
                     case 'brand':
                         $q->sortByBrand($this->sortDirection);
                         break;
-                    // Add more cases for other columns if needed
+                        // Add more cases for other columns if needed
                 }
             })
             ->whereNull('cars.deleted_at')

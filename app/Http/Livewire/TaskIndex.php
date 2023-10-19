@@ -43,16 +43,10 @@ class TaskIndex extends Component
         );
 
         if ($t) {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Task Added!',
-                'type' => 'success', // or 'failed' or 'info'
-            ]);
+            $this->alert('success', 'Task Added!');
             $this->resetFormFields();
         } else {
-            $this->dispatchBrowserEvent('toastalert', [
-                'message' => 'Error Adding Task!',
-                'type' => 'failed', // or 'failed' or 'info'
-            ]);
+            $this->alert('failed', 'Error Adding Task!');
         }
     }
 
