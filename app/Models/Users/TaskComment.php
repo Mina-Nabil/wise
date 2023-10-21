@@ -12,7 +12,7 @@ class TaskComment extends Model
 
     protected $table = 'task_comments';
     protected $fillable = [
-        "comment", "task_id"
+        "comment", "task_id", "user_id"
     ];
 
     //relations
