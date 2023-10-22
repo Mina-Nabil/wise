@@ -224,7 +224,7 @@ class Task extends Model
 
     public function scopeFromTo($query, Carbon $from, Carbon $to)
     {
-        return $query->whereBetween("due", [$from->format('Y-m-d', $to->format('Y-m-d'))]);
+        return $query->whereBetween("due", [$from->format('Y-m-d'), $to->format('Y-m-d')]);
     }
 
     /////relations

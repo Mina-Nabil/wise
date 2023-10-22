@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Users\Task;
 use App\Models\Users\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 
 class TaskIndex extends Component
@@ -68,8 +69,16 @@ class TaskIndex extends Component
         $this->filteredStatus = null;
     }
 
-    public function mount()
+    public function mount($filters)
     {
+        foreach ($filters as $filter) {
+            switch ($filter) {
+                case 'my':
+                    $this->myTasks = Auth::id();
+                    break;
+            }
+        }
+
         $this->startDate = now()->format('Y-m-d');
         $this->endDate = now()
             ->addMonths(3)
@@ -93,7 +102,7 @@ class TaskIndex extends Component
         $endDate = Carbon::parse($this->endDate);
         $users = User::all();
 
-        $tasks = Task::whereBetween('due', [$startDate, $endDate])
+        $tasks = Task::fromTo($startDate, $endDate)
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);
             })

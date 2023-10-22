@@ -16,8 +16,12 @@ class TaskComment extends Model
     ];
 
     //relations
-    public function task() : BelongsTo
+    public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

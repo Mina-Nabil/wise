@@ -12,6 +12,12 @@ class TaskController extends Controller
     {
         return view('tasks.index');
     }
+    public function my()
+    {
+        return view('tasks.index', [
+            "filters"   =>  ["my"]
+        ]);
+    }
 
     public function show($taskId)
     {

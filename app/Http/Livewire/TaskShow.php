@@ -6,10 +6,12 @@ use Livewire\Component;
 use App\Models\Users\Task;
 use App\Models\Users\User;
 use App\Models\Users\TaskComment;
-
+use App\Traits\AlertFrontEnd;
 
 class TaskShow extends Component
 {
+    use AlertFrontEnd;
+
     public $taskId;
     public $taskTitle;
     public $assignedTo;
@@ -23,7 +25,7 @@ class TaskShow extends Component
     public function mount($taskId)
     {
         $this->taskId = $taskId;
-        $task = Task::findOrFail($this->taskId);
+        $task = Task::with('comments', 'comments.user')->findOrFail($this->taskId);
         $this->taskTitle = $task->title;
         $this->assignedTo = $task->assigned_to_id;
         $this->desc = $task->desc;

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('cars')
+@section('companies')
     active
 @endsection
 

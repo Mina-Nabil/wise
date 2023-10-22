@@ -15,7 +15,7 @@
                 </div>
                 @if ($changes)
                     <button type="submit" wire:click="save"
-                        class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
+                        class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm mr-3">Save</button>
                 @endif
 
 

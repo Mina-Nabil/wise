@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('image')->nullable();
             $table->string('password');
             $table->enum('type', User::TYPES);
             $table->string('phone')->nullable();

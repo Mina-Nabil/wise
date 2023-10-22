@@ -1,10 +1,8 @@
 @extends('layouts.app')
 
-@section('tasks')
+@section('home')
     active
 @endsection
 
 @section('content')
-    <livewire:task-index :filters="$filters" />
-
 @endsection

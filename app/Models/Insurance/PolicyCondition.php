@@ -72,6 +72,7 @@ class PolicyCondition extends Model
                 'note' => $note
             ]);
             AppLog::info("Policy condition update done");
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't update policy condition");

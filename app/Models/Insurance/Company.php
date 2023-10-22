@@ -90,6 +90,14 @@ class Company extends Model
         }
     }
 
+    //attributes
+    public function getPrimaryEmailAttribute()
+    {
+        $this->loadMissing('emails');
+        $primary = $this->emails->where('is_primary', true)->first() ?? $this->emails->first();
+        return $primary?->email ?? "N/A";
+    }
+
     //scopes
     public function scopeSearchBy($query, $text)
     {

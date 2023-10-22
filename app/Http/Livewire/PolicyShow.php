@@ -93,7 +93,6 @@ class PolicyShow extends Component
     {
 
         $con = PolicyCondition::find($id);
-
         if (!$con) {
             $this->alert('failed', 'Server error!');
         } else {

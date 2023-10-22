@@ -5,11 +5,12 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
+use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
 
 class CompanyIndex extends Component
 {
-    use WithPagination;
+    use WithPagination, AlertFrontEnd;
 
     public $search;
     public $deleteInfo;
@@ -52,8 +53,7 @@ class CompanyIndex extends Component
     public function saveChanges()
     {
         $this->validate([
-            'companyInfoName' => 'required',
-            'companyInfoNote' => 'required',
+            'companyInfoName' => 'required'
         ]);
 
         $company = Company::findOrFail($this->editThisComp);
@@ -72,10 +72,10 @@ class CompanyIndex extends Component
         $this->validate([
             'newEmailType' => 'required',
             'newEmail' => 'required',
-            'newEmailFname' => 'required',
-            'newEmailLname' => 'required',
+            // 'newEmailFname' => 'required',
+            // 'newEmailLname' => 'required',
         ]);
-
+        /** @var Company */
         $company = Company::findOrFail($this->editThisComp);
 
         $a = $company->addEmail($this->newEmailType, $this->newEmail, true, $this->newEmailFname, $this->newEmailLname, null);
@@ -94,7 +94,6 @@ class CompanyIndex extends Component
     {
         $this->validate([
             'newName' => 'required',
-            'newNote' => 'required',
         ]);
 
         $c = Company::newCompany($this->newName, $this->newNote);
