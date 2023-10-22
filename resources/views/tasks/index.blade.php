@@ -5,6 +5,6 @@
 @endsection
 
 @section('content')
-    <livewire:task-index :filters="$filters" />
+    <livewire:task-index :filters="$filters ?? []" />
 
 @endsection
