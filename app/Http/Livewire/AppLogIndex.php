@@ -29,7 +29,7 @@ class AppLogIndex extends Component
         $fromDate = Carbon::parse($this->fromDate);
         $toDate = Carbon::parse($this->toDate);
 
-        $logs = AppLog::orderBy('created_at', 'desc')->fromTo($fromDate, $toDate)->paginate(20);
+        $logs = AppLog::with('user')->orderBy('created_at', 'desc')->fromTo($fromDate, $toDate)->paginate(20);
 
         return view('livewire.app-log-index', [
             'logs' => $logs,

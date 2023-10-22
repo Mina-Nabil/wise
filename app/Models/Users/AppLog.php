@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,20 +31,20 @@ class AppLog extends Model
     //static functions
     public static function info($title, $desc = null, Model $loggable = null)
     {
-        $user = Auth::user();
-        self::addLog(self::LEVEL_INFO, $title, $desc, $user?->id, $loggable);
+        $id = Auth::id();
+        self::addLog(self::LEVEL_INFO, $title, $desc, $id, $loggable);
     }
 
     public static function warning($title, $desc = null, Model $loggable = null)
     {
-        $user = Auth::user();
-        self::addLog(self::LEVEL_WARNING, $title, $desc, $user?->id, $loggable);
+        $id = Auth::id();
+        self::addLog(self::LEVEL_WARNING, $title, $desc, $id, $loggable);
     }
 
     public static function error($title, $desc = null, Model $loggable = null)
     {
-        $user = Auth::user();
-        self::addLog(self::LEVEL_ERROR, $title, $desc, $user?->id, $loggable);
+        $id = Auth::id();
+        self::addLog(self::LEVEL_ERROR, $title, $desc, $id, $loggable);
     }
 
     private static function addLog($level, $title, $desc, $user_id = null, Model $loggable = null)
@@ -84,5 +85,10 @@ class AppLog extends Model
     public function loggable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -107,8 +107,10 @@ class Task extends Model
                 "desc"      =>  $desc,
                 "due"      =>  $due ? $due->format('Y-m-d H:i') : null,
                 "status"    =>  self::STATUS_NEW,
+                "last_action_by_id" =>  $loggedInUser->id,
                 "desc"      =>  $desc,
             ]);
+            $newTask->save();
             if ($loggedInUser) {
                 $newTask->open_by()->associate($loggedInUser);
                 $newTask->comments()->create([

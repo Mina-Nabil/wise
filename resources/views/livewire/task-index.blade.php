@@ -91,7 +91,7 @@
                                 </th>
 
                                 <th scope="col" class="table-th">
-                                    Assigned to
+                                    Assignee
                                 </th>
 
                                 <th scope="col" class=" table-th ">
@@ -107,7 +107,7 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
-                                    Opened By
+                                    Opened
                                 </th>
 
                             </tr>
@@ -133,8 +133,8 @@
                                     </td>
 
                                     <td class="table-td">
-                                        <b>{{ $task->assigned_to->first_name }}
-                                            {{ $task->assigned_to->last_name }}</b>
+                                        <b>{{ $task->assigned_to?->first_name }}
+                                            {{ $task->assigned_to?->last_name }}</b>
                                     </td>
 
                                     <td class="table-td scale" data-tippy-content="{{ $task->desc }}">
@@ -183,7 +183,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        {{ $task->open_by->first_name }}
+                                        {{ $task->open_by?->first_name }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -284,31 +284,6 @@
 
                             <div class="from-group mb-3">
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    {{-- <div class="input-area">
-                                        <div wire:ignore>
-                                            <label for="basicSelect" class="form-label">Task Type</label>
-
-                                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="taskableType">
-                                                <option value="" {{ $taskableType === null ? 'selected' : '' }}>None</option>
-                                                <option value="Car" {{ $taskableType === 'Car' ? 'selected' : '' }}>Car</option>
-                                                <option value="Policy" {{ $taskableType === 'Policy' ? 'selected' : '' }}>Policy</option>
-                                            </select>
-
-                                        </div>
-                                    </div> --}}
-                                    {{-- <div class="input-area">
-                                        <div wire:ignore>
-                                            <label for="basicSelect" class="form-label">Assigned to</label>
-
-                                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="assignedTo">
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}" {{ $assignedTo == $user->id ? 'selected' : '' }}>
-                                                        {{ $user->first_name }} {{ $user->last_name }} <span class="text-sm">( {{ $user->type }} )</span>
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div> --}}
                                 </div>
                             </div>
 

@@ -5,13 +5,14 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Users\Task;
 use App\Models\Users\User;
+use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 
 class TaskIndex extends Component
 {
-    use WithPagination;
+    use WithPagination, AlertFrontEnd;
 
     public $dateRange;
     public $startDate;

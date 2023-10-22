@@ -157,6 +157,14 @@
                             </span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ url('/logs') }}" class="navItem @yield('logs')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="material-symbols:list"></iconify-icon>
+                                <span>Logs</span>
+                            </span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

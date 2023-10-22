@@ -15,11 +15,15 @@
                                 <tr>
 
                                     <th scope="col" class=" table-th ">
+                                        User
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Level
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Ttile
+                                        Title
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -35,6 +39,8 @@
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                 @foreach ($logs as $log)
                                     <tr>
+                                        <td class="table-td ">{{ $log->user?->username }}</td>
+
                                         <td class="table-td">
                                             @if ($log->level === 'info')
                                                 <span class="badge bg-info-500 text-info-500 bg-opacity-30 capitalize">{{ $log->level }}</span>
