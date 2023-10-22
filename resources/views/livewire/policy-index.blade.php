@@ -81,6 +81,8 @@
                                                 @elseif($condition->operator === 'e')=@endif
                                         </span>
                                         <span
+                                            class="badge bg-slate-900 text-white capitalize">{{ $condition->value_name }}</span>
+                                        <span
                                             class="badge bg-slate-900 text-white capitalize">{{ $condition->rate }}</span>
                                     </h5>
                                 @endforeach

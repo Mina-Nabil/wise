@@ -7,11 +7,14 @@ use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
 use App\Models\Cars\Country;
 use App\Models\Insurance\PolicyCondition;
+use App\Traits\AlertFrontEnd;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class PolicyShow extends Component
 {
+    use AlertFrontEnd;
+
     public $policyId;
 
     public $editedScope;
