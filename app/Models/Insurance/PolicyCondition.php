@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PolicyCondition extends Model
 {
-
     use HasFactory;
 
     const MORPH_TYPE = 'policy_condition';
@@ -27,13 +26,7 @@ class PolicyCondition extends Model
     const OP_LESS = 'lt';
     const OP_EQUAL = 'e';
 
-    const OPERATORS = [
-        self::OP_EQUAL,
-        self::OP_GREATER,
-        self::OP_GREATER_OR_EQUAL,
-        self::OP_LESS,
-        self::OP_LESS_OR_EQUAL
-    ];
+    const OPERATORS = [self::OP_EQUAL, self::OP_GREATER, self::OP_GREATER_OR_EQUAL, self::OP_LESS, self::OP_LESS_OR_EQUAL];
 
     const SCOPE_YEAR = 'year';
     const SCOPE_MODEL = 'car_model';
@@ -41,23 +34,16 @@ class PolicyCondition extends Model
     const SCOPE_COUNTRY = 'country';
     const SCOPE_AGE = 'age';
 
-
-    const SCOPES = [
-        self::SCOPE_AGE,
-        self::SCOPE_MODEL,
-        self::SCOPE_BRAND,
-        self::SCOPE_COUNTRY,
-        self::SCOPE_YEAR
-    ];
+    const SCOPES = [self::SCOPE_AGE, self::SCOPE_MODEL, self::SCOPE_BRAND, self::SCOPE_COUNTRY, self::SCOPE_YEAR];
 
     protected $table = 'policy_conditions';
     protected $fillable = [
         'scope', //scope of condition, car model, brand, model year - age in case of health
         'operator', //operator defining the conditions - e.g if model year (greater than) 2000
         'value', //condition limit
-        'order', //condition order between other conditions - more specific cases should be calculated first 
+        'order', //condition order between other conditions - more specific cases should be calculated first
         'rate', //condition result - end value
-        'note' // extra note for users
+        'note', // extra note for users
     ];
 
     //model functions
@@ -69,13 +55,26 @@ class PolicyCondition extends Model
                 'operator' => $op,
                 'value' => $value,
                 'rate' => $rate,
-                'note' => $note
+                'note' => $note,
             ]);
-            AppLog::info("Policy condition update done");
+            AppLog::info('Policy condition update done');
             return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't update policy condition");
+            return false;
+        }
+    }
+
+    public function deleteCondition()
+    {
+        try {
+            $this->delete();
+            AppLog::info('Policy condition deleted');
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't delete policy condition");
             return false;
         }
     }
@@ -95,7 +94,7 @@ class PolicyCondition extends Model
                         $cond->save();
                         $this->save();
                     });
-                    AppLog::info("Orders adjusted", null, $this->policy);
+                    AppLog::info('Orders adjusted', null, $this->policy);
                     return true;
                 } catch (Exception $e) {
                     report($e);
@@ -103,8 +102,9 @@ class PolicyCondition extends Model
                     return false;
                 }
             }
-            if ($cond->id == $this->id)
+            if ($cond->id == $this->id) {
                 $swap = true;
+            }
         }
         return true;
     }
@@ -124,7 +124,7 @@ class PolicyCondition extends Model
                         $cond->save();
                         $this->save();
                     });
-                    AppLog::info("Orders adjusted", null, $this->policy);
+                    AppLog::info('Orders adjusted', null, $this->policy);
                     return true;
                 } catch (Exception $e) {
                     report($e);
@@ -132,8 +132,9 @@ class PolicyCondition extends Model
                     return false;
                 }
             }
-            if ($cond->id == $this->id)
+            if ($cond->id == $this->id) {
                 $swap = true;
+            }
         }
         return true;
     }
@@ -153,15 +154,15 @@ class PolicyCondition extends Model
         switch ($this->scope) {
             case self::SCOPE_BRAND:
                 $brand = Brand::find($this->value);
-                return $brand?->name ?? "N/A";
+                return $brand?->name ?? 'N/A';
 
             case self::SCOPE_COUNTRY:
                 $country = Country::find($this->value);
-                return $country?->name ?? "N/A";
+                return $country?->name ?? 'N/A';
 
             case self::SCOPE_MODEL:
                 $model = CarModel::find($this->value);
-                return $model?->name ?? "N/A";
+                return $model?->name ?? 'N/A';
 
             default:
                 return $this->value;

@@ -72,6 +72,7 @@ class CarIndex extends Component
     {
         $this->brandId = null;
         $this->editBrandField = false;
+        $this->resetValidation();
     }
 
     public function updateThisPrice($id)
@@ -93,10 +94,18 @@ class CarIndex extends Component
 
     public function updatePrice($id)
     {
-        $this->validate([
-            'updatedYear' => 'required',
-            'updatedPrice' => 'required',
-        ]);
+        $this->validate(
+            [
+                'updatedYear' => ['regex:/^\d{4}$/', 'unique:car_prices,model_year'],
+                'updatedPrice' => 'required|numeric'
+            ],
+            [],
+            [
+                'updatedYear' => 'Year',
+                'updatedPrice' => 'Price',
+            ],
+        );
+
 
         $record = CarPrice::find($id);
         $p = $record->update([
@@ -164,6 +173,9 @@ class CarIndex extends Component
 
     public function saveCarName()
     {
+        $this->validate([
+            'editCarName' => 'required|string|unique:cars,category'
+        ]);
         /** @var Car */
         $car = Car::find($this->carPriceListId);
 
@@ -207,9 +219,17 @@ class CarIndex extends Component
     public function saveModelName()
     {
         /** @var CarModel */
-        $this->validate([
-            'editModelName' => 'required',
-        ]);
+
+        $this->validate(
+            [
+                'editModelName' => 'required|string|unique:car_models,name',
+            ],
+            [],
+            [
+                'editModelName' => 'Model Name',
+            ],
+        );
+
         $model = CarModel::find($this->modelId);
 
         if (!$model) {
@@ -243,9 +263,16 @@ class CarIndex extends Component
     public function saveBrandName()
     {
         /** @var Brand */
-        $this->validate([
-            'editBrandName' => 'required',
-        ]);
+
+        $this->validate(
+            [
+                'editBrandName' => 'required|string|unique:brands,name',
+            ],
+            [],
+            [
+                'editBrandName' => 'Brand Name',
+            ],
+        );
         $brand = Brand::find($this->brandId);
 
         if ($brand) {
@@ -274,7 +301,20 @@ class CarIndex extends Component
 
     public function submit()
     {
-        $this->validate();
+        $this->validate(
+            [
+                'newPriceYear' => ['regex:/^\d{4}$/'],
+                'newPrice' => 'required|numeric'
+            ],
+            [
+                'newPriceYear.regex' => 'The :attribute must be a valid 4-digit year.',
+                'newPrice.numeric' => 'The :attribute must be a numeric value.',
+            ],
+            [
+                'newPriceYear' => 'Year',
+                'newPrice' => 'Price',
+            ],
+        );
 
         /** @var Car */
         $car = Car::findOrFail($this->carPriceListId);
@@ -307,6 +347,7 @@ class CarIndex extends Component
         $this->editCarField = null;
         $this->deleteThisPriceId = null;
         $this->deleteThisCar = false;
+        $this->resetValidation();
     }
 
     public function confirmDeleteBand()

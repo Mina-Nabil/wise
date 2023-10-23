@@ -21,45 +21,27 @@ class AddNewCar extends Component
     public $modelName;
     public $categoryName;
 
-    public function rules()
-    {
-        return [
-            'brandName' => 'required|unique:brands,name',
-            'modelName' => 'required|unique:car_models,name',
-            'categoryName' => 'required|unique:cars,category',
-        ];
-    }
-
-    public function updatedBrandName()
-    {
-        $this->validateOnly('brandName');
-    }
-
-    public function updatedModelName()
-    {
-        $this->validateOnly('modelName');
-    }
-
-    public function updatedCategoryName()
-    {
-        $this->validateOnly('categoryName');
-    }
-
-
-
     public function saveCar()
     {
         if ($this->addNewBrand) {
-
-            $validatedData = $this->validate([
-                'brandName' => 'required|unique:brands,name',
-                'modelName' => 'required|unique:car_models,name',
-                'categoryName' => 'required|unique:cars,category',
-                'country' => 'required|exists:countries,id',
-            ]);
+            $this->validate(
+                [
+                    'brandName' => 'required|unique:brands,name',
+                    'modelName' => 'required|unique:car_models,name',
+                    'categoryName' => 'required|unique:cars,category',
+                    'country' => 'required|exists:countries,id',
+                ],
+                [],
+                [
+                    'brandName' => 'Brand Name',
+                    'modelName' => 'Model Name',
+                    'categoryName' => 'Category',
+                    'country' => 'Country',
+                ],
+            );
 
             $newBrand = Brand::newBrand($this->brandName, $this->country);
-            $newCarModel  = CarModel::newCarModel($this->modelName, $newBrand->id);
+            $newCarModel = CarModel::newCarModel($this->modelName, $newBrand->id);
             $c = Car::newCar($newCarModel->id, $this->categoryName, ' ');
 
             if ($c) {
@@ -74,12 +56,19 @@ class AddNewCar extends Component
                 ]);
             }
         } elseif ($this->addNewModel) {
-
-            $validatedData = $this->validate([
-                'modelName' => 'required|unique:car_models,name',
-                'categoryName' => 'required|unique:cars,category',
-                'brandId' => 'required|exists:brand,id',
-            ]);
+            $this->validate(
+                [
+                    'modelName' => 'required|unique:car_models,name',
+                    'categoryName' => 'required|unique:cars,category',
+                    'brandId' => 'required|exists:brand,id',
+                ],
+                [],
+                [
+                    'modelName' => 'Model Name',
+                    'categoryName' => 'Category',
+                    'brandId' => 'Brand',
+                ],
+            );
 
             $brandId = $this->brandId;
             $newCarModel = CarModel::newCarModel($this->modelName, $brandId);
@@ -97,12 +86,17 @@ class AddNewCar extends Component
                 ]);
             }
         } else {
-
-            $validatedData = $this->validate([
-                'categoryName' => 'required|unique:cars,category',
-                'selectedCarModel' => 'required|exists:car_models,id',
-
-            ]);
+            $this->validate(
+                [
+                    'categoryName' => 'required|unique:cars,category',
+                    'selectedCarModel' => 'required|exists:car_models,id',
+                ],
+                [],
+                [
+                    'categoryName' => 'Category',
+                    'selectedCarModel' => 'Model',
+                ],
+            );
 
             $modelId = $this->selectedCarModel;
             $c = Car::newCar($modelId, $this->categoryName, ' ');
@@ -120,7 +114,6 @@ class AddNewCar extends Component
             }
         }
     }
-
 
     public function updatingAddNewBrand()
     {
@@ -160,12 +153,11 @@ class AddNewCar extends Component
         // dd($this->brandId);
     }
 
-
     public function render()
     {
         $countries = Country::all();
         return view('livewire.add-new-car', [
-            'countries' => $countries
+            'countries' => $countries,
         ]);
     }
 }

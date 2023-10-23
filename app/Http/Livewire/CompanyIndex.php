@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Traits\AlertFrontEnd;
+use App\Http\Requests\UpdateCompanyRequest;
+use App\Http\Requests\AddCompanyEmailRequest;
 use Livewire\WithPagination;
 
 class CompanyIndex extends Component
@@ -26,6 +28,19 @@ class CompanyIndex extends Component
     public $newEmail;
     public $newEmailFname;
     public $newEmailLname;
+
+    public $AddCompanySec = false;
+
+    public function openAddCompany()
+    {
+        $this->AddCompanySec = true;
+    }
+
+    public function closeAddCompany()
+    {
+        $this->AddCompanySec = false;
+    }
+
 
     public function deleteThisComp($id, $name)
     {
@@ -52,9 +67,17 @@ class CompanyIndex extends Component
 
     public function saveChanges()
     {
-        $this->validate([
-            'companyInfoName' => 'required'
-        ]);
+        $this->validate(
+            [
+                'companyInfoName' => 'required|string|max:255',
+                'companyInfoNote' => 'string',
+            ],
+            [],
+            [
+                'companyInfoName' => 'Company Name',
+                'companyInfoNote' => 'Note',
+            ],
+        );
 
         $company = Company::findOrFail($this->editThisComp);
         $success = $company->editInfo($this->companyInfoName, $this->companyInfoNote);
@@ -69,12 +92,22 @@ class CompanyIndex extends Component
 
     public function addEmail()
     {
-        $this->validate([
-            'newEmailType' => 'required',
-            'newEmail' => 'required',
-            // 'newEmailFname' => 'required',
-            // 'newEmailLname' => 'required',
-        ]);
+        $this->validate(
+            [
+                'newEmailType' => 'required|string|max:255',
+                'newEmail' => 'required|email|max:255',
+                'newEmailFname' => 'required|string|max:255',
+                'newEmailLname' => 'required|string|max:255',
+            ],
+            [],
+            [
+                'newEmailType' => 'Email Type',
+                'newEmail' => 'Email Address',
+                'newEmailFname' => 'First Name',
+                'newEmailLname' => 'Last Name',
+            ],
+        );
+
         /** @var Company */
         $company = Company::findOrFail($this->editThisComp);
 
@@ -85,6 +118,10 @@ class CompanyIndex extends Component
         if ($a) {
             $this->alert('success', 'Email Added Succesfuly!');
             $this->editRow($this->editThisComp);
+            $this->newEmailType = null;
+            $this->newEmail = null;
+            $this->newEmailFname = null;
+            $this->newEmailLname = null;
         } else {
             $this->alert('failed', 'Failed to Add!');
         }
@@ -92,9 +129,17 @@ class CompanyIndex extends Component
 
     public function add()
     {
-        $this->validate([
-            'newName' => 'required',
-        ]);
+        $this->validate(
+            [
+                'newName' => 'required|string|max:255|unique:insurance_companies,name',
+                'newNote' => 'nullable|string',
+            ],
+            [],
+            [
+                'newName' => 'Company Name',
+                'newNote' => 'Note',
+            ],
+        );
 
         $c = Company::newCompany($this->newName, $this->newNote);
         if ($c) {
@@ -120,6 +165,7 @@ class CompanyIndex extends Component
             $this->alert('failed', 'Failed to delete!');
         }
     }
+
     public function render()
     {
         $types = CompanyEmail::TYPES;

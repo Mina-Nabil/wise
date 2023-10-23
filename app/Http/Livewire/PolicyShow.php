@@ -51,6 +51,13 @@ class PolicyShow extends Component
 
     public function save()
     {
+        $this->validate(
+            [
+                'policyName' => 'required|string',
+                'policyBusiness' =>  'required|in:' . implode(",", Policy::LINES_OF_BUSINESS),
+                'policyNote' => 'nullable|string'
+            ]
+        );
         $policy = Policy::find($this->policyId);
 
         $p = $policy->editInfo(
@@ -75,6 +82,22 @@ class PolicyShow extends Component
     public function closeNewConditionSection()
     {
         $this->newConditionSection = false;
+        $this->addedScope = null;
+        $this->addedOperator = null;
+        $this->addedValue = null;
+        $this->addedRate = null;
+        $this->addedNote = null;
+    }
+
+    public function deleteCondition($id)
+    {
+        $policy = PolicyCondition::find($id);
+        $p = $policy->deleteCondition();
+        if ($p) {
+            $this->alert('success', 'Condition Deleted!');
+        } else {
+            $this->alert('failed', 'Server error!');
+        }
     }
 
     public function mount()
@@ -118,8 +141,13 @@ class PolicyShow extends Component
         $this->validate([
             'editedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
             'editedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
-            'editedValue' => 'required|numeric',
+            'editedValue' => 'required',
             'editedRate' => 'required|numeric|between:0,100'
+        ], [], [
+            'editedScope' => 'Scope',
+            'editedOperator' => 'operator',
+            'editedValue' => 'Value',
+            'editedRate' => 'Rate',
         ]);
 
         /** @var PolicyCondition */
