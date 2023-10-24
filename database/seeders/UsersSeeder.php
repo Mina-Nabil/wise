@@ -15,7 +15,7 @@ class UsersSeeder extends Seeder
      */
     public function run()
     {
-        User::newUser("remon", "Mina", "Nabil", User::TYPE_ADMIN, "remon@wise");
+        User::newUser("remon", "Remon", "Saleh", User::TYPE_ADMIN, "remon@wise");
         User::newUser("minabil", "Mina", "Nabil", User::TYPE_ADMIN, "mina@wise", "mina9492@hotmail.com", "01225212014");
         User::newUser("michael", "Michael", "Hani", User::TYPE_ADMIN, "michael@wise");
     }

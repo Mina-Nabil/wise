@@ -107,14 +107,12 @@ class Task extends Model
         $notifier_id = Auth::id();
         if ($notifier_id != $this->open_by_id) {
             $this->loadMissing('open_by');
-            /** @var User */
-            $this->open_by?->pushNotification($title, $message, url("tasks/" . $this->id));
+            Log::debug($this->open_by);
+            $this->open_by?->pushNotification($title, $message, "tasks/" . $this->id);
         }
         if ($notifier_id != $this->assigned_to_id) {
             $this->loadMissing('assigned_to');
-            Log::debug($this->assigned_to);
-            /** @var User */
-            $this->assigned_to?->pushNotification($title, $message, url("tasks/" . $this->id));
+            $this->assigned_to?->pushNotification($title, $message, "tasks/" . $this->id);
         }
     }
 
