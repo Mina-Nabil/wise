@@ -143,7 +143,8 @@
                                                             {{ $condition->rate }}
                                                         </td>
 
-                                                        <td class="table-td">
+                                                        <td class="table-td"  style="word-wrap: break-word;">
+                                                            {{-- {{ Str::limit($condition->note, 50) }} --}}
                                                             {{ $condition->note }}
                                                         </td>
 
