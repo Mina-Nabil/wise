@@ -111,6 +111,9 @@ class TaskIndex extends Component
                 return $query->assignedTo(auth()->user()->id);
             })
             ->paginate(10);
+        
+        //fixing assignedTo when a user adds a test without changing the assigned to list
+        $this->assignedTo = $this->assignedTo ?? $users->first()?->id;
 
         return view('livewire.task-index', [
             'tasks' => $tasks,
