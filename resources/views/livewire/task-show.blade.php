@@ -183,7 +183,7 @@
                                         </div>
                                         <div class="flex-1">
                                             <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1`">
-                                                {{ $comment->user->username }}
+                                                {{ $comment->user?->username ?? "System" }}
                                             </div>
                                             <div
                                                 class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">

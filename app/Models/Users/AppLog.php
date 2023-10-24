@@ -75,9 +75,9 @@ class AppLog extends Model
     public function scopeFromTo(Builder $query, Carbon $start_date = null, Carbon $end_date = null)
     {
         $query->when($start_date, function ($query, $start_date) {
-            $query->where('created_at', '>=', $start_date->format('Y-m-d H:i:s'));
+            $query->whereDate('created_at', '>=', $start_date->format('Y-m-d'));
         })->when($end_date, function ($query, $end_date) {
-            $query->where('created_at', '<=', $end_date->format('Y-m-d H:i:s'));
+            $query->whereDate('created_at', '<=', $end_date->format('Y-m-d'));
         });
     }
 
