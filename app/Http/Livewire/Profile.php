@@ -96,14 +96,15 @@ class Profile extends Component
         ]);
 
         // Get the authenticated user
-        $user = User::find(auth()->user()->id);
-
+        /** @var User */
+        $user = Auth::user();
+        if($user == null) return $this->alert('failed', 'Unauthorized access');
+        
         // Check if the entered current password matches the user's actual password
         if (Hash::check($this->currentPassword, $user->password)) {
             // Current password is correct
             // Proceed to update the password
-            $user->password = Hash::make($this->newPassword);
-            $user->save();
+            $user->changePassword($this->newPassword);
             $this->alert('success', 'Updated Successfuly');
         } else {
             // Current password is incorrect

@@ -89,6 +89,7 @@ class User extends Authenticatable
             $this->password = encrypt($password);
             if ($this->save()) {
                 AppLog::info("Password updated", "New password for $this->username");
+                return true;
             } else {
                 return false;
             }
