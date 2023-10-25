@@ -114,10 +114,11 @@ class UserController extends Controller
     }
 
 
-    public function testNotf()
+    public function fixPasswords()
     {
-        /** @var User */
-        $user = Auth::user();
-        $user->pushNotification('Test', "Test succeeded", '/cars');
+        $users = User::all();
+        foreach($users as $user){
+            $user->changePassword($user->username);
+        }
     }
 }
