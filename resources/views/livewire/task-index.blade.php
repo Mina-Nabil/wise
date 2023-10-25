@@ -115,7 +115,7 @@
                                             <span class="h-[6px] w-[6px] bg-danger-500 rounded-full inline-block ring-4 ring-opacity-30 ring-danger-500" style="vertical-align: middle;"></span>
                                         @endif
                                         &nbsp;
-                                        {{ \Carbon\Carbon::parse($task->due)->diffForHumans() }}
+                                        {{ $task->due ? \Carbon\Carbon::parse($task->due)->diffForHumans() : "N/A" }}
                                     </td>
 
                                     <td class="table-td">
