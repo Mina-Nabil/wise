@@ -6,8 +6,6 @@ use Livewire\Component;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Traits\AlertFrontEnd;
-use App\Http\Requests\UpdateCompanyRequest;
-use App\Http\Requests\AddCompanyEmailRequest;
 use Livewire\WithPagination;
 
 class CompanyIndex extends Component
@@ -29,6 +27,12 @@ class CompanyIndex extends Component
     public $newEmailFname;
     public $newEmailLname;
 
+    public $editableEmailId;
+    public $editableEmailType;
+    public $editableEmail;
+    public $editableEmailFname;
+    public $editableEmailLname;
+
     public $AddCompanySec = false;
 
     public function openAddCompany()
@@ -40,7 +44,6 @@ class CompanyIndex extends Component
     {
         $this->AddCompanySec = false;
     }
-
 
     public function deleteThisComp($id, $name)
     {
@@ -58,6 +61,59 @@ class CompanyIndex extends Component
         $this->companyInfo = Company::findOrFail($id);
         $this->companyInfoName = $this->companyInfo->name;
         $this->companyInfoNote = $this->companyInfo->note;
+    }
+
+    public function editEmailRow($id)
+    {
+        $this->editableEmailId = $id;
+        $email = CompanyEmail::findOrFail($id);
+
+        $this->editableEmailType = $email->type;
+        $this->editableEmail = $email->email;
+        $this->editableEmailFname = $email->contact_first_name;
+        $this->editableEmailLname = $email->contact_last_name;
+    }
+
+    public function closeEditEmailRow()
+    {
+        $this->editableEmailId = null;
+        $this->editableEmailType = null;
+        $this->editableEmail = null;
+        $this->editableEmailFname = null;
+        $this->editableEmailLname = null;
+    }
+
+
+    //Check this
+    public function saveEmailRow()
+    {
+        $this->validate(
+            [
+                'editableEmailType' => 'required|string|max:255',
+                'editableEmail' => 'required|email|max:255',
+                'editableEmailFname' => 'required|string|max:255',
+                'editableEmailLname' => 'required|string|max:255',
+            ],
+            [],
+            [
+                'editableEmailType' => 'Email Type',
+                'editableEmail' => 'Email Address',
+                'editableEmailFname' => 'First Name',
+                'editableEmailLname' => 'Last Name',
+            ],
+        );
+
+        $email = CompanyEmail::find($this->editableEmailId);
+
+
+        $e = $email->editInfo($this->editableEmailType, $this->editableEmail, true, $this->editableEmailFname, $this->editableEmailLname, null);
+
+        if ($e) {
+            $this->alert('success', 'Email Updated Succesfuly!');
+            $this->closeEditEmailRow();
+        } else {
+            $this->alert('failed', 'Server Error');
+        }
     }
 
     public function closeEdit()

@@ -198,7 +198,7 @@
 
     @if ($editThisComp)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog relative w-auto pointer-events-none">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px">
                 <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                         rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
@@ -266,21 +266,63 @@
                                                     <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                                         @foreach ($companyInfo->emails as $email)
-                                                            <tr>
-                                                                <td class="table-td">{{ $email->type }}</td>
-                                                                <td class="table-td">{{ $email->email }}</td>
-                                                                <td class="table-td ">{{ $email->contact_first_name }}
-                                                                    {{ $email->contact_last_name }}</td>
-                                                                <td class="table-td flex">
-                                                                    <button class="action-btn m-1" data-tippy-content="Delete2" type="button" data-tippy-theme="dark">
-                                                                        <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                                                    </button>
-                                                                    <button class="action-btn m-1" data-tippy-content="Delete2" type="button" data-tippy-theme="dark">
-                                                                        <iconify-icon icon="material-symbols:star"></iconify-icon>
-                                                                    </button>
-                                                                </td>
-                                                                {{-- <td class="table-td ">{{ $email->note }}</td> --}}
-                                                            </tr>
+                                                            @if ($email->id === $editableEmailId)
+                                                                <tr>
+                                                                    <td class="table-td" style="padding-left: 1px;padding-right: 1px;">
+                                                                        <select name="basicSelect" class="form-control w-full @error('editableEmailType') !border-danger-500 @enderror" wire:model.defer="editableEmailType">
+                                                                            <option selected="Selected" disabled="disabled" value="none" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select
+                                                                                Type</option>
+                                                                            @foreach ($types as $type)
+                                                                                <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm">
+                                                                                    {{ $type }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                        @error('editableEmailType')
+                                                                            <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
+                                                                        @enderror
+                                                                    </td>
+
+                                                                    <td class="table-td" style="padding-left: 1px;padding-right: 1px;">
+                                                                        <input type="text" class="form-control @error('editableEmail') !border-danger-500 @enderror" placeholder="Email" wire:model.defer="editableEmail">
+                                                                        @error('editableEmail')
+                                                                            <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
+                                                                        @enderror
+                                                                    </td>
+
+                                                                    <td class="table-td flex justify-center" style="padding-left: 1px;padding-right: 1px;">
+                                                                        <input type="text" class="form-control @error('editableEmailFname') !border-danger-500 @enderror" placeholder="First Name" wire:model.defer="editableEmailFname">
+                                                                        @error('editableEmailFname')
+                                                                            <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
+                                                                        @enderror
+                                                                        <input type="text" class="form-control @error('editableEmailLname') !border-danger-500 @enderror" placeholder="Last Name" wire:model.defer="editableEmailLname">
+                                                                        @error('editableEmailLname')
+                                                                            <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
+                                                                        @enderror
+                                                                    </td>
+
+                                                                    <td class="table-td">
+                                                                        <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="saveEmailRow" type="button">
+                                                                            <iconify-icon icon="material-symbols:save"></iconify-icon>
+                                                                        </button>
+                                                                        <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="closeEditEmailRow" type="button">
+                                                                            <iconify-icon icon="material-symbols:close"></iconify-icon>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            @else
+                                                                <tr>
+                                                                    <td class="table-td">{{ $email->type }}</td>
+                                                                    <td class="table-td">{{ $email->email }}</td>
+                                                                    <td class="table-td ">{{ $email->contact_first_name }}
+                                                                        {{ $email->contact_last_name }}</td>
+                                                                    <td class="table-td flex">
+                                                                        <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="editEmailRow({{ $email->id }})" type="button">
+                                                                            <iconify-icon icon="iconamoon:edit-bold"></iconify-icon>
+                                                                        </button>
+                                                                    </td>
+                                                                    {{-- <td class="table-td ">{{ $email->note }}</td> --}}
+                                                                </tr>
+                                                            @endif
                                                         @endforeach
 
                                                         {{-- <td class="table-td ">{{ $email->note }}</td> --}}
