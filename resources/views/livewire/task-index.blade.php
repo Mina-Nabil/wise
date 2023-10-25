@@ -111,7 +111,7 @@
                                     </td>
 
                                     <td class="table-td" style="vertical-align: middle;">
-                                        @if (\Carbon\Carbon::parse($task->due)->isPast())
+                                        @if ($task->due && \Carbon\Carbon::parse($task->due)->isPast())
                                             <span class="h-[6px] w-[6px] bg-danger-500 rounded-full inline-block ring-4 ring-opacity-30 ring-danger-500" style="vertical-align: middle;"></span>
                                         @endif
                                         &nbsp;
