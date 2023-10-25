@@ -346,7 +346,7 @@
                         <div class="flex justify-between items-center h-full">
                             <div
                                 class="flex items-center md:space-x-4 space-x-2 xl:space-x-0 rtl:space-x-reverse vertical-box">
-                                <a href="index.html" class="mobile-logo xl:hidden inline-block">
+                                <a href="{{url('/')}}" class="mobile-logo xl:hidden inline-block">
                                     <img src="{{ asset('assets/images/logo/logo-c.svg') }}" class="black_logo"
                                         alt="logo">
                                     <img src="{{ asset('assets/images/logo/logo-c-white.svg') }}" class="white_logo"
