@@ -116,8 +116,8 @@ class UserController extends Controller
 
     public function fixPasswords()
     {
-        $users = User::all();
-        foreach($users as $user){
+        $users = User::whereIn("id", [2, 4, 7])->get();
+        foreach ($users as $user) {
             $user->changePassword($user->username);
         }
     }
