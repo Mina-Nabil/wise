@@ -31,6 +31,12 @@ class TaskIndex extends Component
         'endDate' => ['except' => ''],
     ];
 
+    public function redirectToShowPage($id)
+    {
+        return redirect(route('tasks.show', ['id' => $id]));
+    }
+
+
     public function createTask()
     {
         // Call the newTask method from your model
@@ -111,7 +117,7 @@ class TaskIndex extends Component
                 return $query->assignedTo(auth()->user()->id);
             })
             ->paginate(10);
-        
+
         //fixing assignedTo when a user adds a test without changing the assigned to list
         $this->assignedTo = $this->assignedTo ?? $users->first()?->id;
 
