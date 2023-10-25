@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'last_action_by_id');
             $table->dateTime('due')->nullable();
             $table->enum("status", Task::STATUSES);
+            $table->softDeletes();
             $table->timestamps();
         });
 

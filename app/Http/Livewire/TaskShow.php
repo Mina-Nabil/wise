@@ -96,6 +96,17 @@ class TaskShow extends Component
         }
     }
 
+    public function delete()
+    {
+        /** @var Task */
+        $task = Task::findOrFail($this->taskId);
+        $res = $task->delete();
+        if ($res) {
+            $this->alert('success', 'Task deleted');
+            return redirect()->to('/tasks');
+        } else $this->alert('failed', 'Task deletion failed');
+    }
+
 
     public function render()
     {
