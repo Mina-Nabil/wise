@@ -10,17 +10,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CompanyEmail extends Model
 {
-    CONST MORPH_TYPE = 'company_email';
+    const MORPH_TYPE = 'company_email';
 
     use HasFactory;
 
-    CONST TYPE_INFO = 'Info';
-    CONST TYPE_FINANCE = 'Finance';
-    CONST TYPE_OPERATIONS = 'Operations';
-    CONST TYPE_SALES = 'Sales';
-    CONST TYPE_SUPPORT = 'Support';
+    const TYPE_INFO = 'Info';
+    const TYPE_FINANCE = 'Finance';
+    const TYPE_OPERATIONS = 'Operations';
+    const TYPE_SALES = 'Sales';
+    const TYPE_SUPPORT = 'Support';
 
-    CONST TYPES = [
+    const TYPES = [
         self::TYPE_INFO,
         self::TYPE_FINANCE,
         self::TYPE_OPERATIONS,
@@ -39,8 +39,39 @@ class CompanyEmail extends Model
     ];
 
     //model functions
+    public function editInfo(
+        $type,
+        $email,
+        $is_primary,
+        $first_name = null,
+        $last_name = null,
+        $note = null
+    ): bool {
+        try {
+            $this->update([
+                "type"  => $type,
+                "email"  => $email,
+                "contact_first_name"  => $first_name,
+                "contact_last_name"  => $last_name,
+                "is_primary"  => $is_primary,
+                "note"  => $note,
+            ]);
+            if ($is_primary) {
+                self::where('company_id', $this->company_id)->whereNot("id", $email->id)->update(
+                    ["is_primary"    =>  0]
+                );
+            }
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Toggle Email failed", $e->getMessage());
+            return false;
+        }
+    }
+
     public function toggleEmail(): bool
     {
+
         $this->is_primary = $this->is_primary ? 0 : 1;
         try {
             return $this->save();
