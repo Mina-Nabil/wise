@@ -110,10 +110,10 @@ class TaskIndex extends Component
         $users = User::all();
 
         $loggedInUser = Auth::user();
-        $showOnlyMine = false;
-        if ($loggedInUser->id != 1 || $loggedInUser->id != 10 || $loggedInUser->id != 11) {
+        $showOnlyMine = true;
+        if ($loggedInUser->id == 1 || $loggedInUser->id == 10 || $loggedInUser->id == 11) {
             //remon or mina or michael can access all 
-            $showOnlyMine = true;
+            $showOnlyMine = false;
         }
 
         $tasks = Task::fromTo($startDate, $endDate)
