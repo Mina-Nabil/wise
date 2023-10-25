@@ -57,7 +57,7 @@ class CompanyEmail extends Model
                 "note"  => $note,
             ]);
             if ($is_primary) {
-                self::where('company_id', $this->company_id)->whereNot("id", $email->id)->update(
+                self::where('company_id', $this->company_id)->whereNot("id", $this->id)->update(
                     ["is_primary"    =>  0]
                 );
             }
