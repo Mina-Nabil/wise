@@ -133,8 +133,8 @@ class Task extends Model
             ]);
             $newTask->save();
 
-            if (is_a($loggedInUser, User::class)) {
-                $newTask->open_by()->associate($assign_to_id);
+            if ($loggedInUser) {
+                $newTask->open_by()->associate($loggedInUser);
                 $newTask->comments()->create([
                     "comment"   =>  "Task created by $loggedInUser->username"
                 ]);

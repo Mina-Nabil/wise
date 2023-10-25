@@ -96,7 +96,7 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
-                                    Opened
+                                    Creator
                                 </th>
 
                             </tr>
