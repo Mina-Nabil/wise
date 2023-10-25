@@ -35,7 +35,7 @@ class HomeController extends Controller
 
         $res = User::login(...$request->validated());
         if ($res === true) {
-            return redirect('/cars');
+            return redirect('/');
         } else {
             return redirect('login')->with(['alert_msg' => $res]);
         }
