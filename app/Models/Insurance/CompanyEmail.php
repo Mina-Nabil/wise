@@ -69,19 +69,6 @@ class CompanyEmail extends Model
         }
     }
 
-    public function toggleEmail(): bool
-    {
-
-        $this->is_primary = $this->is_primary ? 0 : 1;
-        try {
-            return $this->save();
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Toggle Email failed", $e->getMessage());
-            return false;
-        }
-    }
-
     ///relations
     public function company(): BelongsTo
     {
