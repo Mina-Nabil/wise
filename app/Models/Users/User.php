@@ -86,7 +86,7 @@ class User extends Authenticatable
     public function changePassword($password): bool
     {
         try {
-            $this->password = encrypt($password);
+            $this->password = bcrypt($password);
             if ($this->save()) {
                 AppLog::info("Password updated", "New password for $this->username");
                 return true;

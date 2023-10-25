@@ -109,14 +109,20 @@ class TaskIndex extends Component
         $endDate = Carbon::parse($this->endDate);
         $users = User::all();
 
+        $loggedInUser = Auth::user();
+        $showOnlyMine = true;
+        if ($loggedInUser->id == 1 || $loggedInUser->id == 10 || $loggedInUser->id == 11) {
+            //remon or mina or michael can access all 
+            $showOnlyMine = false;
+        }
+
         $tasks = Task::fromTo($startDate, $endDate)
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);
             })
-            ->when($this->myTasks, function ($query) {
+            ->when($this->myTasks || $showOnlyMine, function ($query) {
                 return $query->assignedTo(auth()->user()->id);
-            })
-            ->paginate(10);
+            })->paginate(10);
 
         //fixing assignedTo when a user adds a test without changing the assigned to list
         $this->assignedTo = $this->assignedTo ?? $users->first()?->id;
