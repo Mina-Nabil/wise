@@ -9,13 +9,12 @@
 
                     </h4>
                 </div>
-                <div class="flex ">
-                    @if ($changes)
-                        <button type="submit" wire:click="save" class="btn mr-3 inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
-                    @endif
+                @if ($changes)
+                    <button type="submit" wire:click="save" class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
+                @endif
+                @if (auth()->user()->id == 1)
                     <button type="submit" wire:click="delete" class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
-
-                </div>
+                @endif
 
 
             </div>
