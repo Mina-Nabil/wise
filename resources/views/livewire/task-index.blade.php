@@ -11,9 +11,10 @@
                 </div>
             @endif
         </div>
-        <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
 
-            <button data-bs-toggle="modal" data-bs-target="#successModal" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+
+        <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+            <button wire:click="openNewTask" data-bs-toggle="modal" data-bs-target="#successModal" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                 <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
                 Add Task
             </button>
@@ -115,7 +116,20 @@
                                             <span class="h-[6px] w-[6px] bg-danger-500 rounded-full inline-block ring-4 ring-opacity-30 ring-danger-500" style="vertical-align: middle;"></span>
                                         @endif
                                         &nbsp;
-                                        {{ $task->due ? \Carbon\Carbon::parse($task->due)->diffForHumans() : "N/A" }}
+                                        {{ $task->due ? \Carbon\Carbon::parse($task->due)->diffForHumans() : 'N/A' }}
+
+                                        @php
+                                            $currentDate = now();
+                                            $startDate = $task->created_at;
+                                            $dueDate = $task->due;
+                                            $totalDuration = $startDate->diffInSeconds($dueDate);
+                                            $elapsedDuration = $startDate->diffInSeconds($currentDate);
+                                            $percentagePassed = ($elapsedDuration / $totalDuration) * 100;
+                                        @endphp
+
+                                        <div class="w-full bg-slate-200 h-2 m-1 rounded-xl overflow-hidden">
+                                            <div class="@if ($percentagePassed >= 0 && $percentagePassed < 30) bg-success-500 @elseif($percentagePassed >= 30 && $percentagePassed < 70) bg-warning-500 @else bg-danger-500 @endif h-full rounded-xl" style="width: {{ number_format($percentagePassed, 0) }}%"></div>
+                                        </div>
                                     </td>
 
                                     <td class="table-td">
@@ -123,7 +137,7 @@
                                             {{ $task->assigned_to?->last_name }}</b>
                                     </td>
 
-                                    <td class="table-td scale" data-tippy-content="{{ $task->desc }}">
+                                    <td wire:ignore class="table-td scale" data-tippy-content="{{ $task->desc }}">
                                         {{ $task->title }}
                                     </td>
 
@@ -198,7 +212,7 @@
         </div>
     </div>
 
-    <div wire:ignore class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" style="display: {{ $showNewTask ? 'block' : 'none' }} " tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog relative w-auto pointer-events-none">
             <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                         rounded-md outline-none text-current">
@@ -208,7 +222,7 @@
                         <h3 class="text-base font-medium text-white dark:text-white capitalize">
                             New Task
                         </h3>
-                        <button type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                        <button wire:click="closeNewTask" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                     dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
@@ -224,26 +238,36 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Title</label>
-                                        <input type="text" class="form-control" value="Bill" placeholder="Title" wire:model="taskTitle">
+                                        <input type="text" class="form-control @error('taskTitle') !border-danger-500 @enderror" value="Bill" placeholder="Title" wire:model.defer="taskTitle">
+                                        @error('taskTitle')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                     <div class="input-area">
                                         <div wire:ignore>
                                             <label for="basicSelect" class="form-label">Assigned to</label>
 
-                                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="assignedTo">
+
+                                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('assignedTo') !border-danger-500 @enderror" wire:model.defer="assignedTo">
                                                 @foreach ($users as $user)
                                                     <option value="{{ $user->id }}" {{ $assignedTo == $user->id ? 'selected' : '' }}>
                                                         {{ $user->first_name }} {{ $user->last_name }} <span class="text-sm">( {{ $user->type }} )</span>
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            @error('assignedTo')
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="input-area mb-3">
                                 <label for="name" class="form-label">Description</label>
-                                <textarea class="form-control" placeholder="Write Description" wire:model="desc"></textarea>
+                                <textarea class="form-control @error('desc') !border-danger-500 @enderror" placeholder="Write Description" wire:model.defer="desc"></textarea>
+                                @error('desc')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <div class="from-group mb-3">
@@ -251,20 +275,21 @@
                                 </div>
                             </div>
 
-                            <div class="input-area mb-3">
-                                <label for="name" class="form-label">Status</label>
-                                <select name="taskStatus" class="form-control w-full mt-2" wire:model="taskStatus">
-                                    @foreach ($statuses as $status)
-                                        <option value="{{ $status }}">
-                                            {{ ucfirst(str_replace('_', ' ', $status)) }}</option>
-                                    @endforeach
-                                </select>
-
-                            </div>
-
-                            <div class="input-area mb-3">
-                                <label for="time-date-picker" class="form-label">Due</label>
-                                <input class="form-control py-2 flatpickr flatpickr-input active" id="time-date-picker" data-enable-time="true" value="" type="text" wire:model="due">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                <div class="input-area mb-3">
+                                    <label for="time-date-picker" class="form-label">Due Date</label>
+                                    <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror" id="default-picker" value="" type="text" wire:model.defer="dueDate" autocomplete="off">
+                                    @error('dueDate')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="input-area mb-3">
+                                    <label for="time-date-picker" class="form-label">Time </label>
+                                    <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off">
+                                    @error('dueTime')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
 
                         </div>
@@ -278,4 +303,17 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('livewire:load', function() {
+            $('#demo').daterangepicker({
+                "singleDatePicker": true,
+                "timePicker": true,
+                "startDate": "10/20/2023",
+                "endDate": "10/26/2023",
+                "drops": "up"
+            }, function(start, end, label) {
+                console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+            });
+        });
+    </script>
 </div>

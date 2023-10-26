@@ -7,6 +7,7 @@ use App\Models\Users\Task;
 use App\Models\Users\User;
 use App\Models\Users\TaskComment;
 use App\Traits\AlertFrontEnd;
+use Carbon\Carbon;
 
 class TaskShow extends Component
 {
@@ -17,7 +18,8 @@ class TaskShow extends Component
     public $assignedTo;
     public $desc;
     public $taskStatus;
-    public $due;
+    public $dueDate;
+    public $dueTime;
     public $newComment;
     public $taskableType;
     public $changes = false;
@@ -30,7 +32,11 @@ class TaskShow extends Component
         $this->assignedTo = $task->assigned_to_id;
         $this->desc = $task->desc;
         $this->taskStatus = $task->status;
-        $this->due = $task->due;
+
+        $createdAt = Carbon::parse($task->due);
+        $this->dueDate = $createdAt->toDateString();
+        $this->dueTime = $createdAt->format('H:i');
+
         $this->taskableType = $task->taskable_type;
     }
 
@@ -51,7 +57,11 @@ class TaskShow extends Component
     {
         $this->changes = true;
     }
-    public function updatedDue()
+    public function updatedDueDate()
+    {
+        $this->changes = true;
+    }
+    public function updatedDueTime()
     {
         $this->changes = true;
     }
@@ -78,12 +88,32 @@ class TaskShow extends Component
 
     public function save()
     {
+        $this->validate([
+            'taskTitle' => 'required|string|max:255',
+            'assignedTo' => 'required|integer|exists:users,id',
+            'desc' => 'nullable|string',
+            'dueDate' => 'required|date',
+            'dueTime' => 'required|date_format:H:i',
+            'taskStatus' => 'required|in:' . implode(',', Task::STATUSES),
+        ], [], [
+            'taskTitle' => 'Title',
+            'assignedTo' => 'Assignee',
+            'desc' => 'Description',
+            'dueDate' => 'Date',
+            'dueTime' => 'Time',
+            'taskStatus' => 'Status',
+        ]);
+
+        $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
+        $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
+        $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
+
         $task = new Task();
         $t = $task->editTask(
             $this->taskId,
             $this->taskTitle,
             $this->assignedTo,
-            $this->due,
+            $combinedDateTime,
             $this->desc,
             $this->taskStatus
         );
@@ -124,7 +154,8 @@ class TaskShow extends Component
             'assignedTo' => $this->assignedTo,
             'desc' => $this->desc,
             'taskStatus' => $this->taskStatus,
-            'due' => $this->due,
+            'dueDate' => $this->dueDate,
+            'dueTime' => $this->dueTime,
             'statuses' => $statuses,
             'users' => $users,
             'taskableType' => $this->taskableType,

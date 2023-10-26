@@ -23,8 +23,20 @@ class TaskIndex extends Component
     public $taskTitle;
     public $assignedTo;
     public $desc;
-    public $taskStatus;
-    public $due;
+    public $dueDate;
+    public $dueTime;
+
+    public $showNewTask = false;
+
+    public function openNewTask()
+    {
+        $this->showNewTask = true;
+    }
+
+    public function closeNewTask()
+    {
+        $this->showNewTask = false;
+    }
 
     protected $queryString = [
         'startDate' => ['except' => ''],
@@ -36,19 +48,31 @@ class TaskIndex extends Component
         return redirect(route('tasks.show', ['id' => $id]));
     }
 
-
     public function createTask()
     {
-        // Call the newTask method from your model
-        $due = $this->due ? Carbon::parse($this->due) : null;
 
-        $t = Task::newTask(
-            $this->taskTitle,
-            null,
-            $this->assignedTo,
-            $due,
-            $this->desc
-        );
+
+
+        $this->validate([
+            'taskTitle' => 'required|string|max:255',
+            'assignedTo' => 'required|integer|exists:users,id',
+            'desc' => 'nullable|string',
+            'dueDate' => 'required|date',
+            'dueTime' => 'required|date_format:H:i',
+        ], [], [
+            'taskTitle' => 'Title',
+            'assignedTo' => 'Assignee',
+            'desc' => 'Description',
+            'dueDate' => 'Date',
+            'dueTime' => 'Time',
+        ]);
+
+        $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
+        $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
+        $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
+
+
+        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc);
 
         if ($t) {
             $this->alert('success', 'Task Added!');
@@ -63,8 +87,8 @@ class TaskIndex extends Component
         $this->taskTitle = null;
         $this->assignedTo = null;
         $this->desc = null;
-        $this->taskStatus = null;
-        $this->due = null;
+        $this->dueDate = null;
+        $this->dueTime = null;
     }
     public function filterByStatus($status)
     {
@@ -112,7 +136,7 @@ class TaskIndex extends Component
         $loggedInUser = Auth::user();
         $showOnlyMine = true;
         if ($loggedInUser->id == 1 || $loggedInUser->id == 10 || $loggedInUser->id == 11) {
-            //remon or mina or michael can access all 
+            //remon or mina or michael can access all
             $showOnlyMine = false;
         }
 
@@ -122,7 +146,8 @@ class TaskIndex extends Component
             })
             ->when($this->myTasks || $showOnlyMine, function ($query) {
                 return $query->assignedTo(auth()->user()->id);
-            })->paginate(10);
+            })
+            ->paginate(10);
 
         //fixing assignedTo when a user adds a test without changing the assigned to list
         $this->assignedTo = $this->assignedTo ?? $users->first()?->id;
