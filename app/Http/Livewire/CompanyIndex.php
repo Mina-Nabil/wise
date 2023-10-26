@@ -29,15 +29,43 @@ class CompanyIndex extends Component
 
     public $editableEmailId;
     public $editableEmailType;
+    public $editableEmailIsPrim = false;
     public $editableEmail;
     public $editableEmailFname;
     public $editableEmailLname;
+
+    public $deleteThisEmail;
 
     public $AddCompanySec = false;
 
     public function openAddCompany()
     {
         $this->AddCompanySec = true;
+    }
+
+    public function declineDeleteEmail()
+    {
+        $this->deleteThisEmail = null;
+    }
+
+
+    public function deleteEmail()
+    {
+        $email = CompanyEmail::find($this->deleteThisEmail);
+
+        if ($email) {
+            $email->delete();
+            $this->alert('success', 'Email Deleted Successfuly!');
+            $this->deleteThisEmail = null;
+            $this->editRow($this->editThisComp);
+        } else {
+            $this->alert('failed', 'Server Error');
+        }
+    }
+
+    public function confirmDelEmail($id)
+    {
+        $this->deleteThisEmail = $id;
     }
 
     public function closeAddCompany()
@@ -84,7 +112,6 @@ class CompanyIndex extends Component
     }
 
 
-    //Check this
     public function saveEmailRow()
     {
         $this->validate(
@@ -105,12 +132,16 @@ class CompanyIndex extends Component
 
         $email = CompanyEmail::find($this->editableEmailId);
 
+        if ($this->editableEmailIsPrim === 'primary') {
+            $this->editableEmailIsPrim = true;
+        };
 
-        $e = $email->editInfo($this->editableEmailType, $this->editableEmail, true, $this->editableEmailFname, $this->editableEmailLname, null);
+        $e = $email->editInfo($this->editableEmailType, $this->editableEmail, $this->editableEmailIsPrim, $this->editableEmailFname, $this->editableEmailLname, null);
 
         if ($e) {
             $this->alert('success', 'Email Updated Succesfuly!');
             $this->closeEditEmailRow();
+            $this->editRow($this->editThisComp);
         } else {
             $this->alert('failed', 'Server Error');
         }
