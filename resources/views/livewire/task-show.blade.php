@@ -15,10 +15,10 @@
                     <button type="submit" wire:click="save"
                         class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
                 @endif
-                <button type="submit" wire:click="delete"
-                    class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
-
-
+                @if (auth()->user()->id == 1)
+                    <button type="submit" wire:click="delete"
+                        class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
+                @endif
             </div>
             @if (session()->has('success'))
                 <div
