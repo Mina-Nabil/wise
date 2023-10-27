@@ -12,6 +12,7 @@ class TaskShow extends Component
 {
     use AlertFrontEnd;
 
+    public $task;
     public $taskId;
     public $taskTitle;
     public $assignedTo;
@@ -32,6 +33,7 @@ class TaskShow extends Component
         $this->taskStatus = $task->status;
         $this->due = $task->due;
         $this->taskableType = $task->taskable_type;
+        $this->task = $task;
     }
 
     public function updatedTaskTitle()
