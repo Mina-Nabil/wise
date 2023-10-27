@@ -8,6 +8,7 @@ use App\Models\Users\User;
 use App\Models\Users\TaskComment;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class TaskShow extends Component
 {
@@ -111,8 +112,8 @@ class TaskShow extends Component
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
 
-        // $file = $this->file->store(Task::FILES_DIRECTORY, 's3');
-        // $s3Url = Storage::disk('s3')->url($file);
+        $file = $this->file->store(Task::FILES_DIRECTORY, 's3');
+        $s3Url = Storage::disk('s3')->url($file);
 
         $res = $this->task->editTask(
             $this->taskId,

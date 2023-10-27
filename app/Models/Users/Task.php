@@ -18,7 +18,7 @@ class Task extends Model
     use SoftDeletes;
 
     const MORPH_TYPE = 'task';
-
+    const FILES_DIRECTORY = 'tasks/';
     use HasFactory;
 
     protected $fillable = [
