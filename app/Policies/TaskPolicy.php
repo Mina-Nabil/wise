@@ -65,7 +65,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task)
     {
-        return $user->id == 1 || $user->id == 10 || $user->id == 11;
+        return $user->id == 1 || $user->id == 11;
     }
 
 }
