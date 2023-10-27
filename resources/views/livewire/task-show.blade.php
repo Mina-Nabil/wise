@@ -12,18 +12,10 @@
                 @if ($changes)
                     <button type="submit" wire:click="save" class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
                 @endif
-<<<<<<< HEAD
                 @can('delete', $task)
                     <button type="submit" wire:click="delete"
                         class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
                 @endcan
-=======
-                @if (auth()->user()->id == 1)
-                    <button type="submit" wire:click="delete" class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
-                @endif
-
-
->>>>>>> dfd48d012a9da01d2495682913bda197423628b9
             </div>
             @if (session()->has('success'))
                 <div class="py-[18px] px-6 font-normal text-sm rounded-md bg-success-500 text-white animate-\[fade-out_350ms_ease-in-out\] alert mb-2">
