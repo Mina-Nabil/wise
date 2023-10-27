@@ -13,7 +13,7 @@ class TaskShow extends Component
 {
     use AlertFrontEnd;
 
-    public $task;
+    public Task $task;
     public $taskId;
     public $taskTitle;
     public $assignedTo;
@@ -28,6 +28,7 @@ class TaskShow extends Component
     public function mount($taskId)
     {
         $this->taskId = $taskId;
+        /** @var Task */
         $task = Task::with('comments', 'comments.user')->findOrFail($this->taskId);
         $this->taskTitle = $task->title;
         $this->assignedTo = $task->assigned_to_id;
@@ -110,17 +111,20 @@ class TaskShow extends Component
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
 
-        $task = new Task();
-        $t = $task->editTask(
+        // $file = $this->file->store(Task::FILES_DIRECTORY, 's3');
+        // $s3Url = Storage::disk('s3')->url($file);
+
+        $res = $this->task->editTask(
             $this->taskId,
             $this->taskTitle,
             $this->assignedTo,
             $combinedDateTime,
             $this->desc,
-            $this->taskStatus
+            $this->taskStatus,
+            // $s3Url
         );
 
-        if ($t) {
+        if ($res) {
             $this->alert('success', 'Task Updated Successfuly!');
             $this->changes = false;
         } else {

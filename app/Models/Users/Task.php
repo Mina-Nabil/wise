@@ -30,6 +30,7 @@ class Task extends Model
         'assigned_to_id',
         'last_action_by_id',
         'due',
+        'file_url',
         'status'
 
     ];
@@ -108,7 +109,6 @@ class Task extends Model
         $notifier_id = Auth::id();
         if ($notifier_id != $this->open_by_id) {
             $this->loadMissing('open_by');
-            Log::debug($this->open_by);
             $this->open_by?->pushNotification($title, $message, "tasks/" . $this->id);
         }
         if ($notifier_id != $this->assigned_to_id) {
@@ -118,7 +118,7 @@ class Task extends Model
     }
 
     /////static functions
-    public static function newTask($title, Model $taskable = null, $assign_to_id = null, Carbon $due = null, $desc = null)
+    public static function newTask($title, Model $taskable = null, $assign_to_id = null, Carbon $due = null, $desc = null, $file_url = null)
     {
         try {
             $loggedInUser = Auth::user();
@@ -130,6 +130,7 @@ class Task extends Model
                 "last_action_by_id" =>  $loggedInUser->id,
                 "open_by_id" =>  $loggedInUser->id,
                 "desc"      =>  $desc,
+                "file_url"  =>  $file_url
             ]);
             $newTask->save();
 
@@ -162,37 +163,33 @@ class Task extends Model
         }
     }
 
-    public function editTask($taskId, $title, $assignToId, $due, $desc, $status)
+    public function editTask($title, $assignToId, $due, $desc, $status, $file_url = null)
     {
         try {
             $loggedInUser = Auth::user();
-            $task = self::find($taskId);
 
-            if (!$task) {
-                return false;
-            }
-
-            $task->title = $title;
-            $task->desc = $desc;
+            $this->title = $title;
+            $this->desc = $desc;
             if (is_string($due)) {
                 $due = Carbon::parse($due);
             }
-            $task->due = $due ? $due->format('Y-m-d H:i') : null;
-            $task->assigned_to()->associate($assignToId);
-            $task->status = $status;
+            $this->due = $due ? $due->format('Y-m-d H:i') : null;
+            $this->assigned_to()->associate($assignToId);
+            $this->status = $status;
             // You can update other properties as needed
-
-            $task->save();
+            if ($file_url) {
+                $this->file_url = $file_url;
+            }
+            $this->save();
 
             // You can add comments or log the edit action if necessary
-            $task->comments()->create([
+            $this->comments()->create([
                 "comment" => "Task edited by $loggedInUser->username",
             ]);
 
             AppLog::info("Task edited by $loggedInUser->username");
             $this->sendTaskNotifications("Task edit", "Task edited by $loggedInUser->username");
-
-            return $task;
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't edit task", $e->getMessage());
