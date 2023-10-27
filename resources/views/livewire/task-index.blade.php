@@ -56,7 +56,8 @@
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
             <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                 <input type="checkbox" checked class="sr-only peer" wire:model="myTasks">
-                <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                <div
+                    class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                 </div>
                 <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">Me</span>
                 <span class="absolute right-2 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">All</span>
@@ -270,10 +271,6 @@
                                 @enderror
                             </div>
 
-                            <div class="from-group mb-3">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                </div>
-                            </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                 <div class="input-area mb-3">
@@ -290,6 +287,28 @@
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
+                            </div>
+
+                            <div class="card-text h-full space-y-6">
+                                <div class="input-area">
+                                    <div class="filePreview">
+                                        <label>
+                                            <label for="time-date-picker" class="form-label">File</label>
+                                            <input type="file" class="w-full hidden" name="basic" wire:model="file" />
+                                            <span wire:ignore class="w-full h-[40px] file-control flex items-center custom-class @error('file') !border-danger-500 @enderror">
+                                                <span class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                                                    <span id="placeholder" class="text-slate-400">Choose a file or drop it here...</span>
+                                                </span>
+                                                <span
+                                                    class="file-name flex-none cursor-pointer border-l px-4 border-slate-200 dark:border-slate-700 h-full inline-flex items-center bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm rounded-tr rounded-br font-normal">Browse</span>
+                                            </span>
+                                        </label>
+                                        @error('file')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror   
+                                    </div>
+                                </div>
+                                
                             </div>
 
                         </div>

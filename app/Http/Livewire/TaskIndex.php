@@ -9,10 +9,11 @@ use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 
 class TaskIndex extends Component
 {
-    use WithPagination, AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, WithFileUploads;
 
     public $dateRange;
     public $startDate;
@@ -25,6 +26,7 @@ class TaskIndex extends Component
     public $desc;
     public $dueDate;
     public $dueTime;
+    public $file;
 
     public $showNewTask = false;
 
@@ -35,7 +37,8 @@ class TaskIndex extends Component
 
     public function closeNewTask()
     {
-        $this->showNewTask = false;
+        $this->resetFormFields();
+        $this->resetValidation();
     }
 
     protected $queryString = [
@@ -59,7 +62,10 @@ class TaskIndex extends Component
             'desc' => 'nullable|string',
             'dueDate' => 'required|date',
             'dueTime' => 'required|date_format:H:i',
-        ], [], [
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
+        ], [
+            'file.max' => 'The file must not be greater than 5MB.'
+        ], [
             'taskTitle' => 'Title',
             'assignedTo' => 'Assignee',
             'desc' => 'Description',
@@ -67,9 +73,14 @@ class TaskIndex extends Component
             'dueTime' => 'Time',
         ]);
 
+        // $file = $this->file->store(Task::FILES_DIRECTORY, 's3');
+        // $s3Url = Storage::disk('s3')->url($file);
+
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
+
+        
 
 
         $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc);
@@ -89,6 +100,8 @@ class TaskIndex extends Component
         $this->desc = null;
         $this->dueDate = null;
         $this->dueTime = null;
+        $this->file = null;
+        $this->showNewTask = null;
     }
     public function filterByStatus($status)
     {
