@@ -11,15 +11,16 @@
                 </div>
 
                 <div>
-                    <a href="#" wire:click="downloadFile">Download File</a>
+                    @if ($changes)
+                        <button type="submit" wire:click="save" class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm mr-2">Save</button>
+                    @endif
+                    @can('delete', $task)
+                        <button type="submit" wire:click="delete" class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
+                    @endcan
+
                 </div>
 
-                @if ($changes)
-                    <button type="submit" wire:click="save" class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
-                @endif
-                @can('delete', $task)
-                    <button type="submit" wire:click="delete" class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
-                @endcan
+
             </div>
             @if (session()->has('success'))
                 <div class="py-[18px] px-6 font-normal text-sm rounded-md bg-success-500 text-white animate-\[fade-out_350ms_ease-in-out\] alert mb-2">
@@ -108,9 +109,20 @@
                             </div>
 
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
+
+            @if ($fileUrl)
+                <button wire:click="downloadFile" class="btn inline-flex justify-center btn-success w-full btn-sm">
+                    <iconify-icon wire:loading wire:target="downloadFile" class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" icon="line-md:loading-twotone-loop"></iconify-icon>
+                    <span>Download Attached File</span>
+                </button>
+            @endif
+
             <div style="margin-top: 50px">
                 Timeline
             </div>

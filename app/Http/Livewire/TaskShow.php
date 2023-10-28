@@ -52,7 +52,20 @@ class TaskShow extends Component
 
     public function downloadFile()
     {
-        // $this->fileUrl;
+        $fileContents = Storage::disk('s3')->get($this->fileUrl);
+        $fileName = $this->fileUrl;
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers
+        );
     }
 
     public function updatedTaskTitle()
@@ -123,9 +136,6 @@ class TaskShow extends Component
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
 
-        $file = $this->file->store(Task::FILES_DIRECTORY, 's3');
-        $s3Url = Storage::disk('s3')->url($file);
-
         $res = $this->task->editTask(
             $this->taskId,
             $this->taskTitle,
@@ -133,7 +143,7 @@ class TaskShow extends Component
             $combinedDateTime,
             $this->desc,
             $this->taskStatus,
-            // $s3Url
+            $this->fileUrl,
         );
 
         if ($res) {
@@ -176,6 +186,7 @@ class TaskShow extends Component
             'dueTime' => $this->dueTime,
             'statuses' => $statuses,
             'users' => $users,
+            'fileUrl' => $this->fileUrl,
             'taskableType' => $this->taskableType,
         ]);
     }
