@@ -74,7 +74,12 @@ class TaskIndex extends Component
             ],
         );
 
-        $url = $this->file->store(Task::FILES_DIRECTORY, 's3');
+        if ($this->file) {
+            $url = $this->file->store(Task::FILES_DIRECTORY, 's3');
+        } else {
+            $url = null;
+        }
+
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
