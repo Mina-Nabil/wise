@@ -24,6 +24,7 @@ class TaskShow extends Component
     public $dueTime;
     public $newComment;
     public $taskableType;
+    public $fileUrl;
     public $changes = false;
 
     public function mount($taskId)
@@ -36,12 +37,22 @@ class TaskShow extends Component
         $this->desc = $task->desc;
         $this->taskStatus = $task->status;
 
+        if ($task->status) {
+            $this->fileUrl = $task->file_url;
+        }
+
+
         $createdAt = Carbon::parse($task->due);
         $this->dueDate = $createdAt->toDateString();
         $this->dueTime = $createdAt->format('H:i');
 
         $this->taskableType = $task->taskable_type;
         $this->task = $task;
+    }
+
+    public function downloadFile()
+    {
+        // $this->fileUrl;
     }
 
     public function updatedTaskTitle()

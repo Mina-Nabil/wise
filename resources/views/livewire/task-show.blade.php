@@ -9,12 +9,16 @@
 
                     </h4>
                 </div>
+
+                <div>
+                    <a href="#" wire:click="downloadFile">Download File</a>
+                </div>
+
                 @if ($changes)
                     <button type="submit" wire:click="save" class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm">Save</button>
                 @endif
                 @can('delete', $task)
-                    <button type="submit" wire:click="delete"
-                        class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
+                    <button type="submit" wire:click="delete" class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
                 @endcan
             </div>
             @if (session()->has('success'))

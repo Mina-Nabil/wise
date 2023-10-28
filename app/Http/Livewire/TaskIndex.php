@@ -53,37 +53,34 @@ class TaskIndex extends Component
 
     public function createTask()
     {
+        $this->validate(
+            [
+                'taskTitle' => 'required|string|max:255',
+                'assignedTo' => 'required|integer|exists:users,id',
+                'desc' => 'nullable|string',
+                'dueDate' => 'required|date',
+                'dueTime' => 'required|date_format:H:i',
+                'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
+            ],
+            [
+                'file.max' => 'The file must not be greater than 5MB.',
+            ],
+            [
+                'taskTitle' => 'Title',
+                'assignedTo' => 'Assignee',
+                'desc' => 'Description',
+                'dueDate' => 'Date',
+                'dueTime' => 'Time',
+            ],
+        );
 
-
-
-        $this->validate([
-            'taskTitle' => 'required|string|max:255',
-            'assignedTo' => 'required|integer|exists:users,id',
-            'desc' => 'nullable|string',
-            'dueDate' => 'required|date',
-            'dueTime' => 'required|date_format:H:i',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
-        ], [
-            'file.max' => 'The file must not be greater than 5MB.'
-        ], [
-            'taskTitle' => 'Title',
-            'assignedTo' => 'Assignee',
-            'desc' => 'Description',
-            'dueDate' => 'Date',
-            'dueTime' => 'Time',
-        ]);
-
-        // $file = $this->file->store(Task::FILES_DIRECTORY, 's3');
-        // $s3Url = Storage::disk('s3')->url($file);
+        $url = $this->file->store(Task::FILES_DIRECTORY, 's3');
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
 
-        
-
-
-        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc);
+        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $url);
 
         if ($t) {
             $this->alert('success', 'Task Added!');
