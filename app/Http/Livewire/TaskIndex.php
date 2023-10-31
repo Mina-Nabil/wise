@@ -60,7 +60,7 @@ class TaskIndex extends Component
                 'desc' => 'nullable|string',
                 'dueDate' => 'required|date',
                 'dueTime' => 'required|date_format:H:i',
-                'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:5120',
+                'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:5120',
             ],
             [
                 'file.max' => 'The file must not be greater than 5MB.',
