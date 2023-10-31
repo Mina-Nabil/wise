@@ -182,7 +182,7 @@
                                         </div>
                                         <div class="">
                                             <span class="flex items-center justify-center text-sm">
-                                                {{ $comment->created_at->diffForHumans() }}
+                                                {{ $comment->created_at->format('Y-m-d H:i') }}
                                             </span>
                                         </div>
                                     </div>
