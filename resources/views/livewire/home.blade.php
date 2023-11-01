@@ -172,7 +172,13 @@
                         <div>
                             <ul class="list-item space-y-3 h-full overflow-x-auto">
 
-
+                                @if ($recentTasks->isEmpty())
+                                <li class="text-center text-xs">
+                                        <h2><iconify-icon icon="mdi:tick-circle" class="text-success-500"></iconify-icon><br></h2>                                   
+                                    Well done! No tasks for you today. Enjoy your free time!
+                                </li>
+                                
+                                @endif
                                 @foreach ($recentTasks as $task)
                                     <li class="flex items-center space-x-3 rtl:space-x-reverse border-b border-slate-100 dark:border-slate-700 last:border-b-0 pb-3 last:pb-0">
                                         <div>

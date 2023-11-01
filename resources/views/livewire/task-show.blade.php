@@ -1,5 +1,5 @@
 <div>
-    <div class="flex justify-center">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
         <div class="w-full sm:w-1/2" style="max-width: 600px">
             <div class="flex justify-between flex-wrap items-center mb-3">
                 <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
@@ -123,6 +123,26 @@
                 </button>
             @endif
 
+
+
+            <div class="card">
+                <div class="card-body flex flex-col p-6">
+                    <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                        <div class="flex-1">
+                            <div class="card-title text-slate-900 dark:text-white">Attached Files</div>
+                        </div>
+                    </header>
+                                <iframe src='https://assets.ctfassets.net/wm1n7oady8a5/6tJdKFW6ukyIE4Y8sSuYo4/86aa1e4178bef579ac8674eefa1f6bc5/A4-booklet-landscape.en.pdf' height='400px' frameborder='0'></iframe>
+                </div>
+            </div>
+
+            
+            
+
+        </div>
+        <div class="w-full sm:w-1/2" style="max-width: 600px">
+
+
             <div style="margin-top: 50px">
                 Timeline
             </div>
@@ -193,6 +213,12 @@
                 </div>
             @endforeach
 
+
+            
+
+
+
+            
         </div>
     </div>
 </div>
