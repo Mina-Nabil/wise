@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Users\Task;
-use App\Models\Users\TaskComment;
+use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskComment;
 use App\Models\Users\User;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as FakerFactory;

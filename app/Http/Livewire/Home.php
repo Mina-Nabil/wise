@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\Users\Task;
+use App\Models\Tasks\Task;
 use App\Models\Cars\Car;
 use Carbon\Carbon;
 

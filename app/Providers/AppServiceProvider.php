@@ -11,7 +11,7 @@ use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\PolicyCondition;
-use App\Models\Users\Task;
+use App\Models\Tasks\Task;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 

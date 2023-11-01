@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Users\Task;
+use App\Models\Tasks\Task;
 use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

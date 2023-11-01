@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\Users\Task;
+use App\Models\Tasks\Task;
 use App\Models\Users\User;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
@@ -59,8 +59,8 @@ class TaskIndex extends Component
                 'assignedTo' => 'required|integer|exists:users,id',
                 'desc' => 'nullable|string',
                 'dueDate' => 'required|date',
-                'dueTime' => 'required|date_format:H:i',
-                'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:5120',
+                'dueTime' => 'nullable|date_format:H:i',
+                'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
             ],
             [
                 'file.max' => 'The file must not be greater than 5MB.',
@@ -83,7 +83,7 @@ class TaskIndex extends Component
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
-        $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
+        $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
 
         $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $url);
 

@@ -3,9 +3,9 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\Users\Task;
+use App\Models\Tasks\Task;
 use App\Models\Users\User;
-use App\Models\Users\TaskComment;
+use App\Models\Tasks\TaskComment;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -121,7 +121,7 @@ class TaskShow extends Component
             'assignedTo' => 'required|integer|exists:users,id',
             'desc' => 'nullable|string',
             'dueDate' => 'required|date',
-            'dueTime' => 'required|date_format:H:i',
+            'dueTime' => 'nullable|date_format:H:i',
             'taskStatus' => 'required|in:' . implode(',', Task::STATUSES),
         ], [], [
             'taskTitle' => 'Title',
@@ -134,7 +134,7 @@ class TaskShow extends Component
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
-        $combinedDateTime = $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second);
+        $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
 
         $res = $this->task->editTask(
             $this->taskId,

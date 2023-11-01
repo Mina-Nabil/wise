@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Users\Task;
+use App\Models\Tasks\Task;
 use App\Models\Users\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -25,7 +25,7 @@ class TaskPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Users\Task  $task
+     * @param  \App\Models\Tasks\Task  $task
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function view(User $user, Task $task)
@@ -48,7 +48,7 @@ class TaskPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Users\Task  $task
+     * @param  \App\Models\Tasks\Task  $task
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function update(User $user, Task $task)
@@ -57,10 +57,22 @@ class TaskPolicy
     }
 
     /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Tasks\Task  $task
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateMainInfo(User $user, Task $task)
+    {
+        return $user->id == $task->open_by_id;
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Users\Task  $task
+     * @param  \App\Models\Tasks\Task  $task
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function delete(User $user, Task $task)
