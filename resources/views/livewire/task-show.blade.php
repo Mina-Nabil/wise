@@ -129,21 +129,58 @@
                 <div class="card-body flex flex-col p-6">
                     <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                         <div class="flex-1">
-                            <div class="card-title text-slate-900 dark:text-white">Attached Files</div>
+                            <div class="card-title text-slate-900 dark:text-white">Files</div>
                         </div>
                     </header>
-                                <iframe src='https://assets.ctfassets.net/wm1n7oady8a5/6tJdKFW6ukyIE4Y8sSuYo4/86aa1e4178bef579ac8674eefa1f6bc5/A4-booklet-landscape.en.pdf' height='400px' frameborder='0'></iframe>
+                    <iframe src='https://assets.ctfassets.net/wm1n7oady8a5/6tJdKFW6ukyIE4Y8sSuYo4/86aa1e4178bef579ac8674eefa1f6bc5/A4-booklet-landscape.en.pdf' height='400px' frameborder='0'></iframe>
                 </div>
             </div>
 
-            
-            
+
+
 
         </div>
         <div class="w-full sm:w-1/2" style="max-width: 600px">
 
+            <div class="card rounded-md bg-white dark:bg-slate-800 shadow-base mb-5">
+                <div class="card-body flex flex-col p-6 active">
+                    <header class="flex mb-5 items-center">
+                        <div class="flex-1">
+                            <div class="card-subtitle font-Inter"><iconify-icon icon="material-symbols:task"></iconify-icon> Assignied to</div>
+                            <h6>Michael Rafaillo</h6>
 
-            <div style="margin-top: 50px">
+                        </div>
+                    </header>
+                    <div class="card-text h-full menu-open mb-5">
+                        <div class="card-subtitle font-Inter mb-1"><iconify-icon icon="carbon:view-filled"></iconify-icon> Watchers</div>
+                        <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">Mina Nabil</span>
+                        <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">Mina Nabil</span>
+
+
+                    </div>
+
+                    <div class="card-text h-full menu-open">
+                        <div class="card-subtitle font-Inter mb-1">
+                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="material-symbols:timer-outline"></iconify-icon>
+                            Temperorary Assigned:
+                            <span class="float-right">
+                                Till 15/11/2023 08:00PM
+                            </span>
+                        </div>
+                        {{-- <span class="badge bg-primary-500 text-white capitalize inline-flex items-center mb-1">
+                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="material-symbols:timer-outline"></iconify-icon>
+                            Temperorary Assigned:
+                        </span> --}}
+                        {{-- <span class="float-right">
+                            15/11/2023 08:00PM
+                        </span> --}}
+                        <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">Mina Nabil</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div>
                 Timeline
             </div>
             <div class="card mb-5" style="margin-bottom:50px">
@@ -214,11 +251,11 @@
             @endforeach
 
 
-            
 
 
 
-            
+
+
         </div>
     </div>
 </div>
