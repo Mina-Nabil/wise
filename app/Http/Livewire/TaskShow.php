@@ -24,8 +24,14 @@ class TaskShow extends Component
     public $dueTime;
     public $newComment;
     public $taskableType;
-    public $fileUrl;
+    public $watchersList = [];
+    public $setWatchersList;
+    public $editedStatus;
+    public $statusComment;
+    public $changeStatus = false;
+    // public $fileUrl;
     public $changes = false;
+    public $changeWatchers = false;
 
     public function mount($taskId)
     {
@@ -36,10 +42,11 @@ class TaskShow extends Component
         $this->assignedTo = $task->assigned_to_id;
         $this->desc = $task->desc;
         $this->taskStatus = $task->status;
+        $this->watchersList = $task->watcher_ids;
+        $this->editedStatus = $task->status;
 
-        if ($task->status) {
-            $this->fileUrl = $task->file_url;
-        }
+        // dd($this->watchersList->pluck('user_id')->all());
+
 
 
         $createdAt = Carbon::parse($task->due);
@@ -48,6 +55,40 @@ class TaskShow extends Component
 
         $this->taskableType = $task->taskable_type;
         $this->task = $task;
+    }
+
+    public function OpenChangeWatchers(){
+        
+        $this->changeWatchers = true;
+    }
+    public function closeChangeWatchers(){
+        $this->changeWatchers = false;
+    }
+    public function saveWatchers(){
+        $task = Task::find($this->taskId);
+        $t = $task->setWatchers($this->setWatchersList);
+        if($t){
+            $this->alert('success', 'Watchers Updated!');
+            $this->closeChangeWatchers();
+            $this->mount($this->taskId);
+        }else{
+            $this->alert('failed', 'Server Error!');
+        }
+    }
+
+    public function toggleEditStatus(){
+
+        if($this->changeStatus === true){
+            $this->changeStatus = false;
+        }else{
+            $this->changeStatus =true;
+        }
+    }
+    public function saveStatuses(){
+        // dd($this->editedStatus);
+        $task = Task::findOrFail($this->taskId);
+        $task->setStatus($this->editedStatus,$this->statusComment);
+        $this->mount($this->taskId);
     }
 
     public function downloadFile()
@@ -66,6 +107,10 @@ class TaskShow extends Component
             200,
             $headers
         );
+    }
+
+    public function setWatchers(){
+
     }
 
     public function updatedTaskTitle()
@@ -186,8 +231,9 @@ class TaskShow extends Component
             'dueTime' => $this->dueTime,
             'statuses' => $statuses,
             'users' => $users,
-            'fileUrl' => $this->fileUrl,
+            // 'fileUrl' => $this->fileUrl,
             'taskableType' => $this->taskableType,
+            'watchersList' => $this->watchersList,
         ]);
     }
 }
