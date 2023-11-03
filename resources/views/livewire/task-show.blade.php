@@ -27,13 +27,32 @@
                     <div class="card-text h-full">
                         <div class="px-4 pt-4 pb-3">
                             <div class="from-group mb-3">
+                                @if ($changeTitleDesc)
+                                <div class="input-area flex">
+                                    <label for="firstName" class="form-label">Title</label>
+                                    <button wire:click="saveTitleAndDesc" class="btn inline-flex justify-center btn-success btn-sm mb-2 float-right">
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <span>Save</span>
+                                    </button>
+                                    
+                                    
+                                </div>
+                                <input type="text" class="form-control" value="Bill" placeholder="Title" wire:model="taskTitle">
+                                <div class="input-area mb-3">
+                            <label for="name" class="form-label">Description</label>
+                            <textarea class="form-control" placeholder="Write Description" wire:model="desc" style="min-height: 150px"></textarea>
+                                </div>
+                            
+                                @else
                                 <h6 class="mb-3">
                                     {{ $task->title }}
-                                    <span class="float-right cursor-pointer" wire:click="OpenChangeWatchers">
+                                    <span class="float-right cursor-pointer" wire:click="toggleEditTitleDesc">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
                                 </h6>
                                 <p class="text-sm mb-3">{{ $task->desc }}</p>
+                                @endif
+                            </div>  
 
 
                                 @if ($task->status === 'new')
@@ -91,60 +110,60 @@
                                 </span>
 
                                 @if ($changeStatus)
-                                <div class="mt-2">
-                                    <div class="basicRadio">
-                                        <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="assigned" @if($task->status === 'assigned') checked="checked" @endif>
-                                            <span
-                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                    <div class="mt-2">
+                                        <div class="basicRadio">
+                                            <label class="flex items-center cursor-pointer">
+                                                <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="assigned" @if ($task->status === 'assigned') checked="checked" @endif>
+                                                <span
+                                                    class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Assigned</span>
-                                        </label>
-                                    </div>
-                                    <div class="basicRadio">
-                                        <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="in_progress"@if($task->status === 'in_progress') checked="checked" @endif>
-                                            <span
-                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                                <span class="text-secondary-500 text-sm leading-6 capitalize">Assigned</span>
+                                            </label>
+                                        </div>
+                                        <div class="basicRadio">
+                                            <label class="flex items-center cursor-pointer">
+                                                <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="in_progress"@if ($task->status === 'in_progress') checked="checked" @endif>
+                                                <span
+                                                    class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">in Progress</span>
-                                        </label>
-                                    </div>
-                                    <div class="basicRadio">
-                                        <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="pending" @if($task->status === 'pending') checked="checked" @endif>
-                                            <span
-                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                                <span class="text-secondary-500 text-sm leading-6 capitalize">in Progress</span>
+                                            </label>
+                                        </div>
+                                        <div class="basicRadio">
+                                            <label class="flex items-center cursor-pointer">
+                                                <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="pending" @if ($task->status === 'pending') checked="checked" @endif>
+                                                <span
+                                                    class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Pending</span>
-                                        </label>
-                                    </div>
-                                    <div class="basicRadio">
-                                        <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="completed" @if($task->status === 'completed') checked="checked" @endif>
-                                            <span
-                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                                <span class="text-secondary-500 text-sm leading-6 capitalize">Pending</span>
+                                            </label>
+                                        </div>
+                                        <div class="basicRadio">
+                                            <label class="flex items-center cursor-pointer">
+                                                <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="completed" @if ($task->status === 'completed') checked="checked" @endif>
+                                                <span
+                                                    class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Completed</span>
-                                        </label>
-                                    </div>
-                                    <div class="basicRadio">
-                                        <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="closed" @if($task->status === 'closed') checked="checked" @endif>
-                                            <span
-                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                                <span class="text-secondary-500 text-sm leading-6 capitalize">Completed</span>
+                                            </label>
+                                        </div>
+                                        <div class="basicRadio">
+                                            <label class="flex items-center cursor-pointer">
+                                                <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="closed" @if ($task->status === 'closed') checked="checked" @endif>
+                                                <span
+                                                    class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Closed</span>
-                                        </label>
-                                    </div>
-                                    <input type="text" wire:model="statusComment" placeholder="Leave a note..." class="form-control w-full">
-                                    
-                                    <button wire:click="saveStatuses" class="btn inline-flex justify-center btn-success btn-sm mt-2">
-                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveStatuses" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                        <span>Save Status</span>
-                                      </button>
+                                                <span class="text-secondary-500 text-sm leading-6 capitalize">Closed</span>
+                                            </label>
+                                        </div>
+                                        <input type="text" wire:model="statusComment" placeholder="Leave a note..." class="form-control w-full">
 
-                                    {{-- <div class="mb-5">
+                                        <button wire:click="saveStatuses" class="btn inline-flex justify-center btn-success btn-sm mt-2">
+                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveStatuses" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                            <span>Save Status</span>
+                                        </button>
+
+                                        {{-- <div class="mb-5">
                                         <button wire:click="saveStatuses" class="btn btn-success mt-3 float-right btn-sm">
                                             <div class="flex items-center">
                                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"  icon="line-md:loading-twotone-loop"></iconify-icon>
@@ -152,11 +171,11 @@
                                             </div>
                                         </button>
                                     </div> --}}
-                                    
-                                </div>
+
+                                    </div>
                                 @endif
-                                
-                                
+
+
                                 {{-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Title</label>
@@ -176,7 +195,7 @@
                                         </div>
                                     </div>
                                 </div> --}}
-                            </div>
+                        
                             {{-- <div class="input-area mb-3">
                                 <label for="name" class="form-label">Description</label>
                                 <textarea class="form-control" placeholder="Write Description" wire:model="desc"></textarea>
@@ -218,7 +237,6 @@
                         </div>
 
                     </div>
-
                 </div>
 
             </div>

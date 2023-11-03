@@ -29,6 +29,7 @@ class TaskShow extends Component
     public $editedStatus;
     public $statusComment;
     public $changeStatus = false;
+    public $changeTitleDesc = false;
     // public $fileUrl;
     public $changes = false;
     public $changeWatchers = false;
@@ -76,6 +77,28 @@ class TaskShow extends Component
         }
     }
 
+    public function toggleEditTitleDesc(){
+
+        if($this->changeTitleDesc === true){
+            $this->changeTitleDesc = false;
+        }else{
+            $this->changeTitleDesc =true;
+        }
+    }
+
+    public function saveTitleAndDesc(){
+        // dd($this->taskTitle,$this->desc);
+        $task = Task::findOrFail($this->taskId);
+        $t = $task->editTitleAndDesc($this->taskTitle,$this->desc);
+        if($t){
+            $this->alert('success', 'Task Updated!');
+            $this->toggleEditTitleDesc();
+            $this->mount($this->taskId);
+        }else{
+            $this->alert('failed', 'Server Error!');
+        }
+    }
+
     public function toggleEditStatus(){
 
         if($this->changeStatus === true){
@@ -87,7 +110,13 @@ class TaskShow extends Component
     public function saveStatuses(){
         // dd($this->editedStatus);
         $task = Task::findOrFail($this->taskId);
-        $task->setStatus($this->editedStatus,$this->statusComment);
+        $t = $task->setStatus($this->editedStatus,$this->statusComment);
+        if ($t) {
+            $this->alert('success', 'Status Updated!');
+            $this->toggleEditStatus();
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
         $this->mount($this->taskId);
     }
 
