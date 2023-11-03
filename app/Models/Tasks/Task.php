@@ -6,6 +6,7 @@ use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -360,7 +361,7 @@ class Task extends Model
     }
 
     ////scopes
-    public static function scopeMainTasksQuery($query, $assignedToMe = true, $assignedToMyTeam = true, $tempAssignedToMe = true, $watcherTasks = true): Collection
+    public static function scopeMainTasksQuery($query, $assignedToMe = true, $assignedToMyTeam = true, $tempAssignedToMe = true, $watcherTasks = true): Builder
     {
         /** @var User */
         $loggedInUser = Auth::user();

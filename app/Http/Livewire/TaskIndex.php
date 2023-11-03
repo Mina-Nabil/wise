@@ -161,13 +161,7 @@ class TaskIndex extends Component
             $showOnlyMine = false;
         }
 
-        $tasks = Task::fromTo($startDate, $endDate)
-            ->when($this->filteredStatus, function ($query) {
-                return $query->byStates($this->filteredStatus);
-            })
-            ->when($this->myTasks || $showOnlyMine, function ($query) {
-                return $query->assignedTo(auth()->user()->id);
-            })
+        $tasks = Task::mainTasksQuery()
             ->paginate(10);
 
         //fixing assignedTo when a user adds a test without changing the assigned to list
