@@ -57,13 +57,37 @@ class TaskPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determine whether the user can update the task main info like the title.
      *
      * @param  \App\Models\Users\User  $user
      * @param  \App\Models\Tasks\Task  $task
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function updateMainInfo(User $user, Task $task)
+    {
+        return $user->id == $task->open_by_id;
+    }
+
+    /**
+     * Determine whether the user can update the task due.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Tasks\Task  $task
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateDue(User $user, Task $task)
+    {
+        return $user->id == $task->open_by_id;
+    }
+
+    /**
+     * Determine whether the user can update the task assignee.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Tasks\Task  $task
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateAssignTo(User $user, Task $task)
     {
         return $user->id == $task->open_by_id;
     }

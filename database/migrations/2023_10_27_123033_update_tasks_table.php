@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskTempAssignee;
 use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Task::class);
             $table->foreignIdFor(User::class);
+            $table->string('name');
             $table->string('file_url');
         });
 
@@ -36,7 +38,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Task::class);
             $table->foreignIdFor(User::class);
-            $table->enum('status', []);
+            $table->enum('status', TaskTempAssignee::STATUSES);
             $table->date('end_date');
             $table->text('note')->nullable();
             $table->timestamps();

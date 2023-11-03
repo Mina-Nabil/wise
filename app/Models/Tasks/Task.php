@@ -55,16 +55,92 @@ class Task extends Model
     ];
 
     /////model functions
-    public function assignTo($user_id_or_type)
+    public function editTitleAndDesc($title, $desc = null)
     {
-        $this->status = self::STATUS_ASSIGNED;
-        $this->assigned_to_id = $user_id_or_type;
         try {
+            /** @var User */
             $loggedInUser = Auth::user();
-            AppLog::info("Task Assigned to $user_id_or_type");
-            $this->addComment("Task assigned to $loggedInUser->username by $this->username", false);
+            if ($loggedInUser->can('updateMainInfo', $this)) {
+                $this->title = $title;
+
+            }
+            $this->desc = $desc;
+            $this->save();
+
+            $this->addComment("Edited title/description ", false);
+            $this->sendTaskNotifications("Task edit", "Task edited by $loggedInUser->username");
+            AppLog::info("Task title/desc edited");
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit task", $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Edit the task due, should only be done by the task owner
+     * @param Carbon $due 
+     * @param string $comment - adding comment is optional
+     * Adding comment is optional
+     */
+    public function editDue(Carbon $due, $comment = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updateDue', $this)) return false;
+            try {
+                $this->due = $due ? $due->format('Y-m-d H:i') : null;
+                $this->save();
+                if($comment){
+                    $this->addComment($comment, false);
+                } else {
+                    $this->addComment("Updated Due", false);
+                }
+                $this->sendTaskNotifications("Task due update", "Due updated by $loggedInUser->username");
+                AppLog::info("Task#$this->id due updated");
+                return true;
+            } catch (Exception $e) {
+                report($e);
+                AppLog::error("Can't edit task", $e->getMessage());
+                return false;
+            }
+    }
+
+    public function assignTo($user_id_or_type, $comment = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updateAssignTo', $this)) return false;
+        $assignedToTitle = null;
+        if(is_numeric($user_id_or_type)){
+            $this->assigned_to_id = $user_id_or_type;
+            $this->assigned_to_type = null;
+            $assignedToTitle = User::findOrFail($user_id_or_type)->username;
+        } else if(in_array($user_id_or_type, User::TYPES)){
+            $this->assigned_to_id = null;
+            $this->assigned_to_type = $user_id_or_type;
+            $assignedToTitle = $user_id_or_type;
+
+        } else {
+            AppLog::warning("Wrong input", "Trying to set Task#$this->id to $user_id_or_type");
+            return false;
+        }
+
+        try {
+            if($this->status == self::STATUS_NEW) {
+                $this->status = self::STATUS_ASSIGNED;
+            }
+            $this->save();
+            if($comment){
+                $this->addComment($comment, false);
+            } else {
+                $this->addComment("Task assigned to $assignedToTitle", false);
+            }
+            AppLog::info("Task Assigned to $assignedToTitle");
             $this->sendTaskNotifications("Assigned task", "Check Task#$this->id is assigned by $loggedInUser->username");
-            return $this->save();
+
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't assign task", $e->getMessage());
@@ -97,7 +173,7 @@ class Task extends Model
 
     public function addFile($file_url)
     {
-        try{
+        try {
             /** @var User */
             $loggedInUser = Auth::user();
             $this->files()->create([
@@ -115,10 +191,10 @@ class Task extends Model
 
     public function removeFile($file_id)
     {
-        try{
+        try {
             $this->files()->where($file_id)->delete();
-            $this->addComment('File delete', false);
-        }catch (Exception $e) {
+            $this->addComment('File deleted', false);
+        } catch (Exception $e) {
             report($e);
             AppLog::error("Can't add file", $e->getMessage());
             return false;
@@ -138,15 +214,7 @@ class Task extends Model
         }
     }
 
-    public function addTaskTempAssigneeRequest($assignee_id)
-    {
-    }
-
-    public function approveTempAssigneeRequest($request_id)
-    {
-    }
-
-    public function declineTempAssigneeRequest($request_id)
+    public function assigneeRequestTemporarily($assignee_id)
     {
     }
 
@@ -184,7 +252,7 @@ class Task extends Model
             $this->assigned_to?->pushNotification($title, $message, "tasks/" . $this->id);
         }
         $this->loadMissing('watchers');
-        foreach($this->watchers as $watcher){
+        foreach ($this->watchers as $watcher) {
             if ($notifier_id != $watcher->id) {
                 $watcher->pushNotification($title, $message, "tasks/" . $this->id);
             }
@@ -235,51 +303,8 @@ class Task extends Model
         }
     }
 
-    public function editTask($title, $assignToId, $due = null, $desc = null, $file_url = null)
-    {
-        $editables = [];
-        try {
-            /** @var User */
-            $loggedInUser = Auth::user();
-            if ($loggedInUser->can('updateMainInfo', $this)) {
-                if ($this->title != $title) array_push($editables, "title");
-                $this->title = $title;
 
-                if ($this->assigned_to_id != $assignToId) array_push($editables, "assigned to");
-                $this->assigned_to()->associate($assignToId);
-
-                if (is_string($due)) {
-                    $due = Carbon::parse($due);
-                }
-                if ((new Carbon($this->due))->notEqualTo(new Carbon()))
-                    $this->due = $due ? $due->format('Y-m-d H:i') : null;
-            }
-
-            $this->desc = $desc;
-            if ($file_url) {
-                $this->file_url = $file_url;
-            }
-
-
-            $this->save();
-
-            // You can add comments or log the edit action if necessary
-            $this->comments()->create([
-                "comment" => "Task edited by $loggedInUser->username",
-            ]);
-
-            AppLog::info("Task edited by $loggedInUser->username");
-            $this->sendTaskNotifications("Task edit", "Task edited by $loggedInUser->username");
-            return true;
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Can't edit task", $e->getMessage());
-            return false;
-        }
-    }
-
-
-
+    /////automatically set the last action by date
     public static function boot()
     {
         parent::boot();
@@ -295,10 +320,18 @@ class Task extends Model
         });
     }
 
-    //scopes
+    ////scopes
     public function scopeByStates($query, array $states)
     {
         return $query->whereIn("status", $states);
+    }
+
+    public function scopeCanWatch($query, $user_id)
+    {
+        return $query->select('tasks.*')
+        ->join('task_watchers', 'task_id', '=', 'tasks.id')
+        ->groupBy('tasks.id')
+        ->where('task_watchers.user_id', $user_id);
     }
 
     public function scopeOpenBy($query, $user_id)

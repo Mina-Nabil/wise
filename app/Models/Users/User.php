@@ -3,9 +3,15 @@
 namespace App\Models\Users;
 
 use App\Events\AppNotification;
+use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskTempAssignee;
 use App\Traits\CanBeDisabled;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -181,6 +187,28 @@ class User extends Authenticatable
     public function logs()
     {
         return $this->hasMany(AppLog::class);
+    }
+
+    public function tasks_assigned(): HasMany
+    {
+        return $this->hasMany(Task::class, 'assigned_to_id');
+    }
+
+    public function tasks_tmp_assigned(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, TaskTempAssignee::class)->withPivot([
+            'end_date', 'status'
+        ])->wherePivot('status', '=', TaskTempAssignee::STATUS_ACCEPTED)->wherePivot('end_date', '<=', Carbon::now()->format('Y-m-d'));
+    }
+
+    public function tasks_opened(): HasMany
+    {
+        return $this->hasMany(Task::class, 'open_by_id');
+    }
+
+    public function tasks_watcher(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, 'task_watchers');
     }
 
     //auth
