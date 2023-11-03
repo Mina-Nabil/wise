@@ -9,6 +9,7 @@ use App\Traits\CanBeDisabled;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -174,17 +175,22 @@ class User extends Authenticatable
     }
 
     //relations
-    public function notes()
+    public function notes(): HasMany
     {
         return $this->hasMany(Note::class);
     }
 
-    public function notifications()
+    public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
     }
 
-    public function logs()
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    public function logs(): HasMany
     {
         return $this->hasMany(AppLog::class);
     }
@@ -196,9 +202,11 @@ class User extends Authenticatable
 
     public function tasks_tmp_assigned(): BelongsToMany
     {
-        return $this->belongsToMany(Task::class, TaskTempAssignee::class)->withPivot([
-            'end_date', 'status'
-        ])->wherePivot('status', '=', TaskTempAssignee::STATUS_ACCEPTED)->wherePivot('end_date', '<=', Carbon::now()->format('Y-m-d'));
+        return $this->belongsToMany(Task::class, TaskTempAssignee::class)
+            ->withPivot([
+                'end_date', 'status'
+            ])
+            ->wherePivot('status', '=', TaskTempAssignee::STATUS_ACCEPTED)->wherePivot('end_date', '<=', Carbon::now()->format('Y-m-d'));
     }
 
     public function tasks_opened(): HasMany

@@ -11,7 +11,7 @@ class TaskFile extends Model
     use HasFactory;
 
     protected $table = 'task_files';
-    protected $fillable = ['user_id', 'file_url'];
+    protected $fillable = ['user_id', 'file_url', 'name'];
     public $timestamps = false;
 
     ///relations

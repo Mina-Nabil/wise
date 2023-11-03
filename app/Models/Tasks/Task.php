@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
@@ -62,18 +63,17 @@ class Task extends Model
             $loggedInUser = Auth::user();
             if ($loggedInUser->can('updateMainInfo', $this)) {
                 $this->title = $title;
-
             }
             $this->desc = $desc;
             $this->save();
 
-            $this->addComment("Edited title/description ", false);
+            $this->addComment("Edited title/description", false);
             $this->sendTaskNotifications("Task edit", "Task edited by $loggedInUser->username");
-            AppLog::info("Task title/desc edited");
+            AppLog::info("Task title/desc edited", $this);
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't edit task", $e->getMessage());
+            AppLog::error("Can't edit task", $e->getMessage(), $this);
             return false;
         }
     }
@@ -89,22 +89,22 @@ class Task extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('updateDue', $this)) return false;
-            try {
-                $this->due = $due ? $due->format('Y-m-d H:i') : null;
-                $this->save();
-                if($comment){
-                    $this->addComment($comment, false);
-                } else {
-                    $this->addComment("Updated Due", false);
-                }
-                $this->sendTaskNotifications("Task due update", "Due updated by $loggedInUser->username");
-                AppLog::info("Task#$this->id due updated");
-                return true;
-            } catch (Exception $e) {
-                report($e);
-                AppLog::error("Can't edit task", $e->getMessage());
-                return false;
+        try {
+            $this->due = $due ? $due->format('Y-m-d H:i') : null;
+            $this->save();
+            if ($comment) {
+                $this->addComment($comment, false);
+            } else {
+                $this->addComment("Updated Due", false);
             }
+            $this->sendTaskNotifications("Task due update", "Due updated by $loggedInUser->username");
+            AppLog::info("Task#$this->id due updated", $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit task", $e->getMessage(), $this);
+            return false;
+        }
     }
 
     public function assignTo($user_id_or_type, $comment = null)
@@ -113,37 +113,36 @@ class Task extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('updateAssignTo', $this)) return false;
         $assignedToTitle = null;
-        if(is_numeric($user_id_or_type)){
+        if (is_numeric($user_id_or_type)) {
             $this->assigned_to_id = $user_id_or_type;
             $this->assigned_to_type = null;
             $assignedToTitle = User::findOrFail($user_id_or_type)->username;
-        } else if(in_array($user_id_or_type, User::TYPES)){
+        } else if (in_array($user_id_or_type, User::TYPES)) {
             $this->assigned_to_id = null;
             $this->assigned_to_type = $user_id_or_type;
             $assignedToTitle = $user_id_or_type;
-
         } else {
-            AppLog::warning("Wrong input", "Trying to set Task#$this->id to $user_id_or_type");
+            AppLog::warning("Wrong input", "Trying to set Task#$this->id to $user_id_or_type", $this);
             return false;
         }
 
         try {
-            if($this->status == self::STATUS_NEW) {
+            if ($this->status == self::STATUS_NEW) {
                 $this->status = self::STATUS_ASSIGNED;
             }
             $this->save();
-            if($comment){
+            if ($comment) {
                 $this->addComment($comment, false);
             } else {
                 $this->addComment("Task assigned to $assignedToTitle", false);
             }
-            AppLog::info("Task Assigned to $assignedToTitle");
+            AppLog::info("Task Assigned to $assignedToTitle", $this);
             $this->sendTaskNotifications("Assigned task", "Check Task#$this->id is assigned by $loggedInUser->username");
 
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't assign task", $e->getMessage());
+            AppLog::error("Can't assign task", $e->getMessage(), $this);
             return false;
         }
     }
@@ -171,13 +170,14 @@ class Task extends Model
         }
     }
 
-    public function addFile($file_url)
+    public function addFile($name, $file_url)
     {
         try {
             /** @var User */
             $loggedInUser = Auth::user();
             $this->files()->create([
                 "user_id"   =>  $loggedInUser->id,
+                "name"      =>  $name,
                 "file_url"  =>  $file_url
             ]);
             $this->addComment('File uploaded', false);
@@ -201,8 +201,12 @@ class Task extends Model
         }
     }
 
-    public function setWatchers($user_ids)
+    public function setWatchers(array $user_ids)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updateMainInfo', $this)) return false;
+
         try {
             $this->watchers()->sync($user_ids);
             $this->addComment("Changed watchers list", false);
@@ -214,8 +218,27 @@ class Task extends Model
         }
     }
 
-    public function assigneeRequestTemporarily($assignee_id)
+    public function tempAssignTo($user_id, Carbon $end_date, $note = null): TaskTempAssignee | false
     {
+        try {
+            /** @var User */
+            $loggedInUser = Auth::user();
+            /** @var User */
+            $user = User::findOrFail($user_id);
+            $user->loadMissing('manager');
+            if(!$user->manager) return false;
+            $newTmpAssignee = $this->temp_assignee()->updateOrCreate([], [
+                "user_id"   =>  $user_id,
+                "end_date"  =>  $end_date->format('Y-m-d H:i'),
+                "note"      =>  $note,
+            ]);
+            $user->manager->pushNotification('New Task Assignment Request', "$user->username requested a temporary assignment", "temprequests/" . $newTmpAssignee->id);
+            return $newTmpAssignee;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't temp assign", $e->getMessage(), $this);
+            return false;
+        }
     }
 
     public function setStatus($status, $comment)
@@ -231,7 +254,7 @@ class Task extends Model
         $this->sendTaskNotifications("Status changed", "Task#$this->id is set to $status");
         return true;
         try {
-            AppLog::info("Status changed", "Task#$this->id state changed to $status");
+            AppLog::info("Status changed", "Task#$this->id state changed to $status", $this);
             return $this->save();
         } catch (Exception $e) {
             report($e);
@@ -260,6 +283,10 @@ class Task extends Model
     }
 
     /////static functions
+    public static function availableTasks()
+    {
+    }
+
     public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $file_url = null)
     {
         try {
@@ -303,7 +330,6 @@ class Task extends Model
         }
     }
 
-
     /////automatically set the last action by date
     public static function boot()
     {
@@ -329,9 +355,9 @@ class Task extends Model
     public function scopeCanWatch($query, $user_id)
     {
         return $query->select('tasks.*')
-        ->join('task_watchers', 'task_id', '=', 'tasks.id')
-        ->groupBy('tasks.id')
-        ->where('task_watchers.user_id', $user_id);
+            ->join('task_watchers', 'task_id', '=', 'tasks.id')
+            ->groupBy('tasks.id')
+            ->where('task_watchers.user_id', $user_id);
     }
 
     public function scopeOpenBy($query, $user_id)
@@ -406,5 +432,10 @@ class Task extends Model
     public function watchers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'task_watchers');
+    }
+
+    public function temp_assignee(): HasOne
+    {
+        return $this->hasOne(TaskTempAssignee::class);
     }
 }

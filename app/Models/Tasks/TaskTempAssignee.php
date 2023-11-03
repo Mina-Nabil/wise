@@ -26,7 +26,6 @@ class TaskTempAssignee extends Model
     ];
 
     ///functions
-
     public function approveRequest()
     {
         $this->loadMissing('task', 'user');
