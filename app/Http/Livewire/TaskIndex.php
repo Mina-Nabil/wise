@@ -28,6 +28,9 @@ class TaskIndex extends Component
     public $dueTime;
     public $file;
 
+    public $files = [];
+
+
     public $showNewTask = false;
 
     public function openNewTask()
@@ -53,6 +56,9 @@ class TaskIndex extends Component
 
     public function createTask()
     {
+
+        dd($this->files);
+
         $this->validate(
             [
                 'taskTitle' => 'required|string|max:255',
@@ -82,7 +88,7 @@ class TaskIndex extends Component
 
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
-        $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
+        $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;      
         $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
 
         $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $url);
