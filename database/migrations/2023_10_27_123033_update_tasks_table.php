@@ -38,7 +38,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Task::class);
             $table->foreignIdFor(User::class);
-            $table->enum('status', TaskTempAssignee::STATUSES);
+            $table->enum('status', TaskTempAssignee::STATUSES)->default(TaskTempAssignee::STATUS_NEW);
             $table->date('end_date');
             $table->text('note')->nullable();
             $table->timestamps();

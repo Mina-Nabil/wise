@@ -99,6 +99,7 @@ class Task extends Model
             }
             $this->sendTaskNotifications("Task due update", "Due updated by $loggedInUser->username");
             AppLog::info("Task#$this->id due updated", $this);
+            $this->last_action_by()->associate(Auth::id());
             return true;
         } catch (Exception $e) {
             report($e);
@@ -131,6 +132,7 @@ class Task extends Model
                 $this->status = self::STATUS_ASSIGNED;
             }
             $this->save();
+            $this->last_action_by()->associate(Auth::id());
             if ($comment) {
                 $this->addComment($comment, false);
             } else {
@@ -159,6 +161,7 @@ class Task extends Model
             if ($logEvent) {
                 $this->last_action_by()->associate($loggedInUser);
                 AppLog::info("Comment added", "User $loggedInUser->username added new comment to task $this->id");
+                $this->last_action_by()->associate(Auth::id());
                 $this->sendTaskNotifications("Comment added", "Task#$this->id has a new comment by $loggedInUser->username");
             }
 
@@ -181,6 +184,7 @@ class Task extends Model
                 "file_url"  =>  $file_url
             ]);
             $this->addComment('File uploaded', false);
+            $this->last_action_by()->associate(Auth::id());
             $this->sendTaskNotifications("File uploaded", "New file added to Task#$this->id");
         } catch (Exception $e) {
             report($e);
@@ -193,6 +197,7 @@ class Task extends Model
     {
         try {
             $this->files()->where($file_id)->delete();
+            $this->last_action_by()->associate(Auth::id());
             $this->addComment('File deleted', false);
         } catch (Exception $e) {
             report($e);
@@ -210,6 +215,7 @@ class Task extends Model
         try {
             $this->watchers()->sync($user_ids);
             $this->addComment("Changed watchers list", false);
+            $this->last_action_by()->associate($loggedInUser);
             return true;
         } catch (Exception $e) {
             report($e);
@@ -226,13 +232,14 @@ class Task extends Model
             /** @var User */
             $user = User::findOrFail($user_id);
             $user->loadMissing('manager');
-            if(!$user->manager) return false;
+            if (!$user->manager) return false;
             $newTmpAssignee = $this->temp_assignee()->updateOrCreate([], [
                 "user_id"   =>  $user_id,
                 "end_date"  =>  $end_date->format('Y-m-d H:i'),
                 "note"      =>  $note,
             ]);
             $user->manager->pushNotification('New Task Assignment Request', "$user->username requested a temporary assignment", "temprequests/" . $newTmpAssignee->id);
+            $this->last_action_by()->associate($loggedInUser);
             return $newTmpAssignee;
         } catch (Exception $e) {
             report($e);
@@ -249,6 +256,7 @@ class Task extends Model
 
         $this->addComment("Changing status from $this->status to $status", false);
         $this->status = $status;
+        $this->save();
         $this->addComment($comment, false);
         $this->last_action_by()->associate($loggedInUser);
         $this->sendTaskNotifications("Status changed", "Task#$this->id is set to $status");
