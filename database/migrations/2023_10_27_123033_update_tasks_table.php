@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('assigned_to_type')->nullable(); // use if assigned to user_type
         });
 
-        Schema::table("task_files", function (Blueprint $table) {
+        Schema::create("task_files", function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Task::class);
             $table->foreignIdFor(User::class);
@@ -28,13 +28,13 @@ return new class extends Migration
             $table->string('file_url');
         });
 
-        Schema::table("task_watchers", function (Blueprint $table) {
+        Schema::create("task_watchers", function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Task::class);
             $table->foreignIdFor(User::class);
         });
 
-        Schema::table("task_temp_assignee", function (Blueprint $table) {
+        Schema::create("task_temp_assignee", function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Task::class);
             $table->foreignIdFor(User::class);
