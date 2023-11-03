@@ -16,6 +16,12 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('tasks', 'file_url')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('file_url');
+            });
+        }
+
         Schema::table("tasks", function (Blueprint $table) {
             $table->string('assigned_to_type')->nullable(); // use if assigned to user_type
         });

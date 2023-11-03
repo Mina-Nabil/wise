@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskComment;
 use App\Models\Users\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as FakerFactory;
 
@@ -18,7 +19,7 @@ class TaskSeeder extends Seeder
      * @return void
      */
 
-     protected $faker;
+    protected $faker;
 
     public function __construct()
     {
@@ -33,24 +34,17 @@ class TaskSeeder extends Seeder
         $userIds = User::pluck('id'); // Get user IDs
 
         for ($i = 0; $i < 20; $i++) {
-            Task::create([
-                'title' => $this->faker->sentence,
-                'desc' => $this->faker->paragraph,
-                'open_by_id' => $userIds->random(),
-                'assigned_to_id' => $userIds->random(),
-                'last_action_by_id' => $userIds->random(),
-                'due' => $this->faker->dateTimeBetween('now', '+1 year'),
-                'status' => $statuses[array_rand($statuses)], // Random status
-            ]);
-        }
-
-        // Create task comments (optional)
-        for ($i = 0; $i < 50; $i++) {
-            TaskComment::create([
-                'user_id' => $userIds->random(),
-                'task_id' => Task::inRandomOrder()->first()->id,
-                'comment' => $this->faker->paragraph,
-            ]);
+            $newTask = Task::newTask(
+                $this->faker->sentence,
+                null,
+                $userIds->random(),
+                new Carbon($this->faker->dateTimeBetween('now', '+5 day')),
+                $this->faker->paragraph
+            );
+            // Create task comments (optional)
+            for ($k = 0; $i < 2; $i++) {
+                $newTask->addComment($this->faker->paragraph, false);
+            }
         }
     }
 }

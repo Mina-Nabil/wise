@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('desc')->nullable();
             $table->foreignIdFor(User::class, 'open_by_id')->nullable();
             $table->foreignIdFor(User::class, 'assigned_to_id')->nullable();
-            $table->foreignIdFor(User::class, 'last_action_by_id');
+            $table->foreignIdFor(User::class, 'last_action_by_id')->nullable();
             $table->dateTime('due')->nullable();
             $table->enum("status", Task::STATUSES);
             $table->softDeletes();

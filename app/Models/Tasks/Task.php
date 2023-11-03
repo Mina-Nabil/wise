@@ -6,6 +6,7 @@ use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -112,7 +113,7 @@ class Task extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('updateAssignTo', $this)) return false;
+        if (!$loggedInUser?->can('updateAssignTo', $this)) return false;
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
             $this->assigned_to_id = $user_id_or_type;
@@ -139,7 +140,7 @@ class Task extends Model
                 $this->addComment("Task assigned to $assignedToTitle", false);
             }
             AppLog::info("Task Assigned to $assignedToTitle", $this);
-            $this->sendTaskNotifications("Assigned task", "Check Task#$this->id is assigned by $loggedInUser->username");
+            $this->sendTaskNotifications("Assigned task", "Check Task#$this->id's assignee changed");
 
             return true;
         } catch (Exception $e) {
@@ -158,9 +159,8 @@ class Task extends Model
                 "user_id"   =>  $loggedInUser ? $loggedInUser->id : null,
                 "comment"   =>  $comment
             ]);
-            if ($logEvent) {
-                $this->last_action_by()->associate($loggedInUser);
-                AppLog::info("Comment added", "User $loggedInUser->username added new comment to task $this->id");
+            if ($logEvent && $loggedInUser) {
+                AppLog::info("Comment added", "User $loggedInUser->username added new comment to task $this->id", $this);
                 $this->last_action_by()->associate(Auth::id());
                 $this->sendTaskNotifications("Comment added", "Task#$this->id has a new comment by $loggedInUser->username");
             }
@@ -168,7 +168,7 @@ class Task extends Model
             return $comment;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't add comment", $e->getMessage());
+            AppLog::error("Can't add comment", $e->getMessage(), $this);
             return false;
         }
     }
@@ -188,7 +188,7 @@ class Task extends Model
             $this->sendTaskNotifications("File uploaded", "New file added to Task#$this->id");
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't add file", $e->getMessage());
+            AppLog::error("Can't add file", $e->getMessage(), $this);
             return false;
         }
     }
@@ -201,7 +201,7 @@ class Task extends Model
             $this->addComment('File deleted', false);
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't add file", $e->getMessage());
+            AppLog::error("Can't add file", $e->getMessage(), $this);
             return false;
         }
     }
@@ -219,7 +219,7 @@ class Task extends Model
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't Set watchers", $e->getMessage());
+            AppLog::error("Can't Set watchers", $e->getMessage(), $this);
             return false;
         }
     }
@@ -266,7 +266,7 @@ class Task extends Model
             return $this->save();
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't change task status", $e->getMessage());
+            AppLog::error("Can't change task status", $e->getMessage(), $this);
             return false;
         }
     }
@@ -291,11 +291,38 @@ class Task extends Model
     }
 
     /////static functions
-    public static function availableTasks()
+    public static function availableTasks($assignedToMe = true, $assignedToMyTeam = true, $tempAssignedToMe = true, $watcherTasks = true): Collection
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$assignedToMe && !$assignedToMyTeam && !$tempAssignedToMe && !$watcherTasks) return new Collection();
+        return self::select('tasks.*')
+            ->join('task_temp_assignee', 'task_temp_assignee.user_id', '=', 'tasks.id')
+            ->join('task_watchers', 'task_watchers.user_id', '=', 'tasks.id')
+            ->groupBy('tasks.id')
+            ->when($assignedToMe, function ($q) use ($loggedInUser) {
+                $q->orwhere('tasks.assigned_to_id', $loggedInUser->id);
+            })
+            ->when($assignedToMyTeam, function ($q) use ($loggedInUser) {
+                $q->orwhere('tasks.assigned_to_type', $loggedInUser->type);
+            })
+            ->when($tempAssignedToMe, function ($q) use ($loggedInUser) {
+                $q->orwhere(function ($qu) use ($loggedInUser) {
+                    $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
+                        ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
+                        ->whereDate('task_temp_assignee.end_date', '<=', TaskTempAssignee::STATUS_ACCEPTED);
+                });
+            })
+            ->when($watcherTasks, function ($q) use ($loggedInUser) {
+                $q->orwhere('task_watchers.user_id', $loggedInUser->id);
+            })
+            ->get();
     }
 
-    public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $file_url = null)
+    /**
+     * @param array $files .. must contain array of ['name' => filename, 'file_url' => url] records
+     */
+    public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $files = [])
     {
         try {
             $loggedInUser = Auth::user();
@@ -304,10 +331,9 @@ class Task extends Model
                 "desc"      =>  $desc,
                 "due"      =>  $due ? $due->format('Y-m-d H:i') : null,
                 "status"    =>  self::STATUS_NEW,
-                "last_action_by_id" =>  $loggedInUser->id,
-                "open_by_id" =>  $loggedInUser->id,
+                "last_action_by_id" =>  $loggedInUser?->id,
+                "open_by_id" =>  $loggedInUser?->id,
                 "desc"      =>  $desc,
-                "file_url"  =>  $file_url
             ]);
             $newTask->save();
 
@@ -329,7 +355,14 @@ class Task extends Model
                 $newTask->taskable()->associate($taskable);
             }
 
-            AppLog::info("New task created");
+            if (count($files) > 0 && $loggedInUser) {
+                foreach ($files as $f) {
+                    $f['user_id']   =  $loggedInUser->id;
+                }
+                $newTask->files()->create($files);
+            }
+
+            AppLog::info("New task created", $newTask);
             return $newTask;
         } catch (Exception $e) {
             report($e);
