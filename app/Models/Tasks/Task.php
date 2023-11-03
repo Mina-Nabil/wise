@@ -291,34 +291,6 @@ class Task extends Model
     }
 
     /////static functions
-    public static function availableTasks($assignedToMe = true, $assignedToMyTeam = true, $tempAssignedToMe = true, $watcherTasks = true): Collection
-    {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$assignedToMe && !$assignedToMyTeam && !$tempAssignedToMe && !$watcherTasks) return new Collection();
-        return self::select('tasks.*')
-            ->join('task_temp_assignee', 'task_temp_assignee.user_id', '=', 'tasks.id')
-            ->join('task_watchers', 'task_watchers.user_id', '=', 'tasks.id')
-            ->groupBy('tasks.id')
-            ->when($assignedToMe, function ($q) use ($loggedInUser) {
-                $q->orwhere('tasks.assigned_to_id', $loggedInUser->id);
-            })
-            ->when($assignedToMyTeam, function ($q) use ($loggedInUser) {
-                $q->orwhere('tasks.assigned_to_type', $loggedInUser->type);
-            })
-            ->when($tempAssignedToMe, function ($q) use ($loggedInUser) {
-                $q->orwhere(function ($qu) use ($loggedInUser) {
-                    $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
-                        ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
-                        ->whereDate('task_temp_assignee.end_date', '<=', TaskTempAssignee::STATUS_ACCEPTED);
-                });
-            })
-            ->when($watcherTasks, function ($q) use ($loggedInUser) {
-                $q->orwhere('task_watchers.user_id', $loggedInUser->id);
-            })
-            ->get();
-    }
-
     /**
      * @param array $files .. must contain array of ['name' => filename, 'file_url' => url] records
      */
@@ -388,49 +360,66 @@ class Task extends Model
     }
 
     ////scopes
-    public function scopeByStates($query, array $states)
+    public static function scopeMainTasksQuery($query, $assignedToMe = true, $assignedToMyTeam = true, $tempAssignedToMe = true, $watcherTasks = true): Collection
     {
-        return $query->whereIn("status", $states);
+        /** @var User */
+        $loggedInUser = Auth::user();
+        return $query->join('task_temp_assignee', 'task_temp_assignee.user_id', '=', 'tasks.id')
+            ->join('task_watchers', 'task_watchers.user_id', '=', 'tasks.id')
+            ->groupBy('tasks.id')
+            ->when($assignedToMe, function ($q) use ($loggedInUser) {
+                $q->orwhere('tasks.assigned_to_id', $loggedInUser->id);
+            })
+            ->when($assignedToMyTeam, function ($q) use ($loggedInUser) {
+                $q->orwhere('tasks.assigned_to_type', $loggedInUser->type);
+            })
+            ->when($tempAssignedToMe, function ($q) use ($loggedInUser) {
+                $q->orwhere(function ($qu) use ($loggedInUser) {
+                    $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
+                        ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
+                        ->whereDate('task_temp_assignee.end_date', '<=', TaskTempAssignee::STATUS_ACCEPTED);
+                });
+            })
+            ->when($watcherTasks, function ($q) use ($loggedInUser) {
+                $q->orwhere('task_watchers.user_id', $loggedInUser->id);
+            });
     }
 
-    public function scopeCanWatch($query, $user_id)
+    public function scopeByStates($query, array $states)
     {
-        return $query->select('tasks.*')
-            ->join('task_watchers', 'task_id', '=', 'tasks.id')
-            ->groupBy('tasks.id')
-            ->where('task_watchers.user_id', $user_id);
+        return $query->whereIn("tasks.status", $states);
     }
 
     public function scopeOpenBy($query, $user_id)
     {
-        return $query->where('open_by_id', $user_id);
+        return $query->where('tasks.open_by_id', $user_id);
     }
 
     public function scopeAssignedTo($query, $user_id)
     {
-        return $query->where('assigned_to_id', $user_id);
+        return $query->where('tasks.assigned_to_id', $user_id);
     }
 
     public function scopeLastActionBy($query, $user_id)
     {
-        return $query->where('last_action_by_id', $user_id);
+        return $query->where('tasks.last_action_by_id', $user_id);
     }
 
     public function scopeDueToday($query)
     {
-        return $query->whereDate("due", Carbon::now()->format('Y-m-d'));
+        return $query->whereDate("tasks.due", Carbon::now()->format('Y-m-d'));
     }
 
     public function scopeDueTomorrow($query)
     {
-        return $query->whereDate("due", Carbon::tomorrow()->format('Y-m-d'));
+        return $query->whereDate("tasks.due", Carbon::tomorrow()->format('Y-m-d'));
     }
 
     public function scopeFromTo($query, Carbon $from, Carbon $to)
     {
         return $query->where(function ($query) use ($from, $to) {
-            $query->whereBetween("due", [$from->format('Y-m-d'), $to->format('Y-m-d')])
-                ->orWhereNull("due");
+            $query->whereBetween("tasks.due", [$from->format('Y-m-d'), $to->format('Y-m-d')])
+                ->orWhereNull("tasks.due");
         });
     }
 
