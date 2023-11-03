@@ -20,6 +20,7 @@ class TaskIndex extends Component
     public $endDate;
     public $filteredStatus;
     public $myTasks;
+    public $watcherTasks;
 
     public $taskTitle;
     public $assignedTo;
@@ -131,11 +132,12 @@ class TaskIndex extends Component
             }
         }
 
-        $this->startDate = now()->format('Y-m-d');
+        $this->startDate = (new Carbon('last week'))->format('Y-m-d');
         $this->endDate = now()
             ->addMonths(3)
             ->format('Y-m-d');
         $this->dateRange = $this->startDate . ' to ' . $this->endDate;
+        $this->watcherTasks = false;
     }
 
     public function updatedDateRange()
@@ -156,12 +158,17 @@ class TaskIndex extends Component
 
         $loggedInUser = Auth::user();
         $showOnlyMine = true;
+
         if ($loggedInUser->id == 1 || $loggedInUser->id == 10 || $loggedInUser->id == 11) {
             //remon or mina or michael can access all
             $showOnlyMine = false;
         }
 
-        $tasks = Task::mainTasksQuery()
+        $tasks = Task::myTasksQuery($this->myTasks || $showOnlyMine, $this->myTasks || $showOnlyMine, $this->myTasks || $showOnlyMine, $this->watcherTasks)
+            ->fromTo($startDate, $endDate)
+            ->when($this->filteredStatus, function ($query) {
+                return $query->byStates($this->filteredStatus);
+            })
             ->paginate(10);
 
         //fixing assignedTo when a user adds a test without changing the assigned to list

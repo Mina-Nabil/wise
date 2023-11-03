@@ -114,7 +114,7 @@ class Task extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updateAssignTo', $this)) return false;
+        if ($loggedInUser && $loggedInUser->can('updateAssignTo', $this)) return false;
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
             $this->assigned_to_id = $user_id_or_type;
@@ -361,7 +361,7 @@ class Task extends Model
     }
 
     ////scopes
-    public static function scopeMainTasksQuery($query, $assignedToMe = true, $assignedToMyTeam = true, $tempAssignedToMe = true, $watcherTasks = true): Builder
+    public static function scopeMyTasksQuery($query, $assignedToMe = true, $assignedToMyTeam = true, $tempAssignedToMe = true, $watcherTasks = true): Builder
     {
         /** @var User */
         $loggedInUser = Auth::user();
