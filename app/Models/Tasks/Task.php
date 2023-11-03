@@ -365,11 +365,12 @@ class Task extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        return $query->join('task_temp_assignee', 'task_temp_assignee.user_id', '=', 'tasks.id')
-            ->join('task_watchers', 'task_watchers.user_id', '=', 'tasks.id')
+        return $query->select('tasks.*')
+            ->leftjoin('task_temp_assignee', 'task_temp_assignee.task_id', '=', 'tasks.id')
+            ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id')
             ->groupBy('tasks.id')
             ->when($assignedToMe, function ($q) use ($loggedInUser) {
-                $q->orwhere('tasks.assigned_to_id', $loggedInUser->id);
+                $q->orwhere('tasks.assigned_to_id', '=', $loggedInUser->id);
             })
             ->when($assignedToMyTeam, function ($q) use ($loggedInUser) {
                 $q->orwhere('tasks.assigned_to_type', $loggedInUser->type);

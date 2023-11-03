@@ -65,7 +65,7 @@ class TaskPolicy
      */
     public function updateMainInfo(User $user, Task $task)
     {
-        return $user->id == $task->open_by_id;
+        return $user->is_admin || $user->id == $task->open_by_id;
     }
 
     /**
@@ -77,7 +77,7 @@ class TaskPolicy
      */
     public function updateDue(User $user, Task $task)
     {
-        return $user->id == $task->open_by_id;
+        return $user->is_admin || $user->id == $task->open_by_id;
     }
 
     /**
@@ -89,7 +89,7 @@ class TaskPolicy
      */
     public function updateAssignTo(User $user, Task $task)
     {
-        return $user->id == $task->open_by_id;
+        return $user->is_admin || $user->id == $task->open_by_id;
     }
 
     /**
@@ -101,7 +101,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task)
     {
-        return $user->id == 1 || $user->id == 10 || $user->id == 11;
+        return $user->is_admin;
     }
 
 }
