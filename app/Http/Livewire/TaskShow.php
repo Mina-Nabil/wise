@@ -7,12 +7,13 @@ use App\Models\Tasks\Task;
 use App\Models\Users\User;
 use App\Models\Tasks\TaskComment;
 use App\Traits\AlertFrontEnd;
+use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class TaskShow extends Component
 {
-    use AlertFrontEnd;
+    use AlertFrontEnd, ToggleSectionLivewire;
 
     public Task $task;
     public $taskId;
@@ -30,6 +31,10 @@ class TaskShow extends Component
     public $statusComment;
     public $changeStatus = false;
     public $changeTitleDesc = false;
+    public $changeAsignee = false;
+    public $changeDue = false;
+    public $haveDueTime = true;
+    public $assignedToComment;
     // public $fileUrl;
     public $changes = false;
     public $changeWatchers = false;
@@ -58,59 +63,106 @@ class TaskShow extends Component
         $this->task = $task;
     }
 
-    public function OpenChangeWatchers(){
-        
+    public function OpenChangeWatchers()
+    {
+
         $this->changeWatchers = true;
     }
-    public function closeChangeWatchers(){
+    public function closeChangeWatchers()
+    {
         $this->changeWatchers = false;
     }
-    public function saveWatchers(){
+    public function saveWatchers()
+    {
         $task = Task::find($this->taskId);
         $t = $task->setWatchers($this->setWatchersList);
-        if($t){
+        if ($t) {
             $this->alert('success', 'Watchers Updated!');
             $this->closeChangeWatchers();
             $this->mount($this->taskId);
-        }else{
+        } else {
             $this->alert('failed', 'Server Error!');
         }
     }
 
-    public function toggleEditTitleDesc(){
+    // changeDue
+    public function toggleDue()
+    {
+        $this->toggle($this->changeDue);
+    }
 
-        if($this->changeTitleDesc === true){
-            $this->changeTitleDesc = false;
-        }else{
-            $this->changeTitleDesc =true;
+    public function saveDue()
+    {
+        $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
+        if ($this->haveDueTime) {
+            $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
+        } else {
+            $dueTime =  null;
+        }
+
+        $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
+        $task = Task::findOrFail($this->taskId);
+        $t = $task->editDue($combinedDateTime, null);
+        if ($t) {
+            $this->alert('success', 'Due Updated!');
+            $this->toggleDue();
+            $this->mount($this->taskId);
+        } else {
+            $this->alert('failed', 'Server Error!');
         }
     }
 
-    public function saveTitleAndDesc(){
+    public function toggleEditAsignee()
+    {
+        $this->toggle($this->changeAsignee);
+    }
+
+    public function saveAsignee()
+    {
+        $task = Task::findOrFail($this->taskId);
+        $t = $task->assignTo($this->assignedTo, $this->assignedToComment);
+        if ($t) {
+            $this->alert('success', 'Asignee Updated!');
+            $this->toggleEditAsignee();
+            $this->mount($this->taskId);
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
+
+    public function toggleEditTitleDesc()
+    {
+        $this->toggle($this->changeTitleDesc);
+    }
+
+    public function saveTitleAndDesc()
+    {
         // dd($this->taskTitle,$this->desc);
         $task = Task::findOrFail($this->taskId);
-        $t = $task->editTitleAndDesc($this->taskTitle,$this->desc);
-        if($t){
+        $t = $task->editTitleAndDesc($this->taskTitle, $this->desc);
+        if ($t) {
             $this->alert('success', 'Task Updated!');
             $this->toggleEditTitleDesc();
             $this->mount($this->taskId);
-        }else{
+        } else {
             $this->alert('failed', 'Server Error!');
         }
     }
 
-    public function toggleEditStatus(){
+    public function toggleEditStatus()
+    {
 
-        if($this->changeStatus === true){
+        if ($this->changeStatus === true) {
             $this->changeStatus = false;
-        }else{
-            $this->changeStatus =true;
+        } else {
+            $this->changeStatus = true;
         }
     }
-    public function saveStatuses(){
-        // dd($this->editedStatus);
+    public function saveStatuses()
+    {
+
         $task = Task::findOrFail($this->taskId);
-        $t = $task->setStatus($this->editedStatus,$this->statusComment);
+        $t = $task->setStatus($this->editedStatus, $this->statusComment);
         if ($t) {
             $this->alert('success', 'Status Updated!');
             $this->toggleEditStatus();
@@ -138,8 +190,9 @@ class TaskShow extends Component
         );
     }
 
-    public function setWatchers(){
 
+    public function setWatchers()
+    {
     }
 
     public function updatedTaskTitle()
