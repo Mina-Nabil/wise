@@ -4,16 +4,18 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskFile;
 use App\Models\Users\User;
 use App\Models\Tasks\TaskComment;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Livewire\WithFileUploads;
 
 class TaskShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
 
     public Task $task;
     public $taskId;
@@ -38,6 +40,7 @@ class TaskShow extends Component
     // public $fileUrl;
     public $changes = false;
     public $changeWatchers = false;
+    public $uploadedFile;
 
     public function mount($taskId)
     {
@@ -61,6 +64,33 @@ class TaskShow extends Component
 
         $this->taskableType = $task->taskable_type;
         $this->task = $task;
+    }
+
+    public function UpdatedUploadedFile()
+    {
+        $filename = $this->uploadedFile->getClientOriginalName();
+        $url = $this->uploadedFile->store(Task::FILES_DIRECTORY, 's3');
+        $task = Task::find($this->taskId);
+        $t = $task->addFile($filename, $url);
+        if ($t) {
+            $this->alert('success', 'File Uploaded!');
+            $this->mount($this->taskId);
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
+
+    public function removeFile($id)
+    {
+        // dd($id);
+        $task = Task::find($id);
+        $f = $task->removeFile($id);
+        if ($f) {
+            $this->alert('success', 'File removed!');
+            $this->mount($this->taskId);
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
     }
 
     public function OpenChangeWatchers()
@@ -172,13 +202,15 @@ class TaskShow extends Component
         $this->mount($this->taskId);
     }
 
-    public function downloadFile()
+    public function downloadFile($id)
     {
-        $fileContents = Storage::disk('s3')->get($this->fileUrl);
-        $fileName = $this->fileUrl;
+
+        $task = TaskFile::findOrFail($id);
+        // $extension = pathinfo($task->name, PATHINFO_EXTENSION);
+        $fileContents = Storage::disk('s3')->get($task->file_url);
         $headers = [
             'Content-Type' => 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Content-Disposition' => 'attachment; filename="' . $task->name . '"',
         ];
 
         return response()->stream(

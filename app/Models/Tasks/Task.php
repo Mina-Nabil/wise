@@ -187,6 +187,7 @@ class Task extends Model
             $this->addComment('File uploaded', false);
             $this->last_action_by()->associate(Auth::id());
             $this->sendTaskNotifications("File uploaded", "New file added to Task#$this->id");
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't add file", $e->getMessage(), $this);
@@ -197,9 +198,10 @@ class Task extends Model
     public function removeFile($file_id)
     {
         try {
-            $this->files()->where($file_id)->delete();
+            $this->files()->where('id', $file_id)->delete();
             $this->last_action_by()->associate(Auth::id());
             $this->addComment('File deleted', false);
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't add file", $e->getMessage(), $this);

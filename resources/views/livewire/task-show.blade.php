@@ -280,8 +280,86 @@
                         <div class="flex-1">
                             <div class="card-title text-slate-900 dark:text-white">Files</div>
                         </div>
+                        <label for="myFile" class="custom-file-label cursor-pointer">
+                            {{-- <button class="btn inline-flex justify-center btn-outline-dark"><iconify-icon icon="ic:baseline-upload"></iconify-icon> Upload</button> --}}
+                            <span class="btn inline-flex justify-center btn-sm btn-outline-dark float-right">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFile" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
+                            </span>
+
+                        </label>
+                        <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedFile">
                     </header>
-                    <iframe src='https://wiseins.s3.eu-north-1.amazonaws.com/tasks/GGxyo5OihDGEJnn6dW51XyQ2x9544vNDGBqCMMVj.pdf' height='400px' frameborder='0'></iframe>
+                    <div class="card-body">
+
+                        <!-- BEGIN: Files Card -->
+
+
+                        <ul class="divide-y divide-slate-100 dark:divide-slate-700">
+
+                            @foreach ($task->files as $file)
+                                <li class="block py-[8px]">
+                                    <div class="flex space-x-2 rtl:space-x-reverse">
+                                        <div class="flex-1 flex space-x-2 rtl:space-x-reverse">
+                                            <div class="flex-none">
+                                                <div class="h-8 w-8">
+                                                    @php
+                                                        $extension = pathinfo($file->name, PATHINFO_EXTENSION);
+                                                        $icon = '';
+
+                                                        switch ($extension) {
+                                                            case 'doc':
+                                                            case 'docx':
+                                                            case 'xls':
+                                                            case 'xlsx':
+                                                                $icon = 'pdf-2';
+                                                                break;
+
+                                                            case 'jpg':
+                                                            case 'jpeg':
+                                                            case 'png':
+                                                                $icon = 'scr-1';
+                                                                break;
+
+                                                            case 'bmp':
+                                                            case 'gif':
+                                                            case 'svg':
+                                                            case 'webp':
+                                                                $icon = 'zip-1';
+                                                                break;
+
+                                                            case 'pdf':
+                                                                $icon = 'pdf-1';
+                                                                break;
+                                                        }
+                                                    @endphp
+
+                                                    <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}" alt="" class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
+                                                </div>
+
+                                            </div>
+                                            <div class="flex-1">
+                                                <span class="block text-slate-600 text-sm dark:text-slate-300">
+                                                    {{ $file->name }}
+                                                </span>
+                                                <span class="block font-normal text-xs text-slate-500 mt-1">
+                                                    uploaded by {{ $file->user->first_name . ' ' . $file->user->last_name }} / <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeFile({{ $file->id }})">remove</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-none">
+                                            <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
+                                                Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+
+                        </ul>
+                        <!-- END: FIles Card -->
+                    </div>
+                    {{-- <iframe src='https://wiseins.s3.eu-north-1.amazonaws.com/tasks/GGxyo5OihDGEJnn6dW51XyQ2x9544vNDGBqCMMVj.pdf' height='400px' frameborder='0'></iframe> --}}
                 </div>
             </div>
 
