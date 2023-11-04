@@ -186,7 +186,7 @@
                                                 <div class="h-8 w-8 rounded-full text-white bg-blue-500">
                                                     <!-- Customize the background color -->
                                                     <span class="block w-full h-full object-cover text-center text-lg leading-8">
-                                                        {{ strtoupper(substr($task->open_by->username, 0, 2)) }}
+                                                        {{ strtoupper(substr($task->open_by?->username, 0, 2)) }}
                                                     </span>
                                                 </div>
                                             </div>
