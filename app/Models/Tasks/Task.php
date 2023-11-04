@@ -243,7 +243,7 @@ class Task extends Model
             ]);
             $user->manager->pushNotification('New Task Assignment Request', "$user->username requested a temporary assignment", "temprequests/" . $newTmpAssignee->id);
             $this->last_action_by()->associate($loggedInUser);
-            return $newTmpAssignee;
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't temp assign", $e->getMessage(), $this);

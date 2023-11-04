@@ -41,6 +41,10 @@ class TaskShow extends Component
     public $changes = false;
     public $changeWatchers = false;
     public $uploadedFile;
+    public $sendTempAssignSection = false;
+    public $TempAssignDate;
+    public $TempAssignNote;
+
 
     public function mount($taskId)
     {
@@ -64,6 +68,23 @@ class TaskShow extends Component
 
         $this->taskableType = $task->taskable_type;
         $this->task = $task;
+    }
+
+    public function toggleSendTempAssign(){
+        $this->toggle($this->sendTempAssignSection);
+    }
+
+    public function submitTempAssignRequest(){
+        $task = Task::find($this->taskId);
+        $TempAssignDate = $this->dueDate ? Carbon::parse($this->TempAssignDate) : null;
+        $t = $task->tempAssignTo(Auth()->user()->id,$TempAssignDate,$this->TempAssignNote);
+        if ($t) {
+            $this->alert('success', 'Request Sent Successfuly!');
+            $this->toggleSendTempAssign();
+            $this->mount($this->taskId);
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
     }
 
     public function UpdatedUploadedFile()

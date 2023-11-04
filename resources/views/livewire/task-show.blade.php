@@ -1,27 +1,6 @@
 <div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
         <div class="w-full sm:w-1/2" style="max-width: 600px">
-            {{-- <div class="flex justify-between flex-wrap items-center mb-3">
-                <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
-                    <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-
-                        {{ $taskTitle }}
-
-                    </h4>
-                </div>
-
-                <div>
-                    @if ($changes)
-                        <button type="submit" wire:click="save" class="btn inline-flex justify-center btn-success rounded-[25px] btn-sm mr-2">Save</button>
-                    @endif
-                    @can('delete', $task)
-                        <button type="submit" wire:click="delete" class="btn inline-flex justify-center btn-danger rounded-[25px] btn-sm">Delete</button>
-                    @endcan
-
-                </div>
-
-
-            </div> --}}
             <div class="card mb-5">
                 <div class="card-body">
                     <div class="card-text h-full">
@@ -43,8 +22,9 @@
                                         <textarea class="form-control" placeholder="Write Description" wire:model="desc" style="min-height: 150px"></textarea>
                                     </div>
                                 @else
+                                <div class="card-title text-slate-900 dark:text-white">{{ $task->title }}</div>
                                     <h6 class="mb-3">
-                                        {{ $task->title }}
+                                        
                                         <span class="float-right cursor-pointer" wire:click="toggleEditTitleDesc">
                                             <iconify-icon icon="carbon:edit"></iconify-icon>
                                         </span>
@@ -98,11 +78,6 @@
                                 </div>
                             @endif
 
-
-
-
-
-
                             @if ($changeDue)
                                 <div class="from-group mt-3">
                                     <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
@@ -125,8 +100,7 @@
 
                                         <div class="flex justify-between items-end space-x-6">
                                             <div class="input-area">
-                                                <button wire:click="saveDue" class="inline-flex items-center justify-center h-10 w-10 bg-success-500 text-lg border rounded border-success-500
-                                                          text-white rb-zeplin-focused">
+                                                <button wire:click="saveDue" class="inline-flex items-center justify-center h-10 w-10 bg-success-500 text-lg border rounded border-success-500 text-white rb-zeplin-focused">
                                                     <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveDue" icon="line-md:loading-twotone-loop"></iconify-icon>
                                                     <iconify-icon icon="material-symbols:save-outline" wire:loading.remove wire:target="saveDue"></iconify-icon>
                                                 </button>
@@ -192,83 +166,11 @@
                                         <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveStatuses" icon="line-md:loading-twotone-loop"></iconify-icon>
                                         <span>Save Status</span>
                                     </button>
-
-                                    {{-- <div class="mb-5">
-                                        <button wire:click="saveStatuses" class="btn btn-success mt-3 float-right btn-sm">
-                                            <div class="flex items-center">
-                                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"  icon="line-md:loading-twotone-loop"></iconify-icon>
-                                                <span>Save</span>
-                                            </div>
-                                        </button>
-                                    </div> --}}
-
                                 </div>
                             @endif
-
-
-                            {{-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    <div class="input-area">
-                                        <label for="firstName" class="form-label">Title</label>
-                                        <input type="text" class="form-control" value="Bill" placeholder="Title" wire:model="taskTitle">
-                                    </div>
-                                    <div class="input-area">
-                                        <div wire:ignore>
-                                            <label for="basicSelect" class="form-label">Assigned to</label>
-
-                                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="assignedTo">
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}" {{ $assignedTo == $user->id ? 'selected' : '' }}>
-                                                        {{ $user->first_name }} {{ $user->last_name }} <span class="text-sm">( {{ $user->type }} )</span>
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div> --}}
-
-                            {{-- <div class="input-area mb-3">
-                                <label for="name" class="form-label">Description</label>
-                                <textarea class="form-control" placeholder="Write Description" wire:model="desc"></textarea>
-                            </div> --}}
-
-                            {{-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                <div class="input-area mb-3">
-                                    <label for="time-date-picker" class="form-label">Due Date</label>
-                                    <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror" id="default-picker" value="" type="text" wire:model.defer="dueDate" autocomplete="off">
-                                    @error('dueDate')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="input-area mb-3">
-                                    <label for="time-date-picker" class="form-label">Time </label>
-                                    <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off">
-                                    @error('dueTime')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="from-group mb-3">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                </div>
-                            </div>
-
-                            <div class="input-area mb-3">
-                                <label for="name" class="form-label">Status</label>
-                                <select name="taskStatus" class="form-control w-full mt-2" wire:model="taskStatus">
-                                    @foreach ($statuses as $status)
-                                        <option value="{{ $status }}">
-                                            {{ ucfirst(str_replace('_', ' ', $status)) }}</option>
-                                    @endforeach
-                                </select>
-
-                            </div> --}}
-
                         </div>
-
                     </div>
                 </div>
-
             </div>
 
 
@@ -278,7 +180,7 @@
                 <div class="card-body flex flex-col p-6">
                     <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                         <div class="flex-1">
-                            <div class="card-title text-slate-900 dark:text-white">Files</div>
+                            <div class="card-title text-slate-900 dark:text-white"><h6>files</h6></div>
                         </div>
                         <label for="myFile" class="custom-file-label cursor-pointer">
                             {{-- <button class="btn inline-flex justify-center btn-outline-dark"><iconify-icon icon="ic:baseline-upload"></iconify-icon> Upload</button> --}}
@@ -296,6 +198,12 @@
 
 
                         <ul class="divide-y divide-slate-100 dark:divide-slate-700">
+
+                            @if ($task->files->isEmpty())
+                            <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                No files added to this task.
+                            </div> 
+                            @endif
 
                             @foreach ($task->files as $file)
                                 <li class="block py-[8px]">
@@ -444,12 +352,45 @@
                     <div class="card-text h-full menu-open">
                         <div class="card-subtitle font-Inter mb-1">
                             <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="material-symbols:timer-outline"></iconify-icon>
-                            Temperorary Assigned:
-                            <span class="float-right">
+                            Temporary Assigned:
+                            {{-- <span class="float-right">
                                 Till 15/11/2023 08:00PM
-                            </span>
+                            </span> --}}
                         </div>
-                        <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">Mina Nabil</span>
+
+                        @if ($task->temp_assignee)
+                            @if ($task->temp_assignee->status === 'new')
+                                <span class="text-center text-xs text-slate-500 dark:text-slate-400">
+                                    <b>{{ $task->temp_assignee->user->first_name.' '.$task->temp_assignee->user->last_name }}'s</b> Request Pending
+                                </span>
+                                
+                            @else
+                            <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">
+                                {{ $task->temp_assignee->user->first_name.' '.$task->temp_assignee->user->last_name }}
+                            </span>
+                            @endif
+                            
+                        @else
+                            @if ($sendTempAssignSection)
+                            <label for="name" class="form-label">Set end date</label>
+                            <input type="date" class="form-control" wire:model="TempAssignDate">
+                            <label for="name" class="form-label mt-2">Note</label>
+                            <input type="text" class="form-control" value="Bill" placeholder="Leave a note..." wire:model="TempAssignNote">
+                            
+                            <button wire:click="submitTempAssignRequest" class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span>Submit Request</span>
+                            </button>
+                            <button wire:click="toggleSendTempAssign" class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span>Cancel</span>
+                            </button>
+                            @else
+                                <button class="btn inline-flex justify-center btn-outline-light btn-sm" wire:click="toggleSendTempAssign">Send Temp Assign Request</button>
+                            @endif
+                        @endif
+                        
+
                     </div>
                 </div>
             </div>
