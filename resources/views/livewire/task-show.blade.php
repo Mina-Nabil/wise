@@ -13,18 +13,22 @@
                                             <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
                                             <span>Save</span>
                                         </button>
-
-
                                     </div>
-                                    <input type="text" class="form-control" value="Bill" placeholder="Title" wire:model="taskTitle">
+                                    <input type="text" class="form-control @error('taskTitle') !border-danger-500 @enderror" value="Bill" placeholder="Title" wire:model="taskTitle">
+                                    @error('taskTitle')
+                                        <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">* {{ $message }}</span>
+                                    @enderror
                                     <div class="input-area mb-3">
                                         <label for="name" class="form-label">Description</label>
-                                        <textarea class="form-control" placeholder="Write Description" wire:model="desc" style="min-height: 150px"></textarea>
+                                        <textarea class="form-control @error('desc') !border-danger-500 @enderror" placeholder="Write Description" wire:model="desc" style="min-height: 150px"></textarea>
+                                        @error('desc')
+                                            <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">* {{ $message }}</span>
+                                        @enderror
                                     </div>
                                 @else
-                                <div class="card-title text-slate-900 dark:text-white">{{ $task->title }}</div>
+                                    <div class="card-title text-slate-900 dark:text-white">{{ $task->title }}</div>
                                     <h6 class="mb-3">
-                                        
+
                                         <span class="float-right cursor-pointer" wire:click="toggleEditTitleDesc">
                                             <iconify-icon icon="carbon:edit"></iconify-icon>
                                         </span>
@@ -172,37 +176,39 @@
                     </div>
                 </div>
             </div>
-
-
-
-
             <div class="card">
                 <div class="card-body flex flex-col p-6">
                     <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                         <div class="flex-1">
-                            <div class="card-title text-slate-900 dark:text-white"><h6>files</h6></div>
+                            <div class="card-title text-slate-900 dark:text-white">
+                                <h6>files</h6>
+                            </div>
                         </div>
                         <label for="myFile" class="custom-file-label cursor-pointer">
-                            {{-- <button class="btn inline-flex justify-center btn-outline-dark"><iconify-icon icon="ic:baseline-upload"></iconify-icon> Upload</button> --}}
                             <span class="btn inline-flex justify-center btn-sm btn-outline-dark float-right">
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFile" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
+                                <span style="display: flex; align-items: center;"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFile" icon="line-md:loading-twotone-loop"></iconify-icon></span>
+                                <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove wire:target="uploadedFile" icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
                             </span>
 
                         </label>
-                        <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedFile">
+                        <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedFile"><br>
+
                     </header>
+                    <div class="loader" wire:loading wire:target="downloadFile">
+                        <div class="loaderBar"></div>
+                    </div>
+                    @error('uploadedFile')
+                        <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">* {{ $message }}</span>
+                    @enderror
                     <div class="card-body">
 
                         <!-- BEGIN: Files Card -->
-
-
                         <ul class="divide-y divide-slate-100 dark:divide-slate-700">
 
                             @if ($task->files->isEmpty())
-                            <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                No files added to this task.
-                            </div> 
+                                <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    No files added to this task.
+                                </div>
                             @endif
 
                             @foreach ($task->files as $file)
@@ -361,35 +367,39 @@
                         @if ($task->temp_assignee)
                             @if ($task->temp_assignee->status === 'new')
                                 <span class="text-center text-xs text-slate-500 dark:text-slate-400">
-                                    <b>{{ $task->temp_assignee->user->first_name.' '.$task->temp_assignee->user->last_name }}'s</b> Request Pending
+                                    <b>{{ $task->temp_assignee->user->first_name . ' ' . $task->temp_assignee->user->last_name }}'s</b> Request Pending
                                 </span>
-                                
                             @else
-                            <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">
-                                {{ $task->temp_assignee->user->first_name.' '.$task->temp_assignee->user->last_name }}
-                            </span>
+                                <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">
+                                    {{ $task->temp_assignee->user->first_name . ' ' . $task->temp_assignee->user->last_name }}
+                                </span>
                             @endif
-                            
                         @else
                             @if ($sendTempAssignSection)
-                            <label for="name" class="form-label">Set end date</label>
-                            <input type="date" class="form-control" wire:model="TempAssignDate">
-                            <label for="name" class="form-label mt-2">Note</label>
-                            <input type="text" class="form-control" value="Bill" placeholder="Leave a note..." wire:model="TempAssignNote">
-                            
-                            <button wire:click="submitTempAssignRequest" class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                <span>Submit Request</span>
-                            </button>
-                            <button wire:click="toggleSendTempAssign" class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                <span>Cancel</span>
-                            </button>
+                                <label for="name" class="form-label">Set end date</label>
+                                <input type="date" class="form-control  @error('TempAssignDate') !border-danger-500 @enderror" wire:model="TempAssignDate">
+                                @error('TempAssignDate')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <label for="name" class="form-label mt-2">Note</label>
+                                <input type="text" class="form-control  @error('TempAssignNote') !border-danger-500 @enderror" value="Bill" placeholder="Leave a note..." wire:model="TempAssignNote">
+                                @error('TempAssignNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <button wire:click="submitTempAssignRequest" class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <span>Submit Request</span>
+                                </button>
+                                <button wire:click="toggleSendTempAssign" class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <span>Cancel</span>
+                                </button>
                             @else
                                 <button class="btn inline-flex justify-center btn-outline-light btn-sm" wire:click="toggleSendTempAssign">Send Temp Assign Request</button>
                             @endif
                         @endif
-                        
+
 
                     </div>
                 </div>

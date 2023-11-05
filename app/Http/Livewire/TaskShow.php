@@ -45,7 +45,6 @@ class TaskShow extends Component
     public $TempAssignDate;
     public $TempAssignNote;
 
-
     public function mount($taskId)
     {
         $this->taskId = $taskId;
@@ -60,8 +59,6 @@ class TaskShow extends Component
 
         // dd($this->watchersList->pluck('user_id')->all());
 
-
-
         $createdAt = Carbon::parse($task->due);
         $this->dueDate = $createdAt->toDateString();
         $this->dueTime = $createdAt->format('H:i');
@@ -70,14 +67,28 @@ class TaskShow extends Component
         $this->task = $task;
     }
 
-    public function toggleSendTempAssign(){
+    public function toggleSendTempAssign()
+    {
         $this->toggle($this->sendTempAssignSection);
     }
 
-    public function submitTempAssignRequest(){
+    public function submitTempAssignRequest()
+    {
+        $this->validate(
+            [
+                'TempAssignDate' => 'required|date',
+                'TempAssignNote' => 'nullable|string',
+            ],
+            [],
+            [
+                'TempAssignDate' => 'Date',
+                'TempAssignNote' => 'Note',
+            ],
+        );
+
         $task = Task::find($this->taskId);
         $TempAssignDate = $this->dueDate ? Carbon::parse($this->TempAssignDate) : null;
-        $t = $task->tempAssignTo(Auth()->user()->id,$TempAssignDate,$this->TempAssignNote);
+        $t = $task->tempAssignTo(Auth()->user()->id, $TempAssignDate, $this->TempAssignNote);
         if ($t) {
             $this->alert('success', 'Request Sent Successfuly!');
             $this->toggleSendTempAssign();
@@ -89,6 +100,16 @@ class TaskShow extends Component
 
     public function UpdatedUploadedFile()
     {
+        $this->validate(
+            [
+                'uploadedFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            ],
+            [
+                'uploadedFile.max' => 'The file must not be greater than 5MB.',
+            ],
+        );
+
+        dd('sss');
         $filename = $this->uploadedFile->getClientOriginalName();
         $url = $this->uploadedFile->store(Task::FILES_DIRECTORY, 's3');
         $task = Task::find($this->taskId);
@@ -116,7 +137,6 @@ class TaskShow extends Component
 
     public function OpenChangeWatchers()
     {
-
         $this->changeWatchers = true;
     }
     public function closeChangeWatchers()
@@ -125,6 +145,12 @@ class TaskShow extends Component
     }
     public function saveWatchers()
     {
+        $this->validate([
+            'setWatchersList' => 'nullable|array',
+            'setWatchersList.*' => 'integer|exists:users,id',
+        ], [], [
+            'setWatchersList' => 'Watchers',
+        ]);
         $task = Task::find($this->taskId);
         $t = $task->setWatchers($this->setWatchersList);
         if ($t) {
@@ -148,7 +174,7 @@ class TaskShow extends Component
         if ($this->haveDueTime) {
             $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         } else {
-            $dueTime =  null;
+            $dueTime = null;
         }
 
         $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
@@ -170,6 +196,13 @@ class TaskShow extends Component
 
     public function saveAsignee()
     {
+        $this->validate([
+            'assignedTo' => 'required|integer|exists:users,id',
+            'assignedToComment' => 'nullable|string'
+        ], [], [
+            'assignedTo' => 'User',
+            'assignedToComment' => 'Comment'
+        ]);
         $task = Task::findOrFail($this->taskId);
         $t = $task->assignTo($this->assignedTo, $this->assignedToComment);
         if ($t) {
@@ -188,7 +221,17 @@ class TaskShow extends Component
 
     public function saveTitleAndDesc()
     {
-        // dd($this->taskTitle,$this->desc);
+        $this->validate(
+            [
+                'taskTitle' => 'required|string|max:255',
+                'desc' => 'nullable|string',
+            ],
+            [],
+            [
+                'taskTitle' => 'Title',
+                'desc' => 'Description',
+            ],
+        );
         $task = Task::findOrFail($this->taskId);
         $t = $task->editTitleAndDesc($this->taskTitle, $this->desc);
         if ($t) {
@@ -202,7 +245,6 @@ class TaskShow extends Component
 
     public function toggleEditStatus()
     {
-
         if ($this->changeStatus === true) {
             $this->changeStatus = false;
         } else {
@@ -211,7 +253,10 @@ class TaskShow extends Component
     }
     public function saveStatuses()
     {
-
+        $this->validate([
+            'statusComment' => 'nullable|string',
+            'editedStatus' => 'required|in:' . implode(',', Task::STATUSES),
+        ]);
         $task = Task::findOrFail($this->taskId);
         $t = $task->setStatus($this->editedStatus, $this->statusComment);
         if ($t) {
@@ -225,7 +270,6 @@ class TaskShow extends Component
 
     public function downloadFile($id)
     {
-
         $task = TaskFile::findOrFail($id);
         // $extension = pathinfo($task->name, PATHINFO_EXTENSION);
         $fileContents = Storage::disk('s3')->get($task->file_url);
@@ -239,10 +283,9 @@ class TaskShow extends Component
                 echo $fileContents;
             },
             200,
-            $headers
+            $headers,
         );
     }
-
 
     public function setWatchers()
     {
@@ -280,7 +323,6 @@ class TaskShow extends Component
             'newComment' => 'required',
         ]);
 
-
         $task = Task::find($this->taskId);
 
         $com = $task->addComment($this->newComment);
@@ -293,38 +335,33 @@ class TaskShow extends Component
         }
     }
 
-
     public function save()
     {
-        $this->validate([
-            'taskTitle' => 'required|string|max:255',
-            'assignedTo' => 'required|integer|exists:users,id',
-            'desc' => 'nullable|string',
-            'dueDate' => 'required|date',
-            'dueTime' => 'nullable|date_format:H:i',
-            'taskStatus' => 'required|in:' . implode(',', Task::STATUSES),
-        ], [], [
-            'taskTitle' => 'Title',
-            'assignedTo' => 'Assignee',
-            'desc' => 'Description',
-            'dueDate' => 'Date',
-            'dueTime' => 'Time',
-            'taskStatus' => 'Status',
-        ]);
+        $this->validate(
+            [
+                'taskTitle' => 'required|string|max:255',
+                'assignedTo' => 'required|integer|exists:users,id',
+                'desc' => 'nullable|string',
+                'dueDate' => 'required|date',
+                'dueTime' => 'nullable|date_format:H:i',
+                'taskStatus' => 'required|in:' . implode(',', Task::STATUSES),
+            ],
+            [],
+            [
+                'taskTitle' => 'Title',
+                'assignedTo' => 'Assignee',
+                'desc' => 'Description',
+                'dueDate' => 'Date',
+                'dueTime' => 'Time',
+                'taskStatus' => 'Status',
+            ],
+        );
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
 
-        $res = $this->task->editTask(
-            $this->taskId,
-            $this->taskTitle,
-            $this->assignedTo,
-            $combinedDateTime,
-            $this->desc,
-            $this->taskStatus,
-            $this->fileUrl,
-        );
+        $res = $this->task->editTask($this->taskId, $this->taskTitle, $this->assignedTo, $combinedDateTime, $this->desc, $this->taskStatus, $this->fileUrl);
 
         if ($res) {
             $this->alert('success', 'Task Updated Successfuly!');
@@ -342,9 +379,10 @@ class TaskShow extends Component
         if ($res) {
             $this->alert('success', 'Task deleted');
             return redirect()->to('/tasks');
-        } else $this->alert('failed', 'Task deletion failed');
+        } else {
+            $this->alert('failed', 'Task deletion failed');
+        }
     }
-
 
     public function render()
     {
