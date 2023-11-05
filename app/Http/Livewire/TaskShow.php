@@ -12,6 +12,7 @@ use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\URL;
 
 class TaskShow extends Component
 {
@@ -56,6 +57,7 @@ class TaskShow extends Component
         $this->taskStatus = $task->status;
         $this->watchersList = $task->watcher_ids;
         $this->editedStatus = $task->status;
+
 
         // dd($this->watchersList->pluck('user_id')->all());
 
