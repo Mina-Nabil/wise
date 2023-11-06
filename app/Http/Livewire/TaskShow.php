@@ -45,6 +45,7 @@ class TaskShow extends Component
     public $sendTempAssignSection = false;
     public $TempAssignDate;
     public $TempAssignNote;
+    public $preview;
 
     public function mount($taskId)
     {
@@ -67,6 +68,17 @@ class TaskShow extends Component
 
         $this->taskableType = $task->taskable_type;
         $this->task = $task;
+    }
+
+    public function previewFile($id)
+    {
+        $task = TaskFile::findOrFail($id);
+        $url = $task->file_url;
+        // dd('aaa');
+        $modifiedString = preg_replace('/\//', '', $url, 1);
+        $this->preview = 'https://wiseins.s3.eu-north-1.amazonaws.com/'.$modifiedString;
+        
+        // dd($this->preview);
     }
 
     public function toggleSendTempAssign()
@@ -111,7 +123,6 @@ class TaskShow extends Component
             ],
         );
 
-        dd('sss');
         $filename = $this->uploadedFile->getClientOriginalName();
         $url = $this->uploadedFile->store(Task::FILES_DIRECTORY, 's3');
         $task = Task::find($this->taskId);

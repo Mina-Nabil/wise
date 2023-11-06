@@ -202,6 +202,7 @@
                     @enderror
                     <div class="card-body">
 
+                        
                         <!-- BEGIN: Files Card -->
                         <ul class="divide-y divide-slate-100 dark:divide-slate-700">
 
@@ -213,6 +214,7 @@
 
                             @foreach ($task->files as $file)
                                 <li class="block py-[8px]">
+                                    
                                     <div class="flex space-x-2 rtl:space-x-reverse">
                                         <div class="flex-1 flex space-x-2 rtl:space-x-reverse">
                                             <div class="flex-none">
@@ -220,6 +222,7 @@
                                                     @php
                                                         $extension = pathinfo($file->name, PATHINFO_EXTENSION);
                                                         $icon = '';
+                                                        $view = false;
 
                                                         switch ($extension) {
                                                             case 'doc':
@@ -227,12 +230,14 @@
                                                             case 'xls':
                                                             case 'xlsx':
                                                                 $icon = 'pdf-2';
+                                                                
                                                                 break;
 
                                                             case 'jpg':
                                                             case 'jpeg':
                                                             case 'png':
                                                                 $icon = 'scr-1';
+                                                                $view = true;
                                                                 break;
 
                                                             case 'bmp':
@@ -244,6 +249,7 @@
 
                                                             case 'pdf':
                                                                 $icon = 'pdf-1';
+                                                                $view = true;
                                                                 break;
                                                         }
                                                     @endphp
@@ -261,7 +267,14 @@
                                                 </span>
                                             </div>
                                         </div>
+                                        
                                         <div class="flex-none">
+                                            @if ($view)
+                                            <button type="button" wire:click="previewFile({{ $file->id }})" class="font-normal text-xs text-slate-500 mt-1">
+                                                Preview |
+                                            </button>
+                                            @endif
+                                            <span class="font-normal text-xs text-slate-500 mt-1"></span>
                                             <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
                                                 Download
                                             </button>
@@ -273,6 +286,12 @@
                         </ul>
                         <!-- END: FIles Card -->
                     </div>
+                    <div class="loader" wire:loading wire:target="previewFile">
+                        <div class="loaderBar"></div>
+                    </div>
+                    @if ($preview)
+                        <iframe src='{{ $preview }}' height='400px' frameborder='0'></iframe>
+                    @endif
                     {{-- <iframe src='https://wiseins.s3.eu-north-1.amazonaws.com/tasks/GGxyo5OihDGEJnn6dW51XyQ2x9544vNDGBqCMMVj.pdf' height='400px' frameborder='0'></iframe> --}}
                 </div>
             </div>
