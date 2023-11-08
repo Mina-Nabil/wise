@@ -19,6 +19,10 @@ class TaskController extends Controller
         ]);
     }
 
+    public function tempTasksIndex(){
+        return view('tasks.temp-index');
+    }
+
     public function show($taskId)
     {
         Task::findOrFail($taskId);

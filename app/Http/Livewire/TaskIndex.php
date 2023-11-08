@@ -58,12 +58,10 @@ class TaskIndex extends Component
     public function createTask()
     {
 
-        dd($this->files);
-
         $this->validate(
             [
                 'taskTitle' => 'required|string|max:255',
-                'assignedTo' => 'required|integer|exists:users,id',
+                'assignedTo' => 'required',
                 'desc' => 'nullable|string',
                 'dueDate' => 'required|date',
                 'dueTime' => 'nullable|date_format:H:i',
@@ -155,16 +153,9 @@ class TaskIndex extends Component
         $startDate = Carbon::parse($this->startDate);
         $endDate = Carbon::parse($this->endDate);
         $users = User::all();
+        $user_types = User::TYPES;
 
-        $loggedInUser = Auth::user();
-        $showOnlyMine = true;
-
-        if ($loggedInUser->id == 1 || $loggedInUser->id == 10 || $loggedInUser->id == 11) {
-            //remon or mina or michael can access all
-            $showOnlyMine = false;
-        }
-
-        $tasks = Task::myTasksQuery($this->myTasks || $showOnlyMine, $this->watcherTasks)
+        $tasks = Task::myTasksQuery($this->myTasks, $this->watcherTasks)
             ->fromTo($startDate, $endDate)
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);
@@ -179,6 +170,7 @@ class TaskIndex extends Component
             'statuses' => $statuses,
             'filteredStatus' => $this->filteredStatus,
             'users' => $users,
+            'user_types' => $user_types,
         ]);
     }
 }

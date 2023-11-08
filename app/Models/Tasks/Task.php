@@ -2,6 +2,7 @@
 
 namespace App\Models\Tasks;
 
+use App\Exceptions\NoManagerException;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -114,7 +115,7 @@ class Task extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if ($loggedInUser && $loggedInUser->can('updateAssignTo', $this)) return false;
+        if ($loggedInUser && !$loggedInUser->can('updateAssignTo', $this)) return false;
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
             $this->assigned_to_id = $user_id_or_type;
@@ -130,7 +131,7 @@ class Task extends Model
         }
 
         try {
-            if ($this->status == self::STATUS_NEW) {
+            if ($this->status == self::STATUS_NEW && $this->assigned_to_id) {
                 $this->status = self::STATUS_ASSIGNED;
             }
             $this->save();
@@ -187,6 +188,7 @@ class Task extends Model
             $this->addComment('File uploaded', false);
             $this->last_action_by()->associate(Auth::id());
             $this->sendTaskNotifications("File uploaded", "New file added to Task#$this->id");
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't add file", $e->getMessage(), $this);
@@ -197,9 +199,10 @@ class Task extends Model
     public function removeFile($file_id)
     {
         try {
-            $this->files()->where($file_id)->delete();
+            $this->files()->where('id', $file_id)->delete();
             $this->last_action_by()->associate(Auth::id());
             $this->addComment('File deleted', false);
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't add file", $e->getMessage(), $this);
@@ -233,7 +236,7 @@ class Task extends Model
             /** @var User */
             $user = User::findOrFail($user_id);
             $user->loadMissing('manager');
-            if (!$user->manager) return false;
+            if (!$user->manager) throw new NoManagerException();
             $newTmpAssignee = $this->temp_assignee()->updateOrCreate([], [
                 "user_id"   =>  $user_id,
                 "end_date"  =>  $end_date->format('Y-m-d H:i'),
@@ -241,7 +244,7 @@ class Task extends Model
             ]);
             $user->manager->pushNotification('New Task Assignment Request', "$user->username requested a temporary assignment", "temprequests/" . $newTmpAssignee->id);
             $this->last_action_by()->associate($loggedInUser);
-            return $newTmpAssignee;
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't temp assign", $e->getMessage(), $this);
@@ -328,7 +331,7 @@ class Task extends Model
                 $newTask->taskable()->associate($taskable);
             }
 
-            if (count($files) > 0 && $loggedInUser) {
+            if ($files && count($files) > 0 && $loggedInUser) {
                 foreach ($files as $f) {
                     $f['user_id']   =  $loggedInUser->id;
                 }
@@ -370,25 +373,26 @@ class Task extends Model
             ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id')
             ->groupBy('tasks.id');
 
-        if ($loggedInUser->type == User::TYPE_ADMIN && !$assignedToMeOnly) {
-            $query->whereNotNull('tasks.id'); // include all tasks if admin
-        } else {
-            $query->whereNull('tasks.id'); // include no tasks if not admin
-        }
-        $query->orwhere('tasks.assigned_to_type', $loggedInUser->type);
-        $query->orwhere('tasks.assigned_to_id', $loggedInUser->id);
-        
-        if(!$assignedToMeOnly){
-            $query->orwhere('tasks.open_by_id', $loggedInUser->id);
+        if ($loggedInUser->type !== User::TYPE_ADMIN || $assignedToMeOnly) {
+            //filter all if not admin or only assigned
+            $query->whereNull('tasks.id');
         }
 
+        $query->orwhere('tasks.assigned_to_type', $loggedInUser->type);
+        $query->orwhere('tasks.assigned_to_id', $loggedInUser->id);
         $query->orwhere(function ($qu) use ($loggedInUser) {
             $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
                 ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
-                ->whereDate('task_temp_assignee.end_date', '<=', TaskTempAssignee::STATUS_ACCEPTED);
+                ->whereDate('task_temp_assignee.end_date', '>=', Carbon::now()->format('Y-m-d'));
         })->when($includeWatchers, function ($q) use ($loggedInUser) {
             $q->orwhere('task_watchers.user_id', $loggedInUser->id);
         });
+
+
+        if (!$assignedToMeOnly) {
+            $query->orwhere('tasks.open_by_id', $loggedInUser->id);
+        }
+
 
         return $query;
     }

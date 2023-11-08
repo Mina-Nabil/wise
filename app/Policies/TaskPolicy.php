@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Tasks\Task;
 use App\Models\Users\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Log;
 
 class TaskPolicy
 {
@@ -89,7 +90,7 @@ class TaskPolicy
      */
     public function updateAssignTo(User $user, Task $task)
     {
-        return $user->is_admin || $user->id == $task->open_by_id;
+        return $user->is_admin || ($user->id == $task->open_by_id);
     }
 
     /**
