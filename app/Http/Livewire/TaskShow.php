@@ -49,6 +49,7 @@ class TaskShow extends Component
     public $TempAssignNote;
     public $preview;
     public $SetTempAssignSection = false;
+    public $deleteSection = false;
 
     public function mount($taskId)
     {
@@ -71,6 +72,11 @@ class TaskShow extends Component
 
         $this->taskableType = $task->taskable_type;
         $this->task = $task;
+    }
+
+    public function toggleDelete()
+    {
+        $this->toggle($this->deleteSection);
     }
 
     public function previewFile($id)
