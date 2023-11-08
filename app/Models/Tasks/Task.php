@@ -369,6 +369,7 @@ class Task extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('tasks.*')
+            ->leftjoin('users', 'tasks.assigned_to_id', '=', 'users.id')
             ->leftjoin('task_temp_assignee', 'task_temp_assignee.task_id', '=', 'tasks.id')
             ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id')
             ->groupBy('tasks.id');
@@ -378,6 +379,7 @@ class Task extends Model
             $query->whereNull('tasks.id');
         }
 
+        $query->orwhere('users.manager_id', $loggedInUser->id);
         $query->orwhere('tasks.assigned_to_type', $loggedInUser->type);
         $query->orwhere('tasks.assigned_to_id', $loggedInUser->id);
         $query->orwhere(function ($qu) use ($loggedInUser) {
