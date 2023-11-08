@@ -44,9 +44,11 @@ class TaskShow extends Component
     public $changeWatchers = false;
     public $uploadedFile;
     public $sendTempAssignSection = false;
+    public $TempAssignUser;
     public $TempAssignDate;
     public $TempAssignNote;
     public $preview;
+    public $SetTempAssignSection = false;
 
     public function mount($taskId)
     {
@@ -87,6 +89,38 @@ class TaskShow extends Component
         $this->toggle($this->sendTempAssignSection);
     }
 
+    public function toggleSetTempAssign()
+    {
+        $this->toggle($this->SetTempAssignSection);
+    }
+
+    public function submitSetTempAssign()
+    {
+        $this->validate(
+            [
+                'TempAssignUser' => 'integer|exists:users,id',
+                'TempAssignDate' => 'required|date',
+                'TempAssignNote' => 'nullable|string',
+            ],
+            [],
+            [
+                'TempAssignUser' => 'User',
+                'TempAssignDate' => 'Date',
+                'TempAssignNote' => 'Note',
+            ],
+        );
+        $task = Task::find($this->taskId);
+        $TempAssignDate = $this->dueDate ? Carbon::parse($this->TempAssignDate) : null;
+        $t = $task->tempAssignTo($this->TempAssignUser, $TempAssignDate, $this->TempAssignNote);
+        if ($t) {
+            $this->alert('success', 'Request Sent Successfuly!');
+            $this->toggleSendTempAssign();
+            $this->mount($this->taskId);
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
+
     public function submitTempAssignRequest()
     {
         $this->validate(
@@ -99,6 +133,8 @@ class TaskShow extends Component
                 'TempAssignDate' => 'Date',
                 'TempAssignNote' => 'Note',
             ],
+
+
         );
 
         $task = Task::find($this->taskId);
@@ -109,6 +145,7 @@ class TaskShow extends Component
             $this->alert('failed', 'User has no manager to approve this request!');
             return;
         }
+        $t = $task->tempAssignTo(Auth()->user()->id, $TempAssignDate, $this->TempAssignNote);
         if ($t) {
             $this->alert('success', 'Request Sent Successfuly!');
             $this->toggleSendTempAssign();
