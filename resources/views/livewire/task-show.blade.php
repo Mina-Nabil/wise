@@ -441,6 +441,8 @@
                                 <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">
                                     {{ $task->temp_assignee->user->first_name . ' ' . $task->temp_assignee->user->last_name }}
                                 </span>
+                                <span class="float-right">Ends on {{ \Carbon\Carbon::parse($task->temp_assignee->end_date)->format('l, d/m') }}
+                                </span>
                             @endif
                         @else
                             @if ($sendTempAssignSection)
@@ -467,52 +469,54 @@
                                 @if (!$SetTempAssignSection)
                                     <button class="btn inline-flex justify-center btn-outline-light btn-sm" wire:click="toggleSendTempAssign">Send Temp Assign Request</button>
                                 @endif
+
+                                @if ($SetTempAssignSection)
+
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 !border-success-500 @error('TempAssignUser') !border-danger-500 @enderror" wire:model.defer="TempAssignUser">
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}" {{ $assignedTo == $user->id ? 'selected' : '' }}>
+                                                {{ $user->first_name }} {{ $user->last_name }} <span class="text-sm">(
+                                                    {{ $user->type }} )</span>
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('TempAssignUser')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                    <br>
+
+                                    <label for="name" class="form-label">Set end date</label>
+                                    <input type="date" class="form-control !border-success-500  @error('TempAssignDate') !border-danger-500 @enderror" wire:model="TempAssignDate">
+                                    @error('TempAssignDate')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                    <br>
+
+                                    <label for="name" class="form-label">Note</label>
+                                    <input type="text" wire:model="TempAssignNote" placeholder="Leave a note..." class="form-control w-full mt-2   @error('TempAssignNote') !border-danger-500 @enderror">
+                                    @error('TempAssignNote')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+
+
+                                    <button wire:click="submitSetTempAssign" class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="submitSetTempAssign" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <span>Save</span>
+                                    </button>
+                                    <button wire:click="toggleSetTempAssign" class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="toggleSetTempAssign" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <span>Cancel</span>
+                                    </button>
+                                @else
+                                    @if (!$sendTempAssignSection)
+                                        <button class="btn inline-flex justify-center btn-outline-light btn-sm" wire:click="toggleSetTempAssign">Set Temp Assignee</button>
+                                    @endif
+                                @endif
                             @endif
                         @endif
 
 
-                        @if ($SetTempAssignSection)
 
-                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 !border-success-500 @error('TempAssignUser') !border-danger-500 @enderror" wire:model.defer="TempAssignUser">
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" {{ $assignedTo == $user->id ? 'selected' : '' }}>
-                                        {{ $user->first_name }} {{ $user->last_name }} <span class="text-sm">(
-                                            {{ $user->type }} )</span>
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('TempAssignUser')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
-                            <br>
-
-                            <label for="name" class="form-label">Set end date</label>
-                            <input type="date" class="form-control !border-success-500  @error('TempAssignDate') !border-danger-500 @enderror" wire:model="TempAssignDate">
-                            @error('TempAssignDate')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
-                            <br>
-
-                            <label for="name" class="form-label">Note</label>
-                            <input type="text" wire:model="TempAssignNote" placeholder="Leave a note..." class="form-control w-full mt-2   @error('TempAssignNote') !border-danger-500 @enderror">
-                            @error('TempAssignNote')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
-
-
-                            <button wire:click="submitSetTempAssign" class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="submitSetTempAssign" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                <span>Save</span>
-                            </button>
-                            <button wire:click="toggleSetTempAssign" class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="toggleSetTempAssign" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                <span>Cancel</span>
-                            </button>
-                        @else
-                            @if (!$sendTempAssignSection)
-                                <button class="btn inline-flex justify-center btn-outline-light btn-sm" wire:click="toggleSetTempAssign">Set Temp Assignee</button>
-                            @endif
-                        @endif
 
                     </div>
                 </div>
