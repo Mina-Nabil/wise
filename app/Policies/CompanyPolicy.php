@@ -42,8 +42,7 @@ class CompanyPolicy
      */
     public function create(User $user)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can create company");
+        return $user->is_admin;
     }
 
     /**
@@ -55,8 +54,7 @@ class CompanyPolicy
      */
     public function update(User $user, Company $company)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can update company");
+        return $user->is_admin;
     }
 
     /**
@@ -68,7 +66,6 @@ class CompanyPolicy
      */
     public function delete(User $user, Company $company)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can delete company");
+        return $user->is_admin;
     }
 }

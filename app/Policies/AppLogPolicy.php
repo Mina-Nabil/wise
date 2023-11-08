@@ -2,12 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Cars\CarModel;
+use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Response;
 
-class CarModelPolicy
+class AppLogPolicy
 {
     use HandlesAuthorization;
 
@@ -19,19 +18,19 @@ class CarModelPolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return $user->is_admin;
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\CarModel  $carModel
+     * @param  \App\Models\Users\AppLog  $appLog
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, CarModel $carModel)
+    public function view(User $user, AppLog $appLog)
     {
-        return true;
+        //
     }
 
     /**
@@ -42,53 +41,54 @@ class CarModelPolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin;
+        //
     }
 
     /**
-     * Determine whether the user can create models.
+     * Determine whether the user can update the model.
      *
      * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Users\AppLog  $appLog
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, CarModel $model)
+    public function update(User $user, AppLog $appLog)
     {
-        return $user->is_admin;
+        //
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\CarModel  $carModel
+     * @param  \App\Models\Users\AppLog  $appLog
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, CarModel $carModel)
+    public function delete(User $user, AppLog $appLog)
     {
-        return $user->is_admin;
+        //
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\CarModel  $carModel
+     * @param  \App\Models\Users\AppLog  $appLog
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, CarModel $carModel)
+    public function restore(User $user, AppLog $appLog)
     {
-        return $user->is_admin;
+        //
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\CarModel  $carModel
+     * @param  \App\Models\Users\AppLog  $appLog
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, CarModel $carModel)
+    public function forceDelete(User $user, AppLog $appLog)
     {
-        return $user->is_admin;
+        //
     }
 }

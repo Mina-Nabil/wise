@@ -2,6 +2,7 @@
 
 namespace App\Models\Cars;
 
+use App\Exceptions\UnauthorizedException;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,10 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class CarModel extends Model
 {
-    CONST MORPH_TYPE = 'car_model';
+    const MORPH_TYPE = 'car_model';
 
     use HasFactory, SoftDeletes;
 
@@ -22,6 +24,9 @@ class CarModel extends Model
     ///static functions 
     public static function newCarModel($name, $brand_id)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) throw new UnauthorizedException();
         try {
             $newCarModel = new self([
                 "name"      =>  $name,
@@ -38,6 +43,9 @@ class CarModel extends Model
     ///model functions 
     public function editInfo($name, $brand_id)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
         try {
             return $this->update([
                 "name"      =>  $name,
@@ -56,8 +64,12 @@ class CarModel extends Model
 
     public static function deleteModel($ModelId)
     {
+        $model = self::findOrFail($ModelId);
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('delete', $model)) throw new UnauthorizedException();
+
         try {
-            $model = self::findOrFail($ModelId);
             $model->delete();
 
             return true; // Deletion successful

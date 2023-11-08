@@ -2,6 +2,7 @@
 
 namespace App\Models\Cars;
 
+use App\Exceptions\UnauthorizedException;
 use App\Models\Users\AppLog;
 use Carbon\Carbon;
 use Exception;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -17,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Car extends Model
 {
-    CONST MORPH_TYPE = 'car';
+    const MORPH_TYPE = 'car';
 
     use HasFactory, SoftDeletes;
     public $timestamps = false;
@@ -26,6 +28,10 @@ class Car extends Model
     ///static functions
     public static function newCar(int $car_model_id, string $category, string $desc = null)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) throw new UnauthorizedException();
+
         $newCar = new self([
             'car_model_id' => $car_model_id,
             'category' => $category,
@@ -118,6 +124,11 @@ class Car extends Model
     ///model functions
     public function editInfo(int $car_model_id, string $category, string $desc = null)
     {
+
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
+
         $this->update([
             'car_model_id' => $car_model_id,
             'category' => $category,
@@ -136,6 +147,10 @@ class Car extends Model
      */
     public function setPrices(array $prices)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
+
         try {
             DB::transaction(function () use ($prices) {
                 $this->car_prices()->delete();
@@ -150,8 +165,12 @@ class Car extends Model
         }
     }
 
-    public function addPrice($year, $price, $desc=null)
+    public function addPrice($year, $price, $desc = null)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
+
         try {
             $this->car_prices()->updateOrCreate([
                 "model_year"    =>  $year,

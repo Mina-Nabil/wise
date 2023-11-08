@@ -42,8 +42,18 @@ class BrandPolicy
      */
     public function create(User $user)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can create brands");
+        return $user->is_admin;
+    }
+
+    /**
+     * Determine whether the user can create models.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function update(User $user, Brand $brand)
+    {
+        return $user->is_admin;
     }
 
     /**
@@ -55,8 +65,7 @@ class BrandPolicy
      */
     public function delete(User $user, Brand $brand)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can delete brands");
+        return $user->is_admin;
     }
 
     /**
@@ -68,8 +77,7 @@ class BrandPolicy
      */
     public function restore(User $user, Brand $brand)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can restore brands");
+        return $user->is_admin;
     }
 
     /**
@@ -81,6 +89,6 @@ class BrandPolicy
      */
     public function forceDelete(User $user, Brand $brand)
     {
-        return Response::deny("Only admins can delete brands");
+        return $user->is_admin;
     }
 }

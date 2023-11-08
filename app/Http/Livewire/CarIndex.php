@@ -2,22 +2,25 @@
 
 namespace App\Http\Livewire;
 
+use App\Exceptions\UnauthorizedException;
 use Livewire\Component;
 use App\Models\Cars\Car;
 use App\Models\Cars\CarPrice;
 use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
+use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
 
 class CarIndex extends Component
 {
-    use WithPagination;
+    use WithPagination, AlertFrontEnd;
 
     public $search = '';
     public $carPriceListId = null;
     public $paginationReset = false;
     public $sortBy = null;
     public $sortDirection;
+    public $car = null;
     public $prices = null;
     public $newPriceYear = null;
     public $newPrice = null;
@@ -39,7 +42,7 @@ class CarIndex extends Component
 
     public function mount()
     {
-        $this->prices = collect();
+        $this->car = collect();
     }
 
     public function openModel($id)
@@ -174,13 +177,18 @@ class CarIndex extends Component
     public function saveCarName()
     {
         $this->validate([
-            'editCarName' => 'required|string|unique:cars,category'
+            'editCarName' => 'required|string'
         ]);
         /** @var Car */
         $car = Car::find($this->carPriceListId);
 
         if ($car) {
-            $car->editInfo($car->car_model->id, $this->editCarName, 'Edited');
+            try{
+                $car->editInfo($car->car_model->id, $this->editCarName, 'Edited');
+            } catch (UnauthorizedException $e)
+            {
+                $this->alert('danger', 'Unauthorized');
+            }
             $c = $car->save();
 
             if ($c) {
@@ -218,7 +226,6 @@ class CarIndex extends Component
     // to save the edited model name
     public function saveModelName()
     {
-        /** @var CarModel */
 
         $this->validate(
             [
@@ -230,6 +237,7 @@ class CarIndex extends Component
             ],
         );
 
+        /** @var CarModel */
         $model = CarModel::find($this->modelId);
 
         if (!$model) {
@@ -290,10 +298,10 @@ class CarIndex extends Component
     public function editCar()
     {
         /** @var Car */
-        $car = Car::find($this->carPriceListId);
-        if ($car) {
+        $this->car = Car::find($this->carPriceListId);
+        if ($this->car) {
             $this->editCarField = true;
-            $this->editCarName = $car->category;
+            $this->editCarName = $this->car->category;
         } else {
             $this->alert('failed', 'Server Error');
         }
@@ -416,7 +424,7 @@ class CarIndex extends Component
         if (!$p) {
             $this->alert('failed', 'Server Error');
         } else {
-            $this->prices = $p;
+            $this->car = $p;
         }
     }
 

@@ -40,10 +40,20 @@ class CarPolicy
      * @param  \App\Models\Users\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
+    public function update(User $user, Car $car)
+    {
+        return $user->is_admin;
+    }
+
+    /**
+     * Determine whether the user can create models.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
     public function create(User $user)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can create cars");
+        return $user->is_admin;
     }
 
     /**
@@ -55,8 +65,7 @@ class CarPolicy
      */
     public function delete(User $user, Car $car)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can delete cars");
+        return $user->is_admin;
     }
 
     /**
@@ -68,8 +77,7 @@ class CarPolicy
      */
     public function restore(User $user, Car $car)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can restore cars");
+        return $user->is_admin;
     }
 
     /**
@@ -81,7 +89,6 @@ class CarPolicy
      */
     public function forceDelete(User $user, Car $car)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can delete cars");
+        return $user->is_admin;
     }
 }

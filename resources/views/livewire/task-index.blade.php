@@ -76,7 +76,7 @@
         </div>
 
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
-            <label class="text-xs text-white font-Inter font-normal opacity-100">Show Watchers</label>
+            <label class="text-xs dark:text-white font-Inter font-normal opacity-100 ">Show Watchers</label>
             <label
                 class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                 <input type="checkbox" class="sr-only peer" wire:model="watcherTasks">

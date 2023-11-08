@@ -157,6 +157,7 @@
                             </span>
                         </a>
                     </li>
+                    @can('viewAny', \App\Models\Users\AppLog::class)
                     <li>
                         <a href="{{ url('/logs') }}" class="navItem @yield('logs')">
                             <span class="flex items-center">
@@ -165,6 +166,7 @@
                             </span>
                         </a>
                     </li>
+                    @endcan
                 </ul>
             </div>
         </div>

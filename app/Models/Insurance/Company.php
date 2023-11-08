@@ -2,15 +2,17 @@
 
 namespace App\Models\Insurance;
 
+use App\Exceptions\UnauthorizedException;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 class Company extends Model
 {
-    CONST MORPH_TYPE = 'company';
+    const MORPH_TYPE = 'company';
 
     use HasFactory;
 
@@ -23,6 +25,10 @@ class Company extends Model
     ///static functions
     public static function newCompany($name, $note = null): self|false
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) throw new UnauthorizedException();
+
         $newCompany = new self([
             "name"  =>  $name,
             "note"  =>  $note
@@ -42,6 +48,10 @@ class Company extends Model
     ///model functions
     public function editInfo($name, $note = null): bool
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
+
         try {
             $this->update([
                 "name"  =>  $name,
@@ -65,6 +75,10 @@ class Company extends Model
         $last_name = null,
         $note = null
     ) {
+
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
         try {
             $email = $this->emails()->updateOrCreate([
                 "type"  =>  $type,
@@ -82,7 +96,6 @@ class Company extends Model
             }
 
             return true;
-            
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't set email", $e->getMessage());
@@ -101,7 +114,7 @@ class Company extends Model
     //scopes
     public function scopeSearchBy($query, $text)
     {
-        return $query->where('insurance_companies.name','LIKE', "%$text%");
+        return $query->where('insurance_companies.name', 'LIKE', "%$text%");
     }
 
     ///relations

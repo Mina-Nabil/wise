@@ -2,11 +2,13 @@
 
 namespace App\Models\Insurance;
 
+use App\Exceptions\UnauthorizedException;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyEmail extends Model
 {
@@ -48,6 +50,10 @@ class CompanyEmail extends Model
         $note = null
     ): bool {
         try {
+            /** @var User */
+            $loggedInUser = Auth::user();
+            $this->loadMissing('company');
+            if (!$loggedInUser->can('update', $this->company)) throw new UnauthorizedException();
             $this->update([
                 "type"  => $type,
                 "email"  => $email,

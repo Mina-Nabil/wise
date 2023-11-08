@@ -9,20 +9,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Policy extends Model
 {
-    CONST MORPH_TYPE = 'policy';
+    const MORPH_TYPE = 'policy';
 
     use HasFactory, SoftDeletes;
 
-    CONST BUSINESS_MOTOR = 'Motor';
-    CONST BUSINESS_HEALTH = 'Health';
-    CONST BUSINESS_LIFE = 'Life';
-    CONST BUSINESS_PROPERTY = 'Property';
-    CONST BUSINESS_CARGO = 'Cargo';
+    const BUSINESS_MOTOR = 'Motor';
+    const BUSINESS_HEALTH = 'Health';
+    const BUSINESS_LIFE = 'Life';
+    const BUSINESS_PROPERTY = 'Property';
+    const BUSINESS_CARGO = 'Cargo';
 
-    CONST LINES_OF_BUSINESS = [
+    const LINES_OF_BUSINESS = [
         self::BUSINESS_MOTOR,
         self::BUSINESS_HEALTH,
         self::BUSINESS_LIFE,
@@ -41,6 +42,10 @@ class Policy extends Model
     ///static functions
     public static function newPolicy($company_id, $name, $business, $note = null)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return false;
+
         $newPolicy = new self([
             "company_id" =>  $company_id,
             "name"      =>  $name,
@@ -61,6 +66,10 @@ class Policy extends Model
     ///model functions
     public function editInfo($name, $business, $note = null)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         $this->update([
             "name"      =>  $name,
             "business"  =>  $business,
@@ -84,6 +93,10 @@ class Policy extends Model
         $rate,
         $note
     ): false|PolicyCondition {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         try {
             $order = $this->conditions()->count() + 1;
             $condition = $this->conditions()->create([

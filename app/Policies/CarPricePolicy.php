@@ -42,8 +42,7 @@ class CarPricePolicy
      */
     public function create(User $user)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can manage car prices");
+       return $user->is_admin;
     }
 
    

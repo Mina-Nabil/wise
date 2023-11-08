@@ -42,8 +42,7 @@ class PolicyPolicy
      */
     public function create(User $user)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can create policy");
+        return $user->is_admin;
     }
 
     /**
@@ -55,8 +54,7 @@ class PolicyPolicy
      */
     public function update(User $user, Policy $policy)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can update policy");
+        return $user->is_admin;
     }
 
     /**
@@ -68,8 +66,7 @@ class PolicyPolicy
      */
     public function delete(User $user, Policy $policy)
     {
-        if ($user->is_admin) return true;
-        return Response::deny("Only admins can delete policy");
+        return $user->is_admin;
     }
 
 }
