@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\SetUserRequest;
+use App\Models\Users\Notification;
 use App\Models\Users\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -111,6 +113,18 @@ class UserController extends Controller
         } else {
             return redirect()->action([self::class, 'create'])->with(['alert_msg' => 'Failed to edit user. Please check application logs']);
         }
+    }
+
+    public function setNotfAsSeen($id)
+    {
+        /** @var Notification */
+        $notf = Notification::findOrFail($id);
+        Log::info($notf->is_seen);
+        if (!$notf->is_seen)
+            Log::info($notf->setAsSeen());
+        return response()->json([
+            "status"  =>   true
+        ]);
     }
 
 

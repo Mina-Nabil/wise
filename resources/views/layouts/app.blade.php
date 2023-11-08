@@ -560,7 +560,7 @@
                                                 href="{{ url('/notifications') }}">See All</a>
                                         </div>
                                         @if (!auth()->user()->notifications->isEmpty())
-                                            @foreach (auth()->user()->notifications->take(4) as $notification)
+                                            @foreach (auth()->user()->notifications->take(6) as $notification)
                                                 {{-- BEGIN: ONE Notification --}}
                                                 {{-- classes for unread notf. dark:bg-slate-700 dark:bg-opacity-70 text-slate-800 --}}
                                                 <div
@@ -574,9 +574,12 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex-1">
-                                                            <a href="#"
+                                                            <a href="{{ $notification->route }}"
+                                                                @if (!$notification->is_seen) onmouseover="setAsSeen({{ $notification->id }})" @endif
                                                                 class="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1 before:w-full before:h-full before:absolute before:top-0 before:left-0">
-                                                                {{ $notification->title }}
+                                                                @if (!$notification->is_seen)
+                                                                    *
+                                                                @endif {{ $notification->title }}
                                                             </a>
                                                             <div
                                                                 class="text-slate-600 dark:text-slate-300 text-xs leading-4">
@@ -793,6 +796,24 @@
             console.log("{{ session('alert_msg') }}")
             Swal.fire("{{ session('alert_msg') }}")
         @endif
+
+        function setAsSeen(id) {
+            $.ajax({
+                url: "{{ url('notifications/seen/') }}" + id
+                method: 'POST'
+            })
+        }
+    </script>
+    <script>
+        const setAsSeen = (id) => {
+            $.ajax({
+                url: "{{ url('notifications/seen/') }}" + "/" + id,
+                method: 'POST',
+                data: {
+                    _token: "{{ csrf_token() }}"
+                }
+            })
+        }
     </script>
     @livewireScripts
 </body>

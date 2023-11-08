@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Notification extends Model
 {
@@ -38,7 +39,7 @@ class Notification extends Model
     //notf->is_seen (bool)
     public function getIsSeenAttribute()
     {
-        return $this->seen_at != null;
+        return $this->seen_at !== null;
     }
 
     //relations

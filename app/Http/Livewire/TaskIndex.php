@@ -164,7 +164,7 @@ class TaskIndex extends Component
             $showOnlyMine = false;
         }
 
-        $tasks = Task::myTasksQuery($this->myTasks || $showOnlyMine, $this->myTasks || $showOnlyMine, $this->myTasks || $showOnlyMine, $this->watcherTasks)
+        $tasks = Task::myTasksQuery($this->myTasks || $showOnlyMine, $this->watcherTasks)
             ->fromTo($startDate, $endDate)
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);

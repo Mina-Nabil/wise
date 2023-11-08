@@ -361,30 +361,36 @@ class Task extends Model
     }
 
     ////scopes
-    public static function scopeMyTasksQuery($query, $assignedToMe = true, $assignedToMyTeam = true, $tempAssignedToMe = true, $watcherTasks = true): Builder
+    public static function scopeMyTasksQuery($query, $assignedToMeOnly = true, $includeWatchers = true): Builder
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        return $query->select('tasks.*')
+        $query->select('tasks.*')
             ->leftjoin('task_temp_assignee', 'task_temp_assignee.task_id', '=', 'tasks.id')
             ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id')
-            ->groupBy('tasks.id')
-            ->when($assignedToMe, function ($q) use ($loggedInUser) {
-                $q->orwhere('tasks.assigned_to_id', '=', $loggedInUser->id);
-            })
-            ->when($assignedToMyTeam, function ($q) use ($loggedInUser) {
-                $q->orwhere('tasks.assigned_to_type', $loggedInUser->type);
-            })
-            ->when($tempAssignedToMe, function ($q) use ($loggedInUser) {
-                $q->orwhere(function ($qu) use ($loggedInUser) {
-                    $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
-                        ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
-                        ->whereDate('task_temp_assignee.end_date', '<=', TaskTempAssignee::STATUS_ACCEPTED);
-                });
-            })
-            ->when($watcherTasks, function ($q) use ($loggedInUser) {
-                $q->orwhere('task_watchers.user_id', $loggedInUser->id);
-            });
+            ->groupBy('tasks.id');
+
+        if ($loggedInUser->type == User::TYPE_ADMIN && !$assignedToMeOnly) {
+            $query->whereNotNull('tasks.id'); // include all tasks if admin
+        } else {
+            $query->whereNull('tasks.id'); // include no tasks if not admin
+        }
+        $query->orwhere('tasks.assigned_to_type', $loggedInUser->type);
+        $query->orwhere('tasks.assigned_to_id', $loggedInUser->id);
+        
+        if(!$assignedToMeOnly){
+            $query->orwhere('tasks.open_by_id', $loggedInUser->id);
+        }
+
+        $query->orwhere(function ($qu) use ($loggedInUser) {
+            $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
+                ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
+                ->whereDate('task_temp_assignee.end_date', '<=', TaskTempAssignee::STATUS_ACCEPTED);
+        })->when($includeWatchers, function ($q) use ($loggedInUser) {
+            $q->orwhere('task_watchers.user_id', $loggedInUser->id);
+        });
+
+        return $query;
     }
 
     public function scopeByStates($query, array $states)

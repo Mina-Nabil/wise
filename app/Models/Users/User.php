@@ -27,11 +27,18 @@ class User extends Authenticatable
     //All User types
     const TYPE_SALES = 'sales';
     const TYPE_OPERATIONS = 'operations';
+    const TYPE_FINANCE = 'finance';
+    const TYPE_COURIER = 'courier';
     const TYPE_MANAGER = 'manager';
     const TYPE_ADMIN = 'admin';
 
     const TYPES = [
-        self::TYPE_ADMIN, self::TYPE_SALES, self::TYPE_OPERATIONS, self::TYPE_MANAGER
+        self::TYPE_ADMIN,
+        self::TYPE_SALES,
+        self::TYPE_COURIER,
+        self::TYPE_FINANCE,
+        self::TYPE_OPERATIONS,
+        self::TYPE_MANAGER
     ];
 
     protected $fillable = [
@@ -109,7 +116,7 @@ class User extends Authenticatable
 
 
     /////////static functions
-    public static function newUser($username, $first_name, $last_name, $type, $password, $email = null, $phone = null): self|false
+    public static function newUser($username, $first_name, $last_name, $type, $password, $email = null, $phone = null, $manager_id = null): self|false
     {
         try {
             $user = new self([
@@ -118,6 +125,7 @@ class User extends Authenticatable
                 "last_name"     =>  $last_name,
                 "email"         =>  $email,
                 "phone"         =>  $phone,
+                "manager_id"    =>  $manager_id,
                 "type"          =>  $type,
                 "password"      =>  bcrypt($password)
             ]);
@@ -182,7 +190,7 @@ class User extends Authenticatable
 
     public function notifications(): HasMany
     {
-        return $this->hasMany(Notification::class);
+        return $this->hasMany(Notification::class)->latest();
     }
 
     public function manager(): BelongsTo

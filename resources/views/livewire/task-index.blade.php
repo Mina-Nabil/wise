@@ -94,6 +94,10 @@
                                 </th>
 
                                 <th scope="col" class="table-th">
+                                    Opened
+                                </th>
+
+                                <th scope="col" class="table-th">
                                     Assignee
                                 </th>
 
@@ -143,6 +147,11 @@
                                         <div class="w-full bg-slate-200 h-2 m-1 rounded-xl overflow-hidden">
                                             <div class="@if ($percentagePassed >= 0 && $percentagePassed < 30) bg-success-500 @elseif($percentagePassed >= 30 && $percentagePassed < 70) bg-warning-500 @else bg-danger-500 @endif h-full rounded-xl" style="width: {{ number_format($percentagePassed, 0) }}%"></div>
                                         </div>
+                                    </td>
+
+                                    <td class="table-td">
+                                        <b>{{ $task->open_by?->first_name }}
+                                            {{ $task->open_by?->last_name }}</b>
                                     </td>
 
                                     <td class="table-td">
