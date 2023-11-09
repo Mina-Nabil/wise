@@ -77,7 +77,7 @@ class Policy extends Model
         ]);
         try {
             $this->save();
-            AppLog::info('Policy update', "Policy $name ($this->id) updated successfully");
+            AppLog::info('Policy update', "Policy $name ($this->id) updated successfully", $this);
             return true;
         } catch (Exception $e) {
             AppLog::error("Can't edit policy", $e->getMessage());
@@ -107,7 +107,7 @@ class Policy extends Model
                 "rate" =>  $rate,
                 "note" =>  $note,
             ]);
-            AppLog::info('Condition Added', "New condition added for $this->name");
+            AppLog::info('Condition Added', "New condition added for $this->name", $this);
             return $condition;
         } catch (Exception $e) {
             report($e);

@@ -58,7 +58,7 @@ class Company extends Model
                 "note"  =>  $note
             ]);
 
-            AppLog::info('Company data update', "Company $name ($this->id) updated successfully");
+            AppLog::info('Company data update', "Company $name ($this->id) updated successfully", $this);
             return true;
         } catch (Exception $e) {
             AppLog::error("Can't edit company", $e->getMessage());

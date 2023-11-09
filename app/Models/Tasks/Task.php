@@ -72,7 +72,7 @@ class Task extends Model
 
             $this->addComment("Edited title/description", false);
             $this->sendTaskNotifications("Task edit", "Task edited by $loggedInUser->username");
-            AppLog::info("Task title/desc edited", $this);
+            AppLog::info("Task title/desc edited", null, $this);
             return true;
         } catch (Exception $e) {
             report($e);
@@ -101,7 +101,7 @@ class Task extends Model
                 $this->addComment("Updated Due", false);
             }
             $this->sendTaskNotifications("Task due update", "Due updated by $loggedInUser->username");
-            AppLog::info("Task#$this->id due updated", $this);
+            AppLog::info("Task#$this->id due updated", null, $this);
             $this->last_action_by()->associate(Auth::id());
             return true;
         } catch (Exception $e) {
@@ -141,7 +141,7 @@ class Task extends Model
             } else {
                 $this->addComment("Task assigned to $assignedToTitle", false);
             }
-            AppLog::info("Task Assigned to $assignedToTitle", $this);
+            AppLog::info("Task Assigned to $assignedToTitle", null, $this);
             $this->sendTaskNotifications("Assigned task", "Check Task#$this->id's assignee changed");
 
             return true;
@@ -338,7 +338,7 @@ class Task extends Model
                 $newTask->files()->create($files);
             }
 
-            AppLog::info("New task created", $newTask);
+            AppLog::info("New task created", null, $newTask);
             return $newTask;
         } catch (Exception $e) {
             report($e);
@@ -375,9 +375,9 @@ class Task extends Model
             ->when($includeWatchers, function ($q) use ($loggedInUser) {
                 $q->orwhere('task_watchers.user_id', $loggedInUser->id);
             });
-            // ->groupBy('tasks.id');
+        // ->groupBy('tasks.id');
 
-        if($loggedInUser->type === User::TYPE_ADMIN && !$assignedToMeOnly){
+        if ($loggedInUser->type === User::TYPE_ADMIN && !$assignedToMeOnly) {
             return $query;
         }
 

@@ -155,7 +155,7 @@ class Car extends Model
             DB::transaction(function () use ($prices) {
                 $this->car_prices()->delete();
                 $this->car_prices()->createMany($prices);
-                AppLog::info('Prices update', "Car($this->id) price updated");
+                AppLog::info('Prices update', "Car($this->id) price updated", $this);
             });
             return true;
         } catch (Exception $e) {
@@ -179,7 +179,7 @@ class Car extends Model
                 "desc"          =>  $desc
             ]);
             $this->loadMissing('car_model');
-            AppLog::info('New Price', "New price added for {$this->car_model->name} - $this->name");
+            AppLog::info('New Price', "New price added for {$this->car_model->name} - $this->name", $this);
             return true;
         } catch (Exception $e) {
             report($e);
