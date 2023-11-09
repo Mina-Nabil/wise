@@ -97,6 +97,18 @@ class User extends Authenticatable
         }
     }
 
+    public function markNotificationsAsSeenByRoute($route)
+    {
+        try {
+            $now = Carbon::now();
+            $this->notifications()->whereNull('seen_at')->where("route", $route)->update([
+                "seen_at"   =>  $now
+            ]);
+        } catch (Exception $e) {
+            report($e);
+        }
+    }
+
     public function getUnseenNotfCount()
     {
         return $this->notifications()->whereNull('seen_at')->selectRaw("count(*) as unseen")->first()->unseen;
