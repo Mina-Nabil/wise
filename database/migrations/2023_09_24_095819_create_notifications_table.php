@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('route');
             $table->text('message')->nullable();
+            $table->dateTime('seen_at')->nullable();
             $table->timestamps();
         });
     }
