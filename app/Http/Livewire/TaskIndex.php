@@ -156,10 +156,10 @@ class TaskIndex extends Component
         $user_types = User::TYPES;
 
         $tasks = Task::myTasksQuery($this->myTasks, $this->watcherTasks)
-            ->fromTo($startDate, $endDate)
-            ->when($this->filteredStatus, function ($query) {
-                return $query->byStates($this->filteredStatus);
-            })
+            // ->fromTo($startDate, $endDate)
+            // ->when($this->filteredStatus, function ($query) {
+            //     return $query->byStates($this->filteredStatus);
+            // })
             ->paginate(10);
 
         //fixing assignedTo when a user adds a test without changing the assigned to list
