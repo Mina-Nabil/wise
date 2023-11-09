@@ -57,7 +57,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/cars/model/delete/{id}', [CarsController::class, 'deleteCarModel']);
     Route::post('/cars/brand', [CarsController::class, 'setBrand']);
     Route::get('/cars/brands/delete/{id}', [CarsController::class, 'deleteBrand']);
-    Route::get('/fix/pw', [UserController::class, 'fixPasswords']);
+    // Route::get('/fix/pw', [UserController::class, 'fixPasswords']);
 });
 
 Route::post('/login', [HomeController::class, 'authenticate']);
