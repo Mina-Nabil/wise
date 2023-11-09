@@ -20,7 +20,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'sender_id')->nullable();
             $table->string('title');
             $table->string('route');
-            $table->dateTime('seen_at')->nullable();
             $table->text('message')->nullable();
             $table->timestamps();
         });
