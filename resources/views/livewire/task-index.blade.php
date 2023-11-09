@@ -346,13 +346,16 @@
                                         @if ($addWatchersSection)
                                             <label for="multiSelect" class="form-label">Select Watchers</label>
                                             <div class="w-full">
-                                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2" multiple="multiple" style="height: 250px">
+                                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2   @error('setWatchersList') !border-danger-500 @enderror" multiple="multiple" style="height: 250px">
                                                     @foreach ($users as $user)
                                                         <option value="{{ $user->id }}" class="">
                                                             {{ $user->first_name . ' ' . $user->last_name }}
                                                         </option>
                                                     @endforeach
                                                 </select>
+                                                @error('setWatchersList')
+                                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         @else
                                             <button wire:click="toggleAddWatchers" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm">Add Watchers</button>
