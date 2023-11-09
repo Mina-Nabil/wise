@@ -371,7 +371,10 @@ class Task extends Model
         $query->select('tasks.*')
             ->leftjoin('users', 'tasks.assigned_to_id', '=', 'users.id')
             ->leftjoin('task_temp_assignee', 'task_temp_assignee.task_id', '=', 'tasks.id')
-            ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id');
+            ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id')
+            ->when($includeWatchers, function ($q) use ($loggedInUser) {
+                $q->orwhere('task_watchers.user_id', $loggedInUser->id);
+            });
             // ->groupBy('tasks.id');
 
         if($loggedInUser->type === User::TYPE_ADMIN && !$assignedToMeOnly){
@@ -390,8 +393,6 @@ class Task extends Model
             $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
                 ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
                 ->whereDate('task_temp_assignee.end_date', '>=', Carbon::now()->format('Y-m-d'));
-        })->when($includeWatchers, function ($q) use ($loggedInUser) {
-            $q->orwhere('task_watchers.user_id', $loggedInUser->id);
         });
 
 
