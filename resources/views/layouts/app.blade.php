@@ -500,13 +500,16 @@
 
 
                                 <!-- BEGIN: Notification Dropdown -->
+                                @php
+                                $notfCount = auth()->user()->getUnseenNotfCount();
+                                @endphp
                                 <!-- Notifications Dropdown area -->
                                 <div class="relative md:block hidden">
                                     <button class="lg:h-[32px] lg:w-[32px] lg:bg-slate-100 lg:dark:bg-slate-900 dark:text-white text-slate-900 cursor-pointer rounded-full text-[20px] flex flex-col items-center justify-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <iconify-icon class="animate-tada text-slate-800 dark:text-white text-xl" icon="heroicons-outline:bell"></iconify-icon>
-                                        @if (!auth()->user()->notifications->isEmpty())
+                                        @if ($notfCount)
                                             <span class="absolute -right-1 lg:top-0 -top-[6px] h-4 w-4 bg-red-500 text-[8px] font-semibold flex flex-col items-center justify-center rounded-full text-white z-[99]">
-                                                {{ auth()->user()->notifications->count() }}</span>
+                                                {{ $notfCount }}</span>
                                         @endif
                                     </button>
                                     <!-- Notifications Dropdown -->

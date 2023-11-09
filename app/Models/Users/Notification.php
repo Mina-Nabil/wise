@@ -28,6 +28,17 @@ class Notification extends Model
         }
     }
 
+    public function setAsNotSeen()
+    {
+        $this->seen_at = null;
+        try {
+            return $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     //mutator
     protected function route(): Attribute
     {

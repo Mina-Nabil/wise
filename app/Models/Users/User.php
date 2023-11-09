@@ -97,6 +97,11 @@ class User extends Authenticatable
         }
     }
 
+    public function getUnseenNotfCount()
+    {
+        return $this->notifications()->whereNull('seen_at')->selectRaw("count(*) as unseen")->first()->unseen;
+    }
+
     public function changePassword($password): bool
     {
         try {

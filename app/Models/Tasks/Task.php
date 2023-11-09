@@ -298,7 +298,7 @@ class Task extends Model
     /**
      * @param array $files .. must contain array of ['name' => filename, 'file_url' => url] records
      */
-    public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $files = [])
+    public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $files = [], $watchers = [])
     {
         try {
             $loggedInUser = Auth::user();
@@ -336,6 +336,10 @@ class Task extends Model
                     $f['user_id']   =  $loggedInUser->id;
                 }
                 $newTask->files()->create($files);
+            }
+
+            if ($watchers && count($watchers) > 0) {
+                $newTask->setWatchers($watchers);
             }
 
             AppLog::info("New task created", null, $newTask);
