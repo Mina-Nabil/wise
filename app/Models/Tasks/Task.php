@@ -374,26 +374,26 @@ class Task extends Model
             ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id');
             // ->groupBy('tasks.id');
 
-        // if ($loggedInUser->type !== User::TYPE_ADMIN || $assignedToMeOnly) {
-        //     //filter all if not admin or only assigned
-        //     $query->whereNull('tasks.id');
-        // }
+        if ($loggedInUser->type !== User::TYPE_ADMIN || $assignedToMeOnly) {
+            //filter all if not admin or only assigned
+            $query->whereNull('tasks.id');
+        }
 
-        // $query->orwhere('users.manager_id', $loggedInUser->id);
-        // $query->orwhere('tasks.assigned_to_type', $loggedInUser->type);
-        // $query->orwhere('tasks.assigned_to_id', $loggedInUser->id);
-        // $query->orwhere(function ($qu) use ($loggedInUser) {
-        //     $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
-        //         ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
-        //         ->whereDate('task_temp_assignee.end_date', '>=', Carbon::now()->format('Y-m-d'));
-        // })->when($includeWatchers, function ($q) use ($loggedInUser) {
-        //     $q->orwhere('task_watchers.user_id', $loggedInUser->id);
-        // });
+        $query->orwhere('users.manager_id', $loggedInUser->id);
+        $query->orwhere('tasks.assigned_to_type', $loggedInUser->type);
+        $query->orwhere('tasks.assigned_to_id', $loggedInUser->id);
+        $query->orwhere(function ($qu) use ($loggedInUser) {
+            $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
+                ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
+                ->whereDate('task_temp_assignee.end_date', '>=', Carbon::now()->format('Y-m-d'));
+        })->when($includeWatchers, function ($q) use ($loggedInUser) {
+            $q->orwhere('task_watchers.user_id', $loggedInUser->id);
+        });
 
 
-        // if (!$assignedToMeOnly) {
-        //     $query->orwhere('tasks.open_by_id', $loggedInUser->id);
-        // }
+        if (!$assignedToMeOnly) {
+            $query->orwhere('tasks.open_by_id', $loggedInUser->id);
+        }
 
 
         return $query;
