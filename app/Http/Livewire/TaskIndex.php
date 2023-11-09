@@ -10,10 +10,11 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use App\Traits\ToggleSectionLivewire;
 
 class TaskIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, WithFileUploads;
+    use WithPagination, AlertFrontEnd, WithFileUploads, ToggleSectionLivewire;
 
     public $dateRange;
     public $startDate;
@@ -28,11 +29,18 @@ class TaskIndex extends Component
     public $dueDate;
     public $dueTime;
     public $file;
+    public $addWatchersSection;
+    public $setWatchersList;
 
     public $files = [];
 
 
     public $showNewTask = false;
+
+    public function toggleAddWatchers()
+    {
+        $this->toggle($this->addWatchersSection);
+    }
 
     public function openNewTask()
     {
@@ -66,6 +74,8 @@ class TaskIndex extends Component
                 'dueDate' => 'required|date',
                 'dueTime' => 'nullable|date_format:H:i',
                 'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+                'setWatchersList' => 'nullable|array',
+                'setWatchersList.*' => 'integer|exists:users,id',
             ],
             [
                 'file.max' => 'The file must not be greater than 5MB.',
@@ -76,6 +86,7 @@ class TaskIndex extends Component
                 'desc' => 'Description',
                 'dueDate' => 'Date',
                 'dueTime' => 'Time',
+                'setWatchersList' => 'Watchers',
             ],
         );
 
@@ -91,6 +102,7 @@ class TaskIndex extends Component
         $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
 
         $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $url);
+        $t->setWatchers($this->setWatchersList);
 
         if ($t) {
             $this->alert('success', 'Task Added!');
