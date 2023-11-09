@@ -391,9 +391,9 @@ class Task extends Model
         });
 
 
-        if (!$assignedToMeOnly) {
-            $query->orwhere('tasks.open_by_id', $loggedInUser->id);
-        }
+        // if (!$assignedToMeOnly) {
+        //     $query->orwhere('tasks.open_by_id', $loggedInUser->id);
+        // }
 
 
         return $query;
