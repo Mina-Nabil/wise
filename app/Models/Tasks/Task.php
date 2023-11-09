@@ -374,6 +374,10 @@ class Task extends Model
             ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id');
             // ->groupBy('tasks.id');
 
+        if($loggedInUser === User::TYPE_ADMIN && !$assignedToMeOnly){
+            return $query;
+        }
+
         if ($loggedInUser->type !== User::TYPE_ADMIN || $assignedToMeOnly) {
             //filter all if not admin or only assigned
             $query->whereNull('tasks.id');
