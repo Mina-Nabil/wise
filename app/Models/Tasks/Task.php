@@ -371,8 +371,8 @@ class Task extends Model
         $query->select('tasks.*')
             ->leftjoin('users', 'tasks.assigned_to_id', '=', 'users.id')
             ->leftjoin('task_temp_assignee', 'task_temp_assignee.task_id', '=', 'tasks.id')
-            ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id')
-            ->groupBy('tasks.id');
+            ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id');
+            // ->groupBy('tasks.id');
 
         // if ($loggedInUser->type !== User::TYPE_ADMIN || $assignedToMeOnly) {
         //     //filter all if not admin or only assigned
