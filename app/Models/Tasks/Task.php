@@ -378,8 +378,8 @@ class Task extends Model
             ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id')
             ->when($includeWatchers, function ($q) use ($loggedInUser) {
                 $q->orwhere('task_watchers.user_id', $loggedInUser->id);
-            });
-        // ->groupBy('tasks.id');
+            })
+            ->groupBy('tasks.id');
 
         if ($loggedInUser->type === User::TYPE_ADMIN && !$assignedToMeOnly) {
             return $query;
