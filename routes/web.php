@@ -30,10 +30,8 @@ Route::middleware('auth', 'active')->group(function () {
     //Users routes
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/profile', [UserController::class, 'show']);
-    
-    Route::get('/notifications', function () {
-        return view('users.notifications');
-    });
+
+    Route::get('/notifications', [UserController::class, 'notfIndex']);
     Route::post('/notifications/seen/{id}', [UserController::class, 'setNotfAsSeen']);
 
 

@@ -127,6 +127,11 @@ class UserController extends Controller
         ]);
     }
 
+    public function notfIndex()
+    {
+        return view('users.notifications');
+    }
+
 
     public function fixPasswords()
     {
