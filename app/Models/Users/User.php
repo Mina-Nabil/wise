@@ -207,7 +207,7 @@ class User extends Authenticatable
 
     public function latest_notifications(): HasMany
     {
-        return $this->hasMany(Notification::class)->latest()->limit(6);
+        return $this->hasMany(Notification::class)->latest(); //->limit(6)
     }
 
     public function notifications(): HasMany
