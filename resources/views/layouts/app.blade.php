@@ -501,7 +501,9 @@
 
                                 <!-- BEGIN: Notification Dropdown -->
                                 @php
-                                $notfCount = auth()->user()->getUnseenNotfCount();
+                                    $notfCount = auth()
+                                        ->user()
+                                        ->getUnseenNotfCount();
                                 @endphp
                                 <!-- Notifications Dropdown area -->
                                 <div class="relative md:block hidden">
@@ -513,7 +515,7 @@
                                         @endif
                                     </button>
                                     <!-- Notifications Dropdown -->
-                                    <div class="dropdown-menu z-10 hidden bg-white shadow w-[335px] dark:bg-slate-800 border dark:border-slate-700 !top-[23px] rounded-md overflow-hidden lrt:origin-top-right rtl:origin-top-left">
+                                    <div class="dropdown-menu z-10 hidden bg-white shadow w-[335px] dark:bg-slate-800 border dark:border-slate-700 !top-[23px] rounded-md overflow-hidden lrt:origin-top-right rtl:origin-top-left" style="max-height: 390px; overflow: overlay;">
                                         <div class="flex items-center justify-between py-4 px-4">
                                             <h3 class="text-sm font-Inter font-medium text-slate-700 dark:text-white">
                                                 Notifications</h3>
