@@ -78,7 +78,7 @@ class TaskPolicy
      */
     public function updateDue(User $user, Task $task)
     {
-        return $user->is_admin || $user->id == $task->open_by_id;
+        return $user->is_admin || $user->id == $task->open_by_id || $user->id == $task->assigned_to_id;
     }
 
     /**
