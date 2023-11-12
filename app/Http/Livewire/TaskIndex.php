@@ -101,8 +101,7 @@ class TaskIndex extends Component
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
 
-        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $url);
-        $t->setWatchers($this->setWatchersList);
+        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $url, $this->setWatchersList ?? []);
 
         if ($t) {
             $this->alert('success', 'Task Added!');
