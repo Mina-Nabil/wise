@@ -155,7 +155,7 @@
                                         @endif
                                     </td>
 
-                                    <td wire:ignore class="table-td scale" data-tippy-content="{{ $task->desc }}">
+                                    <td class="table-td scale" >
                                         {{ $task->title }}
                                     </td>
 
