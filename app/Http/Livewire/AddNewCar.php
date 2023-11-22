@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Cars\Car;
 use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
-use App\Models\Cars\Country;
+use App\Models\Base\Country;
 
 class AddNewCar extends Component
 {

@@ -5,7 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Insurance\Policy;
 use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
-use App\Models\Cars\Country;
+use App\Models\Base\Country;
 use App\Models\Insurance\PolicyCondition;
 use App\Traits\AlertFrontEnd;
 use Illuminate\Support\Facades\Log;

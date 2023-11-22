@@ -3,7 +3,7 @@
 use App\Models\Cars\Brand;
 use App\Models\Cars\Car;
 use App\Models\Cars\CarModel;
-use App\Models\Cars\Country;
+use App\Models\Base\Country;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

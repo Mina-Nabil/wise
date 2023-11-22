@@ -3,6 +3,7 @@
 namespace App\Models\Cars;
 
 use App\Exceptions\UnauthorizedException;
+use App\Models\Base\Country;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

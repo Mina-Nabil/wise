@@ -4,7 +4,7 @@ namespace App\Models\Insurance;
 
 use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
-use App\Models\Cars\Country;
+use App\Models\Base\Country;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;

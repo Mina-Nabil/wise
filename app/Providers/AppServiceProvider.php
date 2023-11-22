@@ -6,7 +6,7 @@ use App\Models\Cars\Brand;
 use App\Models\Cars\Car;
 use App\Models\Cars\CarPrice;
 use App\Models\Cars\CarModel;
-use App\Models\Cars\Country;
+use App\Models\Base\Country;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Models\Insurance\Policy;

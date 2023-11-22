@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Cars;
+namespace App\Models\Base;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
