@@ -13,6 +13,15 @@ class Car extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const PAYMENT_FREQ_YEARLY = 'yearly';
+    const PAYMENT_FREQ_MONTHLY = 'monthly';
+    const PAYMENT_FREQ_QUARTER = 'quarter';
+    const PAYMENT_FREQS = [
+        self::PAYMENT_FREQ_YEARLY,
+        self::PAYMENT_FREQ_MONTHLY,
+        self::PAYMENT_FREQ_QUARTER,
+    ];
+
     protected $table = 'customer_cars';
     protected $fillable = [
         "car_id",

@@ -3,6 +3,7 @@
 use App\Models\Cars\Car;
 use App\Models\Base\Country;
 use App\Models\Customers\Address;
+use App\Models\Customers\Car as CustomersCar;
 use App\Models\Customers\Customer;
 use App\Models\Customers\Profession;
 use App\Models\Customers\Relative;
@@ -35,7 +36,6 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->enum('gender', Customer::GENDERS)->nullable();
             $table->enum('marital_status', Customer::MARITALSTATUSES)->nullable();
-            $table->string('nationality')->nullable();
             $table->enum('id_type', Customer::IDTYPES);
             $table->string('id_number')->nullable();
             $table->foreignIdFor(Country::class, 'nationality_id')->nullable()->constrained('countries')->nullOnDelete();
@@ -63,10 +63,9 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Customer::class)->constrained('customers')->cascadeOnDelete();
             $table->foreignIdFor(Car::class)->constrained('cars');
-            $table->double('value')->nullable();
             $table->double('sum_insured')->nullable();
             $table->double('insurance_payment')->nullable();
-            $table->double('payment_frequency')->nullable();
+            $table->enum('payment_frequency', CustomersCar::PAYMENT_FREQS)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

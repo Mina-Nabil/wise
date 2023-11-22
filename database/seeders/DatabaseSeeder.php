@@ -24,9 +24,11 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersSeeder::class);
         $this->call(CountriesSeeder::class);
         $this->call(CarsSeeder::class);
+        $this->call(ProfessionsSeeder::class);
         if (App::environment('local')) {
             $this->call(InsuranceSeeder::class);
             $this->call(TaskSeeder::class);
+            $this->call(CustomersSeeder::class);
         }
     }
 }
