@@ -13,7 +13,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as FakerFactory;
 
-class CustomersSeeder extends Seeder
+class LeadsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -29,26 +29,26 @@ class CustomersSeeder extends Seeder
         $cars = Car::all();
 
         for ($i = 0; $i < 50; $i++) {
-            $newCust = Customer::newCustomer(
+            $newCust = Customer::newLead(
                 $faker->name,
                 $faker->phoneNumber,
-                $faker->randomElement(Customer::GENDERS),
-                rand(0, 2) == 0 ? $faker->email : null, // 1/3 is null
-                rand(0, 9) == 0 ? $faker->phoneNumber : null, // 1/10 is null
+                rand(0, 1) == 0 ? $faker->email : null, // 1/3 is null
+                rand(0, 3) == 0 ? $faker->phoneNumber : null, // 1/10 is null
                 rand(0, 1) == 0 ? $faker->name : null, //half is null
-                rand(0, 3) == 0 ? $faker->date('Y-m-d', '2010-01-01') : null,
-                rand(0, 9) == 0 ? $faker->randomElement(Customer::MARITALSTATUSES) : null,
+                rand(0, 2) == 0 ? $faker->date('Y-m-d', '2010-01-01') : null,
+                $faker->randomElement(Customer::GENDERS),
+                rand(0, 3) == 0 ? $faker->randomElement(Customer::MARITALSTATUSES) : null,
                 $is_id_null == 0 ? $faker->randomElement(Customer::IDTYPES) : null,
                 $is_id_null == 0 ? $faker->randomNumber(12) : null,
-                rand(0, 9) == 0 ? $countries->random()->id : null,
-                rand(0, 9) == 0 ? $professions->random()->id : null,
-                rand(0, 9) == 0 ? $faker->randomElement(Customer::SALARY_RANGES) : null,
-                rand(0, 9) == 0 ? $faker->randomElement(Customer::INCOME_SOURCES) : null
+                rand(0, 2) == 0 ? $countries->random()->id : null,
+                rand(0, 3) == 0 ? $professions->random()->id : null,
+                rand(0, 2) == 0 ? $faker->randomElement(Customer::SALARY_RANGES) : null,
+                rand(0, 1) == 0 ? $faker->randomElement(Customer::INCOME_SOURCES) : null
             );
 
-            $carsCount = $faker->biasedNumberBetween(0, 10,  'Faker\Provider\Biased::linearLow');
-            $relativesCount = $faker->biasedNumberBetween(0, 5,  'Faker\Provider\Biased::linearLow');
-            $addressCount = $faker->biasedNumberBetween(0, 2,  'Faker\Provider\Biased::linearLow');
+            $carsCount = $faker->biasedNumberBetween(0, 3,  'Faker\Provider\Biased::linearLow');
+            $relativesCount = $faker->biasedNumberBetween(0, 1,  'Faker\Provider\Biased::linearLow');
+            $addressCount = $faker->biasedNumberBetween(0, 1,  'Faker\Provider\Biased::linearLow');
 
             for ($i = 0; $i < $carsCount; $i++) {
                 $newCust->addCar(

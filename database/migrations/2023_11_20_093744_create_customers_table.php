@@ -7,6 +7,7 @@ use App\Models\Customers\Car as CustomersCar;
 use App\Models\Customers\Customer;
 use App\Models\Customers\Profession;
 use App\Models\Customers\Relative;
+use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -38,6 +39,8 @@ return new class extends Migration
             $table->enum('marital_status', Customer::MARITALSTATUSES)->nullable();
             $table->enum('id_type', Customer::IDTYPES);
             $table->string('id_number')->nullable();
+            $table->foreignIdFor(User::class, 'creator_id')->constrained('users')->nullOnDelete();
+            $table->foreignIdFor(User::class, 'owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignIdFor(Country::class, 'nationality_id')->nullable()->constrained('countries')->nullOnDelete();
             $table->foreignIdFor(Profession::class)->nullable()->constrained('professions')->nullOnDelete();
             $table->enum('salary_range', Customer::SALARY_RANGES);

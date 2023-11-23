@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Customer extends Model
@@ -88,6 +89,25 @@ class Customer extends Model
     ];
 
     ///model functions
+    public function addFollowup($title, $call_time, $desc = null): Followup|false
+    {
+        try {
+            $res = $this->followups()->create([
+                "creator_id" =>  Auth::id(),
+                "title"     =>  $title,
+                "call_time" =>  $call_time,
+                "desc"      =>  $desc
+            ]);
+            AppLog::info("Follow-up created", loggable: $res);
+            return $res;
+        } catch (Exception $e) {
+            AppLog::error("Can't create followup", desc: $e->getMessage());
+            report($e);
+            return false;
+        }
+    }
+
+
     public function editCustomer(
         $name,
         $phone,
@@ -325,6 +345,10 @@ class Customer extends Model
     }
 
     ///relations
+    public function followups(): HasMany
+    {
+        return $this->hasMany(Followup::class);
+    }
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);

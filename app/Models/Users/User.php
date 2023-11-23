@@ -3,6 +3,7 @@
 namespace App\Models\Users;
 
 use App\Events\AppNotification;
+use App\Models\Customers\Customer;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskTempAssignee;
 use App\Traits\CanBeDisabled;
@@ -200,6 +201,23 @@ class User extends Authenticatable
     }
 
     //relations
+    public function owned_followups(): HasMany
+    {
+        return $this->hasMany(Customer::class, 'owner_id');
+    }
+    public function created_followups(): HasMany
+    {
+        return $this->hasMany(Customer::class, 'creator_id');
+    }
+    public function owned_customers(): HasMany
+    {
+        return $this->hasMany(Customer::class, 'owner_id');
+    }
+    public function created_customers(): HasMany
+    {
+        return $this->hasMany(Customer::class, 'creator_id');
+    }
+
     public function notes(): HasMany
     {
         return $this->hasMany(Note::class);
