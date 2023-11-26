@@ -16,6 +16,10 @@ class Customer extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
+    
     const TYPE_LEAD = 'lead';
     const TYPE_CLIENT = 'client';
     const TYPES = [
@@ -296,6 +300,7 @@ class Customer extends Model
             $newLead->save();
             return $newLead;
         } catch (Exception $e) {
+            AppLog::error("Can't add customer", $e->getMessage());
             report($e);
             return false;
         }
@@ -338,7 +343,9 @@ class Customer extends Model
         try {
             $newCustomer->save();
             return $newCustomer;
+            
         } catch (Exception $e) {
+            
             report($e);
             return false;
         }

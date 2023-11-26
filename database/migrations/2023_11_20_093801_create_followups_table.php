@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'creator_id')->constrained('users');
             $table->foreignIdFor(Customer::class)->constrained('customers');
             $table->string('title');
-            $table->emum('status', Followup::STATUSES)->default(Followup::STATUS_NEW);
+            $table->enum('status', Followup::STATUSES)->default(Followup::STATUS_NEW);
             $table->dateTime('call_time')->nullable();
             $table->dateTime('action_time')->nullable();
             $table->string('desc')->nullable();

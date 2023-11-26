@@ -14,6 +14,10 @@ class Relative extends Model
 
     protected $table = 'customer_relative';
 
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
+    
     const RELATION_MOTHER = 'mother';
     const RELATION_FATHER = 'father';
     const RELATION_BROTHER = 'brother';
