@@ -19,7 +19,7 @@ class Customer extends Model
     protected $casts = [
         'birth_date' => 'date',
     ];
-    
+
     const TYPE_LEAD = 'lead';
     const TYPE_CLIENT = 'client';
     const TYPES = [
@@ -175,7 +175,7 @@ class Customer extends Model
         try {
             $tmp = $this->cars()->create([
                 "car_id"      =>  $car_id,
-                "value"      =>  $value,
+                // "value"      =>  $value,
                 "sum_insured"  =>  $sum_insured,
                 "insurance_payment"    =>  $insurance_payment,
                 "payment_frequency"     =>  $payment_frequency
@@ -343,9 +343,8 @@ class Customer extends Model
         try {
             $newCustomer->save();
             return $newCustomer;
-            
         } catch (Exception $e) {
-            
+
             report($e);
             return false;
         }

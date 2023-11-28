@@ -7,6 +7,7 @@ use App\models\Customers\Customer;
 use App\models\Customers\Profession;
 use App\models\Customers\Address;
 use App\models\Customers\Car as CustomerCar;
+use App\Models\Customers\Relative;
 use App\models\Cars\Car;
 use App\models\Cars\CarModel;
 use App\models\Cars\Brand;
@@ -15,7 +16,7 @@ use App\Traits\ToggleSectionLivewire;
 
 class CustomerShow extends Component
 {
-    use ToggleSectionLivewire,AlertFrontEnd;
+    use ToggleSectionLivewire, AlertFrontEnd;
     public $customer;
 
     public $name;
@@ -32,7 +33,7 @@ class CustomerShow extends Component
     public $profession_id;
     public $salaryRange;
     public $incomeSource;
-    
+
     public $editCustomerSection = false;
 
 
@@ -44,10 +45,10 @@ class CustomerShow extends Component
     public $carModel;
     public $CarCategory;
     public $cars;
-    public $sumInsurance ;
-    public $insurancePayment ;
-    public $paymentFreqs ;
-    
+    public $sumInsurance;
+    public $insurancePayment;
+    public $paymentFreqs;
+
     //add Address
     public $addAddressSection = false;
     public $addressType;
@@ -58,7 +59,46 @@ class CustomerShow extends Component
     public $city;
     public $country;
 
-    public function addCar(){
+    //add Relative
+    public $addRelativeSection = false;
+    public $relativeName;
+    public $relation;
+    public $relativeGender;
+    public $RelativePhone;
+    public $relativeBdate;
+
+    public function addRelative()
+    {
+        $this->validate([
+            'relativeName' => 'required|string|max:255',
+            'relation' => 'required|in:' . implode(',', Relative::RELATIONS),
+            'relativeGender' => 'nullable|in:' . implode(',', Customer::GENDERS),
+            'RelativePhone' => 'nullable|string|max:255',
+            'relativeBdate' => 'nullable|date'
+        ]);
+        $customer = Customer::find($this->customer->id);
+        $r = $customer->addRelative(
+            $this->relativeName,
+            $this->relation,
+            $this->relativeGender,
+            $this->RelativePhone,
+            $this->relativeBdate
+        );
+        if ($r) {
+            $this->alert('success', 'Relative added sucessfuly!');
+            $this->relativeName = null;
+            $this->relation = null;
+            $this->relativeGender = null;
+            $this->RelativePhone = null;
+            $this->relativeBdate = null;
+            $this->toggleAddRelative();
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function addCar()
+    {
 
         $this->validate([
             'CarCategory' => 'required|integer|exists:cars,id',
@@ -75,19 +115,20 @@ class CustomerShow extends Component
             $this->insurancePayment,
             $this->paymentFreqs
         );
-        if($c){
-            $this->alert('success' , 'Car added sucessfuly!');
+        if ($c) {
+            $this->alert('success', 'Car added sucessfuly!');
             $this->CarCategory = null;
             $this->sumInsurance = null;
             $this->insurancePayment = null;
             $this->paymentFreqs = null;
             $this->toggleAddCar();
-        }else{
-            $this->alert('failed','server error');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
-    public function addAddress(){
+    public function addAddress()
+    {
         $this->validate([
             'addressType' => 'required|in:' . implode(',', Address::TYPES),
             'line1' => 'required|string|max:255',
@@ -108,8 +149,8 @@ class CustomerShow extends Component
             $this->building,
             $this->flat
         );
-        if($a){
-            $this->alert('success' , 'Address added sucessfuly!');
+        if ($a) {
+            $this->alert('success', 'Address added sucessfuly!');
             $this->addressType = null;
             $this->line1 = null;
             $this->line2 = null;
@@ -118,15 +159,60 @@ class CustomerShow extends Component
             $this->building = null;
             $this->flat = null;
             $this->toggleAddAddress();
-        }else{
-            $this->alert('failed','server error');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
-    
+    public function editInfo()
+    {
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'phone1' => 'required|string|max:255',
+            'phone2' => 'nullable|string|max:255',
+            'arabic_name' => 'nullable|string|max:255',
+            'bdate' => 'nullable|date',
+            'email' =>  'nullable|email',
+            'gender' =>  'nullable|in:' . implode(',', Customer::GENDERS),
+            'maritalStatus' =>  'nullable|in:' . implode(',', Customer::MARITALSTATUSES),
+            'idType' =>  'required|in:' . implode(',', Customer::IDTYPES),
+            'idNumber' => 'nullable|string|max:255',
+            'nationalId' => 'nullable|integer|max:20', //revise
+            'profession_id' => 'integer|exists:professions,id',
+            'salaryRange' => 'required|in:' . implode(',', Customer::SALARY_RANGES),
+            'incomeSource' =>  'required|in:' . implode(',', Customer::INCOME_SOURCES),
+        ]);
+        $customer = Customer::find($this->customer->id);
+        $c = $customer->editCustomer(
+            $this->name,
+            $this->phone1,
+            $this->phone2,
+            $this->arabic_name,
+            $this->bdate,
+            $this->email,
+            $this->gender,
+            $this->maritalStatus,
+            $this->idType,
+            $this->idNumber,
+            $this->nationalId,
+            $this->profession_id,
+            $this->salaryRange,
+            $this->incomeSource
+        );
+        if ($c) {
+            $this->alert('success', 'Updated Successfuly!');
+            $this->mount($this->customer->id);
+            $this->toggleEditCustomer();
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
 
 
-    public function mount($customerId){
+
+
+    public function mount($customerId)
+    {
         $this->customer = Customer::findOrFail($customerId);
 
         $this->name = $this->customer->name;
@@ -143,14 +229,16 @@ class CustomerShow extends Component
         $this->profession_id = $this->customer->profession_id;
         $this->salaryRange  = $this->customer->salary_range;
         $this->incomeSource = $this->customer->income_source;
-
     }
 
 
     public function updatedCarBrand($value)
     {
         $this->models = CarModel::where('brand_id', $value)->get();
-        if($value === ''){$this->carModel=null;$this->CarCategory=null;}
+        if ($value === '') {
+            $this->carModel = null;
+            $this->CarCategory = null;
+        }
         $this->CarCategory = null;
     }
 
@@ -159,13 +247,19 @@ class CustomerShow extends Component
         $this->cars = Car::where('car_model_id', $value)->get();
     }
 
-    public function toggleAddAddress(){
+    public function toggleAddAddress()
+    {
         $this->toggle($this->addAddressSection);
     }
 
     public function toggleAddCar()
     {
         $this->toggle($this->addCarSection);
+    }
+
+    public function toggleAddRelative()
+    {
+        $this->toggle($this->addRelativeSection);
     }
 
     public function toggleEditCustomer()
@@ -184,8 +278,10 @@ class CustomerShow extends Component
         $brands = Brand::all();
         $PAYMENT_FREQS = CustomerCar::PAYMENT_FREQS;
         $addressTypes = Address::TYPES;
+        $RELATIONS = Relative::RELATIONS;
 
-        return view('livewire.customer-show',[
+
+        return view('livewire.customer-show', [
             'customer' => $this->customer,
             'GENDERS' => $GENDERS,
             'MARITALSTATUSES' => $MARITALSTATUSES,
@@ -197,6 +293,7 @@ class CustomerShow extends Component
             'models' => $this->models,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
             'addressTypes' => $addressTypes,
+            'RELATIONS' => $RELATIONS,
         ]);
     }
 }

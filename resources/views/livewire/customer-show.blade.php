@@ -99,7 +99,7 @@
                                 <br>
                             @endforeach
 
-                            <button class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add relative</button>
+                            <button wire:click="toggleAddRelative" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add relative</button>
 
                         </div>
                     </div>
@@ -300,7 +300,7 @@
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                            <button wire:click="editInfo" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Accept
                             </button>
                         </div>
@@ -337,10 +337,9 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Car Brand</label>
-                                        <select name="basicSelect"  class="form-control w-full mt-2" wire:model="carBrand">
+                                        <select name="basicSelect" class="form-control w-full mt-2" wire:model="carBrand">
                                             <option value=''>Select an Option</option>
                                             @foreach ($brands as $brand)
-                                                
                                                 <option value="{{ $brand->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $brand->name }}</option>
                                             @endforeach
                                         </select>
@@ -348,9 +347,9 @@
                                     @if ($carBrand && $carBrand !== '')
                                         <div class="input-area">
                                             <label for="lastName" class="form-label">Car Model</label>
-                                            
-                                            <select name="basicSelect"  class="form-control w-full mt-2" wire:model="carModel">
-                                                <option value='' >Select an Option</option>
+
+                                            <select name="basicSelect" class="form-control w-full mt-2" wire:model="carModel">
+                                                <option value=''>Select an Option</option>
                                                 @foreach ($models as $model)
                                                     <option value="{{ $model->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $model->name }}</option>
                                                 @endforeach
@@ -359,15 +358,15 @@
                                     @endif
 
                                     @if ($carModel && $carModel !== '' && $carBrand && $carBrand !== '')
-                                    <div class="input-area">
-                                        <label for="lastName" class="form-label">Car Category</label>
-                                        <select name="basicSelect"  class="form-control w-full mt-2" wire:model="CarCategory">
-                                            <option selected>Select an Option</option>
-                                            @foreach ($cars as $car)
-                                                <option value="{{ $car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $car->category }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                        <div class="input-area">
+                                            <label for="lastName" class="form-label">Car Category</label>
+                                            <select name="basicSelect" class="form-control w-full mt-2" wire:model="CarCategory">
+                                                <option selected>Select an Option</option>
+                                                @foreach ($cars as $car)
+                                                    <option value="{{ $car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $car->category }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     @endif
                                 </div>
                                 <hr class="mt-5">
@@ -429,9 +428,8 @@
                                 <p class="text-lg"><b>Address info</b></p>
                                 <div class="input-area mt-3">
                                     <label for="firstName" class="form-label">Address Type</label>
-                                    <select name="basicSelect"  class="form-control w-full mt-2" wire:model="addressType">
+                                    <select name="basicSelect" class="form-control w-full mt-2" wire:model="addressType">
                                         @foreach ($addressTypes as $type)
-                                            
                                             <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $type }}</option>
                                         @endforeach
                                     </select>
@@ -467,6 +465,75 @@
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="addAddress" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- addRelativeSection --}}
+    @if ($addRelativeSection)
+        {{-- add address section --}}
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Relative
+                            </h3>
+                            <button wire:click="toggleAddRelative" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <p class="text-lg"><b>Address info</b></p>
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Full Name</label>
+                                    <input id="lastName" type="text" class="form-control" wire:model="relativeName">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Relation</label>
+                                        <select name="basicSelect" class="form-control w-full mt-2" wire:model="relation">
+                                            @foreach ($RELATIONS as $relation)
+                                                <option value="{{ $relation }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $relation }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Gender</label>
+                                        <select name="basicSelect" class="form-control w-full mt-2" wire:model="relativeGender">
+                                            <option selected>Select an Option</option>
+                                            @foreach ($GENDERS as $gender)
+                                                <option value="{{ $gender }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $gender }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Relative Phone</label>
+                                        <input id="lastName" type="text" class="form-control" wire:model="RelativePhone">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Relative birth date</label>
+                                        <input id="lastName" type="date" class="form-control" wire:model="relativeBdate">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addRelative" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>

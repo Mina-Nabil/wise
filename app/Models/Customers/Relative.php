@@ -17,7 +17,9 @@ class Relative extends Model
     protected $casts = [
         'birth_date' => 'date',
     ];
-    
+
+    protected $fillable = ['customer_id', 'name', 'relation', 'gender', 'phone', 'birth_date'];
+
     const RELATION_MOTHER = 'mother';
     const RELATION_FATHER = 'father';
     const RELATION_BROTHER = 'brother';
