@@ -13,16 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('offers', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(User::class, 'creator_id')->constrained('users');
-            $table->morph('owner');
-            $table->enum('status', []);
-            $table->timestamps();
-        });
+        // Schema::create('offers', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignIdFor(User::class, 'creator_id')->constrained('users');
+        //     $table->morph('owner');
+        //     $table->enum('status', []);
+        //     $table->timestamps();
+        // });
 
-        Schema::create('offer_options', function (Blueprint $table) {
-        });
+        // Schema::create('offer_options', function (Blueprint $table) {
+        // });
     }
 
     /**

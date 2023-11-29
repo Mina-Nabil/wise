@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 class BankAccount extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'bank_account';
 
     const TYPE_DEBIT = 'debit';
     const TYPE_CREDIT = 'credit';

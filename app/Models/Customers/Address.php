@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 class Address extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'customer_address';
 
     protected $table = 'customer_addresses';
 

@@ -24,6 +24,7 @@ class User extends Authenticatable
 {
     use  HasFactory, Notifiable, CanBeDisabled;
 
+    const MORPH_TYPE = 'user';
 
     //All User types
     const TYPE_SALES = 'sales';

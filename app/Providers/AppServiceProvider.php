@@ -7,11 +7,26 @@ use App\Models\Cars\Car;
 use App\Models\Cars\CarPrice;
 use App\Models\Cars\CarModel;
 use App\Models\Base\Country;
+use App\Models\Corporates\Address;
+use App\Models\Corporates\BankAccount;
+use App\Models\Corporates\Contact;
+use App\Models\Corporates\Corporate;
+use App\Models\Corporates\Phone;
+use App\Models\Customers\Address as CustomersAddress;
+use App\Models\Customers\Car as CustomersCar;
+use App\Models\Customers\Customer;
+use App\Models\Customers\Followup;
+use App\Models\Customers\Phone as CustomersPhone;
+use App\Models\Customers\Profession;
+use App\Models\Customers\Relative;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\PolicyCondition;
 use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskComment;
+use App\Models\Tasks\TaskFile;
+use App\Models\Tasks\TaskWatcher;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -44,7 +59,22 @@ class AppServiceProvider extends ServiceProvider
             CompanyEmail::MORPH_TYPE => CompanyEmail::class,
             Policy::MORPH_TYPE => Policy::class,
             PolicyCondition::MORPH_TYPE => PolicyCondition::class,
-            Task::MORPH_TYPE => Task::class
+            Task::MORPH_TYPE => Task::class,
+            Customer::MORPH_TYPE => Customer::class,
+            Corporate::MORPH_TYPE => Corporate::class,
+            Address::MORPH_TYPE => Address::class,
+            BankAccount::MORPH_TYPE => BankAccount::class,
+            Contact::MORPH_TYPE => Contact::class,
+            Phone::MORPH_TYPE => Phone::class,
+            CustomersAddress::MORPH_TYPE => CustomersAddress::class,
+            CustomersCar::MORPH_TYPE => CustomersCar::class,
+            CustomersPhone::MORPH_TYPE => CustomersPhone::class,
+            Profession::MORPH_TYPE => Profession::class,
+            Relative::MORPH_TYPE => Relative::class,
+            Followup::MORPH_TYPE => Followup::class,
+            TaskComment::MORPH_TYPE => TaskComment::class,
+            TaskFile::MORPH_TYPE => TaskFile::class,
+            TaskWatcher::MORPH_TYPE => TaskWatcher::class,
         ]);
     }
 }

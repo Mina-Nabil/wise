@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Followup extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'followup';
 
     const STATUS_NEW = 'new';
     const STATUS_CALLED = 'called';

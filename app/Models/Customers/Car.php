@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Car extends Model
 {
     use HasFactory, SoftDeletes;
+    const MORPH_TYPE = 'customer_car';
 
     const PAYMENT_FREQ_YEARLY = 'yearly';
     const PAYMENT_FREQ_MONTHLY = 'monthly';

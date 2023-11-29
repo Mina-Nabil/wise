@@ -31,9 +31,9 @@ class CorporatesSeeder extends Seeder
                 email: rand(0, 2) == 0 ? $faker->email : null, // 1/3 is null
                 commercial_record: rand(0, 2) == 0 ? $faker->randomNumber(7) : null, // 1/3 is null
                 commercial_record_doc: rand(0, 2) == 0 ? $faker->url : null,
-                tax_id: rand(0, 2) == 0 ? $faker->randomNumber(11) : null,
+                tax_id: rand(0, 2) == 0 ? $faker->randomNumber(8) : null,
                 tax_id_doc: rand(0, 2) == 0 ? $faker->url : null,
-                kyc: rand(0, 2) == 0 ? $faker->randomNumber(11) : null,
+                kyc: rand(0, 2) == 0 ? $faker->randomNumber(8) : null,
                 kyc_doc: rand(0, 2) == 0 ? $faker->url : null,
                 contract_doc: rand(0, 2) == 0 ? $faker->url : null,
                 main_bank_evidence: rand(0, 2) == 0 ? $faker->url : null,
@@ -44,7 +44,7 @@ class CorporatesSeeder extends Seeder
             $addressCount = $faker->biasedNumberBetween(0, 2,  'Faker\Provider\Biased::linearLow');
             $phonesCount = $faker->biasedNumberBetween(0, 3,  'Faker\Provider\Biased::linearHigh');
 
-            for ($i = 0; $i < $contactsCount; $i++) {
+            for ($k = 0; $k < $contactsCount; $k++) {
                 $newCorp->addContact(
                     name: $faker->name,
                     job_title: rand(0, 3) == 0 ? $faker->jobTitle : null,
@@ -53,35 +53,35 @@ class CorporatesSeeder extends Seeder
                     is_default: $faker->boolean(25)
                 );
             }
-            for ($i = 0; $i < $accountsCount; $i++) {
+            for ($j = 0; $j < $accountsCount; $j++) {
                 $newCorp->addBankAccount(
                     type: $faker->randomElement(BankAccount::TYPES),
                     bank_name: $faker->company,
-                    account_number: $faker->randomNumber(14),
+                    account_number: $faker->randomNumber(8),
                     owner_name: $faker->name,
                     evidence_doc: rand(0, 3) == 0 ?  $faker->url : null,
-                    iban: rand(0, 3) == 0 ?  $faker->randomNumber(25) : null,
+                    iban: rand(0, 3) == 0 ?  ($faker->randomNumber(8) . $faker->randomNumber(8) . $faker->randomNumber(8)) : null,
                     bank_branch: rand(0, 3) == 0 ?  $faker->company : null,
                     is_default: $faker->boolean(25)
                 );
             }
-            for ($i = 0; $i < $addressCount; $i++) {
+            for ($s = 0; $s < $addressCount; $s++) {
                 $newCorp->addAddress(
-                    $faker->randomElement(Address::TYPES),
-                    $faker->address,
-                    rand(0, 1) == 0 ? $faker->address : null,
-                    rand(0, 1) == 0 ? $faker->country : null,
-                    rand(0, 1) == 0 ? $faker->city : null,
-                    rand(0, 1) == 0 ? $faker->numberBetween(1, 999) : null,
-                    rand(0, 1) == 0 ? $faker->numberBetween(1, 50) : null,
-                    $i == 0
+                    type: $faker->randomElement(Address::TYPES),
+                    line_1: $faker->address,
+                    line_2: rand(0, 1) == 0 ? $faker->address : null,
+                    country: rand(0, 1) == 0 ? $faker->country : null,
+                    city: rand(0, 1) == 0 ? $faker->city : null,
+                    building: rand(0, 1) == 0 ? $faker->numberBetween(1, 999) : null,
+                    flat: rand(0, 1) == 0 ? $faker->numberBetween(1, 50) : null,
+                    is_default: $faker->boolean(25)
                 );
             }
-            for ($i = 0; $i < $phonesCount; $i++) {
+            for ($a = 0; $a < $phonesCount; $a++) {
                 $newCorp->addPhone(
-                    $faker->randomElement(Phone::TYPES),
-                    $faker->phoneNumber,
-                    $i == 0
+                    type: $faker->randomElement(Phone::TYPES),
+                    number: $faker->phoneNumber,
+                    is_default: $faker->boolean(25)
                 );
             }
         }
@@ -95,9 +95,9 @@ class CorporatesSeeder extends Seeder
                 email: rand(0, 2) == 0 ? $faker->email : null, // 1/3 is null
                 commercial_record: rand(0, 2) == 0 ? $faker->randomNumber(7) : null, // 1/3 is null
                 commercial_record_doc: rand(0, 2) == 0 ? $faker->url : null,
-                tax_id: rand(0, 2) == 0 ? $faker->randomNumber(11) : null,
+                tax_id: rand(0, 2) == 0 ? $faker->randomNumber(8) : null,
                 tax_id_doc: rand(0, 2) == 0 ? $faker->url : null,
-                kyc: rand(0, 2) == 0 ? $faker->randomNumber(11) : null,
+                kyc: rand(0, 2) == 0 ? $faker->randomNumber(8) : null,
                 kyc_doc: rand(0, 2) == 0 ? $faker->url : null,
                 contract_doc: rand(0, 2) == 0 ? $faker->url : null,
                 main_bank_evidence: rand(0, 2) == 0 ? $faker->url : null,
@@ -108,7 +108,7 @@ class CorporatesSeeder extends Seeder
             $addressCount = $faker->biasedNumberBetween(0, 2,  'Faker\Provider\Biased::linearLow');
             $phonesCount = $faker->biasedNumberBetween(0, 3,  'Faker\Provider\Biased::linearHigh');
 
-            for ($i = 0; $i < $contactsCount; $i++) {
+            for ($k = 0; $k < $contactsCount; $k++) {
                 $newCorp->addContact(
                     name: $faker->name,
                     job_title: rand(0, 3) == 0 ? $faker->jobTitle : null,
@@ -117,31 +117,31 @@ class CorporatesSeeder extends Seeder
                     is_default: $faker->boolean(25)
                 );
             }
-            for ($i = 0; $i < $accountsCount; $i++) {
+            for ($s = 0; $s < $accountsCount; $s++) {
                 $newCorp->addBankAccount(
                     type: $faker->randomElement(BankAccount::TYPES),
                     bank_name: $faker->company,
-                    account_number: $faker->randomNumber(14),
+                    account_number: $faker->randomNumber(8),
                     owner_name: $faker->name,
                     evidence_doc: rand(0, 3) == 0 ?  $faker->url : null,
-                    iban: rand(0, 3) == 0 ?  $faker->randomNumber(25) : null,
+                    iban: rand(0, 3) == 0 ?  ($faker->randomNumber(8) . $faker->randomNumber(8) . $faker->randomNumber(8)) : null,
                     bank_branch: rand(0, 3) == 0 ?  $faker->company : null,
                     is_default: $faker->boolean(25)
                 );
             }
-            for ($i = 0; $i < $addressCount; $i++) {
+            for ($h = 0; $h < $addressCount; $h++) {
                 $newCorp->addAddress(
                     type: $faker->randomElement(Address::TYPES),
                     line_1: $faker->address,
                     line_2: rand(0, 1) == 0 ? $faker->address : null,
                     country: rand(0, 1) == 0 ? $faker->country : null,
-                    city:  rand(0, 1) == 0 ? $faker->city : null,
+                    city: rand(0, 1) == 0 ? $faker->city : null,
                     building: rand(0, 1) == 0 ? $faker->numberBetween(1, 999) : null,
                     flat: rand(0, 1) == 0 ? $faker->numberBetween(1, 50) : null,
                     is_default: $faker->boolean(25)
                 );
             }
-            for ($i = 0; $i < $phonesCount; $i++) {
+            for ($o = 0; $o < $phonesCount; $o++) {
                 $newCorp->addPhone(
                     type: $faker->randomElement(Phone::TYPES),
                     number: $faker->phoneNumber,

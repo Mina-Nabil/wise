@@ -40,7 +40,7 @@ class CustomersSeeder extends Seeder
                 birth_date: rand(0, 3) == 0 ? $faker->date('Y-m-d', '2010-01-01') : null,
                 marital_status: rand(0, 9) == 0 ? $faker->randomElement(Customer::MARITALSTATUSES) : null,
                 id_type: $is_id_null == 0 ? $faker->randomElement(Customer::IDTYPES) : null,
-                id_number: $is_id_null == 0 ? $faker->randomNumber(12) : null,
+                id_number: $is_id_null == 0 ? $faker->randomNumber(8) : null,
                 nationality_id: rand(0, 9) == 0 ? $countries->random()->id : null,
                 profession_id: rand(0, 9) == 0 ? $professions->random()->id : null,
                 salary_range: rand(0, 9) == 0 ? $faker->randomElement(Customer::SALARY_RANGES) : null,
@@ -52,7 +52,7 @@ class CustomersSeeder extends Seeder
             $addressCount = $faker->biasedNumberBetween(0, 2,  'Faker\Provider\Biased::linearLow');
             $phonesCount = $faker->biasedNumberBetween(0, 3,  'Faker\Provider\Biased::linearHigh');
 
-            for ($i = 0; $i < $carsCount; $i++) {
+            for ($k = 0; $k < $carsCount; $k++) {
                 $newCust->addCar(
                     car_id: $cars->random()->id,
                     sum_insured: rand(0, 9) == 0 ? $faker->numberBetween(10000, 5000000) : null,
@@ -60,16 +60,16 @@ class CustomersSeeder extends Seeder
                     payment_frequency: rand(0, 9) == 0 ? $faker->randomElement(CustomersCar::PAYMENT_FREQS) : null,
                 );
             }
-            for ($i = 0; $i < $relativesCount; $i++) {
+            for ($j = 0; $j < $relativesCount; $j++) {
                 $newCust->addRelative(
                     name: $faker->name,
-                    relation: $faker->randomElement(Relative::RELATIONS),
-                    gender: rand(0, 9) == 0 ? $faker->randomElement(Customer::GENDERS) : null,
-                    phone: rand(0, 9) == 0 ? $faker->randomNumber(11) : null,
+                    relation: rand(0, 9) == 0 ? $faker->randomElement(Relative::RELATIONS) : null,
+                    gender: rand(0, 1) == 0 ? $faker->randomElement(Customer::GENDERS) : null,
+                    phone: rand(0, 2) == 0 ? $faker->randomNumber(8) : null,
                     birth_date: rand(0, 1) == 0 ? $faker->date('Y-m-d', '2010-01-01') : null
                 );
             }
-            for ($i = 0; $i < $addressCount; $i++) {
+            for ($m = 0; $m < $addressCount; $m++) {
                 $newCust->addAddress(
                     type: $faker->randomElement(Address::TYPES),
                     line_1: $faker->address,
@@ -81,7 +81,7 @@ class CustomersSeeder extends Seeder
                     is_default: $faker->boolean(25)
                 );
             }
-            for ($i = 0; $i < $phonesCount; $i++) {
+            for ($l = 0; $l < $phonesCount; $l++) {
                 $newCust->addPhone(
                     type: $faker->randomElement(Phone::TYPES),
                     number: $faker->phoneNumber,
@@ -101,7 +101,7 @@ class CustomersSeeder extends Seeder
                 gender: $faker->randomElement(Customer::GENDERS),
                 marital_status: rand(0, 9) == 0 ? $faker->randomElement(Customer::MARITALSTATUSES) : null,
                 id_type: $is_id_null == 0 ? $faker->randomElement(Customer::IDTYPES) : null,
-                id_number: $is_id_null == 0 ? $faker->randomNumber(12) : null,
+                id_number: $is_id_null == 0 ? $faker->randomNumber(8) : null,
                 nationality_id: rand(0, 9) == 0 ? $countries->random()->id : null,
                 profession_id: rand(0, 9) == 0 ? $professions->random()->id : null,
                 salary_range: rand(0, 9) == 0 ? $faker->randomElement(Customer::SALARY_RANGES) : null,
@@ -114,7 +114,7 @@ class CustomersSeeder extends Seeder
             $addressCount = $faker->biasedNumberBetween(0, 1,  'Faker\Provider\Biased::linearLow');
             $phonesCount = $faker->biasedNumberBetween(0, 2,  'Faker\Provider\Biased::linearHigh');
 
-            for ($i = 0; $i < $carsCount; $i++) {
+            for ($k = 0; $k < $carsCount; $k++) {
                 $newCust->addCar(
                     car_id: $cars->random()->id,
                     sum_insured: rand(0, 9) == 0 ? $faker->numberBetween(10000, 5000000) : null,
@@ -122,16 +122,16 @@ class CustomersSeeder extends Seeder
                     payment_frequency: rand(0, 9) == 0 ? $faker->randomElement(CustomersCar::PAYMENT_FREQS) : null,
                 );
             }
-            for ($i = 0; $i < $relativesCount; $i++) {
+            for ($m = 0; $m < $relativesCount; $m++) {
                 $newCust->addRelative(
                     name: $faker->name,
-                    relation: $faker->randomElement(Relative::RELATIONS),
-                    gender: rand(0, 9) == 0 ? $faker->randomElement(Customer::GENDERS) : null,
-                    phone: rand(0, 9) == 0 ? $faker->randomNumber(11) : null,
+                    relation:  rand(0, 9) == 0 ?  $faker->randomElement(Relative::RELATIONS) : null,
+                    gender: rand(0, 2) == 0 ? $faker->randomElement(Customer::GENDERS) : null,
+                    phone: rand(0, 1) == 0 ? $faker->randomNumber(7) : null,
                     birth_date: rand(0, 1) == 0 ? $faker->date('Y-m-d', '2010-01-01') : null
                 );
             }
-            for ($i = 0; $i < $addressCount; $i++) {
+            for ($h = 0; $h < $addressCount; $h++) {
                 $newCust->addAddress(
                     type: $faker->randomElement(Address::TYPES),
                     line_1: $faker->address,
@@ -140,10 +140,10 @@ class CustomersSeeder extends Seeder
                     city: rand(0, 1) == 0 ? $faker->city : null,
                     building: rand(0, 1) == 0 ? $faker->numberBetween(1, 999) : null,
                     flat: rand(0, 1) == 0 ? $faker->numberBetween(1, 50) : null,
-                    is_default: $i == 0
+                    is_default: $faker->boolean()
                 );
             }
-            for ($i = 0; $i < $phonesCount; $i++) {
+            for ($s = 0; $s < $phonesCount; $s++) {
                 $newCust->addPhone(
                     type: $faker->randomElement(Phone::TYPES),
                     number: $faker->phoneNumber,

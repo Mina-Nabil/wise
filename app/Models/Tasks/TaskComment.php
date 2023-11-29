@@ -10,6 +10,7 @@ use App\Models\Users\User;
 class TaskComment extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'task_comment';
 
     protected $table = 'task_comments';
     protected $fillable = [

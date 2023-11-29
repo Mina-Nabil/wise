@@ -59,6 +59,7 @@ class AppLog extends Model
             $newLog->save();
             if ($loggable) {
                 $newLog->loggable()->associate($loggable);
+                $newLog->save();
             }
         } catch (Exception $e) {
             report($e);

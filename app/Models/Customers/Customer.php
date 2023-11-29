@@ -21,6 +21,8 @@ class Customer extends Model
         'birth_date' => 'date',
     ];
 
+    const MORPH_TYPE = 'customer';
+
     const TYPE_LEAD = 'lead';
     const TYPE_CLIENT = 'client';
     const TYPES = [
@@ -284,7 +286,7 @@ class Customer extends Model
             DB::transaction(function () use ($relatives) {
                 $this->relatives()->delete();
                 foreach ($relatives as $rel) {
-                    $this->addRelative($rel["name"], $rel["relation"], $rel["gender"] ?? null, $rel["phone"] ?? null, $rel["birth_date"] ?? null);
+                    $this->addRelative($rel["name"], $rel["relation"] ?? null, $rel["gender"] ?? null, $rel["phone"] ?? null, $rel["birth_date"] ?? null);
                 }
             });
             return true;
@@ -294,7 +296,7 @@ class Customer extends Model
         }
     }
 
-    public function addRelative($name, $relation, $gender = null, $phone = null, $birth_date = null): Relative|false
+    public function addRelative($name, $relation = null, $gender = null, $phone = null, $birth_date = null): Relative|false
     {
         try {
             $tmp = $this->relatives()->create([

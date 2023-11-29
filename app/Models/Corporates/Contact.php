@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 class Contact extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'corporate_contact';
 
     protected $table = 'corporate_contacts';
     protected $fillable = [

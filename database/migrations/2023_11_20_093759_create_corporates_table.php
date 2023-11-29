@@ -4,6 +4,7 @@ use App\Models\Corporates\Address;
 use App\Models\Corporates\BankAccount;
 use App\Models\Corporates\Corporate;
 use App\Models\Corporates\Phone;
+use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -31,7 +32,7 @@ return new class extends Migration
             $table->string('kyc_doc')->nullable(); 
             $table->string('contract_doc')->nullable(); 
             $table->string('main_bank_evidence')->nullable(); 
-            $table->foreignIdFor(User::class, 'creator_id')->constrained('users')->nullOnDelete();
+            $table->foreignIdFor(User::class, 'creator_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignIdFor(User::class, 'owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });

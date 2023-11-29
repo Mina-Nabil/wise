@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TaskWatcher extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'task_watcher';
 
     protected $table = 'task_watchers';
     protected $fillable = ['user_id'];

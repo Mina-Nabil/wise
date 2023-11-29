@@ -10,6 +10,7 @@ use App\Models\Users\User;
 class TaskFile extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'task_file';
 
     protected $table = 'task_files';
     protected $fillable = ['user_id', 'file_url', 'name'];

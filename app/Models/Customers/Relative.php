@@ -12,6 +12,7 @@ class Relative extends Model
 {
     use HasFactory;
 
+    const MORPH_TYPE = 'customer_relative';
     protected $table = 'customer_relatives';
 
     protected $casts = [

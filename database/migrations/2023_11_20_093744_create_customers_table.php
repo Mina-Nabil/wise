@@ -36,14 +36,14 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->enum('gender', Customer::GENDERS)->nullable();
             $table->enum('marital_status', Customer::MARITALSTATUSES)->nullable();
-            $table->enum('id_type', Customer::IDTYPES);
+            $table->enum('id_type', Customer::IDTYPES)->nullable();
             $table->string('id_number')->nullable();
             $table->foreignIdFor(User::class, 'creator_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignIdFor(User::class, 'owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignIdFor(Country::class, 'nationality_id')->nullable()->constrained('countries')->nullOnDelete();
             $table->foreignIdFor(Profession::class)->nullable()->constrained('professions')->nullOnDelete();
-            $table->enum('salary_range', Customer::SALARY_RANGES);
-            $table->enum('income_source', Customer::INCOME_SOURCES);
+            $table->enum('salary_range', Customer::SALARY_RANGES)->nullable();
+            $table->enum('income_source', Customer::INCOME_SOURCES)->nullable();
             $table->dateTime('birth_date')->nullable();
             $table->timestamps();
         });
@@ -86,7 +86,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Customer::class)->constrained('customers')->cascadeOnDelete();
             $table->string('name');
-            $table->enum('relation', Relative::RELATIONS);
+            $table->enum('relation', Relative::RELATIONS)->nullable();
             $table->enum('gender', Customer::GENDERS)->nullable();
             $table->string('phone')->nullable();
             $table->dateTime('birth_date')->nullable();

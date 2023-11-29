@@ -18,6 +18,8 @@ class Corporate extends Model
 {
     use HasFactory;
 
+    const MORPH_TYPE = 'corporate';
+
     const TYPE_LEAD = 'lead';
     const TYPE_CLIENT = 'client';
     const TYPES = [
@@ -225,7 +227,7 @@ class Corporate extends Model
     {
         try {
             /** @var Phone */
-            $tmp = $this->addresses()->create([
+            $tmp = $this->phones()->create([
                 "type"      =>  $type,
                 "number"    =>  $number,
                 "is_default"    =>  $is_default
