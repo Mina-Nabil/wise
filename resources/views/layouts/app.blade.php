@@ -149,6 +149,14 @@
                             </span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
+                                <span>Customers</span>
+                            </span>
+                        </a>
+                    </li>
                     @can('viewAny', \App\Models\Users\AppLog::class)
                         <li>
                             <a href="{{ url('/logs') }}" class="navItem @yield('logs')">
@@ -453,6 +461,17 @@
                                                         <iconify-icon icon=heroicons:building-storefront class="leading-[1] text-base"> </iconify-icon>
                                                         <span class="leading-[1]">
                                                             Companies
+                                                        </span>
+                                                    </div>
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
+                                                    <div class="flex space-x-2 items-start rtl:space-x-reverse">
+                                                        <iconify-icon icon=raphael:customer class="leading-[1] text-base"> </iconify-icon>
+                                                        <span class="leading-[1]">
+                                                            Customers
                                                         </span>
                                                     </div>
                                                 </a>

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class, 'creator_id')->constrained('users');
             $table->morphs('called');
+            $table->string('title');
             $table->enum('status', Followup::STATUSES)->default(Followup::STATUS_NEW);
             $table->dateTime('call_time')->nullable();
             $table->dateTime('action_time')->nullable();

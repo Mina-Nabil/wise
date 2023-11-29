@@ -17,6 +17,10 @@ class Customer extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
+
     const TYPE_LEAD = 'lead';
     const TYPE_CLIENT = 'client';
     const TYPES = [
@@ -185,7 +189,7 @@ class Customer extends Model
         try {
             $tmp = $this->cars()->create([
                 "car_id"      =>  $car_id,
-                "value"      =>  $value,
+                // "value"      =>  $value,
                 "sum_insured"  =>  $sum_insured,
                 "insurance_payment"    =>  $insurance_payment,
                 "payment_frequency"     =>  $payment_frequency
@@ -344,6 +348,7 @@ class Customer extends Model
             AppLog::info('New customer lead created', loggable: $newLead);
             return $newLead;
         } catch (Exception $e) {
+            AppLog::error("Can't add customer", $e->getMessage());
             report($e);
             AppLog::error('Unable to create customer lead', desc: $e->getMessage());
             return false;
@@ -387,6 +392,7 @@ class Customer extends Model
             AppLog::info('New customer created', loggable: $newCustomer);
             return $newCustomer;
         } catch (Exception $e) {
+
             report($e);
             AppLog::error('Unable to create customer', desc: $e->getMessage());
             return false;
