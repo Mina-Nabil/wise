@@ -11,6 +11,8 @@ use App\Models\Customers\Relative;
 use App\models\Cars\Car;
 use App\models\Cars\CarModel;
 use App\models\Cars\Brand;
+use App\Models\Base\Country;
+use App\Models\Customers\Phone;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 
@@ -22,8 +24,6 @@ class CustomerShow extends Component
     public $name;
     public $arabic_name;
     public $email;
-    public $phone1;
-    public $phone2;
     public $bdate;
     public $gender;
     public $maritalStatus;
@@ -35,8 +35,6 @@ class CustomerShow extends Component
     public $incomeSource;
 
     public $editCustomerSection = false;
-
-
 
     //add car
     public $addCarSection = false;
@@ -66,6 +64,161 @@ class CustomerShow extends Component
     public $relativeGender;
     public $RelativePhone;
     public $relativeBdate;
+    public $editedRelativeId;
+    public $editedRelativeName;
+    public $editedRelation;
+    public $editedRelativeGender;
+    public $editedRelativePhone;
+    public $editedRelativeBdate;
+
+    //Phone
+    public $addPhoneSection = false;
+    public $editedPhoneId = null;
+    public $phoneType;
+    public $number;
+    public $setPhoneDefault;
+    public $editedPhoneType;
+    public $editedNumber;
+
+    public $deletePhoneId;
+    public $deleteRelativeId;
+
+    public function deleteThisPhone($id){
+        $this->deletePhoneId = $id;
+    }
+
+    public function editThisPhone($id){
+        $this->editedPhoneId = $id;
+        $p = Phone::find($this->editedPhoneId);
+        $this->editedPhoneType = $p->type;
+        $this->editedNumber = $p->number; 
+    }
+
+    public function closeEditPhone(){
+        $this->editedPhoneId = null;
+    }
+
+    public function editPhone(){
+        $this->validate([
+            'editedPhoneType' => 'required|in:' . implode(',', Phone::TYPES),
+            'editedNumber' => 'required|string|max:255',
+        ]);
+        $p = Phone::find($this->editedPhoneId);
+        $res = $p->editInfo($this->editedPhoneType,$this->editedNumber);
+        if ($res) {
+            $this->alert('success', 'Phone Edited sucessfuly!');
+            $this->editedPhoneId = null;
+            $this->editedPhoneType = null;
+            $this->editedNumber = null;
+            $this->mount($this->customer->id);
+        }else{
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function deletePhone(){
+        $p = Phone::find($this->deletePhoneId)->delete();
+        if ($p) {
+            $this->alert('success', 'Phone deleted sucessfuly!');
+            $this->deletePhoneId = null;
+            $this->mount($this->customer->id);
+        }else{
+            $this->alert('failed', 'server error');
+        }
+        
+    }
+
+    public function dismissDeletePhone(){
+        $this->deletePhoneId = null;
+    }
+
+    public function addPhone(){
+        $this->validate([
+            'phoneType' => 'required|in:' . implode(',', Phone::TYPES),
+            'number' => 'required|string|max:255',
+        ]);
+        $customer = Customer::find($this->customer->id);
+        $c = $customer->addPhone(
+            $this->phoneType,
+            $this->number,
+            $this->setPhoneDefault
+        );
+        if ($c) {
+            $this->alert('success', 'Phone added sucessfuly!');
+            $this->phoneType = null;
+            $this->number = null;
+            $this->setPhoneDefault = null;
+        }else{
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editThisRelative($id){
+        $this->editedRelativeId = $id;
+       
+        $r = Relative::find($this->editedRelativeId);
+        $this->editedRelativeName = $r->name;
+        $this->editedRelation = $r->relation;
+        $this->editedRelativeGender = $r->gender;
+        $this->editedRelativePhone = $r->phone;
+        $this->editedRelativeBdate = ($r->birth_date ? $r->birth_date->toDateString() :null);
+
+    }
+
+    public function editRelative(){
+        $this->validate([
+            'editedRelativeName' => 'required|string|max:255',
+            'editedRelation' => 'required|in:' . implode(',', Relative::RELATIONS),
+            'editedRelativeGender' => 'nullable|in:' . implode(',', Customer::GENDERS),
+            'editedRelativePhone' => 'nullable|string|max:255',
+            'editedRelativeBdate' => 'nullable|date'
+        ]);
+
+        $r = Relative::find($this->editedRelativeId);
+        $res = $r->editInfo(
+            $this->editedRelativeName,
+            $this->editedRelation,
+            $this->editedRelativeGender,
+            $this->editedRelativePhone,
+            $this->editedRelativeBdate
+        );
+        if ($res) {
+            $this->alert('success', 'Relative Edited sucessfuly!');
+            $this->editedRelativeId = null;
+            $this->relativeName = null;
+            $this->relation = null;
+            $this->relativeGender = null;
+            $this->RelativePhone = null;
+            $this->relativeBdate = null;
+            $this->mount($this->customer->id);
+        }else{
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function closeEditRelative(){
+        $this->editedRelativeId = null;
+    }
+
+    public function deleteThisRelative($id){
+        $this->deleteRelativeId = $id;
+    }
+    
+    public function dismissDeleteRelative(){
+        $this->deleteRelativeId = null;
+    }
+
+    public function deleteRelative(){
+        $r = Relative::find($this->deleteRelativeId)->delete();
+        if ($r) {
+            $this->alert('success', 'Relative deleted sucessfuly!');
+            $this->deleteRelativeId = null;
+            $this->mount($this->customer->id);
+        }else{
+            $this->alert('failed', 'server error');
+        }
+        
+    }
 
     public function addRelative()
     {
@@ -168,8 +321,6 @@ class CustomerShow extends Component
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'phone1' => 'required|string|max:255',
-            'phone2' => 'nullable|string|max:255',
             'arabic_name' => 'nullable|string|max:255',
             'bdate' => 'nullable|date',
             'email' =>  'nullable|email',
@@ -185,8 +336,6 @@ class CustomerShow extends Component
         $customer = Customer::find($this->customer->id);
         $c = $customer->editCustomer(
             $this->name,
-            $this->phone1,
-            $this->phone2,
             $this->arabic_name,
             $this->bdate,
             $this->email,
@@ -218,9 +367,7 @@ class CustomerShow extends Component
         $this->name = $this->customer->name;
         $this->arabic_name = $this->customer->arabic_name;
         $this->email = $this->customer->email;
-        $this->phone1 = $this->customer->phone;
-        $this->phone2 = $this->customer->phone_2;
-        $this->bdate = $this->customer->birth_date->format('d/m/Y');
+        $this->bdate = ($this->customer->birth_date ? $this->customer->birth_date->toDateString() : null);
         $this->gender = $this->customer->gender;
         $this->maritalStatus = $this->customer->marital_status;
         $this->idType = $this->customer->id_type;
@@ -257,6 +404,10 @@ class CustomerShow extends Component
         $this->toggle($this->addCarSection);
     }
 
+    public function toggleAddPhone() {
+        $this->toggle($this->addPhoneSection);
+    }
+
     public function toggleAddRelative()
     {
         $this->toggle($this->addRelativeSection);
@@ -279,6 +430,8 @@ class CustomerShow extends Component
         $PAYMENT_FREQS = CustomerCar::PAYMENT_FREQS;
         $addressTypes = Address::TYPES;
         $RELATIONS = Relative::RELATIONS;
+        $countries = Country::all();
+        $phoneTypes = Phone::TYPES;
 
 
         return view('livewire.customer-show', [
@@ -294,6 +447,8 @@ class CustomerShow extends Component
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
             'addressTypes' => $addressTypes,
             'RELATIONS' => $RELATIONS,
+            'countries' => $countries,
+            'phoneTypes' => $phoneTypes,
         ]);
     }
 }

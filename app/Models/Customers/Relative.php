@@ -47,7 +47,7 @@ class Relative extends Model
                 "birth_date"    =>  $birth_date,
             ]);
             AppLog::info("Adding customer relative", loggable: $this);
-            return false;
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Adding customer relative failed", desc: $e->getMessage(), loggable: $this);
