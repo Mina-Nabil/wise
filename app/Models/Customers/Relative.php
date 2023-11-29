@@ -12,7 +12,7 @@ class Relative extends Model
 {
     use HasFactory;
 
-    protected $table = 'customer_relative';
+    protected $table = 'customer_relatives';
 
     const RELATION_MOTHER = 'mother';
     const RELATION_FATHER = 'father';

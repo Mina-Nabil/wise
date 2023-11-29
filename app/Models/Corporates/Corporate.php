@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models\Customers;
+namespace App\Models\Corporates;
 
 use App\Models\Base\Country;
+use App\Models\Customers\Followup;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class Customer extends Model
+class Corporate extends Model
 {
     use HasFactory;
 
@@ -108,6 +109,43 @@ class Customer extends Model
         }
     }
 
+    public function editInfo(
+        $name,
+        $arabic_name = null,
+        $email = null,
+        $commercial_record = null,
+        $commercial_record_doc = null,
+        $tax_id = null,
+        $tax_id_doc = null,
+        $kyc = null,
+        $kyc_doc = null,
+        $contract_doc = null,
+        $main_bank_evidence = null
+    ): bool {
+        $this->update([
+            "name"          =>  $name,
+            "arabic_name"   =>  $arabic_name,
+            "email"         =>  $email,
+            "commercial_record"     =>  $commercial_record,
+            "commercial_record_doc" =>  $commercial_record_doc,
+            "tax_id"        =>  $tax_id,
+            "tax_id_doc"    =>  $tax_id_doc,
+            "kyc"           =>  $kyc,
+            "kyc_doc"       =>  $kyc_doc,
+            "contract_doc"  =>  $contract_doc,
+            "main_bank_evidence"    =>  $main_bank_evidence
+        ]);
+
+        try {
+            $res = $this->save();
+            AppLog::info('Corporate edited', loggable: $this);
+            return $res;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error('Corporate editing failed', desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
 
     public function setOwner(
         $owner_id
@@ -118,83 +156,11 @@ class Customer extends Model
 
         try {
             $res = $this->save();
-            AppLog::info('Customer owner changed', loggable: $this);
+            AppLog::info('Corporate owner changed', loggable: $this);
             return $res;
         } catch (Exception $e) {
             report($e);
-            AppLog::error('Customer owner changing failed', desc: $e->getMessage(), loggable: $this);
-            return false;
-        }
-    }
-
-    public function editCustomer(
-        $name,
-        $arabic_name = null,
-        $birth_date = null,
-        $email = null,
-        $gender = null,
-        $marital_status = null,
-        $id_type = null,
-        $id_number = null,
-        $nationality_id = null,
-        $profession_id = null,
-        $salary_range = null,
-        $income_source = null
-    ): bool {
-        $this->update([
-            "name"  =>  $name,
-            "arabic_name"   =>  $arabic_name,
-            "birth_date"    =>  $birth_date,
-            "email" =>  $email,
-            "gender"    =>  $gender,
-            "marital_status"    =>  $marital_status,
-            "id_type"   =>  $id_type,
-            "id_number" =>  $id_number,
-            "nationality_id"    =>  $nationality_id,
-            "profession_id" =>  $profession_id,
-            "salary_range"  =>  $salary_range,
-            "income_source" =>  $income_source,
-        ]);
-
-        try {
-            return $this->save();
-        } catch (Exception $e) {
-            report($e);
-            return false;
-        }
-    }
-
-    public function setCars(array $cars): bool
-    {
-        try {
-            DB::transaction(function () use ($cars) {
-                $this->cars()->delete();
-                foreach ($cars as $car) {
-                    $this->addCar($car["car_id"], $car["value"], $adrs["sum_insured"] ?? null, $adrs["insurance_payment"] ?? null, $adrs["payment_frequency"] ?? null);
-                }
-            });
-            return true;
-        } catch (Exception $e) {
-            report($e);
-            return false;
-        }
-    }
-
-    public function addCar($car_id, $value = null, $sum_insured = null, $insurance_payment = null, $payment_frequency = null): Car|false
-    {
-        try {
-            $tmp = $this->cars()->create([
-                "car_id"      =>  $car_id,
-                "value"      =>  $value,
-                "sum_insured"  =>  $sum_insured,
-                "insurance_payment"    =>  $insurance_payment,
-                "payment_frequency"     =>  $payment_frequency
-            ]);
-            AppLog::info("Adding customer car", loggable: $this);
-            return $tmp;
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Adding customer car failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error('Corporate owner changing failed', desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
@@ -236,6 +202,7 @@ class Customer extends Model
         }
     }
 
+
     public function setPhones(array $phones): bool
     {
         try {
@@ -260,22 +227,23 @@ class Customer extends Model
                 "number"    =>  $number,
                 "is_default"    =>  $is_default
             ]);
-            AppLog::info("Adding customer phone", loggable: $this);
+            AppLog::info("Adding corporate phone", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Adding customer phone failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Adding corporate phone failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
 
-    public function setRelatives(array $relatives)
+
+    public function setContacts(array $relatives)
     {
         try {
             DB::transaction(function () use ($relatives) {
-                $this->relatives()->delete();
+                $this->contacts()->delete();
                 foreach ($relatives as $rel) {
-                    $this->addRelative($rel["name"], $rel["relation"], $rel["gender"] ?? null, $rel["phone"] ?? null, $rel["birth_date"] ?? null);
+                    $this->addContact($rel["name"], $rel["job_title"], $rel["email"] ?? null, $rel["phone"] ?? null, $rel["is_default"] ?? null);
                 }
             });
             return true;
@@ -285,21 +253,22 @@ class Customer extends Model
         }
     }
 
-    public function addRelative($name, $relation, $gender = null, $phone = null, $birth_date = null): Relative|false
+    public function addContact($name, $job_title = null, $email = null, $phone = null, $is_default = false): Relative|false
     {
         try {
-            $tmp = $this->relatives()->create([
+            /** @var Contact */
+            $tmp = $this->contacts()->create([
                 "name"      =>  $name,
-                "relation"  =>  $relation,
-                "gender"    =>  $gender,
+                "job_title" =>  $job_title,
+                "email"     =>  $email,
                 "phone"     =>  $phone,
-                "birth_date"    =>  $birth_date,
             ]);
-            AppLog::info("Adding customer relative", loggable: $this);
+            if ($is_default) $tmp->setAsDefault();
+            AppLog::info("Adding corporate contact", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Adding customer relative failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Adding corporate contact failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
@@ -307,88 +276,81 @@ class Customer extends Model
     ///static functions
     public static function newLead(
         $name,
-        $phone,
-        $phone_2 = null,
         $arabic_name = null,
-        $birth_date = null,
         $email = null,
-        $gender = null,
-        $marital_status = null,
-        $id_type = null,
-        $id_number = null,
-        $nationality_id = null,
-        $profession_id = null,
-        $salary_range = null,
-        $income_source = null
+        $commercial_record = null,
+        $commercial_record_doc = null,
+        $tax_id = null,
+        $tax_id_doc = null,
+        $kyc = null,
+        $kyc_doc = null,
+        $contract_doc = null,
+        $main_bank_evidence = null,
+        $owner_id = null
     ): self|false {
         $newLead = new self([
-            "type"  =>  self::TYPE_LEAD,
-            "name"  =>  $name,
-            "phone" =>  $phone,
-            "phone_2"   =>  $phone_2,
+            "type"          =>  self::TYPE_LEAD,
+            "name"          =>  $name,
             "arabic_name"   =>  $arabic_name,
-            "birth_date"    =>  $birth_date,
-            "email" =>  $email,
-            "gender"    =>  $gender,
-            "marital_status"    =>  $marital_status,
-            "id_type"   =>  $id_type,
-            "id_number" =>  $id_number,
-            "nationality_id"    =>  $nationality_id,
-            "profession_id" =>  $profession_id,
-            "salary_range"  =>  $salary_range,
-            "income_source" =>  $income_source,
+            "email"         =>  $email,
+            "commercial_record"     =>  $commercial_record,
+            "commercial_record_doc" =>  $commercial_record_doc,
+            "tax_id"        =>  $tax_id,
+            "tax_id_doc"    =>  $tax_id_doc,
+            "kyc"           =>  $kyc,
+            "kyc_doc"       =>  $kyc_doc,
+            "contract_doc"  =>  $contract_doc,
+            "main_bank_evidence"    =>  $main_bank_evidence,
+            "owner_id"  =>  $owner_id
         ]);
-
         try {
             $newLead->save();
-            AppLog::info('New customer lead created', loggable: $newLead);
+            AppLog::info('New corporate lead created', loggable: $newLead);
             return $newLead;
         } catch (Exception $e) {
             report($e);
-            AppLog::error('Unable to create customer lead', desc: $e->getMessage());
+            AppLog::error('Can\'t create new corporate lead', desc: $e->getMessage());
             return false;
         }
     }
 
-    public static function newCustomer(
+    public static function newCorporate(
+        $owner_id,
         $name,
-        $phone,
-        $gender,
-        $email,
-        $phone_2 = null,
         $arabic_name = null,
-        $birth_date = null,
-        $marital_status = null,
-        $id_type = null,
-        $id_number = null,
-        $nationality_id = null,
-        $profession_id = null,
-        $salary_range = null,
-        $income_source = null
+        $email = null,
+        $commercial_record = null,
+        $commercial_record_doc = null,
+        $tax_id = null,
+        $tax_id_doc = null,
+        $kyc = null,
+        $kyc_doc = null,
+        $contract_doc = null,
+        $main_bank_evidence = null,
     ): self|false {
-        $newCustomer = new self([
-            "type"  =>  self::TYPE_CLIENT,
-            "name"  =>  $name,
+        $newCorporate = new self([
+            "type"          =>  self::TYPE_LEAD,
+            "name"          =>  $name,
             "arabic_name"   =>  $arabic_name,
-            "birth_date"    =>  $birth_date,
-            "email" =>  $email,
-            "gender"    =>  $gender,
-            "marital_status"    =>  $marital_status,
-            "id_type"   =>  $id_type,
-            "id_number" =>  $id_number,
-            "nationality_id"    =>  $nationality_id,
-            "profession_id" =>  $profession_id,
-            "salary_range"  =>  $salary_range,
-            "income_source" =>  $income_source,
+            "email"         =>  $email,
+            "commercial_record"     =>  $commercial_record,
+            "commercial_record_doc" =>  $commercial_record_doc,
+            "tax_id"        =>  $tax_id,
+            "tax_id_doc"    =>  $tax_id_doc,
+            "kyc"           =>  $kyc,
+            "kyc_doc"       =>  $kyc_doc,
+            "contract_doc"  =>  $contract_doc,
+            "main_bank_evidence"    =>  $main_bank_evidence,
+            "owner_id"  =>  $owner_id
         ]);
 
         try {
-            $newCustomer->save();
-            AppLog::info('New customer created', loggable: $newCustomer);
-            return $newCustomer;
+            $newCorporate->save();
+            AppLog::info('New corporate created', loggable: $newCorporate);
+            return $newCorporate;
         } catch (Exception $e) {
             report($e);
-            AppLog::error('Unable to create customer', desc: $e->getMessage());
+            AppLog::error('Can\'t create new corporate', desc: $e->getMessage());
             return false;
         }
     }
@@ -399,33 +361,18 @@ class Customer extends Model
         return $this->morphMany(Followup::class, 'called');
     }
 
-    public function addresses(): HasMany
-    {
-        return $this->hasMany(Address::class);
-    }
-
     public function phones(): HasMany
     {
         return $this->hasMany(Phone::class);
     }
 
-    public function cars(): HasMany
+    public function addresses(): HasMany
     {
-        return $this->hasMany(Car::class);
+        return $this->hasMany(Address::class);
     }
 
-    public function relatives(): HasMany
+    public function contacts(): HasMany
     {
-        return $this->hasMany(Relative::class);
-    }
-
-    public function profession(): BelongsTo
-    {
-        return $this->belongsTo(Profession::class);
-    }
-
-    public function country(): BelongsTo
-    {
-        return $this->belongsTo(Country::class, 'nationality_id');
+        return $this->hasMany(Contact::class);
     }
 }

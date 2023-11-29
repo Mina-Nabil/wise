@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Customers;
+namespace App\Models\Corporates;
 
 use App\Models\Users\AppLog;
 use Exception;
@@ -13,7 +13,7 @@ class Address extends Model
 {
     use HasFactory;
 
-    protected $table = 'customer_addresses';
+    protected $table = 'corporate_addresses';
 
     const TYPE_HOME = 'home';
     const TYPE_WORK = 'work';
@@ -41,16 +41,17 @@ class Address extends Model
     {
         try {
             DB::transaction(function () {
-                DB::table('customer_addresses')->where('customer_id', $this->customer_id)->update([
+                DB::table('corporate_addresses')->where('corporate_id', $this->corporate_id)->update([
                     'is_default'    =>  false
                 ]);
                 $this->is_default = true;
                 $this->save();
             });
+            AppLog::info('Address set as default', loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error('Can\'t set phone as default', desc: $e->getMessage(), loggable: $this);
+            AppLog::error('Can\'t set address as default', desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
@@ -67,18 +68,18 @@ class Address extends Model
                 "city"      =>  $city,
                 "country"   =>  $country,
             ]);
-            AppLog::info("Editing customer address", loggable: $this);
+            AppLog::info("Editing corporate address", loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Editing customer address failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Editing corporate address failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
 
     ///relations
-    public function customer(): BelongsTo
+    public function corporate(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Corporate::class);
     }
 }

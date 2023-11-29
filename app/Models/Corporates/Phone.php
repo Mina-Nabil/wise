@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Customers;
+namespace App\Models\Corporates;
 
 use App\Models\Users\AppLog;
 use Exception;
@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
-class Address extends Model
+class Phone extends Model
 {
     use HasFactory;
 
-    protected $table = 'customer_addresses';
+    protected $table = 'corporate_phones';
 
+    const TYPE_MOBILE = 'mobile';
     const TYPE_HOME = 'home';
     const TYPE_WORK = 'work';
     const TYPE_OTHER = 'other';
@@ -27,12 +28,8 @@ class Address extends Model
 
     protected $fillable = [
         "type",
-        "line_1",
-        "line_2",
-        "flat",
-        "building",
-        "city",
-        "country",
+        "number",
+        "is_default"
     ];
 
 
@@ -41,12 +38,13 @@ class Address extends Model
     {
         try {
             DB::transaction(function () {
-                DB::table('customer_addresses')->where('customer_id', $this->customer_id)->update([
+                DB::table('corporate_phones')->where('corporate_id', $this->corporate_id)->update([
                     'is_default'    =>  false
                 ]);
                 $this->is_default = true;
                 $this->save();
             });
+            AppLog::info('Phone set as default', loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
@@ -55,30 +53,25 @@ class Address extends Model
         }
     }
 
-    public function editInfo($type, $line_1, $line_2 = null, $country = null, $city = null, $building = null, $flat = null)
+    public function editInfo($type, $number)
     {
         try {
             $this->update([
                 "type"      =>  $type,
-                "line_1"    =>  $line_1,
-                "line_2"    =>  $line_2,
-                "flat"      =>  $flat,
-                "building"  =>  $building,
-                "city"      =>  $city,
-                "country"   =>  $country,
+                "number"    =>  $number,
             ]);
-            AppLog::info("Editing customer address", loggable: $this);
+            AppLog::info("Editing corporate phone", loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Editing customer address failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Editing corporate phone failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
 
     ///relations
-    public function customer(): BelongsTo
+    public function corporate(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Corporate::class);
     }
 }

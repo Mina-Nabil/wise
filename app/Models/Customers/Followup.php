@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Followup extends Model
 {
@@ -96,8 +97,8 @@ class Followup extends Model
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
-    public function customer(): BelongsTo
+    public function called(): MorphTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->morphTo();
     }
 }

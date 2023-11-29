@@ -5,6 +5,7 @@ use App\Models\Base\Country;
 use App\Models\Customers\Address;
 use App\Models\Customers\Car as CustomersCar;
 use App\Models\Customers\Customer;
+use App\Models\Customers\Phone;
 use App\Models\Customers\Profession;
 use App\Models\Customers\Relative;
 use App\Models\Users\User;
@@ -21,7 +22,7 @@ return new class extends Migration
      */
     public function up()
     {
-
+        self::down();
         Schema::create('professions', function (Blueprint $table) {
             $table->id();
             $table->string('title')->unique();
@@ -31,15 +32,13 @@ return new class extends Migration
             $table->id();
             $table->enum('type', Customer::TYPES);
             $table->string('name');
-            $table->string('phone')->unique();
-            $table->string('phone_2')->nullable();
             $table->string('arabic_name')->nullable();
             $table->string('email')->nullable();
             $table->enum('gender', Customer::GENDERS)->nullable();
             $table->enum('marital_status', Customer::MARITALSTATUSES)->nullable();
             $table->enum('id_type', Customer::IDTYPES);
             $table->string('id_number')->nullable();
-            $table->foreignIdFor(User::class, 'creator_id')->constrained('users')->nullOnDelete();
+            $table->foreignIdFor(User::class, 'creator_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignIdFor(User::class, 'owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignIdFor(Country::class, 'nationality_id')->nullable()->constrained('countries')->nullOnDelete();
             $table->foreignIdFor(Profession::class)->nullable()->constrained('professions')->nullOnDelete();
@@ -49,11 +48,21 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('customer_phones', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Customer::class)->constrained('customers')->cascadeOnDelete();
+            $table->enum('type', Phone::TYPES);
+            $table->string('number');
+            $table->boolean('is_default')->default(false);
+            $table->timestamps();
+        });
+
         Schema::create('customer_addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Customer::class)->constrained('customers')->cascadeOnDelete();
             $table->enum('type', Address::TYPES);
             $table->string('line_1');
+            $table->boolean('is_default')->default(false);
             $table->string('line_2')->nullable();
             $table->string('flat')->nullable();
             $table->string('building')->nullable();
@@ -73,7 +82,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('customer_relative', function (Blueprint $table) {
+        Schema::create('customer_relatives', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Customer::class)->constrained('customers')->cascadeOnDelete();
             $table->string('name');

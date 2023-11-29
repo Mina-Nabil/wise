@@ -15,7 +15,13 @@ return new class extends Migration
     {
         Schema::create('offers', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(User::class, 'creator_id')->constrained('users');
+            $table->morph('owner');
+            $table->enum('status', []);
             $table->timestamps();
+        });
+
+        Schema::create('offer_options', function (Blueprint $table) {
         });
     }
 

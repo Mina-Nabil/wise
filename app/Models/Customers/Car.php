@@ -2,6 +2,7 @@
 
 namespace App\Models\Customers;
 
+use App\Models\Cars\Car as CarsCar;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -57,5 +58,10 @@ class Car extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function car(): BelongsTo
+    {
+        return $this->belongsTo(CarsCar::class);
     }
 }
