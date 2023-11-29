@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Corporates\Address;
+use App\Models\Corporates\BankAccount;
 use App\Models\Corporates\Corporate;
 use App\Models\Corporates\Phone;
 use Illuminate\Database\Migrations\Migration;
@@ -72,13 +73,14 @@ return new class extends Migration
         Schema::create('corporate_bank_accounts', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Corporate::class)->constrained('corporates')->cascadeOnDelete();
+            $table->enum('type', BankAccount::TYPES);
             $table->string('bank_name');
             $table->string('account_number');
-            $table->string('account_name');
+            $table->string('owner_name');
             $table->boolean('is_default')->default(false);
+            $table->string('bank_branch')->nullable();
             $table->string('iban')->nullable();
             $table->string('evidence_doc')->nullable();
-            $table->string('bank_address')->nullable();
             $table->timestamps();
         });
     }

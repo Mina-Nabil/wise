@@ -14,7 +14,12 @@ class Contact extends Model
     use HasFactory;
 
     protected $table = 'corporate_contacts';
-
+    protected $fillable = [
+        "name",
+        "job_title",
+        "email",
+        "phone",
+    ];
     ///model functions
     public function setAsDefault()
     {

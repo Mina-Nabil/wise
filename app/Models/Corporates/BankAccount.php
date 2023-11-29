@@ -9,19 +9,26 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
-class Relative extends Model
+class BankAccount extends Model
 {
     use HasFactory;
+
+    const TYPE_DEBIT = 'debit';
+    const TYPE_CREDIT = 'credit';
+    const TYPES = [
+        self::TYPE_DEBIT,
+        self::TYPE_CREDIT,
+    ];
 
     protected $table = 'corporate_bank_accounts';
     protected $fillable = [
         'bank_name',
         'account_number',
-        'account_name',
+        'owner_name',
         'is_default',
         'evidence_doc',
-        'bank_address',
         'iban',
+        'bank_branch',
     ];
 
     ///model functions
@@ -44,22 +51,23 @@ class Relative extends Model
         }
     }
 
-    public function editInfo($bank_name, $account_number, $account_name, $evidence_doc = null, $bank_address = null, $iban = null)
+    public function editInfo($type, $bank_name, $account_number, $owner_name, $evidence_doc = null, $iban = null, $bank_branch = null)
     {
         try {
             $this->update([
+                "type"              =>  $type,
                 "bank_name"         =>  $bank_name,
                 "account_number"    =>  $account_number,
-                "account_name"      =>  $account_name,
+                "owner_name"        =>  $owner_name,
                 "evidence_doc"      =>  $evidence_doc,
-                "bank_address"      =>  $bank_address,
                 "iban"              =>  $iban,
+                "bank_branch"       =>  $bank_branch,
             ]);
-            AppLog::info("Editing corporate bank account", loggable: $this);
+            AppLog::info("Editing bank account", loggable: $this);
             return false;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Editing corporate bank account failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Editing bank account failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }

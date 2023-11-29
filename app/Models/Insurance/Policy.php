@@ -44,7 +44,10 @@ class Policy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('create', self::class)) return false;
+        if (
+            !($loggedInUser == null && env('local')) && //local seeder code - can remove later
+            !$loggedInUser->can('create', self::class)
+        ) return false;
 
         $newPolicy = new self([
             "company_id" =>  $company_id,
@@ -95,7 +98,10 @@ class Policy extends Model
     ): false|PolicyCondition {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
+        if (
+            !($loggedInUser == null && env('local')) && //local seeder code - can remove later
+            !$loggedInUser->can('update', $this)
+        ) return false;
 
         try {
             $order = $this->conditions()->count() + 1;

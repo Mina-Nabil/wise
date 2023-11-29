@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             $this->call(InsuranceSeeder::class);
             $this->call(TaskSeeder::class);
             $this->call(CustomersSeeder::class);
+            $this->call(CorporatesSeeder::class);
         }
     }
 }

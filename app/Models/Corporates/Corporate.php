@@ -181,9 +181,10 @@ class Corporate extends Model
         }
     }
 
-    public function addAddress($type, $line_1, $line_2 = null, $country = null, $city = null, $building = null, $flat = null): Address|false
+    public function addAddress($type, $line_1, $line_2 = null, $country = null, $city = null, $building = null, $flat = null, $is_default = false): Address|false
     {
         try {
+            /** @var Address */
             $tmp = $this->addresses()->create([
                 "type"      =>  $type,
                 "line_1"    =>  $line_1,
@@ -193,6 +194,7 @@ class Corporate extends Model
                 "city"      =>  $city,
                 "country"   =>  $country,
             ]);
+            if($is_default) $tmp->setAsDefault();
             AppLog::info("Adding customer address", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -209,7 +211,7 @@ class Corporate extends Model
             DB::transaction(function () use ($phones) {
                 $this->phones()->delete();
                 foreach ($phones as $phone) {
-                    $this->addAddress($phone["type"], $phone["number"], $adrs["is_default"] ?? null);
+                    $this->addAddress($phone["type"], $phone["number"], $phone["is_default"] ?? null);
                 }
             });
             return true;
@@ -222,11 +224,13 @@ class Corporate extends Model
     public function addPhone($type, $number, $is_default = null): Phone|false
     {
         try {
+            /** @var Phone */
             $tmp = $this->addresses()->create([
                 "type"      =>  $type,
                 "number"    =>  $number,
                 "is_default"    =>  $is_default
             ]);
+            if($is_default) $tmp->setAsDefault();
             AppLog::info("Adding corporate phone", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -236,14 +240,13 @@ class Corporate extends Model
         }
     }
 
-
-    public function setContacts(array $relatives)
+    public function setContacts(array $contacts)
     {
         try {
-            DB::transaction(function () use ($relatives) {
+            DB::transaction(function () use ($contacts) {
                 $this->contacts()->delete();
-                foreach ($relatives as $rel) {
-                    $this->addContact($rel["name"], $rel["job_title"], $rel["email"] ?? null, $rel["phone"] ?? null, $rel["is_default"] ?? null);
+                foreach ($contacts as $con) {
+                    $this->addContact($con["name"], $con["job_title"], $con["email"] ?? null, $con["phone"] ?? null, $con["is_default"] ?? null);
                 }
             });
             return true;
@@ -253,7 +256,7 @@ class Corporate extends Model
         }
     }
 
-    public function addContact($name, $job_title = null, $email = null, $phone = null, $is_default = false): Relative|false
+    public function addContact($name, $job_title = null, $email = null, $phone = null, $is_default = false): Contact|false
     {
         try {
             /** @var Contact */
@@ -269,6 +272,46 @@ class Corporate extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Adding corporate contact failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+
+    public function setBankAccounts(array $accounts)
+    {
+        try {
+            DB::transaction(function () use ($accounts) {
+                $this->bank_accounts()->delete();
+                foreach ($accounts as $acc) {
+                    $this->addBankAccount($acc["type"], $acc['bank_name'], $acc['account_number'], $acc['owner_name'], $acc['evidence_doc'] ?? null, $acc['iban'] ?? null, $acc['bank_branch'] ?? null, $acc['is_default'] ?? false);
+                }
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function addBankAccount($type, $bank_name, $account_number, $owner_name, $evidence_doc = null, $iban = null, $bank_branch = null, $is_default = false): BankAccount|false
+    {
+        try {
+            /** @var BankAccount */
+            $tmp = $this->bank_accounts()->create([
+                "type"              =>  $type,
+                "bank_name"         =>  $bank_name,
+                "account_number"    =>  $account_number,
+                "owner_name"        =>  $owner_name,
+                "evidence_doc"      =>  $evidence_doc,
+                "iban"              =>  $iban,
+                "bank_branch"       =>  $bank_branch,
+            ]);
+            if ($is_default) $tmp->setAsDefault();
+            AppLog::info("Adding bank account", loggable: $this);
+            return $tmp;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Adding bank account failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
@@ -374,5 +417,10 @@ class Corporate extends Model
     public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class);
+    }
+
+    public function bank_accounts(): HasMany
+    {
+        return $this->hasMany(BankAccount::class);
     }
 }

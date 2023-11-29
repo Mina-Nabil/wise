@@ -27,7 +27,10 @@ class Company extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('create', self::class)) throw new UnauthorizedException();
+        if (
+            !($loggedInUser == null && env('local')) && //local seeder code - can remove later
+            !$loggedInUser->can('create', self::class)
+        ) throw new UnauthorizedException();
 
         $newCompany = new self([
             "name"  =>  $name,
@@ -78,7 +81,10 @@ class Company extends Model
 
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
+        if (
+            !($loggedInUser == null && env('local')) && //local seeder code - can remove later
+            !$loggedInUser->can('update', $this)
+        ) throw new UnauthorizedException();
         try {
             $email = $this->emails()->updateOrCreate([
                 "type"  =>  $type,

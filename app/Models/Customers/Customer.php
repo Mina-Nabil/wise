@@ -88,7 +88,7 @@ class Customer extends Model
     ];
 
     protected $fillable = [
-        'type', 'name', 'arabic_name', 'email', 'gender',
+        'type', 'name', 'arabic_name', 'email', 'gender', 'owner_id',
         'marital_status', 'nationality_id', 'id_type', 'id_number',
         'profession_id', 'salary_range', 'income_source', 'birth_date'
     ];
@@ -161,8 +161,11 @@ class Customer extends Model
         ]);
 
         try {
-            return $this->save();
+            $res = $this->save();
+            AppLog::info('Customer info changed', loggable: $this);
+            return $res;
         } catch (Exception $e) {
+            AppLog::error('Customer info changes failed', desc: $e->getMessage(), loggable: $this);
             report($e);
             return false;
         }
@@ -174,7 +177,7 @@ class Customer extends Model
             DB::transaction(function () use ($cars) {
                 $this->cars()->delete();
                 foreach ($cars as $car) {
-                    $this->addCar($car["car_id"], $car["value"], $adrs["sum_insured"] ?? null, $adrs["insurance_payment"] ?? null, $adrs["payment_frequency"] ?? null);
+                    $this->addCar($car["car_id"], $car["sum_insured"] ?? null, $car["insurance_payment"] ?? null, $car["payment_frequency"] ?? null);
                 }
             });
             return true;
@@ -184,12 +187,11 @@ class Customer extends Model
         }
     }
 
-    public function addCar($car_id, $value = null, $sum_insured = null, $insurance_payment = null, $payment_frequency = null): Car|false
+    public function addCar($car_id, $sum_insured = null, $insurance_payment = null, $payment_frequency = null): Car|false
     {
         try {
             $tmp = $this->cars()->create([
                 "car_id"      =>  $car_id,
-                // "value"      =>  $value,
                 "sum_insured"  =>  $sum_insured,
                 "insurance_payment"    =>  $insurance_payment,
                 "payment_frequency"     =>  $payment_frequency
@@ -209,7 +211,7 @@ class Customer extends Model
             DB::transaction(function () use ($addresses) {
                 $this->addresses()->delete();
                 foreach ($addresses as $adrs) {
-                    $this->addAddress($adrs["type"], $adrs["line_1"], $adrs["line_2"] ?? null, $adrs["country"] ?? null, $adrs["city"] ?? null, $adrs["building"] ?? null, $adrs["flat"] ?? null);
+                    $this->addAddress($adrs["type"], $adrs["line_1"], $adrs["line_2"] ?? null, $adrs["country"] ?? null, $adrs["city"] ?? null, $adrs["building"] ?? null, $adrs["flat"] ?? null, $adrs["is_default"] ?? null);
                 }
             });
             return true;
@@ -219,9 +221,10 @@ class Customer extends Model
         }
     }
 
-    public function addAddress($type, $line_1, $line_2 = null, $country = null, $city = null, $building = null, $flat = null): Address|false
+    public function addAddress($type, $line_1, $line_2 = null, $country = null, $city = null, $building = null, $flat = null, $is_default = null): Address|false
     {
         try {
+            /** @var Address */
             $tmp = $this->addresses()->create([
                 "type"      =>  $type,
                 "line_1"    =>  $line_1,
@@ -231,6 +234,7 @@ class Customer extends Model
                 "city"      =>  $city,
                 "country"   =>  $country,
             ]);
+            if ($is_default) $tmp->setAsDefault();
             AppLog::info("Adding customer address", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -246,7 +250,7 @@ class Customer extends Model
             DB::transaction(function () use ($phones) {
                 $this->phones()->delete();
                 foreach ($phones as $phone) {
-                    $this->addAddress($phone["type"], $phone["number"], $adrs["is_default"] ?? null);
+                    $this->addAddress($phone["type"], $phone["number"], $phone["is_default"] ?? null);
                 }
             });
             return true;
@@ -259,11 +263,12 @@ class Customer extends Model
     public function addPhone($type, $number, $is_default = null): Phone|false
     {
         try {
-            $tmp = $this->addresses()->create([
+            /** @var Phone */
+            $tmp = $this->phones()->create([
                 "type"      =>  $type,
-                "number"    =>  $number,
-                "is_default"    =>  $is_default
+                "number"    =>  $number
             ]);
+            if ($is_default) $tmp->setAsDefault();
             AppLog::info("Adding customer phone", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -312,7 +317,6 @@ class Customer extends Model
     public static function newLead(
         $name,
         $phone,
-        $phone_2 = null,
         $arabic_name = null,
         $birth_date = null,
         $email = null,
@@ -323,13 +327,12 @@ class Customer extends Model
         $nationality_id = null,
         $profession_id = null,
         $salary_range = null,
-        $income_source = null
+        $income_source = null,
+        $owner_id,
     ): self|false {
         $newLead = new self([
             "type"  =>  self::TYPE_LEAD,
             "name"  =>  $name,
-            "phone" =>  $phone,
-            "phone_2"   =>  $phone_2,
             "arabic_name"   =>  $arabic_name,
             "birth_date"    =>  $birth_date,
             "email" =>  $email,
@@ -341,10 +344,12 @@ class Customer extends Model
             "profession_id" =>  $profession_id,
             "salary_range"  =>  $salary_range,
             "income_source" =>  $income_source,
+            "owner_id" =>  $owner_id,
         ]);
 
         try {
             $newLead->save();
+            $newLead->addPhone(Phone::TYPE_HOME, $phone, true);
             AppLog::info('New customer lead created', loggable: $newLead);
             return $newLead;
         } catch (Exception $e) {
@@ -356,11 +361,10 @@ class Customer extends Model
     }
 
     public static function newCustomer(
+        $owner_id,
         $name,
-        $phone,
         $gender,
         $email,
-        $phone_2 = null,
         $arabic_name = null,
         $birth_date = null,
         $marital_status = null,
@@ -385,6 +389,7 @@ class Customer extends Model
             "profession_id" =>  $profession_id,
             "salary_range"  =>  $salary_range,
             "income_source" =>  $income_source,
+            "owner_id" =>  $owner_id,
         ]);
 
         try {
