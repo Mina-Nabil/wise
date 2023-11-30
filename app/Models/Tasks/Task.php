@@ -410,6 +410,15 @@ class Task extends Model
 
     public function scopeByStates($query, array $states)
     {
+        if (in_array('all', $states)) {
+            return $query;
+        }
+        if (in_array('active', $states)) {
+            array_push($states, self::STATUS_ASSIGNED);
+            array_push($states, self::STATUS_IN_PROGRESS);
+            array_push($states, self::STATUS_NEW);
+            array_push($states, self::STATUS_PENDING);
+        }
         return $query->whereIn("tasks.status", $states);
     }
 

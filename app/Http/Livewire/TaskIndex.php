@@ -121,14 +121,10 @@ class TaskIndex extends Component
         $this->file = null;
         $this->showNewTask = null;
     }
+
     public function filterByStatus($status)
     {
         $this->filteredStatus = [$status];
-    }
-
-    public function resetStatusFilter()
-    {
-        $this->filteredStatus = null;
     }
 
     public function mount($filters)
@@ -170,6 +166,9 @@ class TaskIndex extends Component
             ->fromTo($startDate, $endDate)
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);
+            })
+            ->when($this->filteredStatus == null, function ($query) {
+                return $query->byStates(['active']);
             })
             ->paginate(10);
 
