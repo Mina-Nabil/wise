@@ -187,7 +187,7 @@ class TaskShow extends Component
     public function removeFile($id)
     {
         // dd($id);
-        $task = Task::find($id);
+        $task = Task::find($this->taskId);
         $f = $task->removeFile($id);
         if ($f) {
             $this->alert('success', 'File removed!');
