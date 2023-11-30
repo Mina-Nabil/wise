@@ -137,10 +137,8 @@ class TaskIndex extends Component
             }
         }
 
-        $this->startDate = (new Carbon('last week'))->format('Y-m-d');
-        $this->endDate = now()
-            ->addMonths(3)
-            ->format('Y-m-d');
+        $this->startDate = null;
+        $this->endDate = null;
         $this->dateRange = $this->startDate . ' to ' . $this->endDate;
         $this->watcherTasks = false;
     }
@@ -157,13 +155,16 @@ class TaskIndex extends Component
     public function render()
     {
         $statuses = Task::STATUSES;
-        $startDate = Carbon::parse($this->startDate);
-        $endDate = Carbon::parse($this->endDate);
+
         $users = User::all();
         $user_types = User::TYPES;
 
         $tasks = Task::myTasksQuery($this->myTasks, $this->watcherTasks)
-            ->fromTo($startDate, $endDate)
+            ->when($this->startDate && $this->endDate, function ($query) {
+                $startDate = Carbon::parse($this->startDate);
+                $endDate = Carbon::parse($this->endDate);
+                return $query->fromTo($startDate, $endDate);
+            })
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);
             })

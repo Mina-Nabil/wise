@@ -370,10 +370,6 @@ class Task extends Model
     ////scopes
     public static function scopeMyTasksQuery($query, $assignedToMeOnly = true, $includeWatchers = true): Builder
     {
-        Log::info("Querying tasks");
-        Log::info("Assigned to me: " . ($assignedToMeOnly ? "True" : "False"));
-        Log::info("Include watchers: " . ($includeWatchers ? "True" : "False"));
-
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('tasks.*')
@@ -383,7 +379,8 @@ class Task extends Model
             ->when($includeWatchers, function ($q) use ($loggedInUser) {
                 $q->orwhere('task_watchers.user_id', $loggedInUser->id);
             })
-            ->groupBy('tasks.id');
+            ->groupBy('tasks.id')
+            ->orderBy('tasks.due');
 
         if ($loggedInUser->type === User::TYPE_ADMIN && !$assignedToMeOnly) {
             return $query;
