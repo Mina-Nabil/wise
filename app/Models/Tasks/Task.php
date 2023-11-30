@@ -370,6 +370,10 @@ class Task extends Model
     ////scopes
     public static function scopeMyTasksQuery($query, $assignedToMeOnly = true, $includeWatchers = true): Builder
     {
+        Log::info("Querying tasks");
+        Log::info("Assigned to me: " . ($assignedToMeOnly ? "True" : "False"));
+        Log::info("Include watchers: " . ($includeWatchers ? "True" : "False"));
+
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('tasks.*')
