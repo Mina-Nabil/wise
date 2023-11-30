@@ -139,7 +139,7 @@ class TaskIndex extends Component
 
         $this->startDate = null;
         $this->endDate = null;
-        $this->dateRange = $this->startDate . ' to ' . $this->endDate;
+        $this->dateRange = ($this->startDate && $this->endDate) ? $this->startDate . ' to ' . $this->endDate : "N/A";
         $this->watcherTasks = false;
     }
 
