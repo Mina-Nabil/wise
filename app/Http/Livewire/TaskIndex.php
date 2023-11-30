@@ -90,10 +90,13 @@ class TaskIndex extends Component
             ],
         );
 
-        if ($this->file) {
-            $url = $this->file->store(Task::FILES_DIRECTORY, 's3');
+        if ($this->files) {
+            $urls  = [];
+            foreach ($this->files as $file) {  
+                array_push($urls, ['name' => $file->getClientOriginalName() , 'file_url' => $file->store(Task::FILES_DIRECTORY, 's3')]);
+            }
         } else {
-            $url = null;
+            $urls = [];
         }
 
 
@@ -101,7 +104,7 @@ class TaskIndex extends Component
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
 
-        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $url, $this->setWatchersList ?? []);
+        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $urls, $this->setWatchersList ?? []);
 
         if ($t) {
             $this->alert('success', 'Task Added!');
