@@ -46,6 +46,7 @@ class CustomerShow extends Component
     public $sumInsurance;
     public $insurancePayment;
     public $paymentFreqs;
+    public $editedCarId = null;
 
     //add Address
     public $addAddressSection = false;
@@ -91,10 +92,16 @@ class CustomerShow extends Component
     public $deletePhoneId;
     public $deleteRelativeId;
     public $deleteAddressId;
+    public $deleteCarId;
 
     public function deleteThisPhone($id)
     {
         $this->deletePhoneId = $id;
+    }
+
+    public function deleteThisCar($id)
+    {
+        $this->deleteCarId = $id;
     }
 
     public function deleteThisAddress($id)
@@ -219,9 +226,85 @@ class CustomerShow extends Component
         }
     }
 
+    public function deleteCar()
+    {
+        $c = CustomerCar::find($this->deleteCarId)->delete();
+        if ($c) {
+            $this->alert('success', 'Car deleted sucessfuly!');
+            $this->deleteCarId = null;
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editThisCar($id)
+    {
+        $this->editedCarId = $id;
+        $c = CustomerCar::find($id);
+        $this->carBrand = $c->car->car_model->brand->id;
+        $this->carModel =  $c->car->car_model->id;
+        $this->CarCategory =  $c->car->id;
+        $this->sumInsurance  =  $c->sum_insured;
+        $this->insurancePayment  =  $c->insurance_payment;
+        $this->paymentFreqs =  $c->payment_frequency;
+        $this->models = CarModel::where('brand_id', $this->carBrand)->get();
+        $this->cars = Car::where('car_model_id', $this->carModel)->get();
+    }
+    
+    public function updateCar(){
+        $this->validate([
+            'CarCategory' => 'required|integer|exists:cars,id',
+            'sumInsurance' => 'nullable|integer',
+            'insurancePayment' => 'nullable|integer',
+            'paymentFreqs' => 'nullable|in:' . implode(',', CustomerCar::PAYMENT_FREQS),
+        ]);
+        $c = CustomerCar::find($this->editedCarId);
+        $c->editInfo(
+            $this->CarCategory,
+            null,
+            $this->sumInsurance,
+            $this->insurancePayment,
+            $this->paymentFreqs
+        );
+        if($c){
+            $this->alert('success', 'Car Edited sucessfuly!');
+            $this->editedCarId = null;
+            $this->carBrand = null;
+            $this->carModel =  null;
+            $this->CarCategory =  null;
+            $this->sumInsurance  =  null;
+            $this->insurancePayment  = null;
+            $this->paymentFreqs =  null;
+            $this->models = null;
+            $this->cars = null;
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function closeEditCar()
+    {
+        $this->editedCarId = null;
+        $this->carBrand = null;
+        $this->carModel =  null;
+        $this->CarCategory =  null;
+        $this->sumInsurance  =  null;
+        $this->insurancePayment  = null;
+        $this->paymentFreqs =  null;
+        $this->models = null;
+        $this->cars = null;
+    }
+
     public function dismissDeletePhone()
     {
         $this->deletePhoneId = null;
+    }
+
+    public function dismissDeleteCar()
+    {
+        $this->deleteCarId = null;
     }
 
     public function addPhone()
