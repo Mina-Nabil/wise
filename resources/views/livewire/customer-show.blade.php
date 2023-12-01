@@ -6,19 +6,14 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                 <div class="flex-1 rounded-md overlay max-w-[520px] min-w-\[var\(500px\)\]" style="min-width: 400px;">
                     <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
-                        <b>{{ $customer->name }}
-                            <span class="float-right cursor-pointer text-slate-500" wire:click="">
-                                <iconify-icon icon="material-symbols:edit-outline"></iconify-icon>
-                            </span></b>
+                        <b>{{ $customer->name }}</b>
                     </div>
 
                     <div class="card-body flex flex-col justify-center mt-5  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <p class="mb-2">
                                 <b>Owned Cars ({{ $customer->cars->count() }})</b>
-                                <span class="float-right cursor-pointer text-slate-500" wire:click="">
-                                    <iconify-icon icon="material-symbols:edit-outline"></iconify-icon>
-                                </span>
+
                             </p>
 
                             @if ($customer->cars->isEmpty())
@@ -70,16 +65,20 @@
                         <div class="card-text flex flex-col justify-between  menu-open">
                             <p>
                                 <b>Addresses</b>
-                                <span class="float-right cursor-pointer text-slate-500" wire:click="">
-                                    <iconify-icon icon="material-symbols:edit-outline"></iconify-icon>
-                                </span>
                             </p>
                             <br>
                             @if ($customer->addresses->isEmpty())
                                 <p class="text-center m-5 text-primary">No addresses added to this customer.</p>
                             @else
                                 @foreach ($customer->addresses as $address)
-                                    <p><b>Address {{ $loop->index + 1 }}</b></p>
+                                    <p><b>Address {{ $loop->index + 1 }}</b>
+                                        <button wire:click="deleteThisAddress({{ $address->id }})" class="action-btn float-right" type="button">
+                                            <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                        </button>
+                                        <button wire:click="editThisAddress({{ $address->id }})" class="action-btn float-right mr-1" type="button">
+                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                        </button>
+                                    </p>
                                     <p>{{ $address->line_1 }}</p>
                                     <p>{{ $address->line_2 }}</p>
                                     <p>Flat: {{ $address->flat }}, Building: {{ $address->building }}</p>
@@ -95,9 +94,6 @@
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <p class="mb-2">
                                 <b>Relatives</b>
-                                <span class="float-right cursor-pointer text-slate-500" wire:click="">
-                                    <iconify-icon icon="material-symbols:edit-outline"></iconify-icon>
-                                </span>
                             </p>
 
                             @if ($customer->relatives->isEmpty())
@@ -169,9 +165,6 @@
                         <div class="card-text flex flex-col justify-between  menu-open">
                             <p>
                                 <b>Profession</b>
-                                <span class="float-right cursor-pointer text-slate-500" wire:click="">
-                                    <iconify-icon icon="material-symbols:edit-outline"></iconify-icon>
-                                </span>
                             </p>
                             <p>{{ $customer->profession->title ?? 'N/A' }}</p>
                             <br>
@@ -192,9 +185,6 @@
                         <div class="card-text flex flex-col justify-between  menu-open">
                             <p>
                                 <b>Phones</b>
-                                <span class="float-right cursor-pointer text-slate-500" wire:click="">
-                                    <iconify-icon icon="material-symbols:edit-outline"></iconify-icon>
-                                </span>
                             </p>
                             <br>
 
@@ -244,8 +234,7 @@
                                 Delete Phone
                             </h3>
                             <button wire:click="dismissDeletePhone" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -262,6 +251,42 @@
                         <!-- Modal footer -->
                         <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="deletePhone" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($deleteAddressId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                Delete Address
+                            </h3>
+                            <button wire:click="dismissDeleteAddress" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                Are you sure ! you want to delete this Address ?
+                            </h6>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteAddress" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
                         </div>
                     </div>
                 </div>
@@ -492,6 +517,77 @@
         </div>
     @endif
 
+    @if ($editedAddressId)
+        {{-- add address section --}}
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Address
+                            </h3>
+                            <button wire:click="closeEditAddress" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <p class="text-lg"><b>Address info</b></p>
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Address Type</label>
+                                    <select name="basicSelect" class="form-control w-full mt-2" wire:model="EditedAddressType">
+                                        @foreach ($addressTypes as $type)
+                                            <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Line 1</label>
+                                    <input id="lastName" type="text" class="form-control" wire:model="EditedLine1">
+                                </div>
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Line 2</label>
+                                    <input id="lastName" type="text" class="form-control" wire:model="EditedLine2">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Flat</label>
+                                        <input id="lastName" type="text" class="form-control" wire:model="EditedFlat">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">Building</label>
+                                        <input id="lastName" type="text" class="form-control" wire:model="EditedBuilding">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">City</label>
+                                        <input id="lastName" type="text" class="form-control" wire:model="EditedCity">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">City</label>
+                                        <input id="lastName" type="text" class="form-control" wire:model="EditedCountry">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editAddress" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if ($addAddressSection)
         {{-- add address section --}}
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
@@ -563,7 +659,6 @@
         </div>
     @endif
 
-    {{-- addRelativeSection --}}
     @if ($addRelativeSection)
         {{-- add address section --}}
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">

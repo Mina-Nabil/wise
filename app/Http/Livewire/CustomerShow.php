@@ -49,6 +49,7 @@ class CustomerShow extends Component
 
     //add Address
     public $addAddressSection = false;
+    public $editedAddressId = null;
     public $addressType;
     public $line1;
     public $line2;
@@ -56,6 +57,13 @@ class CustomerShow extends Component
     public $building;
     public $city;
     public $country;
+    public $EditedAddressType;
+    public $EditedLine1;
+    public $EditedLine2;
+    public $EditedFlat;
+    public $EditedBuilding;
+    public $EditedCity;
+    public $EditedCountry;
 
     //add Relative
     public $addRelativeSection = false;
@@ -82,57 +90,142 @@ class CustomerShow extends Component
 
     public $deletePhoneId;
     public $deleteRelativeId;
+    public $deleteAddressId;
 
-    public function deleteThisPhone($id){
+    public function deleteThisPhone($id)
+    {
         $this->deletePhoneId = $id;
     }
 
-    public function editThisPhone($id){
+    public function deleteThisAddress($id)
+    {
+        $this->deleteAddressId = $id;
+    }
+
+    public function deleteAddress()
+    {
+        $a = Address::find($this->deleteAddressId)->delete();
+        if ($a) {
+            $this->alert('success', 'Address deleted sucessfuly!');
+            $this->deleteAddressId = null;
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function closeEditAddress()
+    {
+        $this->editedAddressId = null;
+    }
+
+    public function editAddress()
+    {
+        $this->validate([
+            'EditedAddressType' => 'required|in:' . implode(',', Address::TYPES),
+            'EditedLine1' => 'required|string|max:255',
+            'EditedLine2' => 'nullable|string|max:255',
+            'EditedFlat' => 'nullable|string|max:255',
+            'EditedBuilding' => 'nullable|string|max:255',
+            'EditedCity' => 'nullable|string|max:255',
+            'EditedCountry' => 'nullable|string|max:255'
+        ]);
+
+        $address = Address::find($this->editedAddressId);
+        $a = $address->editInfo(
+            $this->EditedAddressType,
+            $this->EditedLine1,
+            $this->EditedLine2,
+            $this->EditedCountry,
+            $this->EditedCity,
+            $this->EditedBuilding,
+            $this->EditedFlat
+        );
+        if ($a) {
+            $this->alert('success', 'Address edited successfuly');
+            $this->editedAddressId = null;
+            $this->EditedAddressType = null;
+            $this->EditedLine1 = null;
+            $this->EditedLine2 = null;
+            $this->EditedFlat = null;
+            $this->EditedBuilding = null;
+            $this->EditedCity = null;
+            $this->EditedCountry = null;
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editThisAddress($id)
+    {
+        $this->editedAddressId = $id;
+        $a = Address::find($this->editedAddressId);
+        $this->EditedAddressType = $a->type;
+        $this->EditedLine1 = $a->line_1;
+        $this->EditedLine2 = $a->line_2;
+        $this->EditedFlat = $a->flat;
+        $this->EditedBuilding = $a->building;
+        $this->EditedCity = $a->city;
+        $this->EditedCountry = $a->country;
+    }
+
+    public function dismissDeleteAddress()
+    {
+        $this->deleteAddressId = null;
+    }
+
+    public function editThisPhone($id)
+    {
         $this->editedPhoneId = $id;
         $p = Phone::find($this->editedPhoneId);
         $this->editedPhoneType = $p->type;
-        $this->editedNumber = $p->number; 
+        $this->editedNumber = $p->number;
     }
 
-    public function closeEditPhone(){
+    public function closeEditPhone()
+    {
         $this->editedPhoneId = null;
     }
 
-    public function editPhone(){
+    public function editPhone()
+    {
         $this->validate([
             'editedPhoneType' => 'required|in:' . implode(',', Phone::TYPES),
             'editedNumber' => 'required|string|max:255',
         ]);
         $p = Phone::find($this->editedPhoneId);
-        $res = $p->editInfo($this->editedPhoneType,$this->editedNumber);
+        $res = $p->editInfo($this->editedPhoneType, $this->editedNumber);
         if ($res) {
             $this->alert('success', 'Phone Edited sucessfuly!');
             $this->editedPhoneId = null;
             $this->editedPhoneType = null;
             $this->editedNumber = null;
             $this->mount($this->customer->id);
-        }else{
+        } else {
             $this->alert('failed', 'server error');
         }
     }
 
-    public function deletePhone(){
+    public function deletePhone()
+    {
         $p = Phone::find($this->deletePhoneId)->delete();
         if ($p) {
             $this->alert('success', 'Phone deleted sucessfuly!');
             $this->deletePhoneId = null;
             $this->mount($this->customer->id);
-        }else{
+        } else {
             $this->alert('failed', 'server error');
         }
-        
     }
 
-    public function dismissDeletePhone(){
+    public function dismissDeletePhone()
+    {
         $this->deletePhoneId = null;
     }
 
-    public function addPhone(){
+    public function addPhone()
+    {
         $this->validate([
             'phoneType' => 'required|in:' . implode(',', Phone::TYPES),
             'number' => 'required|string|max:255',
@@ -148,24 +241,25 @@ class CustomerShow extends Component
             $this->phoneType = null;
             $this->number = null;
             $this->setPhoneDefault = null;
-        }else{
+        } else {
             $this->alert('failed', 'server error');
         }
     }
 
-    public function editThisRelative($id){
+    public function editThisRelative($id)
+    {
         $this->editedRelativeId = $id;
-       
+
         $r = Relative::find($this->editedRelativeId);
         $this->editedRelativeName = $r->name;
         $this->editedRelation = $r->relation;
         $this->editedRelativeGender = $r->gender;
         $this->editedRelativePhone = $r->phone;
-        $this->editedRelativeBdate = ($r->birth_date ? $r->birth_date->toDateString() :null);
-
+        $this->editedRelativeBdate = ($r->birth_date ? $r->birth_date->toDateString() : null);
     }
 
-    public function editRelative(){
+    public function editRelative()
+    {
         $this->validate([
             'editedRelativeName' => 'required|string|max:255',
             'editedRelation' => 'required|in:' . implode(',', Relative::RELATIONS),
@@ -191,33 +285,36 @@ class CustomerShow extends Component
             $this->RelativePhone = null;
             $this->relativeBdate = null;
             $this->mount($this->customer->id);
-        }else{
+        } else {
             $this->alert('failed', 'server error');
         }
     }
 
-    public function closeEditRelative(){
+    public function closeEditRelative()
+    {
         $this->editedRelativeId = null;
     }
 
-    public function deleteThisRelative($id){
+    public function deleteThisRelative($id)
+    {
         $this->deleteRelativeId = $id;
     }
-    
-    public function dismissDeleteRelative(){
+
+    public function dismissDeleteRelative()
+    {
         $this->deleteRelativeId = null;
     }
 
-    public function deleteRelative(){
+    public function deleteRelative()
+    {
         $r = Relative::find($this->deleteRelativeId)->delete();
         if ($r) {
             $this->alert('success', 'Relative deleted sucessfuly!');
             $this->deleteRelativeId = null;
             $this->mount($this->customer->id);
-        }else{
+        } else {
             $this->alert('failed', 'server error');
         }
-        
     }
 
     public function addRelative()
@@ -357,9 +454,6 @@ class CustomerShow extends Component
         }
     }
 
-
-
-
     public function mount($customerId)
     {
         $this->customer = Customer::findOrFail($customerId);
@@ -377,7 +471,6 @@ class CustomerShow extends Component
         $this->salaryRange  = $this->customer->salary_range;
         $this->incomeSource = $this->customer->income_source;
     }
-
 
     public function updatedCarBrand($value)
     {
@@ -404,7 +497,8 @@ class CustomerShow extends Component
         $this->toggle($this->addCarSection);
     }
 
-    public function toggleAddPhone() {
+    public function toggleAddPhone()
+    {
         $this->toggle($this->addPhoneSection);
     }
 
