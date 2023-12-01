@@ -251,8 +251,9 @@ class CustomerShow extends Component
         $this->models = CarModel::where('brand_id', $this->carBrand)->get();
         $this->cars = Car::where('car_model_id', $this->carModel)->get();
     }
-    
-    public function updateCar(){
+
+    public function updateCar()
+    {
         $this->validate([
             'CarCategory' => 'required|integer|exists:cars,id',
             'sumInsurance' => 'nullable|integer',
@@ -267,7 +268,7 @@ class CustomerShow extends Component
             $this->insurancePayment,
             $this->paymentFreqs
         );
-        if($c){
+        if ($c) {
             $this->alert('success', 'Car Edited sucessfuly!');
             $this->editedCarId = null;
             $this->carBrand = null;
@@ -324,6 +325,7 @@ class CustomerShow extends Component
             $this->phoneType = null;
             $this->number = null;
             $this->setPhoneDefault = null;
+            $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -425,6 +427,7 @@ class CustomerShow extends Component
             $this->RelativePhone = null;
             $this->relativeBdate = null;
             $this->toggleAddRelative();
+            $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -455,6 +458,7 @@ class CustomerShow extends Component
             $this->insurancePayment = null;
             $this->paymentFreqs = null;
             $this->toggleAddCar();
+            $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -492,6 +496,18 @@ class CustomerShow extends Component
             $this->building = null;
             $this->flat = null;
             $this->toggleAddAddress();
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setPhoneAsDefault($id)
+    {
+        $p = Phone::find($id)->setAsDefault();
+        if ($p) {
+            $this->alert('success', 'Phone set as primary!');
+            $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -506,12 +522,12 @@ class CustomerShow extends Component
             'email' =>  'nullable|email',
             'gender' =>  'nullable|in:' . implode(',', Customer::GENDERS),
             'maritalStatus' =>  'nullable|in:' . implode(',', Customer::MARITALSTATUSES),
-            'idType' =>  'required|in:' . implode(',', Customer::IDTYPES),
+            'idType' =>  'nullable|in:' . implode(',', Customer::IDTYPES),
             'idNumber' => 'nullable|string|max:255',
-            'nationalId' => 'nullable|integer|max:20', //revise
-            'profession_id' => 'integer|exists:professions,id',
-            'salaryRange' => 'required|in:' . implode(',', Customer::SALARY_RANGES),
-            'incomeSource' =>  'required|in:' . implode(',', Customer::INCOME_SOURCES),
+            'nationalId' => 'nullable|integer|exists:countries,id',
+            'profession_id' => 'nullable|exists:professions,id',
+            'salaryRange' => 'nullable|in:' . implode(',', Customer::SALARY_RANGES),
+            'incomeSource' =>  'nullable|in:' . implode(',', Customer::INCOME_SOURCES),
         ]);
         $customer = Customer::find($this->customer->id);
         $c = $customer->editCustomer(
