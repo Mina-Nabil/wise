@@ -115,11 +115,6 @@ class TaskIndex extends Component
         }
     }
 
-    public function resetPagination()
-    {
-        $this->resetPage();
-    }
-
     private function resetFormFields()
     {
         $this->taskTitle = null;
@@ -146,6 +141,7 @@ class TaskIndex extends Component
             }
         }
 
+        $this->searchText = null;
         $this->startDate = null;
         $this->endDate = null;
         $this->dateRange = ($this->startDate && $this->endDate) ? $this->startDate . ' to ' . $this->endDate : "N/A";
@@ -159,6 +155,11 @@ class TaskIndex extends Component
             [$this->startDate, $this->endDate] = explode(' to ', $this->dateRange);
             // dd($this->startDate, $this->endDate);
         }
+    }
+    
+    public function updatedSearchText()
+    {
+        $this->resetPage();
     }
 
     public function render()
