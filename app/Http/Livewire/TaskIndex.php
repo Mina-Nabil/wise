@@ -115,6 +115,11 @@ class TaskIndex extends Component
         }
     }
 
+    private function resetPagination()
+    {
+        $this->resetPage();
+    }
+
     private function resetFormFields()
     {
         $this->taskTitle = null;
