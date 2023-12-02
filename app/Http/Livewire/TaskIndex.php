@@ -20,6 +20,7 @@ class TaskIndex extends Component
     public $startDate;
     public $endDate;
     public $filteredStatus;
+    public $searchText;
     public $myTasks;
     public $watcherTasks;
 
@@ -164,6 +165,9 @@ class TaskIndex extends Component
                 $startDate = Carbon::parse($this->startDate);
                 $endDate = Carbon::parse($this->endDate);
                 return $query->fromTo($startDate, $endDate);
+            })
+            ->when($this->searchText, function ($query) {
+                return $query->searchByTitle($this->searchText);
             })
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);

@@ -296,7 +296,7 @@ class Task extends Model
 
     /////static functions
     /**
-     * @param array $files .. must contain array of ['name' => filename, 'file_url' => url] records
+     * @param array $files must contain array of ['name' => filename, 'file_url' => url] records
      */
     public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $files = [], $watchers = [])
     {
@@ -421,6 +421,11 @@ class Task extends Model
             array_push($states, self::STATUS_PENDING);
         }
         return $query->whereIn("tasks.status", $states);
+    }
+
+    public function scopeSearchByTitle($query, $text)
+    {
+        return $query->where('tasks.title', 'LIKE', "%" . $text . "%");
     }
 
     public function scopeOpenBy($query, $user_id)

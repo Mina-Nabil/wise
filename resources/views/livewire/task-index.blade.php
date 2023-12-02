@@ -62,6 +62,7 @@
 
 
         </div>
+        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model="searchText" placeholder="Search by title">
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px"
             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
             wire:model="dateRange">
