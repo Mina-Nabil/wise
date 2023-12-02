@@ -335,7 +335,7 @@ class Task extends Model
                 foreach ($files as $f) {
                     $f['user_id']   =  $loggedInUser->id;
                 }
-                $newTask->files()->create($files);
+                $newTask->files()->createMany($files);
             }
 
             if ($watchers && count($watchers) > 0) {
