@@ -115,7 +115,7 @@ class TaskIndex extends Component
         }
     }
 
-    private function resetPagination()
+    public function resetPagination()
     {
         $this->resetPage();
     }
