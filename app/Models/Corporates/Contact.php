@@ -40,15 +40,14 @@ class Contact extends Model
         }
     }
 
-    public function editInfo($name, $relation, $gender = null, $phone = null, $birth_date = null)
+    public function editInfo($name, $job_title = null, $email = null, $phone = null)
     {
         try {
             $this->update([
-                "name"      =>  $name,
-                "relation"  =>  $relation,
-                "gender"    =>  $gender,
+                "name"  => $name,
+                "job_title"  => $job_title,
+                "email" => $email,
                 "phone"     =>  $phone,
-                "birth_date"    =>  $birth_date,
             ]);
             AppLog::info("Adding corporate contact", loggable: $this);
             return false;
