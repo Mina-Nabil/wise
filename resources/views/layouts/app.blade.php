@@ -157,6 +157,16 @@
                             </span>
                         </a>
                     </li>
+
+                    <li>
+                        <a href="{{ url('/corporates') }}" class="navItem @yield('corporates')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
+                                <span>Corporates</span>
+                            </span>
+                        </a>
+                    </li>
+
                     @can('viewAny', \App\Models\Users\AppLog::class)
                         <li>
                             <a href="{{ url('/logs') }}" class="navItem @yield('logs')">
