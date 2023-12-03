@@ -93,8 +93,12 @@ class TaskIndex extends Component
 
         if ($this->files) {
             $urls  = [];
-            foreach ($this->files as $file) {  
-                array_push($urls, ['name' => $file->getClientOriginalName() , 'file_url' => $file->store(Task::FILES_DIRECTORY, 's3')]);
+            foreach ($this->files as $file) {
+                array_push($urls, [
+                    'name'      => $file->getClientOriginalName(),
+                    'file_url'  => $file->store(Task::FILES_DIRECTORY, 's3'),
+                    'user_id'   => Auth::id()
+                ]);
             }
         } else {
             $urls = [];
@@ -156,7 +160,7 @@ class TaskIndex extends Component
             // dd($this->startDate, $this->endDate);
         }
     }
-    
+
     public function updatedSearchText()
     {
         $this->resetPage();

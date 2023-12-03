@@ -296,7 +296,7 @@ class Task extends Model
 
     /////static functions
     /**
-     * @param array $files must contain array of ['name' => filename, 'file_url' => url] records
+     * @param array $files must contain array of ['name' => filename, 'file_url' => url, 'user_id'  => user_id] records
      */
     public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $files = [], $watchers = [])
     {
@@ -331,10 +331,7 @@ class Task extends Model
                 $newTask->taskable()->associate($taskable);
             }
 
-            if ($files && count($files) > 0 && $loggedInUser) {
-                foreach ($files as $f) {
-                    $f['user_id']   =  $loggedInUser->id;
-                }
+            if ($files && count($files) > 0) {
                 $newTask->files()->createMany($files);
             }
 
