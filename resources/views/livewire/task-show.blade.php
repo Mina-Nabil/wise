@@ -268,7 +268,7 @@
                                                 </span>
                                                 <span class="block font-normal text-xs text-slate-500 mt-1">
                                                     uploaded by
-                                                    {{ $file->user->first_name . ' ' . $file->user->last_name }} / <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeFile({{ $file->id }})">remove</span>
+                                                    {{ $file->user?->first_name . ' ' . $file->user?->last_name }} / <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeFile({{ $file->id }})">remove</span>
                                                 </span>
                                             </div>
                                         </div>
