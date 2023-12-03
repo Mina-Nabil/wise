@@ -50,7 +50,7 @@ class Contact extends Model
                 "phone"     =>  $phone,
             ]);
             AppLog::info("Adding corporate contact", loggable: $this);
-            return false;
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Adding corporate contact failed", desc: $e->getMessage(), loggable: $this);
