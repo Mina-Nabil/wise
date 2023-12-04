@@ -8,6 +8,7 @@ use App\Models\Corporates\Address;
 use App\Models\Corporates\BankAccount;
 use App\Models\Corporates\Contact;
 use App\Models\Corporates\Phone;
+use App\Models\Customers\Followup;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 
@@ -49,6 +50,15 @@ class CorporateShow extends Component
     public $PhoneId;
     public $deletePhoneId;
     public $addPhoneSection = false;
+
+    //followups
+    public $addFollowupSection = false;
+    public $followupTitle;
+    public $followupCallDate;
+    public $followupCallTime;
+    public $followupDesc;
+    public $followupId;
+    public $deleteFollowupId;
 
     //contact
     public $contactName;
@@ -209,6 +219,139 @@ class CorporateShow extends Component
 
     public function closeDeleteBankAccount(){
         $this->deleteBankAccountId = null;
+    }
+
+    public function closeEditFollowup()
+    {
+        $this->followupId = null;
+        $this->followupTitle = null;
+        $this->followupCallDate = null;
+        $this->followupCallTime = null;
+        $this->followupDesc = null;
+    }
+
+    public function closeFollowupSection()
+    {
+        $this->followupTitle = null;
+        $this->followupCallDate = null;
+        $this->followupCallTime = null;
+        $this->followupDesc = null;
+        $this->addFollowupSection = false;
+    }
+
+    public function OpenAddFollowupSection()
+    {
+        $this->addFollowupSection = true;
+    }
+
+    public function editThisFollowup($id){
+        $this->followupId = $id;
+        $f = Followup::find($id);
+        $this->followupTitle = $f->title;
+        $combinedDateTime = new \DateTime($f->call_time);
+        $this->followupCallDate = $combinedDateTime->format('Y-m-d');
+        $this->followupCallTime = $combinedDateTime->format('H:i:s');
+        $this->followupDesc = $f->desc;
+    }
+
+    public function deleteThisFollowup($id){
+        $this->deleteFollowupId = $id;
+    }
+
+    public function dismissDeleteFollowup(){
+        $this->deleteFollowupId = null;
+    }
+
+    public function deleteFollowup(){
+        $res = Followup::find($this->deleteFollowupId)->delete();
+        if ($res) {
+            $this->alert('success', 'Followup Deleted successfuly');
+            $this->dismissDeleteFollowup();
+            $this->mount($this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function addFollowup()
+    {
+        $this->validate([
+            'followupTitle' => 'required|string|max:255',
+            'followupCallDate' => 'nullable|date',
+            'followupCallTime' => 'nullable',
+            'followupDesc' => 'nullable|string|max:255'
+        ]);
+
+        $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
+        $combinedDateTime = new \DateTime($combinedDateTimeString);
+
+        $corporate = Corporate::find($this->corporate->id);
+
+        $res = $corporate->addFollowup(
+            $this->followupTitle,
+            $combinedDateTime,
+            $this->followupDesc
+        );
+
+        if ($res) {
+            $this->alert('success', 'Followup added successfuly');
+            $this->closeFollowupSection();
+            $this->mount($this->corporate->id);
+            return redirect()->route('corporates.show' , $this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editFollowup()
+    {
+        $this->validate([
+            'followupTitle' => 'required|string|max:255',
+            'followupCallDate' => 'nullable|date',
+            'followupCallTime' => 'nullable',
+            'followupDesc' => 'nullable|string|max:255'
+        ]);
+
+        $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
+        $combinedDateTime = new \DateTime($combinedDateTimeString);
+
+        $followup = Followup::find($this->followupId);
+
+        $res = $followup->editInfo(
+            $this->followupTitle,
+            $combinedDateTime,
+            $this->followupDesc
+        );
+
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+            $this->closeEditFollowup();
+            $this->mount($this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setFollowupAsCalled($id)
+    {
+        $res = Followup::find($id)->setAsCalled();
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+            $this->mount($this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setFollowupAsCancelled($id)
+    {
+        $res = Followup::find($id)->setAsCancelled();
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+            $this->mount($this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function mount($corporateId)
