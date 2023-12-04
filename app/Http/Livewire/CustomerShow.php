@@ -12,6 +12,7 @@ use App\models\Cars\Car;
 use App\models\Cars\CarModel;
 use App\models\Cars\Brand;
 use App\Models\Base\Country;
+use App\Models\Customers\Followup;
 use App\Models\Customers\Phone;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
@@ -89,6 +90,14 @@ class CustomerShow extends Component
     public $editedPhoneType;
     public $editedNumber;
 
+    //followups
+    public $addFollowupSection = false;
+    public $followupTitle;
+    public $followupCallDate;
+    public $followupCallTime;
+    public $followupDesc;
+
+
     public $deletePhoneId;
     public $deleteRelativeId;
     public $deleteAddressId;
@@ -124,6 +133,71 @@ class CustomerShow extends Component
     public function closeEditAddress()
     {
         $this->editedAddressId = null;
+    }
+
+    public function closeFollowupSection()
+    {
+        $this->addFollowupSection = false;
+        $this->followupTitle = null;
+        $this->followupCallDate = null;
+        $this->followupCallTime = null;
+        $this->followupDesc = null;
+    }
+
+    public function OpenAddFollowupSection()
+    {
+        $this->addFollowupSection = true;
+    }
+
+    public function addFollowup()
+    {
+        $this->validate([
+            'followupTitle' => 'required|string|max:255',
+            'followupCallDate' => 'nullable|date',
+            'followupCallTime' => 'nullable',
+            'followupDesc' => 'nullable|string|max:255'
+        ]);
+
+        $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
+        $combinedDateTime = new \DateTime($combinedDateTimeString);
+
+        $customer = Customer::find($this->customer->id);
+
+        $res = $customer->addFollowup(
+            $this->followupTitle,
+            $combinedDateTime,
+            $this->followupDesc
+        );
+
+        if ($res) {
+            $this->alert('success', 'Followup added successfuly');
+            $this->closeFollowupSection();
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setFollowupAsCalled($id)
+    {
+        $res = Followup::find($id)->setAsCalled();
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setFollowupAsCancelled($id)
+    {
+        $res = Followup::find($id)->setAsCancelled();
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function editAddress()
