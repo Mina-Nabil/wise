@@ -94,6 +94,11 @@ class CorporateIndex extends Component
 
     }
 
+    public function redirectToShowPage($id)
+    {
+        return redirect(route('corporates.show',  $id));
+    }
+
 
 
     public function toggleAddLead(){

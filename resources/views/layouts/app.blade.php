@@ -167,6 +167,15 @@
                         </a>
                     </li>
 
+                    <li>
+                        <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="icon-park:cycle-arrow"></iconify-icon>
+                                <span>Follow Ups</span>
+                            </span>
+                        </a>
+                    </li>
+
                     @can('viewAny', \App\Models\Users\AppLog::class)
                         <li>
                             <a href="{{ url('/logs') }}" class="navItem @yield('logs')">
