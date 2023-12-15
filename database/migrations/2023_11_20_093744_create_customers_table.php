@@ -8,6 +8,7 @@ use App\Models\Customers\Customer;
 use App\Models\Customers\Phone;
 use App\Models\Customers\Profession;
 use App\Models\Customers\Relative;
+use App\Models\Offers\OfferOption;
 use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -77,7 +78,7 @@ return new class extends Migration
             $table->foreignIdFor(Car::class)->constrained('cars');
             $table->double('sum_insured')->nullable();
             $table->double('insurance_payment')->nullable();
-            $table->enum('payment_frequency', CustomersCar::PAYMENT_FREQS)->nullable();
+            $table->enum('payment_frequency', OfferOption::PAYMENT_FREQS)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
