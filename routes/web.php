@@ -7,6 +7,7 @@ use App\Http\Controllers\PoliciesController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\AppLogController;
 use App\Models\Customers\Customer;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,10 @@ Route::middleware('auth', 'active')->group(function () {
 
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
+    Route::get('/followups', [CustomerController::class, 'followupsIndex'])->name('followups.index');
+
+    Route::get('/corporates', [CorporateController::class, 'index'])->name('corporates.index');
+    Route::get('/corporates/{id}', [CorporateController::class, 'show'])->name('corporates.show');
 
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::get('/logs', [AppLogController::class, 'index'])->name('logs.index');

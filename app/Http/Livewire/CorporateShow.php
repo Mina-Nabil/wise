@@ -8,6 +8,7 @@ use App\Models\Corporates\Address;
 use App\Models\Corporates\BankAccount;
 use App\Models\Corporates\Contact;
 use App\Models\Corporates\Phone;
+use App\Models\Customers\Followup;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 
@@ -50,6 +51,15 @@ class CorporateShow extends Component
     public $deletePhoneId;
     public $addPhoneSection = false;
 
+    //followups
+    public $addFollowupSection = false;
+    public $followupTitle;
+    public $followupCallDate;
+    public $followupCallTime;
+    public $followupDesc;
+    public $followupId;
+    public $deleteFollowupId;
+
     //contact
     public $contactName;
     public $jobTitle;
@@ -84,11 +94,34 @@ class CorporateShow extends Component
     public function editThisAddress($id)
     {
         $this->editAddressId = $id;
+        $a = Address::find($id);
+        $this->type = $a->type;
+        $this->line1 = $a->line_1;
+        $this->line2 = $a->line_2;
+        $this->country = $a->country;
+        $this->city = $a->city;
+        $this->building = $a->building;
+        $this->flat = $a->flat;
     }
 
     public function closeEditAddress()
     {
         $this->editAddressId = null;
+        $this->type = null;
+        $this->line1 = null;
+        $this->line2 = null;
+        $this->country = null;
+        $this->city = null;
+        $this->building = null;
+        $this->flat = null;
+    }
+
+    public function deleteThisAddress($id){
+        $this->deleteAddressId = $id;
+    }
+
+    public function closeDeleteAddress(){
+        $this->deleteAddressId = null;
     }
 
     public function toggleAddPhone()
@@ -99,11 +132,22 @@ class CorporateShow extends Component
     public function editThisPhone($id)
     {
         $this->PhoneId = $id;
+        $p = Phone::find($id);
+        $this->phoneType = $p->type;
+        $this->number  = $p->number;
     }
 
     public function closeEditPhone()
     {
         $this->PhoneId = null;
+    }
+
+    public function deleteThisPhone($id){
+        $this->deletePhoneId = $id;
+    }
+
+    public function closeDeletePhone(){
+        $this->deletePhoneId = null;
     }
 
     public function toggleAddContact()
@@ -114,11 +158,28 @@ class CorporateShow extends Component
     public function editThisContact($id)
     {
         $this->contactId = $id;
+        $c = Contact::find($id);
+        $this->contactName = $c->name;
+        $this->jobTitle = $c->job_title;
+        $this->contactEmail = $c->email;
+        $this->contactPhone = $c->phone;
     }
 
     public function closeEditContact()
     {
         $this->contactId = null;
+        $this->contactName = null;
+        $this->jobTitle = null;
+        $this->contactEmail = null;
+        $this->contactPhone = null;
+    }
+
+    public function deleteThisContact($id){
+        $this->deleteContactId = $id;
+    }
+
+    public function closeDeleteContact(){
+        $this->deleteContactId = null;
     }
 
 
@@ -130,16 +191,183 @@ class CorporateShow extends Component
     public function editThisBankAccount($id)
     {
         $this->bankAccountId = $id;
+        $b = BankAccount::find($id);
+        $this->accountType = $b->type;
+        $this->bankName = $b->bank_name;
+        $this->accountNumber = $b->account_number;
+        $this->ownerName = $b->owner_name;
+        $this->evidenceDoc = $b->evidence_doc;
+        $this->iban = $b->iban;
+        $this->bankBranch = $b->bank_branch;
     }
 
     public function closeEditBankAccount()
     {
         $this->bankAccountId = null;
+        $this->accountType = null;
+        $this->bankName = null;
+        $this->accountNumber = null;
+        $this->ownerName = null;
+        $this->evidenceDoc = null;
+        $this->iban = null;
+        $this->bankBranch = null;
+    }
+
+    public function deleteThisBankAccount($id){
+        $this->deleteBankAccountId = $id;
+    }
+
+    public function closeDeleteBankAccount(){
+        $this->deleteBankAccountId = null;
+    }
+
+    public function closeEditFollowup()
+    {
+        $this->followupId = null;
+        $this->followupTitle = null;
+        $this->followupCallDate = null;
+        $this->followupCallTime = null;
+        $this->followupDesc = null;
+    }
+
+    public function closeFollowupSection()
+    {
+        $this->followupTitle = null;
+        $this->followupCallDate = null;
+        $this->followupCallTime = null;
+        $this->followupDesc = null;
+        $this->addFollowupSection = false;
+    }
+
+    public function OpenAddFollowupSection()
+    {
+        $this->addFollowupSection = true;
+    }
+
+    public function editThisFollowup($id){
+        $this->followupId = $id;
+        $f = Followup::find($id);
+        $this->followupTitle = $f->title;
+        $combinedDateTime = new \DateTime($f->call_time);
+        $this->followupCallDate = $combinedDateTime->format('Y-m-d');
+        $this->followupCallTime = $combinedDateTime->format('H:i:s');
+        $this->followupDesc = $f->desc;
+    }
+
+    public function deleteThisFollowup($id){
+        $this->deleteFollowupId = $id;
+    }
+
+    public function dismissDeleteFollowup(){
+        $this->deleteFollowupId = null;
+    }
+
+    public function deleteFollowup(){
+        $res = Followup::find($this->deleteFollowupId)->delete();
+        if ($res) {
+            $this->alert('success', 'Followup Deleted successfuly');
+            $this->dismissDeleteFollowup();
+            $this->mount($this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function addFollowup()
+    {
+        $this->validate([
+            'followupTitle' => 'required|string|max:255',
+            'followupCallDate' => 'nullable|date',
+            'followupCallTime' => 'nullable',
+            'followupDesc' => 'nullable|string|max:255'
+        ]);
+
+        $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
+        $combinedDateTime = new \DateTime($combinedDateTimeString);
+
+        $corporate = Corporate::find($this->corporate->id);
+
+        $res = $corporate->addFollowup(
+            $this->followupTitle,
+            $combinedDateTime,
+            $this->followupDesc
+        );
+
+        if ($res) {
+            $this->alert('success', 'Followup added successfuly');
+            $this->closeFollowupSection();
+            $this->mount($this->corporate->id);
+            return redirect()->route('corporates.show' , $this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editFollowup()
+    {
+        $this->validate([
+            'followupTitle' => 'required|string|max:255',
+            'followupCallDate' => 'nullable|date',
+            'followupCallTime' => 'nullable',
+            'followupDesc' => 'nullable|string|max:255'
+        ]);
+
+        $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
+        $combinedDateTime = new \DateTime($combinedDateTimeString);
+
+        $followup = Followup::find($this->followupId);
+
+        $res = $followup->editInfo(
+            $this->followupTitle,
+            $combinedDateTime,
+            $this->followupDesc
+        );
+
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+            $this->closeEditFollowup();
+            $this->mount($this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setFollowupAsCalled($id)
+    {
+        $res = Followup::find($id)->setAsCalled();
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+            $this->mount($this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setFollowupAsCancelled($id)
+    {
+        $res = Followup::find($id)->setAsCancelled();
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+            $this->mount($this->corporate->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function mount($corporateId)
     {
         $this->corporate = Corporate::findOrFail($corporateId);
+        $this->name = $this->corporate->name;
+        $this->arabicName = $this->corporate->arabic_name;
+        $this->email = $this->corporate->email;
+        $this->commercialRecord = $this->corporate->commercial_record;
+        $this->commercialRecordDoc = $this->corporate->commercial_record_doc;
+        $this->taxId = $this->corporate->tax_id;
+        $this->taxIdDoc = $this->corporate->tax_id_doc;
+        $this->kyc = $this->corporate->kyc;
+        $this->kycDoc = $this->corporate->kyc_doc;
+        $this->contractDoc = $this->corporate->contract_doc;
+        $this->mainBandEvidence = $this->corporate->main_bank_evidence;
     }
 
     public function editCorporate()
@@ -224,6 +452,7 @@ class CorporateShow extends Component
             $this->city = null;
             $this->building = null;
             $this->flat = null;
+            $this->toggleAddAddress();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -254,13 +483,7 @@ class CorporateShow extends Component
         );
         if ($res) {
             $this->alert('success', 'Address edited successfuly');
-            $this->type = null;
-            $this->line1 = null;
-            $this->line2 = null;
-            $this->country = null;
-            $this->city = null;
-            $this->building = null;
-            $this->flat = null;
+            $this->closeEditAddress();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -295,6 +518,7 @@ class CorporateShow extends Component
             $this->alert('success', 'Phone Added successfuly');
             $this->phoneType = null;
             $this->number = null;
+            $this->toggleAddPhone();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -311,12 +535,13 @@ class CorporateShow extends Component
         $res = $p->editInfo(
             $this->phoneType,
             $this->number,
-            null,
+            false
         );
         if ($res) {
             $this->alert('success', 'Phone Edited successfuly');
             $this->phoneType = null;
             $this->number = null;
+            $this->closeEditPhone();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -335,12 +560,22 @@ class CorporateShow extends Component
         }
     }
 
+    public function setPhoneAsDefault($id){
+        $r = Phone::find($id)->setAsDefault();
+        if ($r) {
+            $this->alert('success', 'Phone updated!');
+            $this->mount($this->corporate->id);
+        }else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
     public function addContact()
     {
         $this->validate([
             'contactName' => 'required|string|max:255',
             'jobTitle' => 'nullable|string|max:255',
-            'contactEmail' => 'nullable|string|max:255',
+            'contactEmail' => 'nullable|email',
             'contactPhone' => 'nullable|string|max:255'
         ]);
         $c = Corporate::find($this->corporate->id);
@@ -357,6 +592,7 @@ class CorporateShow extends Component
             $this->jobTitle = null;
             $this->contactEmail = null;
             $this->contactPhone = null;
+            $this->toggleAddContact();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -368,7 +604,7 @@ class CorporateShow extends Component
         $this->validate([
             'contactName' => 'required|string|max:255',
             'jobTitle' => 'nullable|string|max:255',
-            'contactEmail' => 'nullable|string|max:255',
+            'contactEmail' => 'nullable|email',
             'contactPhone' => 'nullable|string|max:255'
         ]);
         $c = Contact::find($this->contactId);
@@ -384,6 +620,7 @@ class CorporateShow extends Component
             $this->jobTitle = null;
             $this->contactEmail = null;
             $this->contactPhone = null;
+            $this->closeEditContact();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -433,6 +670,7 @@ class CorporateShow extends Component
             $this->evidenceDoc = null;
             $this->iban = null;
             $this->bankBranch = null;
+            $this->toggleAddBankAccount();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -451,7 +689,7 @@ class CorporateShow extends Component
             'bankBranch' => 'nullable|string|max:255',
         ]);
         $b = BankAccount::find($this->bankAccountId);
-        $res = $b->addBankAccount(
+        $res = $b->editInfo(
             $this->accountType,
             $this->bankName,
             $this->accountNumber,
@@ -462,14 +700,8 @@ class CorporateShow extends Component
             false
         );
         if ($res) {
-            $this->alert('success', 'Account Added successfuly');
-            $this->accountType = null;
-            $this->bankName = null;
-            $this->accountNumber = null;
-            $this->ownerName = null;
-            $this->evidenceDoc = null;
-            $this->iban = null;
-            $this->bankBranch = null;
+            $this->alert('success', 'Account edited successfuly');
+            $this->closeEditBankAccount();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -490,6 +722,13 @@ class CorporateShow extends Component
 
     public function render()
     {
-        return view('livewire.corporate-show');
+        $addressTypes = Address::TYPES;
+        $bankAccTypes = BankAccount::TYPES;
+        $phoneTypes = Phone::TYPES;
+        return view('livewire.corporate-show',[
+            'addressTypes' => $addressTypes,
+            'bankAccTypes' => $bankAccTypes,
+            'phoneTypes'  => $phoneTypes,
+        ]);
     }
 }

@@ -16,5 +16,9 @@ class CustomerController extends Controller
         return view('customers.show', compact('customerId'));
     }
 
+    public function followupsIndex(){
+        return view('customers.followups');
+    }
+
 
 }

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <title>Wise</title>
-    <link rel="icon" type="image/png" href="{{ asset('assets/images/logo/favicon.svg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/logo/wise-favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -67,10 +67,10 @@
             <div id="bodyOverlay" class="w-screen h-screen fixed top-0 bg-slate-900 bg-opacity-50 backdrop-blur-sm z-10 hidden"></div>
             <div class="logo-segment">
                 <a class="flex items-center" href="{{ url('/') }}">
-                    <img src="{{ asset('assets/images/logo/logo-c.svg') }}" class="black_logo" alt="logo">
-                    <img src="{{ asset('assets/images/logo/logo-c-white.svg') }}" class="white_logo" alt="logo">
-                    <span class="ltr:ml-3 rtl:mr-3 text-xl font-Inter font-bold text-slate-900 dark:text-white">Wise
-                        Ins.</span>
+                    <img src="{{ asset('assets/images/logo/wise-logo-wide.png') }}" class="black_logo" alt="logo">
+                    <img src="{{ asset('assets/images/logo/wise-logo-wide-white.png') }}" class="white_logo" alt="logo">
+                    {{-- <span class="ltr:ml-3 rtl:mr-3 text-xl font-Inter font-bold text-slate-900 dark:text-white">Wise
+                        Ins.</span> --}}
                 </a>
                 <!-- Sidebar Type Button -->
                 <div id="sidebar_type" class="cursor-pointer text-slate-900 dark:text-white text-lg">
@@ -157,6 +157,25 @@
                             </span>
                         </a>
                     </li>
+
+                    <li>
+                        <a href="{{ url('/corporates') }}" class="navItem @yield('corporates')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
+                                <span>Corporates</span>
+                            </span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="icon-park-outline:cycle-arrow"></iconify-icon>
+                                <span>Follow Ups</span>
+                            </span>
+                        </a>
+                    </li>
+
                     @can('viewAny', \App\Models\Users\AppLog::class)
                         <li>
                             <a href="{{ url('/logs') }}" class="navItem @yield('logs')">

@@ -31,11 +31,12 @@
             <div class="right-column  relative">
                 <div class="inner-content h-full flex flex-col bg-white dark:bg-slate-800">
                     <div class="auth-box h-full flex flex-col justify-center">
-                        <div class="mobile-logo text-center mb-6 lg:hidden block">
-                            <a href="index.html">
-                                <img src="assets/images/logo/logo.svg" alt="" class="mb-10 dark_logo">
-                                <img src="assets/images/logo/logo-white.svg" alt="" class="mb-10 white_logo">
-                            </a>
+                        <div class="mobile-logo text-center mb-6  block flex justify-center">
+
+                                {{-- <img src="assets/images/logo/logo.svg" alt="" class="mb-10 dark_logo"> --}}
+                                <img src="{{ asset('assets/images/logo/wise-logo.png') }}" alt="" class="mb-10 dark_logo" width="250px">
+                                <img src="{{ asset('assets/images/logo/wise-logo-white.png') }}" alt="" class="mb-10 white_logo" width="250px">
+
                         </div>
                         <div class="text-center 2xl:mb-10 mb-4">
                             <h4 class="font-medium">Sign in</h4>

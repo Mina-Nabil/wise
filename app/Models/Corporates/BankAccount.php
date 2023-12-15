@@ -65,7 +65,7 @@ class BankAccount extends Model
                 "bank_branch"       =>  $bank_branch,
             ]);
             AppLog::info("Editing bank account", loggable: $this);
-            return false;
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Editing bank account failed", desc: $e->getMessage(), loggable: $this);
