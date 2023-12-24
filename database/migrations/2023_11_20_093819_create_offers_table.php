@@ -7,6 +7,7 @@ use App\Models\Offers\OfferOption;
 use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -18,12 +19,16 @@ return new class extends Migration
      */
     public function up()
     {
+        
+        DB::statement("ALTER TABLE policies MODIFY COLUMN business ENUM('" . implode("','", Policy::LINES_OF_BUSINESS) . "')");
+        DB::statement("ALTER TABLE policy_conditions MODIFY COLUMN scope ENUM('" . implode("','", PolicyCondition::SCOPES) . "')");
+
         Schema::create('offers', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class, 'creator_id')->constrained();
             $table->foreignIdFor(User::class, 'assignee_id')->nullable()->constrained();
             $table->enum('assignee_type', User::TYPES)->nullable(); //if assigned to team
-            $table->morph('owner'); //customer or corporate
+            $table->morph('client'); //customer or corporate
             $table->nullableMorphs('item'); //only car for now.. later maybe more items will be added
             $table->enum('type', Policy::LINES_OF_BUSINESS); //motor - health..
             $table->enum('status', Offer::STATUSES);
@@ -45,6 +50,15 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('offer_docs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Offer::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->string('name');
+            $table->text('url');
+            $table->timestamps();
+        });
+
         Schema::create('offer_options', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Offer::class)->constrained();
@@ -55,8 +69,19 @@ return new class extends Migration
             $table->double('periodic_payment')->nullable();
             $table->enum('payment_frequency', OfferOption::PAYMENT_FREQS)->nullable();
             $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('application_doc')->nullable();
             $table->timestamps();
             $table->softDeletes();
+        });
+
+
+        Schema::create('option_fields', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(OfferOption::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->string('name');
+            $table->string('value');
+            $table->timestamps();
         });
 
         Schema::table('offers', function (Blueprint $table) {

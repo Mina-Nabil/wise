@@ -10,14 +10,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
-class OfferNote extends Model
+class OfferDoc extends Model
 {
     use HasFactory;
 
-    protected $table = 'offer_notes';
+    protected $table = 'offer_docs';
     protected $fillable = [
-        'note',
+        'name',
+        'url',
         'user_id',
     ];
 
@@ -25,26 +27,6 @@ class OfferNote extends Model
 
 
     ////model functions
-    public function editInfo($note)
-    {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if ($loggedInUser->id != $this->user_id) return false;
-        try {
-            if ($this->update([
-                "note"  =>  $note
-            ])) {
-                AppLog::info("Offer note edited", loggable: $this);
-                return true;
-            }
-            return false;
-        } catch (Exception $e) {
-            AppLog::error("Can't add Note", desc: $e->getMessage(), loggable: $this);
-            report($e);
-            return false;
-        }
-    }
-
     public function delete()
     {
         /** @var User */
@@ -54,10 +36,11 @@ class OfferNote extends Model
             $this->loadMissing('offer');
             $tmpOffer = $this->offer;
             if (parent::delete()) {
-                AppLog::info("Note deleted", loggable: $tmpOffer);
+                Storage::delete($this->url);
+                AppLog::info("File deleted", loggable: $tmpOffer);
                 return true;
             } else {
-                AppLog::error("Note deletetion failed", loggable: $this);
+                AppLog::error("File deletetion failed", loggable: $this);
                 return false;
             }
         } catch (Exception $e) {

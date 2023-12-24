@@ -330,7 +330,7 @@ class Customer extends Model
         $profession_id = null,
         $salary_range = null,
         $income_source = null,
-        $owner_id,
+        $owner_id = null,
     ): self|false {
         $newLead = new self([
             "type"  =>  self::TYPE_LEAD,
@@ -347,6 +347,7 @@ class Customer extends Model
             "salary_range"  =>  $salary_range,
             "income_source" =>  $income_source,
             "owner_id" =>  $owner_id,
+            "creator_id"    => Auth::id()
         ]);
 
         try {
@@ -392,6 +393,7 @@ class Customer extends Model
             "salary_range"  =>  $salary_range,
             "income_source" =>  $income_source,
             "owner_id" =>  $owner_id,
+            "creator_id"    => Auth::id()
         ]);
 
         try {

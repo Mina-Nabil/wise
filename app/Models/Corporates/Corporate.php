@@ -196,7 +196,7 @@ class Corporate extends Model
                 "city"      =>  $city,
                 "country"   =>  $country,
             ]);
-            if($is_default) $tmp->setAsDefault();
+            if ($is_default) $tmp->setAsDefault();
             AppLog::info("Adding customer address", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -232,7 +232,7 @@ class Corporate extends Model
                 "number"    =>  $number,
                 "is_default"    =>  $is_default
             ]);
-            if($is_default) $tmp->setAsDefault();
+            if ($is_default) $tmp->setAsDefault();
             AppLog::info("Adding corporate phone", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -346,7 +346,8 @@ class Corporate extends Model
             "kyc_doc"       =>  $kyc_doc,
             "contract_doc"  =>  $contract_doc,
             "main_bank_evidence"    =>  $main_bank_evidence,
-            "owner_id"  =>  $owner_id
+            "owner_id"      =>  $owner_id,
+            "creator_id"    => Auth::id()
         ]);
         try {
             $newLead->save();
@@ -386,7 +387,8 @@ class Corporate extends Model
             "kyc_doc"       =>  $kyc_doc,
             "contract_doc"  =>  $contract_doc,
             "main_bank_evidence"    =>  $main_bank_evidence,
-            "owner_id"  =>  $owner_id
+            "owner_id"  =>  $owner_id,
+            "creator_id"    => Auth::id()
         ]);
 
         try {

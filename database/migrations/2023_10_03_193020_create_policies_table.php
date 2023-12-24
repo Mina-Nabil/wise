@@ -53,7 +53,7 @@ return new class extends Migration
             $table->enum('scope', PolicyCondition::SCOPES);
             $table->enum('operator', PolicyCondition::OPERATORS);
             $table->double('value');
-            $table->double('rate');
+            $table->double('rate'); //result
             $table->integer('order');
             $table->text('note')->nullable();
             $table->timestamps();

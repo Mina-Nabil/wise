@@ -207,21 +207,82 @@ class Offer extends Model
         }
     }
 
+    public function addOption($policy_id, $policy_condition_id, $insured_value, $payment_frequency)
+    {
+        switch ($payment_frequency) {
+            case OfferOption::PAYMENT_FREQ_YEARLY:
+                $periodic_payment = $insured_value;
+                break;
+            case OfferOption::PAYMENT_FREQ_QUARTER:
+                $periodic_payment = round($insured_value / 4, 2);
+                break;
+            case OfferOption::PAYMENT_FREQ_MONTHLY:
+                $periodic_payment = round($insured_value / 12, 2);
+                break;
+
+            default:
+                return false;
+        }
+        try {
+            if ($this->options()->firstOrCreate(
+                [
+                    "policy_id"             =>  $policy_id,
+                ],
+                [
+                    "policy_condition_id"   =>  $policy_condition_id,
+                    "insured_value"         =>  $insured_value,
+                    "periodic_payment"      =>  $periodic_payment,
+                    "payment_frequency"     =>  $payment_frequency,
+                ]
+            )) {
+            } else {
+                AppLog::error("Can't add offer option", desc: "No stack found", loggable: $this);
+                return false;
+            }
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add offer option", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function addNote($note)
     {
-        try{
-            if($this->notes()->create([
+        try {
+            if ($this->notes()->create([
+                "user_id"   =>  Auth::id(),
                 "note"  =>  $note
-            ])){
-                AppLog::info("Note added");
+            ])) {
+                AppLog::info("Note added", loggable: $this);
                 return true;
             } else {
                 AppLog::error("Note addition failed", desc: "Failed to add note", loggable: $this);
                 return false;
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             report($e);
             AppLog::error("Note addition failed", desc: $e->getMessage(), loggable: $this);
+            return true;
+        }
+    }
+
+    public function addFile($name, $url)
+    {
+        try {
+            if ($this->file()->create([
+                "name"  =>  $name,
+                "user_id"   =>  Auth::id(),
+                "url"  =>  $url,
+            ])) {
+                AppLog::info("File added", loggable: $this);
+                return true;
+            } else {
+                AppLog::error("File addition failed", desc: "Failed to add file", loggable: $this);
+                return false;
+            }
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("File addition failed", desc: $e->getMessage(), loggable: $this);
             return true;
         }
     }
@@ -253,6 +314,11 @@ class Offer extends Model
     public function notes(): HasMany
     {
         return $this->hasMany(OfferNote::class);
+    }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(OfferDoc::class);
     }
 
     public function owner(): MorphTo

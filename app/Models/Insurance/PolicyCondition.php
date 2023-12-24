@@ -26,15 +26,24 @@ class PolicyCondition extends Model
     const OP_LESS = 'lt';
     const OP_EQUAL = 'e';
 
-    const OPERATORS = [self::OP_EQUAL, self::OP_GREATER, self::OP_GREATER_OR_EQUAL, self::OP_LESS, self::OP_LESS_OR_EQUAL];
+    const OPERATORS = [
+        self::OP_EQUAL, self::OP_GREATER,
+        self::OP_GREATER_OR_EQUAL, self::OP_LESS,
+        self::OP_LESS_OR_EQUAL
+    ];
 
+    const SCOPE_AGE = 'age'; //health - medical scope
+    //the following scopes are for cars
     const SCOPE_YEAR = 'year';
     const SCOPE_MODEL = 'car_model';
     const SCOPE_BRAND = 'brand';
     const SCOPE_COUNTRY = 'country';
-    const SCOPE_AGE = 'age';
 
-    const SCOPES = [self::SCOPE_AGE, self::SCOPE_MODEL, self::SCOPE_BRAND, self::SCOPE_COUNTRY, self::SCOPE_YEAR];
+    const SCOPES = [
+        self::SCOPE_AGE,
+        self::SCOPE_MODEL, self::SCOPE_BRAND,
+        self::SCOPE_COUNTRY, self::SCOPE_YEAR
+    ];
 
     protected $table = 'policy_conditions';
     protected $fillable = [
@@ -57,11 +66,11 @@ class PolicyCondition extends Model
                 'rate' => $rate,
                 'note' => $note,
             ]);
-            AppLog::info('Policy condition update done');
+            AppLog::info('Policy condition update done', loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't update policy condition");
+            AppLog::error("Can't update policy condition", loggable: $this);
             return false;
         }
     }
@@ -70,11 +79,11 @@ class PolicyCondition extends Model
     {
         try {
             $this->delete();
-            AppLog::info('Policy condition deleted');
+            AppLog::info('Policy condition deleted', loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't delete policy condition");
+            AppLog::error("Can't delete policy condition", loggable: $this);
             return false;
         }
     }
