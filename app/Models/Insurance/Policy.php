@@ -2,8 +2,11 @@
 
 namespace App\Models\Insurance;
 
+use App\Models\Cars\Car;
+use App\Models\Customers\Car as CustomersCar;
 use App\Models\Users\AppLog;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,18 +21,65 @@ class Policy extends Model
 
     use HasFactory, SoftDeletes;
 
-    const BUSINESS_MOTOR = 'Motor';
-    const BUSINESS_HEALTH = 'Health';
-    const BUSINESS_LIFE = 'Life';
+    const BUSINESS_PERSONAL_MOTOR = 'personal_motor';
+    const BUSINESS_CORPORATE_MOTOR = 'corporate_motor';
+    const BUSINESS_PERSONAL_MEDICAL = 'personal_medical';
+    const BUSINESS_CORPORATE_MEDICAL = 'corporate_medical';
+    const BUSINESS_PERSONAL_LIFE = 'personal_life';
+    const BUSINESS_CORPORATE_LIFE = 'corporate_life';
+    const BUSINESS_ACCIDENT = 'Accident';
+    const BUSINESS_HOME = 'Home';
+    const BUSINESS_BUSINESS = 'Business';
     const BUSINESS_PROPERTY = 'Property';
     const BUSINESS_CARGO = 'Cargo';
+    const BUSINESS_INLAND = 'Inland';
+    const BUSINESS_ENGINEERING = 'Engineering';
+    const BUSINESS_EXTENDED_WARRANTY = 'Extended_warranty';
+    const BUSINESS_LIABILITY = 'Liability';
+
+    const OPTIONS_TYPES = [
+        self::BUSINESS_PERSONAL_MOTOR,
+        self::BUSINESS_CORPORATE_MOTOR,
+        self::BUSINESS_PERSONAL_MEDICAL,
+        self::BUSINESS_CORPORATE_MEDICAL,
+    ];
+
+    const PERSONAL_TYPES = [
+        self::BUSINESS_PERSONAL_MOTOR,
+        self::BUSINESS_PERSONAL_MEDICAL,
+        self::BUSINESS_ACCIDENT,
+        self::BUSINESS_HOME,
+        self::BUSINESS_BUSINESS,
+        self::BUSINESS_PERSONAL_MEDICAL,
+    ];
+
+    const CORPORATE_TYPES = [
+        self::BUSINESS_CORPORATE_MEDICAL,
+        self::BUSINESS_CORPORATE_MOTOR,
+        self::BUSINESS_CARGO,
+        self::BUSINESS_INLAND,
+        self::BUSINESS_ENGINEERING,
+        self::BUSINESS_LIABILITY,
+        self::BUSINESS_EXTENDED_WARRANTY,
+        self::BUSINESS_CORPORATE_LIFE,
+    ];
 
     const LINES_OF_BUSINESS = [
-        self::BUSINESS_MOTOR,
-        self::BUSINESS_HEALTH,
-        self::BUSINESS_LIFE,
+        self::BUSINESS_PERSONAL_MOTOR,
+        self::BUSINESS_CORPORATE_MOTOR,
+        self::BUSINESS_PERSONAL_MEDICAL,
+        self::BUSINESS_CORPORATE_MEDICAL,
+        self::BUSINESS_ACCIDENT,
+        self::BUSINESS_HOME,
         self::BUSINESS_PROPERTY,
         self::BUSINESS_CARGO,
+        self::BUSINESS_INLAND,
+        self::BUSINESS_ENGINEERING,
+        self::BUSINESS_LIABILITY,
+        self::BUSINESS_EXTENDED_WARRANTY,
+        self::BUSINESS_PERSONAL_LIFE,
+        self::BUSINESS_CORPORATE_LIFE,
+        self::BUSINESS_BUSINESS,
     ];
 
     protected $table = 'policies';
@@ -41,6 +91,35 @@ class Policy extends Model
     ];
 
     ///static functions
+    public static function getAvailablePolicies($type, Car $car = null, $age = null): Collection
+    {
+        assert(in_array($type, [self::OPTIONS_TYPES]), "Can't find options for type outside of motor and medical");
+        assert($car || $age, "All parameters are null");
+
+        if ($car) {
+            assert(!$age, "Must use only one parameter");
+            assert(in_array($type, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]), "Must use a motor type if a car is supplied");
+        }
+        if ($age) {
+            assert(!$car, "Must use only one parameter");
+            assert(in_array($type, [self::BUSINESS_PERSONAL_MEDICAL, self::BUSINESS_CORPORATE_MEDICAL]), "Must use a medical type if age is supplied");
+        }
+
+        $policies = self::byType($type)->withCompany()->withConditions()->get();
+        $valid_policies = new Collection();
+        foreach ($policies as $pol) {
+            if ($car)
+                $rate = $pol->getRateByCar($car);
+            else if ($age)
+                $rate = $pol->getRateByAge($age);
+
+            if ($rate) {
+                $valid_policies->push(["policy" => $pol, "rate"  => $rate]);
+            }
+        }
+        return $valid_policies;
+    }
+
     public static function newPolicy($company_id, $name, $business, $note = null)
     {
         /** @var User */
@@ -68,6 +147,70 @@ class Policy extends Model
     }
 
     ///model functions
+    public function getRateByCar(CustomersCar $customer_car)
+    {
+        if (!in_array($this->business, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]))
+            throw new Exception("Invalid business type. Can't get policy rate by car");
+
+        $this->loadMissing('conditions');
+        $customer_car->loadMissing('car');
+        foreach ($this->conditions as $cond) {
+            switch ($cond->scope) {
+                case PolicyCondition::SCOPE_MODEL:
+                    if ($customer_car->car->car_model_id == $cond->value)
+                        return $cond->rate;
+
+                case PolicyCondition::SCOPE_BRAND:
+                    $customer_car->car->loadMissing('car_model');
+                    if ($customer_car->car->car_model->brand_id == $cond->value)
+                        return $cond->rate;
+
+                case PolicyCondition::SCOPE_COUNTRY:
+                    $customer_car->car->loadMissing('car_model', 'car_model.brand');
+                    if ($customer_car->car->car_model->brand->country_id == $cond->value)
+                        return $cond->rate;
+
+                case PolicyCondition::SCOPE_YEAR:
+                    switch ($cond->operator) {
+                        case PolicyCondition::OP_EQUAL:
+                            if ($customer_car->model_year == $cond->value)
+                                return $cond->rate;
+
+                        case PolicyCondition::OP_GREATER:
+                            if ($customer_car->model_year > $cond->value)
+                                return $cond->rate;
+
+                        case PolicyCondition::OP_GREATER_OR_EQUAL:
+                            if ($customer_car->model_year >= $cond->value)
+                                return $cond->rate;
+
+                        case PolicyCondition::OP_LESS:
+                            if ($customer_car->model_year < $cond->value)
+                                return $cond->rate;
+
+                        case PolicyCondition::OP_LESS_OR_EQUAL:
+                            if ($customer_car->model_year <= $cond->value)
+                                return $cond->rate;
+                    }
+            }
+        }
+        return 0;
+    }
+
+    public function getRateByAge($age)
+    {
+        if (!in_array($this->business, [self::BUSINESS_PERSONAL_MEDICAL, self::BUSINESS_CORPORATE_MEDICAL]))
+            throw new Exception("Invalid business type. Can't get rate by age");
+        foreach ($this->conditions as $cond) {
+            switch ($cond->scope) {
+                case PolicyCondition::SCOPE_AGE:
+                    if ($age == $cond->value)
+                        return $cond->rate;
+            }
+        }
+        return 0;
+    }
+
     public function editInfo($name, $business, $note = null)
     {
         /** @var User */
@@ -149,6 +292,11 @@ class Policy extends Model
     public function scopeWithCompany($query)
     {
         $query->with('company');
+    }
+
+    public function scopeByType($query, $type)
+    {
+        return $query->where('business', $type);
     }
 
     ///relations

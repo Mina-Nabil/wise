@@ -76,6 +76,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Customer::class)->constrained('customers')->cascadeOnDelete();
             $table->foreignIdFor(Car::class)->constrained('cars');
+            $table->unsignedInteger('model_year'); 
             $table->double('sum_insured')->nullable();
             $table->double('insurance_payment')->nullable();
             $table->enum('payment_frequency', OfferOption::PAYMENT_FREQS)->nullable();
