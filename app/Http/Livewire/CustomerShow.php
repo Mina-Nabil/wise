@@ -105,6 +105,15 @@ class CustomerShow extends Component
     public $deleteAddressId;
     public $deleteCarId;
 
+    public $section = 'profile';
+
+    public function changeSection($section){
+        $this->section = $section;
+        // dd($this->section);
+        $this->mount($this->customer->id);
+    }
+
+
     public function deleteThisPhone($id)
     {
         $this->deletePhoneId = $id;
@@ -769,7 +778,6 @@ class CustomerShow extends Component
         $RELATIONS = Relative::RELATIONS;
         $countries = Country::all();
         $phoneTypes = Phone::TYPES;
-
 
         return view('livewire.customer-show', [
             'customer' => $this->customer,
