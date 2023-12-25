@@ -11,13 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
-class OfferNote extends Model
+class OfferComment extends Model
 {
     use HasFactory;
 
-    protected $table = 'offer_notes';
+    protected $table = 'offer_comments';
     protected $fillable = [
-        'note',
+        'comment',
         'user_id',
     ];
 
@@ -25,21 +25,21 @@ class OfferNote extends Model
 
 
     ////model functions
-    public function editInfo($note)
+    public function editInfo($comment)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if ($loggedInUser->id != $this->user_id) return false;
         try {
             if ($this->update([
-                "note"  =>  $note
+                "comment"  =>  $comment
             ])) {
-                AppLog::info("Offer note edited", loggable: $this);
+                AppLog::info("Offer comment edited", loggable: $this);
                 return true;
             }
             return false;
         } catch (Exception $e) {
-            AppLog::error("Can't add Note", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Can't add Comment", desc: $e->getMessage(), loggable: $this);
             report($e);
             return false;
         }
@@ -54,14 +54,14 @@ class OfferNote extends Model
             $this->loadMissing('offer');
             $tmpOffer = $this->offer;
             if (parent::delete()) {
-                AppLog::info("Note deleted", loggable: $tmpOffer);
+                AppLog::info("Comment deleted", loggable: $tmpOffer);
                 return true;
             } else {
-                AppLog::error("Note deletetion failed", loggable: $this);
+                AppLog::error("Comment deletetion failed", loggable: $this);
                 return false;
             }
         } catch (Exception $e) {
-            AppLog::info("Note deletetion failed", loggable: $this, desc: $e->getMessage());
+            AppLog::info("Comment deletetion failed", loggable: $this, desc: $e->getMessage());
             report($e);
             return false;
         }

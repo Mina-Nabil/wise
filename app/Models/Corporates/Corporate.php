@@ -267,6 +267,7 @@ class Corporate extends Model
                 "job_title" =>  $job_title,
                 "email"     =>  $email,
                 "phone"     =>  $phone,
+                "is_default"     =>  false,
             ]);
             if ($is_default) $tmp->setAsDefault();
             AppLog::info("Adding corporate contact", loggable: $this);

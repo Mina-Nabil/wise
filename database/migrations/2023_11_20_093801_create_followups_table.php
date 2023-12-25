@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('caller_note')->nullable();
             $table->timestamps();
         });
+
+        ////add comments
     }
 
     /**

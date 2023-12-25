@@ -19,9 +19,8 @@ return new class extends Migration
      */
     public function up()
     {
-        
+
         DB::statement("ALTER TABLE policies MODIFY COLUMN business ENUM('" . implode("','", Policy::LINES_OF_BUSINESS) . "')");
-        DB::statement("ALTER TABLE policy_conditions MODIFY COLUMN scope ENUM('" . implode("','", PolicyCondition::SCOPES) . "')");
 
         Schema::create('offers', function (Blueprint $table) {
             $table->id();
@@ -42,11 +41,11 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('offer_notes', function (Blueprint $table) {
+        Schema::create('offer_comments', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Offer::class)->constrained();
             $table->foreignIdFor(User::class)->constrained();
-            $table->string('note');
+            $table->string('comment');
             $table->timestamps();
         });
 
@@ -63,13 +62,13 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Offer::class)->constrained();
             $table->enum('status', OfferOption::STATUSES);
-            $table->foreignIdFor(Policy::class)->constrained();
+            $table->foreignIdFor(Policy::class)->constrained(); ///health one allianz - life for ever masr el ta2eme
             $table->foreignIdFor(PolicyCondition::class)->nullable()->constrained('policy_condition');
             $table->double('insured_value')->nullable();
             $table->double('periodic_payment')->nullable();
             $table->enum('payment_frequency', OfferOption::PAYMENT_FREQS)->nullable();
             $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('application_doc')->nullable();
+            $table->string('application_doc')->nullable(); //
             $table->timestamps();
             $table->softDeletes();
         });
@@ -81,6 +80,15 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained();
             $table->string('name');
             $table->string('value');
+            $table->timestamps();
+        });
+        
+        Schema::create('option_docs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(OfferOption::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->string('name'); 
+            $table->string('url');
             $table->timestamps();
         });
 
@@ -100,8 +108,8 @@ return new class extends Migration
         Schema::table('offers', function (Blueprint $table) {
             $table->dropConstrainedForeignIdFor(OfferOption::class, 'selected_option_id');
         });
-        Schema::dropIfExists('offer_options'); 
-        Schema::dropIfExists('offer_notes'); 
+        Schema::dropIfExists('offer_options');
+        Schema::dropIfExists('offer_notes');
         Schema::dropIfExists('offers');
     }
 };

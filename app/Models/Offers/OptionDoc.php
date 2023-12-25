@@ -3,7 +3,6 @@
 namespace App\Models\Offers;
 
 use App\Exceptions\UnauthorizedException;
-use App\Models\Insurance\Policy;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,35 +11,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class OfferDoc extends Model
+class OptionDoc extends Model
 {
     use HasFactory;
-
-    protected $table = 'offer_docs';
+    protected $table = 'option_docs';
     protected $fillable = [
         'name',
         'url',
         'user_id',
     ];
 
-    ////static functions
-
-
-    ////model functions
+    //model functions
     public function delete()
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('delete', $this)) throw new UnauthorizedException();
         try {
-            $this->loadMissing('offer');
-            $tmpOffer = $this->offer;
+            $this->loadMissing('option');
+            $tmpOption = $this->option;
             if (parent::delete()) {
                 Storage::delete($this->url);
-                AppLog::info("File deleted", loggable: $tmpOffer);
+                AppLog::info("Option File deleted", loggable: $tmpOption);
                 return true;
             } else {
-                AppLog::error("File deletetion failed", loggable: $this);
+                AppLog::error("Option File deletetion failed", loggable: $this);
                 return false;
             }
         } catch (Exception $e) {
@@ -49,18 +44,10 @@ class OfferDoc extends Model
             return false;
         }
     }
-
-    ////scopes
-
-
-    ////relations
-    public function offer(): BelongsTo
+    
+    ///relations
+    public function option(): BelongsTo
     {
-        return $this->belongsTo(Offer::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(Policy::class);
+        return $this->belongsTo(OfferOption::class);
     }
 }

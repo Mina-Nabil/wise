@@ -246,22 +246,22 @@ class Offer extends Model
         }
     }
 
-    public function addNote($note)
+    public function addComment($comment)
     {
         try {
-            if ($this->notes()->create([
+            if ($this->comments()->create([
                 "user_id"   =>  Auth::id(),
-                "note"  =>  $note
+                "comment"  =>  $comment
             ])) {
-                AppLog::info("Note added", loggable: $this);
+                AppLog::info("Comment added", loggable: $this);
                 return true;
             } else {
-                AppLog::error("Note addition failed", desc: "Failed to add note", loggable: $this);
+                AppLog::error("Comment addition failed", desc: "Failed to add comment", loggable: $this);
                 return false;
             }
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Note addition failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Comment addition failed", desc: $e->getMessage(), loggable: $this);
             return true;
         }
     }
@@ -269,7 +269,7 @@ class Offer extends Model
     public function addFile($name, $url)
     {
         try {
-            if ($this->file()->create([
+            if ($this->files()->create([
                 "name"  =>  $name,
                 "user_id"   =>  Auth::id(),
                 "url"  =>  $url,
@@ -311,9 +311,9 @@ class Offer extends Model
         return $this->hasMany(OfferOption::class);
     }
 
-    public function notes(): HasMany
+    public function comments(): HasMany
     {
-        return $this->hasMany(OfferNote::class);
+        return $this->hasMany(OfferComment::class);
     }
 
     public function files(): HasMany

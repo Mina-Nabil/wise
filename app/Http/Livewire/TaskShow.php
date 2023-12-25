@@ -139,8 +139,6 @@ class TaskShow extends Component
                 'TempAssignDate' => 'Date',
                 'TempAssignNote' => 'Note',
             ],
-
-
         );
 
         $task = Task::find($this->taskId);

@@ -9,7 +9,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class OfferOption extends Model
 {
@@ -77,6 +79,49 @@ class OfferOption extends Model
         }
     }
 
+    public function addField($name, $value)
+    {
+        try {
+            if ($this->docs()->create([
+                "name"  =>  $name,
+                "user_id"   =>  Auth::id(),
+                "value"  =>  $value,
+            ])) {
+                AppLog::info("Option Field added", loggable: $this);
+                return true;
+            } else {
+                AppLog::error("Option Field addition failed", desc: "Failed to add option field", loggable: $this);
+                return false;
+            }
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Option field addition failed", desc: $e->getMessage(), loggable: $this);
+            return true;
+        }
+    }
+
+    public function addFile($name, $url)
+    {
+        try {
+            if ($this->docs()->create([
+                "name"  =>  $name,
+                "user_id"   =>  Auth::id(),
+                "url"  =>  $url,
+            ])) {
+                AppLog::info("Option File added", loggable: $this);
+                return true;
+            } else {
+                AppLog::error("Option File addition failed", desc: "Failed to add option file", loggable: $this);
+                return false;
+            }
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Option File addition failed", desc: $e->getMessage(), loggable: $this);
+            return true;
+        }
+    }
+
+
     ////scopes
 
 
@@ -84,6 +129,16 @@ class OfferOption extends Model
     public function offer(): BelongsTo
     {
         return $this->belongsTo(Offer::class);
+    }
+
+    public function docs(): HasMany
+    {
+        return $this->hasMany(OptionDoc::class);
+    }
+
+    public function fields(): HasMany
+    {
+        return $this->hasMany(OptionField::class);
     }
 
     public function approver(): BelongsTo

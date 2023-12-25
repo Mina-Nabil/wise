@@ -27,15 +27,15 @@ class Policy extends Model
     const BUSINESS_CORPORATE_MEDICAL = 'corporate_medical';
     const BUSINESS_PERSONAL_LIFE = 'personal_life';
     const BUSINESS_CORPORATE_LIFE = 'corporate_life';
-    const BUSINESS_ACCIDENT = 'Accident';
-    const BUSINESS_HOME = 'Home';
-    const BUSINESS_BUSINESS = 'Business';
-    const BUSINESS_PROPERTY = 'Property';
-    const BUSINESS_CARGO = 'Cargo';
-    const BUSINESS_INLAND = 'Inland';
-    const BUSINESS_ENGINEERING = 'Engineering';
-    const BUSINESS_EXTENDED_WARRANTY = 'Extended_warranty';
-    const BUSINESS_LIABILITY = 'Liability';
+    const BUSINESS_ACCIDENT = 'accident';
+    const BUSINESS_HOME = 'home';
+    const BUSINESS_BUSINESS = 'business';
+    const BUSINESS_PROPERTY = 'property';
+    const BUSINESS_CARGO = 'cargo';
+    const BUSINESS_INLAND = 'inland';
+    const BUSINESS_ENGINEERING = 'engineering';
+    const BUSINESS_EXTENDED_WARRANTY = 'extended_warranty';
+    const BUSINESS_LIABILITY = 'liability';
 
     const OPTIONS_TYPES = [
         self::BUSINESS_PERSONAL_MOTOR,
