@@ -291,6 +291,10 @@ class Offer extends Model
 
 
     ////relations
+    public function client(): MorphTo
+    {
+        return $this->morphTo();
+    }
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');

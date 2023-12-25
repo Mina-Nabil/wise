@@ -24,8 +24,8 @@ return new class extends Migration
 
         Schema::create('offers', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class, 'creator_id')->constrained();
-            $table->foreignIdFor(User::class, 'assignee_id')->nullable()->constrained();
+            $table->foreignIdFor(User::class, 'creator_id')->constrained('users');
+            $table->foreignIdFor(User::class, 'assignee_id')->nullable()->constrained('users');
             $table->enum('assignee_type', User::TYPES)->nullable(); //if assigned to team
             $table->morphs('client'); //customer or corporate
             $table->nullableMorphs('item'); //only car for now.. later maybe more items will be added
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->double('item_value')->nullable();
             $table->text('note')->nullable();
             $table->dateTime('due')->nullable();
-            $table->foreignIdFor(User::class, 'closed_by_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(User::class, 'closed_by_id')->nullable()->constrained('users')->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -63,11 +63,11 @@ return new class extends Migration
             $table->foreignIdFor(Offer::class)->constrained();
             $table->enum('status', OfferOption::STATUSES);
             $table->foreignIdFor(Policy::class)->constrained(); ///health one allianz - life for ever masr el ta2eme
-            $table->foreignIdFor(PolicyCondition::class)->nullable()->constrained('policy_condition');
+            $table->foreignIdFor(PolicyCondition::class)->nullable()->constrained('policy_conditions');
             $table->double('insured_value')->nullable();
             $table->double('periodic_payment')->nullable();
             $table->enum('payment_frequency', OfferOption::PAYMENT_FREQS)->nullable();
-            $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('application_doc')->nullable(); //
             $table->timestamps();
             $table->softDeletes();
@@ -93,7 +93,7 @@ return new class extends Migration
         });
 
         Schema::table('offers', function (Blueprint $table) {
-            $table->foreignIdFor(OfferOption::class, 'selected_option_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(OfferOption::class, 'selected_option_id')->nullable()->constrained('offer_options')->nullOnDelete();
         });
     }
 
