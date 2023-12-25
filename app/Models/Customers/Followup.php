@@ -9,7 +9,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\Auth;
 
 class Followup extends Model
 {
@@ -89,6 +91,22 @@ class Followup extends Model
         }
     }
 
+    public function addComment($comment)
+    {
+        try {
+            $this->comments()->create([
+                "user_id"   =>  Auth::id(),
+                "comment"   =>  $comment
+            ]);
+            AppLog::info("Follow up comment added", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't create follow up comment", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     ///relations
     public function owner(): BelongsTo
     {
@@ -97,6 +115,10 @@ class Followup extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+    public function comments(): HasMany
+    {
+        return $this->hasMany(FollowupComment::class);
     }
     public function called(): MorphTo
     {

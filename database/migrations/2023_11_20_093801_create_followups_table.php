@@ -28,7 +28,14 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        ////add comments
+        
+        Schema::create('followups_comments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Followup::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->string('comment');
+            $table->timestamps();
+        });
     }
 
     /**

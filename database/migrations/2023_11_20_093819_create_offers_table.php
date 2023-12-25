@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'creator_id')->constrained();
             $table->foreignIdFor(User::class, 'assignee_id')->nullable()->constrained();
             $table->enum('assignee_type', User::TYPES)->nullable(); //if assigned to team
-            $table->morph('client'); //customer or corporate
+            $table->morphs('client'); //customer or corporate
             $table->nullableMorphs('item'); //only car for now.. later maybe more items will be added
             $table->enum('type', Policy::LINES_OF_BUSINESS); //motor - health..
             $table->enum('status', Offer::STATUSES);
