@@ -51,7 +51,7 @@ class Offer extends Model
 
 
     ////static functions
-    public function newOffer(Customer|Corporate $owner, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null): self|false
+    public function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null): self|false
     {
         $newOffer = new self([
             "creator_id"    =>  Auth::id(),
@@ -64,7 +64,7 @@ class Offer extends Model
             "note"          =>  $note,
             "due"           =>  $due->format('Y-m-d H:i:s'),
         ]);
-        $newOffer->owner()->associate($owner);
+        $newOffer->client()->associate($client);
         if ($item)
             $newOffer->item()->associate($item);
 
