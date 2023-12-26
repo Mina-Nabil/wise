@@ -271,7 +271,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                 <div class="input-area mb-3">
                                     <label for="time-date-picker" class="form-label">Due Date</label>
-                                    <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror" id="default-picker" value="" type="text" wire:model.defer="dueDate" autocomplete="off">
+                                    <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror" id="default-picker" value="" type="date" wire:model.defer="dueDate" autocomplete="off">
                                     @error('dueDate')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
