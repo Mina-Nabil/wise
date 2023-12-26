@@ -108,8 +108,11 @@ return new class extends Migration
         Schema::table('offers', function (Blueprint $table) {
             $table->dropConstrainedForeignIdFor(OfferOption::class, 'selected_option_id');
         });
+        Schema::dropIfExists('option_docs');
+        Schema::dropIfExists('option_fields');
         Schema::dropIfExists('offer_options');
-        Schema::dropIfExists('offer_notes');
+        Schema::dropIfExists('offer_docs');
+        Schema::dropIfExists('offer_comments');
         Schema::dropIfExists('offers');
     }
 };
