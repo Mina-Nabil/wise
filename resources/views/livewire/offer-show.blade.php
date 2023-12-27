@@ -4,7 +4,7 @@
             <div class="grid grid-cols-1 gap-5 mb-5 col-span-3">
 
                 <div>
-                    <p class="text-sm text-slate-400  font-light">
+                    <p class="text-sm text-slate-400  font-light"  wire:click="setStatus">
                         {{ ucwords($offer->client_type) }}
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -39,30 +39,38 @@
                                         <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
                                     </span>
                                 </button>
-                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                <ul
+                                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                     <li>
                                         <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white">
                                             Action</a>
                                     </li>
-                                    <li>
-                                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                                    dark:hover:text-white">
-                                            Another Action</a>
-                                    </li>
+                                    @foreach ($STATUSES as $status)
+                                        @if (!($status === $offer->status))
+                                            <li wire:click="setStatus('{{ $status }}')">
+                                                <p  class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                    Set As {{ ucwords(str_replace('_', ' ', $status)) }}
+                                                </p>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
                                     <li>
                                         <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white">
                                             Something else here</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        <a href="#"
+                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
                                             Sign out</a>
                                     </li>
                                 </ul>
                             </div>
+                            <button class="btn inline-flex justify-center btn-secondary shadow-base2 float-right btn-sm mr-2">Edit</button>
                         </div>
                     </div>
                     <p class="text-sm text-slate-400 font-light">
@@ -73,7 +81,7 @@
                     </p>
                 </div>
 
-                <div class="flex-1 rounded-md overlay" style="min-width: 400px;">
+                <div class="rounded-md overlay">
                     <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <p class="mb-2">
@@ -107,17 +115,14 @@
                                                 <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                 </button>
-                                                <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                <ul
+                                                    class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                     <li>
-                                                        <button wire:click="editThisCar({{ $offer->item->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                        <button wire:click="toggleEditItem"
+                                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                             Edit</button>
-                                                    </li>
-                                                    <li>
-                                                        <button wire:click="deleteThisCar({{ $offer->item->id }})" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                                dark:hover:text-white">
-                                                            Delete</button>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -143,52 +148,96 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    <header class=" card-header noborder">
-                        <h4 class="card-title">Options
-                        </h4>
-                    </header>
-                    <div class="card-body px-6 pb-6">
-                        <div class="overflow-x-auto -mx-6">
-                            <div class="inline-block min-w-full align-middle">
-                                <div class="overflow-hidden ">
-                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                        <thead class="bg-slate-200 dark:bg-slate-700">
-                                            <tr>
 
-                                                <th scope="col" class=" table-th ">
-                                                    Policy
-                                                </th>
+                <div class="rounded-md overlay">
+                    <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
+                        <div class="card-text flex flex-col justify-between h-full menu-open">
+                            <p class="mb-2">
+                                <b>Options ({{ $offer->options->count() }})</b>
 
-                                                <th scope="col" class=" table-th ">
-                                                    Insured Value
-                                                </th>
+                            </p>
 
-                                                <th scope="col" class=" table-th ">
-                                                    Fields
-                                                </th>
+                            @if ($offer->options->isEmpty())
+                                <p class="text-center m-5 text-primary">No options added to this offer.</p>
+                            @else
+                                @foreach ($offer->options as $option)
+                                    <div class="card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5" style="border-color:rgb(224, 224, 224)">
+                                        <div class="break-words flex items-center my-1 m-4">
+                                            <h3 class="text-base capitalize py-3">
+                                                {{ $option->policy->company->name }} - {{ $option->policy->name }} - {{ $option->policy->business }}
 
-                                                <th scope="col" class=" table-th ">
-                                                    Docs
-                                                </th>
+                                                @if ($option->payment_frequency)
+                                                    <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $option->payment_frequency }} Payment</span>
+                                                @endif
 
+                                                @if ($option->status === 'new')
+                                                    <span class="badge bg-info-500 mr-2  bg-opacity-30 h-auto">
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
+                                                    </span>
+                                                @elseif(str_contains($option->status, 'declined'))
+                                                    <span class="badge bg-danger-500  mr-2 bg-opacity-30 h-auto">
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
+                                                    </span>
+                                                @elseif($option->status === 'approved')
+                                                    <span class="badge bg-success-500  mr-2 bg-opacity-30 h-auto">
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
+                                                    </span>
+                                                @endif
 
-
-
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
-                                            <tr>
-                                                <td class="table-td">Dorelle <br>dharling0@rediff.com <br> car_model = BMW</td>
-                                                <td class="table-td ">9466565 <br> Monthly <br> k2kkke</td>
-                                            </tr>
+                                            </h3>
 
 
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                                            <div class="ml-auto">
+                                                <div class="relative">
+                                                    <div class="dropdown relative">
+                                                        <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                        </button>
+                                                        <ul
+                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                            shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                            <li>
+                                                                <button wire:click="" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                dark:hover:text-white">
+                                                                    Edit</button>
+                                                            </li>
+                                                            <li>
+                                                                <button wire:click="" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                dark:hover:text-white">
+                                                                    Delete</button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <hr><br>
+                                        <div class="grid grid-cols-2 mb-4">
+                                            <div class="border-r ml-5">
+                                                <p><b>Option fields</b></p>
+                                                @foreach ($option->fields as $field)
+                                                    <p>{{ $field->name }}: {{ number_format($field->value, 0, '.', ',') }}</p>
+                                                @endforeach
+
+
+                                                @foreach ($option->fields as $field)
+                                                    <p>{{ $field->name }}</p>
+                                                @endforeach
+                                            </div>
+                                            <div class="ml-5">
+                                                <p><b>Option docs</b></p>
+                                                @foreach ($option->docs as $doc)
+                                                    <p>{{ $doc->name }}: download</p>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+
+                            {{-- <button wire:click="" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add car</button> --}}
+
                         </div>
                     </div>
                 </div>
@@ -196,6 +245,9 @@
             </div>
             <div>
 
+                <span class="badge bg-primary-500 h-auto w-full mb-5">
+                    <iconify-icon icon="mingcute:time-line"></iconify-icon>&nbsp;Due: {{ \Carbon\Carbon::parse($offer->due)->format('l d-m-Y h:ia') }}
+                </span>
                 {{-- Notes --}}
                 <div class="flex-1 rounded-md overlay">
                     <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
@@ -332,8 +384,10 @@
                 </div>
                 {{-- End Files --}}
 
+                <br><br>
+
                 {{-- Comments --}}
-                {{-- <div>
+                <div>
                     <div>
                         Timeline
                     </div>
@@ -403,9 +457,83 @@
                             </div>
                         </div>
                     @endforeach
-                </div> --}}
+                </div>
                 {{-- End Comments --}}
             </div>
         </div>
     </div>
+
+
+    @if ($editItemSection)
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+        <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+            <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                            Edit Item
+                        </h3>
+                        <button wire:click="toggleEditItem" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-4">
+                        <div class="from-group">
+                            <label for="lastName" class="form-label">Car</label>
+                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="carId">
+
+                                @foreach ($offer->client->cars as $car)
+                                    <option value="{{ $car->car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        {{ $car->car->category }}
+                                    </option>
+                                @endforeach
+
+                            </select>
+                        </div>
+                        <div class="from-group">
+                            <label for="lastName" class="form-label">Item title</label>
+                            <input type="text" class="form-control mt-2 w-full" wire:model.defer="item_title">
+                            @error('item_title')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="from-group">
+                            <label for="lastName" class="form-label">Item value</label>
+                            <input type="number" class="form-control mt-2 w-full" wire:model.defer="item_value">
+                            @error('item_value')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="from-group">
+                            <label for="lastName" class="form-label">Item Description</label>
+                            <textarea class="form-control mt-2 w-full" wire:model.defer="item_desc"></textarea>
+                            @error('item_desc')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                        <button wire:click="editItem" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+
+
+
+
+
+
 </div>

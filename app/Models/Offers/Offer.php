@@ -176,7 +176,8 @@ class Offer extends Model
         }
         try {
             if ($this->update($updates)) {
-                AppLog::error("Offer item updated", loggable: $this);
+                AppLog::info("Offer item updated", loggable: $this);
+                return true;
             } else {
                 AppLog::error("Can't set offer item", desc: "Failed to update", loggable: $this);
             }
