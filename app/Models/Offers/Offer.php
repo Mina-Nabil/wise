@@ -19,7 +19,13 @@ use Illuminate\Support\Facades\Auth;
 
 class Offer extends Model
 {
+
     use HasFactory, SoftDeletes, Loggable;
+
+    protected $casts = [
+        'due' => 'datetime',
+    ];
+
 
     const STATUS_NEW = 'new';
     const STATUS_PENDING_OPERATIONS = 'pending_operations';
