@@ -120,8 +120,6 @@ class OfferOption extends Model
             return true;
         }
     }
-
-
     ////scopes
 
 

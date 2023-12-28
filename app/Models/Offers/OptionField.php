@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class OptionField extends Model
 {
     use HasFactory;
-    protected $table = 'option_docs';
+    protected $table = 'option_fields';
     protected $fillable = [
         'name',
         'value',
