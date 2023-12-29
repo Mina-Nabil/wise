@@ -35,7 +35,10 @@ class OfferIndex extends Component
     public $dueDate;
     public $dueTime;
 
-
+    public function redirectToShowPage($id)
+    {
+        return redirect(route('offers.show', $id));
+    }
 
     public function selectClient($id)
     {

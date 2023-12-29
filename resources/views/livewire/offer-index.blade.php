@@ -69,7 +69,7 @@
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                 @foreach ($offers as $offer)
-                                    <tr wire:click="redirectToShowPage({{ $offer }})" class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                    <tr wire:click="redirectToShowPage({{ $offer->id }})" class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
 
                                         <td class="table-td ">
                                             <b>{{ $offer->client->name }}</b>
