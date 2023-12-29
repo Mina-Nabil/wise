@@ -53,6 +53,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/followups', [CustomerController::class, 'followupsIndex'])->name('followups.index');
 
     Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
+    Route::get('/offers/{id}', [OfferController::class, 'show'])->name('offers.show');
 
     Route::get('/corporates', [CorporateController::class, 'index'])->name('corporates.index');
     Route::get('/corporates/{id}', [CorporateController::class, 'show'])->name('corporates.show');

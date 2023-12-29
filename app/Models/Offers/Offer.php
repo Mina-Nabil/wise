@@ -19,7 +19,13 @@ use Illuminate\Support\Facades\Auth;
 
 class Offer extends Model
 {
+
     use HasFactory, SoftDeletes, Loggable;
+
+    protected $casts = [
+        'due' => 'datetime',
+    ];
+
 
     const STATUS_NEW = 'new';
     const STATUS_PENDING_OPERATIONS = 'pending_operations';
@@ -176,7 +182,8 @@ class Offer extends Model
         }
         try {
             if ($this->update($updates)) {
-                AppLog::error("Offer item updated", loggable: $this);
+                AppLog::info("Offer item updated", loggable: $this);
+                return true;
             } else {
                 AppLog::error("Can't set offer item", desc: "Failed to update", loggable: $this);
             }
