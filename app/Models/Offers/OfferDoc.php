@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class OfferDoc extends Model
 {
     use HasFactory;
+    const FILES_DIRECTORY = 'offers/docs/';
 
     protected $table = 'offer_docs';
     protected $fillable = [
@@ -22,7 +23,6 @@ class OfferDoc extends Model
         'url',
         'user_id',
     ];
-
     ////static functions
 
 

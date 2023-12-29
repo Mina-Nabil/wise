@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Storage;
 class OptionDoc extends Model
 {
     use HasFactory;
+    const FILES_DIRECTORY = 'offers/options/';
+
     protected $table = 'option_docs';
     protected $fillable = [
         'name',
