@@ -200,7 +200,7 @@
                                                                     Add Field</button>
                                                             </li>
                                                             <li>
-                                                                <label for="myFile" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                                                                     Add Doc
                                                                 </label>
                                                                 <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedFile">
@@ -221,7 +221,11 @@
                                             <div class="border-r ml-5">
                                                 <p><b>Option fields</b></p>
                                                 @foreach ($option->fields as $field)
-                                                    <p>{{ $field->name }}: {{ number_format($field->value, 0, '.', ',') }}</p>
+                                                    <p>{{ $field->name }}: {{ number_format($field->value, 0, '.', ',') }}
+                                                        <button type="button" wire:click="deleteOptionField({{ $field->id }})" class="font-normal text-xs text-slate-500 mt-1">
+                                                            Delete
+                                                        </button>
+                                                    </p>
                                                 @endforeach
 
 
@@ -230,9 +234,22 @@
                                                 @endforeach
                                             </div>
                                             <div class="ml-5">
-                                                <p><b>Option docs</b></p>
+                                                <p>
+                                                    <b>Option docs</b>
+                                                    @if ($optionId === $option->id)
+                                                        <span style="display: inline-block; align-items: center;" wire:loading wire:target="uploadedOptionFile"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" icon="line-md:loading-twotone-loop"></iconify-icon></span>
+                                                    @endif
+                                                </p>
                                                 @foreach ($option->docs as $doc)
-                                                    <p>{{ $doc->name }}: download</p>
+                                                    <p>{{ $doc->name }}:
+                                                        <button type="button" wire:click="downloadOptionDoc({{ $doc->id }})" class="text-xs text-slate-900 dark:text-white">
+                                                            Download |
+                                                        </button>
+                                                        <span class="font-normal text-xs text-slate-500 mt-1"></span>
+                                                        <button type="button" wire:click="deleteOptionDoc({{ $doc->id }})" class="font-normal text-xs text-slate-500 mt-1">
+                                                            Delete
+                                                        </button>
+                                                    </p>
                                                 @endforeach
                                             </div>
                                         </div>
@@ -553,8 +570,7 @@
                             </h3>
                             <button wire:click="toggleAddOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -591,185 +607,168 @@
                                     <label for="lastName" class="form-label" style="margin:0">Condition</label>
                                     <p>{{ ucwords(str_replace('_', ' ', $conditionData->scope)) }}
                                         <b>
-                                            @switch($conditionData->operator)
-                                                @case('gte')
-                                                    >=
-                                                @break
-
-                                                @case('gt')
-                                                    >
-                                                @break
-
-                                                @case('lte')
-                                    <= @break @case('lt') < @break @case('e')=@break @endswitch </b>
-
+                                            {{ $conditionData->operator == 'gte' ? '>=' : ($conditionData->operator == 'gt' ? '>' : ($conditionData->operator == 'lte' ? '<=' : ($conditionData->operator == 'lt' ? '<' : ($conditionData->operator == 'e' ? '=' : '')))) }}
+                                        </b>
                                         {{ $conditionData->value }} | Rate:{{ $conditionData->value }}
-                            </p>
-                            <br>
-                        @else
-                            <div class="text-sm mt-0">
-                                @foreach ($policyConditions as $condition)
-                                    <p><iconify-icon icon="material-symbols:policy"></iconify-icon>
-                                        {{ ucwords(str_replace('_', ' ', $condition->scope)) }}
-                                        <b>
-                                            @switch($condition->operator)
-                                                @case('gte')
-                                                    >=
-                                                @break
+                                    </p>
+                                    <br>
+                                @else
+                                    <div class="text-sm mt-0">
+                                        @foreach ($policyConditions as $condition)
+                                            <p><iconify-icon icon="material-symbols:policy"></iconify-icon>
+                                                {{ ucwords(str_replace('_', ' ', $condition->scope)) }}
+                                                <b>
+                                                    {{ $condition->operator == 'gte' ? '>=' : ($condition->operator == 'gt' ? '>' : ($condition->operator == 'lte' ? '<=' : ($condition->operator == 'lt' ? '<' : ($condition->operator == 'e' ? '=' : '')))) }}
+                                                </b>
 
-                                                @case('gt')
-                                                    >
-                                                @break
+                                                {{ $condition->value }} | Rate:{{ $condition->value }}
 
-                                                @case('lte')
-                                    <= @break @case('lt') < @break @case('e')=@break @endswitch </b>
+                                                <Span wire:click="selectCondition({{ $condition->id }})" class="cursor-pointer text-primary-500">Select Condition</Span>
+                                            </p>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            @endif
 
-                                        {{ $condition->value }} | Rate:{{ $condition->value }}
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Insured Value</label>
+                                <input type="text" class="form-control mt-2 w-full" wire:model.defer="insured_value">
+                                @error('insured_value')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                                        <Span wire:click="selectCondition({{ $condition->id }})" class="cursor-pointer text-primary-500">Select Condition</Span>
-                            </p>
-                        @endforeach
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Payment Frequency</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="payment_frequency">
+
+                                    @foreach ($PAYMENT_FREQS as $freqs)
+                                        <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $freqs }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                                @error('payment_frequency')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addOption" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
                     </div>
-                @endif
-            @endif
-
-            <div class="from-group">
-                <label for="lastName" class="form-label">Insured Value</label>
-                <input type="text" class="form-control mt-2 w-full" wire:model.defer="insured_value">
-                @error('insured_value')
-                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="from-group">
-                <label for="lastName" class="form-label">Payment Frequency</label>
-                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="payment_frequency">
-
-                    @foreach ($PAYMENT_FREQS as $freqs)
-                        <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                            {{ $freqs }}
-                        </option>
-                    @endforeach
-
-                </select>
-                @error('payment_frequency')
-                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                @enderror
-            </div>
-
-        </div>
-        <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-            <button wire:click="addOption" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                Submit
-            </button>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-@endif
-
-
-
-@if ($editDueSection)
-<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-<div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-<div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-        <!-- Modal header -->
-        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                Edit Due Date
-            </h3>
-            <button wire:click="toggleEditDue" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                </svg>
-                <span class="sr-only">Close modal</span>
-            </button>
-        </div>
-        <!-- Modal body -->
-        <div class="p-6 space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                <div class="input-area mb-3">
-                    <label for="time-date-picker" class="form-label">Due Date</label>
-                    <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror" id="default-picker" type="date" wire:model.defer="dueDate" autocomplete="off">
-                    @error('dueDate')
-                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div class="input-area mb-3">
-                    <label for="time-date-picker" class="form-label">Time </label>
-                    <input type="time" class="form-control  @error('dueTime') !border-danger-500 @enderror" id="appt" name="appt" min="09:00" max="18:00" wire:model.defer="dueTime" autocomplete="off" />
-                    {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
-                    @error('dueTime')
-                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                    @enderror
-
                 </div>
             </div>
         </div>
-        <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-            <button wire:click="editDue" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                Submit
-            </button>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-@endif
+    @endif
 
-@if ($addFieldSection_id)
-<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-<div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-<div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-        <!-- Modal header -->
-        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                Add Field
-            </h3>
-            <button wire:click="closeAddField" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                </svg>
-                <span class="sr-only">Close modal</span>
-            </button>
-        </div>
-        <!-- Modal body -->
-        <div class="p-6 space-y-4">
 
-            <div class="input-area mb-3">
-                <label class="form-label">Field Name</label>
-                <input class="form-control py-2 @error('newFieldName') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="newFieldName" autocomplete="off">
-                @error('newFieldName')
-                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                @enderror
+
+    @if ($editDueSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Due Date
+                            </h3>
+                            <button wire:click="toggleEditDue" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                <div class="input-area mb-3">
+                                    <label for="time-date-picker" class="form-label">Due Date</label>
+                                    <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror" id="default-picker" type="date" wire:model.defer="dueDate" autocomplete="off">
+                                    @error('dueDate')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="input-area mb-3">
+                                    <label for="time-date-picker" class="form-label">Time </label>
+                                    <input type="time" class="form-control  @error('dueTime') !border-danger-500 @enderror" id="appt" name="appt" min="09:00" max="18:00" wire:model.defer="dueTime" autocomplete="off" />
+                                    {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
+                                    @error('dueTime')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editDue" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="input-area mb-3">
-                <label class="form-label">Value </label>
-                <input type="text" class="form-control  @error('newFieldValue') !border-danger-500 @enderror" id="appt" name="appt" min="09:00" max="18:00" wire:model.defer="newFieldValue" autocomplete="off" />
-                {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
-                @error('newFieldValue')
-                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                @enderror
+        </div>
+    @endif
 
+    @if ($addFieldSection_id)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Field
+                            </h3>
+                            <button wire:click="closeAddField" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+
+                            <div class="input-area mb-3">
+                                <label class="form-label">Field Name</label>
+                                <input class="form-control py-2 @error('newFieldName') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="newFieldName" autocomplete="off">
+                                @error('newFieldName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area mb-3">
+                                <label class="form-label">Value </label>
+                                <input type="text" class="form-control  @error('newFieldValue') !border-danger-500 @enderror" id="appt" name="appt" min="09:00" max="18:00" wire:model.defer="newFieldValue" autocomplete="off" />
+                                {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
+                                @error('newFieldValue')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addField" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-            <button wire:click="addField" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                Submit
-            </button>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-@endif
+    @endif
+
+
 
 
 </div>

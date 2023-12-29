@@ -6,15 +6,20 @@ use Livewire\Component;
 use App\Models\Offers\Offer;
 use App\Models\Cars\Car;
 use App\Models\Insurance\Policy;
+use App\Models\Tasks\Task;
 use App\Models\Insurance\PolicyCondition;
 use App\Models\Offers\OfferOption;
+use App\Models\Offers\OptionDoc;
+use App\Models\Offers\OptionField;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 class OfferShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
 
     public $offer;
     public $preview;
@@ -47,6 +52,101 @@ class OfferShow extends Component
     public $addFieldSection_id;
     public $newFieldName;
     public $newFieldValue;
+
+    public $uploadedFile;
+
+    public $uploadedOptionFile;
+    public $optionId;
+
+    public function uploadDocOptionId($id)
+    {
+        $this->optionId = $id;
+    }
+
+    public function downloadOptionDoc($id)
+    {
+        $doc = OptionDoc::findOrFail($id);
+        $fileContents = Storage::disk('s3')->get($doc->url);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $doc->name . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function deleteOptionDoc($id)
+    {
+        $res = OptionDoc::find($id)->delete();
+        if ($res) {
+            $this->alert('success', 'Document deleted!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function deleteOptionField($id)
+    {
+        $res = OptionField::find($id)->delete();
+        if ($res) {
+            $this->alert('success', 'Field deleted!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    // upload file for option
+    public function UpdatedUploadedOptionFile()
+    {
+        $this->validate(
+            [
+                'uploadedOptionFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            ],
+            [
+                'uploadedOptionFile.max' => 'The file must not be greater than 5MB.',
+            ],
+        );
+
+        $filename = $this->uploadedOptionFile->getClientOriginalName();
+        $url = $this->uploadedOptionFile->store(Task::FILES_DIRECTORY, 's3');
+        $option = OfferOption::find($this->optionId);
+        $o = $option->addFile($filename, $url);
+        if ($o) {
+            $this->alert('success', 'File Uploaded!');
+            $this->optionId = null;
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
+
+    // upload file for the offer
+    public function UpdatedUploadedFile()
+    {
+        $this->validate(
+            [
+                'uploadedFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            ],
+            [
+                'uploadedFile.max' => 'The file must not be greater than 5MB.',
+            ],
+        );
+
+        $filename = $this->uploadedFile->getClientOriginalName();
+        $url = $this->uploadedFile->store(Task::FILES_DIRECTORY, 's3');
+        $o = $this->offer->addFile($filename, $url);
+        if ($o) {
+            $this->alert('success', 'File Uploaded!');
+            $this->uploadedFile = null;
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
 
     public function closeAddField()
     {
