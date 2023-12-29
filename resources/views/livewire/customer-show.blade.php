@@ -1,6 +1,6 @@
 <div>
 
-    <div class="flex justify-center">
+    <div class="sm:flex justify-center">
         <div class="max-w-screen-lg">
 
             
@@ -56,7 +56,7 @@
                     </div>
 
                     @if($section === 'cars')
-                    <div class="flex-1 rounded-md overlay max-w-[520px] min-w-\[var\(500px\)\]" style="min-width: 400px;">
+                    <div class="flex-1 rounded-md col-span-2">
                         <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                             <div class="card-text flex flex-col justify-between h-full menu-open">
                                 <p class="mb-2">
@@ -140,7 +140,7 @@
                    
 
                     @if($section === 'profile')
-                    <div class="flex-1 rounded-md overlay max-w-[520px] min-w-\[var\(500px\)\]" style="min-width: 400px;">
+                    <div class="md:flex-1 rounded-md overlay max-w-[520px] min-w-\[var\(500px\)\] sm:col-span-2" style="min-width: 400px;">
                         
 
                         {{-- <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
@@ -284,7 +284,7 @@
 
                     </div>
 
-                    <div class="flex-1 rounded-md overlay  max-w-[400px] min-w-[310px]">
+                    <div class="md:flex-1 rounded-md overlay  max-w-[400px] min-w-[310px] sm:col-span-2">
 
                         <div class="card-body  flex flex-col justify-center bg-cover card p-4 active">
                             <div class="card-text flex flex-col justify-between h-full menu-open">
@@ -409,7 +409,7 @@
                     @endif
 
                     @if($section === 'followups')
-                    <div class="card-body flex flex-col justify-center bg-cover card p-4 mt-5"  style="min-width: 400px;">
+                    <div class="card-body flex flex-col justify-center bg-cover card p-4 mt-5  col-span-2">
                         <div class="card-text flex flex-col justify-between  menu-open">
                             <p>
                                 <b>Followups</b>
