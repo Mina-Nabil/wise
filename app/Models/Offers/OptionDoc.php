@@ -4,6 +4,7 @@ namespace App\Models\Offers;
 
 use App\Exceptions\UnauthorizedException;
 use App\Models\Users\AppLog;
+use App\Models\Users\User;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,5 +52,10 @@ class OptionDoc extends Model
     public function option(): BelongsTo
     {
         return $this->belongsTo(OfferOption::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class , 'user_id');
     }
 }
