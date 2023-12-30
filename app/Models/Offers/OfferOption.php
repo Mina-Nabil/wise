@@ -82,7 +82,7 @@ class OfferOption extends Model
     public function addField($name, $value)
     {
         try {
-            if ($this->docs()->create([
+            if ($this->fields()->create([
                 "name"  =>  $name,
                 "user_id"   =>  Auth::id(),
                 "value"  =>  $value,

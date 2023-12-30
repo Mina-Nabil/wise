@@ -41,11 +41,6 @@
                                 </button>
                                 <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                    <li>
-                                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                                    dark:hover:text-white">
-                                            Action</a>
-                                    </li>
                                     @foreach ($STATUSES as $status)
                                         @if (!($status === $offer->status))
                                             <li wire:click="setStatus('{{ $status }}')">
@@ -58,17 +53,12 @@
 
                                     <li>
                                         <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                                    dark:hover:text-white">
-                                            Something else here</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
-                                            Sign out</a>
+                                            Delete Offer</a>
                                     </li>
                                 </ul>
                             </div>
-                            <button class="btn inline-flex justify-center btn-secondary shadow-base2 float-right btn-sm mr-2">Edit</button>
+                            <button wire:click="toggleEditInfo" class="btn inline-flex justify-center btn-secondary shadow-base2 float-right btn-sm mr-2">Edit</button>
                         </div>
                     </div>
                     <p class="text-sm text-slate-400 font-light">
@@ -219,7 +209,7 @@
                                         <hr><br>
                                         <div class="grid grid-cols-2 mb-4">
                                             <div class="border-r ml-5">
-                                                <p><b>Option fields</b></p>
+                                                <p><b>Fields ({{ $option->fields->count() }})</b></p>
                                                 @foreach ($option->fields as $field)
                                                     <p>{{ $field->name }}: {{ number_format($field->value, 0, '.', ',') }}
                                                         <button type="button" wire:click="deleteOptionField({{ $field->id }})" class="font-normal text-xs text-slate-500 mt-1">
@@ -227,15 +217,10 @@
                                                         </button>
                                                     </p>
                                                 @endforeach
-
-
-                                                @foreach ($option->fields as $field)
-                                                    <p>{{ $field->name }}</p>
-                                                @endforeach
                                             </div>
                                             <div class="ml-5">
                                                 <p>
-                                                    <b>Option docs</b>
+                                                    <b>Documents</b>
                                                     @if ($optionId === $option->id)
                                                         <span style="display: inline-block; align-items: center;" wire:loading wire:target="uploadedOptionFile"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" icon="line-md:loading-twotone-loop"></iconify-icon></span>
                                                     @endif
@@ -280,7 +265,7 @@
                 <div class="flex-1 rounded-md overlay">
                     <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
-                            <p class="mb-2">
+                            <p class="mb-2 text-wrap">
                                 <b>Notes</b><br>
                                 <span class="mt-2">{{ $offer->note ?? 'No notes for this offer.' }}</span>
                             </p>
@@ -295,7 +280,7 @@
                         <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                             <div class="flex-1">
                                 <div class="card-title text-slate-900 dark:text-white">
-                                    <h6>files</h6>
+                                    <h6>files <iconify-icon wire:loading wire:target="downloadOfferFile" icon="svg-spinners:3-dots-move"></iconify-icon></h6>
                                 </div>
                             </div>
                             <label for="myFile" class="custom-file-label cursor-pointer">
@@ -315,8 +300,6 @@
                             <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">* {{ $message }}</span>
                         @enderror
                         <div class="card-body">
-
-
                             <!-- BEGIN: Files Card -->
                             <ul class="divide-y divide-slate-100 dark:divide-slate-700">
 
@@ -373,26 +356,24 @@
 
                                                 </div>
                                                 <div class="flex-1">
-                                                    <span class="block text-slate-600 text-sm dark:text-slate-300 ">
+                                                    <span class="block text-slate-600 text-sm dark:text-slate-300" style="overflow-wrap: anywhere">
                                                         {{ mb_strimwidth($file->name, 0, 30, '...') }}
                                                     </span>
                                                     <span class="block font-normal text-xs text-slate-500 mt-1">
                                                         uploaded by
-                                                        {{ $file->user->first_name . ' ' . $file->user->last_name }} / <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeFile({{ $file->id }})">remove</span>
+                                                        {{ $file->user->first_name . ' ' . $file->user->last_name }} / <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeOfferFile({{ $file->id }})">remove</span>
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <div class="flex-none">
-                                                @if ($view)
-                                                    <button type="button" wire:click="previewFile({{ $file->id }})" class="font-normal text-xs text-slate-500 mt-1">
-                                                        Preview |
-                                                    </button>
-                                                @endif
                                                 <span class="font-normal text-xs text-slate-500 mt-1"></span>
-                                                <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
-                                                    Download
+                                                <button wire:click="downloadOfferFile({{ $file->id }})" class="action-btn float-right mr-1 text-xs" type="button">
+                                                    <iconify-icon icon="ic:baseline-download"></iconify-icon>
                                                 </button>
+                                                {{-- <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
+                                                    Download
+                                                </button> --}}
                                             </div>
                                         </div>
                                     </li>
@@ -768,6 +749,8 @@
         </div>
     @endif
 
+    @if ($editInfoSection)
+    @endif
 
 
 

@@ -8,6 +8,7 @@ use App\Models\Cars\Car;
 use App\Models\Insurance\Policy;
 use App\Models\Tasks\Task;
 use App\Models\Insurance\PolicyCondition;
+use App\Models\Offers\OfferDoc;
 use App\Models\Offers\OfferOption;
 use App\Models\Offers\OptionDoc;
 use App\Models\Offers\OptionField;
@@ -58,6 +59,13 @@ class OfferShow extends Component
     public $uploadedOptionFile;
     public $optionId;
 
+    public $editInfoSection = false;
+
+    public function toggleEditInfo()
+    {
+        $this->toggle($this->editInfoSection);
+    }
+
     public function uploadDocOptionId($id)
     {
         $this->optionId = $id;
@@ -101,6 +109,39 @@ class OfferShow extends Component
         }
     }
 
+    public function removeOfferFile($id)
+    {
+        $res = OfferDoc::find($id)->delete();
+        if ($res) {
+            $this->alert('success', 'File Deleted');
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function downloadOfferFile($id)
+    {
+        $doc = OfferDoc::findOrFail($id);
+
+        // $extension = pathinfo($task->name, PATHINFO_EXTENSION);
+        $fileContents = Storage::disk('s3')->get($doc->url);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $doc->name . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+
+
     // upload file for option
     public function UpdatedUploadedOptionFile()
     {
@@ -114,12 +155,13 @@ class OfferShow extends Component
         );
 
         $filename = $this->uploadedOptionFile->getClientOriginalName();
-        $url = $this->uploadedOptionFile->store(Task::FILES_DIRECTORY, 's3');
+        $url = $this->uploadedOptionFile->store(OptionDoc::FILES_DIRECTORY, 's3');
         $option = OfferOption::find($this->optionId);
         $o = $option->addFile($filename, $url);
         if ($o) {
             $this->alert('success', 'File Uploaded!');
             $this->optionId = null;
+            $this->mount($this->offer->id);
         } else {
             $this->alert('failed', 'Server Error!');
         }
@@ -138,11 +180,12 @@ class OfferShow extends Component
         );
 
         $filename = $this->uploadedFile->getClientOriginalName();
-        $url = $this->uploadedFile->store(Task::FILES_DIRECTORY, 's3');
+        $url = $this->uploadedFile->store(OfferDoc::FILES_DIRECTORY, 's3');
         $o = $this->offer->addFile($filename, $url);
         if ($o) {
             $this->alert('success', 'File Uploaded!');
             $this->uploadedFile = null;
+            $this->mount($this->offer->id);
         } else {
             $this->alert('failed', 'Server Error!');
         }
@@ -172,6 +215,7 @@ class OfferShow extends Component
         if ($res) {
             $this->alert('success', 'Field added');
             $this->closeAddField();
+            $this->mount($this->offer->id);
         } else {
             $this->alert('failed', 'Server Error');
         }

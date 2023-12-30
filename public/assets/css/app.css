@@ -17315,3 +17315,7 @@ ul.custom-list ul {
         width: 0%;
     }
 }
+
+.text-wrap{
+    overflow-wrap: anywhere;
+}
