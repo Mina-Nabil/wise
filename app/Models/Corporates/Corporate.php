@@ -5,6 +5,7 @@ namespace App\Models\Corporates;
 use App\Models\Base\Country;
 use App\Models\Customers\Followup;
 use App\Models\Users\AppLog;
+use App\Models\Users\User;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -401,6 +402,40 @@ class Corporate extends Model
             AppLog::error('Can\'t create new corporate', desc: $e->getMessage());
             return false;
         }
+    }
+
+    ///scopes
+    public function scopeUserData($query, $searchText = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        $query->select('corporates.*')
+            ->join('users', "corporates.owner_id", '=', 'users.id');
+
+        if ($loggedInUser->type !== User::TYPE_ADMIN) {
+            $query->where(function ($q) use ($loggedInUser) {
+                $q->where('users.manager_id', $loggedInUser->id)
+                    ->orwhere('users.id', $loggedInUser->id);
+            });
+        }
+
+        $query->when($searchText, function ($q, $v) {
+            $q->leftjoin('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id')
+                ->groupBy('corporates.id');
+
+            $splittedText = explode(' ', $v);
+
+            foreach ($splittedText as $tmp) {
+                $q->where(function ($qq) use ($tmp) {
+                    $qq->where('corporates.name', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                        ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%");
+                });
+            }
+        });
+        return $query;
     }
 
     ///relations

@@ -78,7 +78,7 @@ class FollowupIndex extends Component
 
     public function render()
     {
-        $followups = Followup::paginate(10);
+        $followups = Followup::userData($this->search)->paginate(10);
         return view('livewire.followup-index',[
             'followups' => $followups,
         ]);

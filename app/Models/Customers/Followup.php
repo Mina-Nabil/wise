@@ -2,6 +2,7 @@
 
 namespace App\Models\Customers;
 
+use App\Models\Corporates\Corporate;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -106,6 +107,45 @@ class Followup extends Model
             return false;
         }
     }
+    ///scopes
+    public function scopeUserData($query, $searchText = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        $query->select('followups.*')
+            ->join('users', "followups.creator_id", '=', 'users.id');
+
+        if ($loggedInUser->type !== User::TYPE_ADMIN) {
+            $query->where(function ($q) use ($loggedInUser) {
+                $q->where('users.manager_id', $loggedInUser->id)
+                    ->orwhere('users.id', $loggedInUser->id);
+            });
+        }
+
+        $query->when($searchText, function ($q, $v) {
+            $q->leftjoin('corporates', function ($j) {
+                $j->on('followups.called_id', '=', 'corporates.id')
+                    ->where('followups.called_type', Corporate::MORPH_TYPE);
+            })->leftjoin('customers', function ($j) {
+                $j->on('followups.called_id', '=', 'customers.id')
+                    ->where('followups.called_type', Customer::MORPH_TYPE);
+            })->groupBy('followups.id');
+
+            $splittedText = explode(' ', $v);
+
+            foreach ($splittedText as $tmp) {
+                $q->where(function ($qq) use ($tmp) {
+                    $qq->where('followups.title', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.name', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.email', 'LIKE', "%$tmp%");
+                });
+            }
+        });
+        return $query;
+    }
+
 
     ///relations
     public function owner(): BelongsTo

@@ -4,6 +4,7 @@ namespace App\Models\Customers;
 
 use App\Models\Base\Country;
 use App\Models\Users\AppLog;
+use App\Models\Users\User;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -406,6 +407,40 @@ class Customer extends Model
             AppLog::error('Unable to create customer', desc: $e->getMessage());
             return false;
         }
+    }
+
+    ///scopes
+    public function scopeUserData($query, $searchText = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        $query->select('customers.*')
+            ->join('users', 'customers.owner_id', '=', 'users.id');
+
+        if ($loggedInUser->type !== User::TYPE_ADMIN) {
+            $query->where(function ($q) use ($loggedInUser) {
+                $q->where('users.manager_id', $loggedInUser->id)
+                    ->orwhere('users.id', $loggedInUser->id);
+            });
+        }
+
+        $query->when($searchText, function ($q, $v) {
+            $q->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')
+                ->groupBy('customers.id');
+
+            $splittedText = explode(' ', $v);
+
+            foreach ($splittedText as $tmp) {
+                $q->where(function ($qq) use ($tmp) {
+                    $qq->where('customers.name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_name', 'LIKE', "%$tmp%");
+                });
+            }
+        });
+        return $query;
     }
 
     ///relations

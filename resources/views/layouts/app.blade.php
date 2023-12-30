@@ -124,6 +124,39 @@
                         </a>
                     </li>
                     <!-- Apps Area -->
+                    <li class="sidebar-menu-title">CRM</li>
+                    <li>
+                        <a href="{{ url('/offers') }}" class="navItem @yield('offers')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="ic:outline-local-offer"></iconify-icon>
+                                <span>Offers</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
+                                <span>Customers</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/corporates') }}" class="navItem @yield('corporates')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
+                                <span>Corporates</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="icon-park-outline:cycle-arrow"></iconify-icon>
+                                <span>Follow Ups</span>
+                            </span>
+                        </a>
+                    </li>
                     <li class="sidebar-menu-title">Settings</li>
                     <li>
                         <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
@@ -149,41 +182,8 @@
                             </span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
-                                <span>Customers</span>
-                            </span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="{{ url('/corporates') }}" class="navItem @yield('corporates')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
-                                <span>Corporates</span>
-                            </span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="icon-park-outline:cycle-arrow"></iconify-icon>
-                                <span>Follow Ups</span>
-                            </span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="{{ url('/offers') }}" class="navItem @yield('offers')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="ic:outline-local-offer"></iconify-icon>
-                                <span>Offers</span>
-                            </span>
-                        </a>
-                    </li>
+                   
+            
 
                     @can('viewAny', \App\Models\Users\AppLog::class)
                         <li>

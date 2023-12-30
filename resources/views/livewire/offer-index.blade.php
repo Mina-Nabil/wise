@@ -21,7 +21,7 @@
     <div class="card">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="search">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search using client name, email or phone number" wire:model="search">
         </header>
 
         <div class="card-body px-6 pb-6">

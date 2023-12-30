@@ -119,7 +119,7 @@ class CustomerIndex extends Component
         $INCOME_SOURCES = Customer::INCOME_SOURCES;
         $professions = Profession::all();
         $countries = Country::all();
-        $customers = Customer::paginate(10);
+        $customers = Customer::userData($this->search)->paginate(10);
 
         return view('livewire.customer-index',[
             'customers' => $customers,

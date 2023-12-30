@@ -27,6 +27,7 @@ class OfferIndex extends Component
     public $note;
     public $due;
     public $item;
+    public $search;
     public $searchClient;
     public $clientNames;
     public $selectedClientId;
@@ -122,7 +123,7 @@ class OfferIndex extends Component
     public function render()
     {
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
-        $offers = Offer::paginate(10);
+        $offers = Offer::userData($this->search)->paginate(10);
         return view('livewire.offer-index', [
             'offers' => $offers,
             'clientNames' => $this->clientNames,

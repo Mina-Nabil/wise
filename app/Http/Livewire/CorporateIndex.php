@@ -112,7 +112,7 @@ class CorporateIndex extends Component
 
     public function render()
     {
-        $corporates = Corporate::paginate(10);
+        $corporates = Corporate::userData($this->search)->paginate(10);
         return view('livewire.corporate-index',[
             'corporates' => $corporates,
         ]);
