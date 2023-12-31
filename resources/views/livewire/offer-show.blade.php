@@ -211,7 +211,7 @@
                                             <div class="border-r ml-5">
                                                 <p><b>Fields ({{ $option->fields->count() }})</b></p>
                                                 @foreach ($option->fields as $field)
-                                                    <p>{{ $field->name }}: {{ number_format($field->value, 0, '.', ',') }}
+                                                    <p>{{ $field->name }}: {{ $field->value }}
                                                         <button type="button" wire:click="deleteOptionField({{ $field->id }})" class="font-normal text-xs text-slate-500 mt-1">
                                                             Delete
                                                         </button>

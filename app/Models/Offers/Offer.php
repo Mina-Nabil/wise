@@ -243,6 +243,8 @@ class Offer extends Model
                     "payment_frequency"     =>  $payment_frequency,
                 ]
             )) {
+                AppLog::info("Offer option added", loggable: $this);
+                return true;
             } else {
                 AppLog::error("Can't add offer option", desc: "No stack found", loggable: $this);
                 return false;
@@ -294,6 +296,49 @@ class Offer extends Model
             return true;
         }
     }
+
+    public function assignTo($user_id_or_type, $comment = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        // if ($loggedInUser && !$loggedInUser->can('updateAssignTo', $this)) return false;
+        $assignedToTitle = null;
+        if (is_numeric($user_id_or_type)) {
+            $this->assigned_to_id = $user_id_or_type;
+            $this->assigned_to_type = null;
+            $assignedToTitle = User::findOrFail($user_id_or_type)->username;
+        } else if (in_array($user_id_or_type, User::TYPES)) {
+            $this->assigned_to_id = null;
+            $this->assigned_to_type = $user_id_or_type;
+            $assignedToTitle = $user_id_or_type;
+        } else {
+            AppLog::warning("Wrong input", "Trying to set Offer#$this->id to $user_id_or_type", $this);
+            return false;
+        }
+
+        try {
+            $this->save();
+            $this->last_action_by()->associate(Auth::id());
+            if ($comment) {
+                $this->addComment($comment, false);
+            } else {
+                $this->addComment("Offer assigned to $assignedToTitle", false);
+            }
+            AppLog::info("Offer Assigned to $assignedToTitle", null, $this);
+            $this->sendTaskNotifications("Assigned offer", "Check Offer#$this->id's assignee changed");
+
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't assign offer", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+    // public function acceptOption($option_id)
+    // {
+
+    // }
 
     ////scopes
     public function scopeUserData($query, $searchText = null)
