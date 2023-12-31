@@ -388,7 +388,7 @@ class Offer extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    public function assignee_id(): BelongsTo
+    public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assignee_id');
     }

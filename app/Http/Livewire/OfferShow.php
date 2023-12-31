@@ -50,6 +50,8 @@ class OfferShow extends Component
     public $insured_value;
     public $payment_frequency;
 
+    public $editOptionId;
+
     public $addFieldSection_id;
     public $newFieldName;
     public $newFieldValue;
@@ -61,6 +63,74 @@ class OfferShow extends Component
 
     public $editInfoSection = false;
 
+    public $deleteOptionId;
+
+    public function deleteThisOption($id)
+    {
+        $this->deleteOptionId = $id;
+    }
+    public function dismissDeleteOption()
+    {
+        $this->deleteOptionId = null;
+    }
+
+    public function deleteOption()
+    {
+        $res = OfferOption::find($this->deleteOptionId)->delete();
+        if ($res) {
+            $this->alert('success', 'Option deleted');
+            $this->dismissDeleteOption();
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function editThisOption($id)
+    {
+        $this->editOptionId  =  $id;
+        $option = OfferOption::find($id);
+
+        // dd($option);
+        $this->policyData = $option->policy;
+        $this->conditionData = $option->policy_condition;
+        $this->insured_value = $option->insured_value;
+        $this->payment_frequency = $option->payment_frequency;
+    }
+
+    public function closeEditOption()
+    {
+        $this->editOptionId = null;
+        $this->policyData =  null;
+        $this->conditionData =  null;
+        $this->insured_value = null;
+        $this->payment_frequency =  null;
+    }
+
+    public function editOption()
+    {
+        $option = OfferOption::find($this->editOptionId);
+        $res = $option->editInfo($this->insured_value, $this->payment_frequency);
+        if ($res) {
+            $this->alert('success', 'Option updated');
+            $this->closeEditOption();
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+
+    public function clearPolicy()
+    {
+        $this->policyId = null;
+        $this->conditionId = null;
+        $this->searchPolicy = null;
+        $this->policiesData = null;
+        $this->policyData = null;
+        $this->conditionData = null;
+        $this->policyConditions = null;
+    }
     public function toggleEditInfo()
     {
         $this->toggle($this->editInfoSection);
@@ -104,6 +174,18 @@ class OfferShow extends Component
         $res = OptionField::find($id)->delete();
         if ($res) {
             $this->alert('success', 'Field deleted!');
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function removeOptionFile($id)
+    {
+        $res = OptionDoc::find($id)->delete();
+        if ($res) {
+            $this->alert('success', 'File Deleted');
+            $this->mount($this->offer->id);
         } else {
             $this->alert('failed', 'Server error');
         }
@@ -241,6 +323,9 @@ class OfferShow extends Component
     public function toggleEditItem()
     {
         $this->toggle($this->editItemSection);
+        if ($this->editItemSection) {
+            $this->carId = $this->offer->item_id;
+        }
     }
 
     public function editItem()

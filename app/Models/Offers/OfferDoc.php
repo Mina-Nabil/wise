@@ -4,6 +4,7 @@ namespace App\Models\Offers;
 
 use App\Exceptions\UnauthorizedException;
 use App\Models\Insurance\Policy;
+use App\Models\Users\User;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -61,6 +62,6 @@ class OfferDoc extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(Policy::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

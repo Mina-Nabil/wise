@@ -3,6 +3,7 @@
 namespace App\Models\Offers;
 
 use App\Models\Insurance\Policy;
+use App\Models\Insurance\PolicyCondition;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Exception;
@@ -69,7 +70,8 @@ class OfferOption extends Model
                 "insured_value"  =>  $insured_value,
                 "periodic_payment"  =>  $periodic_payment,
                 "payment_frequency"  =>  $payment_frequency,
-            ])) {
+            
+            ])) { return true;
             } else {
                 AppLog::error("Can't edit offer option", desc: "No stack found", loggable: $this);
                 return false;
@@ -153,6 +155,6 @@ class OfferOption extends Model
 
     public function policy_condition(): BelongsTo
     {
-        return $this->belongsTo(Offer::class);
+        return $this->belongsTo(PolicyCondition::class);
     }
 }
