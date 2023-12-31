@@ -24,6 +24,7 @@ use App\Models\Insurance\CompanyEmail;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\PolicyCondition;
 use App\Models\Offers\Offer;
+use App\Models\Offers\OfferOption;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskComment;
 use App\Models\Tasks\TaskFile;
@@ -77,6 +78,7 @@ class AppServiceProvider extends ServiceProvider
             TaskFile::MORPH_TYPE => TaskFile::class,
             TaskWatcher::MORPH_TYPE => TaskWatcher::class,
             Offer::MORPH_TYPE => Offer::class,
+            OfferOption::MORPH_TYPE => OfferOption::class,
         ]);
     }
 }

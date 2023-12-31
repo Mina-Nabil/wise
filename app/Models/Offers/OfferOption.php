@@ -18,6 +18,8 @@ class OfferOption extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const MORPH_TYPE = 'offer_options';
+
     const STATUS_NEW = 'new';
     const STATUS_DECLINED = 'declined';
     const STATUS_APPROVED = 'approved';
