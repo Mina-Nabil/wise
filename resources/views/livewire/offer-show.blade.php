@@ -293,7 +293,7 @@
                                                             <span>
                                                                 <span
                                                                     class="text-lg">{{ is_numeric($field->value) ? number_format($field->value, 0, '.', ',') : $field->value }}</span>
-                                                                | <button type="button"
+                                                                <button type="button"
                                                                     wire:click="deleteOptionField({{ $field->id }})"
                                                                     class="font-normal text-xs text-slate-500 mt-1">
                                                                     Delete
