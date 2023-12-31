@@ -65,6 +65,28 @@ class OfferShow extends Component
 
     public $deleteOptionId;
 
+    public $deleteThisOffer = false;
+
+    public function confirmDeleteOffer()
+    {
+        $this->deleteThisOffer = true;
+    }
+    public function dismissDeleteOffer()
+    {
+        $this->deleteThisOffer = false;
+    }
+
+    public function deleteOffer()
+    {
+        $res = Offer::find($this->offer->id)->delete();
+        if ($res) {
+            return redirect(route('offers.index'));
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+
     public function deleteThisOption($id)
     {
         $this->deleteOptionId = $id;
@@ -407,6 +429,7 @@ class OfferShow extends Component
             $this->insured_value = null;
             $this->payment_frequency = null;
             $this->toggleAddOption();
+            $this->mount($this->offer->id);
         } else {
             $this->alert('failed', 'Server Error');
         }
