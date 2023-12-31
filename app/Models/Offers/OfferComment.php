@@ -40,7 +40,7 @@ class OfferComment extends Model
             }
             return false;
         } catch (Exception $e) {
-            AppLog::error("Can't add Comment", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Can't edit Comment", desc: $e->getMessage(), loggable: $this);
             report($e);
             return false;
         }

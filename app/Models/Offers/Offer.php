@@ -159,6 +159,9 @@ class Offer extends Model
             $updates['status']  = $status;
             if ($this->update($updates)) {
                 AppLog::info("Changed status to " . $status, loggable: $this);
+                $this->sendOfferNotifications("Offer status changed", "Offer#$this->id's status changed");
+                $this->addComment("Status set to $status", false);
+
                 return true;
             } else {
                 AppLog::error("Changing status failed", desc: "No Exception found", loggable: $this);
@@ -184,6 +187,8 @@ class Offer extends Model
         try {
             if ($this->update($updates)) {
                 AppLog::info("Offer item updated", loggable: $this);
+                $this->sendOfferNotifications("Offer item change", "Offer#$this->id's item details changed");
+                $this->addComment("Details changed", false);
                 return true;
             } else {
                 AppLog::error("Can't set offer item", desc: "Failed to update", loggable: $this);
@@ -197,12 +202,18 @@ class Offer extends Model
 
     public function changeDue(Carbon $newDue)
     {
-        try {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if ($loggedInUser && !$loggedInUser->can('changeDue', $this)) return false;
 
+        try {
             if ($this->update([
                 "due"   =>  $newDue->format('Y-m-d H:i:s')
             ])) {
                 AppLog::info("Offer due updated", loggable: $this);
+                $this->sendOfferNotifications("Offer due change", "Offer#$this->id's next action is set to {$newDue->format('Y-m-d H:i:s')}");
+                $this->addComment("Due set to {$newDue->format('Y-m-d H:i:s')}", false);
+
                 return true;
             } else {
                 AppLog::error("Due edit failed", "Update failed with no exception", loggable: $this);
@@ -218,7 +229,7 @@ class Offer extends Model
     /**
      * @param array $fields should contain an array of arrays.. each child array should contain 'name' & 'value'
      */
-    public function addOption($policy_id, $policy_condition_id, $insured_value, $payment_frequency, array $fields = [])
+    public function addOption($policy_id, $policy_condition_id = null, $insured_value = null, $payment_frequency = null, array $fields = [])
     {
         switch ($payment_frequency) {
             case OfferOption::PAYMENT_FREQ_YEARLY:
@@ -246,8 +257,12 @@ class Offer extends Model
                     "payment_frequency"     =>  $payment_frequency,
                 ]
             )) {
-                foreach ($fields as $field)
+
+                foreach ($fields as $field) {
                     $tmpOption->addField($field['name'], $field['value']);
+                }
+
+                $this->sendOfferNotifications("New Offer option", "A new option is attached on Offer#$this->id");
                 AppLog::info("Offer option added", loggable: $this);
                 return true;
             } else {
@@ -261,26 +276,6 @@ class Offer extends Model
         }
     }
 
-    public function addComment($comment)
-    {
-        try {
-            if ($this->comments()->create([
-                "user_id"   =>  Auth::id(),
-                "comment"  =>  $comment
-            ])) {
-                AppLog::info("Comment added", loggable: $this);
-                return true;
-            } else {
-                AppLog::error("Comment addition failed", desc: "Failed to add comment", loggable: $this);
-                return false;
-            }
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Comment addition failed", desc: $e->getMessage(), loggable: $this);
-            return true;
-        }
-    }
-
     public function addFile($name, $url)
     {
         try {
@@ -289,6 +284,9 @@ class Offer extends Model
                 "user_id"   =>  Auth::id(),
                 "url"  =>  $url,
             ])) {
+                $this->sendOfferNotifications("New Offer File attached", "A new file is attached on Offer#$this->id");
+                $this->addComment("New Offer file", false);
+
                 AppLog::info("File added", loggable: $this);
                 return true;
             } else {
@@ -306,7 +304,7 @@ class Offer extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        // if ($loggedInUser && !$loggedInUser->can('updateAssignTo', $this)) return false;
+        if ($loggedInUser && !$loggedInUser->can('updateAssignTo', $this)) return false;
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
             $this->assigned_to_id = $user_id_or_type;
@@ -324,13 +322,15 @@ class Offer extends Model
         try {
             $this->save();
             $this->last_action_by()->associate(Auth::id());
+
+
             if ($comment) {
                 $this->addComment($comment, false);
             } else {
                 $this->addComment("Offer assigned to $assignedToTitle", false);
             }
             AppLog::info("Offer Assigned to $assignedToTitle", null, $this);
-            $this->sendTaskNotifications("Assigned offer", "Check Offer#$this->id's assignee changed");
+            $this->sendOfferNotifications("Offer Assignee change", "A new assignee is assigned for Offer#$this->id");
 
             return true;
         } catch (Exception $e) {
@@ -340,10 +340,65 @@ class Offer extends Model
         }
     }
 
-    // public function acceptOption($option_id)
-    // {
+    public function acceptOption($option_id)
+    {
+        if ($this->status == self::STATUS_APPROVED)
+            throw new Exception('Offer already approved');
 
-    // }
+        $option = OfferOption::findOrFail($option_id);
+        $option->status = OfferOption::STATUS_APPROVED;
+        $this->selected_option_id = $option_id;
+        try {
+            $this->options()->where('status', OfferOption::STATUS_APPROVED)->update([
+                'status'    =>  OfferOption::STATUS_DECLINED
+            ]);
+            $option->save();
+            $this->save();
+            $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
+            $this->addComment("Offer option accepted", false);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Option accept failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    private function sendOfferNotifications($title, $message)
+    {
+        $notifier_id = Auth::id();
+        if ($notifier_id != $this->assignee_id) {
+            $this->loadMissing('assignee');
+            $this->assignee?->pushNotification($title, $message, "offers/" . $this->id);
+        }
+        if ($notifier_id != $this->creator_id) {
+            $this->loadMissing('creator');
+            $this->assignee?->pushNotification($title, $message, "offers/" . $this->id);
+        }
+    }
+
+    private function addComment($comment, $logEvent = true): OfferComment|false
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        try {
+            $comment = $this->comments()->create([
+                "user_id"   =>  $loggedInUser ? $loggedInUser->id : null,
+                "comment"   =>  $comment
+            ]);
+            if ($logEvent && $loggedInUser) {
+                AppLog::info("Comment added", "User $loggedInUser->username added new comment to task $this->id", $this);
+                $this->last_action_by()->associate(Auth::id());
+                $this->sendOfferNotifications("Comment added", "Task#$this->id has a new comment by $loggedInUser->username");
+            }
+
+            return $comment;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add comment", $e->getMessage(), $this);
+            return false;
+        }
+    }
 
     ////scopes
     public function scopeUserData($query, $searchText = null)
