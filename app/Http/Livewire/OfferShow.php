@@ -63,7 +63,31 @@ class OfferShow extends Component
 
     public $editInfoSection = false;
 
-    public function editThisOption($id) {
+    public $deleteOptionId;
+
+    public function deleteThisOption($id)
+    {
+        $this->deleteOptionId = $id;
+    }
+    public function dismissDeleteOption()
+    {
+        $this->deleteOptionId = null;
+    }
+
+    public function deleteOption()
+    {
+        $res = OfferOption::find($this->deleteOptionId)->delete();
+        if ($res) {
+            $this->alert('success', 'Option deleted');
+            $this->dismissDeleteOption();
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function editThisOption($id)
+    {
         $this->editOptionId  =  $id;
         $option = OfferOption::find($id);
 
@@ -74,7 +98,8 @@ class OfferShow extends Component
         $this->payment_frequency = $option->payment_frequency;
     }
 
-    public function closeEditOption(){
+    public function closeEditOption()
+    {
         $this->editOptionId = null;
         $this->policyData =  null;
         $this->conditionData =  null;
@@ -82,20 +107,22 @@ class OfferShow extends Component
         $this->payment_frequency =  null;
     }
 
-    public function editOption(){
+    public function editOption()
+    {
         $option = OfferOption::find($this->editOptionId);
-        $res = $option->editInfo($this->insured_value,$this->payment_frequency);
+        $res = $option->editInfo($this->insured_value, $this->payment_frequency);
         if ($res) {
-            $this->alert('success' , 'Option updated');
+            $this->alert('success', 'Option updated');
             $this->closeEditOption();
             $this->mount($this->offer->id);
-        }else{
-            $this->alert('failed' , 'Server error');
+        } else {
+            $this->alert('failed', 'Server error');
         }
     }
 
 
-    public function clearPolicy() {
+    public function clearPolicy()
+    {
         $this->policyId = null;
         $this->conditionId = null;
         $this->searchPolicy = null;
@@ -296,7 +323,7 @@ class OfferShow extends Component
     public function toggleEditItem()
     {
         $this->toggle($this->editItemSection);
-        if($this->editItemSection){
+        if ($this->editItemSection) {
             $this->carId = $this->offer->item_id;
         }
     }
