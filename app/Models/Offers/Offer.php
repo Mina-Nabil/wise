@@ -215,7 +215,10 @@ class Offer extends Model
         }
     }
 
-    public function addOption($policy_id, $policy_condition_id, $insured_value, $payment_frequency)
+    /**
+     * @param array $fields should contain an array of arrays.. each child array should contain 'name' & 'value'
+     */
+    public function addOption($policy_id, $policy_condition_id, $insured_value, $payment_frequency, array $fields = [])
     {
         switch ($payment_frequency) {
             case OfferOption::PAYMENT_FREQ_YEARLY:
@@ -232,7 +235,7 @@ class Offer extends Model
                 return false;
         }
         try {
-            if ($this->options()->firstOrCreate(
+            if ($tmpOption = $this->options()->firstOrCreate(
                 [
                     "policy_id"             =>  $policy_id,
                 ],
@@ -243,6 +246,8 @@ class Offer extends Model
                     "payment_frequency"     =>  $payment_frequency,
                 ]
             )) {
+                foreach ($fields as $field)
+                    $tmpOption->addField($field['name'], $field['value']);
                 AppLog::info("Offer option added", loggable: $this);
                 return true;
             } else {
