@@ -71,15 +71,6 @@
                                         <iconify-icon class="mr-1" icon="academicons:acclaim"></iconify-icon>
                                         Claims</a>
                                 </li>
-                                <li class="nav-item" role="presentation">
-                                    <a href="#tabs-settings-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent dark:text-slate-300"
-                                        id="tabs-settings-withIcon-tab" data-bs-toggle="pill"
-                                        data-bs-target="#tabs-settings-withIcon" role="tab"
-                                        aria-controls="tabs-settings-withIcon" aria-selected="false">
-                                        <iconify-icon class="mr-1" icon="clarity:settings-line"></iconify-icon>
-                                        Settings</a>
-                                </li>
                             </ul>
                         </div>
                     </div>
@@ -269,7 +260,78 @@
                             </div>
                         </div> --}}
 
-                        <div class="card-body flex flex-col justify-center bg-cover card p-4">
+                        <div class="card-body flex flex-col justify-center bg-cover card p-4 ">
+                            <div class="card-text flex flex-col justify-between  menu-open">
+                                <p>
+                                    <b>Phones</b>
+                                </p>
+                                <br>
+
+                                @if ($customer->phones->isEmpty())
+                                    <p class="text-center m-5 text-primary">No cars Phones to this customer.</p>
+                                @else
+                                    @foreach ($customer->phones as $phone)
+                                        <div class="flex items-center ">
+                                            @if ($phone->is_default)
+                                                <iconify-icon class="text-primary"
+                                                    icon="material-symbols:star"></iconify-icon>
+                                            @endif
+                                            <b class="mr-auto">{{ ucfirst($phone->type) }}</b>
+
+
+                                            <div class="ml-auto">
+                                                <div class="relative">
+                                                    <div class="dropdown relative">
+                                                        <button class="text-xl text-center block w-full "
+                                                            type="button" id="tableDropdownMenuButton1"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <iconify-icon
+                                                                icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                        </button>
+                                                        <ul
+                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                            shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+
+                                                            <li>
+                                                                <button
+                                                                    wire:click="setPhoneAsDefault({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white">
+                                                                    Set as primary</button>
+                                                            </li>
+                                                            <li>
+                                                                <button
+                                                                    wire:click="editThisPhone({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                dark:hover:text-white">
+                                                                    Edit</button>
+                                                            </li>
+                                                            <li>
+                                                                <button
+                                                                    wire:click="deleteThisPhone({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                dark:hover:text-white">
+                                                                    Delete</button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p>{{ $phone->number }}</p>
+                                        <br>
+                                    @endforeach
+
+                                @endif
+
+                            </div>
+
+                            <button wire:click="toggleAddPhone"
+                                class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add
+                                Phone</button>
+                        </div>
+
+                        <div class="card-body flex flex-col justify-center bg-cover card p-4 mt-5">
                             <div class="card-text flex flex-col justify-between  menu-open">
                                 <p>
                                     <b>Addresses</b>
@@ -324,9 +386,7 @@
                                             </button>
                                         </p>
 
-                                        <p><a @if ($relative->phone) href="tel:{{ $relative->phone }}" @endif
-                                                style="text-decoration:revert;@if ($relative->phone)color:blue @endif">{{ $relative->phone ?? 'N/A' }}</a>
-                                            | {{ $relative->relation ?? 'N/A' }}, {{ $relative->gender ?? 'N/A' }},
+                                        <p> {{ $relative->phone ?? 'N/A' }} | {{ $relative->relation ?? 'N/A' }}, {{ $relative->gender ?? 'N/A' }},
                                             {{ $relative->birth_date != null ? $relative->birth_date->format('d/m/Y') : 'N/A' }}
                                         </p>
                                         <br>
@@ -401,76 +461,7 @@
                             </div>
                         </div>
 
-                        <div class="card-body flex flex-col justify-center bg-cover card p-4 mt-5">
-                            <div class="card-text flex flex-col justify-between  menu-open">
-                                <p>
-                                    <b>Phones</b>
-                                </p>
-                                <br>
-
-                                @if ($customer->phones->isEmpty())
-                                    <p class="text-center m-5 text-primary">No cars Phones to this customer.</p>
-                                @else
-                                    @foreach ($customer->phones as $phone)
-                                        <div class="flex items-center ">
-                                            @if ($phone->is_default)
-                                                <iconify-icon class="text-primary"
-                                                    icon="material-symbols:star"></iconify-icon>
-                                            @endif
-                                            <b class="mr-auto">{{ ucfirst($phone->type) }}</b>
-
-
-                                            <div class="ml-auto">
-                                                <div class="relative">
-                                                    <div class="dropdown relative">
-                                                        <button class="text-xl text-center block w-full "
-                                                            type="button" id="tableDropdownMenuButton1"
-                                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <iconify-icon
-                                                                icon="heroicons-outline:dots-vertical"></iconify-icon>
-                                                        </button>
-                                                        <ul
-                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
-                                            shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-
-                                                            <li>
-                                                                <button
-                                                                    wire:click="setPhoneAsDefault({{ $phone->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white">
-                                                                    Set as primary</button>
-                                                            </li>
-                                                            <li>
-                                                                <button
-                                                                    wire:click="editThisPhone({{ $phone->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                                dark:hover:text-white">
-                                                                    Edit</button>
-                                                            </li>
-                                                            <li>
-                                                                <button
-                                                                    wire:click="deleteThisPhone({{ $phone->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                                dark:hover:text-white">
-                                                                    Delete</button>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p>{{ $phone->number }}</p>
-                                        <br>
-                                    @endforeach
-
-                                @endif
-
-                            </div>
-
-                            <button wire:click="toggleAddPhone"
-                                class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add
-                                Phone</button>
-                        </div>
+                        
 
 
 
