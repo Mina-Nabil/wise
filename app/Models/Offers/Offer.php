@@ -232,7 +232,7 @@ class Offer extends Model
                 return false;
         }
         try {
-            if ($this->options()->firstOrCreate(
+            if ($r = $this->options()->firstOrCreate(
                 [
                     "policy_id"             =>  $policy_id,
                 ],
@@ -244,7 +244,7 @@ class Offer extends Model
                 ]
             )) {
                 AppLog::info("Offer option added", loggable: $this);
-                return true;
+                return $r;
             } else {
                 AppLog::error("Can't add offer option", desc: "No stack found", loggable: $this);
                 return false;

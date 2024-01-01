@@ -49,6 +49,8 @@ class OfferShow extends Component
     public $conditionData; // selected condtion data
     public $insured_value;
     public $payment_frequency;
+    public $fields = [];
+    public $files = [];
 
     public $editOptionId;
 
@@ -66,6 +68,17 @@ class OfferShow extends Component
     public $deleteOptionId;
 
     public $deleteThisOffer = false;
+
+    public function addAnotherField()
+    {
+        $this->fields[] = ['field' => '', 'value' => ''];
+    }
+
+    public function removeField($index)
+    {
+        unset($this->fields[$index]);
+        $this->fields = array_values($this->fields);
+    }
 
     public function confirmDeleteOffer()
     {
@@ -406,9 +419,24 @@ class OfferShow extends Component
             'conditionId' => 'required|integer|exists:policy_conditions,id',
             'insured_value' => 'nullable|numeric',
             'payment_frequency' =>  'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
-        ], attributes: [
-            'conditionId' => 'Policy'
+            'files' => 'nullable|array',
+            'files.*' => 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'fields' => 'nullable|array',
+        ], messages: [
+            'conditionId' => 'Policy is required!'
         ]);
+
+        $validationRules = [];
+
+
+
+        if (!empty($this->fields)) {
+            foreach ($this->fields as $index => $field) {
+                $validationRules["fields.$index.field"] = 'required|string|max:255';
+                $validationRules["fields.$index.value"] = 'required|numeric';
+            }
+            $this->validate($validationRules);
+        }
 
         $res = $this->offer->addOption(
             $this->policyId,
@@ -416,6 +444,21 @@ class OfferShow extends Component
             $this->insured_value,
             $this->payment_frequency
         );
+
+        if (!empty($this->fields)) {
+            foreach ($this->fields as $field) {
+                $res->addField($field['field'], $field['value']);
+            }
+        }
+
+        if (!empty($this->files)) {
+            foreach ($this->files as $file) {
+                $filename = $file->getClientOriginalName();
+                $url = $file->store(OptionDoc::FILES_DIRECTORY, 's3');
+                $res->addFile($filename, $url);
+            }
+        }
+
 
         if ($res) {
             $this->alert('success', 'options created');
@@ -429,6 +472,8 @@ class OfferShow extends Component
             $this->insured_value = null;
             $this->payment_frequency = null;
             $this->toggleAddOption();
+            $this->fields = [];
+            $this->files = [];
             $this->mount($this->offer->id);
         } else {
             $this->alert('failed', 'Server Error');

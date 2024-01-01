@@ -658,8 +658,15 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6">
+
                             @error('conditionId')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-danger-500 bg-opacity-[14%] text-danger-500">
+                                    <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                        <div class="flex-1">
+                                            {{ $message }}
+                                        </div>
+                                    </div>
+                                </div>
                             @enderror
                             @if ($policyId)
                                 <label for="lastName" class="form-label" style="margin: 0">Policy</label>
@@ -741,10 +748,68 @@
                                 @enderror
                             </div>
 
+                            <div class="input-area">
+                                <div class="filegroup">
+                                    <label>
+                                        <label for="time-date-picker" class="form-label">
+                                            Upload Files ({{ count($files) ?? '0' }})
+                                        </label>
+                                        <input type="file" class="w-full hidden " name="basic" multiple="multiple" wire:model="files" />
+                                        <span class="w-full h-[40px] file-control flex items-center custom-class  @error('files') !border-danger-500 @enderror">
+                                            <span class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                                                <span id="placeholder" class="text-slate-400">
+                                                    @foreach ($files as $file)
+                                                        <span class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $file->getClientOriginalName() }}</span>
+                                                    @endforeach
+                                                    @if (empty($files))
+                                                        Choose a file or drop it here...
+                                                    @endif
+                                                </span>
+                                            </span>
+                                            <span class="file-name flex-none cursor-pointer border-l px-4 border-slate-200 dark:border-slate-700 h-full inline-flex items-center bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm rounded-tr rounded-br font-normal">Browse</span>
+                                        </span>
+                                    </label>
+                                    @error('files')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="from-group">
+                                @if (!empty($fields))
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                        <div class="input-area">
+                                            <label for="time-date-picker" class="form-label" style="margin: 0">Field</label>
+                                        </div>
+                                        <div class="input-area">
+                                            <label for="time-date-picker" class="form-label" style="margin: 0">Value</label>
+                                        </div>
+                                    </div>
+                                @endif
+                                @foreach ($fields as $index => $field)
+                                    <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
+                                        <div class="input-area col-span-4">
+                                            <input class="form-control w-full mt-2  @error('fields.{{ $index }}.field') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.field" type="text" placeholder="Field">
+                                        </div>
+                                        <div class="input-area col-span-3">
+                                            <input class="form-control w-full mt-2   @error('fields.{{ $index }}.value') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.value" type="number" placeholder="Value">
+                                        </div>
+                                        <div class="col-span-1 flex items-center">
+                                            <button class="action-btn" wire:click="removeField({{ $index }})" type="button">
+                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                <button wire:click="addAnotherField" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Field</button>
+                            </div>
+
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="addOption" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="addOption" icon="line-md:loading-twotone-loop"></iconify-icon>
                                 Submit
                             </button>
                         </div>
