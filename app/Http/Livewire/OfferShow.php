@@ -533,14 +533,8 @@ class OfferShow extends Component
 
 
 
-        // $item = $this->offer->item;
-        // // dd($item);
-        // $this->AVAILABLE_POLICIES = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR,$item,null);
-        // dd($this->AVAILABLE_POLICIES);
-        // if ($this->AVAILABLE_POLICIES->isNotEmpty()) {
-        // dd($this->AVAILABLE_POLICIES);}else{
-        //     dd('empty');
-        // }
+        $item = $this->offer->item;
+        $this->AVAILABLE_POLICIES = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR,$item,null);   
     }
 
     public function setStatus($s)

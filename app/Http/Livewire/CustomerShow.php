@@ -9,6 +9,7 @@ use App\models\Customers\Address;
 use App\models\Customers\Car as CustomerCar;
 use App\Models\Customers\Relative;
 use App\models\Cars\Car;
+use App\models\Tasks\Task;
 use App\models\Cars\CarModel;
 use App\models\Cars\Brand;
 use App\Models\Base\Country;
@@ -105,7 +106,11 @@ class CustomerShow extends Component
     public $deleteAddressId;
     public $deleteCarId;
 
+    
+
     public $section = 'profile';
+
+    protected $queryString = ['section'];
 
     public function changeSection($section){
         $this->section = $section;
@@ -777,6 +782,8 @@ class CustomerShow extends Component
         $RELATIONS = Relative::RELATIONS;
         $countries = Country::all();
         $phoneTypes = Phone::TYPES;
+        $tasks = $this->customer->taskable;
+        // dd($tasks);
 
         return view('livewire.customer-show', [
             'customer' => $this->customer,
@@ -793,6 +800,7 @@ class CustomerShow extends Component
             'RELATIONS' => $RELATIONS,
             'countries' => $countries,
             'phoneTypes' => $phoneTypes,
+            'tasks' => $tasks
         ]);
     }
 }
