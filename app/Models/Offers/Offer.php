@@ -264,7 +264,7 @@ class Offer extends Model
 
                 $this->sendOfferNotifications("New Offer option", "A new option is attached on Offer#$this->id");
                 AppLog::info("Offer option added", loggable: $this);
-                return $r;
+                return $tmpOption;
             } else {
                 AppLog::error("Can't add offer option", desc: "No stack found", loggable: $this);
                 return false;

@@ -74,7 +74,7 @@
                                             {{ $followup->called_type }}
                                         </td>
 
-                                        <td class="table-td ">
+                                        <td wire:click="redirectToCalledPage({{ $followup->id }})" class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
                                             {{ $followup->called->name }}
                                         </td>
 

@@ -29,6 +29,12 @@ class FollowupIndex extends Component
         return redirect(route($followup->called_type.'s.show',  $followup->called_id));
     }
 
+    public function redirectToCalledPage($id)
+    {
+        $followup = Followup::findOrFail($id);
+        return redirect(route($followup->called_type.'s.show',  $followup->called_id));
+    }
+
     public function closeEditFollowup()
     {
         $this->followupId = null;
