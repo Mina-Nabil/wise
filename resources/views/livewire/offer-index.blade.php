@@ -165,7 +165,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                     <div class="input-area">
                                         <label for="lastName" class="form-label">Client Type</label>
-                                        @if ($item)
+                                        @if ($owner)
                                             {{ $clientType }}
                                         @else
                                             <select class="form-control w-full mt-2 @error('clientType') !border-danger-500 @enderror" wire:model="clientType">
@@ -177,14 +177,14 @@
                                     </div>
                                     <div class="input-area">
                                         <label for="lastName" class="form-label">
-                                            @if ($item)
+                                            @if ($owner)
                                                 Selected client
                                             @else
                                                 Search client
                                             @endif
 
                                         </label>
-                                        @if ($item)
+                                        @if ($owner)
                                             {{ $selectedClientName }}
                                         @else
                                             <input placeholder="Serach..." type="text" class="form-control" wire:model="searchClient">
@@ -204,11 +204,11 @@
 
                                 @endif
                             </div>
-                            @if ($item)
                                 @if ($clientCars)
                                     <div class="from-group">
                                         <label for="lastName" class="form-label">Select Client Car</label>
                                         <select name="basicSelect" class="form-control w-full mt-2 @error('item') !border-danger-500 @enderror" wire:model="item">
+                                            <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option</option>
                                             @foreach ($clientCars as $car)
                                                 <option value="{{ $car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $car->car->car_model->brand->name }} {{ $car->car->car_model->name }} {{ $car->car->category }}</option>
                                             @endforeach
@@ -224,7 +224,6 @@
                                     </div>
 
                                 @endif
-                            @endif
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Offer Type</label>
                                 <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('type') !border-danger-500 @enderror" wire:model="type">

@@ -375,6 +375,7 @@ class OfferShow extends Component
         if ($res) {
             $this->alert('success', 'Due Updated');
             $this->toggleEditDue();
+            $this->mount($this->offer->id);
         } else {
             $this->alert('failed', 'Server Error');
         }
@@ -533,8 +534,9 @@ class OfferShow extends Component
 
 
         // $item = $this->offer->item;
-        // $this->AVAILABLE_POLICIES = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR,$item);
-
+        // // dd($item);
+        // $this->AVAILABLE_POLICIES = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR,$item,null);
+        // dd($this->AVAILABLE_POLICIES);
         // if ($this->AVAILABLE_POLICIES->isNotEmpty()) {
         // dd($this->AVAILABLE_POLICIES);}else{
         //     dd('empty');
@@ -557,6 +559,7 @@ class OfferShow extends Component
         $usersTypes = User::TYPES;
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
+        
 
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,

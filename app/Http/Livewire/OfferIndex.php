@@ -44,12 +44,11 @@ class OfferIndex extends Component
 
     public function selectClient($id)
     {
-        $this->item = $id;
-
+        
         if ($this->clientType == 'Customer') {
-            $res = Customer::find($this->item);
+            $res = Customer::find($id);
         } elseif ($this->clientType == 'Corporate') {
-            $res = Corporate::find($this->item);
+            $res = Corporate::find($id);
         }
 
         $this->clientCars = $res->cars;
@@ -100,7 +99,7 @@ class OfferIndex extends Component
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
-        $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
+        $combinedDateTime = Carbon::parse($dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate);
         $item = CustomerCar::find($this->item);
 
         $offer = new Offer();
