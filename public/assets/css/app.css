@@ -4205,6 +4205,9 @@ textarea.form-control.is-invalid {
 .col-span-4 {
     grid-column: span 4 / span 4;
 }
+.col-span-5 {
+    grid-column: span 5 / span 5;
+}
 .col-span-1 {
     grid-column: span 1 / span 1;
 }
@@ -16553,6 +16556,9 @@ ul.custom-list ul {
     .md\:col-span-2 {
         grid-column: span 2 / span 2;
     }
+    .md\:col-span-8 {
+        grid-column: span 8 / span 8;
+    }
     .md\:my-0 {
         margin-top: 0px;
         margin-bottom: 0px;
@@ -16638,6 +16644,9 @@ ul.custom-list ul {
     }
     .md\:grid-cols-4 {
         grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .md\:grid-cols-8 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
     }
     .md\:flex-row {
         flex-direction: row;
@@ -16863,6 +16872,9 @@ ul.custom-list ul {
     }
     .lg\:grid-cols-5 {
         grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .lg\:grid-cols-8 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
     }
     .lg\:justify-end {
         justify-content: flex-end;
@@ -17321,6 +17333,6 @@ ul.custom-list ul {
     }
 }
 
-.text-wrap{
+.text-wrap {
     overflow-wrap: anywhere;
 }

@@ -1,7 +1,7 @@
 <div>
     <div>
-        <div class="max-w-screen-lg grid grid-cols-1 md:grid-cols-4 gap-5 mb-5">
-            <div class="grid-cols-1 gap-5 mb-5 col-span-3">
+        <div class="max-w-screen-lg grid grid-cols-1 md:grid-cols-8 gap-5 mb-5">
+            <div class="grid-cols-1 gap-5 mb-5 col-span-5">
 
                 <div>
                     <p class="text-sm text-slate-400  font-light" wire:click="setStatus">
@@ -354,7 +354,7 @@
                 </div>
 
             </div>
-            <div>
+            <div class=" col-span-3">
                 <span class="badge bg-primary-500 h-auto w-full mb-5 text-white" style="padding: 10px">
                     <iconify-icon icon="mingcute:time-line"></iconify-icon>&nbsp;Due:
                     {{ \Carbon\Carbon::parse($offer->due)->format('l d-m-Y h:ia') }}
