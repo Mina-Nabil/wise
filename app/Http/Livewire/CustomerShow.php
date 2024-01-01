@@ -598,7 +598,6 @@ class CustomerShow extends Component
 
         $customer = Customer::find($this->customer->id);
         $c = $customer->addCar(
-            $this->customer->id,
             $this->CarCategory,
             $this->sumInsurance,
             $this->insurancePayment,

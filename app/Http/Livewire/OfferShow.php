@@ -5,6 +5,8 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Offers\Offer;
 use App\Models\Cars\Car;
+use App\Models\Users\User;
+use App\Models\Customers\Car as CustomerCar;
 use App\Models\Insurance\Policy;
 use App\Models\Tasks\Task;
 use App\Models\Insurance\PolicyCondition;
@@ -22,6 +24,7 @@ class OfferShow extends Component
 {
     use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
 
+    public $AVAILABLE_POLICIES;
     public $offer;
     public $preview;
     public $clientCars;
@@ -69,6 +72,27 @@ class OfferShow extends Component
 
     public $deleteThisOffer = false;
 
+    public $editAssigneeSec = false;
+    public $asigneeType = 'user';
+    public $newAsignee;
+
+    public function changeAsignee(){
+        $res = $this->offer->assignTo($this->newAsignee);
+        if ($res) {
+            $this->alert('success' , 'Assignee Updated');
+            $this->asigneeType = 'user';
+            $this->newAsignee = null;
+            $this->toggleEditAssignee();
+            $this->mount($this->offer->id);
+        }else{
+            $this->alert('failed' , 'Server Error');
+        }
+    }
+
+    public function toggleEditAssignee() {
+        $this->toggle($this->editAssigneeSec);
+    }
+
     public function addAnotherField()
     {
         $this->fields[] = ['field' => '', 'value' => ''];
@@ -104,6 +128,7 @@ class OfferShow extends Component
     {
         $this->deleteOptionId = $id;
     }
+
     public function dismissDeleteOption()
     {
         $this->deleteOptionId = null;
@@ -504,6 +529,16 @@ class OfferShow extends Component
 
         $this->dueDate =  Carbon::parse($this->offer->due)->toDateString();
         $this->dueTime = Carbon::parse($this->offer->due)->toTimeString();
+
+
+
+        // $item = $this->offer->item;
+        // $this->AVAILABLE_POLICIES = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR,$item);
+
+        // if ($this->AVAILABLE_POLICIES->isNotEmpty()) {
+        // dd($this->AVAILABLE_POLICIES);}else{
+        //     dd('empty');
+        // }
     }
 
     public function setStatus($s)
@@ -518,11 +553,16 @@ class OfferShow extends Component
 
     public function render()
     {
+        $users = User::all();
+        $usersTypes = User::TYPES;
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
+
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,
-            'PAYMENT_FREQS' => $PAYMENT_FREQS
+            'PAYMENT_FREQS' => $PAYMENT_FREQS,
+            'users' => $users,
+            'usersTypes' => $usersTypes,
         ]);
     }
 }

@@ -210,7 +210,7 @@
                                         <label for="lastName" class="form-label">Select Client Car</label>
                                         <select name="basicSelect" class="form-control w-full mt-2 @error('item') !border-danger-500 @enderror" wire:model="item">
                                             @foreach ($clientCars as $car)
-                                                <option value="{{ $car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $car->car->category }}</option>
+                                                <option value="{{ $car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $car->car->car_model->brand->name }} {{ $car->car->car_model->name }} {{ $car->car->category }}</option>
                                             @endforeach
                                         </select>
                                     </div>

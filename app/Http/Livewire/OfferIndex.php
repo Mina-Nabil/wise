@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Customers\Customer;
 use App\Models\Corporates\Corporate;
 use App\Models\Cars\Car;
+use App\Models\Customers\Car as CustomerCar;
 use Livewire\Component;
 use App\Models\Offers\Offer;
 use App\Models\Insurance\Policy;
@@ -100,7 +101,7 @@ class OfferIndex extends Component
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
-        $item = Car::find($this->item);
+        $item = CustomerCar::find($this->item);
 
         $offer = new Offer();
         $res = $offer->newOffer(

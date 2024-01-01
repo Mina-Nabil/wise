@@ -93,7 +93,15 @@ class Policy extends Model
     ///static functions
     public static function getAvailablePolicies($type, CustomersCar $car = null, $age = null): Collection
     {
-        assert(in_array($type, [self::OPTIONS_TYPES]), "Can't find options for type outside of motor and medical");
+        assert(
+            in_array($type, [
+                self::BUSINESS_PERSONAL_MOTOR,
+                self::BUSINESS_CORPORATE_MOTOR,
+                self::BUSINESS_PERSONAL_MEDICAL,
+                self::BUSINESS_CORPORATE_MEDICAL,
+            ]),
+            "Can't find options for type outside of motor and medical. Received: $type"
+        );
         assert($car || $age, "All parameters are null");
 
         if ($car) {

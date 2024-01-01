@@ -155,7 +155,7 @@
                                         @endif
                                     </td>
 
-                                    <td class="table-td scale" >
+                                    <td class="table-td" >
                                         {{ $task->title }}
                                     </td>
 

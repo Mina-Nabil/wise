@@ -40,7 +40,8 @@
                                         <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
                                     </span>
                                 </button>
-                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                <ul
+                                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                     @foreach ($STATUSES as $status)
                                         @if (!($status === $offer->status))
@@ -53,7 +54,8 @@
                                     @endforeach
 
                                     <li wire:click="confirmDeleteOffer">
-                                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        <a href="#"
+                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
                                             Delete Offer</a>
                                     </li>
@@ -82,15 +84,15 @@
                                     <h3 class="text-base capitalize py-3">
                                         <ul class="m-0 p-0 list-none">
                                             <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                                {{ $offer->item->car_model->brand->name }}
+                                                {{ $offer->item->car->car_model->brand->name }}
                                                 <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
                                             </li>
                                             <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                                {{ $offer->item->car_model->name }}
+                                                {{ $offer->item->car->car_model->name }}
                                                 <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
                                             </li>
                                             <li class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white mr-5">
-                                                {{ $offer->item->category }}
+                                                {{ $offer->item->car->category }}
                                             </li>
                                         </ul>
                                     </h3>
@@ -104,10 +106,12 @@
                                                 <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                 </button>
-                                                <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                <ul
+                                                    class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                     <li>
-                                                        <button wire:click="toggleEditItem" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                        <button wire:click="toggleEditItem"
+                                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                             Edit</button>
                                                     </li>
@@ -192,7 +196,8 @@
                                                                     Add Field</button>
                                                             </li>
                                                             <li>
-                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                                                                     Add Doc
                                                                 </label>
                                                                 <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedOptionFile">
@@ -361,10 +366,15 @@
                 <div class="flex-1 rounded-md overlay mb-5">
                     <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
-                            <p class="mb-2 text-wrap">
-                                <b><iconify-icon icon="mdi:user"></iconify-icon> Assigned To</b><br>
-                                <span class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : 'No notes for this offer.' }}</span>
-                            </p>
+                            <div class="mb-2 text-wrap flex justify-between">
+                                <b><iconify-icon icon="mdi:user"></iconify-icon> Assigned To</b>
+
+                                <span class="ml-5 cursor-pointer float-right" wire:click="toggleEditAssignee">
+                                    <iconify-icon icon="carbon:edit"></iconify-icon>
+                                </span>
+
+                            </div>
+                            <p><span class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : 'No notes for this offer.' }}</span></p>
                         </div>
                     </div>
                 </div>
@@ -1000,6 +1010,79 @@
         </div>
     @endif
 
+    @if ($editAssigneeSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Assignee
+                            </h3>
+                            <button wire:click="toggleEditAssignee" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6">
+
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Payment Frequency</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="asigneeType">
+                                    <option value="user" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        User
+                                    </option>
+                                    <option value="team" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        Team
+                                    </option>
+                                </select>
+                            </div>
+
+                            @if ($asigneeType == 'user')
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Payment Frequency</label>
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
+                                        <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
+                                        @foreach ($users as $user)
+                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $user->first_name.' '.$user->last_name}}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
+                            @if ($asigneeType == 'team')
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Payment Frequency</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
+                                    <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
+                                        @foreach ($usersTypes as $type)
+                                        <option value="{{ type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ ucwords($type)}}
+                                        </option>
+                                        @endforeach
+                                </select>
+                            </div>
+                            @endif
+
+
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="changeAsignee" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
     @if ($deleteOptionId)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
@@ -1013,7 +1096,8 @@
                                 Delete Option
                             </h3>
                             <button wire:click="dismissDeleteOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1049,7 +1133,8 @@
                                 Delete Offer
                             </h3>
                             <button wire:click="dismissDeleteOffer" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
