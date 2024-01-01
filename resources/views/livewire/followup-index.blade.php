@@ -25,10 +25,11 @@
 
         <div class="card-body px-6 pb-6">
             <div class=" -mx-6">
-                <div class="inline-block min-w-full align-middle">
-                    <div class="overflow-hidden ">
-                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                            <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
+                <div class="inline-block min-w-full align-middle" >
+                    <div >
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700" >
+                            <thead
+                                class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                 <tr>
 
                                     <th scope="col" class=" table-th ">
@@ -61,12 +62,13 @@
 
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700" >
 
                                 @foreach ($followups as $followup)
                                     <tr>
 
-                                        <td  wire:click="redirectToShowPage({{ $followup->id }})" class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                        <td wire:click="redirectToShowPage({{ $followup->id }})"
+                                            class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
                                             <b>{{ Str::limit($followup->title, 40, '...') }}</b>
                                         </td>
 
@@ -74,7 +76,8 @@
                                             {{ $followup->called_type }}
                                         </td>
 
-                                        <td wire:click="redirectToCalledPage({{ $followup->id }})" class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                        <td wire:click="redirectToCalledPage({{ $followup->id }})"
+                                            class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
                                             {{ $followup->called->name }}
                                         </td>
 
@@ -95,14 +98,40 @@
                                             <div class="ml-auto">
                                                 <div class="relative">
                                                     <div class="dropdown relative">
-                                                        <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                        <button class="text-xl text-center block w-full " type="button"
+                                                            id="tableDropdownMenuButton1" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <iconify-icon
+                                                                icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                         </button>
-                                                        <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                        <ul
+                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+
+                                                            @if ($followup->status === 'new')
+                                                                <li>
+                                                                    <button
+                                                                        wire:click="editThisFollowup({{ $followup->id }})"
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                        Edit</button>
+                                                                </li>
+                                                                <li>
+                                                                    <button
+                                                                        wire:click="setFollowupAsCalled({{ $followup->id }})"
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                        Set as called</button>
+                                                                </li>
+                                                                <li>
+                                                                    <button
+                                                                        wire:click="setFollowupAsCancelled({{ $followup->id }})"
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                        Set as cancelled</button>
+                                                                </li>
+                                                            @endif
                                                             <li>
-                                                                <button wire:click="editThisFollowup({{ $followup->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
-                                                                    Edit</button>
+                                                                <button
+                                                                    wire:click="deleteThisFollowup({{ $followup->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                    Delete</button>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -122,12 +151,14 @@
                                 <div class="card-body rounded-md bg-white dark:bg-slate-800">
                                     <div class="items-center text-center p-5">
                                         <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
-                                        <h2 class="card-title text-slate-900 dark:text-white mb-3">No Follow ups with the
+                                        <h2 class="card-title text-slate-900 dark:text-white mb-3">No Follow ups with
+                                            the
                                             applied
                                             filters</h2>
                                         <p class="card-text">Try changing the filters or search terms for this view.
                                         </p>
-                                        <a href="{{ url('/followups') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
+                                        <a href="{{ url('/followups') }}"
+                                            class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
                                             all follow ups</a>
                                     </div>
                                 </div>
@@ -148,19 +179,26 @@
 
     @if ($followupId)
         {{-- add address section --}}
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Follow up
                             </h3>
-                            <button wire:click="closeEditFollowup" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <button wire:click="closeEditFollowup" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -170,42 +208,56 @@
                             <div class="from-group">
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Title</label>
-                                    <input id="lastName" type="text" class="form-control @error('followupTitle') !border-danger-500 @enderror" wire:model.defer="followupTitle">
+                                    <input id="lastName" type="text"
+                                        class="form-control @error('followupTitle') !border-danger-500 @enderror"
+                                        wire:model.defer="followupTitle">
                                 </div>
                                 @error('followupTitle')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Call Date</label>
-                                        <input id="lastName" type="date" class="form-control @error('followupCallDate') !border-danger-500 @enderror" wire:model.defer="followupCallDate">
+                                        <input id="lastName" type="date"
+                                            class="form-control @error('followupCallDate') !border-danger-500 @enderror"
+                                            wire:model.defer="followupCallDate">
                                     </div>
                                     @error('followupCallDate')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                     <div class="input-area">
                                         <label for="firstName" class="form-label"> Time</label>
-                                        <input id="lastName" type="time" class="form-control @error('followupCallTime') !border-danger-500 @enderror" wire:model.defer="followupCallTime">
+                                        <input id="lastName" type="time"
+                                            class="form-control @error('followupCallTime') !border-danger-500 @enderror"
+                                            wire:model.defer="followupCallTime">
                                     </div>
                                     @error('followupCallTime')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
 
                                 <div class="input-area mt-3">
                                     <label for="firstName" class="form-label">Description</label>
-                                    <input id="lastName" type="text" class="form-control @error('followupDesc') !border-danger-500 @enderror" wire:model.defer="followupDesc">
+                                    <input id="lastName" type="text"
+                                        class="form-control @error('followupDesc') !border-danger-500 @enderror"
+                                        wire:model.defer="followupDesc">
                                 </div>
                                 @error('followupDesc')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="editFollowup" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editFollowup" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>

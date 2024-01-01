@@ -35,6 +35,26 @@ class FollowupIndex extends Component
         return redirect(route($followup->called_type.'s.show',  $followup->called_id));
     }
 
+    public function setFollowupAsCalled($id)
+    {
+        $res = Followup::find($id)->setAsCalled();
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setFollowupAsCancelled($id)
+    {
+        $res = Followup::find($id)->setAsCancelled();
+        if ($res) {
+            $this->alert('success', 'Followup updated successfuly');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
     public function closeEditFollowup()
     {
         $this->followupId = null;
