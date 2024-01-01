@@ -88,9 +88,10 @@ class Corporate extends Model
     ];
 
     protected $fillable = [
-        'type', 'name', 'arabic_name', 'email', 'gender',
-        'marital_status', 'nationality_id', 'id_type', 'id_number',
-        'profession_id', 'salary_range', 'income_source', 'birth_date'
+        'type', 'name', 'arabic_name', 'email', 'commercial_record',
+        'commercial_record_doc', 'tax_id', 'tax_id_doc', 'kyc',
+        'kyc_doc', 'contract_doc', 'main_bank_evidence', 'creator_id', 
+        'owner_id'
     ];
 
     ///model functions
@@ -196,6 +197,7 @@ class Corporate extends Model
                 "building"  =>  $building,
                 "city"      =>  $city,
                 "country"   =>  $country,
+                "is_default"   =>  false
             ]);
             if ($is_default) $tmp->setAsDefault();
             AppLog::info("Adding customer address", loggable: $this);
@@ -214,7 +216,7 @@ class Corporate extends Model
             DB::transaction(function () use ($phones) {
                 $this->phones()->delete();
                 foreach ($phones as $phone) {
-                    $this->addAddress($phone["type"], $phone["number"], $phone["is_default"] ?? null);
+                    $this->addAddress($phone["type"], $phone["number"], $phone["is_default"] ?? false);
                 }
             });
             return true;
@@ -224,7 +226,7 @@ class Corporate extends Model
         }
     }
 
-    public function addPhone($type, $number, $is_default = null): Phone|false
+    public function addPhone($type, $number, $is_default = false): Phone|false
     {
         try {
             /** @var Phone */

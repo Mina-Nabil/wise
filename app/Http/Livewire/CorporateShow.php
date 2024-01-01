@@ -511,8 +511,7 @@ class CorporateShow extends Component
         $c = Corporate::find($this->corporate->id);
         $res = $c->addPhone(
             $this->phoneType,
-            $this->number,
-            null,
+            $this->number
         );
         if ($res) {
             $this->alert('success', 'Phone Added successfuly');
