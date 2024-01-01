@@ -27,7 +27,8 @@
                                 </span>
                             @endif
                             <span class="badge bg-secondary-500 h-auto">
-                                <iconify-icon icon="mdi:category"></iconify-icon>&nbsp; {{ ucwords(str_replace('_', ' ', $offer->type)) }}
+                                <iconify-icon icon="mdi:category"></iconify-icon>&nbsp;
+                                {{ ucwords(str_replace('_', ' ', $offer->type)) }}
                             </span>
                         </h5>
                         <div>
@@ -59,7 +60,8 @@
                                 </ul>
                             </div>
                             <a href="{{ route($offer->client_type . 's.show', $offer->client_id) }}" target="_blank">
-                                <button wire:click="toggleEditInfo" class="btn inline-flex justify-center btn-secondary shadow-base2 float-right btn-sm mr-2">View {{ ucwords($offer->client_type) }}</button>
+                                <button wire:click="toggleEditInfo" class="btn inline-flex justify-center btn-secondary shadow-base2 float-right btn-sm mr-2">View
+                                    {{ ucwords($offer->client_type) }}</button>
                             </a>
                         </div>
                     </div>
@@ -153,10 +155,12 @@
                                     <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5">
                                         <div class="break-words flex items-center my-1 m-4">
                                             <h3 class="text-base capitalize py-3">
-                                                {{ ucwords($option->policy->company->name) }} | {{ ucwords($option->policy->name) }}
+                                                {{ ucwords($option->policy->company->name) }} |
+                                                {{ ucwords($option->policy->name) }}
 
                                                 @if ($option->payment_frequency)
-                                                    <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $option->payment_frequency }} Payment</span>
+                                                    <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $option->payment_frequency }}
+                                                        Payment</span>
                                                 @endif
 
                                                 @if ($option->status === 'new')
@@ -215,9 +219,11 @@
                                         <div class="break-words flex items-center m-4 mt-0">
                                             <p class="">
                                                 Insured Value:
-                                            <h6 class="ml-3">{{ number_format($option->insured_value, 0, '.', ',') }}</h6>
+                                            <h6 class="ml-3">
+                                                {{ number_format($option->insured_value, 0, '.', ',') }}</h6>
                                             <p class="text-slate-900 dark:text-slate-300 ml-4">
-                                                <span class="text-sm text-slate-400 block">| {{ ucwords(str_replace('_', ' ', $option->policy->business)) }}</span>
+                                                <span class="text-sm text-slate-400 block">|
+                                                    {{ ucwords(str_replace('_', ' ', $option->policy->business)) }}</span>
                                             </p>
                                             </p>
                                         </div>
@@ -240,8 +246,8 @@
                                                                 </span>
                                                             </span>
                                                             <span>
-                                                                <span class="text-lg">{{ number_format($field->value, 0, '.', ',') }}</span>
-                                                                | <button type="button" wire:click="deleteOptionField({{ $field->id }})" class="font-normal text-xs text-slate-500 mt-1">
+                                                                <span class="text-lg">{{ is_numeric($field->value) ? number_format($field->value, 0, '.', ',') : $field->value }}</span>
+                                                                <button type="button" wire:click="deleteOptionField({{ $field->id }})" class="font-normal text-xs text-slate-500 mt-1">
                                                                     Delete
                                                                 </button>
                                                             </span>
@@ -316,7 +322,8 @@
                                                                 </span>
                                                                 <span class="block font-normal text-xs text-slate-500 mt-1">
                                                                     uploaded by
-                                                                    {{ $file->user->first_name . ' ' . $file->user->last_name }} / <span class="cursor-pointer" wire:click="removeOptionFile({{ $file->id }})">remove</span>
+                                                                    {{ $file->user->first_name . ' ' . $file->user->last_name }}
+                                                                    / <span class="cursor-pointer" wire:click="removeOptionFile({{ $file->id }})">remove</span>
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -344,7 +351,8 @@
             </div>
             <div>
                 <span class="badge bg-primary-500 h-auto w-full mb-5 text-white" style="padding: 10px">
-                    <iconify-icon icon="mingcute:time-line"></iconify-icon>&nbsp;Due: {{ \Carbon\Carbon::parse($offer->due)->format('l d-m-Y h:ia') }}
+                    <iconify-icon icon="mingcute:time-line"></iconify-icon>&nbsp;Due:
+                    {{ \Carbon\Carbon::parse($offer->due)->format('l d-m-Y h:ia') }}
                     <span class="ml-5 cursor-pointer" wire:click="toggleEditDue">
                         <iconify-icon icon="carbon:edit"></iconify-icon>
                     </span>
@@ -397,7 +405,8 @@
                             <div class="loaderBar"></div>
                         </div>
                         @error('uploadedFile')
-                            <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">* {{ $message }}</span>
+                            <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">*
+                                {{ $message }}</span>
                         @enderror
                         <div class="card-body">
                             <!-- BEGIN: Files Card -->
@@ -461,7 +470,8 @@
                                                     </span>
                                                     <span class="block font-normal text-xs text-slate-500 mt-1">
                                                         uploaded by
-                                                        {{ $file->user->first_name . ' ' . $file->user->last_name }} / <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeOfferFile({{ $file->id }})">remove</span>
+                                                        {{ $file->user->first_name . ' ' . $file->user->last_name }} /
+                                                        <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeOfferFile({{ $file->id }})">remove</span>
                                                     </span>
                                                 </div>
                                             </div>
@@ -682,7 +692,8 @@
                                 <div class="text-sm mt-0">
                                     @if ($policiesData)
                                         @foreach ($policiesData as $policy)
-                                            <p><iconify-icon icon="material-symbols:policy"></iconify-icon> {{ $policy->company->name }} | {{ $policy->name }} | <Span wire:click="selectPolicy({{ $policy->id }})" class="cursor-pointer text-primary-500">Select Policy</Span></p>
+                                            <p><iconify-icon icon="material-symbols:policy"></iconify-icon>
+                                                {{ $policy->company->name }} | {{ $policy->name }} | <Span wire:click="selectPolicy({{ $policy->id }})" class="cursor-pointer text-primary-500">Select Policy</Span></p>
                                         @endforeach
 
                                     @endif

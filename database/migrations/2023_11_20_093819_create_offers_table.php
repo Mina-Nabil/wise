@@ -44,7 +44,7 @@ return new class extends Migration
         Schema::create('offer_comments', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Offer::class)->constrained();
-            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->string('comment');
             $table->timestamps();
         });
