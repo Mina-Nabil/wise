@@ -25,9 +25,9 @@
 
         <div class="card-body px-6 pb-6">
             <div class=" -mx-6">
-                <div class="inline-block min-w-full align-middle" >
-                    <div >
-                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700" >
+                <div class="inline-block min-w-full align-middle">
+                    <div>
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                             <thead
                                 class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                 <tr>
@@ -57,12 +57,16 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Note
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Created by
                                     </th>
 
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700" >
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                 @foreach ($followups as $followup)
                                     <tr>
@@ -85,12 +89,21 @@
                                             {{ $followup->status }}
                                         </td>
 
+
+
                                         <td class="table-td ">
                                             {{ $followup->call_time }}
                                         </td>
 
                                         <td class="table-td ">
                                             {{ Str::limit($followup->desc, 40, '...') }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            <button
+                                                class="toolTip caller-note{{ $followup->id }} btn inline-flex justify-center btn-outline-dark mr-3">Caller
+                                                Note</button>
+
                                         </td>
 
                                         <td class="table-td flex">
@@ -141,7 +154,18 @@
 
                                     </tr>
                                 @endforeach
-
+                                @section('child_scripts')
+                                    <script>
+                                        $(function() {
+                                            @foreach ($followups as $followup)
+                                                tippy(".caller-note{{ $followup->id }}", {
+                                                    content: "{{$followup->caller_note}}",
+                                                    placement: "bottom"
+                                                });
+                                            @endforeach
+                                        });
+                                    </script>
+                                @endsection
                             </tbody>
                         </table>
 

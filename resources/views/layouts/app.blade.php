@@ -841,6 +841,7 @@
     <script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/rt-plugins.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
+
     @yield('body')
 
     <script>
@@ -849,14 +850,6 @@
             Swal.fire("{{ session('alert_msg') }}")
         @endif
 
-        function setAsSeen(id) {
-            $.ajax({
-                url: "{{ url('notifications/seen/') }}" + id
-                method: 'POST'
-            })
-        }
-    </script>
-    <script>
         const setAsSeen = (id) => {
             $.ajax({
                 url: "{{ url('notifications/seen/') }}" + "/" + id,
@@ -867,17 +860,9 @@
             })
         }
     </script>
-    <script>
-        const setAsSeen = (id) => {
-            $.ajax({
-                url: "{{ url('notifications/seen/') }}" + "/" + id,
-                method: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}"
-                }
-            })
-        }
-    </script>
+
+    @yield('child_scripts')
+
     @livewireScripts
 </body>
 
