@@ -25,7 +25,7 @@ class OfferShow extends Component
 {
     use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
 
-    public $AVAILABLE_POLICIES;
+    public $available_pols;
     public $offer;
     public $preview;
     public $clientCars;
@@ -77,20 +77,22 @@ class OfferShow extends Component
     public $asigneeType = 'user';
     public $newAsignee;
 
-    public function changeAsignee(){
+    public function changeAsignee()
+    {
         $res = $this->offer->assignTo($this->newAsignee);
         if ($res) {
-            $this->alert('success' , 'Assignee Updated');
+            $this->alert('success', 'Assignee Updated');
             $this->asigneeType = 'user';
             $this->newAsignee = null;
             $this->toggleEditAssignee();
             $this->mount($this->offer->id);
-        }else{
-            $this->alert('failed' , 'Server Error');
+        } else {
+            $this->alert('failed', 'Server Error');
         }
     }
 
-    public function toggleEditAssignee() {
+    public function toggleEditAssignee()
+    {
         $this->toggle($this->editAssigneeSec);
     }
 
@@ -450,7 +452,8 @@ class OfferShow extends Component
             'files.*' => 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
             'fields' => 'nullable|array',
         ], messages: [
-            'conditionId' => 'Policy is required!'
+            'conditionId' => 'Policy is required!',
+            'files.*'   =>  'File :position is invalid. Please upload a file of type: pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp'
         ]);
 
         $validationRules = [];
@@ -464,27 +467,22 @@ class OfferShow extends Component
             }
             $this->validate($validationRules);
         }
-
+        $files = [];
+        if (!empty($this->files)) {
+            foreach ($this->files as $i => $file) {
+                $files[$i] = ['name' => $file->getClientOriginalName(), 'url' => $file->store(OptionDoc::FILES_DIRECTORY, 's3')];
+            }
+        }
         $res = $this->offer->addOption(
             $this->policyId,
             $this->conditionId,
             $this->insured_value,
-            $this->payment_frequency
+            $this->payment_frequency,
+            $this->fields,
+            $files
         );
 
-        if (!empty($this->fields)) {
-            foreach ($this->fields as $field) {
-                $res->addField($field['field'], $field['value']);
-            }
-        }
 
-        if (!empty($this->files)) {
-            foreach ($this->files as $file) {
-                $filename = $file->getClientOriginalName();
-                $url = $file->store(OptionDoc::FILES_DIRECTORY, 's3');
-                $res->addFile($filename, $url);
-            }
-        }
 
 
         if ($res) {
@@ -515,7 +513,7 @@ class OfferShow extends Component
         $res = $this->offer->addComment($this->newComment);
         if ($res) {
             $this->alert('success', $res);
-            $this->mount($this->offer->id);
+            $this->mount($this->offer->id, []);
             $this->newComment = null;
         } else {
             $this->alert('failed', 'server error');
@@ -535,8 +533,8 @@ class OfferShow extends Component
 
 
         $item = $this->offer->item;
-        $this->AVAILABLE_POLICIES = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR,$item,null);   
-        Log::info($this->AVAILABLE_POLICIES);
+        $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
+        Log::info($this->available_pols);
     }
 
     public function setStatus($s)
@@ -555,7 +553,7 @@ class OfferShow extends Component
         $usersTypes = User::TYPES;
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
-        
+
 
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,

@@ -791,7 +791,14 @@
                                         </span>
                                     </label>
                                     @error('files')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                    @error('files.*')
+                                    @foreach ($errors->get('files.*') as $each_file_errors)
+                                        @foreach($each_file_errors as $msg)
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $msg }}</span>
+                                        @endforeach
+                                    @endforeach
                                     @enderror
                                 </div>
                             </div>
