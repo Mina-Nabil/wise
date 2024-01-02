@@ -5,6 +5,7 @@ namespace App\Models\Corporates;
 use App\Models\Base\Country;
 use App\Models\Customers\Followup;
 use App\Models\Tasks\Task;
+use App\Models\Offers\Offer;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Exception;
@@ -470,5 +471,10 @@ class Corporate extends Model
     public function tasks(): MorphMany
     {
         return $this->morphMany(Task::class, 'taskable');
+    }
+
+    public function offers(): MorphMany
+    {
+        return $this->morphMany(Offer::class, 'client');
     }
 }

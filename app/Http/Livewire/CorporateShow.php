@@ -81,6 +81,16 @@ class CorporateShow extends Component
     public $deleteBankAccountId;
     public $addBankAccountSection;
 
+    public $section = 'profile';
+
+    protected $queryString = ['section'];
+
+    public function changeSection($section)
+    {
+        $this->section = $section;
+        $this->mount($this->corporate->id);
+    }
+
     public function toggleEditCorporate()
     {
         $this->toggle($this->editCorporateSection);
@@ -368,6 +378,7 @@ class CorporateShow extends Component
         $this->kycDoc = $this->corporate->kyc_doc;
         $this->contractDoc = $this->corporate->contract_doc;
         $this->mainBandEvidence = $this->corporate->main_bank_evidence;
+
     }
 
     public function editCorporate()
@@ -724,10 +735,14 @@ class CorporateShow extends Component
         $addressTypes = Address::TYPES;
         $bankAccTypes = BankAccount::TYPES;
         $phoneTypes = Phone::TYPES;
+        $tasks = $this->corporate->tasks;
+        $offers = $this->corporate->offers;
         return view('livewire.corporate-show',[
             'addressTypes' => $addressTypes,
             'bankAccTypes' => $bankAccTypes,
             'phoneTypes'  => $phoneTypes,
+            'tasks' => $tasks,
+            'offers' => $offers
         ]);
     }
 }
