@@ -17,6 +17,8 @@ use App\Models\Customers\Followup;
 use App\Models\Customers\Phone;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Illuminate\Routing\Route;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Round;
 
 class CustomerShow extends Component
 {
@@ -106,13 +108,14 @@ class CustomerShow extends Component
     public $deleteAddressId;
     public $deleteCarId;
 
-    
+
 
     public $section = 'profile';
 
     protected $queryString = ['section'];
 
-    public function changeSection($section){
+    public function changeSection($section)
+    {
         $this->section = $section;
         // dd($this->section);
         $this->mount($this->customer->id);
@@ -174,7 +177,8 @@ class CustomerShow extends Component
         $this->addFollowupSection = true;
     }
 
-    public function editThisFollowup($id){
+    public function editThisFollowup($id)
+    {
         $this->followupId = $id;
         $f = Followup::find($id);
         $this->followupTitle = $f->title;
@@ -184,15 +188,18 @@ class CustomerShow extends Component
         $this->followupDesc = $f->desc;
     }
 
-    public function deleteThisFollowup($id){
+    public function deleteThisFollowup($id)
+    {
         $this->deleteFollowupId = $id;
     }
 
-    public function dismissDeleteFollowup(){
+    public function dismissDeleteFollowup()
+    {
         $this->deleteFollowupId = null;
     }
 
-    public function deleteFollowup(){
+    public function deleteFollowup()
+    {
         $res = Followup::find($this->deleteFollowupId)->delete();
         if ($res) {
             $this->alert('success', 'Followup Deleted successfuly');
@@ -227,7 +234,7 @@ class CustomerShow extends Component
             $this->alert('success', 'Followup added successfuly');
             $this->closeFollowupSection();
             $this->mount($this->customer->id);
-            return redirect()->route('customers.show' , $this->customer->id);
+            return redirect()->route('customers.show', $this->customer->id);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -768,6 +775,11 @@ class CustomerShow extends Component
         $this->toggle($this->editCustomerSection);
     }
 
+    public function redirectToTask($id)
+    {
+        return redirect(Route('tasks.show', $id));
+    }
+
     public function render()
     {
         $GENDERS = Customer::GENDERS;
@@ -782,7 +794,7 @@ class CustomerShow extends Component
         $RELATIONS = Relative::RELATIONS;
         $countries = Country::all();
         $phoneTypes = Phone::TYPES;
-        $tasks = $this->customer->taskable;
+        $tasks = $this->customer->tasks;
         // dd($tasks);
 
         return view('livewire.customer-show', [

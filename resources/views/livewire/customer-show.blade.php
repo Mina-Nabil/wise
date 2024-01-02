@@ -16,44 +16,38 @@
                         <div>
                             <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab" role="tablist">
                                 <li class="nav-item" role="presentation" wire:click="changeSection('profile')">
-                                    <a href="#tabs-profile-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if($section === 'profile') active @endif dark:text-slate-300"
-                                        id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon" aria-selected="false">
+                                    <a href="#tabs-profile-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'profile') active @endif dark:text-slate-300" id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon"
+                                        aria-selected="false">
                                         <iconify-icon class="mr-1" icon="heroicons-outline:user"></iconify-icon>
                                         Profile</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('cars')">
-                                    <a href="#tabs-messages-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if($section === 'cars') active @endif dark:text-slate-300"
-                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                        aria-selected="false">
                                         <iconify-icon class="mr-1" icon="mingcute:car-line"></iconify-icon>
                                         cars</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('followups')">
-                                    <a href="#tabs-messages-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if($section === 'followups') active @endif dark:text-slate-300"
-                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                        aria-selected="false">
                                         <iconify-icon class="mr-1" icon="icon-park-outline:cycle-arrow"></iconify-icon>
                                         Follow Ups</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('offers')">
-                                    <a href="#tabs-messages-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if($section === 'offers') active @endif dark:text-slate-300"
-                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                        aria-selected="false">
                                         <iconify-icon class="mr-1" icon="ic:outline-local-offer"></iconify-icon>
                                         Offers</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('tasks')">
-                                    <a href="#tabs-messages-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if($section === 'tasks') active @endif dark:text-slate-300"
-                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                        aria-selected="false">
                                         <iconify-icon class="mr-1" icon="ic:round-add-task"></iconify-icon>
                                         Tasks</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('claims')">
-                                    <a href="#tabs-messages-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if($section === 'claims') active @endif dark:text-slate-300"
-                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'claims') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                        aria-selected="false">
                                         <iconify-icon class="mr-1" icon="academicons:acclaim"></iconify-icon>
                                         Claims</a>
                                 </li>
@@ -103,18 +97,15 @@
                                                             <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                             </button>
-                                                            <ul
-                                                                class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                            <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                                 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                 <li>
-                                                                    <button wire:click="editThisCar({{ $car->id }})"
-                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                    <button wire:click="editThisCar({{ $car->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white">
                                                                         Edit</button>
                                                                 </li>
                                                                 <li>
-                                                                    <button wire:click="deleteThisCar({{ $car->id }})"
-                                                                        class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                    <button wire:click="deleteThisCar({{ $car->id }})" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white">
                                                                         Delete</button>
                                                                 </li>
@@ -255,25 +246,21 @@
                                                         <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                             <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                         </button>
-                                                        <ul
-                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                        <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
 
                                                             <li>
-                                                                <button wire:click="setPhoneAsDefault({{ $phone->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="setPhoneAsDefault({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white">
                                                                     Set as primary</button>
                                                             </li>
                                                             <li>
-                                                                <button wire:click="editThisPhone({{ $phone->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="editThisPhone({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                                     Edit</button>
                                                             </li>
                                                             <li>
-                                                                <button wire:click="deleteThisPhone({{ $phone->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="deleteThisPhone({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                                     Delete</button>
                                                             </li>
@@ -489,33 +476,6 @@
                     <div class="card-body flex flex-col justify-center bg-cover card  col-span-2">
                         <div class="card-header">
                             <h4 class="card-title">Tasks</h4>
-                            <div>
-                                <!-- BEGIN: Card Dropdown -->
-                                <div class="relative">
-                                    <div class="dropdown relative">
-                                        <button class="text-xl text-center block w-full " type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <span class="text-lg inline-flex h-6 w-6 flex-col items-center justify-center border border-slate-200 dark:border-slate-700  rounded dark:text-slate-400">
-                                                <iconify-icon icon="heroicons-outline:dots-horizontal"></iconify-icon>
-                                            </span>
-                                        </button>
-                                        <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                            <li>
-                                                <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
-                                                    Last 28 Days</a>
-                                            </li>
-                                            <li>
-                                                <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
-                                                    Last Month</a>
-                                            </li>
-                                            <li>
-                                                <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600  dark:hover:text-white">
-                                                    Last Year</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- END: Card Droopdown -->
-                            </div>
                         </div>
                         <div class="card-body p-6">
 
@@ -524,51 +484,57 @@
 
                             <div>
                                 <ul class="divide-y divide-slate-100 dark:divide-slate-700 -mx-6 -mb-6">
-                                    {{-- @foreach ([a,0] as $task) --}}
+                                    @foreach ($tasks as $task)
                                         <li>
-                                            <a  class="hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-slate-800 text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0 cursor-pointer">
+                                            <a class=" text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
                                                 <div class="flex ltr:text-left rtl:text-right">
                                                     <div class="flex-none ltr:mr-3 rtl:ml-3">
                                                         <div class="h-8 w-8 bg-white dark:bg-slate-700 rounded-full relative">
                                                             <span class="block w-full h-full object-cover text-center text-lg leading-8">
-                                                                {{ strtoupper(substr('michael', 0, 1)) }}
-                                                                {{-- {{ strtoupper(substr($task->open_by->first_name, 0, 1)) }} --}}
+                                                                {{ strtoupper(substr($task->open_by->first_name, 0, 1)) }}
                                                             </span>
                                                         </div>
                                                     </div>
                                                     <div class="flex-1">
                                                         <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1`">
-                                                            Michael hani
-                                                            {{-- {{ $task->open_by->first_name.' '.$task->open_by->last_name }} --}}
+                                                            {{ $task->open_by->first_name . ' ' . $task->open_by->last_name }}
                                                         </div>
                                                         <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">
                                                             <b>
-                                                                test title
-                                                                {{-- {{ $task->title }} --}}
+                                                                {{ $task->title }}
                                                             </b>
                                                         </div>
                                                         <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 text-break">
-                                                            21133llalknfdadkadkakdskkasdkksdkkskdkasiiwepqeoweoqwep
-                                                            {{-- {{ $task->desc }} --}}
+                                                            {{ $task->desc }}
                                                         </div>
                                                         <div class="text-slate-400 dark:text-slate-400 text-xs mt-1">
-                                                            2023-22-10 05:26:13
-                                                            {{-- {{ $task->created_at }} --}}
-                                                            <span class="float-right"> 2 <iconify-icon icon="fa6-regular:comment"></iconify-icon></span>
-                                                            <span class="float-right mr-3"> 5 <iconify-icon icon="ph:files-bold"></iconify-icon></iconify-icon></span>
+                                                            {{ $task->created_at }}
+                                                            <span class="float-right"> {{ $task->comments->count() }} <iconify-icon icon="fa6-regular:comment"></iconify-icon></span>
+                                                            <span class="float-right mr-3"> {{ $task->files->count() }} <iconify-icon icon="ph:files-bold"></iconify-icon></iconify-icon></span>
                                                         </div>
                                                     </div>
 
 
 
                                                     <div class="flex-0">
-                                                        <button class="btn btn-sm inline-flex justify-center btn-light light">view</button>
+                                                        <button wire:click="redirectToTask({{ $task->id }})" class="btn btn-sm inline-flex justify-center btn-light light">view</button>
                                                     </div>
 
                                                 </div>
                                             </a>
                                         </li>
-                                    {{-- @endforeach --}}
+                                    @endforeach
+                                    @if ($tasks->isEmpty())
+                                        <li class="p-2">
+                                            <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
+                                                <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                                    <div class="flex-1">
+                                                        No tasks related to this customer!
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    @endif
 
 
 
@@ -600,8 +566,7 @@
                                 Delete Car
                             </h3>
                             <button wire:click="dismissDeleteCar" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -637,8 +602,7 @@
                                 Delete Phone
                             </h3>
                             <button wire:click="dismissDeletePhone" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -674,8 +638,7 @@
                                 Delete Followup
                             </h3>
                             <button wire:click="dismissDeleteFollowup" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -711,8 +674,7 @@
                                 Delete Address
                             </h3>
                             <button wire:click="dismissDeleteAddress" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -748,8 +710,7 @@
                                 Delete Relative
                             </h3>
                             <button wire:click="dismissDeleteRelative" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
