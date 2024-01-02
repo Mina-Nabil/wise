@@ -780,6 +780,11 @@ class CustomerShow extends Component
         return redirect(Route('tasks.show', $id));
     }
 
+    public function redirectToOffer($id)
+    {
+        return redirect(Route('offers.show', $id));
+    }
+
     public function render()
     {
         $GENDERS = Customer::GENDERS;
@@ -795,6 +800,7 @@ class CustomerShow extends Component
         $countries = Country::all();
         $phoneTypes = Phone::TYPES;
         $tasks = $this->customer->tasks;
+        $offers = $this->customer->offers;
         // dd($tasks);
 
         return view('livewire.customer-show', [
@@ -812,7 +818,8 @@ class CustomerShow extends Component
             'RELATIONS' => $RELATIONS,
             'countries' => $countries,
             'phoneTypes' => $phoneTypes,
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'offers' => $offers
         ]);
     }
 }
