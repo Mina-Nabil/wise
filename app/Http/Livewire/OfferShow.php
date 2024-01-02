@@ -505,6 +505,11 @@ class OfferShow extends Component
         }
     }
 
+    public function generateOption($policyId) {
+        $this->toggleAddOption();
+        $this->selectPolicy($policyId);
+    }
+
     public function addComment()
     {
         $this->validate([
@@ -534,7 +539,6 @@ class OfferShow extends Component
 
         $item = $this->offer->item;
         $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
-        Log::info($this->available_pols);
     }
 
     public function setStatus($s)

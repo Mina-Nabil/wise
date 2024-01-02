@@ -141,6 +141,84 @@
                 </div>
 
                 <div class="rounded-md overlay mt-5">
+                <div class="card">
+                    <header class="card-header noborder">
+                        <h4 class="card-title">Available Policies
+                        </h4>
+                    </header>
+                    <div class="card-body px-6 pb-6">
+                        <div class="overflow-x-auto -mx-6 ">
+                            <span class=" col-span-8  hidden"></span>
+                            <span class="  col-span-4 hidden"></span>
+                            <div class="inline-block min-w-full align-middle">
+                                <div class="overflow-hidden ">
+                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        @if (!empty($available_pols))
+                                        <thead class=" border-t border-slate-100 dark:border-slate-800">                           
+                                            <tr>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Policy
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    L.O.B
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Rate
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Action
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                            @foreach ($available_pols as $policy)
+                                            <tr>
+                                                <td class="table-td ">
+                                                    <div class="min-w-[170px]">
+                                                        <span class="text-slate-500 dark:text-slate-400">
+                                                            <span class="block text-slate-600 dark:text-slate-300">{{ $policy['policy']['company']['name'] }}</span>
+                                                            <span class="block text-slate-500 text-xs">{{ $policy['policy']['name'] }}</span>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td class="table-td ">{{ ucwords(str_replace('_', ' ', $policy['policy']['business'])) }}</td>
+                                                <td class="table-td ">
+
+                                                    <div class=" text-success-500">
+                                                        {{ $policy['rate'] }} %
+                                                    </div>
+
+                                                </td>
+                                                <td class="table-td ">
+                                                    <button wire:click="generateOption({{ $policy['policy']['id'] }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp; Generate Option</button>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+
+                                        </tbody>
+                                        @else    
+                                        <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500 mx-2">
+                                            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                              <div class="flex-1">
+                                                No available policies for this offer!
+                                              </div>
+                                            </div>
+                                          </div>
+                                            @endif
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <div class="rounded-md overlay mt-5">
                     <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <p class="mb-2">
@@ -791,14 +869,14 @@
                                         </span>
                                     </label>
                                     @error('files')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                     @error('files.*')
-                                    @foreach ($errors->get('files.*') as $each_file_errors)
-                                        @foreach($each_file_errors as $msg)
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $msg }}</span>
+                                        @foreach ($errors->get('files.*') as $each_file_errors)
+                                            @foreach ($each_file_errors as $msg)
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $msg }}</span>
+                                            @endforeach
                                         @endforeach
-                                    @endforeach
                                     @enderror
                                 </div>
                             </div>
@@ -1053,27 +1131,27 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Payment Frequency</label>
                                     <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
-                                        <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
+                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
                                         @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ $user->first_name.' '.$user->last_name}}
-                                        </option>
+                                            <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ $user->first_name . ' ' . $user->last_name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
                             @endif
                             @if ($asigneeType == 'team')
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Payment Frequency</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
-                                    <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Payment Frequency</label>
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
+                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
                                         @foreach ($usersTypes as $type)
-                                        <option value="{{ type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ ucwords($type)}}
-                                        </option>
+                                            <option value="{{ type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ ucwords($type) }}
+                                            </option>
                                         @endforeach
-                                </select>
-                            </div>
+                                    </select>
+                                </div>
                             @endif
 
 
