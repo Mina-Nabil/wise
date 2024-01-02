@@ -4,6 +4,7 @@ namespace App\Models\Corporates;
 
 use App\Models\Base\Country;
 use App\Models\Customers\Followup;
+use App\Models\Tasks\Task;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Exception;
@@ -464,5 +465,10 @@ class Corporate extends Model
     public function bank_accounts(): HasMany
     {
         return $this->hasMany(BankAccount::class);
+    }
+
+    public function tasks(): MorphMany
+    {
+        return $this->morphMany(Task::class, 'taskable');
     }
 }

@@ -78,12 +78,20 @@ class OfferIndex extends Component
 
     public function openAddOfferSection()
     {
+        $this->initiateOfferSection();
         $this->addOfferSection = true;
     }
 
     public function closeAddOfferSection()
     {
         $this->addOfferSection = false;
+    }
+
+    public function initiateOfferSection()
+    {
+        $this->item = null;
+        $this->type = Policy::BUSINESS_PERSONAL_MOTOR;
+        $this->owner = null;
     }
 
     public function newOffer()
@@ -114,7 +122,7 @@ class OfferIndex extends Component
             $item
         );
         if ($res) {
-            return redirect(route('customers.show',  $res->id));
+            return redirect(route('offers.show',  $res->id));
         } else {
             $this->alert('failed', 'Server error');
         }

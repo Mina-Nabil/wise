@@ -17,6 +17,7 @@ use App\Models\Offers\OptionField;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 
@@ -535,6 +536,7 @@ class OfferShow extends Component
 
         $item = $this->offer->item;
         $this->AVAILABLE_POLICIES = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR,$item,null);   
+        Log::info($this->AVAILABLE_POLICIES);
     }
 
     public function setStatus($s)

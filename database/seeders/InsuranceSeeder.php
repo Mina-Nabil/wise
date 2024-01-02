@@ -42,7 +42,7 @@ class InsuranceSeeder extends Seeder
             Policy::newPolicy(
                 $companies->random()->id,
                 $faker->word,
-                $faker->randomElement(Policy::LINES_OF_BUSINESS),
+                Policy::BUSINESS_PERSONAL_MOTOR,
                 $faker->text,
             );
         }

@@ -3,6 +3,7 @@
 namespace App\Models\Customers;
 
 use App\Models\Base\Country;
+use App\Models\Tasks\Task;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Exception;
@@ -477,5 +478,10 @@ class Customer extends Model
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'nationality_id');
+    }
+
+    public function tasks(): MorphMany
+    {
+        return $this->morphMany(Task::class, 'taskable');
     }
 }

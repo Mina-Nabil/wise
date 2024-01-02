@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Policy extends Model
 {
@@ -114,6 +115,7 @@ class Policy extends Model
         }
 
         $policies = self::byType($type)->withCompany()->withConditions()->get();
+        Log::info($policies);
         $valid_policies = new Collection();
         foreach ($policies as $pol) {
             if ($car)
