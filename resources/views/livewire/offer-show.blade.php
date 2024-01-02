@@ -195,7 +195,7 @@
 
                                                 </td>
                                                 <td class="table-td ">
-                                                    <button wire:click="generateOption({{ $policy['policy']['id'] }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp; Generate Option</button>
+                                                    <button wire:click="generateOption({{ $policy['policy']['id'].','.$policy['policy']['conditions'][0]->id    }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp; Generate Option</button>
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -796,7 +796,7 @@
                                         <b>
                                             {{ $conditionData->operator == 'gte' ? '>=' : ($conditionData->operator == 'gt' ? '>' : ($conditionData->operator == 'lte' ? '<=' : ($conditionData->operator == 'lt' ? '<' : ($conditionData->operator == 'e' ? '=' : '')))) }}
                                         </b>
-                                        {{ $conditionData->value }} | Rate:{{ $conditionData->value }}
+                                        {{ $conditionData->value }} | Rate:{{ $conditionData->rate }}
                                     </p>
                                     <br>
                                 @else

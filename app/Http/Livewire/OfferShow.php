@@ -505,9 +505,11 @@ class OfferShow extends Component
         }
     }
 
-    public function generateOption($policyId) {
+    public function generateOption($policyId , $conditionId) {
         $this->toggleAddOption();
         $this->selectPolicy($policyId);
+        $this->selectCondition($conditionId);
+
     }
 
     public function addComment()
@@ -536,9 +538,7 @@ class OfferShow extends Component
         $this->dueTime = Carbon::parse($this->offer->due)->toTimeString();
 
 
-
-        $item = $this->offer->item;
-        $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
+        
     }
 
     public function setStatus($s)
@@ -557,6 +557,7 @@ class OfferShow extends Component
         $usersTypes = User::TYPES;
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
+        $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
 
 
         return view('livewire.offer-show', [
