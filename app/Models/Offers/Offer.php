@@ -230,7 +230,7 @@ class Offer extends Model
     /**
      * @param array $fields should contain an array of arrays.. each child array should contain 'name' & 'value'
      */
-    public function addOption($policy_id, $policy_condition_id = null, $insured_value = null, $payment_frequency = null, array $fields = [])
+    public function addOption($policy_id, $policy_condition_id = null, $insured_value = null, $payment_frequency = null, array $fields = [], $docs = [])
     {
         switch ($payment_frequency) {
             case OfferOption::PAYMENT_FREQ_YEARLY:
@@ -247,6 +247,7 @@ class Offer extends Model
                 return false;
         }
         try {
+            /** @var OfferOption */
             if ($tmpOption = $this->options()->firstOrCreate(
                 [
                     "policy_id"             =>  $policy_id,
@@ -261,6 +262,9 @@ class Offer extends Model
 
                 foreach ($fields as $field) {
                     $tmpOption->addField($field['name'], $field['value']);
+                }
+                foreach ($docs as $doc) {
+                    $tmpOption->addFile($doc['name'], $doc['url']);
                 }
 
                 $this->sendOfferNotifications("New Offer option", "A new option is attached on Offer#$this->id");
