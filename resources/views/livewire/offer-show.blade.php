@@ -40,8 +40,7 @@
                                         <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
                                     </span>
                                 </button>
-                                <ul
-                                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                     @foreach ($STATUSES as $status)
                                         @if (!($status === $offer->status))
@@ -54,8 +53,7 @@
                                     @endforeach
 
                                     <li wire:click="confirmDeleteOffer">
-                                        <a href="#"
-                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
                                             Delete Offer</a>
                                     </li>
@@ -106,12 +104,10 @@
                                                 <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                 </button>
-                                                <ul
-                                                    class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                     <li>
-                                                        <button wire:click="toggleEditItem"
-                                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                        <button wire:click="toggleEditItem" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                             Edit</button>
                                                     </li>
@@ -141,81 +137,81 @@
                 </div>
 
                 <div class="rounded-md overlay mt-5">
-                <div class="card">
-                    <header class="card-header noborder">
-                        <h4 class="card-title">Available Policies
-                        </h4>
-                    </header>
-                    <div class="card-body px-6 pb-6">
-                        <div class="overflow-x-auto -mx-6 ">
-                            <span class=" col-span-8  hidden"></span>
-                            <span class="  col-span-4 hidden"></span>
-                            <div class="inline-block min-w-full align-middle">
-                                <div class="overflow-hidden ">
-                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                        @if (!empty($available_pols))
-                                        <thead class=" border-t border-slate-100 dark:border-slate-800">                           
-                                            <tr>
+                    <div class="card">
+                        <header class="card-header noborder">
+                            <h4 class="card-title">Available Policies
+                            </h4>
+                        </header>
+                        <div class="card-body px-6 pb-6">
+                            <div class="overflow-x-auto -mx-6 ">
+                                <span class=" col-span-8  hidden"></span>
+                                <span class="  col-span-4 hidden"></span>
+                                <div class="inline-block min-w-full align-middle">
+                                    <div class="overflow-hidden ">
+                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                            @if (!empty($available_pols))
+                                                <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                                    <tr>
 
-                                                <th scope="col" class=" table-th ">
-                                                    Policy
-                                                </th>
+                                                        <th scope="col" class=" table-th ">
+                                                            Policy
+                                                        </th>
 
-                                                <th scope="col" class=" table-th ">
-                                                    L.O.B
-                                                </th>
+                                                        <th scope="col" class=" table-th ">
+                                                            L.O.B
+                                                        </th>
 
-                                                <th scope="col" class=" table-th ">
-                                                    Rate
-                                                </th>
+                                                        <th scope="col" class=" table-th ">
+                                                            Rate
+                                                        </th>
 
-                                                <th scope="col" class=" table-th ">
-                                                    Action
-                                                </th>
+                                                        <th scope="col" class=" table-th ">
+                                                            Action
+                                                        </th>
 
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                                            @foreach ($available_pols as $policy)
-                                            <tr>
-                                                <td class="table-td ">
-                                                    <div class="min-w-[170px]">
-                                                        <span class="text-slate-500 dark:text-slate-400">
-                                                            <span class="block text-slate-600 dark:text-slate-300">{{ $policy['policy']['company']['name'] }}</span>
-                                                            <span class="block text-slate-500 text-xs">{{ $policy['policy']['name'] }}</span>
-                                                        </span>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                    @foreach ($available_pols as $policy)
+                                                        <tr>
+                                                            <td class="table-td ">
+                                                                <div class="min-w-[170px]">
+                                                                    <span class="text-slate-500 dark:text-slate-400">
+                                                                        <span class="block text-slate-600 dark:text-slate-300">{{ $policy['policy']['company']['name'] }}</span>
+                                                                        <span class="block text-slate-500 text-xs">{{ $policy['policy']['name'] }}</span>
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="table-td ">{{ ucwords(str_replace('_', ' ', $policy['policy']['business'])) }}</td>
+                                                            <td class="table-td ">
+
+                                                                <div class=" text-success-500">
+                                                                    {{ $policy['rate'] }} %
+                                                                </div>
+
+                                                            </td>
+                                                            <td class="table-td ">
+                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['policy']['conditions'][0]->id }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp; Generate Option</button>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                </tbody>
+                                            @else
+                                                <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500 mx-2">
+                                                    <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                                        <div class="flex-1">
+                                                            No available policies for this offer!
+                                                        </div>
                                                     </div>
-                                                </td>
-                                                <td class="table-td ">{{ ucwords(str_replace('_', ' ', $policy['policy']['business'])) }}</td>
-                                                <td class="table-td ">
-
-                                                    <div class=" text-success-500">
-                                                        {{ $policy['rate'] }} %
-                                                    </div>
-
-                                                </td>
-                                                <td class="table-td ">
-                                                    <button wire:click="generateOption({{ $policy['policy']['id'].','.$policy['policy']['conditions'][0]->id    }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp; Generate Option</button>
-                                                </td>
-                                            </tr>
-                                            @endforeach
-
-                                        </tbody>
-                                        @else    
-                                        <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500 mx-2">
-                                            <div class="flex items-start space-x-3 rtl:space-x-reverse">
-                                              <div class="flex-1">
-                                                No available policies for this offer!
-                                              </div>
-                                            </div>
-                                          </div>
+                                                </div>
                                             @endif
-                                    </table>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 </div>
 
                 <div class="rounded-md overlay mt-5">
@@ -274,8 +270,7 @@
                                                                     Add Field</button>
                                                             </li>
                                                             <li>
-                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                                                                     Add Doc
                                                                 </label>
                                                                 <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedOptionFile">
@@ -1114,47 +1109,22 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6">
-
                             <div class="from-group">
-                                <label for="lastName" class="form-label">Payment Frequency</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="asigneeType">
-                                    <option value="user" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                        User
-                                    </option>
-                                    <option value="team" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                        Team
-                                    </option>
+                                <label for="lastName" class="form-label">Select Assignee</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $user->first_name . ' ' . $user->last_name }}
+                                        </option>
+                                    @endforeach
+                                    @foreach ($usersTypes as $type)
+                                        <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            <b>{{ ucwords($type) }} Team </b>
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
-
-                            @if ($asigneeType == 'user')
-                                <div class="from-group">
-                                    <label for="lastName" class="form-label">Payment Frequency</label>
-                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
-                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                {{ $user->first_name . ' ' . $user->last_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @endif
-                            @if ($asigneeType == 'team')
-                                <div class="from-group">
-                                    <label for="lastName" class="form-label">Payment Frequency</label>
-                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
-                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select user</option>
-                                        @foreach ($usersTypes as $type)
-                                            <option value="{{ type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                {{ ucwords($type) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @endif
-
-
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1181,8 +1151,7 @@
                                 Delete Option
                             </h3>
                             <button wire:click="dismissDeleteOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1218,8 +1187,7 @@
                                 Delete Offer
                             </h3>
                             <button wire:click="dismissDeleteOffer" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>

@@ -74,7 +74,6 @@ class OfferShow extends Component
     public $deleteThisOffer = false;
 
     public $editAssigneeSec = false;
-    public $asigneeType = 'user';
     public $newAsignee;
 
     public function changeAsignee()
@@ -82,7 +81,6 @@ class OfferShow extends Component
         $res = $this->offer->assignTo($this->newAsignee);
         if ($res) {
             $this->alert('success', 'Assignee Updated');
-            $this->asigneeType = 'user';
             $this->newAsignee = null;
             $this->toggleEditAssignee();
             $this->mount($this->offer->id);
@@ -505,11 +503,11 @@ class OfferShow extends Component
         }
     }
 
-    public function generateOption($policyId , $conditionId) {
+    public function generateOption($policyId, $conditionId)
+    {
         $this->toggleAddOption();
         $this->selectPolicy($policyId);
         $this->selectCondition($conditionId);
-
     }
 
     public function addComment()
@@ -536,9 +534,6 @@ class OfferShow extends Component
 
         $this->dueDate =  Carbon::parse($this->offer->due)->toDateString();
         $this->dueTime = Carbon::parse($this->offer->due)->toTimeString();
-
-
-        
     }
 
     public function setStatus($s)
