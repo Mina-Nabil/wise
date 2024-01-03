@@ -107,7 +107,11 @@ class CustomerShow extends Component
     public $deleteRelativeId;
     public $deleteAddressId;
     public $deleteCarId;
+    public $callerNoteSec = false;
 
+    public $callerNotetype;
+    public $callerNoteId;
+    public $note;
 
 
     public $section = 'profile';
@@ -121,6 +125,24 @@ class CustomerShow extends Component
         $this->mount($this->customer->id);
     }
 
+    
+
+    public function toggleCallerNote($type = null ,$id = null){
+
+        $this->callerNotetype = $type;
+        $this->callerNoteId = $id;
+        $this->toggle($this->callerNoteSec);
+
+    }
+
+    public function submitCallerNote(){
+        
+        if ($this->callerNotetype === 'called') {
+            $this->setFollowupAsCalled($this->callerNoteId,$this->note);
+        }elseif($this->callerNotetype ==='cancelled'){
+            $this->setFollowupAsCancelled($this->callerNoteId,$this->note);
+        }
+    }
 
     public function deleteThisPhone($id)
     {
@@ -271,9 +293,10 @@ class CustomerShow extends Component
 
     public function setFollowupAsCalled($id)
     {
-        $res = Followup::find($id)->setAsCalled();
+        $res = Followup::find($id)->setAsCalled($this->note);
         if ($res) {
             $this->alert('success', 'Followup updated successfuly');
+            $this->toggleCallerNote();
             $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');
@@ -282,9 +305,10 @@ class CustomerShow extends Component
 
     public function setFollowupAsCancelled($id)
     {
-        $res = Followup::find($id)->setAsCancelled();
+        $res = Followup::find($id)->setAsCancelled($this->note);
         if ($res) {
             $this->alert('success', 'Followup updated successfuly');
+            $this->toggleCallerNote();
             $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');

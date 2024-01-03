@@ -81,14 +81,39 @@ class CorporateShow extends Component
     public $deleteBankAccountId;
     public $addBankAccountSection;
 
+    public $callerNoteSec = false;
+    public $callerNotetype;
+    public $callerNoteId;
+    public $note;
+
+
     public $section = 'profile';
 
     protected $queryString = ['section'];
+    
 
     public function changeSection($section)
     {
         $this->section = $section;
         $this->mount($this->corporate->id);
+    }
+
+    
+    public function toggleCallerNote($type = null ,$id = null){
+
+        $this->callerNotetype = $type;
+        $this->callerNoteId = $id;
+        $this->toggle($this->callerNoteSec);
+
+    }
+
+    public function submitCallerNote(){
+        
+        if ($this->callerNotetype === 'called') {
+            $this->setFollowupAsCalled($this->callerNoteId,$this->note);
+        }elseif($this->callerNotetype =='cancelled'){
+            $this->setFollowupAsCancelled($this->callerNoteId,$this->note);
+        }
     }
 
     public function toggleEditCorporate()
@@ -344,9 +369,10 @@ class CorporateShow extends Component
 
     public function setFollowupAsCalled($id)
     {
-        $res = Followup::find($id)->setAsCalled();
+        $res = Followup::find($id)->setAsCalled($this->note);
         if ($res) {
             $this->alert('success', 'Followup updated successfuly');
+            $this->toggleCallerNote();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
@@ -355,9 +381,10 @@ class CorporateShow extends Component
 
     public function setFollowupAsCancelled($id)
     {
-        $res = Followup::find($id)->setAsCancelled();
+        $res = Followup::find($id)->setAsCancelled($this->note);
         if ($res) {
             $this->alert('success', 'Followup updated successfuly');
+            $this->toggleCallerNote();
             $this->mount($this->corporate->id);
         } else {
             $this->alert('failed', 'server error');

@@ -23,6 +23,29 @@ class FollowupIndex extends Component
     public $followupId;
     public $deleteFollowupId;
 
+    public $callerNoteSec = false;
+
+    public $callerNotetype;
+    public $callerNoteId;
+    public $note;
+
+    public function toggleCallerNote($type = null ,$id = null){
+
+        $this->callerNotetype = $type;
+        $this->callerNoteId = $id;
+        $this->toggle($this->callerNoteSec);
+
+    }
+
+    public function submitCallerNote(){
+        
+        if ($this->callerNotetype === 'called') {
+            $this->setFollowupAsCalled($this->callerNoteId,$this->note);
+        }elseif($this->callerNotetype =='cancelled'){
+            $this->setFollowupAsCancelled($this->callerNoteId,$this->note);
+        }
+    }
+
     public function redirectToShowPage($id)
     {
         $followup = Followup::findOrFail($id);
@@ -37,9 +60,10 @@ class FollowupIndex extends Component
 
     public function setFollowupAsCalled($id)
     {
-        $res = Followup::find($id)->setAsCalled();
+        $res = Followup::find($id)->setAsCalled($this->note);
         if ($res) {
             $this->alert('success', 'Followup updated successfuly');
+            $this->toggleCallerNote();
         } else {
             $this->alert('failed', 'server error');
         }
@@ -47,9 +71,10 @@ class FollowupIndex extends Component
 
     public function setFollowupAsCancelled($id)
     {
-        $res = Followup::find($id)->setAsCancelled();
+        $res = Followup::find($id)->setAsCancelled($this->note);
         if ($res) {
             $this->alert('success', 'Followup updated successfuly');
+            $this->toggleCallerNote();
         } else {
             $this->alert('failed', 'server error');
         }
