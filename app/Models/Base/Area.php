@@ -2,16 +2,14 @@
 
 namespace App\Models\Base;
 
-use App\Models\Cars\Brand;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Country extends Model
+class Area extends Model
 {
-    CONST MORPH_TYPE = 'country';
+    CONST MORPH_TYPE = 'area';
 
     use HasFactory;
 
@@ -19,14 +17,14 @@ class Country extends Model
     public $timestamps = false;
 
     ////static function 
-    public static function newCountry($name)
+    public static function newArea($name)
     {
-        $newCountry = new self([
+        $newArea = new self([
             "name"  =>  $name
         ]);
         try {
-            $newCountry->save();
-            return $newCountry;
+            $newArea->save();
+            return $newArea;
         } catch (Exception $e) {
             report($e);
             return false;
@@ -37,11 +35,5 @@ class Country extends Model
     public function scopeSortByName(Builder $query)
     {
         return $query->orderBy('name');
-    }
-
-    ///relations
-    public function brands(): HasMany
-    {
-        return $this->hasMany(Brand::class);
     }
 }

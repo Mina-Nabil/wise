@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Base\Area;
+use App\Models\Base\City;
 use Livewire\Component;
 use App\models\Customers\Customer;
 use App\models\Customers\Profession;
@@ -23,6 +25,7 @@ use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Round;
 class CustomerShow extends Component
 {
     use ToggleSectionLivewire, AlertFrontEnd;
+
     public $customer;
 
     public $name;
@@ -61,6 +64,7 @@ class CustomerShow extends Component
     public $flat;
     public $building;
     public $city;
+    public $area;
     public $country;
     public $EditedAddressType;
     public $EditedLine1;
@@ -68,6 +72,7 @@ class CustomerShow extends Component
     public $EditedFlat;
     public $EditedBuilding;
     public $EditedCity;
+    public $EditedArea;
     public $EditedCountry;
 
     //add Relative
@@ -327,6 +332,7 @@ class CustomerShow extends Component
             'EditedCountry' => 'nullable|string|max:255'
         ]);
 
+        /** @var Address */
         $address = Address::find($this->editedAddressId);
         $a = $address->editInfo(
             $this->EditedAddressType,
@@ -335,7 +341,8 @@ class CustomerShow extends Component
             $this->EditedCountry,
             $this->EditedCity,
             $this->EditedBuilding,
-            $this->EditedFlat
+            $this->EditedFlat,
+            $this->EditedArea,
         );
         if ($a) {
             $this->alert('success', 'Address edited successfuly');
@@ -346,6 +353,7 @@ class CustomerShow extends Component
             $this->EditedFlat = null;
             $this->EditedBuilding = null;
             $this->EditedCity = null;
+            $this->EditedArea = null;
             $this->EditedCountry = null;
             $this->mount($this->customer->id);
         } else {
@@ -363,6 +371,7 @@ class CustomerShow extends Component
         $this->EditedFlat = $a->flat;
         $this->EditedBuilding = $a->building;
         $this->EditedCity = $a->city;
+        $this->EditedArea = $a->area;
         $this->EditedCountry = $a->country;
     }
 
@@ -661,9 +670,11 @@ class CustomerShow extends Component
             'flat' => 'nullable|string|max:255',
             'building' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
+            'area' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255'
         ]);
 
+        /** @var Customer */
         $customer = Customer::find($this->customer->id);
         $a = $customer->addAddress(
             $this->addressType,
@@ -671,6 +682,7 @@ class CustomerShow extends Component
             $this->line2,
             $this->country,
             $this->city,
+            $this->area,
             $this->building,
             $this->flat
         );
@@ -822,6 +834,8 @@ class CustomerShow extends Component
         $addressTypes = Address::TYPES;
         $RELATIONS = Relative::RELATIONS;
         $countries = Country::all();
+        $cities = City::all();
+        $areas = Area::all();
         $phoneTypes = Phone::TYPES;
         $tasks = $this->customer->tasks;
         $offers = $this->customer->offers;
@@ -843,6 +857,8 @@ class CustomerShow extends Component
             'countries' => $countries,
             'phoneTypes' => $phoneTypes,
             'tasks' => $tasks,
+            'cities' => $cities,
+            'areas' => $areas,
             'offers' => $offers
         ]);
     }

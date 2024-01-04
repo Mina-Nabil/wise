@@ -297,7 +297,7 @@
                                         <p>{{ $address->line_1 }}</p>
                                         <p>{{ $address->line_2 }}</p>
                                         <p>Flat: {{ $address->flat }}, Building: {{ $address->building }}</p>
-                                        <p>{{ $address->city }}, {{ $address->country }}</p>
+                                        <p>{{ $address->area }}, {{ $address->city }}, {{ $address->country }}</p>
                                         <br>
                                     @endforeach
                                 @endif
@@ -1300,12 +1300,31 @@
                                     </div>
 
                                     <div class="input-area">
+                                        <label for="lastName" class="form-label">Area</label>
+                                        <input list="areas" type="text" class="form-control @error('EditedArea') !border-danger-500 @enderror" wire:model="EditedArea">
+                                        <datalist id="areas">
+                                            @foreach ($areas as $areas)
+                                            <option value="{{$areas->name}}"> {{$areas->name}}</option>
+                                            @endforeach
+                                        </datalist>
+                                    </div>
+                                    <div class="input-area">
                                         <label for="lastName" class="form-label">City</label>
-                                        <input id="lastName" type="text" class="form-control @error('EditedCity') !border-danger-500 @enderror" wire:model="EditedCity">
+                                        <input list="cities" type="text" class="form-control @error('EditedCity') !border-danger-500 @enderror" wire:model="EditedCity">
+                                        <datalist id="cities">
+                                            @foreach ($cities as $city)
+                                            <option value="{{$city->name}}"> {{$city->name}}</option>
+                                            @endforeach
+                                        </datalist>
                                     </div>
                                     <div class="input-area">
                                         <label for="lastName" class="form-label">Country</label>
-                                        <input id="lastName" type="text" class="form-control @error('EditedCountry') !border-danger-500 @enderror" wire:model="EditedCountry">
+                                        <input list="countries" type="text" class="form-control @error('EditedCountry') !border-danger-500 @enderror" wire:model="EditedCountry">
+                                        <datalist id="countries">
+                                            @foreach ($countries as $country)
+                                            <option value="{{$country->name}}"> {{$country->name}}</option>
+                                            @endforeach
+                                        </datalist>
                                     </div>
                                 </div>
                                 @error('EditedFlat')
@@ -1393,12 +1412,31 @@
                                         <input id="lastName" type="text" class="form-control @error('building') !border-danger-500 @enderror" wire:model="building">
                                     </div>
                                     <div class="input-area">
+                                        <label for="lastName" class="form-label">Area</label>
+                                        <input list="areas" type="text" class="form-control @error('area') !border-danger-500 @enderror" wire:model="area">
+                                        <datalist id="areas">
+                                            @foreach ($areas as $area)
+                                            <option value="{{$area->name}}"> {{$area->name}}</option>
+                                            @endforeach
+                                        </datalist>
+                                    </div>
+                                    <div class="input-area">
                                         <label for="lastName" class="form-label">City</label>
-                                        <input id="lastName" type="text" class="form-control @error('city') !border-danger-500 @enderror" wire:model="city">
+                                        <input list="cities" type="text" class="form-control @error('city') !border-danger-500 @enderror" wire:model="city">
+                                        <datalist id="cities">
+                                            @foreach ($cities as $city)
+                                            <option value="{{$city->name}}"> {{$city->name}}</option>
+                                            @endforeach
+                                        </datalist>
                                     </div>
                                     <div class="input-area">
                                         <label for="lastName" class="form-label">Country</label>
-                                        <input id="lastName" type="text" class="form-control @error('country') !border-danger-500 @enderror" wire:model="country">
+                                        <input list="countries" type="text" class="form-control @error('country') !border-danger-500 @enderror" wire:model="country">
+                                        <datalist id="countries">
+                                            @foreach ($countries as $country)
+                                            <option value="{{$country->name}}"> {{$country->name}}</option>
+                                            @endforeach
+                                        </datalist>
                                     </div>
                                 </div>
                                 @error('flat')

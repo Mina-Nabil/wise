@@ -16,13 +16,13 @@ class Address extends Model
 
     protected $table = 'corporate_addresses';
 
-    const TYPE_HOME = 'home';
-    const TYPE_WORK = 'work';
+    const TYPE_HQ = 'hq';
+    const TYPE_BRANCH = 'branch';
     const TYPE_OTHER = 'other';
 
     const TYPES = [
-        self::TYPE_HOME,
-        self::TYPE_WORK,
+        self::TYPE_HQ,
+        self::TYPE_BRANCH,
         self::TYPE_OTHER
     ];
 
@@ -32,6 +32,7 @@ class Address extends Model
         "line_2",
         "flat",
         "building",
+        "area",
         "city",
         "country",
     ];
@@ -57,7 +58,7 @@ class Address extends Model
         }
     }
 
-    public function editInfo($type, $line_1, $line_2 = null, $country = null, $city = null, $building = null, $flat = null)
+    public function editInfo($type, $line_1, $line_2 = null, $country = null, $city = null, $building = null, $flat = null, $area = null)
     {
         try {
             $this->update([
@@ -66,6 +67,7 @@ class Address extends Model
                 "line_2"    =>  $line_2,
                 "flat"      =>  $flat,
                 "building"  =>  $building,
+                "area"      =>  $area,
                 "city"      =>  $city,
                 "country"   =>  $country,
             ]);

@@ -312,12 +312,12 @@ class Offer extends Model
         if ($loggedInUser && !$loggedInUser->can('updateAssignTo', $this)) return false;
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
-            $this->assigned_to_id = $user_id_or_type;
-            $this->assigned_to_type = null;
+            $this->assignee_id = $user_id_or_type;
+            $this->assignee_type = null;
             $assignedToTitle = User::findOrFail($user_id_or_type)->username;
         } else if (in_array($user_id_or_type, User::TYPES)) {
-            $this->assigned_to_id = null;
-            $this->assigned_to_type = $user_id_or_type;
+            $this->assignee_id = null;
+            $this->assignee_type = $user_id_or_type;
             $assignedToTitle = $user_id_or_type;
         } else {
             AppLog::warning("Wrong input", "Trying to set Offer#$this->id to $user_id_or_type", $this);
@@ -326,8 +326,6 @@ class Offer extends Model
 
         try {
             $this->save();
-            $this->last_action_by()->associate(Auth::id());
-
 
             if ($comment) {
                 $this->addComment($comment, false);
@@ -393,7 +391,6 @@ class Offer extends Model
             ]);
             if ($logEvent && $loggedInUser) {
                 AppLog::info("Comment added", "User $loggedInUser->username added new comment to task $this->id", $this);
-                $this->last_action_by()->associate(Auth::id());
                 $this->sendOfferNotifications("Comment added", "Task#$this->id has a new comment by $loggedInUser->username");
             }
 

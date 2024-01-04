@@ -447,7 +447,7 @@
                                 </span>
 
                             </div>
-                            <p><span class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : 'No notes for this offer.' }}</span></p>
+                            <p><span class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type):  'No one/team assigned') }}</span></p>
                         </div>
                     </div>
                 </div>

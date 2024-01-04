@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Base\Area;
+use App\Models\Base\City;
 use App\Models\Cars\Brand;
 use App\Models\Cars\Car;
 use App\Models\Cars\CarPrice;
@@ -52,11 +54,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Relation::enforceMorphMap([
+            City::MORPH_TYPE => City::class,
+            Area::MORPH_TYPE => Area::class,
+            Country::MORPH_TYPE => Country::class,
             Brand::MORPH_TYPE => Brand::class,
             Car::MORPH_TYPE => Car::class,
             CarModel::MORPH_TYPE => CarModel::class,
             CarPrice::MORPH_TYPE => CarPrice::class,
-            Country::MORPH_TYPE => Country::class,
             Company::MORPH_TYPE => Company::class,
             CompanyEmail::MORPH_TYPE => CompanyEmail::class,
             Policy::MORPH_TYPE => Policy::class,

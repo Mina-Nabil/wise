@@ -216,7 +216,7 @@ class Customer extends Model
             DB::transaction(function () use ($addresses) {
                 $this->addresses()->delete();
                 foreach ($addresses as $adrs) {
-                    $this->addAddress($adrs["type"], $adrs["line_1"], $adrs["line_2"] ?? null, $adrs["country"] ?? null, $adrs["city"] ?? null, $adrs["building"] ?? null, $adrs["flat"] ?? null, $adrs["is_default"] ?? null);
+                    $this->addAddress($adrs["type"], $adrs["line_1"], $adrs["line_2"] ?? null, $adrs["country"] ?? null, $adrs["city"] ?? null, $adrs["area"] ?? null, $adrs["building"] ?? null, $adrs["flat"] ?? null, $adrs["is_default"] ?? null);
                 }
             });
             return true;
@@ -226,7 +226,7 @@ class Customer extends Model
         }
     }
 
-    public function addAddress($type, $line_1, $line_2 = null, $country = null, $city = null, $building = null, $flat = null, $is_default = null): Address|false
+    public function addAddress($type, $line_1, $line_2 = null, $country = null, $city = null, $area = null, $building = null, $flat = null, $is_default = null): Address|false
     {
         try {
             /** @var Address */
@@ -237,6 +237,7 @@ class Customer extends Model
                 "flat"      =>  $flat,
                 "building"  =>  $building,
                 "city"      =>  $city,
+                "area"      =>  $area,
                 "country"   =>  $country,
             ]);
             if ($is_default) $tmp->setAsDefault();
@@ -255,7 +256,7 @@ class Customer extends Model
             DB::transaction(function () use ($phones) {
                 $this->phones()->delete();
                 foreach ($phones as $phone) {
-                    $this->addAddress($phone["type"], $phone["number"], $phone["is_default"] ?? null);
+                    $this->addPhone($phone["type"], $phone["number"], $phone["is_default"] ?? null);
                 }
             });
             return true;

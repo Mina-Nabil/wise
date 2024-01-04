@@ -55,6 +55,7 @@ return new class extends Migration
             $table->string('line_2')->nullable();
             $table->string('flat')->nullable();
             $table->string('building')->nullable();
+            $table->string('area')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->timestamps();

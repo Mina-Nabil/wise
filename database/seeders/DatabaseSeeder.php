@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call(UsersSeeder::class);
         $this->call(CountriesSeeder::class);
+        $this->call(CitiesSeeder::class);
         $this->call(CarsSeeder::class);
         $this->call(ProfessionsSeeder::class);
         if (App::environment('local')) {

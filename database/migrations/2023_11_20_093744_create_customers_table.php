@@ -68,6 +68,7 @@ return new class extends Migration
             $table->string('flat')->nullable();
             $table->string('building')->nullable();
             $table->string('city')->nullable();
+            $table->string('area')->nullable();
             $table->string('country')->nullable();
             $table->timestamps();
         });

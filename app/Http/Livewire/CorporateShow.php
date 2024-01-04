@@ -2,6 +2,9 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Base\Area;
+use App\Models\Base\City;
+use App\Models\Base\Country;
 use Livewire\Component;
 use App\Models\Corporates\Corporate;
 use App\Models\Corporates\Address;
@@ -37,6 +40,7 @@ class CorporateShow extends Component
     public $line2;
     public $country;
     public $city;
+    public $area;
     public $building;
     public $flat;
     public $editAddressId;
@@ -135,6 +139,7 @@ class CorporateShow extends Component
         $this->line2 = $a->line_2;
         $this->country = $a->country;
         $this->city = $a->city;
+        $this->area = $a->area;
         $this->building = $a->building;
         $this->flat = $a->flat;
     }
@@ -147,6 +152,7 @@ class CorporateShow extends Component
         $this->line2 = null;
         $this->country = null;
         $this->city = null;
+        $this->area = null;
         $this->building = null;
         $this->flat = null;
     }
@@ -466,10 +472,12 @@ class CorporateShow extends Component
             'line2' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
+            'area' => 'nullable|string|max:255',
             'building' => 'nullable|string|max:255',
             'flat' => 'nullable|string|max:255'
 
         ]);
+        /** @var Corporate */
         $c = Corporate::find($this->corporate->id);
         $c->addAddress(
             $this->type,
@@ -477,6 +485,7 @@ class CorporateShow extends Component
             $this->line2,
             $this->country,
             $this->city,
+            $this->area,
             $this->building,
             $this->flat,
             false
@@ -488,6 +497,7 @@ class CorporateShow extends Component
             $this->line2 = null;
             $this->country = null;
             $this->city = null;
+            $this->area = null;
             $this->building = null;
             $this->flat = null;
             $this->toggleAddAddress();
@@ -504,11 +514,13 @@ class CorporateShow extends Component
             'line1' => 'required|string|max:255',
             'line2' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
+            'area' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'building' => 'nullable|string|max:255',
             'flat' => 'nullable|string|max:255'
 
         ]);
+        /** @var Address */
         $a = Address::find($this->editAddressId);
         $res = $a->editInfo(
             $this->type,
@@ -517,7 +529,8 @@ class CorporateShow extends Component
             $this->country,
             $this->city,
             $this->building,
-            $this->flat
+            $this->flat,
+            $this->area,
         );
         if ($res) {
             $this->alert('success', 'Address edited successfuly');
@@ -762,6 +775,9 @@ class CorporateShow extends Component
         $addressTypes = Address::TYPES;
         $bankAccTypes = BankAccount::TYPES;
         $phoneTypes = Phone::TYPES;
+        $areas = Area::all();
+        $cities = City::all();
+        $countries = Country::all();
         $tasks = $this->corporate->tasks;
         $offers = $this->corporate->offers;
         return view('livewire.corporate-show',[
@@ -769,6 +785,9 @@ class CorporateShow extends Component
             'bankAccTypes' => $bankAccTypes,
             'phoneTypes'  => $phoneTypes,
             'tasks' => $tasks,
+            'areas' => $areas,
+            'cities' => $cities,
+            'countries' => $countries,
             'offers' => $offers
         ]);
     }
