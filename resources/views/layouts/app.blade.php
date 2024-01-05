@@ -584,6 +584,13 @@
                                 <!-- END: gray-scale Dropdown -->
 
 
+                                <!-- BEGIN: gray-scale Dropdown -->
+                                <div>
+                                    <livewire:new-lead />
+                                </div>
+                                <!-- END: gray-scale Dropdown -->
+
+
                                 <!-- BEGIN: Notification Dropdown -->
                                 @php
                                     $notfCount = auth()
@@ -672,11 +679,12 @@
                                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <div
                                             class="lg:h-8 lg:w-8 h-7 w-7 rounded-full flex-1 ltr:mr-[10px] rtl:ml-[10px]">
-                                            <img src="{{ asset('assets/images/all-img/user.png') }}" alt="user"
-                                                class="block w-full h-full object-cover rounded-full">
+                                            <span class="block w-full h-full object-cover text-center text-lg leading-8 user-initial">
+                                                {{ strtoupper(substr( Auth::user()->username, 0, 1)) }}
+                                            </span>
                                         </div>
                                         <span
-                                            class="flex-none text-slate-600 dark:text-white text-sm font-normal items-center lg:flex hidden overflow-hidden text-ellipsis whitespace-nowrap">{{ Auth::user()->username }}</span>
+                                            class="flex-none text-slate-600 dark:text-white text-sm font-normal items-center lg:flex hidden overflow-hidden text-ellipsis whitespace-nowrap">{{ ucwords(Auth::user()->username) }}</span>
                                         <svg class="w-[16px] h-[16px] dark:text-white hidden lg:inline-block text-base inline-block ml-[10px] rtl:mr-[10px]"
                                             aria-hidden="true" fill="none" stroke="currentColor"
                                             viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
