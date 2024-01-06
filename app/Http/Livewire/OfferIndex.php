@@ -6,6 +6,9 @@ use App\Models\Customers\Customer;
 use App\Models\Corporates\Corporate;
 use App\Models\Cars\Car;
 use App\Models\Customers\Car as CustomerCar;
+use App\Models\Customers\Relative;
+use App\Models\Cars\Brand;
+use App\Models\Cars\CarModel;
 use Livewire\Component;
 use App\Models\Offers\Offer;
 use App\Models\Insurance\Policy;
@@ -19,7 +22,7 @@ class OfferIndex extends Component
     use WithPagination, AlertFrontEnd;
 
     public $addOfferSection = false;
-    public $owner;
+    public $owner; //client
     public $clientType = 'Customer';
     public $type;
     public $item_value;
@@ -37,6 +40,28 @@ class OfferIndex extends Component
     public $dueDate;
     public $dueTime;
 
+    public $bdate;
+    public $gender;
+
+    public $carBrand;
+    public $models;
+    public $carModel;
+    public $CarCategory;
+    public $cars;
+
+    public $relatives = [];
+
+    public function removeRelative($index)
+    {
+        unset($this->relatives[$index]);
+        $this->relatives = array_values($this->relatives);
+    }
+
+    public function addAnotherField()
+    {
+        $this->relatives[] = ['name' => '', 'relation' => '' , 'gender' => '' , 'phone' => '' , 'birth_date' => ''];
+    }
+
     public function redirectToShowPage($id)
     {
         return redirect(route('offers.show', $id));
@@ -47,11 +72,20 @@ class OfferIndex extends Component
         
         if ($this->clientType == 'Customer') {
             $res = Customer::find($id);
+                
+                $this->bdate = ($res->birth_date ? $res->birth_date->toDateString() : null);
+                // dd($this->bdate);
+                $this->gender = $res->gender;
+            
         } elseif ($this->clientType == 'Corporate') {
             $res = Corporate::find($id);
         }
 
         $this->clientCars = $res->cars;
+        if ($this->clientCars->isEmpty()) {
+            $this->clientCars = null;
+        }
+
         $this->owner = $res;
         $this->selectedClientName = $res->name;
         $this->clientNames = null;
@@ -94,8 +128,25 @@ class OfferIndex extends Component
         $this->owner = null;
     }
 
+    public function updatedCarBrand($value)
+    {
+        $this->models = CarModel::where('brand_id', $value)->get();
+        if ($value === '') {
+            $this->carModel = null;
+            $this->CarCategory = null;
+        }
+        $this->CarCategory = null;
+    }
+
+    public function updatedCarModel($value)
+    {
+        $this->cars = Car::where('car_model_id', $value)->get();
+        $this->CarCategory = null;
+    }
+
     public function newOffer()
     {
+
         $this->validate([
             'type' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),
             'item_value' => 'nullable|numeric',
@@ -108,8 +159,23 @@ class OfferIndex extends Component
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = Carbon::parse($dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate);
-        $item = CustomerCar::find($this->item);
+        
 
+        if($this->type === 'personal_medical' && $this->clientType === 'Customer'){
+
+            $this->owner->setRelatives($this->relatives);
+            $this->owner->editCustomer(name:$this->owner->name,birth_date:$this->bdate,gender:$this->gender);
+
+        }elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && !$this->item = null){
+            // dd($this->owner);
+            $item = $this->owner->addCar(car_id:$this->CarCategory);
+
+            // dd($item);
+        }else{
+            $item = CustomerCar::find($this->item);
+        }
+        
+        // dd($this->item);
         $offer = new Offer();
         $res = $offer->newOffer(
             $this->owner,
@@ -131,11 +197,17 @@ class OfferIndex extends Component
     public function render()
     {
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
+        $GENDERS = Customer::GENDERS;
+        $RELATIONS = Relative::RELATIONS;
+        $brands = Brand::all();
         $offers = Offer::userData($this->search)->paginate(10);
         return view('livewire.offer-index', [
             'offers' => $offers,
             'clientNames' => $this->clientNames,
-            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS
+            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
+            'GENDERS' => $GENDERS,
+            'RELATIONS' => $RELATIONS,
+            'brands' => $brands,
         ]);
     }
 }
