@@ -62,6 +62,11 @@ class OfferIndex extends Component
         $this->relatives[] = ['name' => '', 'relation' => '' , 'gender' => '' , 'phone' => '' , 'birth_date' => ''];
     }
 
+    public function addNewCar(){
+        $this->clientCars = null;
+        $this->item = null;
+    }
+
     public function redirectToShowPage($id)
     {
         return redirect(route('offers.show', $id));
@@ -146,7 +151,7 @@ class OfferIndex extends Component
 
     public function newOffer()
     {
-
+// dd($this->CarCategory);
         $this->validate([
             'type' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),
             'item_value' => 'nullable|numeric',
@@ -167,12 +172,13 @@ class OfferIndex extends Component
             $this->owner->editCustomer(name:$this->owner->name,birth_date:$this->bdate,gender:$this->gender);
 
         }elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && !$this->item = null){
-            // dd($this->owner);
+
             $item = $this->owner->addCar(car_id:$this->CarCategory);
 
-            // dd($item);
         }else{
+
             $item = CustomerCar::find($this->item);
+
         }
         
         // dd($this->item);

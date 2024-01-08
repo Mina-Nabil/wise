@@ -230,16 +230,11 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    @else
-                                        <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
-                                            <div class="flex items-start space-x-3 rtl:space-x-reverse">
-                                                <div class="flex-1">
-                                                    No cars for selected client!
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <button wire:click="addNewCar" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add new car</button>
+                                    @else
+                                        <p class="text-lg"><b>Select new car</b></p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="margin: 0">
                                             <div class="input-area">
                                                 <label for="firstName" class="form-label">Car Brand</label>
                                                 <select name="basicSelect" class="form-control w-full mt-2" wire:model="carBrand">
@@ -284,6 +279,7 @@
                                     @endif
                                 @endif
                             @elseif($type === 'personal_medical' && $clientType === 'Customer')
+                                @if($owner)
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Birth Date</label>
@@ -317,22 +313,22 @@
                                         <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
                                             <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
                                                 <div class="input-area col-span-4">
-                                                    <input class="form-control w-full mt-2  @error('relatives.{{ $index }}.name') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.name" type="text" placeholder="name">
+                                                    <input class="form-control w-full mt-2  @error('relatives.{{ $index }}.name') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.name" type="text" placeholder="Relative name">
                                                 </div>
                                                 <div class="input-area col-span-4">
-                                                    <input class="form-control w-full mt-2   @error('relatives.{{ $index }}.phone') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.phone" type="number" placeholder="phone">
+                                                    <input class="form-control w-full mt-2   @error('relatives.{{ $index }}.phone') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.phone" type="number" placeholder="Relative phone">
                                                 </div>
                                                 <div class="input-area col-span-3">
-                                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2  @error('relatives.{{ $index }}.relation') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.relation">
-                                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
+                                                    <select name="basicSelect" class="form-control w-full mt-2  @error('relatives.{{ $index }}.relation') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.relation">
+                                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Relation...</option>
                                                         @foreach ($RELATIONS as $relation)
                                                             <option value="{{ $relation }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($relation) }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
                                                 <div class="input-area col-span-2">
-                                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2   @error('relatives.{{ $index }}.gender') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.gender">
-                                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
+                                                    <select name="basicSelect" class="form-control w-full mt-2   @error('relatives.{{ $index }}.gender') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.gender">
+                                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Gender...</option>
                                                         @foreach ($GENDERS as $gender)
                                                             <option value="{{ $gender }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($gender) }}</option>
                                                         @endforeach
@@ -353,6 +349,7 @@
 
                                     <button wire:click="addAnotherField" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Relative</button>
                                 </div>
+                                @endif
                             @endif
 
                             <div class="from-group">
