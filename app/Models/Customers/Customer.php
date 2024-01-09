@@ -269,6 +269,40 @@ class Customer extends Model
         }
     }
 
+    public function setInterests(array $interests): bool
+    {
+        try {
+            DB::transaction(function () use ($interests) {
+                $this->interests()->delete();
+                foreach ($interests as $intr) {
+                    $this->addInterest($intr["business"], $intr["interested"], $adrs["note"] ?? null);
+                }
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function addInterest($business, bool $interested, $note = null): Interest|false
+    {
+        try {
+            /** @var Interest */
+            $tmp = $this->interests()->create([
+                "business"      =>  $business,
+                "interested"    =>  $interested,
+                "note"    =>  $note
+            ]);
+            AppLog::info("Adding customer interest", loggable: $this);
+            return $tmp;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Adding customer interest failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function setPhones(array $phones): bool
     {
         try {
@@ -559,6 +593,11 @@ class Customer extends Model
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);
+    }
+
+    public function interests(): HasMany
+    {
+        return $this->hasMany(Interest::class);
     }
 
     public function relatives(): HasMany
