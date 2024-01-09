@@ -7,6 +7,7 @@ use App\Models\Tasks\Task;
 use App\Models\Offers\Offer;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -189,7 +190,15 @@ class Customer extends Model
             DB::transaction(function () use ($cars) {
                 $this->cars()->delete();
                 foreach ($cars as $car) {
-                    $this->addCar($car["car_id"], $car["sum_insured"] ?? null, $car["insurance_payment"] ?? null, $car["payment_frequency"] ?? null);
+                    $this->addCar(
+                        $car["car_id"],
+                        $car["sum_insured"] ?? null,
+                        $car["insurance_payment"] ?? null,
+                        $car["payment_frequency"] ?? null,
+                        $car["insurance_company_id"] ?? null,
+                        $car["renewal_date"] ?? null,
+                        $car["wise_insured"] ?? false
+                    );
                 }
             });
             return true;
@@ -199,14 +208,17 @@ class Customer extends Model
         }
     }
 
-    public function addCar($car_id, $sum_insured = null, $insurance_payment = null, $payment_frequency = null): Car|false
+    public function addCar($car_id, $sum_insured = null, $insurance_payment = null, $payment_frequency = null, $insurance_company_id = null, Carbon $renewal_date = null, $wise_insured = false): Car|false
     {
         try {
             $tmp = $this->cars()->create([
                 "car_id"      =>  $car_id,
                 "sum_insured"  =>  $sum_insured,
                 "insurance_payment"    =>  $insurance_payment,
-                "payment_frequency"     =>  $payment_frequency
+                "payment_frequency"     =>  $payment_frequency,
+                "insurance_company_id"     =>  $insurance_company_id,
+                "renewal_date"     =>  $renewal_date ? $renewal_date->format('Y-m-d H:i:s') : null,
+                'wise_insured' =>   $wise_insured
             ]);
             AppLog::info("Adding customer car", loggable: $this);
             return $tmp;

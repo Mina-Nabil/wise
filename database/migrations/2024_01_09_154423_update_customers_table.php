@@ -3,6 +3,7 @@
 use App\Models\Customers\BankAccount;
 use App\Models\Customers\Customer;
 use App\Models\Customers\Relative;
+use App\Models\Insurance\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -39,6 +40,12 @@ return new class extends Migration
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Customer::class, 'relative_id')->constrained('customers')->cascadeOnDelete();
             $table->enum('relation', Relative::RELATIONS)->nullable();
+        });
+
+        Schema::table('customer_cars', function (Blueprint $table) {
+            $table->foreignIdFor(Company::class, 'insurance_company_id')->nullable()->constrained('insurance_companies')->nullOnDelete(); 
+            $table->dateTime('renewal_date')->nullable();
+            $table->boolean('wise_insured')->default(false);
         });
     }
 

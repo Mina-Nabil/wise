@@ -3,7 +3,9 @@
 namespace App\Models\Customers;
 
 use App\Models\Cars\Car as CarsCar;
+use App\Models\Insurance\Company;
 use App\Models\Users\AppLog;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,12 +32,15 @@ class Car extends Model
         "sum_insured",
         "model_year",
         "insurance_payment",
-        "payment_frequency"
+        "payment_frequency",
+        "insurance_company_id",
+        "renewal_date",
+        "wise_insured",
     ];
 
 
     //model functions
-    public function editInfo($car_id, $model_year = null, $sum_insured = null, $insurance_payment = null, $payment_frequency = null)
+    public function editInfo($car_id, $model_year = null, $sum_insured = null, $insurance_payment = null, $payment_frequency = null,  $insurance_company_id = null, Carbon $renewal_date = null, $wise_insured = null)
     {
         try {
             $this->update([
@@ -43,7 +48,10 @@ class Car extends Model
                 "model_year"    =>  $model_year,
                 "sum_insured"   =>  $sum_insured,
                 "insurance_payment"    =>  $insurance_payment,
-                "payment_frequency"     =>  $payment_frequency
+                "payment_frequency"     =>  $payment_frequency,
+                "insurance_company_id"     =>  $insurance_company_id,
+                "renewal_date"     =>  $renewal_date ? $renewal_date->format('Y-m-d H:i:s') : null,
+                "wise_insured"     =>  $wise_insured,
             ]);
             AppLog::info("Adding customer car", loggable: $this);
             return true;
@@ -64,5 +72,10 @@ class Car extends Model
     public function car(): BelongsTo
     {
         return $this->belongsTo(CarsCar::class);
+    }
+
+    public function insurance_company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'insurance_company_id');
     }
 }
