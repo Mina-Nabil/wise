@@ -319,6 +319,46 @@ class Customer extends Model
         }
     }
 
+    public function setBankAccounts(array $accounts)
+    {
+        try {
+            DB::transaction(function () use ($accounts) {
+                $this->bank_accounts()->delete();
+                foreach ($accounts as $acc) {
+                    $this->addBankAccount($acc["type"], $acc['bank_name'], $acc['account_number'], $acc['owner_name'], $acc['evidence_doc'] ?? null, $acc['iban'] ?? null, $acc['bank_branch'] ?? null, $acc['is_default'] ?? false);
+                }
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function addBankAccount($type, $bank_name, $account_number, $owner_name, $evidence_doc = null, $iban = null, $bank_branch = null, $is_default = false): BankAccount|false
+    {
+        try {
+            /** @var BankAccount */
+            $tmp = $this->bank_accounts()->create([
+                "type"              =>  $type,
+                "bank_name"         =>  $bank_name,
+                "account_number"    =>  $account_number,
+                "owner_name"        =>  $owner_name,
+                "evidence_doc"      =>  $evidence_doc,
+                "iban"              =>  $iban,
+                "bank_branch"       =>  $bank_branch,
+            ]);
+            if ($is_default) $tmp->setAsDefault();
+            AppLog::info("Adding bank account", loggable: $this);
+            return $tmp;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Adding bank account failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+
     ///static functions
     public static function newLead(
         $name,
@@ -490,5 +530,10 @@ class Customer extends Model
     public function offers(): MorphMany
     {
         return $this->morphMany(Offer::class, 'client');
+    }
+
+    public function bank_accounts(): HasMany
+    {
+        return $this->hasMany(BankAccount::class);
     }
 }
