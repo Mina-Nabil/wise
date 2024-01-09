@@ -38,13 +38,6 @@ class Policy extends Model
     const BUSINESS_EXTENDED_WARRANTY = 'extended_warranty';
     const BUSINESS_LIABILITY = 'liability';
 
-    const OPTIONS_TYPES = [
-        self::BUSINESS_PERSONAL_MOTOR,
-        self::BUSINESS_CORPORATE_MOTOR,
-        self::BUSINESS_PERSONAL_MEDICAL,
-        self::BUSINESS_CORPORATE_MEDICAL,
-    ];
-
     const PERSONAL_TYPES = [
         self::BUSINESS_PERSONAL_MOTOR,
         self::BUSINESS_PERSONAL_MEDICAL,
