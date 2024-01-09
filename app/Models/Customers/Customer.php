@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 class Customer extends Model
 {
     use HasFactory;
+    const FILES_DIRECTORY = 'customers/docs/';
 
     protected $casts = [
         'birth_date' => 'date',
@@ -95,7 +96,8 @@ class Customer extends Model
     protected $fillable = [
         'type', 'name', 'arabic_name', 'email', 'gender', 'owner_id',
         'marital_status', 'nationality_id', 'id_type', 'id_number',
-        'profession_id', 'salary_range', 'income_source', 'birth_date'
+        'profession_id', 'salary_range', 'income_source', 'birth_date',
+        'id_doc', 'driver_license_doc'
     ];
 
     ///model functions
@@ -148,7 +150,9 @@ class Customer extends Model
         $nationality_id = null,
         $profession_id = null,
         $salary_range = null,
-        $income_source = null
+        $income_source = null,
+        $id_doc = null,
+        $driver_license_doc = null,
     ): bool {
         $this->update([
             "name"  =>  $name,
@@ -163,6 +167,8 @@ class Customer extends Model
             "profession_id" =>  $profession_id,
             "salary_range"  =>  $salary_range,
             "income_source" =>  $income_source,
+            "id_doc" =>  $id_doc,
+            "driver_license_doc" =>  $driver_license_doc,
         ]);
 
         try {
@@ -375,6 +381,8 @@ class Customer extends Model
         $salary_range = null,
         $income_source = null,
         $owner_id = null,
+        $id_doc = null,
+        $driver_license_doc = null,
     ): self|false {
         $newLead = new self([
             "type"  =>  self::TYPE_LEAD,
@@ -391,6 +399,8 @@ class Customer extends Model
             "salary_range"  =>  $salary_range,
             "income_source" =>  $income_source,
             "owner_id" =>  $owner_id,
+            "id_doc" =>  $id_doc,
+            "driver_license_doc" =>  $driver_license_doc,
             "creator_id"    => Auth::id()
         ]);
 
@@ -420,7 +430,9 @@ class Customer extends Model
         $nationality_id = null,
         $profession_id = null,
         $salary_range = null,
-        $income_source = null
+        $income_source = null,
+        $id_doc = null,
+        $driver_license_doc = null,
     ): self|false {
         $newCustomer = new self([
             "type"  =>  self::TYPE_CLIENT,
@@ -437,6 +449,8 @@ class Customer extends Model
             "salary_range"  =>  $salary_range,
             "income_source" =>  $income_source,
             "owner_id" =>  $owner_id,
+            "id_doc" =>  $id_doc,
+            "driver_license_doc" =>  $driver_license_doc,
             "creator_id"    => Auth::id()
         ]);
 
