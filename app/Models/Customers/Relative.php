@@ -26,13 +26,15 @@ class Relative extends Model
     const RELATION_BROTHER = 'brother';
     const RELATION_SISTER = 'sister';
     const RELATION_SON = 'son';
+    const RELATION_OTHER = 'other';
 
     const RELATIONS = [
         self::RELATION_MOTHER,
         self::RELATION_FATHER,
         self::RELATION_BROTHER,
         self::RELATION_SISTER,
-        self::RELATION_SON
+        self::RELATION_SON,
+        self::RELATION_OTHER,
     ];
 
     ///model functions

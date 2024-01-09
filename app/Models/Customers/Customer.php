@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
@@ -325,6 +326,33 @@ class Customer extends Model
         }
     }
 
+    /** @var array $customer_relatives .. each entry should consist of entries like this ['id' => 'relation'] */
+    public function setCustomerRelatives(array $customer_relatives)
+    {
+        try {
+            DB::transaction(function () use ($customer_relatives) {
+                $this->customer_relatives()->sync($customer_relatives);
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function addCustomerRelative($id, $relation = null)
+    {
+        try {
+            $tmp = $this->customer_relatives()->attach($id, ["relation" =>  $relation]);
+            AppLog::info("Adding customer to customer relative", loggable: $this);
+            return $tmp;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Adding customer to customer relative failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function setBankAccounts(array $accounts)
     {
         try {
@@ -534,6 +562,11 @@ class Customer extends Model
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'nationality_id');
+    }
+
+    public function customer_relatives(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'cust_cust_relatives', 'relation_id')->withPivot('relation');
     }
 
     public function tasks(): MorphMany

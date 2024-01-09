@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Customers\BankAccount;
+use App\Models\Customers\Customer;
+use App\Models\Customers\Relative;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +20,26 @@ return new class extends Migration
             $table->string('id_doc')->nullable();
             $table->string('driver_license_doc')->nullable();
         });
+        
+        Schema::create('customer_bank_accounts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
+            $table->enum('type', BankAccount::TYPES);
+            $table->string('bank_name');
+            $table->string('account_number');
+            $table->string('owner_name');
+            $table->boolean('is_default')->default(false);
+            $table->string('bank_branch')->nullable();
+            $table->string('iban')->nullable();
+            $table->string('evidence_doc')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('cust_cust_relatives', function (Blueprint $table) {
+            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Customer::class, 'relative_id')->constrained('customers')->cascadeOnDelete();
+            $table->enum('relation', Relative::RELATIONS)->nullable();
+        });
     }
 
     /**
@@ -26,9 +49,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->dropColumn('id_doc');
-            $table->dropColumn('driver_license_doc');
-        });
+        Schema::dropIfExists('customer_bank_accounts');
     }
 };
