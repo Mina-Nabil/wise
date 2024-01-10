@@ -53,7 +53,7 @@ return new class extends Migration
         Schema::create('customer_interests', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
-            $table->enum('relation', Policy::LINES_OF_BUSINESS);
+            $table->enum('business', Policy::LINES_OF_BUSINESS);
             $table->boolean('interested')->default(true);
             $table->string('note')->nullable();
         });
