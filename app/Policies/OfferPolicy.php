@@ -75,7 +75,79 @@ class OfferPolicy
      * @param  \App\Models\Offers\Offer  $offer
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function changeDue(User $user, Offer $offer)
+    public function updateStatus(User $user, Offer $offer)
+    {
+        return true;
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Offers\Offer  $offer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateItem(User $user, Offer $offer)
+    {
+        return true;
+    }
+
+      /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Offers\Offer  $offer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateOptions(User $user, Offer $offer)
+    {
+        return true;
+    }
+
+      /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Offers\Offer  $offer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateDiscount(User $user, Offer $offer)
+    {
+        return true;
+    }
+
+      /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Offers\Offer  $offer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateFlag(User $user, Offer $offer)
+    {
+        return true;
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Offers\Offer  $offer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateDue(User $user, Offer $offer)
+    {
+        return true;
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Offers\Offer  $offer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateNote(User $user, Offer $offer)
     {
         return true;
     }

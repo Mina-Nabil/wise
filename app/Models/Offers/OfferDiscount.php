@@ -11,35 +11,52 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
-class OfferComment extends Model
+class OfferDiscount extends Model
 {
     use HasFactory;
 
-    protected $table = 'offer_comments';
+    protected $table = 'offer_discounts';
     protected $fillable = [
-        'comment',
+        'value',
+        'note',
+        'type',
         'user_id',
+    ];
+
+    const TYPE_COMMISSION = 'commission';
+    const TYPE_NO_CLAIM = 'no_claim';
+    const TYPE_FAMILY = 'family';
+    const TYPE_OTHER = 'other';
+
+    const TYPES = [
+        self::TYPE_COMMISSION,
+        self::TYPE_NO_CLAIM,
+        self::TYPE_FAMILY,
+        self::TYPE_OTHER
     ];
 
     ////static functions
 
 
     ////model functions
-    public function editInfo($comment)
+    public function editInfo($type, $value, $note = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if ($loggedInUser->id != $this->user_id) return false;
+        if (!$loggedInUser->can('update', $this)) return false;
+
         try {
             if ($this->update([
-                "comment"  =>  $comment
+                "type"  =>  $type,
+                "value"  =>  $value,
+                "note"  =>  $note
             ])) {
-                AppLog::info("Offer comment edited", loggable: $this);
+                AppLog::info("Offer discount edited", loggable: $this);
                 return true;
             }
             return false;
         } catch (Exception $e) {
-            AppLog::error("Can't edit Comment", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Can't edit discount", desc: $e->getMessage(), loggable: $this);
             report($e);
             return false;
         }
@@ -54,14 +71,14 @@ class OfferComment extends Model
             $this->loadMissing('offer');
             $tmpOffer = $this->offer;
             if (parent::delete()) {
-                AppLog::info("Comment deleted", loggable: $tmpOffer);
+                AppLog::info("Discount deleted", loggable: $tmpOffer);
                 return true;
             } else {
-                AppLog::error("Comment deletion failed", loggable: $this);
+                AppLog::error("Discount deletion failed", loggable: $this);
                 return false;
             }
         } catch (Exception $e) {
-            AppLog::info("Comment deletetion failed", loggable: $this, desc: $e->getMessage());
+            AppLog::info("Discount deletetion failed", loggable: $this, desc: $e->getMessage());
             report($e);
             return false;
         }

@@ -51,7 +51,7 @@ class Offer extends Model
 
     protected $table = 'offers';
     protected $fillable = [
-        'creator_id', 'type', 'status', 'item_id', 'item_type',
+        'creator_id', 'type', 'status', 'item_id', 'item_type', 'is_renewal',
         'item_title', 'item_value', 'item_desc', 'selected_option_id',
         'note', 'due', 'closed_by_id', 'assignee_id'
 
@@ -59,7 +59,7 @@ class Offer extends Model
 
 
     ////static functions
-    public function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null): self|false
+    public function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false): self|false
     {
         $newOffer = new self([
             "creator_id"    =>  Auth::id(),
@@ -70,6 +70,7 @@ class Offer extends Model
             "item_title"    =>  $item_title,
             "item_desc"     =>  $item_desc,
             "note"          =>  $note,
+            "is_renewal"    =>  $is_renewal,
             "due"           =>  $due->format('Y-m-d H:i:s'),
         ]);
         $newOffer->client()->associate($client);
@@ -89,24 +90,48 @@ class Offer extends Model
     }
 
     ////model functions
-    public function editInfo($item_value = null, $item_title = null, $item_desc = null, string $note = null)
+    public function setNote(string $note = null)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateNote', $this)) return false;
+
         $this->update([
-            "item_value"    =>  $item_value,
-            "item_title"    =>  $item_title,
-            "item_desc"     =>  $item_desc,
-            "note"          =>  $note,
+            "note"          =>  $note
         ]);
 
         try {
             if ($this->save()) {
-                AppLog::info("Offer Main Info Updated", loggable: $this);
+                AppLog::info("Offer note Updated", loggable: $this);
                 return true;
             }
             return false;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't edit offer", desc: $e->getMessage());
+            AppLog::error("Can't edit offer note", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function setRenewalFlag(bool $is_renewal)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateFlag', $this)) return false;
+
+        $this->update([
+            "is_renewal"    =>  $is_renewal
+        ]);
+
+        try {
+            if ($this->save()) {
+                AppLog::info("Offer renewal flag Updated", loggable: $this);
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit offer renewal flag", desc: $e->getMessage());
             return false;
         }
     }
@@ -115,8 +140,13 @@ class Offer extends Model
      * @return string if failed, an error message will return
      * @return true if done
      */
-    public function setStatus($status): string|true
+    public function setStatus($status): string|bool
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateStatus', $this))
+            return false;
+
         $updates = array();
         //perform checks
         switch ($status) {
@@ -177,6 +207,11 @@ class Offer extends Model
 
     public function setItemDetails($item_value, Model $item = null, $item_title = null, $item_desc = null)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateItem', $this))
+            return false;
+
         $updates['item_value'] = $item_value;
         $updates['item_title'] = $item_title;
         $updates['item_desc'] = $item_desc;
@@ -205,7 +240,7 @@ class Offer extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if ($loggedInUser && !$loggedInUser->can('changeDue', $this)) return false;
+        if (!$loggedInUser?->can('updateDue', $this)) return false;
 
         try {
             if ($this->update([
@@ -232,6 +267,11 @@ class Offer extends Model
      */
     public function addOption($policy_id, $policy_condition_id = null, $insured_value = null, $payment_frequency = null, array $fields = [], $docs = [])
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateOptions', $this)) return false;
+        
+
         switch ($payment_frequency) {
             case OfferOption::PAYMENT_FREQ_YEARLY:
                 $periodic_payment = $insured_value;
@@ -281,8 +321,63 @@ class Offer extends Model
         }
     }
 
+
+    public function addDiscount($type, $value, $note = null): OfferDiscount|false
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateDiscount', $this)) return false;
+
+        try {
+            $discount = $this->discounts()->create([
+                "user_id"   =>  $loggedInUser->id,
+                "type"   =>  $type,
+                "value"   =>  $value,
+                "note"   =>  $note
+            ]);
+
+            AppLog::info("Discount added", loggable: $this);
+            $this->sendOfferNotifications("Discount added", "Offer#$this->id has a new discount by $loggedInUser->username");
+
+            return $discount;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add discount", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+
+
+    public function addComment($comment, $logEvent = true): OfferComment|false
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        try {
+            $comment = $this->comments()->create([
+                "user_id"   =>  $loggedInUser ? $loggedInUser->id : null,
+                "comment"   =>  $comment
+            ]);
+            if ($logEvent && $loggedInUser) {
+                AppLog::info("Comment added", "User $loggedInUser->username added new comment to offer $this->id", $this);
+                $this->sendOfferNotifications("Comment added", "Offer#$this->id has a new comment by $loggedInUser->username");
+            }
+
+            return $comment;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add comment", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
     public function addFile($name, $url)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateItem', $this)) return false;
+        
+
         try {
             if ($this->files()->create([
                 "name"  =>  $name,
@@ -309,7 +404,8 @@ class Offer extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if ($loggedInUser && !$loggedInUser->can('updateAssignTo', $this)) return false;
+        if (!$loggedInUser?->can('updateAssignTo', $this)) return false;
+
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
             $this->assignee_id = $user_id_or_type;
@@ -345,6 +441,11 @@ class Offer extends Model
 
     public function acceptOption($option_id)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateOptions', $this)) return false;
+        
+
         if ($this->status == self::STATUS_APPROVED)
             throw new Exception('Offer already approved');
 
@@ -367,6 +468,7 @@ class Offer extends Model
         }
     }
 
+
     private function sendOfferNotifications($title, $message)
     {
         $notifier_id = Auth::id();
@@ -380,27 +482,6 @@ class Offer extends Model
         }
     }
 
-    private function addComment($comment, $logEvent = true): OfferComment|false
-    {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        try {
-            $comment = $this->comments()->create([
-                "user_id"   =>  $loggedInUser ? $loggedInUser->id : null,
-                "comment"   =>  $comment
-            ]);
-            if ($logEvent && $loggedInUser) {
-                AppLog::info("Comment added", "User $loggedInUser->username added new comment to task $this->id", $this);
-                $this->sendOfferNotifications("Comment added", "Task#$this->id has a new comment by $loggedInUser->username");
-            }
-
-            return $comment;
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Can't add comment", $e->getMessage(), $this);
-            return false;
-        }
-    }
 
     ////scopes
     public function scopeUserData($query, $searchText = null)
@@ -468,6 +549,11 @@ class Offer extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(OfferComment::class);
+    }
+
+    public function discounts(): HasMany
+    {
+        return $this->hasMany(OfferDiscount::class);
     }
 
     public function files(): HasMany

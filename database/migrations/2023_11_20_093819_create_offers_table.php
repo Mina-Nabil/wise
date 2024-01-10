@@ -31,9 +31,9 @@ return new class extends Migration
             $table->nullableMorphs('item'); //only car for now.. later maybe more items will be added
             $table->enum('type', Policy::LINES_OF_BUSINESS); //motor - health..
             $table->enum('status', Offer::STATUSES);
+            $table->double('item_value')->nullable();
             $table->string('item_title')->nullable();
             $table->text('item_desc')->nullable();
-            $table->double('item_value')->nullable();
             $table->text('note')->nullable();
             $table->dateTime('due')->nullable();
             $table->foreignIdFor(User::class, 'closed_by_id')->nullable()->constrained('users')->nullOnDelete();
@@ -43,7 +43,7 @@ return new class extends Migration
 
         Schema::create('offer_comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Offer::class)->constrained();
+            $table->foreignIdFor(Offer::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->string('comment');
             $table->timestamps();
@@ -51,7 +51,7 @@ return new class extends Migration
 
         Schema::create('offer_docs', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Offer::class)->constrained();
+            $table->foreignIdFor(Offer::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(User::class)->constrained();
             $table->string('name');
             $table->text('url');
@@ -60,7 +60,7 @@ return new class extends Migration
 
         Schema::create('offer_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Offer::class)->constrained();
+            $table->foreignIdFor(Offer::class)->constrained()->cascadeOnDelete();
             $table->enum('status', OfferOption::STATUSES);
             $table->foreignIdFor(Policy::class)->constrained(); ///health one allianz - life for ever masr el ta2eme
             $table->foreignIdFor(PolicyCondition::class)->nullable()->constrained('policy_conditions');

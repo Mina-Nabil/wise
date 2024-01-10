@@ -32,11 +32,16 @@ class OfferOption extends Model
 
     const PAYMENT_FREQ_YEARLY = 'yearly';
     const PAYMENT_FREQ_MONTHLY = 'monthly';
-    const PAYMENT_FREQ_QUARTER = 'quarter';
+    const PAYMENT_FREQ_QUARTER = 'quarterly';
+    const PAYMENT_FREQ_HALF_YEARLY = 'half-yearly';
+    const PAYMENT_INSTALLEMENTS = 'installements';
+
     const PAYMENT_FREQS = [
         self::PAYMENT_FREQ_YEARLY,
         self::PAYMENT_FREQ_MONTHLY,
         self::PAYMENT_FREQ_QUARTER,
+        self::PAYMENT_FREQ_HALF_YEARLY,
+        self::PAYMENT_INSTALLEMENTS
     ];
 
     protected $table = 'offer_options';
