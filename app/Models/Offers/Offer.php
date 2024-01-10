@@ -140,7 +140,7 @@ class Offer extends Model
      * @return string if failed, an error message will return
      * @return true if done
      */
-    public function setStatus($status): string|true
+    public function setStatus($status): string|bool
     {
         /** @var User */
         $loggedInUser = Auth::user();

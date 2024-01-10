@@ -159,7 +159,7 @@ class User extends Authenticatable
     }
 
     /**
-     * @return string|true true if login is successful, error message string if the login failed
+     * @return string|bool true if login is successful, error message string if the login failed
      */
     public static function login($username, $password): string|bool
     {
@@ -217,11 +217,6 @@ class User extends Authenticatable
     public function created_customers(): HasMany
     {
         return $this->hasMany(Customer::class, 'creator_id');
-    }
-
-    public function notes(): HasMany
-    {
-        return $this->hasMany(Note::class);
     }
 
     public function latest_notifications(): HasMany
