@@ -281,6 +281,56 @@ class Offer extends Model
         }
     }
 
+
+    public function addDiscount($type, $value, $note = null): OfferDiscount|false
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('addDiscount', $this)) return false;
+
+        try {
+            $discount = $this->discounts()->create([
+                "user_id"   =>  $loggedInUser->id,
+                "type"   =>  $type,
+                "value"   =>  $value,
+                "note"   =>  $note
+            ]);
+
+            AppLog::info("Discount added", loggable: $this);
+            $this->sendOfferNotifications("Discount added", "Offer#$this->id has a new discount by $loggedInUser->username");
+
+            return $discount;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add discount", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+
+
+    public function addComment($comment, $logEvent = true): OfferComment|false
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        try {
+            $comment = $this->comments()->create([
+                "user_id"   =>  $loggedInUser ? $loggedInUser->id : null,
+                "comment"   =>  $comment
+            ]);
+            if ($logEvent && $loggedInUser) {
+                AppLog::info("Comment added", "User $loggedInUser->username added new comment to offer $this->id", $this);
+                $this->sendOfferNotifications("Comment added", "Offer#$this->id has a new comment by $loggedInUser->username");
+            }
+
+            return $comment;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add comment", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
     public function addFile($name, $url)
     {
         try {
@@ -367,6 +417,7 @@ class Offer extends Model
         }
     }
 
+
     private function sendOfferNotifications($title, $message)
     {
         $notifier_id = Auth::id();
@@ -380,27 +431,6 @@ class Offer extends Model
         }
     }
 
-    private function addComment($comment, $logEvent = true): OfferComment|false
-    {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        try {
-            $comment = $this->comments()->create([
-                "user_id"   =>  $loggedInUser ? $loggedInUser->id : null,
-                "comment"   =>  $comment
-            ]);
-            if ($logEvent && $loggedInUser) {
-                AppLog::info("Comment added", "User $loggedInUser->username added new comment to task $this->id", $this);
-                $this->sendOfferNotifications("Comment added", "Task#$this->id has a new comment by $loggedInUser->username");
-            }
-
-            return $comment;
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Can't add comment", $e->getMessage(), $this);
-            return false;
-        }
-    }
 
     ////scopes
     public function scopeUserData($query, $searchText = null)
@@ -468,6 +498,11 @@ class Offer extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(OfferComment::class);
+    }
+
+    public function discounts(): HasMany
+    {
+        return $this->hasMany(OfferDiscount::class);
     }
 
     public function files(): HasMany
