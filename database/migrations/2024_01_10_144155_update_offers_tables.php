@@ -31,7 +31,7 @@ return new class extends Migration
         Schema::create('offer_discounts', function(Blueprint $table){
             $table->id();
             $table->foreignIdFor(Offer::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(User::class)->constrained()->nullOnDelete();
+            $table->foreignIdFor(User::class)->constrained();
             $table->enum('type', OfferDiscount::TYPES);
             $table->double('value');
             $table->string('note')->nullable();
