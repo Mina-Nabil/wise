@@ -26,7 +26,7 @@ use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Round;
 
 class CustomerShow extends Component
 {
-    use ToggleSectionLivewire, AlertFrontEnd,WithFileUploads;
+    use ToggleSectionLivewire, AlertFrontEnd, WithFileUploads;
 
     public $customer;
 
@@ -137,7 +137,7 @@ class CustomerShow extends Component
 
     public function downloadDoc($url)
     {
-        $filename = $this->customer->name.'_document.'.pathinfo($url, PATHINFO_EXTENSION);
+        $filename = $this->customer->name . '_document.' . pathinfo($url, PATHINFO_EXTENSION);
         $fileContents = Storage::disk('s3')->get($url);
         $headers = [
             'Content-Type' => 'application/octet-stream',
@@ -153,29 +153,32 @@ class CustomerShow extends Component
         );
     }
 
-    public function clearIdDoc(){
+    public function clearIdDoc()
+    {
         $this->idDoc = null;
     }
 
-    public function cleardriverLicenseDoc(){
+    public function cleardriverLicenseDoc()
+    {
         $this->driverLicenseDoc = null;
     }
-    
 
-    public function toggleCallerNote($type = null ,$id = null){
+
+    public function toggleCallerNote($type = null, $id = null)
+    {
 
         $this->callerNotetype = $type;
         $this->callerNoteId = $id;
         $this->toggle($this->callerNoteSec);
-
     }
 
-    public function submitCallerNote(){
-        
+    public function submitCallerNote()
+    {
+
         if ($this->callerNotetype === 'called') {
-            $this->setFollowupAsCalled($this->callerNoteId,$this->note);
-        }elseif($this->callerNotetype ==='cancelled'){
-            $this->setFollowupAsCancelled($this->callerNoteId,$this->note);
+            $this->setFollowupAsCalled($this->callerNoteId, $this->note);
+        } elseif ($this->callerNotetype === 'cancelled') {
+            $this->setFollowupAsCancelled($this->callerNoteId, $this->note);
         }
     }
 
@@ -745,6 +748,33 @@ class CustomerShow extends Component
 
     public function editInfo()
     {
+
+
+
+        if (is_null($this->customer->id_doc) && (is_null($this->idDoc))) {
+            $idDoc_url = null;
+        } elseif (!is_null($this->customer->id_doc) && (is_null($this->idDoc))) {
+            $idDoc_url = null;
+        } elseif (!is_null($this->customer->id_doc) && (!is_null($this->idDoc))) {
+            if (is_string($this->idDoc)) {
+                $this->idDoc = null;
+                $idDoc_url = $this->customer->id_doc;
+            }
+        }
+
+        if (is_null($this->customer->driver_license_doc) && (is_null($this->driverLicenseDoc))) {
+            $driverLicenseDoc_url = null;
+        } elseif (!is_null($this->customer->driver_license_doc) && (is_null($this->driverLicenseDoc))) {
+            $driverLicenseDoc_url = null;
+        } elseif (!is_null($this->customer->driver_license_doc) && (!is_null($this->driverLicenseDoc))) {
+            if (is_string($this->driverLicenseDoc)) {
+                $this->driverLicenseDoc = null;
+                $driverLicenseDoc_url = $this->customer->driver_license_doc;
+            }
+        }
+
+
+        // dd($this->idDoc);
         $this->validate([
             'name' => 'required|string|max:255',
             'arabic_name' => 'nullable|string|max:255',
@@ -761,17 +791,21 @@ class CustomerShow extends Component
             'idDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
             'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
+
+        // dd($this->idDoc);
         $customer = Customer::find($this->customer->id);
 
-        if(!is_null($this->idDoc)){
+        // dd($this->driverLicenseDoc);
+
+        if (!is_string($this->idDoc) && !is_null($this->idDoc) && is_null($this->customer->id_doc)) {
             $idDoc_url = $this->idDoc->store(Customer::FILES_DIRECTORY, 's3');
         }
 
-        if(!is_null($this->driverLicenseDoc)){
+        if (!is_string($this->driverLicenseDoc) && !is_null($this->driverLicenseDoc) && is_null($this->customer->driver_license_doc)) {
             $driverLicenseDoc_url = $this->driverLicenseDoc->store(Customer::FILES_DIRECTORY, 's3');
         }
-        
-        
+
+        dd($idDoc_url);
 
         $c = $customer->editCustomer(
             $this->name,
@@ -816,7 +850,6 @@ class CustomerShow extends Component
         $this->incomeSource = $this->customer->income_source;
         $this->idDoc = $this->customer->id_doc;
         $this->driverLicenseDoc = $this->customer->driver_license_doc;
-
     }
 
     public function updatedCarBrand($value)
