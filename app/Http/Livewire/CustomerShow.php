@@ -19,12 +19,14 @@ use App\Models\Customers\Followup;
 use App\Models\Customers\Phone;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Route;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Round;
 
 class CustomerShow extends Component
 {
-    use ToggleSectionLivewire, AlertFrontEnd;
+    use ToggleSectionLivewire, AlertFrontEnd, WithFileUploads;
 
     public $customer;
 
@@ -40,6 +42,8 @@ class CustomerShow extends Component
     public $profession_id;
     public $salaryRange;
     public $incomeSource;
+    public $idDoc;
+    public $driverLicenseDoc;
 
     public $editCustomerSection = false;
 
@@ -130,22 +134,51 @@ class CustomerShow extends Component
         $this->mount($this->customer->id);
     }
 
-    
 
-    public function toggleCallerNote($type = null ,$id = null){
+    public function downloadDoc($url)
+    {
+        $filename = $this->customer->name . '_document.' . pathinfo($url, PATHINFO_EXTENSION);
+        $fileContents = Storage::disk('s3')->get($url);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function clearIdDoc()
+    {
+        $this->idDoc = null;
+    }
+
+    public function cleardriverLicenseDoc()
+    {
+        $this->driverLicenseDoc = null;
+    }
+
+
+    public function toggleCallerNote($type = null, $id = null)
+    {
 
         $this->callerNotetype = $type;
         $this->callerNoteId = $id;
         $this->toggle($this->callerNoteSec);
-
     }
 
-    public function submitCallerNote(){
-        
+    public function submitCallerNote()
+    {
+
         if ($this->callerNotetype === 'called') {
-            $this->setFollowupAsCalled($this->callerNoteId,$this->note);
-        }elseif($this->callerNotetype ==='cancelled'){
-            $this->setFollowupAsCancelled($this->callerNoteId,$this->note);
+            $this->setFollowupAsCalled($this->callerNoteId, $this->note);
+        } elseif ($this->callerNotetype === 'cancelled') {
+            $this->setFollowupAsCancelled($this->callerNoteId, $this->note);
         }
     }
 
@@ -715,6 +748,33 @@ class CustomerShow extends Component
 
     public function editInfo()
     {
+
+
+
+        if (is_null($this->customer->id_doc) && (is_null($this->idDoc))) {
+            $idDoc_url = null;
+        } elseif (!is_null($this->customer->id_doc) && (is_null($this->idDoc))) {
+            $idDoc_url = null;
+        } elseif (!is_null($this->customer->id_doc) && (!is_null($this->idDoc))) {
+            if (is_string($this->idDoc)) {
+                $this->idDoc = null;
+                $idDoc_url = $this->customer->id_doc;
+            }
+        }
+
+        if (is_null($this->customer->driver_license_doc) && (is_null($this->driverLicenseDoc))) {
+            $driverLicenseDoc_url = null;
+        } elseif (!is_null($this->customer->driver_license_doc) && (is_null($this->driverLicenseDoc))) {
+            $driverLicenseDoc_url = null;
+        } elseif (!is_null($this->customer->driver_license_doc) && (!is_null($this->driverLicenseDoc))) {
+            if (is_string($this->driverLicenseDoc)) {
+                $this->driverLicenseDoc = null;
+                $driverLicenseDoc_url = $this->customer->driver_license_doc;
+            }
+        }
+
+
+        // dd($this->idDoc);
         $this->validate([
             'name' => 'required|string|max:255',
             'arabic_name' => 'nullable|string|max:255',
@@ -728,8 +788,25 @@ class CustomerShow extends Component
             'profession_id' => 'nullable|exists:professions,id',
             'salaryRange' => 'nullable|in:' . implode(',', Customer::SALARY_RANGES),
             'incomeSource' =>  'nullable|in:' . implode(',', Customer::INCOME_SOURCES),
+            'idDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
+
+        // dd($this->idDoc);
         $customer = Customer::find($this->customer->id);
+
+        // dd($this->driverLicenseDoc);
+
+        if (!is_string($this->idDoc) && !is_null($this->idDoc) && is_null($this->customer->id_doc)) {
+            $idDoc_url = $this->idDoc->store(Customer::FILES_DIRECTORY, 's3');
+        }
+
+        if (!is_string($this->driverLicenseDoc) && !is_null($this->driverLicenseDoc) && is_null($this->customer->driver_license_doc)) {
+            $driverLicenseDoc_url = $this->driverLicenseDoc->store(Customer::FILES_DIRECTORY, 's3');
+        }
+
+        dd($idDoc_url);
+
         $c = $customer->editCustomer(
             $this->name,
             $this->arabic_name,
@@ -742,7 +819,9 @@ class CustomerShow extends Component
             $this->nationalId,
             $this->profession_id,
             $this->salaryRange,
-            $this->incomeSource
+            $this->incomeSource,
+            $idDoc_url,
+            $driverLicenseDoc_url
         );
         if ($c) {
             $this->alert('success', 'Updated Successfuly!');
@@ -769,6 +848,8 @@ class CustomerShow extends Component
         $this->profession_id = $this->customer->profession_id;
         $this->salaryRange  = $this->customer->salary_range;
         $this->incomeSource = $this->customer->income_source;
+        $this->idDoc = $this->customer->id_doc;
+        $this->driverLicenseDoc = $this->customer->driver_license_doc;
     }
 
     public function updatedCarBrand($value)
