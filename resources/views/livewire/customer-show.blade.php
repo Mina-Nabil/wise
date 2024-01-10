@@ -11,32 +11,37 @@
                         <div>
                             <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab" role="tablist">
                                 <li class="nav-item" role="presentation" wire:click="changeSection('profile')">
-                                    <a href="#tabs-profile-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'profile') active @endif dark:text-slate-300" id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-profile-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'profile') active @endif dark:text-slate-300"
+                                        id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="heroicons-outline:user"></iconify-icon>
                                         Profile</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('cars')">
-                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="mingcute:car-line"></iconify-icon>
                                         cars</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('followups')">
-                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="icon-park-outline:cycle-arrow"></iconify-icon>
                                         Follow Ups</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('offers')">
-                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="ic:outline-local-offer"></iconify-icon>
                                         Offers</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('tasks')">
-                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="ic:round-add-task"></iconify-icon>
                                         Tasks</a>
                                 </li>
@@ -92,15 +97,18 @@
                                                             <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                             </button>
-                                                            <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                            <ul
+                                                                class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                                 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                 <li>
-                                                                    <button wire:click="editThisCar({{ $car->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                    <button wire:click="editThisCar({{ $car->id }})"
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white">
                                                                         Edit</button>
                                                                 </li>
                                                                 <li>
-                                                                    <button wire:click="deleteThisCar({{ $car->id }})" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                    <button wire:click="deleteThisCar({{ $car->id }})"
+                                                                        class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white">
                                                                         Delete</button>
                                                                 </li>
@@ -241,21 +249,25 @@
                                                         <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                             <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                         </button>
-                                                        <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                        <ul
+                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
 
                                                             <li>
-                                                                <button wire:click="setPhoneAsDefault({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="setPhoneAsDefault({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white">
                                                                     Set as primary</button>
                                                             </li>
                                                             <li>
-                                                                <button wire:click="editThisPhone({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="editThisPhone({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                                     Edit</button>
                                                             </li>
                                                             <li>
-                                                                <button wire:click="deleteThisPhone({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="deleteThisPhone({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                                     Delete</button>
                                                             </li>
@@ -394,6 +406,50 @@
 
                             </div>
                         </div>
+
+
+
+
+                        {{-- bank accounts section --}}
+                        <div class="card-body flex flex-col justify-center mt-5  bg-no-repeat bg-center bg-cover card p-4 active">
+                            <div class="card-text flex flex-col justify-between h-full menu-open">
+                                <p class="mb-2">
+                                    <b>Bank Accounts</b>
+                                </p>
+
+                                @if ($customer->bank_accounts->isEmpty())
+                                    <p class="text-center m-5 text-primary">No bank accounts added to this corporate.</p>
+                                @else
+                                    @foreach ($customer->bank_accounts as $account)
+                                        <p><b> {{ $account->bank_name }}</b>
+                                            <button wire:click="deleteThisBankAccount({{ $account->id }})" class="action-btn float-right" type="button">
+                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                            </button>
+                                            <button wire:click="editThisBankAccount({{ $account->id }})" class="action-btn float-right mr-1" type="button">
+                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                            </button>
+                                        </p>
+
+                                        <p>{{ $account->type }}</p>
+                                        <p>{{ $account->account_number }}</p>
+                                        <p>{{ $account->owner_name }}</p>
+                                        <p>{{ $account->bank_branch }}</p>
+                                        <p>{{ $account->iban }}</p>
+                                        @if ($account->evidence_doc)
+                                            <span wire:click="downloadEvidenceDoc('{{ $account->evidence_doc }}')" class="text-primary-500 cursor-pointer">download</span>
+                                        @endif
+                                        <br>
+                                    @endforeach
+                                @endif
+
+                                <button wire:click="toggleAddBankAccount" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add Bank Account</button>
+
+                            </div>
+                        </div>
+
+
+
+
 
                         <div class="card-body flex flex-col justify-center bg-cover card p-4 mt-5">
                             <div class="card-text flex flex-col justify-between  menu-open">
@@ -699,7 +755,8 @@
                                 Delete Car
                             </h3>
                             <button wire:click="dismissDeleteCar" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -735,7 +792,8 @@
                                 Delete Phone
                             </h3>
                             <button wire:click="dismissDeletePhone" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -771,7 +829,8 @@
                                 Delete Followup
                             </h3>
                             <button wire:click="dismissDeleteFollowup" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -807,7 +866,8 @@
                                 Delete Address
                             </h3>
                             <button wire:click="dismissDeleteAddress" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -843,7 +903,8 @@
                                 Delete Relative
                             </h3>
                             <button wire:click="dismissDeleteRelative" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -869,8 +930,9 @@
 
     @if ($editCustomerSection)
         {{-- edit customer section --}}
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" id="basic_modal" tabindex="-1" aria-labelledby="basic_modal" aria-hidden="true" style="display: block">
+            <!-- BEGIN: Modal -->
+            <div class="modal-dialog relative w-auto pointer-events-none">
                 <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
@@ -1988,6 +2050,243 @@
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="submitCallerNote" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($deleteBankAccountId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                Delete Bank Account
+                            </h3>
+                            <button wire:click="closeDeleteBankAccount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                Are you sure ! you Want to delete this bank account ?
+                            </h6>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteBankAccount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($bankAccountId)
+        {{-- add address section --}}
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Bank Account
+                            </h3>
+                            <button wire:click="closeEditBankAccount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <p class="text-lg"><b>Account info</b></p>
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Account Type</label>
+                                    <select name="basicSelect" class="form-control w-full mt-2 @error('accountType') !border-danger-500 @enderror" wire:model="accountType">
+                                        @foreach ($bankAccTypes as $type)
+                                            <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('accountType')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Bank Name</label>
+                                    <input id="lastName" type="text" class="form-control @error('bankName') !border-danger-500 @enderror" wire:model="bankName">
+                                </div>
+                                @error('bankName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Account Number</label>
+                                    <input id="lastName" type="text" class="form-control @error('accountNumber') !border-danger-500 @enderror" wire:model="accountNumber">
+                                </div>
+                                @error('accountNumber')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Owner Name</label>
+                                        <input id="lastName" type="text" class="form-control @error('ownerName') !border-danger-500 @enderror" wire:model="ownerName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">Evidence Doc</label>
+                                        @if (!$evidenceDoc)
+                                            <input wire:model="evidenceDoc" type="file" class="form-control w-full  @error('evidenceDoc') !border-danger-500 @enderror" name="basic" />
+                                        @else
+                                            <span class="block min-w-[140px] text-left">
+                                                <span class="inline-block text-center text-sm mx-auto py-1">
+                                                    <span class="flex items-center space-x-3 rtl:space-x-reverse">
+                                                        <span class="h-[6px] w-[6px] bg-success-500 rounded-full inline-block ring-4 ring-opacity-30 ring-success-500"></span>
+                                                        <span>
+                                                            Document added
+                                                            <span wire:click="clearEvidenceDoc" class="text-xs text-slate-500 dark:text-slate-400 mt-1 cursor-pointer">| remove</span>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">Iban</label>
+                                        <input id="lastName" type="text" class="form-control @error('iban') !border-danger-500 @enderror" wire:model="iban">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">Bank Branch</label>
+                                        <input id="lastName" type="text" class="form-control @error('bankBranch') !border-danger-500 @enderror" wire:model="bankBranch">
+                                    </div>
+                                </div>
+                                @error('ownerName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @error('evidenceDoc')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @error('iban')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @error('bankBranch')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editBankAccount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($addBankAccountSection)
+        {{-- add address section --}}
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Bank Account
+                            </h3>
+                            <button wire:click="toggleAddBankAccount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <p class="text-lg"><b>Account info</b></p>
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Account Type</label>
+                                    <select name="basicSelect" class="form-control w-full mt-2 @error('accountType') !border-danger-500 @enderror" wire:model="accountType">
+                                        @foreach ($bankAccTypes as $type)
+                                            <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('accountType')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Bank Name</label>
+                                    <input id="lastName" type="text" class="form-control @error('bankName') !border-danger-500 @enderror" wire:model="bankName">
+                                </div>
+                                @error('bankName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Account Number</label>
+                                    <input id="lastName" type="text" class="form-control @error('accountNumber') !border-danger-500 @enderror" wire:model="accountNumber">
+                                </div>
+                                @error('accountNumber')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Owner Name</label>
+                                        <input id="lastName" type="text" class="form-control @error('ownerName') !border-danger-500 @enderror" wire:model="ownerName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">Evidence Doc</label>
+                                        <input wire:model="evidenceDoc" type="file" class="form-control w-full  @error('evidenceDoc') !border-danger-500 @enderror" name="basic" />
+                                    </div>
+
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">Iban</label>
+                                        <input id="lastName" type="text" class="form-control @error('iban') !border-danger-500 @enderror" wire:model="iban">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">Bank Branch</label>
+                                        <input id="lastName" type="text" class="form-control @error('bankBranch') !border-danger-500 @enderror" wire:model="bankBranch">
+                                    </div>
+                                </div>
+                                @error('ownerName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @error('evidenceDoc')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @error('iban')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @error('bankBranch')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addBankAccount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>

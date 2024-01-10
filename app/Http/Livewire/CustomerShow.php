@@ -7,6 +7,7 @@ use App\Models\Base\City;
 use Livewire\Component;
 use App\models\Customers\Customer;
 use App\models\Customers\Profession;
+use App\models\Customers\BankAccount;
 use App\models\Customers\Address;
 use App\models\Customers\Car as CustomerCar;
 use App\Models\Customers\Relative;
@@ -122,6 +123,18 @@ class CustomerShow extends Component
     public $callerNoteId;
     public $note;
 
+    //bank account
+    public $accountType;
+    public $bankName;
+    public $accountNumber;
+    public $ownerName;
+    public $evidenceDoc;
+    public $iban;
+    public $bankBranch;
+    public $bankAccountId;
+    public $deleteBankAccountId;
+    public $addBankAccountSection;
+
 
     public $section = 'profile';
 
@@ -135,9 +148,181 @@ class CustomerShow extends Component
     }
 
 
+    public function toggleAddBankAccount()
+    {
+        $this->toggle($this->addBankAccountSection);
+    }
+
+    public function editThisBankAccount($id)
+    {
+        $this->bankAccountId = $id;
+        $b = BankAccount::find($id);
+        $this->accountType = $b->type;
+        $this->bankName = $b->bank_name;
+        $this->accountNumber = $b->account_number;
+        $this->ownerName = $b->owner_name;
+        $this->evidenceDoc = $b->evidence_doc;
+        $this->iban = $b->iban;
+        $this->bankBranch = $b->bank_branch;
+    }
+
+    public function closeEditBankAccount()
+    {
+        $this->bankAccountId = null;
+        $this->accountType = null;
+        $this->bankName = null;
+        $this->accountNumber = null;
+        $this->ownerName = null;
+        $this->evidenceDoc = null;
+        $this->iban = null;
+        $this->bankBranch = null;
+    }
+
+    public function deleteThisBankAccount($id){
+        $this->deleteBankAccountId = $id;
+    }
+
+    public function closeDeleteBankAccount(){
+        $this->deleteBankAccountId = null;
+    }
+
+
+    public function addBankAccount()
+    {
+
+        $this->validate([
+            'accountType' =>  'required|in:' . implode(',', BankAccount::TYPES),
+            'bankName' => 'required|string|max:255',
+            'accountNumber' =>  'required|string|max:255',
+            'ownerName' =>  'required|string|max:255',
+            'evidenceDoc' =>  'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'iban' => 'nullable|string|max:255',
+            'bankBranch' => 'nullable|string|max:255',
+        ]);
+        $c = Customer::find($this->customer->id);
+
+        if ($this->evidenceDoc) {
+            $evidenceDoc_url = $this->evidenceDoc->store(Customer::FILES_DIRECTORY, 's3');
+        }else{
+            $evidenceDoc_url = null;
+        }
+        
+
+        $res = $c->addBankAccount(
+            $this->accountType,
+            $this->bankName,
+            $this->accountNumber,
+            $this->ownerName,
+            $evidenceDoc_url,
+            $this->iban,
+            $this->bankBranch,
+            false
+        );
+        if ($res) {
+            $this->alert('success', 'Account Added successfuly');
+            $this->accountType = null;
+            $this->bankName = null;
+            $this->accountNumber = null;
+            $this->ownerName = null;
+            $this->evidenceDoc = null;
+            $this->iban = null;
+            $this->bankBranch = null;
+            $this->toggleAddBankAccount();
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editBankAccount()
+    {
+        $a = BankAccount::find($this->bankAccountId);
+
+        if (is_null($a->evidence_doc) && (is_null($this->evidenceDoc))) {
+            $evidenceDoc_url = null;
+        } elseif (!is_null($a->evidence_doc) && (is_null($this->evidenceDoc))) {
+            $evidenceDoc_url = null;
+        } elseif (!is_null($a->evidence_doc) && (!is_null($this->evidenceDoc))) {
+            if (is_string($this->evidenceDoc)) {
+                $this->evidenceDoc = null;
+                $evidenceDoc_url = $a->evidence_doc;
+            }
+        }
+
+        $this->validate([
+            'accountType' =>  'required|in:' . implode(',', BankAccount::TYPES),
+            'bankName' => 'required|string|max:255',
+            'accountNumber' =>  'required|string|max:255',
+            'ownerName' =>  'required|string|max:255',
+            'evidenceDoc' =>   'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'iban' => 'nullable|string|max:255',
+            'bankBranch' => 'nullable|string|max:255',
+        ]);
+        $b = BankAccount::find($this->bankAccountId);
+
+        if (!is_string($this->evidenceDoc) && !is_null($this->evidenceDoc)) {
+            $evidenceDoc_url = $this->evidenceDoc->store(Customer::FILES_DIRECTORY, 's3');
+        }
+
+        $res = $b->editInfo(
+            $this->accountType,
+            $this->bankName,
+            $this->accountNumber,
+            $this->ownerName,
+            $evidenceDoc_url,
+            $this->iban,
+            $this->bankBranch,
+            false
+        );
+        if ($res) {
+            $this->alert('success', 'Account edited successfuly');
+            $this->closeEditBankAccount();
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function deleteBankAccount()
+    {
+        $r = BankAccount::find($this->deleteBankAccountId)->delete();
+        if ($r) {
+            $this->alert('success', 'Account deleted sucessfuly!');
+            $this->deleteBankAccountId = null;
+            $this->mount($this->customer->id);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function clearEvidenceDoc()
+    {
+        $this->evidenceDoc = null;
+    }
+
+
     public function downloadDoc($url)
     {
         $filename = $this->customer->name . '_document.' . pathinfo($url, PATHINFO_EXTENSION);
+        $fileContents = Storage::disk('s3')->get($url);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function downloadEvidenceDoc($url)
+    {
+        
+        $filename = $this->customer->name . '_evidence_document.' . pathinfo($url, PATHINFO_EXTENSION);
         $fileContents = Storage::disk('s3')->get($url);
         $headers = [
             'Content-Type' => 'application/octet-stream',
@@ -748,9 +933,6 @@ class CustomerShow extends Component
 
     public function editInfo()
     {
-
-
-
         if (is_null($this->customer->id_doc) && (is_null($this->idDoc))) {
             $idDoc_url = null;
         } elseif (!is_null($this->customer->id_doc) && (is_null($this->idDoc))) {
@@ -773,8 +955,6 @@ class CustomerShow extends Component
             }
         }
 
-
-        // dd($this->idDoc);
         $this->validate([
             'name' => 'required|string|max:255',
             'arabic_name' => 'nullable|string|max:255',
@@ -792,20 +972,15 @@ class CustomerShow extends Component
             'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
 
-        // dd($this->idDoc);
         $customer = Customer::find($this->customer->id);
 
-        // dd($this->driverLicenseDoc);
-
-        if (!is_string($this->idDoc) && !is_null($this->idDoc) && is_null($this->customer->id_doc)) {
+        if (!is_string($this->idDoc) && !is_null($this->idDoc)) {
             $idDoc_url = $this->idDoc->store(Customer::FILES_DIRECTORY, 's3');
         }
 
-        if (!is_string($this->driverLicenseDoc) && !is_null($this->driverLicenseDoc) && is_null($this->customer->driver_license_doc)) {
+        if (!is_string($this->driverLicenseDoc) && !is_null($this->driverLicenseDoc)) {
             $driverLicenseDoc_url = $this->driverLicenseDoc->store(Customer::FILES_DIRECTORY, 's3');
         }
-
-        dd($idDoc_url);
 
         $c = $customer->editCustomer(
             $this->name,
@@ -920,6 +1095,7 @@ class CustomerShow extends Component
         $phoneTypes = Phone::TYPES;
         $tasks = $this->customer->tasks;
         $offers = $this->customer->offers;
+        $bankAccTypes = BankAccount::TYPES; 
         // dd($tasks);
 
         return view('livewire.customer-show', [
@@ -940,7 +1116,8 @@ class CustomerShow extends Component
             'tasks' => $tasks,
             'cities' => $cities,
             'areas' => $areas,
-            'offers' => $offers
+            'offers' => $offers,
+            'bankAccTypes' => $bankAccTypes
         ]);
     }
 }
