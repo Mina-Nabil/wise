@@ -70,7 +70,13 @@
                                 @else
                                     @foreach ($customer->cars as $car)
                                         <div class="card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5" style="border-color:rgb(224, 224, 224)">
+                                            @if ($car->wise_insured)
+                                                <span class="badge bg-success-500 text-white capitalize inline-flex items-center">
+                                                    <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="wpf:security-checked"></iconify-icon>
+                                                    Wise Insured</span>
+                                                @endif
                                             <div class="break-words flex items-center my-1 m-4">
+                                                
                                                 <h3 class="text-base capitalize py-3">
                                                     <ul class="m-0 p-0 list-none">
                                                         <li class="inline-block relative top-[3px] text-base font-Inter ">
@@ -90,6 +96,8 @@
                                                     <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $car->payment_frequency }}
                                                         Payment</span>
                                                 @endif
+
+                                                
 
                                                 <div class="ml-auto">
                                                     <div class="relative">
@@ -119,16 +127,23 @@
 
                                             </div>
                                             <hr><br>
-                                            <div class="grid grid-cols-2 mb-4">
+                                            <div class="grid grid-cols-3 mb-4">
                                                 <div class="border-r ml-5">
                                                     <p><b>Sum insured</b></p>
                                                     <p>{{ number_format($car->sum_insured, 0, '.', ',') }}</p>
+                                                </div>
+                                                <div class="border-r ml-5">
+                                                    <p><b>Insurance Company </b></p>
+                                                    <p>{{ $car->insurance_company->name }}</p>
                                                 </div>
                                                 <div class="ml-5">
                                                     <p><b>Insurance payment</b></p>
                                                     <p>{{ number_format($car->insurance_payment, 0, '.', ',') }}</p>
                                                 </div>
                                             </div>
+                                            @if ($car->renewal_date)
+                                                <p class="m-4">Renewal Date: <b>{{ optional(\Carbon\Carbon::parse($car->renewal_date))->format('l d M Y') ?? '' }}                                                </b></p>
+                                            @endif
                                         </div>
                                     @endforeach
                                 @endif
