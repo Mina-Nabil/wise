@@ -12,7 +12,8 @@ use App\models\Customers\Address;
 use App\models\Customers\Car as CustomerCar;
 use App\Models\Customers\Relative;
 use App\models\Cars\Car;
-use App\models\Tasks\Task;
+use Carbon\Carbon;
+use App\models\Insurance\Company;
 use App\models\Cars\CarModel;
 use App\models\Cars\Brand;
 use App\Models\Base\Country;
@@ -22,8 +23,6 @@ use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Routing\Route;
-use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Round;
 
 class CustomerShow extends Component
 {
@@ -59,6 +58,9 @@ class CustomerShow extends Component
     public $insurancePayment;
     public $paymentFreqs;
     public $editedCarId = null;
+    public $renewalDate;
+    public $wiseInsured;
+    public $insuranceCompanyId;
 
     //add Address
     public $addAddressSection = false;
@@ -178,11 +180,13 @@ class CustomerShow extends Component
         $this->bankBranch = null;
     }
 
-    public function deleteThisBankAccount($id){
+    public function deleteThisBankAccount($id)
+    {
         $this->deleteBankAccountId = $id;
     }
 
-    public function closeDeleteBankAccount(){
+    public function closeDeleteBankAccount()
+    {
         $this->deleteBankAccountId = null;
     }
 
@@ -203,10 +207,10 @@ class CustomerShow extends Component
 
         if ($this->evidenceDoc) {
             $evidenceDoc_url = $this->evidenceDoc->store(Customer::FILES_DIRECTORY, 's3');
-        }else{
+        } else {
             $evidenceDoc_url = null;
         }
-        
+
 
         $res = $c->addBankAccount(
             $this->accountType,
@@ -321,7 +325,7 @@ class CustomerShow extends Component
 
     public function downloadEvidenceDoc($url)
     {
-        
+
         $filename = $this->customer->name . '_evidence_document.' . pathinfo($url, PATHINFO_EXTENSION);
         $fileContents = Storage::disk('s3')->get($url);
         $headers = [
@@ -664,6 +668,9 @@ class CustomerShow extends Component
         $this->sumInsurance  =  $c->sum_insured;
         $this->insurancePayment  =  $c->insurance_payment;
         $this->paymentFreqs =  $c->payment_frequency;
+        $this->renewalDate = Carbon::parse($c->renewal_date)->toDateString();
+        $this->wiseInsured = $c->wise_insured;
+        $this->insuranceCompanyId = $c->insurance_company_id;
         $this->models = CarModel::where('brand_id', $this->carBrand)->get();
         $this->cars = Car::where('car_model_id', $this->carModel)->get();
     }
@@ -675,14 +682,24 @@ class CustomerShow extends Component
             'sumInsurance' => 'nullable|integer',
             'insurancePayment' => 'nullable|integer',
             'paymentFreqs' => 'nullable|in:' . implode(',', CustomerCar::PAYMENT_FREQS),
+            'insuranceCompanyId' => 'nullable|integer|exists:insurance_companies,id',
+            'renewalDate' => 'nullable|date',
+            'wiseInsured' => 'nullable|boolean',
+
         ]);
+
+        $renewalDate = $this->renewalDate ? Carbon::parse($this->renewalDate) : null;
+
         $c = CustomerCar::find($this->editedCarId);
         $c->editInfo(
             $this->CarCategory,
             null,
             $this->sumInsurance,
             $this->insurancePayment,
-            $this->paymentFreqs
+            $this->paymentFreqs,
+            $this->insuranceCompanyId,
+            $renewalDate,
+            $this->wiseInsured
         );
         if ($c) {
             $this->alert('success', 'Car Edited sucessfuly!');
@@ -695,6 +712,10 @@ class CustomerShow extends Component
             $this->paymentFreqs =  null;
             $this->models = null;
             $this->cars = null;
+            $this->paymentFreqs = null;
+            $this->insuranceCompanyId = null;
+            $this->renewalDate = null;
+            $this->wiseInsured = null;
             $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');
@@ -712,6 +733,10 @@ class CustomerShow extends Component
         $this->paymentFreqs =  null;
         $this->models = null;
         $this->cars = null;
+        $this->paymentFreqs = null;
+        $this->insuranceCompanyId = null;
+        $this->renewalDate = null;
+        $this->wiseInsured = null;
     }
 
     public function dismissDeletePhone()
@@ -857,14 +882,22 @@ class CustomerShow extends Component
             'sumInsurance' => 'nullable|integer',
             'insurancePayment' => 'nullable|integer',
             'paymentFreqs' => 'nullable|in:' . implode(',', CustomerCar::PAYMENT_FREQS),
+            'insuranceCompanyId' => 'nullable|integer|exists:insurance_companies,id',
+            'renewalDate' => 'nullable|date',
+            'wiseInsured' => 'nullable|boolean',
         ]);
+
+        $renewalDate = $this->renewalDate ? Carbon::parse($this->renewalDate) : null;
 
         $customer = Customer::find($this->customer->id);
         $c = $customer->addCar(
             $this->CarCategory,
             $this->sumInsurance,
             $this->insurancePayment,
-            $this->paymentFreqs
+            $this->paymentFreqs,
+            $this->insuranceCompanyId,
+            $renewalDate,
+            $this->wiseInsured
         );
         if ($c) {
             $this->alert('success', 'Car added sucessfuly!');
@@ -872,6 +905,9 @@ class CustomerShow extends Component
             $this->sumInsurance = null;
             $this->insurancePayment = null;
             $this->paymentFreqs = null;
+            $this->insuranceCompanyId = null;
+            $this->renewalDate = null;
+            $this->wiseInsured = null;
             $this->toggleAddCar();
             $this->mount($this->customer->id);
         } else {
@@ -1095,7 +1131,8 @@ class CustomerShow extends Component
         $phoneTypes = Phone::TYPES;
         $tasks = $this->customer->tasks;
         $offers = $this->customer->offers;
-        $bankAccTypes = BankAccount::TYPES; 
+        $bankAccTypes = BankAccount::TYPES;
+        $companies = Company::all();
         // dd($tasks);
 
         return view('livewire.customer-show', [
@@ -1117,7 +1154,8 @@ class CustomerShow extends Component
             'cities' => $cities,
             'areas' => $areas,
             'offers' => $offers,
-            'bankAccTypes' => $bankAccTypes
+            'bankAccTypes' => $bankAccTypes,
+            'companies' => $companies
         ]);
     }
 }
