@@ -134,7 +134,7 @@
                                                 </div>
                                                 <div class="border-r ml-5">
                                                     <p><b>Insurance Company </b></p>
-                                                    <p>{{ $car->insurance_company->name }}</p>
+                                                    <p>{{ $car->insurance_company?->name ?? "N/A" }}</p>
                                                 </div>
                                                 <div class="ml-5">
                                                     <p><b>Insurance payment</b></p>
