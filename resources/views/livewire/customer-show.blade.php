@@ -11,32 +11,37 @@
                         <div>
                             <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab" role="tablist">
                                 <li class="nav-item" role="presentation" wire:click="changeSection('profile')">
-                                    <a href="#tabs-profile-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'profile') active @endif dark:text-slate-300" id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-profile-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'profile') active @endif dark:text-slate-300"
+                                        id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="heroicons-outline:user"></iconify-icon>
                                         Profile</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('cars')">
-                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="mingcute:car-line"></iconify-icon>
                                         cars</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('followups')">
-                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="icon-park-outline:cycle-arrow"></iconify-icon>
                                         Follow Ups</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('offers')">
-                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="ic:outline-local-offer"></iconify-icon>
                                         Offers</a>
                                 </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('tasks')">
-                                    <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
-                                        aria-selected="false">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                         <iconify-icon class="mr-1" icon="ic:round-add-task"></iconify-icon>
                                         Tasks</a>
                                 </li>
@@ -100,15 +105,18 @@
                                                             <button class="text-xl text-center block w-full " type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                             </button>
-                                                            <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                            <ul
+                                                                class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                                 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                 <li>
-                                                                    <button wire:click="editThisCar({{ $car->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                    <button wire:click="editThisCar({{ $car->id }})"
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white">
                                                                         Edit</button>
                                                                 </li>
                                                                 <li>
-                                                                    <button wire:click="deleteThisCar({{ $car->id }})" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                    <button wire:click="deleteThisCar({{ $car->id }})"
+                                                                        class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white">
                                                                         Delete</button>
                                                                 </li>
@@ -256,21 +264,25 @@
                                                         <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                             <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                         </button>
-                                                        <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                        <ul
+                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
 
                                                             <li>
-                                                                <button wire:click="setPhoneAsDefault({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="setPhoneAsDefault({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white">
                                                                     Set as primary</button>
                                                             </li>
                                                             <li>
-                                                                <button wire:click="editThisPhone({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="editThisPhone({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                                     Edit</button>
                                                             </li>
                                                             <li>
-                                                                <button wire:click="deleteThisPhone({{ $phone->id }})" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                <button wire:click="deleteThisPhone({{ $phone->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                                     Delete</button>
                                                             </li>
@@ -421,7 +433,7 @@
                                 </p>
 
                                 @if ($customer->bank_accounts->isEmpty())
-                                    <p class="text-center m-5 text-primary">No bank accounts added to this corporate.</p>
+                                    <p class="text-center m-5 text-primary">No bank accounts added to this customer.</p>
                                 @else
                                     @foreach ($customer->bank_accounts as $account)
                                         <p><b> {{ $account->bank_name }}</b>
@@ -450,6 +462,44 @@
                             </div>
                         </div>
 
+
+
+                        {{-- bank accounts section --}}
+                        <div class="card-body flex flex-col justify-center mt-5  bg-no-repeat bg-center bg-cover card p-4 active">
+                            <div class="card-text flex flex-col justify-between h-full menu-open">
+                                <p class="mb-2">
+                                    <b>Policy Interests</b>
+                                </p>
+
+                                @if ($customer->interests->isEmpty())
+                                    <p class="text-center m-5 text-primary">No interests for this customer.</p>
+                                @else
+                                    @foreach ($customer->interests as $interest)
+                                        <p><span class="badge bg-slate-900 text-white capitalize inline-flex items-center">
+                                            @if ($interest->interested)
+                                            <iconify-icon class="ltr:mr-1 rtl:ml-1 text-info-500" icon="mdi:stars"></iconify-icon>
+                                            @endif
+                                                {{ ucwords(str_replace('_', ' ', $interest->relation)) }}
+                                            </span>
+
+
+                                            <button wire:click="removeInterest({{ $interest->id }})" class="action-btn float-right" type="button">
+                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                            </button>
+                                            <button wire:click="editThisInterest({{ $interest->id }})" class="action-btn float-right mr-1" type="button">
+                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                            </button>
+                                        </p>
+
+                                        <p>{{ $interest->note }}</p>
+                                        <br>
+                                    @endforeach
+                                @endif
+
+                                <button wire:click="toggleAddInterest" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add Interest</button>
+
+                            </div>
+                        </div>
 
 
 
@@ -758,7 +808,8 @@
                                 Delete Car
                             </h3>
                             <button wire:click="dismissDeleteCar" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -794,7 +845,8 @@
                                 Delete Phone
                             </h3>
                             <button wire:click="dismissDeletePhone" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -830,7 +882,8 @@
                                 Delete Followup
                             </h3>
                             <button wire:click="dismissDeleteFollowup" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -866,7 +919,8 @@
                                 Delete Address
                             </h3>
                             <button wire:click="dismissDeleteAddress" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -902,7 +956,8 @@
                                 Delete Relative
                             </h3>
                             <button wire:click="dismissDeleteRelative" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1892,6 +1947,128 @@
         </div>
     @endif
 
+    @if ($interestId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Interest
+                            </h3>
+                            <button wire:click="closeEditInterest" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3">
+                                    <div class="input-area col-span-2">
+                                        <label for="firstName" class="form-label">Relation</label>
+                                        <select name="basicSelect" class="form-control w-full mt-2 @error('lob') !border-danger-500 @enderror" wire:model.defer="lob">
+                                            @foreach ($LINES_OF_BUSINESS as $lob)
+                                                <option value="{{ $lob }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                    {{ ucwords(str_replace('_', ' ', $lob)) }}
+                                                    </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="checkbox-area">
+                                        <label for="firstName" class="form-label">Mark as Interested</label>
+                                        <input type="checkbox" name="checkbox" wire:model.defer="interested">
+                                    </div>
+                                    <div class="input-area col-span-3">
+                                        <label for="firstName" class="form-label">Leave a Note</label>
+                                        <input id="lastName" type="text" class="form-control @error('interestNote') !border-danger-500 @enderror" wire:model.defer="interestNote">
+                                    </div>
+                                </div>
+                                @error('lob')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @error('interestNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editInterest" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($interestSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Interest
+                            </h3>
+                            <button wire:click="toggleAddInterest" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3">
+                                    <div class="input-area col-span-2">
+                                        <label for="firstName" class="form-label">Relation</label>
+                                        <select name="basicSelect" class="form-control w-full mt-2 @error('lob') !border-danger-500 @enderror" wire:model.defer="lob">
+                                            @foreach ($LINES_OF_BUSINESS as $lob)
+                                                <option value="{{ $lob }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                    {{ ucwords(str_replace('_', ' ', $lob)) }}
+                                                    </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="checkbox-area">
+                                        <label for="firstName" class="form-label">Mark as Interested</label>
+                                        <input type="checkbox" name="checkbox" wire:model.defer="interested">
+                                    </div>
+                                    <div class="input-area col-span-3">
+                                        <label for="firstName" class="form-label">Leave a Note</label>
+                                        <input id="lastName" type="text" class="form-control @error('interestNote') !border-danger-500 @enderror" wire:model.defer="interestNote">
+                                    </div>
+                                </div>
+                                @error('lob')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @error('interestNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addInterest" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if ($editedPhoneId)
         {{-- add address section --}}
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
@@ -2142,7 +2319,8 @@
                                 Delete Bank Account
                             </h3>
                             <button wire:click="closeDeleteBankAccount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>

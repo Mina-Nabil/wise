@@ -11,6 +11,7 @@ use App\models\Customers\BankAccount;
 use App\models\Customers\Address;
 use App\models\Customers\Car as CustomerCar;
 use App\Models\Customers\Relative;
+use App\Models\Insurance\Policy;
 use App\models\Cars\Car;
 use Carbon\Carbon;
 use App\models\Insurance\Company;
@@ -18,6 +19,7 @@ use App\models\Cars\CarModel;
 use App\models\Cars\Brand;
 use App\Models\Base\Country;
 use App\Models\Customers\Followup;
+use App\Models\Customers\Interest;
 use App\Models\Customers\Phone;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
@@ -137,6 +139,12 @@ class CustomerShow extends Component
     public $deleteBankAccountId;
     public $addBankAccountSection;
 
+    //interests
+    public $interestSection = false;
+    public $lob;
+    public $interested;
+    public $interestNote;
+    public $interestId;
 
     public $section = 'profile';
 
@@ -149,6 +157,10 @@ class CustomerShow extends Component
         $this->mount($this->customer->id);
     }
 
+    public function toggleAddInterest()
+    {
+        $this->toggle($this->interestSection);
+    }
 
     public function toggleAddBankAccount()
     {
@@ -1113,6 +1125,68 @@ class CustomerShow extends Component
         return redirect(Route('offers.show', $id));
     }
 
+    public function editThisInterest($id){
+        $this->interestId = $id;
+        $i = Interest::find($id);
+        $this->lob  = $i->relation;
+        $this->interested = $i->interested;
+        $this->note = $i->note;
+    }
+
+    public function closeEditInterest(){
+        $this->interestId = null;
+    }
+
+    public function editInterest(){
+        $this->validate([
+            'lob' => 'required|in:' . implode(',', policy::LINES_OF_BUSINESS),
+            'interested' => 'required|boolean',
+            'interestNote' => 'nullable|string|max:255'
+        ]);
+
+        $i = Interest::find($this->interestId);
+
+        $res = $i->editInterest(
+            $this->lob,
+            $this->interested,
+            $this->note,
+        );
+
+        if ($res) {
+            $this->lob = null;
+            $this->interested = null;
+            $this->note = null;
+            $this->mount($this->customer->id);
+            $this->alert('success','Interest edited!');
+        }else{
+            $this->alert('failed','Server error');
+        }
+    }
+
+    public function addInterest(){
+        $this->validate([
+            'lob' => 'required|in:' . implode(',', policy::LINES_OF_BUSINESS),
+            'interested' => 'required|boolean',
+            'interestNote' => 'nullable|string|max:255'
+        ]);
+
+        $res = $this->customer->addInterest(
+            $this->lob,
+            $this->interested,
+            $this->note,
+        );
+
+        if ($res) {
+            $this->lob = null;
+            $this->interested = null;
+            $this->note = null;
+            $this->mount($this->customer->id);
+            $this->alert('success','Interest Added!');
+        }else{
+            $this->alert('failed','Server error');
+        }
+    }
+
     public function render()
     {
         $GENDERS = Customer::GENDERS;
@@ -1134,6 +1208,7 @@ class CustomerShow extends Component
         $bankAccTypes = BankAccount::TYPES;
         $companies = Company::all();
         // dd($tasks);
+        $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
 
         return view('livewire.customer-show', [
             'customer' => $this->customer,
@@ -1155,7 +1230,8 @@ class CustomerShow extends Component
             'areas' => $areas,
             'offers' => $offers,
             'bankAccTypes' => $bankAccTypes,
-            'companies' => $companies
+            'companies' => $companies,
+            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS
         ]);
     }
 }
