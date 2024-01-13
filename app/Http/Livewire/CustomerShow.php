@@ -146,6 +146,17 @@ class CustomerShow extends Component
     public $interestNote;
     public $interestId;
 
+    //customer ralative
+    public $addCustomerRelativeSection;
+    public $searchCustomer; // value for searching customers
+    public $customerResult;
+    public $selectedRelative;
+    public $custRelation;
+    public $deleteRelativeCustId;
+
+
+
+
     public $section = 'profile';
 
     protected $queryString = ['section'];
@@ -155,6 +166,59 @@ class CustomerShow extends Component
         $this->section = $section;
         // dd($this->section);
         $this->mount($this->customer->id);
+    }
+
+    public function deleteThisRelativeCustomer($id){
+        $this->deleteRelativeCustId = $id;
+    }
+
+    public function dismissDeleteRelativeCustomer(){
+        $this->deleteRelativeCustId = null;
+    }
+
+    public function deleteRelativeCustomer(){
+        $this->customer->customer_relatives()->detach($this->deleteRelativeCustId);
+        $this->dismissDeleteRelativeCustomer();
+        $this->mount($this->customer->id);
+    }
+
+    public function addRelariveCustomer(){
+        $this->validate([
+            'custRelation' => 'required|in:' . implode(',', Relative::RELATIONS),
+        ]);
+
+        
+        $res = $this->customer->addCustomerRelative($this->selectedRelative->id,$this->custRelation);
+
+        if ($res) {
+            $this->alert('success' ,'Customer relative added');
+            $this->selectedRelative = null;
+            $this->custRelation = null;
+            $this->toggleAddCustomerRelative();
+            $this->mount($this->customer->id);
+        }else{
+            $this->alert('failed' , 'server error');
+        }
+    }
+
+
+    public function clearCustomerRelative(){
+        $this->selectedRelative = null;
+    }
+
+    public function selectCustomerRelative($id){
+        $this->selectedRelative = Customer::find($id);
+
+        $this->customerResult = null;
+        $this->searchCustomer = null;
+    }
+
+    public function updatedSearchCustomer(){
+        $this->customerResult = Customer::userData($this->searchCustomer)->get()->take(5);
+    }
+
+    public function toggleAddCustomerRelative(){
+        $this->toggle($this->addCustomerRelativeSection);
     }
 
     public function toggleAddInterest()

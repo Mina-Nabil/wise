@@ -365,6 +365,35 @@
                             </div>
                         </div>
 
+                        <div class="card-body flex flex-col justify-center mt-5  bg-no-repeat bg-center bg-cover card p-4 active">
+                            <div class="card-text flex flex-col justify-between h-full menu-open">
+                                <p class="mb-2">
+                                    <b>Relative Customers</b>
+                                </p>
+                                @if ($customer->customer_relatives->isEmpty())
+                                    <p class="text-center m-5 text-primary">No customer relatives added to this customer.</p>
+                                @else
+                                    @foreach ($customer->customer_relatives as $cust_relative)
+                                        <p><b> {{ $cust_relative->name }}</b>
+                                            <button wire:click="deleteThisRelativeCustomer({{ $cust_relative->id }})" class="action-btn float-right" type="button">
+                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                            </button>
+                                        </p>
+
+
+                                        <p> 
+                                            {{ ucwords($cust_relative->pivot->relation) }}
+                                        </p>
+                                        <br>
+                                    @endforeach
+                                @endif
+
+                                <button wire:click="toggleAddCustomerRelative" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add
+                                    relative</button>
+
+                            </div>
+                        </div>
+
 
                     </div>
 
@@ -464,7 +493,7 @@
 
 
 
-                        {{-- bank accounts section --}}
+                        {{-- Interests section --}}
                         <div class="card-body flex flex-col justify-center mt-5  bg-no-repeat bg-center bg-cover card p-4 active">
                             <div class="card-text flex flex-col justify-between h-full menu-open">
                                 <p class="mb-2">
@@ -476,9 +505,9 @@
                                 @else
                                     @foreach ($customer->interests as $interest)
                                         <p><span class="badge bg-slate-900 text-white capitalize inline-flex items-center">
-                                            @if ($interest->interested)
-                                            <iconify-icon class="ltr:mr-1 rtl:ml-1 text-info-500" icon="mdi:stars"></iconify-icon>
-                                            @endif
+                                                @if ($interest->interested)
+                                                    <iconify-icon class="ltr:mr-1 rtl:ml-1 text-info-500" icon="mdi:stars"></iconify-icon>
+                                                @endif
                                                 {{ ucwords(str_replace('_', ' ', $interest->relation)) }}
                                             </span>
 
@@ -826,6 +855,43 @@
                         <!-- Modal footer -->
                         <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="deleteCar" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($deleteRelativeCustId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                Delete Relative Customer
+                            </h3>
+                            <button wire:click="dismissDeleteRelativeCustomer" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                Are you sure ! you Want to delete this relative customer ?
+                            </h6>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteRelativeCustomer" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
                         </div>
                     </div>
                 </div>
@@ -1947,6 +2013,77 @@
         </div>
     @endif
 
+    @if ($addCustomerRelativeSection)
+        {{-- add address section --}}
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Customer Relative
+                            </h3>
+                            <button wire:click="toggleAddCustomerRelative" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3">
+                                    @if ($selectedRelative)
+                                    <div class="input-area col-span-2">
+                                    <label for="lastName" class="form-label" style="margin: 0">Customer</label>
+                                    <p>{{ $selectedRelative->name }}</p>
+                                    <p class="text-sm">{{ $selectedRelative->email }}</p>
+                                    <p wire:click="clearCustomerRelative" class="text-primary-500 cursor-pointer text-sm"><iconify-icon icon="mdi:clear"></iconify-icon></p><br>
+                                    </div>
+                                    <div class="input-area col-span-1">
+                                        <label for="firstName" class="form-label">Relation</label>
+                                        <select name="basicSelect" class="form-control w-full mt-2 @error('custRelation') !border-danger-500 @enderror" wire:model.defer="custRelation">
+                                            <option value="{{ $relation }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">select an option..</option>
+                                            @foreach ($RELATIONS as $relation)
+                                                <option value="{{ $relation }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                    {{ $relation }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @else
+                                    <div class="input-area col-span-3">
+                                            <label for="firstName" class="form-label">Search Customers <iconify-icon wire:loading wire:target="searchCustomer" icon="svg-spinners:180-ring"></iconify-icon></label>
+                                            <input id="lastName" type="text" class="form-control" wire:model="searchCustomer">
+                                            <div class="text-sm mt-0">
+                                                @if ($customerResult)
+                                                    @foreach ($customerResult as $searchedCustomer)
+                                                        <p><iconify-icon icon="raphael:customer"></iconify-icon>
+                                                            {{ $searchedCustomer->name }} | {{ $searchedCustomer->email }} | <Span wire:click="selectCustomerRelative({{ $searchedCustomer->id }})" class="cursor-pointer text-primary-500">Select Relative</Span></p>
+                                                    @endforeach
+
+                                                @endif
+                                            </div>
+                                        
+                                    </div>
+                                    @endif
+
+                                </div>
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="addRelariveCustomer" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    @endif
+
     @if ($interestId)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
@@ -1975,7 +2112,7 @@
                                             @foreach ($LINES_OF_BUSINESS as $lob)
                                                 <option value="{{ $lob }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     {{ ucwords(str_replace('_', ' ', $lob)) }}
-                                                    </option>
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -2036,7 +2173,7 @@
                                             @foreach ($LINES_OF_BUSINESS as $lob)
                                                 <option value="{{ $lob }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     {{ ucwords(str_replace('_', ' ', $lob)) }}
-                                                    </option>
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>

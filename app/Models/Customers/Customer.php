@@ -391,7 +391,7 @@ class Customer extends Model
         try {
             $tmp = $this->customer_relatives()->attach($id, ["relation" =>  $relation]);
             AppLog::info("Adding customer to customer relative", loggable: $this);
-            return $tmp;
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Adding customer to customer relative failed", desc: $e->getMessage(), loggable: $this);
@@ -617,7 +617,7 @@ class Customer extends Model
 
     public function customer_relatives(): BelongsToMany
     {
-        return $this->belongsToMany(self::class, 'cust_cust_relatives', 'relation_id')->withPivot('relation');
+        return $this->belongsToMany(self::class, 'cust_cust_relatives', 'customer_id','relative_id')->withPivot('relation');
     }
 
     public function tasks(): MorphMany
