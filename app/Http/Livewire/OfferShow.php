@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Offers\Offer;
+use App\Models\Offers\OfferDiscount;
 use App\Models\Cars\Car;
 use App\Models\Users\User;
 use App\Models\Customers\Car as CustomerCar;
@@ -60,6 +61,14 @@ class OfferShow extends Component
     public $fields = [];
     public $files = [];
 
+    //discounts
+    public $addDiscountSec = false;
+    public $discountType;
+    public $discountValue;
+    public $discountNote;
+    public $deleteDiscountId;
+    public $discountId;
+
     public $editOptionId;
 
     public $addFieldSection_id;
@@ -90,6 +99,87 @@ class OfferShow extends Component
             $this->mount($this->offer->id);
         } else {
             $this->alert('failed', 'Server Error');
+        }
+    }
+
+    public function toggleAddDiscount(){
+        $this->toggle($this->addDiscountSec);
+    }
+
+    public function editThisDicount($id){
+        $this->discountId = $id;
+        $discount = OfferDiscount::find($id);
+        $this->discountType  = $discount->type;
+        $this->discountValue  = $discount->value;
+        $this->discountNote = $discount->note;
+    }
+
+    public function deleteThisDiscount($id){
+        $this->deleteDiscountId = $id;
+    }
+
+    public function closeEditDiscount(){
+        $this->discountId = null;
+    }
+
+    public function deleteDiscount(){
+        $res = OfferDiscount::find($this->deleteDiscountId)->delete();
+        if($res){
+            $this->deleteDiscountId = null;
+            $this->alert('success','Discount Deleted!');
+        }else{
+            $this->alert('failed','server error');
+        }
+    }
+
+    public function dismissDeleteDiscount(){
+        $this->deleteDiscountId = null;
+    }
+
+    public function addDiscount(){
+        $this->validate([
+            'discountType' => 'required|in:' . implode(',', OfferDiscount::TYPES),
+            'discountValue' => 'required|numeric',
+            'discountNote' => 'nullable|string|max:255'
+        ]);
+        $res = $this->offer->addDiscount(
+            $this->discountType,
+            $this->discountValue,
+            $this->discountNote
+        );
+        if($res){
+            $this->discountType =  null;
+            $this->discountValue = null;
+            $this->discountNote =  null;
+            $this->toggleAddDiscount();
+            $this->mount($this->offer->id);
+            $this->alert('success','Discount Added!');
+        }else{
+            $this->alert('failed','server error');
+        }
+    }
+
+    public function updateDiscount(){
+        $this->validate([
+            'discountType' => 'required|in:' . implode(',', OfferDiscount::TYPES),
+            'discountValue' => 'required|numeric',
+            'discountNote' => 'nullable|string|max:255'
+        ]);
+
+        $res = OfferDiscount::find($this->discountId)->editInfo(
+            $this->discountType,
+            $this->discountValue,
+            $this->discountNote
+        );
+        if($res){
+            $this->discountType =  null;
+            $this->discountValue = null;
+            $this->discountNote =  null;
+            $this->closeEditDiscount();
+            $this->mount($this->offer->id);
+            $this->alert('success','Discount Added!');
+        }else{
+            $this->alert('failed','server error');
         }
     }
 
@@ -564,6 +654,8 @@ class OfferShow extends Component
         $usersTypes = User::TYPES;
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
+        $DISCOUNT_TYPES = OfferDiscount::TYPES;
+        
         // $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
 
 
@@ -572,6 +664,7 @@ class OfferShow extends Component
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
             'users' => $users,
             'usersTypes' => $usersTypes,
+            'DISCOUNT_TYPES' => $DISCOUNT_TYPES
         ]);
     }
 }

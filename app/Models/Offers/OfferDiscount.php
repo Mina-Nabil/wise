@@ -15,6 +15,8 @@ class OfferDiscount extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $table = 'offer_discounts';
     protected $fillable = [
         'value',

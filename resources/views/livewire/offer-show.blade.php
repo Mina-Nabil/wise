@@ -667,6 +667,103 @@
                 </div>
                 {{-- End Files --}}
 
+                <div class="card mt-5">
+                    <div class="card-body flex flex-col p-6">
+                        <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                            <div class="flex-1">
+                                <div class="card-title text-slate-900 dark:text-white">
+                                    <h6>Discounts <iconify-icon wire:loading wire:target="downloadOfferFile" icon="svg-spinners:3-dots-move"></iconify-icon></h6>
+                                </div>
+                            </div>
+                            <button wire:click="toggleAddDiscount" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add Discount</button>
+
+                        </header>
+                        <div class="card-body">
+                            <!-- BEGIN: Files Card -->
+                            <ul class="divide-y divide-slate-100 dark:divide-slate-700">
+
+                                @if ($offer->discounts->isEmpty())
+                                    <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                        No discounts added to this offer.
+                                    </div>
+                                @endif
+
+
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                    <thead class="">
+                                        <tr>
+
+                                            <th scope="col" class=" table-th ">
+                                                Type
+                                            </th>
+
+                                            <th scope="col" class=" table-th ">
+                                                Discount
+                                            </th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                        @foreach ($offer->discounts as $discount)
+                                            <tr>
+                                                <td class="table-td ">
+                                                    <div class="min-w-[170px]">
+                                                        <span class="text-slate-500 dark:text-slate-400">
+                                                            <span class="block text-slate-600 dark:text-slate-300">{{ ucwords(str_replace('_', ' ', $discount->type)) }}</span>
+                                                            <span class="block text-slate-500 text-xs">Offered By: {{ $discount->user->username }}</span>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td class="table-td ">
+
+                                                    <div class=" text-success-500 text-lg">
+                                                        {{ $discount->value }}
+                                                    </div>
+
+                                                </td>
+                                                <td class="table-td ">
+                                                    <div>
+                                                        <div class="relative">
+                                                            <div class="dropdown relative">
+                                                                <button class="text-xl text-center block w-full " type="button" id="transactionDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                </button>
+                                                                <ul
+                                                                    class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                    shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                    <li>
+                                                                        <a wire:click="editThisDicount({{ $discount->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                            dark:hover:text-white">
+                                                                            Edit</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a wire:click="deleteThisDiscount({{ $discount->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                            dark:hover:text-white">
+                                                                            Delete</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr style="border: 0">
+                                                <td class="table-td col-span-2 text-wrap"><b>Note:</b> {{ $discount->note }}</td>
+                                            </tr>
+                                        @endforeach
+
+                                    </tbody>
+                                </table>
+
+                            </ul>
+                            <!-- END: FIles Card -->
+                        </div>
+                    </div>
+                </div>
+
                 <br><br>
 
                 {{-- Comments --}}
@@ -746,6 +843,123 @@
         </div>
     </div>
 
+    @if ($discountId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Discount
+                            </h3>
+                            <button wire:click="closeEditDiscount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">DiscountType</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('discountType') !border-danger-500 @enderror" wire:model="discountType">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
+                                    @foreach ($DISCOUNT_TYPES as $type)
+                                        <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ ucwords(str_replace('_', ' ', $type)) }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Item title</label>
+                                <input type="number" class="form-control mt-2 w-full @error('discountValue') !border-danger-500 @enderror" wire:model.defer="discountValue">
+                                @error('discountValue')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Item Description</label>
+                                <textarea class="form-control mt-2 w-full @error('discountNote') !border-danger-500 @enderror" wire:model.defer="discountNote"></textarea>
+                                @error('discountNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="updateDiscount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($addDiscountSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Discount
+                            </h3>
+                            <button wire:click="toggleAddDiscount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">DiscountType</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('discountType') !border-danger-500 @enderror" wire:model="discountType">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
+                                    @foreach ($DISCOUNT_TYPES as $type)
+                                        <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ ucwords(str_replace('_', ' ', $type)) }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Item title</label>
+                                <input type="number" class="form-control mt-2 w-full @error('discountValue') !border-danger-500 @enderror" wire:model.defer="discountValue">
+                                @error('discountValue')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Item Description</label>
+                                <textarea class="form-control mt-2 w-full @error('discountNote') !border-danger-500 @enderror" wire:model.defer="discountNote"></textarea>
+                                @error('discountNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addDiscount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if ($editItemSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
@@ -1293,6 +1507,42 @@
         </div>
     @endif
 
+    @if ($deleteDiscountId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                Delete Discount
+                            </h3>
+                            <button wire:click="dismissDeleteDiscount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                Are you sure ! you Want to delete this Discount ?
+                            </h6>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteDiscount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if ($deleteOptionId)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
