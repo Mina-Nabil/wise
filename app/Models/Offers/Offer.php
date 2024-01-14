@@ -265,27 +265,22 @@ class Offer extends Model
     /**
      * @param array $fields should contain an array of arrays.. each child array should contain 'name' & 'value'
      */
-    public function addOption($policy_id, $policy_condition_id = null, $insured_value = null, $payment_frequency = null, array $fields = [], $docs = [])
-    {
+    public function addOption(
+        $policy_id,
+        $policy_condition_id = null,
+        $insured_value = null,
+        $payment_frequency = null,
+        $net_premium = null,
+        $gross_premium = null,
+        $is_renewal = false,
+        $installements_count = null,
+        array $fields = [],
+        $docs = []
+    ) {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateOptions', $this)) return false;
-        
 
-        switch ($payment_frequency) {
-            case OfferOption::PAYMENT_FREQ_YEARLY:
-                $periodic_payment = $insured_value;
-                break;
-            case OfferOption::PAYMENT_FREQ_QUARTER:
-                $periodic_payment = round($insured_value / 4, 2);
-                break;
-            case OfferOption::PAYMENT_FREQ_MONTHLY:
-                $periodic_payment = round($insured_value / 12, 2);
-                break;
-
-            default:
-                return false;
-        }
         try {
             /** @var OfferOption */
             if ($tmpOption = $this->options()->firstOrCreate(
@@ -294,9 +289,12 @@ class Offer extends Model
                 ],
                 [
                     "policy_condition_id"   =>  $policy_condition_id,
-                    "insured_value"         =>  $insured_value,
-                    "periodic_payment"      =>  $periodic_payment,
-                    "payment_frequency"     =>  $payment_frequency,
+                    "insured_value"  =>  $insured_value,
+                    "net_premium"  =>  $net_premium,
+                    "gross_premium"  =>  $gross_premium,
+                    "payment_frequency"  =>  $payment_frequency,
+                    "is_renewal"  =>  $is_renewal,
+                    "installements_count"  =>  $installements_count
                 ]
             )) {
 
@@ -376,7 +374,7 @@ class Offer extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateItem', $this)) return false;
-        
+
 
         try {
             if ($this->files()->create([
@@ -444,7 +442,7 @@ class Offer extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateOptions', $this)) return false;
-        
+
 
         if ($this->status == self::STATUS_APPROVED)
             throw new Exception('Offer already approved');

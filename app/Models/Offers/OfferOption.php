@@ -47,36 +47,38 @@ class OfferOption extends Model
     protected $table = 'offer_options';
     protected $fillable = [
         'status', 'policy_id', 'policy_condition_id',
-        'insured_value', 'periodic_payment', 'payment_frequency', 'approved_by_id'
+        'insured_value',
+        'payment_frequency',
+        'approved_by_id',
+        'net_premium',
+        'gross_premium',
+        'is_renewal',
+        'installements_count'
     ];
 
     ////static functions
 
 
     ////model functions
-    public function editInfo($insured_value, $payment_frequency)
-    {
-        switch ($payment_frequency) {
-            case self::PAYMENT_FREQ_YEARLY:
-                $periodic_payment = $insured_value;
-                break;
-            case self::PAYMENT_FREQ_QUARTER:
-                $periodic_payment = round($insured_value / 4, 2);
-                break;
-            case self::PAYMENT_FREQ_MONTHLY:
-                $periodic_payment = round($insured_value / 12, 2);
-                break;
-
-            default:
-                return false;
-        }
+    public function editInfo(
+        $insured_value = null,
+        $net_premium = null,
+        $gross_premium = null,
+        $payment_frequency = null,
+        $is_renewal = false,
+        $installements_count = null
+    ) {
         try {
             if ($this->update([
                 "insured_value"  =>  $insured_value,
-                "periodic_payment"  =>  $periodic_payment,
+                "net_premium"  =>  $net_premium,
+                "gross_premium"  =>  $gross_premium,
                 "payment_frequency"  =>  $payment_frequency,
-            
-            ])) { return true;
+                "is_renewal"  =>  $is_renewal,
+                "installements_count"  =>  $installements_count
+
+            ])) {
+                return true;
             } else {
                 AppLog::error("Can't edit offer option", desc: "No stack found", loggable: $this);
                 return false;
