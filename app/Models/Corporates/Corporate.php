@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -92,7 +93,7 @@ class Corporate extends Model
     protected $fillable = [
         'type', 'name', 'arabic_name', 'email', 'commercial_record',
         'commercial_record_doc', 'tax_id', 'tax_id_doc', 'kyc',
-        'kyc_doc', 'contract_doc', 'main_bank_evidence', 'creator_id', 
+        'kyc_doc', 'contract_doc', 'main_bank_evidence', 'creator_id',
         'owner_id'
     ];
 
@@ -285,7 +286,6 @@ class Corporate extends Model
         }
     }
 
-
     public function setBankAccounts(array $accounts)
     {
         try {
@@ -321,6 +321,20 @@ class Corporate extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Adding bank account failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    public function setStatus($status, $reason, $note = null): status|false
+    {
+        try {
+            return $this->status()->updateOrCreate([], [
+                "status"    =>  $status,
+                "reason"    =>  $reason,
+                "note"    =>  $note,
+            ]);
+        } catch (Exception $e) {
+            report($e);
             return false;
         }
     }
@@ -444,6 +458,11 @@ class Corporate extends Model
     }
 
     ///relations
+    public function status(): HasOne
+    {
+        return $this->hasOne(Status::class);
+    }
+
     public function followups(): MorphMany
     {
         return $this->morphMany(Followup::class, 'called');

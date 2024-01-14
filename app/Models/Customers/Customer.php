@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -442,6 +443,19 @@ class Customer extends Model
         }
     }
 
+    public function setStatus($status, $reason, $note = null): status|false
+    {
+        try {
+            return $this->status()->updateOrCreate([], [
+                "status"    =>  $status,
+                "reason"    =>  $reason,
+                "note"    =>  $note,
+            ]);
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
 
     ///static functions
     public static function newLead(
@@ -579,6 +593,11 @@ class Customer extends Model
     }
 
     ///relations
+    public function status(): HasOne
+    {
+        return $this->hasOne(Status::class);
+    }
+
     public function followups(): MorphMany
     {
         return $this->morphMany(Followup::class, 'called');

@@ -31,7 +31,7 @@ return new class extends Migration
             $table->nullableMorphs('item'); //only car for now.. later maybe more items will be added
             $table->enum('type', Policy::LINES_OF_BUSINESS); //motor - health..
             $table->enum('status', Offer::STATUSES);
-            $table->double('item_value')->nullable();
+            $table->double('item_value')->nullable(); //se3r el item el hn3mno
             $table->string('item_title')->nullable();
             $table->text('item_desc')->nullable();
             $table->text('note')->nullable();

@@ -21,9 +21,9 @@ return new class extends Migration
         });
 
         Schema::table('offer_options', function(Blueprint $table){
-            $table->dropColumn('periodic_payment');
-            $table->double('net_premium')->nullable();
-            $table->double('gross_premium')->nullable();
+            $table->dropColumn('periodic_payment'); //kan 2est
+            $table->double('net_premium')->nullable(); //50000
+            $table->double('gross_premium')->nullable(); //48000
             $table->boolean('is_renewal')->default(false);
             $table->integer('installements_count')->nullable();
         });
@@ -45,6 +45,15 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('offer_discounts');
+        Schema::table('offer_options', function(Blueprint $table){
+            $table->dropColumn('net_premium');
+            $table->dropColumn('gross_premium');
+            $table->dropColumn('is_renewal');
+            $table->dropColumn('installements_count');
+        });
+        Schema::table('offers', function(Blueprint $table){
+            $table->dropColumn('is_renewal');
+        });
     }
 };

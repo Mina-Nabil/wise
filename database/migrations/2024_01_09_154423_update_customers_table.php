@@ -58,15 +58,7 @@ return new class extends Migration
             $table->boolean('interested')->default(true);
             $table->string('note')->nullable();
         });
-
-        Schema::create('customer_status', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete(); 
-            $table->foreignIdFor(User::class)->constrained(); 
-            $table->enum('business', Policy::LINES_OF_BUSINESS);
-            $table->boolean('interested')->default(true);
-            $table->string('note')->nullable();
-        });
+        
     }
 
     /**
@@ -76,6 +68,12 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('customer_interests');
+        Schema::dropIfExists('cust_cust_relatives');
         Schema::dropIfExists('customer_bank_accounts');
+        Schema::table('customers', function (Blueprint $table) {
+            $table->dropColumn('id_doc');
+            $table->dropColumn('driver_license_doc');
+        });
     }
 };
