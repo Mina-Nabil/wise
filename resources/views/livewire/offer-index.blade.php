@@ -248,7 +248,7 @@
                                             @if ($carBrand && $carBrand !== '')
                                                 <div class="input-area">
                                                     <label for="lastName" class="form-label">Car Model</label>
-        
+
                                                     <select name="basicSelect" class="form-control w-full mt-2" wire:model="carModel">
                                                         <option value=''>Select an Option</option>
                                                         @foreach ($models as $model)
@@ -258,7 +258,7 @@
                                                     </select>
                                                 </div>
                                             @endif
-        
+
                                             @if ($carModel && $carModel !== '' && $carBrand && $carBrand !== '')
                                                 <div class="input-area">
                                                     <label for="lastName" class="form-label">Car Category</label>
@@ -275,89 +275,105 @@
                                         @error('CarCategory')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
-                                        
+
                                     @endif
                                 @endif
                             @elseif($type === 'personal_medical' && $clientType === 'Customer')
-                                @if($owner)
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
-                                    <div class="input-area">
-                                        <label for="firstName" class="form-label">Birth Date</label>
-                                        <input type="date" class="form-control @error('bdate') !border-danger-500 @enderror" wire:model="bdate">
-                                    </div>
-                                    <div class="input-area">
-                                        <label for="lastName" class="form-label">Gender</label>
-                                        <select name="basicSelect" class="form-control w-full mt-2 @error('gender') !border-danger-500 @enderror" wire:model="gender">
-                                            @foreach ($GENDERS as $gender)
-                                                <option value="{{ $gender }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $gender }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                @error('bdate')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                                @error('gender')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-
-                                <div class="from-group">
-                                    @if (!empty($relatives))
-                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
-                                            <div class="input-area">
-                                                <label for="time-date-picker" class="form-label" style="margin: 0">Relative Info</label>
-                                            </div>
+                                @if ($owner)
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
+                                        <div class="input-area">
+                                            <label for="firstName" class="form-label">Birth Date</label>
+                                            <input type="date" class="form-control @error('bdate') !border-danger-500 @enderror" wire:model="bdate">
                                         </div>
-                                    @endif
-                                    @foreach ($relatives as $index => $relative)
-                                        <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
-                                            <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
-                                                <div class="input-area col-span-4">
-                                                    <input class="form-control w-full mt-2  @error('relatives.{{ $index }}.name') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.name" type="text" placeholder="Relative name">
-                                                </div>
-                                                <div class="input-area col-span-4">
-                                                    <input class="form-control w-full mt-2   @error('relatives.{{ $index }}.phone') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.phone" type="number" placeholder="Relative phone">
-                                                </div>
-                                                <div class="input-area col-span-3">
-                                                    <select name="basicSelect" class="form-control w-full mt-2  @error('relatives.{{ $index }}.relation') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.relation">
-                                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Relation...</option>
-                                                        @foreach ($RELATIONS as $relation)
-                                                            <option value="{{ $relation }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($relation) }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="input-area col-span-2">
-                                                    <select name="basicSelect" class="form-control w-full mt-2   @error('relatives.{{ $index }}.gender') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.gender">
-                                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Gender...</option>
-                                                        @foreach ($GENDERS as $gender)
-                                                            <option value="{{ $gender }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($gender) }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
+                                        <div class="input-area">
+                                            <label for="lastName" class="form-label">Gender</label>
+                                            <select name="basicSelect" class="form-control w-full mt-2 @error('gender') !border-danger-500 @enderror" wire:model="gender">
+                                                @foreach ($GENDERS as $gender)
+                                                    <option value="{{ $gender }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ $gender }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    @error('bdate')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                    @error('gender')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
 
-                                                <div class="input-area col-span-3">
-                                                    <input class="form-control w-full mt-2   @error('relatives.{{ $index }}.birth_date') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.birth_date" type="date" placeholder="birth_date">
-                                                </div>
-                                                <div class="col-span-1 flex items-center">
-                                                    <button class="action-btn" wire:click="removeRelative({{ $index }})" type="button">
-                                                        <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                                    </button>
+                                    <div class="from-group">
+                                        @if (!empty($relatives))
+                                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                                <div class="input-area">
+                                                    <label for="time-date-picker" class="form-label" style="margin: 0">Relative Info</label>
                                                 </div>
                                             </div>
-                                        </div>
-                                    @endforeach
+                                        @endif
+                                        @foreach ($relatives as $index => $relative)
+                                            <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
+                                                <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
+                                                    <div class="input-area col-span-4">
+                                                        <input class="form-control w-full mt-2  @error('relatives.{{ $index }}.name') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.name" type="text" placeholder="Relative name">
+                                                    </div>
+                                                    <div class="input-area col-span-4">
+                                                        <input class="form-control w-full mt-2   @error('relatives.{{ $index }}.phone') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.phone" type="number" placeholder="Relative phone">
+                                                    </div>
+                                                    <div class="input-area col-span-3">
+                                                        <select name="basicSelect" class="form-control w-full mt-2  @error('relatives.{{ $index }}.relation') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.relation">
+                                                            <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Relation...</option>
+                                                            @foreach ($RELATIONS as $relation)
+                                                                <option value="{{ $relation }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($relation) }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="input-area col-span-2">
+                                                        <select name="basicSelect" class="form-control w-full mt-2   @error('relatives.{{ $index }}.gender') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.gender">
+                                                            <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Gender...</option>
+                                                            @foreach ($GENDERS as $gender)
+                                                                <option value="{{ $gender }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($gender) }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
 
-                                    <button wire:click="addAnotherField" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Relative</button>
-                                </div>
+                                                    <div class="input-area col-span-3">
+                                                        <input class="form-control w-full mt-2   @error('relatives.{{ $index }}.birth_date') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.birth_date" type="date" placeholder="birth_date">
+                                                    </div>
+                                                    <div class="col-span-1 flex items-center">
+                                                        <button class="action-btn" wire:click="removeRelative({{ $index }})" type="button">
+                                                            <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+
+                                        <button wire:click="addAnotherField" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Relative</button>
+                                    </div>
                                 @endif
                             @endif
 
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Item title</label>
-                                <input type="text" class="form-control mt-2 w-full" wire:model.defer="item_title">
-                                @error('item_title')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Item title</label>
+                                    <input type="text" class="form-control mt-2 w-full" wire:model.defer="item_title">
+                                    @error('item_title')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Is Renewal</label>
+                                    <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
+                                        <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer" wire:model="isRenewal">
+                                            <div
+                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            </div>
+                                            <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
+                                            <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
+                                        </label>
+                                    </div>
+                                </div>
+
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Item value</label>

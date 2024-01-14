@@ -53,6 +53,10 @@ class OfferShow extends Component
     public $conditionData; // selected condtion data
     public $insured_value;
     public $payment_frequency;
+    public $grossPremium;
+    public $netPremium;
+    public $optionIsRenewal;
+    public $installmentsCount;
     public $fields = [];
     public $files = [];
 
@@ -157,6 +161,10 @@ class OfferShow extends Component
         $this->conditionData = $option->policy_condition;
         $this->insured_value = $option->insured_value;
         $this->payment_frequency = $option->payment_frequency;
+        $this->grossPremium = $option->gross_premium;
+        $this->netPremium = $option->net_premium;
+        $this->optionIsRenewal = $option->is_renewal;
+        $this->installmentsCount = $option->installements_count;
     }
 
     public function closeEditOption()
@@ -398,7 +406,7 @@ class OfferShow extends Component
             'item_desc' => 'nullable|string',
         ]);
 
-        $item = Car::find($this->carId);
+        $item = CustomerCar::find($this->carId);
 
         $res = $this->offer->setItemDetails(
             $this->item_value,
@@ -446,6 +454,10 @@ class OfferShow extends Component
             'conditionId' => 'required|integer|exists:policy_conditions,id',
             'insured_value' => 'nullable|numeric',
             'payment_frequency' =>  'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
+            'grossPremium' => 'nullable|numeric',
+            'netPremium' => 'nullable|numeric',
+            'installmentsCount' => 'nullable|numeric',
+            'optionIsRenewal' => 'boolean',
             'files' => 'nullable|array',
             'files.*' => 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
             'fields' => 'nullable|array',
@@ -552,7 +564,7 @@ class OfferShow extends Component
         $usersTypes = User::TYPES;
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
-        $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
+        // $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
 
 
         return view('livewire.offer-show', [

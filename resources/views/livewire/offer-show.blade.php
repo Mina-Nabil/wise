@@ -40,7 +40,8 @@
                                         <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
                                     </span>
                                 </button>
-                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                <ul
+                                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                     @foreach ($STATUSES as $status)
                                         @if (!($status === $offer->status))
@@ -53,7 +54,8 @@
                                     @endforeach
 
                                     <li wire:click="confirmDeleteOffer">
-                                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        <a href="#"
+                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
                                             Delete Offer</a>
                                     </li>
@@ -79,51 +81,58 @@
                             </p>
                             <div class="card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5" style="border-color:rgb(224, 224, 224)">
                                 <div class="break-words flex items-center my-1 m-4">
-                                    <h3 class="text-base capitalize py-3">
-                                        <ul class="m-0 p-0 list-none">
-                                            <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                                {{ $offer->item->car->car_model->brand->name }}
-                                                <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
-                                            </li>
-                                            <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                                {{ $offer->item->car->car_model->name }}
-                                                <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
-                                            </li>
-                                            <li class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white mr-5">
-                                                {{ $offer->item->car->category }}
-                                            </li>
-                                        </ul>
-                                    </h3>
-                                    {{-- @if ($car->payment_frequency)
+
+                                    @if ($offer->item)
+                                        <h3 class="text-base capitalize py-3">
+                                            <ul class="m-0 p-0 list-none">
+                                                <li class="inline-block relative top-[3px] text-base font-Inter ">
+                                                    {{ $offer->item->car->car_model->brand->name }}
+                                                    <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
+                                                </li>
+                                                <li class="inline-block relative top-[3px] text-base font-Inter ">
+                                                    {{ $offer->item->car->car_model->name }}
+                                                    <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
+                                                </li>
+                                                <li class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white mr-5">
+                                                    {{ $offer->item->car->category }}
+                                                </li>
+                                            </ul>
+                                        </h3>
+
+                                        {{-- @if ($car->payment_frequency)
                                                 <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $car->payment_frequency }} Payment</span>
                                             @endif --}}
 
-                                    <div class="ml-auto">
-                                        <div class="relative">
-                                            <div class="dropdown relative">
-                                                <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
-                                                </button>
-                                                <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                        <div class="ml-auto">
+                                            <div class="relative">
+                                                <div class="dropdown relative">
+                                                    <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                    </button>
+                                                    <ul
+                                                        class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                    <li>
-                                                        <button wire:click="toggleEditItem" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                        <li>
+                                                            <button wire:click="toggleEditItem"
+                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
-                                                            Edit</button>
-                                                    </li>
-                                                </ul>
+                                                                Edit</button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    @endif
 
                                 </div>
-                                <hr><br>
+                                <hr>
+                                <br>
                                 <div class="grid grid-cols-2 mb-4">
                                     <div class="ml-5">
                                         <p>
                                             <b>{{ $offer->item_title }}</b>
-                                            <span class="float-right font-light text-lg">
-                                                {{ number_format($offer->item_value, 0, '.', ',') }} EGP
+                                            <span class="float-right text-lg">
+                                                <b>{{ number_format($offer->item_value, 0, '.', ',') }} EGP</b>
                                             </span>
                                         </p>
                                         <p>
@@ -135,6 +144,8 @@
                         </div>
                     </div>
                 </div>
+
+
 
                 <div class="rounded-md overlay mt-5">
                     <div class="card">
@@ -191,7 +202,8 @@
 
                                                             </td>
                                                             <td class="table-td ">
-                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['policy']['conditions'][0]->id }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp; Generate Option</button>
+                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['policy']['conditions'][0]->id }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars"
+                                                                        class="text-primary-600"></iconify-icon>&nbsp; Generate Option</button>
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -231,6 +243,11 @@
                                 @foreach ($offer->options as $option)
                                     {{-- card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5" style="border-color:rgb(224, 224, 224)" --}}
                                     <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5">
+                                        @if ($option->is_renewal)
+                                            <span class="badge bg-success-500 text-white capitalize inline-flex items-center w-full">
+                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="material-symbols:autorenew-rounded"></iconify-icon>
+                                                Is Renewal</span>
+                                        @endif
                                         <div class="break-words flex items-center my-1 m-4">
                                             <h3 class="text-base capitalize py-3">
                                                 {{ ucwords($option->policy->company->name) }} |
@@ -270,7 +287,8 @@
                                                                     Add Field</button>
                                                             </li>
                                                             <li>
-                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                                                                     Add Doc
                                                                 </label>
                                                                 <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedOptionFile">
@@ -294,7 +312,55 @@
                                             {{ ucwords(str_replace('_', ' ', $option->policy->business)) }}
                                         </p> --}}
 
-                                        <div class="break-words flex items-center m-4 mt-0">
+                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                            <thead class="">
+                                                <tr>
+
+                                                    <th scope="col" class=" table-th" style="padding-bottom:0">
+                                                        Insured Value:
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th" style="padding-bottom:0">
+                                                        Gross Premium:
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th" style="padding-bottom:0">
+                                                        Net Premium:
+                                                    </th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody class=" ">
+
+                                                <tr>
+
+                                                    <td class="table-td ">
+                                                        <h6>
+                                                            {{ number_format($option->insured_value, 0, '.', ',') }}
+                                                            <span class="text-sm text-slate-400 block">
+                                                                {{ ucwords(str_replace('_', ' ', $option->policy->business)) }}</span>
+                                                        </h6>
+                                                    </td>
+
+                                                    <td class="table-td ">
+                                                        <h6>
+                                                            {{ number_format($option->gross_premium, 0, '.', ',') }}
+                                                        </h6>
+                                                    </td>
+
+                                                    <td class="table-td  ">
+                                                        <h6>
+                                                            {{ number_format($option->net_premium, 0, '.', ',') }}
+                                                        </h6>
+                                                    </td>
+                                                </tr>
+
+
+                                            </tbody>
+                                        </table>
+
+
+                                        {{-- <div class="break-words flex items-center m-4 mt-0">
                                             <p class="">
                                                 Insured Value:
                                             <h6 class="ml-3">
@@ -305,6 +371,21 @@
                                             </p>
                                             </p>
                                         </div>
+                                        <div class="break-words flex items-center m-4 mt-0">
+                                            <p class="">
+                                                Gross Premium:
+                                            <h6 class="ml-3">
+                                                {{ number_format($option->gross_premium, 0, '.', ',') }}</h6>
+                                            </p>
+                                        </div>
+                                        <div class="break-words flex items-center m-4 mt-0">
+                                            <p class="">
+                                                Net Premium:
+                                            <h6 class="ml-3">
+                                                {{ number_format($option->net_premium, 0, '.', ',') }}</h6>
+                                            </p>
+                                        </div> --}}
+
 
                                         <hr><br>
                                         <div class="grid sm:gridcols-1 md:grid-cols-2 mb-4">
@@ -447,7 +528,7 @@
                                 </span>
 
                             </div>
-                            <p><span class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type):  'No one/team assigned') }}</span></p>
+                            <p><span class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type) : 'No one/team assigned') }}</span></p>
                         </div>
                     </div>
                 </div>
@@ -691,7 +772,7 @@
                                 <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="carId">
 
                                     @foreach ($offer->client->cars as $car)
-                                        <option value="{{ $car->car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ $car->car->category }}
                                         </option>
                                     @endforeach
@@ -818,31 +899,73 @@
                             @endif
 
 
-                            <div class="from-group">
+                            <div class="from-group mt-3">
                                 <label for="lastName" class="form-label">Insured Value</label>
-                                <input type="text" class="form-control mt-2 w-full" wire:model.defer="insured_value">
+                                <input type="text" class="form-control mt-2 w-full @error('insured_value') !border-danger-500 @enderror" wire:model.defer="insured_value">
                                 @error('insured_value')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
 
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Payment Frequency</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="payment_frequency">
-
-                                    @foreach ($PAYMENT_FREQS as $freqs)
-                                        <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ $freqs }}
-                                        </option>
-                                    @endforeach
-
-                                </select>
-                                @error('payment_frequency')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                <div class="from-group mt-3">
+                                    <label for="lastName" class="form-label ">Gross Premium</label>
+                                    <input wire:model="grossPremium" type="text" class="form-control mt-2 w-full @error('grossPremium') !border-danger-500 @enderror">
+                                    @error('grossPremium')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group mt-3">
+                                    <label for="lastName" class="form-label">Net Premium</label>
+                                    <input wire:model="netPremium" type="text" class="form-control mt-2 w-full  @error('netPremium') !border-danger-500 @enderror">
+                                    @error('netPremium')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
 
-                            <div class="input-area">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Payment Frequency</label>
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2  @error('payment_frequency') !border-danger-500 @enderror" wire:model="payment_frequency">
+
+                                        @foreach ($PAYMENT_FREQS as $freqs)
+                                            <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ ucwords($freqs) }}
+                                            </option>
+                                        @endforeach
+
+                                    </select>
+                                    @error('payment_frequency')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Is Renewal</label>
+                                    <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
+                                        <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer" wire:model="optionIsRenewal">
+                                            <div
+                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            </div>
+                                            <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
+                                            <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if ($payment_frequency === 'installements')
+                                <div class="from-group mt-3">
+                                    <label for="lastName" class="form-label">Installments Count</label>
+                                    <input name="basicSelect" class="form-control mt-2 w-full !border-success-500 @error('installmentsCount') !border-danger-500 @enderror" type="number" wire:model="installmentsCount">
+                                    @error('installmentsCount')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+
+                            <div class="input-area mt-3">
                                 <div class="filegroup">
                                     <label>
                                         <label for="time-date-picker" class="form-label">
@@ -876,7 +999,7 @@
                                 </div>
                             </div>
 
-                            <div class="from-group">
+                            <div class="from-group mt-3">
                                 @if (!empty($fields))
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                         <div class="input-area">
@@ -1061,20 +1184,52 @@
                                 @enderror
                             </div>
 
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Payment Frequency</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="payment_frequency">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                <div class="from-group mt-3">
+                                    <label for="lastName" class="form-label ">Gross Premium</label>
+                                    <input wire:model="grossPremium" type="text" class="form-control mt-2 w-full @error('grossPremium') !border-danger-500 @enderror">
+                                    @error('grossPremium')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group mt-3">
+                                    <label for="lastName" class="form-label">Net Premium</label>
+                                    <input wire:model="netPremium" type="text" class="form-control mt-2 w-full  @error('netPremium') !border-danger-500 @enderror">
+                                    @error('netPremium')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
 
-                                    @foreach ($PAYMENT_FREQS as $freqs)
-                                        <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ $freqs }}
-                                        </option>
-                                    @endforeach
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Payment Frequency</label>
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="payment_frequency">
 
-                                </select>
-                                @error('payment_frequency')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                                        @foreach ($PAYMENT_FREQS as $freqs)
+                                            <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ $freqs }}
+                                            </option>
+                                        @endforeach
+
+                                    </select>
+                                    @error('payment_frequency')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Is Renewal</label>
+                                    <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
+                                        <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer" wire:model="optionIsRenewal">
+                                            <div
+                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            </div>
+                                            <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
+                                            <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -1151,7 +1306,8 @@
                                 Delete Option
                             </h3>
                             <button wire:click="dismissDeleteOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1187,7 +1343,8 @@
                                 Delete Offer
                             </h3>
                             <button wire:click="dismissDeleteOffer" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>

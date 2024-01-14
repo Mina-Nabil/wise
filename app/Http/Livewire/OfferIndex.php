@@ -17,6 +17,8 @@ use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
 use Illuminate\Routing\Route;
 
+use function PHPUnit\Framework\isNull;
+
 class OfferIndex extends Component
 {
     use WithPagination, AlertFrontEnd;
@@ -39,6 +41,7 @@ class OfferIndex extends Component
     public $clientCars;
     public $dueDate;
     public $dueTime;
+    public $isRenewal;
 
     public $bdate;
     public $gender;
@@ -158,30 +161,27 @@ class OfferIndex extends Component
             'item_title' => 'nullable|string|max:255',
             'item_desc' => 'nullable|string',
             'note' => 'nullable|string',
-            'due' => 'nullable|date'
+            'due' => 'nullable|date',
+            'isRenewal' => 'boolean'
         ]);
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = Carbon::parse($dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate);
         
-
+        // dd($this->item);
         if($this->type === 'personal_medical' && $this->clientType === 'Customer'){
-
             $this->owner->setRelatives($this->relatives);
             $this->owner->editCustomer(name:$this->owner->name,birth_date:$this->bdate,gender:$this->gender);
 
-        }elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && !$this->item = null){
-
+        }elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && is_Null($this->item) ){
             $item = $this->owner->addCar(car_id:$this->CarCategory);
 
         }else{
-
             $item = CustomerCar::find($this->item);
 
         }
-        
-        // dd($this->item);
+
         $offer = new Offer();
         $res = $offer->newOffer(
             $this->owner,
@@ -191,7 +191,8 @@ class OfferIndex extends Component
             $this->item_desc,
             $this->note,
             $combinedDateTime,
-            $item
+            $item,
+            $this->isRenewal
         );
         if ($res) {
             return redirect(route('offers.show',  $res->id));
