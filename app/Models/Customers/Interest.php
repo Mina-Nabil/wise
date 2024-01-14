@@ -15,6 +15,7 @@ class Interest extends Model
     const MORPH_TYPE = 'customer_interests';
 
     protected $table = 'customer_interests';
+    public $timestamps = false;
 
     protected $fillable = [
         "business",

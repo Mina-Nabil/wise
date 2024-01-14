@@ -5,6 +5,7 @@ use App\Models\Customers\Customer;
 use App\Models\Customers\Relative;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\Policy;
+use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -53,6 +54,15 @@ return new class extends Migration
         Schema::create('customer_interests', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
+            $table->enum('business', Policy::LINES_OF_BUSINESS);
+            $table->boolean('interested')->default(true);
+            $table->string('note')->nullable();
+        });
+
+        Schema::create('customer_status', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete(); 
+            $table->foreignIdFor(User::class)->constrained(); 
             $table->enum('business', Policy::LINES_OF_BUSINESS);
             $table->boolean('interested')->default(true);
             $table->string('note')->nullable();

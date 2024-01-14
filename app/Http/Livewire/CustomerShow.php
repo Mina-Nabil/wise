@@ -269,7 +269,6 @@ class CustomerShow extends Component
 
     public function addBankAccount()
     {
-
         $this->validate([
             'accountType' =>  'required|in:' . implode(',', BankAccount::TYPES),
             'bankName' => 'required|string|max:255',
@@ -1230,20 +1229,20 @@ class CustomerShow extends Component
     public function addInterest(){
         $this->validate([
             'lob' => 'required|in:' . implode(',', policy::LINES_OF_BUSINESS),
-            'interested' => 'required|boolean',
+            'interested' => 'nullable|boolean',
             'interestNote' => 'nullable|string|max:255'
         ]);
 
         $res = $this->customer->addInterest(
             $this->lob,
-            $this->interested,
-            $this->note,
+            $this->interested ?? false,
+            $this->interestNote,
         );
 
         if ($res) {
             $this->lob = null;
             $this->interested = null;
-            $this->note = null;
+            $this->interestNote = null;
             $this->mount($this->customer->id);
             $this->alert('success','Interest Added!');
         }else{

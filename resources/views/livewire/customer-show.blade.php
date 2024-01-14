@@ -504,13 +504,13 @@
                                     <p class="text-center m-5 text-primary">No interests for this customer.</p>
                                 @else
                                     @foreach ($customer->interests as $interest)
-                                        <p><span class="badge bg-slate-900 text-white capitalize inline-flex items-center">
+                                        <p>
+                                            <span class="badge bg-slate-900 text-white capitalize inline-flex items-center">
                                                 @if ($interest->interested)
                                                     <iconify-icon class="ltr:mr-1 rtl:ml-1 text-info-500" icon="mdi:stars"></iconify-icon>
                                                 @endif
-                                                {{ ucwords(str_replace('_', ' ', $interest->relation)) }}
+                                                {{ ucwords(str_replace('_', ' ', $interest->business)) }}
                                             </span>
-
 
                                             <button wire:click="removeInterest({{ $interest->id }})" class="action-btn float-right" type="button">
                                                 <iconify-icon icon="heroicons:trash"></iconify-icon>
@@ -1368,7 +1368,7 @@
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Insurance Company</label>
                                         <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('insuranceCompanyId') !border-danger-500 @enderror" wire:model="insuranceCompanyId">
-                                            <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"> Select an oprion...</option>
+                                            <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"> Select an option...</option>
                                             @foreach ($companies as $company)
                                                 <option value="{{ $company->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     {{ ucwords($company->name) }}</option>
@@ -1514,6 +1514,7 @@
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Insurance Company</label>
                                         <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('insuranceCompanyId') !border-danger-500 @enderror" wire:model="insuranceCompanyId">
+                                            <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"> Select an option...</option>
                                             @foreach ($companies as $company)
                                                 <option value="{{ $company->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     {{ ucwords($company->name) }}</option>

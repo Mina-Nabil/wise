@@ -289,11 +289,15 @@ class Customer extends Model
     {
         try {
             /** @var Interest */
-            $tmp = $this->interests()->create([
-                "business"      =>  $business,
-                "interested"    =>  $interested,
-                "note"    =>  $note
-            ]);
+            $tmp = $this->interests()->updateOrCreate(
+                [
+                    "business"      =>  $business,
+                ],
+                [
+                    "interested"    =>  $interested,
+                    "note"    =>  $note
+                ]
+            );
             AppLog::info("Adding customer interest", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -617,7 +621,7 @@ class Customer extends Model
 
     public function customer_relatives(): BelongsToMany
     {
-        return $this->belongsToMany(self::class, 'cust_cust_relatives', 'customer_id','relative_id')->withPivot('relation');
+        return $this->belongsToMany(self::class, 'cust_cust_relatives', 'customer_id', 'relative_id')->withPivot('relation');
     }
 
     public function tasks(): MorphMany
