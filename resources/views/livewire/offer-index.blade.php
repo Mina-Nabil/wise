@@ -53,6 +53,10 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Item Value
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Assigned To
                                     </th>
 
@@ -76,15 +80,31 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            <b>{{ $offer->client_type }}</b>
+                                            {{ $offer->client_type }}
                                         </td>
 
                                         <td class="table-td ">
-                                            <b>{{ $offer->type }}</b>
+                                            {{ ucwords(str_replace('_', ' ', $offer->type)) }}
                                         </td>
 
                                         <td class="table-td ">
-                                            <b>{{ $offer->status }}</b>
+                                            @if ($offer->status === 'new')
+                                                <span class="badge bg-info-500 h-auto">
+                                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                </span>
+                                            @elseif(str_contains($offer->status, 'pending'))
+                                                <span class="badge bg-warning-500 h-auto">
+                                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                </span>
+                                            @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
+                                                <span class="badge bg-danger-500 h-auto">
+                                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                </span>
+                                            @elseif($offer->status === 'approved')
+                                                <span class="badge bg-success-500 h-auto">
+                                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                </span>
+                                            @endif
                                         </td>
 
                                         <td class="table-td ">
@@ -92,11 +112,15 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            <b>{{ $offer->assignee_id->first_name ?? 'N/A' }}</b>
+                                            <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b>
                                         </td>
 
                                         <td class="table-td ">
-                                            <b>{{ $offer->due }}</b>
+                                            {{ $offer->assignee_id->first_name ?? 'N/A' }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            {{ $offer->due }}
                                         </td>
 
                                         <td class="table-td ">
