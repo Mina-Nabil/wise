@@ -307,6 +307,30 @@ class Policy extends Model
         }
     }
 
+    public function addBenefit($benefit, $value)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (
+            !($loggedInUser == null && App::isLocal()) && //local seeder code - can remove later
+            !$loggedInUser->can('update', $this)
+        ) return false;
+        try {
+            AppLog::info("Adding benefit", loggable: $this);
+
+            return $this->benefits()->updateOrCreate([
+                "benefit"   =>  $benefit,
+            ], [
+                "value"     =>  $value
+            ]);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Adding benefit failed", loggable: $this, desc: $e->getMessage());
+            return false;
+        }
+    }
+
+
     //scopes
     public function scopeTableData($query)
     {
@@ -344,6 +368,11 @@ class Policy extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function benefits(): HasMany
+    {
+        return $this->hasMany(PolicyBenefit::class);
     }
 
     public function conditions(): HasMany
