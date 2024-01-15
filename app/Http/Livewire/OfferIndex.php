@@ -62,10 +62,11 @@ class OfferIndex extends Component
 
     public function addAnotherField()
     {
-        $this->relatives[] = ['name' => '', 'relation' => '' , 'gender' => '' , 'phone' => '' , 'birth_date' => ''];
+        $this->relatives[] = ['name' => '', 'relation' => '', 'gender' => '', 'phone' => '', 'birth_date' => ''];
     }
 
-    public function addNewCar(){
+    public function addNewCar()
+    {
         $this->clientCars = null;
         $this->item = null;
     }
@@ -77,22 +78,23 @@ class OfferIndex extends Component
 
     public function selectClient($id)
     {
-        
+
         if ($this->clientType == 'Customer') {
             $res = Customer::find($id);
-                
-                $this->bdate = ($res->birth_date ? $res->birth_date->toDateString() : null);
-                // dd($this->bdate);
-                $this->gender = $res->gender;
-            
+
+            $this->bdate = ($res->birth_date ? $res->birth_date->toDateString() : null);
+            // dd($this->bdate);
+            $this->gender = $res->gender;
+
+            $this->clientCars = $res->cars;
+            if ($this->clientCars->isEmpty()) {
+                $this->clientCars = null;
+            }
         } elseif ($this->clientType == 'Corporate') {
             $res = Corporate::find($id);
         }
 
-        $this->clientCars = $res->cars;
-        if ($this->clientCars->isEmpty()) {
-            $this->clientCars = null;
-        }
+
 
         $this->owner = $res;
         $this->selectedClientName = $res->name;
@@ -154,7 +156,7 @@ class OfferIndex extends Component
 
     public function newOffer()
     {
-// dd($this->CarCategory);
+        // dd($this->CarCategory);
         $this->validate([
             'type' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),
             'item_value' => 'nullable|numeric',
@@ -168,18 +170,17 @@ class OfferIndex extends Component
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = Carbon::parse($dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate);
-        
+
         // dd($this->item);
-        if($this->type === 'personal_medical' && $this->clientType === 'Customer'){
+        if ($this->type === 'personal_medical' && $this->clientType === 'Customer') {
             $this->owner->setRelatives($this->relatives);
-            $this->owner->editCustomer(name:$this->owner->name,birth_date:$this->bdate,gender:$this->gender);
-
-        }elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && is_Null($this->item) ){
-            $item = $this->owner->addCar(car_id:$this->CarCategory);
-
-        }else{
+            $this->owner->editCustomer(name: $this->owner->name, birth_date: $this->bdate, gender: $this->gender);
+        } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && is_Null($this->item)) {
+            $item = $this->owner->addCar(car_id: $this->CarCategory);
+            $this->item_title = null;
+        } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer') {
+            $this->item_title = null;
             $item = CustomerCar::find($this->item);
-
         }
 
         $offer = new Offer();
@@ -204,6 +205,8 @@ class OfferIndex extends Component
     public function render()
     {
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
+        $PERSONAL_TYPES = Policy::PERSONAL_TYPES;
+        $CORPORATE_TYPES = Policy::CORPORATE_TYPES;
         $GENDERS = Customer::GENDERS;
         $RELATIONS = Relative::RELATIONS;
         $brands = Brand::all();
@@ -215,6 +218,8 @@ class OfferIndex extends Component
             'GENDERS' => $GENDERS,
             'RELATIONS' => $RELATIONS,
             'brands' => $brands,
+            'PERSONAL_TYPES' => $PERSONAL_TYPES,
+            'CORPORATE_TYPES' => $CORPORATE_TYPES,
         ]);
     }
 }

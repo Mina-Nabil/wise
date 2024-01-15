@@ -6,10 +6,6 @@
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
-            {{-- <button wire:click="toggleAddLead" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
-                <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
-                Add Lead
-            </button> --}}
             <button wire:click="openAddOfferSection" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                 <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
                 Create Offer
@@ -64,10 +60,6 @@
                                         Due
                                     </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Actions
-                                    </th>
-
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -116,16 +108,13 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            {{ $offer->assignee_id->first_name ?? 'N/A' }}
+                                            {{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type) : 'No one/team assigned') }}
                                         </td>
 
                                         <td class="table-td ">
                                             {{ $offer->due }}
                                         </td>
 
-                                        <td class="table-td ">
-                                            ...
-                                        </td>
 
                                     </tr>
                                 @endforeach
@@ -204,7 +193,7 @@
                                             @if ($owner)
                                                 Selected client
                                             @else
-                                                Search client
+                                                Search client <iconify-icon wire:loading wire:target="searchClient" class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
                                             @endif
 
                                         </label>
@@ -231,11 +220,20 @@
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Offer Type</label>
                                 <select name="basicSelect" class="form-control w-full mt-2 @error('type') !border-danger-500 @enderror" wire:model="type">
-                                    @foreach ($LINES_OF_BUSINESS as $line)
-                                        <option value="{{ $line }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ ucwords(str_replace('_', ' ', $line)) }}
-                                        </option>
-                                    @endforeach
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
+                                    @if ($clientType === 'Customer')
+                                        @foreach ($PERSONAL_TYPES as $line)
+                                            <option value="{{ $line }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ ucwords(str_replace('_', ' ', $line)) }}
+                                            </option>
+                                        @endforeach
+                                    @elseif($clientType === 'Corporate')
+                                        @foreach ($CORPORATE_TYPES as $line)
+                                            <option value="{{ $line }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ ucwords(str_replace('_', ' ', $line)) }}
+                                            </option>
+                                        @endforeach
+                                    @endif
 
                                 </select>
                                 @error('type')
@@ -376,21 +374,24 @@
                                 @endif
                             @endif
 
+
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
-                                <div class="from-group">
-                                    <label for="lastName" class="form-label">Item title</label>
-                                    <input type="text" class="form-control mt-2 w-full" wire:model.defer="item_title">
-                                    @error('item_title')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                                @if ($type === 'personal_motor' && $clientType === 'Customer')
+                                @else
+                                    <div class="from-group">
+                                        <label for="lastName" class="form-label">Item title</label>
+                                        <input type="text" class="form-control mt-2 w-full" wire:model.defer="item_title">
+                                        @error('item_title')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                @endif
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Is Renewal</label>
                                     <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
                                         <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                                             <input type="checkbox" checked class="sr-only peer" wire:model="isRenewal">
-                                            <div
-                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
                                             <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
                                             <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
