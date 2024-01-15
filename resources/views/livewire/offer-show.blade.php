@@ -328,17 +328,17 @@
                                                 @endif
 
                                                 @if ($option->status === 'new')
-                                                    <span class="badge bg-info-500 mr-2  bg-opacity-30 h-auto">
+                                                    <span class="badge bg-info-500 mr-2  bg-opacity-50 h-auto">
                                                         <iconify-icon
                                                             icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
                                                     </span>
                                                 @elseif(str_contains($option->status, 'declined'))
-                                                    <span class="badge bg-danger-500  mr-2 bg-opacity-30 h-auto">
+                                                    <span class="badge bg-danger-500  mr-2 bg-opacity-50 h-auto">
                                                         <iconify-icon
                                                             icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
                                                     </span>
                                                 @elseif($option->status === 'approved')
-                                                    <span class="badge bg-success-500  mr-2 bg-opacity-30 h-auto">
+                                                    <span class="badge bg-success-500  mr-2 bg-opacity-50 h-auto">
                                                         <iconify-icon
                                                             icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
                                                     </span>
@@ -358,6 +358,12 @@
                                                         </button>
                                                         <ul
                                                             class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                            <li>
+                                                                <button
+                                                                    wire:click="acceptOption({{ $option->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                    Accept Option</button>
+                                                            </li>
                                                             <li>
                                                                 <button
                                                                     wire:click="openAddFieldSec({{ $option->id }})"
@@ -1371,7 +1377,7 @@
                                     <select name="basicSelect" id="basicSelect"
                                         class="form-control w-full mt-2  @error('payment_frequency') !border-danger-500 @enderror"
                                         wire:model="payment_frequency">
-
+                                        <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
                                         @foreach ($PAYMENT_FREQS as $freqs)
                                             <option value="{{ $freqs }}"
                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
@@ -1730,7 +1736,7 @@
                                     <label for="lastName" class="form-label">Payment Frequency</label>
                                     <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
                                         wire:model="payment_frequency">
-
+                                        <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
                                         @foreach ($PAYMENT_FREQS as $freqs)
                                             <option value="{{ $freqs }}"
                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">

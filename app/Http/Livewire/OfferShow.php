@@ -274,10 +274,26 @@ class OfferShow extends Component
         $this->payment_frequency =  null;
     }
 
+    public function acceptOption($id){
+        $res = $this->offer->acceptOption($id);
+        if ($res) {
+            $this->alert('success', 'Option Accepted');
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
     public function editOption()
     {
         $option = OfferOption::find($this->editOptionId);
-        $res = $option->editInfo($this->insured_value, $this->payment_frequency);
+        $res = $option->editInfo(
+            $this->insured_value,
+            $this->netPremium,
+            $this->grossPremium,
+            $this->payment_frequency,
+            $this->optionIsRenewal,
+            $this->installmentsCount
+        );
         if ($res) {
             $this->alert('success', 'Option updated');
             $this->closeEditOption();
@@ -388,8 +404,6 @@ class OfferShow extends Component
             $headers,
         );
     }
-
-
 
     // upload file for option
     public function UpdatedUploadedOptionFile()
@@ -631,7 +645,7 @@ class OfferShow extends Component
         ]);
         $res = $this->offer->addComment($this->newComment);
         if ($res) {
-            $this->alert('success', $res);
+            $this->alert('success', 'comment added!');
             $this->mount($this->offer->id, []);
             $this->newComment = null;
         } else {
@@ -674,7 +688,7 @@ class OfferShow extends Component
     {
         $res = $this->offer->setStatus($s);
         if ($res) {
-            $this->alert('success', $res);
+            $this->alert('info', $res);
         } else {
             $this->alert('failed', 'server error');
         }
