@@ -102,11 +102,13 @@ class OfferShow extends Component
         }
     }
 
-    public function toggleAddDiscount(){
+    public function toggleAddDiscount()
+    {
         $this->toggle($this->addDiscountSec);
     }
 
-    public function editThisDicount($id){
+    public function editThisDicount($id)
+    {
         $this->discountId = $id;
         $discount = OfferDiscount::find($id);
         $this->discountType  = $discount->type;
@@ -114,29 +116,34 @@ class OfferShow extends Component
         $this->discountNote = $discount->note;
     }
 
-    public function deleteThisDiscount($id){
+    public function deleteThisDiscount($id)
+    {
         $this->deleteDiscountId = $id;
     }
 
-    public function closeEditDiscount(){
+    public function closeEditDiscount()
+    {
         $this->discountId = null;
     }
 
-    public function deleteDiscount(){
+    public function deleteDiscount()
+    {
         $res = OfferDiscount::find($this->deleteDiscountId)->delete();
-        if($res){
+        if ($res) {
             $this->deleteDiscountId = null;
-            $this->alert('success','Discount Deleted!');
-        }else{
-            $this->alert('failed','server error');
+            $this->alert('success', 'Discount Deleted!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
-    public function dismissDeleteDiscount(){
+    public function dismissDeleteDiscount()
+    {
         $this->deleteDiscountId = null;
     }
 
-    public function addDiscount(){
+    public function addDiscount()
+    {
         $this->validate([
             'discountType' => 'required|in:' . implode(',', OfferDiscount::TYPES),
             'discountValue' => 'required|numeric',
@@ -147,19 +154,20 @@ class OfferShow extends Component
             $this->discountValue,
             $this->discountNote
         );
-        if($res){
+        if ($res) {
             $this->discountType =  null;
             $this->discountValue = null;
             $this->discountNote =  null;
             $this->toggleAddDiscount();
             $this->mount($this->offer->id);
-            $this->alert('success','Discount Added!');
-        }else{
-            $this->alert('failed','server error');
+            $this->alert('success', 'Discount Added!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
-    public function updateDiscount(){
+    public function updateDiscount()
+    {
         $this->validate([
             'discountType' => 'required|in:' . implode(',', OfferDiscount::TYPES),
             'discountValue' => 'required|numeric',
@@ -171,15 +179,15 @@ class OfferShow extends Component
             $this->discountValue,
             $this->discountNote
         );
-        if($res){
+        if ($res) {
             $this->discountType =  null;
             $this->discountValue = null;
             $this->discountNote =  null;
             $this->closeEditDiscount();
             $this->mount($this->offer->id);
-            $this->alert('success','Discount Added!');
-        }else{
-            $this->alert('failed','server error');
+            $this->alert('success', 'Discount Added!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
@@ -627,6 +635,26 @@ class OfferShow extends Component
         }
     }
 
+    public function setIsRenewal()
+    {
+        $res = $this->offer->setRenewalFlag(true);
+        if ($res) {
+            $this->alert('success', 'Renewal Status Changed!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function removeRenewal()
+    {
+        $res = $this->offer->setRenewalFlag(false);
+        if ($res) {
+            $this->alert('success', 'Renewal removed!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
     public function mount($offerId)
     {
         $this->offer = Offer::find($offerId);
@@ -655,7 +683,7 @@ class OfferShow extends Component
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
-        
+
         // $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
 
 
