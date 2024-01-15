@@ -41,7 +41,7 @@ class OfferIndex extends Component
     public $clientCars;
     public $dueDate;
     public $dueTime;
-    public $isRenewal;
+    public $isRenewal = false;
 
     public $bdate;
     public $gender;
@@ -163,11 +163,10 @@ class OfferIndex extends Component
             'item_title' => 'nullable|string|max:255',
             'item_desc' => 'nullable|string',
             'note' => 'nullable|string',
-            'due' => 'nullable|date',
             'isRenewal' => 'boolean'
         ]);
 
-        $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
+        $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : Carbon::tomorrow();
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = Carbon::parse($dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate);
 
@@ -176,6 +175,7 @@ class OfferIndex extends Component
             $this->owner->setRelatives($this->relatives);
             $this->owner->editCustomer(name: $this->owner->name, birth_date: $this->bdate, gender: $this->gender);
         } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && is_Null($this->item)) {
+            if(!$this->CarCategory) return $this->alert('failed', 'Please select a car');
             $item = $this->owner->addCar(car_id: $this->CarCategory);
             $this->item_title = null;
         } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer') {

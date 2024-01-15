@@ -56,7 +56,7 @@ class OfferShow extends Component
     public $payment_frequency;
     public $grossPremium;
     public $netPremium;
-    public $optionIsRenewal;
+    public $optionIsRenewal = false;
     public $installmentsCount;
     public $fields = [];
     public $files = [];
@@ -586,6 +586,10 @@ class OfferShow extends Component
             $this->conditionId,
             $this->insured_value,
             $this->payment_frequency,
+            $this->netPremium,
+            $this->grossPremium,
+            $this->optionIsRenewal,
+            $this->installmentsCount,
             $this->fields,
             $files
         );

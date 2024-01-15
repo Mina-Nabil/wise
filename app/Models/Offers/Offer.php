@@ -275,7 +275,7 @@ class Offer extends Model
         $is_renewal = false,
         $installements_count = null,
         array $fields = [],
-        $docs = []
+        array $docs = []
     ) {
         /** @var User */
         $loggedInUser = Auth::user();
