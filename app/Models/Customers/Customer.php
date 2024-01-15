@@ -447,6 +447,7 @@ class Customer extends Model
     {
         try {
             return $this->status()->updateOrCreate([], [
+                "user_id"      =>  Auth::id(),
                 "status"    =>  $status,
                 "reason"    =>  $reason,
                 "note"    =>  $note,
