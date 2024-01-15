@@ -85,7 +85,7 @@ class Policy extends Model
     ];
 
     ///static functions
-    public static function getAvailablePolicies($type, CustomersCar $car = null, $age = null): Collection
+    public static function getAvailablePolicies($type, CustomersCar $car = null, $age = null, $offerValue = null): Collection
     {
         assert(
             in_array($type, [
@@ -112,7 +112,7 @@ class Policy extends Model
         $valid_policies = new Collection();
         foreach ($policies as $pol) {
             if ($car)
-                $rate = $pol->getRateByCar($car);
+                $rate = $pol->getRateByCarOrValue($car);
             else if ($age)
                 $rate = $pol->getRateByAge($age);
 
@@ -150,7 +150,7 @@ class Policy extends Model
     }
 
     ///model functions
-    public function getRateByCar(CustomersCar $customer_car)
+    public function getRateByCarOrValue(CustomersCar $customer_car, $value = null)
     {
         if (!in_array($this->business, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]))
             throw new Exception("Invalid business type. Can't get policy rate by car");
@@ -193,6 +193,30 @@ class Policy extends Model
 
                         case PolicyCondition::OP_LESS_OR_EQUAL:
                             if ($customer_car->model_year <= $cond->value)
+                                return $cond->rate;
+                    }
+
+                case PolicyCondition::SCOPE_VALUE:
+                    $checkValue = $value ?? $customer_car->price;
+                    switch ($cond->operator) {
+                        case PolicyCondition::OP_EQUAL:
+                            if ($checkValue == $cond->value)
+                                return $cond->rate;
+
+                        case PolicyCondition::OP_GREATER:
+                            if ($checkValue > $cond->value)
+                                return $cond->rate;
+
+                        case PolicyCondition::OP_GREATER_OR_EQUAL:
+                            if ($checkValue >= $cond->value)
+                                return $cond->rate;
+
+                        case PolicyCondition::OP_LESS:
+                            if ($checkValue < $cond->value)
+                                return $cond->rate;
+
+                        case PolicyCondition::OP_LESS_OR_EQUAL:
+                            if ($checkValue <= $cond->value)
                                 return $cond->rate;
                     }
             }

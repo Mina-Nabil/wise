@@ -38,11 +38,14 @@ class PolicyCondition extends Model
     const SCOPE_MODEL = 'car_model';
     const SCOPE_BRAND = 'brand';
     const SCOPE_COUNTRY = 'country';
+    //default scope for all
+    const SCOPE_VALUE = 'value';
 
     const SCOPES = [
         self::SCOPE_AGE,
         self::SCOPE_MODEL, self::SCOPE_BRAND,
-        self::SCOPE_COUNTRY, self::SCOPE_YEAR
+        self::SCOPE_COUNTRY, self::SCOPE_YEAR,
+        self::SCOPE_VALUE
     ];
 
     protected $table = 'policy_conditions';

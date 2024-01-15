@@ -688,7 +688,12 @@ class OfferShow extends Component
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
 
-        // $this->available_pols = Policy::getAvailablePolicies(Policy::BUSINESS_PERSONAL_MOTOR, $this->offer->item, null);
+        $this->available_pols = Policy::getAvailablePolicies(
+            type: Policy::BUSINESS_PERSONAL_MOTOR, 
+            car: $this->offer->item, 
+            age: null,
+            offerValue: $this->offer->item_value
+        );
 
 
         return view('livewire.offer-show', [

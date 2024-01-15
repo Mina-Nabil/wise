@@ -47,6 +47,9 @@
                                         <div class="input-area mb-3">
                                             <label for="name" class="form-label">Business</label>
                                             <select name="business" class="form-control w-full mt-2  @error('policyBusiness') !border-danger-500 @enderror" wire:model.defer="policyBusiness">
+                                                <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" selected>
+                                                    Please select business type
+                                                </option>
                                                 @foreach ($linesOfBusiness as $line)
                                                     <option value="{{ $line }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                         {{ $line }}
@@ -60,6 +63,9 @@
                                         <div class="input-area mb-3">
                                             <label for="name" class="form-label">Company</label>
                                             <select name="business" class="form-control w-full mt-2  @error('company') !border-danger-500 @enderror" wire:model.defer="company">
+                                                <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" selected>
+                                                    Please select company
+                                                </option>
                                                 @foreach ($companies as $company)
                                                     <option value="{{ $company->id }}" class="py-1 inline-block font-Inter font-normal text-sm">
                                                         {{ $company->name }}

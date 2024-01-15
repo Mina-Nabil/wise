@@ -62,6 +62,12 @@ class Car extends Model
         }
     }
 
+    //attributes
+    public function getPriceAttribute()
+    {
+        return $this->car->car_prices()->where('model_year', $this->model_year)->first()?->price ?? 'N/A';
+    }
+
 
     ///relations
     public function customer(): BelongsTo

@@ -30,7 +30,9 @@ class Status extends Model
         self::STATUS_INACTIVE,
     ];
 
-    const REASONS = []; //lsa madaneesh el reasons
+    const REASONS = [
+        'Test'
+    ]; //lsa madaneesh el reasons
 
 
     //relations
