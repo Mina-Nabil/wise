@@ -3,7 +3,9 @@
 namespace App\Models\Users;
 
 use App\Events\AppNotification;
+use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
+use App\Models\Offers\Offer;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskTempAssignee;
 use App\Traits\CanBeDisabled;
@@ -201,22 +203,71 @@ class User extends Authenticatable
         return "user$this->id-channel";
     }
 
-    //relations
-    public function owned_followups(): HasMany
+    //dashboard queries
+    public function homeAssignedOffers($paginated = false)
     {
-        return $this->hasMany(Customer::class, 'owner_id');
+        $q = $this->assigned_offers()->latest();
+        return ($paginated) ? $q->paginate() : $q->limit(5)->get();
     }
+
+    public function homeCreatedOffers($paginated = false)
+    {
+        $q = $this->created_offers()->latest();
+        return ($paginated) ? $q->paginate(5) : $q->limit(5)->get();
+    }
+
+    public function homeFollowups($paginated = false)
+    {
+        $q = $this->created_followups()->latest();
+        return ($paginated) ? $q->paginate(5) : $q->limit(5)->get();
+    }
+
+    public function homeCustomers($paginated = false)
+    {
+        $q = $this->owned_customers()->latest();
+        return ($paginated) ? $q->paginate(5) : $q->limit(5)->get();
+    }
+
+    public function homeCorporates($paginated = false)
+    {
+        $q = $this->owned_corporates()->latest();
+        return ($paginated) ? $q->paginate(5) : $q->limit(5)->get();
+    }
+
+    //relations
     public function created_followups(): HasMany
     {
         return $this->hasMany(Customer::class, 'creator_id');
     }
+
     public function owned_customers(): HasMany
     {
         return $this->hasMany(Customer::class, 'owner_id');
     }
+
     public function created_customers(): HasMany
     {
         return $this->hasMany(Customer::class, 'creator_id');
+    }
+
+    public function owned_corporates(): HasMany
+    {
+        return $this->hasMany(Corporate::class, 'owner_id');
+    }
+
+    public function created_corporates(): HasMany
+    {
+        return $this->hasMany(Corporate::class, 'creator_id');
+    }
+
+    public function created_offers(): HasMany
+    {
+        return $this->hasMany(Offer::class, 'creator_id');
+    }
+
+    public function assigned_offers(): HasMany
+    {
+        return $this->hasMany(Offer::class, 'creator_id');
     }
 
     public function latest_notifications(): HasMany
