@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete(); 
             $table->enum('status', CustomersStatus::STATUSES);
             $table->enum('reason', CustomersStatus::REASONS);
-            $table->string('note')->default(true);
+            $table->string('note')->nullable();
             $table->timestamps();
         });
 
@@ -35,7 +35,7 @@ return new class extends Migration
             $table->foreignIdFor(Corporate::class)->constrained()->cascadeOnDelete(); 
             $table->enum('status', CorporatesStatus::STATUSES);
             $table->enum('reason', CorporatesStatus::REASONS)->nullable();
-            $table->string('note')->default(true);
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
