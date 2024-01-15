@@ -108,11 +108,11 @@ class Policy extends Model
         }
 
         $policies = self::byType($type)->withCompany()->withConditions()->get();
-    
+
         $valid_policies = new Collection();
         foreach ($policies as $pol) {
             if ($car)
-                $rate = $pol->getRateByCarOrValue($car);
+                $rate = $pol->getRateByCarOrValue($car, $offerValue);
             else if ($age)
                 $rate = $pol->getRateByAge($age);
 
@@ -162,62 +162,76 @@ class Policy extends Model
                 case PolicyCondition::SCOPE_MODEL:
                     if ($customer_car->car->car_model_id == $cond->value)
                         return $cond->rate;
-
+                    break;
                 case PolicyCondition::SCOPE_BRAND:
                     $customer_car->car->loadMissing('car_model');
                     if ($customer_car->car->car_model->brand_id == $cond->value)
                         return $cond->rate;
+                    break;
 
                 case PolicyCondition::SCOPE_COUNTRY:
                     $customer_car->car->loadMissing('car_model', 'car_model.brand');
                     if ($customer_car->car->car_model->brand->country_id == $cond->value)
                         return $cond->rate;
+                    break;
 
                 case PolicyCondition::SCOPE_YEAR:
+                    if (!$customer_car) break;
                     switch ($cond->operator) {
                         case PolicyCondition::OP_EQUAL:
                             if ($customer_car->model_year == $cond->value)
                                 return $cond->rate;
+                            break;
 
                         case PolicyCondition::OP_GREATER:
                             if ($customer_car->model_year > $cond->value)
                                 return $cond->rate;
+                            break;
 
                         case PolicyCondition::OP_GREATER_OR_EQUAL:
                             if ($customer_car->model_year >= $cond->value)
                                 return $cond->rate;
+                            break;
 
                         case PolicyCondition::OP_LESS:
                             if ($customer_car->model_year < $cond->value)
                                 return $cond->rate;
+                            break;
 
                         case PolicyCondition::OP_LESS_OR_EQUAL:
                             if ($customer_car->model_year <= $cond->value)
                                 return $cond->rate;
+                            break;
                     }
 
                 case PolicyCondition::SCOPE_VALUE:
                     $checkValue = $value ?? $customer_car->price;
+                    if (!$checkValue) break;
                     switch ($cond->operator) {
                         case PolicyCondition::OP_EQUAL:
                             if ($checkValue == $cond->value)
                                 return $cond->rate;
+                            break;
 
                         case PolicyCondition::OP_GREATER:
                             if ($checkValue > $cond->value)
                                 return $cond->rate;
+                            break;
 
                         case PolicyCondition::OP_GREATER_OR_EQUAL:
                             if ($checkValue >= $cond->value)
                                 return $cond->rate;
+                            break;
 
                         case PolicyCondition::OP_LESS:
                             if ($checkValue < $cond->value)
                                 return $cond->rate;
+                            break;
 
                         case PolicyCondition::OP_LESS_OR_EQUAL:
                             if ($checkValue <= $cond->value)
                                 return $cond->rate;
+                            break;
                     }
             }
         }

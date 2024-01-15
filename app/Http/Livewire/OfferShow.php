@@ -709,7 +709,6 @@ class OfferShow extends Component
             offerValue: $this->offer->item_value
         );
 
-
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
