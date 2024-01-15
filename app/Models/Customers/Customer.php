@@ -564,7 +564,7 @@ class Customer extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        $query->select('customers.*')
+        $query->select('customers.*')->with('status')
             ->join('users', 'customers.owner_id', '=', 'users.id');
 
         if ($loggedInUser->type !== User::TYPE_ADMIN) {
