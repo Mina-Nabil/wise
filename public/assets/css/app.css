@@ -4205,6 +4205,10 @@ textarea.form-control.is-invalid {
 .col-span-4 {
     grid-column: span 4 / span 4;
 }
+.col-span-6 {
+    grid-column: span 6 / span 6;
+}
+
 .col-span-5 {
     grid-column: span 5 / span 5;
 }
@@ -16793,6 +16797,9 @@ ul.custom-list ul {
     }
     .lg\:col-span-4 {
         grid-column: span 4 / span 4;
+    }
+    .lg\:col-span-6 {
+        grid-column: span 6 / span 6;
     }
     .lg\:col-span-8 {
         grid-column: span 8 / span 8;

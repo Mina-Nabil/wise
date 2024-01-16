@@ -5,6 +5,7 @@ namespace App\Models\Users;
 use App\Events\AppNotification;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
+use App\Models\Customers\Followup;
 use App\Models\Offers\Offer;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskTempAssignee;
@@ -207,37 +208,37 @@ class User extends Authenticatable
     public function homeAssignedOffers($paginated = false)
     {
         $q = $this->assigned_offers()->latest();
-        return ($paginated) ? $q->paginate() : $q->limit(5)->get();
+        return ($paginated) ? $q->paginate(5, ['*'], 'AssignedOffersPage') : $q->limit(5)->get();
     }
 
     public function homeCreatedOffers($paginated = false)
     {
         $q = $this->created_offers()->latest();
-        return ($paginated) ? $q->paginate(5) : $q->limit(5)->get();
+        return ($paginated) ? $q->paginate(5, ['*'], 'CreatedOffersPage') : $q->limit(5)->get();
     }
 
     public function homeFollowups($paginated = false)
     {
         $q = $this->created_followups()->latest();
-        return ($paginated) ? $q->paginate(5) : $q->limit(5)->get();
+        return ($paginated) ? $q->paginate(5, ['*'], 'ffollowupsPage') : $q->limit(5)->get();
     }
 
     public function homeCustomers($paginated = false)
     {
         $q = $this->owned_customers()->latest();
-        return ($paginated) ? $q->paginate(5) : $q->limit(5)->get();
+        return ($paginated) ? $q->paginate(5, ['*'], 'customerPage') : $q->limit(5)->get();
     }
 
     public function homeCorporates($paginated = false)
     {
         $q = $this->owned_corporates()->latest();
-        return ($paginated) ? $q->paginate(5) : $q->limit(5)->get();
+        return ($paginated) ? $q->paginate(5, ['*'], 'corporatePage') : $q->limit(5)->get();
     }
 
     //relations
     public function created_followups(): HasMany
     {
-        return $this->hasMany(Customer::class, 'creator_id');
+        return $this->hasMany(Followup::class, 'creator_id');
     }
 
     public function owned_customers(): HasMany
