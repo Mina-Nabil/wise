@@ -121,9 +121,9 @@
                                 @foreach ($companies as $company)
                                     <tr>
 
-                                        <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                        <td class="table-td">
                                             {{ $company->name }}</td>
-                                        <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                        <td class="table-td">
                                             {{ $company->note }}</td>
 
                                         <td class="table-td ">

@@ -136,8 +136,8 @@
                                     <h5 class="mb-0 text-primary-500" style="display: flex; align-items: center;">
                                         <iconify-icon class="text-xl inline-block ltr:mr-2 rtl:ml-2 text-primary-500"
                                             icon="iconoir:privacy-policy"></iconify-icon>
-                                        {{ $policy->company->name }} &nbsp; <span
-                                            class="badge bg-primary-500 text-white capitalize">{{ $policy->name }}</span>
+                                            {{ $policy->name }} &nbsp; <span
+                                            class="badge bg-primary-500 text-white capitalize">{{ $policy->company->name }}</span>
                                     </h5>
 
                                 </div>
