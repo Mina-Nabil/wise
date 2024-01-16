@@ -83,7 +83,7 @@ class PolicyShow extends Component
     {
         $this->newConditionSection = false;
         $this->addedScope = null;
-        $this->addedOperator = null;
+        $this->addedOperator = 'e';
         $this->addedValue = null;
         $this->addedRate = null;
         $this->addedNote = null;
