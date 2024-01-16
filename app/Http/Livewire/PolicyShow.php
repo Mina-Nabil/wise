@@ -28,7 +28,7 @@ class PolicyShow extends Component
     public $policyNote;
 
     public $addedScope;
-    public $addedOperator;
+    public $addedOperator = 'e';
     public $addedValue;
     public $addedRate;
     public $addedNote;
@@ -220,7 +220,6 @@ class PolicyShow extends Component
         $policy_note = $policy->note;
 
         // $this->addedScope = 'age';
-        $this->addedOperator = 'e';
 
 
         $linesOfBusiness = Policy::LINES_OF_BUSINESS;
