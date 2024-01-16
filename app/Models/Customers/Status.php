@@ -13,7 +13,7 @@ class Status extends Model
 
     protected $table = 'customer_status';
     protected $fillable = [
-        'status', 'reason', 'note'
+        'status', 'reason', 'note', 'user_id'
     ];
 
     const STATUS_NEW = 'new';

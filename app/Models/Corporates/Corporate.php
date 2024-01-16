@@ -428,7 +428,7 @@ class Corporate extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        $query->select('corporates.*')
+        $query->select('corporates.*')->with('status')
             ->join('users', "corporates.owner_id", '=', 'users.id');
 
         if ($loggedInUser->type !== User::TYPE_ADMIN) {
