@@ -16,6 +16,16 @@ class Home extends Component
 {
     use WithPagination;
 
+    public function redirectToCustomerShowPage($id)
+    {
+        return redirect(route('customers.show', $id));
+    }
+
+    public function redirectToCorporateShowPage($id)
+    {
+        return redirect(route('corporates.show', $id));
+    }
+
     public function render()
     {
         $countTasks = Task::assignedTo(auth()->user()->id)->count();

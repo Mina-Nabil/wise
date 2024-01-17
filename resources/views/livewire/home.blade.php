@@ -139,7 +139,7 @@
             </div>
 
 
-            
+
 
             {{-- created offers --}}
             <div class="lg:col-span-6 col-span-12">
@@ -186,13 +186,15 @@
                                             <p class="text-sm text-slate-400  font-light" wire:click="setStatus">
                                                 {{ ucwords($offer->client_type) }}
                                             </p>
-                                            <div class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap">
-                                                <b>{{ $offer->client->name }}</b>
-                                            </div>
+                                            <a href="{{ route('offers.show', $offer->id) }}">
+                                                <div class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap hover:underline cursor-pointer">
+                                                    <b>{{ $offer->client->name }}</b>
+                                                </div>
+                                            </a>
                                             <p class="text-sm">{{ ucwords(str_replace('_', ' ', $offer->type)) }}</p>
                                         </div>
                                         <div class="flex-1 ltr:text-right rtl:text-left">
-                                            <div class="text-sm font-light text-slate-400 dark:text-slate-400">
+                                            <div class="text-sm font-light  text-slate-900 dark:text-slate-900">
                                                 @if ($offer->status === 'new')
                                                     <span class="badge bg-info-500 h-auto">
                                                         <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
@@ -212,7 +214,7 @@
                                                 @endif
 
                                                 @if ($offer->is_renewal)
-                                                    <span class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl" style="vertical-align: top;">Renewal</span>
+                                                    <span class="badge bg-success-500 text-success-900 bg-opacity-30 capitalize rounded-3xl" style="vertical-align: top;">Renewal</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -277,15 +279,17 @@
                                             <p class="text-sm text-slate-400  font-light" wire:click="setStatus">
                                                 {{ ucwords($offer->client_type) }}
                                             </p>
-                                            <div class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap">
-                                                <b>{{ $offer->client->name }}</b>
-                                            </div>
+                                            <a href="{{ route('offers.show', $offer->id) }}">
+                                                <div class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap  hover:underline cursor-pointer">
+                                                    <b>{{ $offer->client->name }}</b>
+                                                </div>
+                                            </a>
                                             <p class="text-sm">{{ ucwords(str_replace('_', ' ', $offer->type)) }}</p>
                                         </div>
                                         <div class="flex-1 ltr:text-right rtl:text-left">
-                                            <div class="text-sm font-light text-slate-400 dark:text-slate-400">
+                                            <div class="text-sm font-light text-slate-900 dark:text-slate-900">
                                                 @if ($offer->status === 'new')
-                                                    <span class="badge bg-info-500 h-auto">
+                                                    <span class="badge bg-info-500 h-auto ">
                                                         <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
                                                     </span>
                                                 @elseif(str_contains($offer->status, 'pending'))
@@ -303,7 +307,7 @@
                                                 @endif
 
                                                 @if ($offer->is_renewal)
-                                                    <span class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl" style="vertical-align: top;">Renewal</span>
+                                                    <span class="badge bg-success-500 text-slate-900  bg-opacity-30 capitalize rounded-3xl" style="vertical-align: top;">Renewal</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -375,11 +379,55 @@
                                             </div>
                                         </div>
                                         <div class="text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]">
-                                            <div class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap">
-                                                {{ $task->title }}
-                                            </div>
+                                            <a href="{{ route('tasks.show', $task->id) }}">
+                                                <div class="text-sm text-slate-600 dark:text-slate-300  hover:underline cursor-pointer">
+
+                                                    <P class=" overflow-hidden text-ellipsis whitespace-nowrap " style="min-width: 150px">{{ $task->title }}</P>
+                                                    @php
+                                                        $currentDate = now();
+                                                        $startDate = $task->created_at;
+                                                        $dueDate = $task->due;
+                                                        $totalDuration = $startDate->diffInSeconds($dueDate);
+                                                        $elapsedDuration = $startDate->diffInSeconds($currentDate);
+                                                        $percentagePassed = ($elapsedDuration / $totalDuration) * 100;
+                                                    @endphp
+
+                                                    <div class="w-full bg-slate-200 h-2 m-1 rounded-xl overflow-hidden" style="max-width: 100px">
+                                                        <div class="@if ($percentagePassed >= 0 && $percentagePassed < 30) bg-success-500 @elseif($percentagePassed >= 30 && $percentagePassed < 70) bg-warning-500 @else bg-danger-500 @endif h-full rounded-xl" style="width: {{ number_format($percentagePassed, 0) }}%"></div>
+                                                    </div>
+
+                                                </div>
+                                            </a>
                                         </div>
+
                                         <div class="flex-1 ltr:text-right rtl:text-left">
+                                            <div>
+                                                @if ($task->status === 'new')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                                        New
+                                                    </div>
+                                                @elseif($task->status === 'assigned')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
+                                                        Assigned
+                                                    </div>
+                                                @elseif($task->status === 'in_progress')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
+                                                        in Progress
+                                                    </div>
+                                                @elseif($task->status === 'pending')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
+                                                        Pending
+                                                    </div>
+                                                @elseif($task->status === 'completed')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                                        Completed
+                                                    </div>
+                                                @elseif($task->status === 'closed')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
+                                                        Closed
+                                                    </div>
+                                                @endif
+                                            </div>
                                             <div class="text-sm font-light text-slate-400 dark:text-slate-400">
                                                 {{ \Carbon\Carbon::parse($task->due)->diffForHumans() }}
                                             </div>
@@ -441,9 +489,11 @@
                                     <li class="flex items-center space-x-3 rtl:space-x-reverse border-b border-slate-100 dark:border-slate-700 last:border-b-0 pb-3 last:pb-0">
                                         <div class="text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]">
                                             <p class="text-sm">{{ ucwords(str_replace('_', ' ', $followup->called->name)) }}</p>
-                                            <div class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap">
-                                                <b>{{ $followup->title }}</b>
-                                            </div>
+                                            <a href="{{ route($followup->called_type . 's.show', $followup->called_id) }}">
+                                                <div class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap  hover:underline cursor-pointer">
+                                                    <b>{{ $followup->title }}</b>
+                                                </div>
+                                            </a>
                                             <p class="text-sm text-slate-400  font-light" wire:click="setStatus">
                                                 {{ ucwords($followup->call_time) }}
                                             </p>
@@ -486,13 +536,13 @@
             </div>
 
             {{-- Customers --}}
-            <div class="lg:col-span-6 col-span-12 rounded">
-                <div class="card-body px-6 pb-6 ">
+            <div class="lg:col-span-6 col-span-12 rounded overflow-x-auto">
+                <div class="card-body px-6">
                     <div class=" -mx-6">
                         <div class="inline-block min-w-full align-middle">
                             <div class="rounded ">
                                 {{-- overflow-hidden --}}
-                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 rounded">
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 rounded whitespace-nowrap" data-simplebar="data-simplebar">
                                     <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                         <tr>
 
@@ -518,9 +568,9 @@
                                     <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                         @foreach ($homeCustomers as $customer)
-                                            <tr>
+                                            <tr wire:click="redirectToCustomerShowPage({{ $customer }})" class=" hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
 
-                                                <td wire:click="redirectToShowPage({{ $customer }})" class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                                <td class="table-td">
                                                     <b>{{ $customer->name }}</b>
                                                 </td>
 
@@ -580,13 +630,13 @@
             </div>
 
             {{-- Corporate --}}
-            <div class="lg:col-span-6 col-span-12 rounded">
-                <div class="card-body px-6 pb-6 ">
+            <div class="lg:col-span-6 col-span-12 rounded overflow-x-auto">
+                <div class="card-body px-6">
                     <div class=" -mx-6">
                         <div class="inline-block min-w-full align-middle">
                             <div class="rounded ">
                                 {{-- overflow-hidden --}}
-                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 rounded">
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 rounded whitespace-nowrap" data-simplebar="data-simplebar">
                                     <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                         <tr>
 
@@ -612,9 +662,9 @@
                                     <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                         @foreach ($homeCorporates as $corporate)
-                                            <tr>
+                                            <tr wire:click="redirectToCorporateShowPage({{ $corporate }})" class=" hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
 
-                                                <td wire:click="redirectToShowPage({{ $corporate }})" class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                                <td class="table-td">
                                                     <b>{{ $corporate->name }}</b>
                                                 </td>
 
