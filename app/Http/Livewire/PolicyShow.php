@@ -6,6 +6,7 @@ use App\Models\Insurance\Policy;
 use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
 use App\Models\Base\Country;
+use App\Models\Insurance\PolicyBenefit;
 use App\Models\Insurance\PolicyCondition;
 use App\Traits\AlertFrontEnd;
 use Illuminate\Support\Facades\Log;
@@ -41,6 +42,77 @@ class PolicyShow extends Component
 
     public $changes = false;
 
+    public $BENEFITS;
+    public $editBenefitId;
+    public $ebenefit;
+    public $benefitValue;
+    public $newBenefit;
+    public $newValue;
+    public $deleteBenefitId;
+
+    public function addBenefit(){
+        $this->validate([
+            'newBenefit' =>  'required|in:' . implode(",", PolicyBenefit::BENEFITS),
+            'newValue' => 'required|string|max:255'
+        ]);
+        $res = Policy::find($this->policyId)->addBenefit($this->newBenefit,$this->newValue);
+        if($res){
+            $this->mount();
+            $this->newBenefit= null;
+            $this->newValue= null;
+            $this->alert('success' , 'Benefit added!');
+        }else{
+            $this->alert('failed','server error');
+        }
+    }
+
+    public function editBenefit(){
+        $res = PolicyBenefit::find($this->editBenefitId)->editInfo($this->ebenefit,$this->benefitValue);
+        if($res){
+            $this->mount();
+            $this->ebenefit= null;
+            $this->benefitValue= null;
+            $this->editBenefitId = null;
+            $this->alert('success' , 'Benefit updated!');
+        }else{
+            $this->alert('failed','server error');
+        }
+    }
+
+    public function deleteThisBenefit($id){
+        $this->deleteBenefitId = $id;
+        
+    }
+
+    public function dismissDeleteOption(){
+        $this->deleteBenefitId = null;
+    }
+
+    public function deleteBenefit(){
+        $res = PolicyBenefit::find($this->deleteBenefitId)->delete();
+        if($res){
+            $this->mount();
+            $this->deleteBenefitId= null;
+            $this->alert('success' , 'Benefit deleted!');
+        }else{
+            $this->alert('failed','server error');
+        }
+    }
+
+
+    public function editThisBenefit($id){
+        $this->editBenefitId = $id;
+        $b = PolicyBenefit::find($id);
+        $this->ebenefit = $b->benifit;
+        $this->benefitValue = $b->value;
+        
+    }
+
+    public function closeEditBenefit(){
+        $this->editBenefitId = null;
+        $this->ebenefit = null;
+        $this->benefitValue = null;
+    }
 
     public function updated($propertyName)
     {
@@ -110,6 +182,16 @@ class PolicyShow extends Component
         $this->models = CarModel::all();
         $this->countries = Country::all();
         $this->addedScope = 'age';
+        $this->BENEFITS = PolicyBenefit::BENEFITS;
+
+        foreach ($this->BENEFITS as $BENEFIT) {
+            if (!in_array($BENEFIT, $policy->benefits->pluck('benifit')->toArray())) {
+                $this->newBenefit = $BENEFIT;
+                break;
+            }
+        }
+
+        
     }
 
     public function editRow($id)
@@ -225,7 +307,7 @@ class PolicyShow extends Component
         $linesOfBusiness = Policy::LINES_OF_BUSINESS;
         $scopes = PolicyCondition::SCOPES;
         $operators = PolicyCondition::OPERATORS;
-
+        
 
         // Fetch the conditions related to the policy (assuming $policy is available)
         $conditions = $policy->conditions;
