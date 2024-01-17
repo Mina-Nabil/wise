@@ -44,6 +44,9 @@ class OfferShow extends Component
     public $dueDate;
     public $dueTime;
 
+    public $editNoteSec = false;
+    public $offerNote;
+
     public $addOptionSection;
     public $searchPolicy; //search client policies
     public $policiesData; // client policies search result 
@@ -487,6 +490,22 @@ class OfferShow extends Component
     public function toggleEditDue()
     {
         $this->toggle($this->editDueSection);
+    }
+
+    public function toggleEditNote()
+    {
+        $this->toggle($this->editNoteSec);
+        $this->offerNote = $this->offer->note;
+    }
+
+    public function editNote(){
+        $res = $this->offer->setNote($this->offerNote);
+        if($res){
+            $this->alert('success' , 'Note Changed!');
+            $this->toggleEditNote();
+        }else{
+            $this->alert('failed','server error');
+        }
     }
 
     public function editDue()
