@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::create('policy_benefits', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Policy::class)->constrained();
-            $table->enum('benifit', PolicyBenefit::BENEFITS);
+            $table->enum('benefit', PolicyBenefit::BENEFITS);
             $table->string('value');
         });
     }

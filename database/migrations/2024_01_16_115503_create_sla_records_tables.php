@@ -14,15 +14,17 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('sla_records');
+
         Schema::create('sla_records', function (Blueprint $table) {
             $table->id();
             $table->morphs('action_item');
-            $table->foreignIdFor(User::class, 'created_by')->constrained();
-            $table->foreignIdFor(User::class, 'assigned_to_id')->nullable()->constrained();
+            $table->foreignIdFor(User::class, 'created_by')->constrained('users');
+            $table->foreignIdFor(User::class, 'assigned_to_id')->nullable()->constrained('users');
             $table->string('assigned_to_team')->nullable();
             $table->string("action_title");
             $table->dateTime('due');
-            $table->foreignIdFor(User::class, 'reply_by')->constrained();
+            $table->foreignIdFor(User::class, 'reply_by')->constrained('users');
             $table->string("reply_action")->nullable();
             $table->dateTime('reply_date')->nullable();
             $table->boolean('is_ignore')->default(false);

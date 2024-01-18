@@ -26,5 +26,6 @@ class UsersSeeder extends Seeder
         User::newUser("youmna.soliman", "Youmna", "Soliman", User::TYPE_OPERATIONS, "youmna.soliman"); //9
         User::newUser("minabil", "Mina", "Nabil", User::TYPE_ADMIN, "mina@wise", "mina9492@hotmail.com", "01225212014"); //10
         User::newUser("michael", "Michael", "Hani", User::TYPE_ADMIN, "michael@wise"); //11
+        User::newUser("fady.atef", "Fady", "Atef", User::TYPE_ADMIN, "fady@wise"); //12
     }
 }

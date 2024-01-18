@@ -430,7 +430,7 @@
                                         <tr class="">
 
                                             <td class="table-td">
-                                                {{ $benefit->benifit }}
+                                                {{ $benefit->benefit }}
                                             </td>
 
                                             <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" wire:click="editThisBenefit({{ $benefit->id }})">
@@ -458,7 +458,7 @@
 
                                         <select wire:model="newBenefit" class=" @error('newBenefit') !border-danger-500  @enderror form-control w-full text-center">
                                             @foreach ($BENEFITS as $BENEFIT)
-                                                @if (!in_array($BENEFIT, $policy->benefits->pluck('benifit')->toArray()))
+                                                @if (!in_array($BENEFIT, $policy->benefits->pluck('benefit')->toArray()))
                                                     <option class=" inline-block font-Inter font-normal text-sm text-slate-600" value="{{ $BENEFIT }}">
                                                         {{ $BENEFIT }}
                                                     </option>

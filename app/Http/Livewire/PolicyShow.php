@@ -103,7 +103,7 @@ class PolicyShow extends Component
     public function editThisBenefit($id){
         $this->editBenefitId = $id;
         $b = PolicyBenefit::find($id);
-        $this->ebenefit = $b->benifit;
+        $this->ebenefit = $b->benefit;
         $this->benefitValue = $b->value;
         
     }
@@ -185,7 +185,7 @@ class PolicyShow extends Component
         $this->BENEFITS = PolicyBenefit::BENEFITS;
 
         foreach ($this->BENEFITS as $BENEFIT) {
-            if (!in_array($BENEFIT, $policy->benefits->pluck('benifit')->toArray())) {
+            if (!in_array($BENEFIT, $policy->benefits->pluck('benefit')->toArray())) {
                 $this->newBenefit = $BENEFIT;
                 break;
             }
