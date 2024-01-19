@@ -92,6 +92,13 @@ class OfferShow extends Component
     public $editAssigneeSec = false;
     public $newAsignee;
 
+    public $upoadfiler;
+
+    public function UpdatedUpoadfiler()
+    {
+        dd($this->upoadfiler);
+    }
+
     public function changeAsignee()
     {
         $res = $this->offer->assignTo($this->newAsignee);
@@ -277,7 +284,8 @@ class OfferShow extends Component
         $this->payment_frequency =  null;
     }
 
-    public function acceptOption($id){
+    public function acceptOption($id)
+    {
         $res = $this->offer->acceptOption($id);
         if ($res) {
             $this->alert('success', 'Option Accepted');
@@ -438,16 +446,19 @@ class OfferShow extends Component
     {
         $this->validate(
             [
-                'uploadedFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+                'uploadedFile.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
             ],
             [
-                'uploadedFile.max' => 'The file must not be greater than 5MB.',
+                'uploadedFile.*.max' => 'The file must not be greater than 5MB.',
             ],
         );
 
-        $filename = $this->uploadedFile->getClientOriginalName();
-        $url = $this->uploadedFile->store(OfferDoc::FILES_DIRECTORY, 's3');
-        $o = $this->offer->addFile($filename, $url);
+        foreach ($this->uploadedFile as $file) {
+            $filename = $file->getClientOriginalName();
+            $url = $file->store(OfferDoc::FILES_DIRECTORY, 's3');
+            $o = $this->offer->addFile($filename, $url);
+        }
+
         if ($o) {
             $this->alert('success', 'File Uploaded!');
             $this->uploadedFile = null;
@@ -498,13 +509,14 @@ class OfferShow extends Component
         $this->offerNote = $this->offer->note;
     }
 
-    public function editNote(){
+    public function editNote()
+    {
         $res = $this->offer->setNote($this->offerNote);
-        if($res){
-            $this->alert('success' , 'Note Changed!');
+        if ($res) {
+            $this->alert('success', 'Note Changed!');
             $this->toggleEditNote();
-        }else{
-            $this->alert('failed','server error');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
@@ -722,8 +734,8 @@ class OfferShow extends Component
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
 
         $this->available_pols = Policy::getAvailablePolicies(
-            type: Policy::BUSINESS_PERSONAL_MOTOR, 
-            car: $this->offer->item, 
+            type: Policy::BUSINESS_PERSONAL_MOTOR,
+            car: $this->offer->item,
             age: null,
             offerValue: $this->offer->item_value
         );

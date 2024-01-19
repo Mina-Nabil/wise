@@ -1041,3 +1041,34 @@ document.addEventListener('livewire:load', function () {
     // Initialize the Select2 plugin
     $('#select2basic').select2();
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    var dropzones = document.getElementsByClassName("dropzone-container");
+
+    // Convert the HTMLCollection to an array for easier iteration
+    var dropzonesArray = Array.from(dropzones);
+
+    dropzonesArray.forEach(function(dropzone) {
+        dropzone.addEventListener("dragenter", function(event) {
+            event.preventDefault();
+            dropzone.classList.add("drag-over");
+        });
+
+        dropzone.addEventListener("dragleave", function(event) {
+            event.preventDefault();
+            dropzone.classList.remove("drag-over");
+        });
+
+        // To allow drop
+        // dropzone.addEventListener("dragover", function(event) {
+        //     event.preventDefault();
+        // });
+
+        // dropzone.addEventListener("drop", function(event) {
+        //     event.preventDefault();
+        //     dropzone.classList.remove("drag-over");
+        // });
+    });
+});
+
+
