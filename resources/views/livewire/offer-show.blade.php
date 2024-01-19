@@ -11,23 +11,19 @@
                         <h5><b>{{ $offer->client->name }}</b>
                             @if ($offer->status === 'new')
                                 <span class="badge bg-info-500 h-auto">
-                                    <iconify-icon
-                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
                                 </span>
                             @elseif(str_contains($offer->status, 'pending'))
                                 <span class="badge bg-warning-500 h-auto">
-                                    <iconify-icon
-                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
                                 </span>
                             @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
                                 <span class="badge bg-danger-500 h-auto">
-                                    <iconify-icon
-                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
                                 </span>
                             @elseif($offer->status === 'approved')
                                 <span class="badge bg-success-500 h-auto">
-                                    <iconify-icon
-                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
                                 </span>
                             @endif
                             <span class="badge bg-secondary-500 h-auto">
@@ -37,26 +33,19 @@
                         </h5>
                         <div>
                             <div class="dropdown relative float-right">
-                                <button
-                                    class="btn btn-sm inline-flex justify-center btn-secondary items-center cursor-default relative !pr-14"
-                                    type="button" id="secondarysplitDropdownMenuButton" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                                <button class="btn btn-sm inline-flex justify-center btn-secondary items-center cursor-default relative !pr-14" type="button" id="secondarysplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     Actions
-                                    <span
-                                        class="cursor-pointer absolute  h-full ltr:right-0 rtl:left-0 px-2 flex
+                                    <span class="cursor-pointer absolute  h-full ltr:right-0 rtl:left-0 px-2 flex
                                                 items-center justify-center leading-none">
-                                        <iconify-icon class="leading-none text-xl"
-                                            icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                                        <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
                                     </span>
                                 </button>
-                                <ul
-                                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                     @foreach ($STATUSES as $status)
                                         @if (!($status === $offer->status))
                                             <li wire:click="setStatus('{{ $status }}')">
-                                                <p
-                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                <p class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                                                     Set As {{ ucwords(str_replace('_', ' ', $status)) }}
                                                 </p>
                                             </li>
@@ -65,15 +54,13 @@
 
                                     @if ($offer->is_renewal)
                                         <li wire:click="removeRenewal" class="cursor-pointer">
-                                            <p
-                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                            <p class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
                                                 Remove Renewal</p>
                                         </li>
                                     @else
                                         <li wire:click="setIsRenewal" class="cursor-pointer">
-                                            <p
-                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                            <p class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
                                                 Set is Renewal</p>
                                         </li>
@@ -81,16 +68,14 @@
 
 
                                     <li wire:click="confirmDeleteOffer">
-                                        <a
-                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                     dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
                                             Delete Offer</a>
                                     </li>
                                 </ul>
                             </div>
                             <a href="{{ route($offer->client_type . 's.show', $offer->client_id) }}" target="_blank">
-                                <button wire:click="toggleEditInfo"
-                                    class="btn inline-flex justify-center btn-secondary shadow-base2 float-right btn-sm mr-2">View
+                                <button wire:click="toggleEditInfo" class="btn inline-flex justify-center btn-secondary shadow-base2 float-right btn-sm mr-2">View
                                     {{ ucwords($offer->client_type) }}</button>
                             </a>
                         </div>
@@ -101,8 +86,7 @@
                 </div>
 
                 @if ($offer->is_renewal)
-                    <div
-                        class="py-2 px-6 font-normal text-sm rounded-md text-success-500 border border-success-500
+                    <div class="py-2 px-6 font-normal text-sm rounded-md text-success-500 border border-success-500
                                     dark:bg-slate-800 mt-2">
                         <div class="flex items-start space-x-3 rtl:space-x-reverse">
                             <div class="flex-1 font-Inter">
@@ -114,15 +98,13 @@
                 @endif
 
                 <div class="rounded-md overlay mt-5">
-                    <div
-                        class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
+                    <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <p class="mb-2">
                                 <b>Offered Item ( Car )</b>
 
                             </p>
-                            <div class="card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5"
-                                style="border-color:rgb(224, 224, 224)">
+                            <div class="card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5" style="border-color:rgb(224, 224, 224)">
                                 <div class="break-words flex items-center my-1 m-4">
 
                                     @if ($offer->item)
@@ -130,16 +112,13 @@
                                             <ul class="m-0 p-0 list-none">
                                                 <li class="inline-block relative top-[3px] text-base font-Inter ">
                                                     {{ $offer->item->car->car_model->brand->name }}
-                                                    <iconify-icon icon="heroicons-outline:chevron-right"
-                                                        class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
+                                                    <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
                                                 </li>
                                                 <li class="inline-block relative top-[3px] text-base font-Inter ">
                                                     {{ $offer->item->car->car_model->name }}
-                                                    <iconify-icon icon="heroicons-outline:chevron-right"
-                                                        class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
+                                                    <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
                                                 </li>
-                                                <li
-                                                    class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white mr-5">
+                                                <li class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white mr-5">
                                                     {{ $offer->item->car->category }}
                                                 </li>
                                             </ul>
@@ -156,17 +135,13 @@
                                     <div class="ml-auto">
                                         <div class="relative">
                                             <div class="dropdown relative">
-                                                <button class="text-xl text-center block w-full " type="button"
-                                                    id="tableDropdownMenuButton1" data-bs-toggle="dropdown"
-                                                    aria-expanded="false">
+                                                <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                 </button>
-                                                <ul
-                                                    class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                     <li>
-                                                        <button wire:click="toggleEditItem"
-                                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                        <button wire:click="toggleEditItem" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                             Edit</button>
                                                     </li>
@@ -183,8 +158,7 @@
                                     <div class="ml-5">
                                         <p class="text-center">
                                             <span class="text-lg">
-                                                <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b><span
-                                                    class="text-sm">EGP</span>
+                                                <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b><span class="text-sm">EGP</span>
                                             </span>
                                         </p>
 
@@ -212,8 +186,7 @@
                                 <span class="  col-span-4 hidden"></span>
                                 <div class="inline-block min-w-full align-middle">
                                     <div class="overflow-hidden ">
-                                        <table
-                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                             @if (!empty($available_pols))
                                                 <thead class=" border-t border-slate-100 dark:border-slate-800">
                                                     <tr>
@@ -236,17 +209,14 @@
 
                                                     </tr>
                                                 </thead>
-                                                <tbody
-                                                    class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                     @foreach ($available_pols as $policy)
                                                         <tr>
                                                             <td class="table-td ">
                                                                 <div class="min-w-[170px]">
                                                                     <span class="text-slate-500 dark:text-slate-400">
-                                                                        <span
-                                                                            class="block text-slate-600 dark:text-slate-300">{{ $policy['policy']['company']['name'] }}</span>
-                                                                        <span
-                                                                            class="block text-slate-500 text-xs">{{ $policy['policy']['name'] }}</span>
+                                                                        <span class="block text-slate-600 dark:text-slate-300">{{ $policy['policy']['company']['name'] }}</span>
+                                                                        <span class="block text-slate-500 text-xs">{{ $policy['policy']['name'] }}</span>
                                                                     </span>
                                                                 </div>
                                                             </td>
@@ -261,11 +231,7 @@
 
                                                             </td>
                                                             <td class="table-td ">
-                                                                <button
-                                                                    wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['policy']['conditions'][0]->id }})"
-                                                                    class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon
-                                                                        icon="bi:stars"
-                                                                        class="text-primary-600"></iconify-icon>&nbsp;
+                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['policy']['conditions'][0]->id }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp;
                                                                     Generate Option</button>
                                                             </td>
                                                         </tr>
@@ -273,8 +239,7 @@
 
                                                 </tbody>
                                             @else
-                                                <div
-                                                    class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500 mx-2">
+                                                <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500 mx-2">
                                                     <div class="flex items-start space-x-3 rtl:space-x-reverse">
                                                         <div class="flex-1">
                                                             No available policies for this offer!
@@ -291,8 +256,7 @@
                 </div>
 
                 <div class="rounded-md overlay mt-5">
-                    <div
-                        class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
+                    <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <p class="mb-2">
                                 <b>Options ({{ $offer->options->count() }})</b>
@@ -302,18 +266,15 @@
                             @if ($offer->options->isEmpty())
                                 <div class="text-center">
                                     <p class="text-center m-5 text-primary">No options added to this offer.</p>
-                                    <button wire:click="toggleAddOption"
-                                        class="btn inline-flex justify-center btn-dark btn-sm">Create option</button>
+                                    <button wire:click="toggleAddOption" class="btn inline-flex justify-center btn-dark btn-sm">Create option</button>
                                 </div>
                             @else
                                 @foreach ($offer->options as $option)
                                     {{-- card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5" style="border-color:rgb(224, 224, 224)" --}}
                                     <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5">
                                         @if ($option->is_renewal)
-                                            <span
-                                                class="badge bg-success-500 text-white capitalize inline-flex items-center w-full">
-                                                <iconify-icon class="ltr:mr-1 rtl:ml-1"
-                                                    icon="material-symbols:autorenew-rounded"></iconify-icon>
+                                            <span class="badge bg-success-500 text-white capitalize inline-flex items-center w-full">
+                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="material-symbols:autorenew-rounded"></iconify-icon>
                                                 Is Renewal</span>
                                         @endif
                                         <div class="break-words flex items-center my-1 m-4">
@@ -322,25 +283,21 @@
                                                 {{ ucwords($option->policy->name) }}
 
                                                 @if ($option->payment_frequency)
-                                                    <span
-                                                        class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $option->payment_frequency }}
+                                                    <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $option->payment_frequency }}
                                                         Payment</span>
                                                 @endif
 
                                                 @if ($option->status === 'new')
                                                     <span class="badge bg-info-500 mr-2  bg-opacity-50 h-auto">
-                                                        <iconify-icon
-                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
                                                     </span>
                                                 @elseif(str_contains($option->status, 'declined'))
                                                     <span class="badge bg-danger-500  mr-2 bg-opacity-50 h-auto">
-                                                        <iconify-icon
-                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
                                                     </span>
                                                 @elseif($option->status === 'approved')
                                                     <span class="badge bg-success-500  mr-2 bg-opacity-50 h-auto">
-                                                        <iconify-icon
-                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $option->status)) }}
                                                     </span>
                                                 @endif
 
@@ -350,46 +307,30 @@
                                             <div class="ml-auto">
                                                 <div class="relative">
                                                     <div class="dropdown relative">
-                                                        <button class="text-xl text-center block w-full "
-                                                            type="button" id="tableDropdownMenuButton1"
-                                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <iconify-icon
-                                                                icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                        <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                         </button>
-                                                        <ul
-                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                        <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                             <li>
-                                                                <button
-                                                                    wire:click="acceptOption({{ $option->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                <button wire:click="acceptOption({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
                                                                     Accept Option</button>
                                                             </li>
                                                             <li>
-                                                                <button
-                                                                    wire:click="openAddFieldSec({{ $option->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                <button wire:click="openAddFieldSec({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
                                                                     Add Field</button>
                                                             </li>
                                                             <li>
-                                                                <label for="myFile"
-                                                                    wire:click="uploadDocOptionId({{ $option->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                                                                     Add Doc
                                                                 </label>
-                                                                <input type="file" id="myFile" name="filename"
-                                                                    style="display: none;"
-                                                                    wire:model="uploadedOptionFile">
+                                                                <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedOptionFile">
                                                             </li>
                                                             <li>
-                                                                <button
-                                                                    wire:click="editThisOption({{ $option->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                <button wire:click="editThisOption({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
                                                                     Edit</button>
                                                             </li>
                                                             <li>
-                                                                <button
-                                                                    wire:click="deleteThisOption({{ $option->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                <button wire:click="deleteThisOption({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
                                                                     Delete</button>
                                                             </li>
                                                         </ul>
@@ -403,8 +344,7 @@
                                             {{ ucwords(str_replace('_', ' ', $option->policy->business)) }}
                                         </p> --}}
 
-                                        <table
-                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                             <thead class="">
                                                 <tr>
 
@@ -489,22 +429,16 @@
                                                 <ul class=" rounded p-4 min-w-[184px] space-y-5">
 
                                                     @foreach ($option->fields as $field)
-                                                        <li
-                                                            class="flex justify-between text-xs text-slate-600 dark:text-slate-300">
-                                                            <span
-                                                                class="flex space-x-2 rtl:space-x-reverse items-center">
-                                                                <span
-                                                                    class="inline-flex h-[6px] w-[6px] bg-primary-500 ring-opacity-25 rounded-full ring-4 bg-primary-500 ring-{{ ['info', 'secondary', 'success', 'primary'][array_rand(['info', 'secondary', 'success', 'primary'])] }}-500 "></span>
+                                                        <li class="flex justify-between text-xs text-slate-600 dark:text-slate-300">
+                                                            <span class="flex space-x-2 rtl:space-x-reverse items-center">
+                                                                <span class="inline-flex h-[6px] w-[6px] bg-primary-500 ring-opacity-25 rounded-full ring-4 bg-primary-500 ring-{{ ['info', 'secondary', 'success', 'primary'][array_rand(['info', 'secondary', 'success', 'primary'])] }}-500 "></span>
                                                                 <span>{{ $field->name }}
 
                                                                 </span>
                                                             </span>
                                                             <span>
-                                                                <span
-                                                                    class="text-lg">{{ is_numeric($field->value) ? number_format($field->value, 0, '.', ',') : $field->value }}</span>
-                                                                <button type="button"
-                                                                    wire:click="deleteOptionField({{ $field->id }})"
-                                                                    class="font-normal text-xs text-slate-500 mt-1">
+                                                                <span class="text-lg">{{ is_numeric($field->value) ? number_format($field->value, 0, '.', ',') : $field->value }}</span>
+                                                                <button type="button" wire:click="deleteOptionField({{ $field->id }})" class="font-normal text-xs text-slate-500 mt-1">
                                                                     Delete
                                                                 </button>
                                                             </span>
@@ -523,10 +457,7 @@
                                                     <br><br>
 
                                                     @if ($optionId === $option->id)
-                                                        <span style="display: inline-block; align-items: center;"
-                                                            wire:loading wire:target="uploadedOptionFile"><iconify-icon
-                                                                class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                                                icon="line-md:loading-twotone-loop"></iconify-icon></span>
+                                                        <span style="display: inline-block; align-items: center;" wire:loading wire:target="uploadedOptionFile"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" icon="line-md:loading-twotone-loop"></iconify-icon></span>
                                                     @endif
                                                 </p>
 
@@ -572,31 +503,22 @@
                                                                         }
                                                                     @endphp
 
-                                                                    <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}"
-                                                                        alt=""
-                                                                        class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
+                                                                    <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}" alt="" class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
                                                                 </div>
 
                                                             </div>
                                                             <div class="flex-1">
-                                                                <span
-                                                                    class="block text-slate-600 text-sm dark:text-slate-300"
-                                                                    style="overflow-wrap: anywhere">
+                                                                <span class="block text-slate-600 text-sm dark:text-slate-300" style="overflow-wrap: anywhere">
                                                                     {{ mb_strimwidth($file->name, 0, 30, '...') }}
                                                                 </span>
-                                                                <span
-                                                                    class="block font-normal text-xs text-slate-500 mt-1">
+                                                                <span class="block font-normal text-xs text-slate-500 mt-1">
                                                                     uploaded by
                                                                     {{ $file->user->first_name . ' ' . $file->user->last_name }}
-                                                                    / <span class="cursor-pointer"
-                                                                        wire:click="removeOptionFile({{ $file->id }})">remove</span>
+                                                                    / <span class="cursor-pointer" wire:click="removeOptionFile({{ $file->id }})">remove</span>
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                        <button wire:click="downloadOptionDoc({{ $file->id }})"
-                                                            class="action-btn float-right text-xs border-blue-600"
-                                                            type="button"
-                                                            style="border-color: darkgrey;margin-right:10px">
+                                                        <button wire:click="downloadOptionDoc({{ $file->id }})" class="action-btn float-right text-xs border-blue-600" type="button" style="border-color: darkgrey;margin-right:10px">
                                                             <iconify-icon icon="ic:baseline-download"></iconify-icon>
                                                         </button>
                                                     </div>
@@ -606,8 +528,7 @@
                                     </div>
                                 @endforeach
                                 <div>
-                                    <button wire:click="toggleAddOption"
-                                        class="btn inline-flex justify-center btn-dark btn-sm">Add option</button>
+                                    <button wire:click="toggleAddOption" class="btn inline-flex justify-center btn-dark btn-sm">Add option</button>
                                 </div>
 
                             @endif
@@ -629,8 +550,7 @@
                 </span>
                 {{-- assignee --}}
                 <div class="flex-1 rounded-md overlay mb-5">
-                    <div
-                        class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
+                    <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <div class="mb-2 text-wrap flex justify-between">
                                 <b><iconify-icon icon="mdi:user"></iconify-icon> Assigned To</b>
@@ -640,8 +560,7 @@
                                 </span>
 
                             </div>
-                            <p><span
-                                    class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type) : 'No one/team assigned') }}</span>
+                            <p><span class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type) : 'No one/team assigned') }}</span>
                             </p>
                         </div>
                     </div>
@@ -649,8 +568,7 @@
                 {{-- End assignee --}}
                 {{-- Notes --}}
                 <div class="flex-1 rounded-md overlay">
-                    <div
-                        class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
+                    <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <p class="mb-2 text-wrap">
                                 <b><iconify-icon icon="material-symbols:note"></iconify-icon> Notes</b><br>
@@ -658,7 +576,7 @@
                                     <iconify-icon icon="carbon:edit"></iconify-icon>
                                 </span>
                                 <span class="mt-2">{{ $offer->note ?? 'No notes for this offer.' }}</span>
-                                
+
                             </p>
                         </div>
                     </div>
@@ -668,28 +586,20 @@
                 {{-- Files --}}
                 <div class="card mt-5">
                     <div class="card-body flex flex-col p-6">
-                        <header
-                            class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                        <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                             <div class="flex-1">
                                 <div class="card-title text-slate-900 dark:text-white">
-                                    <h6>files <iconify-icon wire:loading wire:target="downloadOfferFile"
-                                            icon="svg-spinners:3-dots-move"></iconify-icon></h6>
+                                    <h6>files <iconify-icon wire:loading wire:target="downloadOfferFile" icon="svg-spinners:3-dots-move"></iconify-icon></h6>
                                 </div>
                             </div>
-                            <label for="myFile" class="custom-file-label cursor-pointer">
+                            {{-- <label for="myFile" class="custom-file-label cursor-pointer">
                                 <span class="btn inline-flex justify-center btn-sm btn-outline-dark float-right">
-                                    <span style="display: flex; align-items: center;"><iconify-icon
-                                            class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                            wire:target="uploadedFile"
-                                            icon="line-md:loading-twotone-loop"></iconify-icon></span>
-                                    <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove
-                                            wire:target="uploadedFile"
-                                            icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
+                                    <span style="display: flex; align-items: center;"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFile" icon="line-md:loading-twotone-loop"></iconify-icon></span>
+                                    <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove wire:target="uploadedFile" icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
                                 </span>
 
-                            </label>
-                            <input type="file" id="myFile" name="filename" style="display: none;"
-                                wire:model="uploadedFile"><br>
+                            </label> --}}
+                            <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedFile"><br>
 
                         </header>
                         <div class="loader" wire:loading wire:target="downloadFile">
@@ -751,31 +661,25 @@
                                                             }
                                                         @endphp
 
-                                                        <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}"
-                                                            alt=""
-                                                            class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
+                                                        <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}" alt="" class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
                                                     </div>
 
                                                 </div>
                                                 <div class="flex-1">
-                                                    <span class="block text-slate-600 text-sm dark:text-slate-300"
-                                                        style="overflow-wrap: anywhere">
+                                                    <span class="block text-slate-600 text-sm dark:text-slate-300" style="overflow-wrap: anywhere">
                                                         {{ mb_strimwidth($file->name, 0, 30, '...') }}
                                                     </span>
                                                     <span class="block font-normal text-xs text-slate-500 mt-1">
                                                         uploaded by
                                                         {{ $file->user->first_name . ' ' . $file->user->last_name }} /
-                                                        <span class="cursor-pointer"
-                                                            onclick="confirm('Are you sure ?')"
-                                                            wire:click="removeOfferFile({{ $file->id }})">remove</span>
+                                                        <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeOfferFile({{ $file->id }})">remove</span>
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <div class="flex-none">
                                                 <span class="font-normal text-xs text-slate-500 mt-1"></span>
-                                                <button wire:click="downloadOfferFile({{ $file->id }})"
-                                                    class="action-btn float-right mr-1 text-xs" type="button">
+                                                <button wire:click="downloadOfferFile({{ $file->id }})" class="action-btn float-right mr-1 text-xs" type="button">
                                                     <iconify-icon icon="ic:baseline-download"></iconify-icon>
                                                 </button>
                                                 {{-- <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
@@ -786,7 +690,27 @@
                                     </li>
                                 @endforeach
 
+
+                                <div class="dropzone-container">
+                                    <p class="dropzone-para" wire:loading wire:target="uploadedFile" style="font-size20px"><iconify-icon icon="svg-spinners:tadpole"></iconify-icon></p>
+                                    <p class="dropzone-para" wire:loading.remove wire:target="uploadedFile">Choose a file or drop it here...</p>
+                                    <input name="file" id="fileInput" type="file" class="dropzone dropzone-input" multiple wire:model="uploadedFile" />
+
+                                </div>
                             </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
                             <!-- END: FIles Card -->
                         </div>
                         <div class="loader" wire:loading wire:target="previewFile">
@@ -802,16 +726,13 @@
 
                 <div class="card mt-5">
                     <div class="card-body flex flex-col p-6">
-                        <header
-                            class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                        <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                             <div class="flex-1">
                                 <div class="card-title text-slate-900 dark:text-white">
-                                    <h6>Discounts <iconify-icon wire:loading wire:target="downloadOfferFile"
-                                            icon="svg-spinners:3-dots-move"></iconify-icon></h6>
+                                    <h6>Discounts <iconify-icon wire:loading wire:target="downloadOfferFile" icon="svg-spinners:3-dots-move"></iconify-icon></h6>
                                 </div>
                             </div>
-                            <button wire:click="toggleAddDiscount"
-                                class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add
+                            <button wire:click="toggleAddDiscount" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add
                                 Discount</button>
 
                         </header>
@@ -824,8 +745,7 @@
                                         No discounts added to this offer.
                                     </div>
                                 @else
-                                    <table
-                                        class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                         <thead class="">
                                             <tr>
 
@@ -840,16 +760,14 @@
 
                                             </tr>
                                         </thead>
-                                        <tbody
-                                            class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                             @foreach ($offer->discounts as $discount)
                                                 <tr>
                                                     <td class="table-td ">
                                                         <div class="min-w-[170px]">
                                                             <span class="text-slate-500 dark:text-slate-400">
-                                                                <span
-                                                                    class="block text-slate-600 dark:text-slate-300">{{ ucwords(str_replace('_', ' ', $discount->type)) }}</span>
+                                                                <span class="block text-slate-600 dark:text-slate-300">{{ ucwords(str_replace('_', ' ', $discount->type)) }}</span>
                                                                 <span class="block text-slate-500 text-xs">Offered By:
                                                                     {{ $discount->user->username }}</span>
                                                             </span>
@@ -866,26 +784,18 @@
                                                         <div>
                                                             <div class="relative">
                                                                 <div class="dropdown relative">
-                                                                    <button class="text-xl text-center block w-full "
-                                                                        type="button"
-                                                                        id="transactionDropdownMenuButton2"
-                                                                        data-bs-toggle="dropdown"
-                                                                        aria-expanded="false">
-                                                                        <iconify-icon
-                                                                            icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                    <button class="text-xl text-center block w-full " type="button" id="transactionDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                     </button>
-                                                                    <ul
-                                                                        class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                                    <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                                     shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                         <li>
-                                                                            <a wire:click="editThisDicount({{ $discount->id }})"
-                                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                            <a wire:click="editThisDicount({{ $discount->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                             dark:hover:text-white">
                                                                                 Edit</a>
                                                                         </li>
                                                                         <li>
-                                                                            <a wire:click="deleteThisDiscount({{ $discount->id }})"
-                                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                            <a wire:click="deleteThisDiscount({{ $discount->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                             dark:hover:text-white">
                                                                                 Delete</a>
                                                                         </li>
@@ -923,27 +833,21 @@
                         <div class="card-body">
                             <div class="card-text h-full">
                                 <div class="mt-5">
-                                    <div
-                                        class="text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
+                                    <div class="text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
                                         <div class="flex ltr:text-left rtl:text-right">
                                             <div class="flex-none ltr:mr-3 rtl:ml-3">
                                                 <div class="h-8 w-8 rounded-full relative text-white bg-blue-500">
 
-                                                    <span
-                                                        class="block w-full h-full object-cover text-center text-lg leading-8">
+                                                    <span class="block w-full h-full object-cover text-center text-lg leading-8">
                                                         {{ strtoupper(substr('michael', 0, 1)) }}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="flex-1">
-                                                <input type="text" class="form-control border-0"
-                                                    placeholder="Leave a comment..." wire:model="newComment"
-                                                    wire:keydown.enter="addComment"
-                                                    style="border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.5);">
+                                                <input type="text" class="form-control border-0" placeholder="Leave a comment..." wire:model="newComment" wire:keydown.enter="addComment" style="border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.5);">
                                             </div>
                                             <div class="">
-                                                <button class="btn inline-flex justify-center btn-primary btn-sm"
-                                                    wire:click="addComment">
+                                                <button class="btn inline-flex justify-center btn-primary btn-sm" wire:click="addComment">
                                                     <span class="flex items-center">
                                                         <span>Post</span>
                                                     </span>
@@ -961,25 +865,21 @@
                             <div class="card-body">
                                 <div class="card-text h-full">
                                     <div class="mt-5">
-                                        <div
-                                            class="text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
+                                        <div class="text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
                                             <div class="flex ltr:text-left rtl:text-right">
                                                 <div class="flex-none ltr:mr-3 rtl:ml-3">
                                                     <div class="h-8 w-8 rounded-full relative text-white bg-blue-500">
 
-                                                        <span
-                                                            class="block w-full h-full object-cover text-center text-lg leading-8">
+                                                        <span class="block w-full h-full object-cover text-center text-lg leading-8">
                                                             {{ strtoupper(substr($comment->user?->username ?? 'System', 0, 1)) }}
                                                         </span>
                                                     </div>
                                                 </div>
                                                 <div class="flex-1">
-                                                    <div
-                                                        class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1`">
+                                                    <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1`">
                                                         {{ ucwords($comment->user->username) ?? 'System' }}
                                                     </div>
-                                                    <div
-                                                        class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">
+                                                    <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">
                                                         {{ $comment->comment }}
                                                     </div>
                                                 </div>
@@ -1002,27 +902,19 @@
     </div>
 
     @if ($discountId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Discount
                             </h3>
-                            <button wire:click="closeEditDiscount" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                            <button wire:click="closeEditDiscount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1031,14 +923,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Type</label>
-                                <select name="basicSelect" id="basicSelect"
-                                    class="form-control w-full mt-2 @error('discountType') !border-danger-500 @enderror"
-                                    wire:model="discountType">
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('discountType') !border-danger-500 @enderror" wire:model="discountType">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select an option...</option>
                                     @foreach ($DISCOUNT_TYPES as $type)
-                                        <option value="{{ $type }}"
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ ucwords(str_replace('_', ' ', $type)) }}
                                         </option>
                                     @endforeach
@@ -1047,29 +936,22 @@
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Value in EGP</label>
-                                <input type="number"
-                                    class="form-control mt-2 w-full @error('discountValue') !border-danger-500 @enderror"
-                                    wire:model.defer="discountValue">
+                                <input type="number" class="form-control mt-2 w-full @error('discountValue') !border-danger-500 @enderror" wire:model.defer="discountValue">
                                 @error('discountValue')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Note</label>
-                                <textarea class="form-control mt-2 w-full @error('discountNote') !border-danger-500 @enderror"
-                                    wire:model.defer="discountNote"></textarea>
+                                <textarea class="form-control mt-2 w-full @error('discountNote') !border-danger-500 @enderror" wire:model.defer="discountNote"></textarea>
                                 @error('discountNote')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="updateDiscount" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="updateDiscount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -1080,27 +962,19 @@
     @endif
 
     @if ($addDiscountSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Add Discount
                             </h3>
-                            <button wire:click="toggleAddDiscount" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                            <button wire:click="toggleAddDiscount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1109,14 +983,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Type</label>
-                                <select name="basicSelect" id="basicSelect"
-                                    class="form-control w-full mt-2 @error('discountType') !border-danger-500 @enderror"
-                                    wire:model="discountType">
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('discountType') !border-danger-500 @enderror" wire:model="discountType">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select an option...</option>
                                     @foreach ($DISCOUNT_TYPES as $type)
-                                        <option value="{{ $type }}"
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ ucwords(str_replace('_', ' ', $type)) }}
                                         </option>
                                     @endforeach
@@ -1125,29 +996,22 @@
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Value in EGP</label>
-                                <input type="number"
-                                    class="form-control mt-2 w-full @error('discountValue') !border-danger-500 @enderror"
-                                    wire:model.defer="discountValue">
+                                <input type="number" class="form-control mt-2 w-full @error('discountValue') !border-danger-500 @enderror" wire:model.defer="discountValue">
                                 @error('discountValue')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Note</label>
-                                <textarea class="form-control mt-2 w-full @error('discountNote') !border-danger-500 @enderror"
-                                    wire:model.defer="discountNote"></textarea>
+                                <textarea class="form-control mt-2 w-full @error('discountNote') !border-danger-500 @enderror" wire:model.defer="discountNote"></textarea>
                                 @error('discountNote')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addDiscount" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addDiscount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -1158,27 +1022,19 @@
     @endif
 
     @if ($editItemSection)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Item
                             </h3>
-                            <button wire:click="toggleEditItem" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                            <button wire:click="toggleEditItem" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1188,12 +1044,10 @@
                             @if ($offer->client->cars)
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Car</label>
-                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                        wire:model="carId">
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="carId">
 
                                         @foreach ($offer->client->cars as $car)
-                                            <option value="{{ $car->id }}"
-                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            <option value="{{ $car->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                 {{ $car->car->category }}
                                             </option>
                                         @endforeach
@@ -1206,32 +1060,27 @@
                                 <label for="lastName" class="form-label">Item title</label>
                                 <input type="text" class="form-control mt-2 w-full" wire:model.defer="item_title">
                                 @error('item_title')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Item value</label>
                                 <input type="number" class="form-control mt-2 w-full" wire:model.defer="item_value">
                                 @error('item_value')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Item Description</label>
                                 <textarea class="form-control mt-2 w-full" wire:model.defer="item_desc"></textarea>
                                 @error('item_desc')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="editItem" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editItem" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -1242,27 +1091,18 @@
     @endif
 
     @if ($addOptionSection)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Create Option
                             </h3>
-                            <button wire:click="toggleAddOption" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="toggleAddOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1271,8 +1111,7 @@
                         <div class="p-6">
 
                             @error('conditionId')
-                                <div
-                                    class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-danger-500 bg-opacity-[14%] text-danger-500">
+                                <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-danger-500 bg-opacity-[14%] text-danger-500">
                                     <div class="flex items-start space-x-3 rtl:space-x-reverse">
                                         <div class="flex-1">
                                             {{ $message }}
@@ -1287,9 +1126,7 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">
                                         Search Policy
-                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                            wire:loading wire:target="searchPolicy"
-                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="searchPolicy" icon="line-md:loading-twotone-loop"></iconify-icon>
                                     </label>
                                     <input type="text" class="form-control mt-2 w-full" wire:model="searchPolicy">
                                 </div>
@@ -1297,9 +1134,7 @@
                                     @if ($policiesData)
                                         @foreach ($policiesData as $policy)
                                             <p><iconify-icon icon="material-symbols:policy"></iconify-icon>
-                                                {{ $policy->company->name }} | {{ $policy->name }} | <Span
-                                                    wire:click="selectPolicy({{ $policy->id }})"
-                                                    class="cursor-pointer text-primary-500">Select Policy</Span></p>
+                                                {{ $policy->company->name }} | {{ $policy->name }} | <Span wire:click="selectPolicy({{ $policy->id }})" class="cursor-pointer text-primary-500">Select Policy</Span></p>
                                         @endforeach
 
                                     @endif
@@ -1328,8 +1163,7 @@
 
                                                 {{ $condition->value }} | Rate:{{ $condition->value }}
 
-                                                <Span wire:click="selectCondition({{ $condition->id }})"
-                                                    class="cursor-pointer text-primary-500">Select Condition</Span>
+                                                <Span wire:click="selectCondition({{ $condition->id }})" class="cursor-pointer text-primary-500">Select Condition</Span>
                                             </p>
                                         @endforeach
                                     </div>
@@ -1338,39 +1172,31 @@
 
 
                             @if ($policyId || $conditionId)
-                                <p class="text-sm m-3"><Span wire:click="clearPolicy"
-                                        class="cursor-pointer text-primary-500">Clear policy</Span></p>
+                                <p class="text-sm m-3"><Span wire:click="clearPolicy" class="cursor-pointer text-primary-500">Clear policy</Span></p>
                             @endif
 
 
                             <div class="from-group mt-3">
                                 <label for="lastName" class="form-label">Insured Value</label>
-                                <input type="text"
-                                    class="form-control mt-2 w-full @error('insured_value') !border-danger-500 @enderror"
-                                    wire:model.defer="insured_value">
+                                <input type="text" class="form-control mt-2 w-full @error('insured_value') !border-danger-500 @enderror" wire:model.defer="insured_value">
                                 @error('insured_value')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                 <div class="from-group mt-3">
                                     <label for="lastName" class="form-label ">Gross Premium</label>
-                                    <input wire:model="grossPremium" type="text"
-                                        class="form-control mt-2 w-full @error('grossPremium') !border-danger-500 @enderror">
+                                    <input wire:model="grossPremium" type="text" class="form-control mt-2 w-full @error('grossPremium') !border-danger-500 @enderror">
                                     @error('grossPremium')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group mt-3">
                                     <label for="lastName" class="form-label">Net Premium</label>
-                                    <input wire:model="netPremium" type="text"
-                                        class="form-control mt-2 w-full  @error('netPremium') !border-danger-500 @enderror">
+                                    <input wire:model="netPremium" type="text" class="form-control mt-2 w-full  @error('netPremium') !border-danger-500 @enderror">
                                     @error('netPremium')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1378,37 +1204,28 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Payment Frequency</label>
-                                    <select name="basicSelect" id="basicSelect"
-                                        class="form-control w-full mt-2  @error('payment_frequency') !border-danger-500 @enderror"
-                                        wire:model="payment_frequency">
-                                        <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2  @error('payment_frequency') !border-danger-500 @enderror" wire:model="payment_frequency">
+                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
                                         @foreach ($PAYMENT_FREQS as $freqs)
-                                            <option value="{{ $freqs }}"
-                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                 {{ ucwords($freqs) }}
                                             </option>
                                         @endforeach
 
                                     </select>
                                     @error('payment_frequency')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Is Renewal</label>
                                     <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
-                                        <label
-                                            class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                            <input type="checkbox" checked class="sr-only peer"
-                                                wire:model="optionIsRenewal">
-                                            <div
-                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                        <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer" wire:model="optionIsRenewal">
+                                            <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
-                                            <span
-                                                class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
-                                            <span
-                                                class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
+                                            <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
+                                            <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
                                         </label>
                                     </div>
                                 </div>
@@ -1417,12 +1234,9 @@
                             @if ($payment_frequency === 'installements')
                                 <div class="from-group mt-3">
                                     <label for="lastName" class="form-label">Installments Count</label>
-                                    <input name="basicSelect"
-                                        class="form-control mt-2 w-full !border-success-500 @error('installmentsCount') !border-danger-500 @enderror"
-                                        type="number" wire:model="installmentsCount">
+                                    <input name="basicSelect" class="form-control mt-2 w-full !border-success-500 @error('installmentsCount') !border-danger-500 @enderror" type="number" wire:model="installmentsCount">
                                     @error('installmentsCount')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                             @endif
@@ -1433,34 +1247,28 @@
                                         <label for="time-date-picker" class="form-label">
                                             Upload Files ({{ count($files) ?? '0' }})
                                         </label>
-                                        <input type="file" class="w-full hidden " name="basic"
-                                            multiple="multiple" wire:model="files" />
-                                        <span
-                                            class="w-full h-[40px] file-control flex items-center custom-class  @error('files') !border-danger-500 @enderror">
+                                        <input type="file" class="w-full hidden " name="basic" multiple="multiple" wire:model="files" />
+                                        <span class="w-full h-[40px] file-control flex items-center custom-class  @error('files') !border-danger-500 @enderror">
                                             <span class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
                                                 <span id="placeholder" class="text-slate-400">
                                                     @foreach ($files as $file)
-                                                        <span
-                                                            class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $file->getClientOriginalName() }}</span>
+                                                        <span class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $file->getClientOriginalName() }}</span>
                                                     @endforeach
                                                     @if (empty($files))
                                                         Choose a file or drop it here...
                                                     @endif
                                                 </span>
                                             </span>
-                                            <span
-                                                class="file-name flex-none cursor-pointer border-l px-4 border-slate-200 dark:border-slate-700 h-full inline-flex items-center bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm rounded-tr rounded-br font-normal">Browse</span>
+                                            <span class="file-name flex-none cursor-pointer border-l px-4 border-slate-200 dark:border-slate-700 h-full inline-flex items-center bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm rounded-tr rounded-br font-normal">Browse</span>
                                         </span>
                                     </label>
                                     @error('files')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                     @error('files.*')
                                         @foreach ($errors->get('files.*') as $each_file_errors)
                                             @foreach ($each_file_errors as $msg)
-                                                <span
-                                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $msg }}</span>
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $msg }}</span>
                                             @endforeach
                                         @endforeach
                                     @enderror
@@ -1471,51 +1279,37 @@
                                 @if (!empty($fields))
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                         <div class="input-area">
-                                            <label for="time-date-picker" class="form-label"
-                                                style="margin: 0">Field</label>
+                                            <label for="time-date-picker" class="form-label" style="margin: 0">Field</label>
                                         </div>
                                         <div class="input-area">
-                                            <label for="time-date-picker" class="form-label"
-                                                style="margin: 0">Value</label>
+                                            <label for="time-date-picker" class="form-label" style="margin: 0">Value</label>
                                         </div>
                                     </div>
                                 @endif
                                 @foreach ($fields as $index => $field)
                                     <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
                                         <div class="input-area col-span-4">
-                                            <input
-                                                class="form-control w-full mt-2  @error('fields.{{ $index }}.field') !border-danger-500 @enderror"
-                                                wire:model="fields.{{ $index }}.field" type="text"
-                                                placeholder="Field">
+                                            <input class="form-control w-full mt-2  @error('fields.{{ $index }}.field') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.field" type="text" placeholder="Field">
                                         </div>
                                         <div class="input-area col-span-3">
-                                            <input
-                                                class="form-control w-full mt-2   @error('fields.{{ $index }}.value') !border-danger-500 @enderror"
-                                                wire:model="fields.{{ $index }}.value" type="number"
-                                                placeholder="Value">
+                                            <input class="form-control w-full mt-2   @error('fields.{{ $index }}.value') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.value" type="number" placeholder="Value">
                                         </div>
                                         <div class="col-span-1 flex items-center">
-                                            <button class="action-btn" wire:click="removeField({{ $index }})"
-                                                type="button">
+                                            <button class="action-btn" wire:click="removeField({{ $index }})" type="button">
                                                 <iconify-icon icon="heroicons:trash"></iconify-icon>
                                             </button>
                                         </div>
                                     </div>
                                 @endforeach
 
-                                <button wire:click="addAnotherField"
-                                    class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Field</button>
+                                <button wire:click="addAnotherField" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Field</button>
                             </div>
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addOption" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="addOption"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addOption" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="addOption" icon="line-md:loading-twotone-loop"></iconify-icon>
                                 Submit
                             </button>
                         </div>
@@ -1526,27 +1320,18 @@
     @endif
 
     @if ($editDueSection)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Due Date
                             </h3>
-                            <button wire:click="toggleEditDue" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="toggleEditDue" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1556,35 +1341,25 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                 <div class="input-area mb-3">
                                     <label for="time-date-picker" class="form-label">Due Date</label>
-                                    <input
-                                        class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror"
-                                        id="default-picker" type="date" wire:model.defer="dueDate"
-                                        autocomplete="off">
+                                    <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror" id="default-picker" type="date" wire:model.defer="dueDate" autocomplete="off">
                                     @error('dueDate')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="input-area mb-3">
                                     <label for="time-date-picker" class="form-label">Time </label>
-                                    <input type="time"
-                                        class="form-control  @error('dueTime') !border-danger-500 @enderror"
-                                        id="appt" name="appt" min="09:00" max="18:00"
-                                        wire:model.defer="dueTime" autocomplete="off" />
+                                    <input type="time" class="form-control  @error('dueTime') !border-danger-500 @enderror" id="appt" name="appt" min="09:00" max="18:00" wire:model.defer="dueTime" autocomplete="off" />
                                     {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
                                     @error('dueTime')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
 
                                 </div>
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="editDue" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editDue" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -1595,80 +1370,56 @@
     @endif
 
     @if ($editNoteSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Note
                             </h3>
-                            <button wire:click="toggleEditNote" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="toggleEditNote" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
-                                <div class="input-area mb-3">
-                                    <label for="time-date-picker" class="form-label">Due Date</label>
-                                    <input
-                                        class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('offerNote') !border-danger-500 @enderror"
-                                        id="default-picker" type="text" wire:model.defer="offerNote"
-                                        autocomplete="off">
-                                    @error('offerNote')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                        </div>
-                        <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="editNote" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
-                                Submit
-                            </button>
+                            <div class="input-area mb-3">
+                                <label for="time-date-picker" class="form-label">Due Date</label>
+                                <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('offerNote') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="offerNote" autocomplete="off">
+                                @error('offerNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="editNote" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    Submit
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     @endif
 
     @if ($addFieldSection_id)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Add Field
                             </h3>
-                            <button wire:click="closeAddField" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeAddField" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1678,33 +1429,24 @@
 
                             <div class="input-area mb-3">
                                 <label class="form-label">Field Name</label>
-                                <input class="form-control py-2 @error('newFieldName') !border-danger-500 @enderror"
-                                    id="default-picker" type="text" wire:model.defer="newFieldName"
-                                    autocomplete="off">
+                                <input class="form-control py-2 @error('newFieldName') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="newFieldName" autocomplete="off">
                                 @error('newFieldName')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="input-area mb-3">
                                 <label class="form-label">Value </label>
-                                <input type="text"
-                                    class="form-control  @error('newFieldValue') !border-danger-500 @enderror"
-                                    id="appt" name="appt" min="09:00" max="18:00"
-                                    wire:model.defer="newFieldValue" autocomplete="off" />
+                                <input type="text" class="form-control  @error('newFieldValue') !border-danger-500 @enderror" id="appt" name="appt" min="09:00" max="18:00" wire:model.defer="newFieldValue" autocomplete="off" />
                                 {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
                                 @error('newFieldValue')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addField" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addField" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -1718,27 +1460,18 @@
     @endif
 
     @if ($editOptionId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Create Option
                             </h3>
-                            <button wire:click="closeEditOption" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeEditOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1759,31 +1492,25 @@
 
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Insured Value</label>
-                                <input type="text" class="form-control mt-2 w-full"
-                                    wire:model.defer="insured_value">
+                                <input type="text" class="form-control mt-2 w-full" wire:model.defer="insured_value">
                                 @error('insured_value')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                 <div class="from-group mt-3">
                                     <label for="lastName" class="form-label ">Gross Premium</label>
-                                    <input wire:model="grossPremium" type="text"
-                                        class="form-control mt-2 w-full @error('grossPremium') !border-danger-500 @enderror">
+                                    <input wire:model="grossPremium" type="text" class="form-control mt-2 w-full @error('grossPremium') !border-danger-500 @enderror">
                                     @error('grossPremium')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group mt-3">
                                     <label for="lastName" class="form-label">Net Premium</label>
-                                    <input wire:model="netPremium" type="text"
-                                        class="form-control mt-2 w-full  @error('netPremium') !border-danger-500 @enderror">
+                                    <input wire:model="netPremium" type="text" class="form-control mt-2 w-full  @error('netPremium') !border-danger-500 @enderror">
                                     @error('netPremium')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -1791,36 +1518,28 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Payment Frequency</label>
-                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                        wire:model="payment_frequency">
-                                        <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="payment_frequency">
+                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
                                         @foreach ($PAYMENT_FREQS as $freqs)
-                                            <option value="{{ $freqs }}"
-                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                 {{ $freqs }}
                                             </option>
                                         @endforeach
 
                                     </select>
                                     @error('payment_frequency')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Is Renewal</label>
                                     <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
-                                        <label
-                                            class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                            <input type="checkbox" checked class="sr-only peer"
-                                                wire:model="optionIsRenewal">
-                                            <div
-                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                        <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer" wire:model="optionIsRenewal">
+                                            <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
-                                            <span
-                                                class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
-                                            <span
-                                                class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
+                                            <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
+                                            <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
                                         </label>
                                     </div>
                                 </div>
@@ -1828,10 +1547,8 @@
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="editOption" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editOption" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -1842,27 +1559,18 @@
     @endif
 
     @if ($editAssigneeSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Assignee
                             </h3>
-                            <button wire:click="toggleEditAssignee" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="toggleEditAssignee" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1871,19 +1579,16 @@
                         <div class="p-6">
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Select Assignee</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                    wire:model="newAsignee">
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="newAsignee">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select user</option>
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->id }}"
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ $user->first_name . ' ' . $user->last_name }}
                                         </option>
                                     @endforeach
                                     @foreach ($usersTypes as $type)
-                                        <option value="{{ $type }}"
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             <b>{{ ucwords($type) }} Team </b>
                                         </option>
                                     @endforeach
@@ -1891,10 +1596,8 @@
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="changeAsignee" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="changeAsignee" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -1905,30 +1608,21 @@
     @endif
 
     @if ($deleteDiscountId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                 Delete Discount
                             </h3>
-                            <button wire:click="dismissDeleteDiscount" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="dismissDeleteDiscount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1940,10 +1634,8 @@
                             </h6>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="deleteDiscount" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteDiscount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
                         </div>
                     </div>
                 </div>
@@ -1952,30 +1644,21 @@
     @endif
 
     @if ($deleteOptionId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                 Delete Option
                             </h3>
-                            <button wire:click="dismissDeleteOption" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="dismissDeleteOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1987,10 +1670,8 @@
                             </h6>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="deleteOption" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteOption" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
                         </div>
                     </div>
                 </div>
@@ -1999,30 +1680,21 @@
     @endif
 
     @if ($deleteThisOffer)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                 Delete Offer
                             </h3>
-                            <button wire:click="dismissDeleteOffer" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="dismissDeleteOffer" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2034,10 +1706,8 @@
                             </h6>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="deleteOffer" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteOffer" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
                         </div>
                     </div>
                 </div>
