@@ -97,10 +97,12 @@ class Customer extends Model
     ];
 
     protected $fillable = [
-        'type', 'name', 'arabic_name', 'email', 'gender', 'owner_id',
-        'marital_status', 'nationality_id', 'id_type', 'id_number',
+        'type', 'first_name', 'middle_name', 'last_name',
+        'arabic_first_name', 'arabic_middle_name', 'arabic_last_name',
+        'email', 'gender', 'owner_id', 'marital_status',
+        'nationality_id', 'id_type', 'id_number',
         'profession_id', 'salary_range', 'income_source', 'birth_date',
-        'id_doc', 'driver_license_doc'
+        'id_doc', 'driver_license_doc', 'note'
     ];
 
     ///model functions
@@ -142,8 +144,12 @@ class Customer extends Model
     }
 
     public function editCustomer(
-        $name,
-        $arabic_name = null,
+        $first_name,
+        $last_name,
+        $middle_name = null,
+        $arabic_first_name = null,
+        $arabic_middle_name = null,
+        $arabic_last_name = null,
         $birth_date = null,
         $email = null,
         $gender = null,
@@ -158,8 +164,12 @@ class Customer extends Model
         $driver_license_doc = null,
     ): bool {
         $this->update([
-            "name"  =>  $name,
-            "arabic_name"   =>  $arabic_name,
+            "first_name"  =>  $first_name,
+            "last_name"  =>  $last_name,
+            "middle_name"  =>  $middle_name,
+            "arabic_first_name"  =>  $arabic_first_name,
+            "arabic_middle_name"   =>  $arabic_middle_name,
+            "arabic_last_name"   =>  $arabic_last_name,
             "birth_date"    =>  $birth_date,
             "email" =>  $email,
             "gender"    =>  $gender,
@@ -446,6 +456,7 @@ class Customer extends Model
     public function setStatus($status, $reason, $note = null): status|false
     {
         try {
+            AppLog::info("Updating customer status", loggable: $this);
             return $this->status()->updateOrCreate([], [
                 "user_id"      =>  Auth::id(),
                 "status"    =>  $status,
@@ -453,6 +464,21 @@ class Customer extends Model
                 "note"    =>  $note,
             ]);
         } catch (Exception $e) {
+            AppLog::error("Updating customer note", loggable: $this, desc: $e->getMessage());
+            report($e);
+            return false;
+        }
+    }
+
+    public function setCustomerNote($note): bool
+    {
+        try {
+            AppLog::info("Updating customer note", loggable: $this);
+            return $this->update([
+                "note"    =>  $note,
+            ]);
+        } catch (Exception $e) {
+            AppLog::error("Updating customer note", loggable: $this, desc: $e->getMessage());
             report($e);
             return false;
         }
@@ -460,9 +486,13 @@ class Customer extends Model
 
     ///static functions
     public static function newLead(
-        $name,
+        $first_name,
+        $last_name,
         $phone,
-        $arabic_name = null,
+        $middle_name = null,
+        $arabic_first_name = null,
+        $arabic_middle_name = null,
+        $arabic_last_name = null,
         $birth_date = null,
         $email = null,
         $gender = null,
@@ -476,11 +506,16 @@ class Customer extends Model
         $owner_id = null,
         $id_doc = null,
         $driver_license_doc = null,
+        $note = null,
     ): self|false {
         $newLead = new self([
             "type"  =>  self::TYPE_LEAD,
-            "name"  =>  $name,
-            "arabic_name"   =>  $arabic_name,
+            "first_name"  =>  $first_name,
+            "last_name"  =>  $last_name,
+            "middle_name"  =>  $middle_name,
+            "arabic_first_name"  =>  $arabic_first_name,
+            "arabic_middle_name"   =>  $arabic_middle_name,
+            "arabic_last_name"   =>  $arabic_last_name,
             "birth_date"    =>  $birth_date,
             "email" =>  $email,
             "gender"    =>  $gender,
@@ -494,6 +529,7 @@ class Customer extends Model
             "owner_id" =>  $owner_id,
             "id_doc" =>  $id_doc,
             "driver_license_doc" =>  $driver_license_doc,
+            "note" =>  $note,
             "creator_id"    => Auth::id()
         ]);
 
@@ -512,10 +548,14 @@ class Customer extends Model
 
     public static function newCustomer(
         $owner_id,
-        $name,
+        $first_name,
+        $last_name,
         $gender,
         $email,
-        $arabic_name = null,
+        $middle_name = null,
+        $arabic_first_name = null,
+        $arabic_middle_name = null,
+        $arabic_last_name = null,
         $birth_date = null,
         $marital_status = null,
         $id_type = null,
@@ -526,11 +566,16 @@ class Customer extends Model
         $income_source = null,
         $id_doc = null,
         $driver_license_doc = null,
+        $note = null
     ): self|false {
         $newCustomer = new self([
             "type"  =>  self::TYPE_CLIENT,
-            "name"  =>  $name,
-            "arabic_name"   =>  $arabic_name,
+            "first_name"  =>  $first_name,
+            "last_name"  =>  $last_name,
+            "middle_name"  =>  $middle_name,
+            "arabic_first_name"  =>  $arabic_first_name,
+            "arabic_middle_name"   =>  $arabic_middle_name,
+            "arabic_last_name"   =>  $arabic_last_name,
             "birth_date"    =>  $birth_date,
             "email" =>  $email,
             "gender"    =>  $gender,
@@ -543,6 +588,7 @@ class Customer extends Model
             "income_source" =>  $income_source,
             "owner_id" =>  $owner_id,
             "id_doc" =>  $id_doc,
+            "note" =>  $note,
             "driver_license_doc" =>  $driver_license_doc,
             "creator_id"    => Auth::id()
         ]);

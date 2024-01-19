@@ -32,8 +32,12 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->enum('type', Customer::TYPES);
-            $table->string('name');
-            $table->string('arabic_name')->nullable();
+            $table->string('first_name');
+            $table->string('middle_name')->nullable();
+            $table->string('last_name');
+            $table->string('arabic_first_name')->nullable();
+            $table->string('arabic_middle_name')->nullable();
+            $table->string('arabic_last_name')->nullable();
             $table->string('email')->nullable();
             $table->enum('gender', Customer::GENDERS)->nullable();
             $table->enum('marital_status', Customer::MARITALSTATUSES)->nullable();
@@ -46,6 +50,7 @@ return new class extends Migration
             $table->enum('salary_range', Customer::SALARY_RANGES)->nullable();
             $table->enum('income_source', Customer::INCOME_SOURCES)->nullable();
             $table->dateTime('birth_date')->nullable();
+            $table->string('note')->nullable();
             $table->timestamps();
         });
 
