@@ -11,6 +11,7 @@ use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
 use Livewire\Component;
 use App\Models\Offers\Offer;
+use App\Models\Cars\CarPrice;
 use App\Models\Insurance\Policy;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
@@ -51,6 +52,8 @@ class OfferIndex extends Component
     public $carModel;
     public $CarCategory;
     public $cars;
+    public $CarPrices;
+    public $carPrice;
 
     public $relatives = [];
 
@@ -152,6 +155,23 @@ class OfferIndex extends Component
     {
         $this->cars = Car::where('car_model_id', $value)->get();
         $this->CarCategory = null;
+    }
+
+    public function updatedCarCategory(){
+        if($this->CarCategory){
+            $this->CarPrices = CarPrice::where('car_id',$this->CarCategory)->get();
+        }
+    }
+    public function updatedCarPrice(){
+        if($this->carPrice){
+            $this->item_value = $this->carPrice;
+        }
+    }
+
+    public function updatedItem(){
+        if($this->item){
+            $this->CarPrices = CarPrice::where('car_id',$this->item)->get();
+        }
     }
 
     public function newOffer()

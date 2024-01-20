@@ -99,7 +99,7 @@
                                             @endif
 
                                             @if ($offer->is_renewal)
-                                            <span class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl" style="vertical-align: top;">Renewal</span>
+                                                <span class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl" style="vertical-align: top;">Renewal</span>
                                             @endif
                                         </td>
 
@@ -302,8 +302,25 @@
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
 
+
+
+
                                     @endif
                                 @endif
+
+                                @if ($CarCategory || $item)
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">Model Year</label>
+                                        <select name="basicSelect" class="form-control w-full mt-2 @error('carPrice') !border-danger-500 @enderror text-dark" wire:model="carPrice">
+                                            <option selected>Select an Option</option>
+                                            @foreach ($CarPrices as $price)
+                                                <option value="{{ $price->price }}" class="">
+                                                    {{ 'Model Year: ' . $price->model_year . ' ·  Price: ' . $price->price . '' }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
+                                
                             @elseif($type === 'personal_medical' && $clientType === 'Customer')
                                 @if ($owner)
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
