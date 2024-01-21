@@ -279,7 +279,7 @@ class Policy extends Model
         $operator,
         $value,
         $rate,
-        $note
+        $note = null
     ): false|PolicyCondition {
         /** @var User */
         $loggedInUser = Auth::user();

@@ -11,7 +11,7 @@ class Status extends Model
 {
     use HasFactory;
 
-    protected $table = 'customer_status';
+    protected $table = 'corporate_status';
 
     const STATUS_NEW = 'new';
     const STATUS_QUALIFIED = 'qualified';

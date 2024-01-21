@@ -2,7 +2,7 @@
     <div>
         <div class="flex justify-between flex-wrap items-center mb-6">
             <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4 mb-4 sm:mb-0 flex space-x-3 rtl:space-x-reverse">Dashboard</h4>
-            <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center rtl:space-x-reverse">
+            {{-- <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center rtl:space-x-reverse">
                 <button class="btn leading-0 inline-flex justify-center bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 !font-normal">
                     <span class="flex items-center">
                         <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2 font-light" icon="heroicons-outline:calendar"></iconify-icon>
@@ -15,9 +15,11 @@
                         <span>Select Date</span>
                     </span>
                 </button>
-            </div>
+            </div> --}}
         </div>
         <div class="grid grid-cols-12 gap-5 mb-5">
+
+{{--             
             <div class="2xl:col-span-3 lg:col-span-4 col-span-12">
                 <div class="bg-no-repeat bg-cover bg-center p-4 rounded-[6px] relative" style="background-image: url(assets/images/all-img/widget-bg-1.png); height:100%;">
                     <div class="max-w-[180px]">
@@ -136,13 +138,13 @@
                         <!-- END: Group Chart3 -->
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
 
 
 
             {{-- created offers --}}
-            <div class="lg:col-span-6 col-span-12">
+            {{-- <div class="lg:col-span-6 col-span-12">
                 <div class="card ">
                     <div class="card-header ">
                         <h4 class="card-title">Created Offers</h4>
@@ -232,10 +234,10 @@
 
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Assigned Offers --}}
-            <div class="lg:col-span-6 col-span-12">
+            <div class="lg:col-span-4 col-span-12">
                 <div class="card ">
                     <div class="card-header ">
                         <h4 class="card-title">Assigned Offers</h4>
@@ -328,7 +330,7 @@
             </div>
 
             {{-- Tasks --}}
-            <div class="lg:col-span-8 col-span-12">
+            <div class="lg:col-span-4 col-span-12">
                 <div class="card ">
                     <div class="card-header ">
                         <h4 class="card-title">Recent Tasks</h4>
