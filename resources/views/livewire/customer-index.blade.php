@@ -69,7 +69,7 @@
                                     <tr>
 
                                         <td wire:click="redirectToShowPage({{ $customer }})" class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
-                                            <b>{{ $customer->name }}</b>
+                                            <b>{{ $customer->first_name }} {{ $customer->middle_name }} {{ $customer->last_name }}</b>
                                         </td>
 
                                         <td class="table-td ">
@@ -103,8 +103,8 @@
                                                     </button>
                                                     <ul class="dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                         @foreach ($customerStatus as $status)
-                                                        <li class="cursor-pointer" wire:click="changeThisStatus('{{ $customer->id }}','{{ $status }}')">
-                                                                <a  class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                            <li class="cursor-pointer" wire:click="changeThisStatus('{{ $customer->id }}','{{ $status }}')">
+                                                                <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
                                                                     Set as {{ $status }}
                                                                 </a>
                                                             </li>
@@ -176,22 +176,58 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <p class="text-lg"><b>Customer Info</b></p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
                                     <div class="input-area">
-                                        <label for="firstName" class="form-label">Customer Name</label>
-                                        <input id="firstName" type="text" class="form-control @error('name') !border-danger-500 @enderror" wire:model.defer="name">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('firstName') !border-danger-500 @enderror" wire:model.defer="firstName">
                                     </div>
                                     <div class="input-area">
-                                        <label for="lastName" class="form-label">Arabic Name</label>
-                                        <input id="lastName" type="text" class="form-control @error('arabic_name') !border-danger-500 @enderror" wire:model.defer="arabic_name">
+                                        <label for="firstName" class="form-label">Middle Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('middleName') !border-danger-500 @enderror" wire:model.defer="middleName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Last Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('lastName') !border-danger-500 @enderror" wire:model.defer="lastName">
                                     </div>
                                 </div>
-                                @error('name')
+                                @error('firstName')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
-                                @error('arabic_name')
+
+                                @error('middleName')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+
+                                @error('lastName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Arabic First Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('ArabicFirstName') !border-danger-500 @enderror" wire:model.defer="ArabicFirstName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Arabic Middle Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('ArabicMiddleName') !border-danger-500 @enderror" wire:model.defer="ArabicMiddleName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Arabic Last Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('ArabicLastName') !border-danger-500 @enderror" wire:model.defer="ArabicLastName">
+                                    </div>
+                                </div>
+                                @error('ArabicFirstName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                @error('ArabicMiddleName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                @error('ArabicLastName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
                                 <div class="input-area mt-2">
                                     <label for="name" class="form-label">Email</label>
                                     <input id="name" type="text" class="form-control @error('email') !border-danger-500 @enderror" wire:model.defer="email">
@@ -343,19 +379,37 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <p class="text-lg"><b>Lead Info</b></p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
                                     <div class="input-area">
-                                        <label for="firstName" class="form-label">Customer Name</label>
-                                        <input id="firstName" type="text" class="form-control @error('LeadName') !border-danger-500 @enderror" wire:model="LeadName">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('leadFirstName') !border-danger-500 @enderror" wire:model.defer="leadFirstName">
                                     </div>
                                     <div class="input-area">
-                                        <label for="lastName" class="form-label">Arabic Name</label>
-                                        <input id="lastName" type="text" class="form-control @error('LeadPhone') !border-danger-500 @enderror" wire:model="LeadPhone">
+                                        <label for="leadMiddleName" class="form-label">Middle Name</label>
+                                        <input id="leadMiddleName" type="text" class="form-control @error('leadMiddleName') !border-danger-500 @enderror" wire:model.defer="leadMiddleName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="leadLastName" class="form-label">Last Name</label>
+                                        <input id="leadLastName" type="text" class="form-control @error('leadLastName') !border-danger-500 @enderror" wire:model.defer="leadLastName">
                                     </div>
                                 </div>
-                                @error('LeadName')
+                                @error('leadFirstName')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+
+                                @error('leadMiddleName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                @error('leadLastName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area">
+                                    <label for="lastName" class="form-label">Phone</label>
+                                    <input id="lastName" type="text" class="form-control @error('LeadPhone') !border-danger-500 @enderror" wire:model="LeadPhone">
+                                </div>
                                 @error('LeadPhone')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

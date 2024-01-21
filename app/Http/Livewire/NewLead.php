@@ -13,34 +13,51 @@ class NewLead extends Component
     use  AlertFrontEnd, ToggleSectionLivewire;
 
     public $addLeadSection;
-    public $LeadName;
+    public $leadFirstName;
+    public $leadMiddleName;
+    public $leadLastName;
+    public $leadArabicFirstName;
+    public $leadArabicMiddleName;
+    public $leadArabicLastName;
     public $LeadPhone;
     public $LeadEmail;
     public $leadType = 'customer';
 
 
-    public function toggleAddLead(){
+    public function toggleAddLead()
+    {
         $this->toggle($this->addLeadSection);
     }
 
-    public function addLead(){
+    public function addLead()
+    {
 
 
         if ($this->leadType === 'customer') {
             $this->validate([
-                'LeadName' => 'required|string|max:255',
+                'leadFirstName' => 'required|string|max:255',
+                'leadMiddleName' => 'nullable|string|max:255',
+                'leadLastName' => 'required|string|max:255',
+                'leadArabicFirstName' => 'nullable|string|max:255',
+                'leadArabicMiddleName' => 'nullable|string|max:255',
+                'leadArabicLastName' => 'nullable|string|max:255',
                 'LeadPhone' => 'required|string|max:255',
                 'LeadEmail' => 'nullable|email',
             ]);
-    
+
             $customer = new Customer();
             $res = $customer->newLead(
-                $this->LeadName,
+                $this->leadFirstName,
+                $this->leadLastName,
                 $this->LeadPhone,
-                email:$this->LeadEmail,
+                $this->leadMiddleName,
+                $this->leadArabicFirstName,
+                $this->leadArabicMiddleName,
+                $this->leadArabicLastName,
+                email: $this->LeadEmail,
                 owner_id: auth()->id()
             );
-        }elseif($this->leadType === 'corporate'){
+        } elseif ($this->leadType === 'corporate') {
             $this->validate([
                 'LeadName' => 'required|string|max:255',
                 'LeadPhone' => 'nullable|string|max:255',
@@ -50,19 +67,18 @@ class NewLead extends Component
             $corporate = new Corporate();
             $res = $corporate->newLead(
                 $this->LeadName,
-                email:$this->LeadEmail
+                email: $this->LeadEmail
             );
 
-            $res->addPhone('home',$this->LeadPhone);
-
+            $res->addPhone('home', $this->LeadPhone);
         }
-        
 
 
-        if($res){
+
+        if ($res) {
             $this->alert('success', 'Lead Added!');
             $this->toggleAddLead();
-        }else{
+        } else {
             $this->alert('failed', 'server error');
         }
     }

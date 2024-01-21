@@ -19,7 +19,12 @@ class CustomerIndex extends Component
 
     public $addCustomerSection = false;
     public $ownerId;
-    public $name;
+    public $firstName;
+    public $middleName;
+    public $lastName;
+    public $ArabicFirstName;
+    public $ArabicMiddleName;
+    public $ArabicLastName;
     public $arabic_name;
     public $email;
     public $bdate;
@@ -33,7 +38,12 @@ class CustomerIndex extends Component
     public $incomeSource;
 
     public $addLeadSection;
-    public $LeadName;
+    public $leadFirstName;
+    public $leadMiddleName;
+    public $leadLastName;
+    public $leadArabicFirstName;
+    public $leadArabicMiddleName;
+    public $leadArabicLastName;
     public $LeadPhone;
 
     public $changeCustStatusId;
@@ -55,7 +65,7 @@ class CustomerIndex extends Component
 
     public function changeStatus()
     {
-        $res = Customer::find($this->changeCustStatusId)->setStatus($this->changeCustStatusStatus,$this->statusReason,$this->statusNote);
+        $res = Customer::find($this->changeCustStatusId)->setStatus($this->changeCustStatusStatus, $this->statusReason, $this->statusNote);
         if ($res) {
             $this->alert('success', 'Status updated!');
             $this->changeCustStatusId = null;
@@ -68,12 +78,17 @@ class CustomerIndex extends Component
     public function addLead()
     {
         $this->validate([
-            'LeadName' => 'required|string|max:255',
+            'leadFirstName' => 'required|string|max:255',
+            'leadMiddleName' => 'nullable|string|max:255',
+            'leadLastName' => 'required|string|max:255',
+            'leadArabicFirstName' => 'nullable|string|max:255',
+            'leadArabicMiddleName' => 'nullable|string|max:255',
+            'leadArabicLastName' => 'nullable|string|max:255',
             'LeadPhone' => 'required|string|max:255',
         ]);
 
         $customer = new Customer();
-        $res = $customer->newLead($this->LeadName, $this->LeadPhone, null, null, null, null, null, null, null, null, null, null, null, auth()->id());
+        $res = $customer->newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: auth()->id());
         if ($res) {
             $this->alert('success', 'Lead Added!');
             $this->toggleAddLead();
@@ -85,7 +100,12 @@ class CustomerIndex extends Component
     public function addCustomer()
     {
         $this->validate([
-            'name' => 'required|string|max:255',
+            'firstName' => 'required|string|max:255',
+            'middleName' => 'nullable|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'ArabicFirstName' => 'nullable|string|max:255',
+            'ArabicMiddleName' => 'nullable|string|max:255',
+            'ArabicLastName' => 'nullable|string|max:255',
             'arabic_name' => 'nullable|string|max:255',
             'bdate' => 'nullable|date',
             'email' => 'required|email',
@@ -100,7 +120,7 @@ class CustomerIndex extends Component
         ]);
 
         $customer = new Customer();
-        $res = $customer->newCustomer(auth()->id(), $this->name, $this->gender, $this->email, $this->arabic_name, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource);
+        $res = $customer->newCustomer(auth()->id(), $this->firstName, $this->lastName, $this->gender, $this->email, $this->middleName, $this->ArabicFirstName, $this->ArabicMiddleName, $this->ArabicLastName, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource);
         if ($res) {
             redirect()->route('customers.show', $res->id);
         } else {
