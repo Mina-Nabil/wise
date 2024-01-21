@@ -530,7 +530,7 @@ class Customer extends Model
             "id_doc" =>  $id_doc,
             "driver_license_doc" =>  $driver_license_doc,
             "note" =>  $note,
-            "creator_id"    => Auth::id()
+            "creator_id"    => Auth::id() ?? 10
         ]);
 
         try {

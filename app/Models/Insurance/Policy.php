@@ -305,10 +305,7 @@ class Policy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (
-            !($loggedInUser == null && App::isLocal()) && //local seeder code - can remove later
-            !$loggedInUser->can('update', $this)
-        ) return false;
+        if (!$loggedInUser->can('update', $this)) return false;
         try {
             AppLog::info("Adding benefit", loggable: $this);
 
