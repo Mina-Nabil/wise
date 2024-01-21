@@ -26,12 +26,9 @@ class Company extends Model
     ///static functions
     public static function newCompany($name, $note = null): self|false
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (
-            !(($loggedInUser == null) && (App::isLocal() || App::environment('staging'))) && //local seeder code - can remove later
-            !$loggedInUser->can('create', self::class)
-        ) throw new UnauthorizedException();
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('create', self::class)) throw new UnauthorizedException();
 
         $newCompany = new self([
             "name"  =>  $name,
