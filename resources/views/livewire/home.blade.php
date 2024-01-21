@@ -19,7 +19,7 @@
         </div>
         <div class="grid grid-cols-12 gap-5 mb-5">
 
-{{--             
+            {{--             
             <div class="2xl:col-span-3 lg:col-span-4 col-span-12">
                 <div class="bg-no-repeat bg-cover bg-center p-4 rounded-[6px] relative" style="background-image: url(assets/images/all-img/widget-bg-1.png); height:100%;">
                     <div class="max-w-[180px]">
@@ -542,9 +542,9 @@
                 <div class="card-body px-6">
                     <div class=" -mx-6">
                         <div class="inline-block min-w-full align-middle">
-                            <div class="rounded ">
+                            <div class="rounded " data-simplebar="data-simplebar">
                                 {{-- overflow-hidden --}}
-                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 rounded whitespace-nowrap" data-simplebar="data-simplebar">
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 rounded whitespace-nowrap w-full">
                                     <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                         <tr>
 
@@ -573,7 +573,7 @@
                                             <tr wire:click="redirectToCustomerShowPage({{ $customer }})" class=" hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
 
                                                 <td class="table-td">
-                                                    <b>{{ $customer->name }}</b>
+                                                    <b>{{ $customer->first_name }} {{ $customer->middle_name }} {{ $customer->last_name }}</b>
                                                 </td>
 
                                                 <td class="table-td ">
@@ -636,9 +636,9 @@
                 <div class="card-body px-6">
                     <div class=" -mx-6">
                         <div class="inline-block min-w-full align-middle">
-                            <div class="rounded ">
+                            <div class="rounded " data-simplebar="data-simplebar">
                                 {{-- overflow-hidden --}}
-                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 rounded whitespace-nowrap" data-simplebar="data-simplebar">
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 rounded whitespace-nowrap">
                                     <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                         <tr>
 
