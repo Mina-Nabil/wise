@@ -303,9 +303,9 @@ class Policy extends Model
 
     public function addBenefit($benefit, $value)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('update', $this)) return false;
         try {
             AppLog::info("Adding benefit", loggable: $this);
 
