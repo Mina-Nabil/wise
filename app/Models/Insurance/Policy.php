@@ -278,12 +278,9 @@ class Policy extends Model
         $rate,
         $note = null
     ): false|PolicyCondition {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (
-            !($loggedInUser == null && App::isLocal()) && //local seeder code - can remove later
-            !$loggedInUser->can('update', $this)
-        ) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('update', $this)) return false;
 
         try {
             $order = $this->conditions()->count() + 1;
