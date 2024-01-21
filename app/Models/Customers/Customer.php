@@ -630,8 +630,12 @@ class Customer extends Model
 
             foreach ($splittedText as $tmp) {
                 $q->where(function ($qq) use ($tmp) {
-                    $qq->where('customers.name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_name', 'LIKE', "%$tmp%")
+                    $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.email', 'LIKE', "%$tmp%")
                         ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
                         ->orwhere('customers.arabic_name', 'LIKE', "%$tmp%");
