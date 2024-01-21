@@ -125,12 +125,9 @@ class Policy extends Model
 
     public static function newPolicy($company_id, $name, $business, $note = null)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (
-            !($loggedInUser == null && App::isLocal()) && //local seeder code - can remove later
-            !$loggedInUser->can('create', self::class)
-        ) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('create', self::class)) return false;
 
         $newPolicy = new self([
             "company_id" =>  $company_id,
