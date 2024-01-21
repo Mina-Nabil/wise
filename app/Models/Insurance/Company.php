@@ -29,7 +29,7 @@ class Company extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (
-            !(($loggedInUser == null) && App::isLocal()) && //local seeder code - can remove later
+            !(($loggedInUser == null) && (App::isLocal() || App::environment('staging'))) && //local seeder code - can remove later
             !$loggedInUser->can('create', self::class)
         ) throw new UnauthorizedException();
 
