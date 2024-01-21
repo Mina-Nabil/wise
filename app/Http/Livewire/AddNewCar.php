@@ -60,7 +60,7 @@ class AddNewCar extends Component
                 [
                     'modelName' => 'required|unique:car_models,name',
                     'categoryName' => 'required|unique:cars,category',
-                    'brandId' => 'required|exists:brand,id',
+                    'brandId' => 'required|exists:brands,id',
                 ],
                 [],
                 [
