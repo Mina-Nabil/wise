@@ -587,6 +587,10 @@ class OfferShow extends Component
     {
         $this->conditionId = $id;
         $this->conditionData =  PolicyCondition::find($this->conditionId);
+        $this->insured_value = $this->offer->item_value;
+        Log::info($this->conditionData);
+        if ($this->conditionData)
+            $this->netPremium = $this->offer->item_value * ($this->conditionData->rate / 100);
         // dd($this->conditionData);
     }
 

@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customers\Customer;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\Policy;
+use App\Models\Insurance\PolicyBenefit;
 use App\Models\Insurance\PolicyCondition;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -317,5 +319,55 @@ class ProdInsuranceSeeder extends Seeder
         ///COUNTRIES
         $plus->addCondition(PolicyCondition::SCOPE_COUNTRY, PolicyCondition::OP_EQUAL, 27, 4.652);
         $one->addCondition(PolicyCondition::SCOPE_COUNTRY, PolicyCondition::OP_EQUAL, 27, 7.002);
+
+        ////BENEFITS
+        $plus->addBenefit(PolicyBenefit::BENEFIT_RISKS, "الانقلاب العرضي - التصادم الخاجي - الحريق / الانفجار -الاشتعال الذاتي - السرقه / السطو");
+        $one->addBenefit(PolicyBenefit::BENEFIT_RISKS, "جميع الأخطار بخلاف ماهو مستثنى صراحة بنص الوثيقة");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_WORKSHOPS, "الإصلاح لدى الوكيل و قائمة مراكز الخدمة المتعاقدة مع أليانز أو أي مركز خدمة مفضل");
+        $one->addBenefit(PolicyBenefit::BENEFIT_WORKSHOPS, "الإصلاح لدى الوكيل و قائمة مراكز الخدمة المتعاقدة مع أليانز أو أي مركز خدمة مفضل");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_COVER_PERCENTAGE, "بدون تحمل اول 3 سنوات من بداية الترخيص");
+        $one->addBenefit(PolicyBenefit::BENEFIT_COVER_PERCENTAGE, "لا تطبق");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_MANDATORY_COVER, "بدون تحمل اجباري");
+        $one->addBenefit(PolicyBenefit::BENEFIT_MANDATORY_COVER, "بدون تحمل اجباري");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_APPLIED_DISCOUNT, "التجديد الاول 10% -التجديد الثاني 20% -التجديد الثالث 30%-التجديد الرابع 40%-التجديد الخامس 50%");
+        $one->addBenefit(PolicyBenefit::BENEFIT_APPLIED_DISCOUNT, "التجديد الاول 10% -التجديد الثاني 20% -التجديد الثالث 30%");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_ONROAD_HELP, "مغطى");
+        $one->addBenefit(PolicyBenefit::BENEFIT_ONROAD_HELP, "مغطى");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_PERSONAL_ACCIDENT, "مغطى بحد اقصى  400,000جنيه مصري");
+        $one->addBenefit(PolicyBenefit::BENEFIT_PERSONAL_ACCIDENT, "مغطى بحد اقصى 500,000جنيه مصري");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_OTHER_CARS_ASSISTANCE, "مغطى بحد اقصى 150,000جنيه مصري");
+        $one->addBenefit(PolicyBenefit::BENEFIT_OTHER_CARS_ASSISTANCE, "مغطى بحد اقصى  250,000جنيه مصري");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_POLICE_FILE, "للحوادث التي تتعدى 150,000 ج(وفي حالات السرقة و الهلاك الكلي)");
+        $one->addBenefit(PolicyBenefit::BENEFIT_POLICE_FILE, "غير مطالب في حالة الحوادث ب استثناء(السرقة و الهلاك الكلي)");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_NATURAL_DISASTER, "غير مغطى");
+        $one->addBenefit(PolicyBenefit::BENEFIT_NATURAL_DISASTER, "مغطى");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_STRIKES, "غير مغطى");
+        $one->addBenefit(PolicyBenefit::BENEFIT_STRIKES, "مغطى");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_CAR_KEYS_LOSS, "مغطى");
+        $one->addBenefit(PolicyBenefit::BENEFIT_CAR_KEYS_LOSS, "مغطى");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_MARKET_PRICE_DIFF, "غير مغطى");
+        $one->addBenefit(PolicyBenefit::BENEFIT_MARKET_PRICE_DIFF, "مغطى");
+
+        $plus->addBenefit(PolicyBenefit::BENEFIT_SPARE_CAR, "غير مغطى");
+        $one->addBenefit(PolicyBenefit::BENEFIT_SPARE_CAR, "مغطى");
+        ////
+
+        Customer::newLead("Hossam", "Ashmawy", "01151687560", "Hassan Ragab", "حسام", "حسن رجب", "عشماوى");
+        Customer::newLead("Hany", "Hassan", "01069086683", "Mohamad Abbas", "هاني", "محمد عباس", "حسن");
+        Customer::newLead("Ahmed", "Lotfy", "01222193172");
+        Customer::newLead("Veronia", "Raafat", "01200058134");
+
     }
 }

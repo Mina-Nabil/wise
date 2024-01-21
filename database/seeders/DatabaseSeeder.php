@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             $this->call(TaskSeeder::class);
             $this->call(CustomersSeeder::class);
             $this->call(CorporatesSeeder::class);
+        } else {
+            $this->call(ProdInsuranceSeeder::class);
         }
     }
 }

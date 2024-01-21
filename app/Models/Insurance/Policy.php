@@ -112,12 +112,12 @@ class Policy extends Model
         $valid_policies = new Collection();
         foreach ($policies as $pol) {
             if ($car)
-                $rate = $pol->getRateByCarOrValue($car, $offerValue);
+                $rate = $pol->getConditionByCarOrValue($car, $offerValue);
             else if ($age)
-                $rate = $pol->getRateByAge($age);
+                $rate = $pol->getConditionByAge($age);
 
             if ($rate) {
-                $valid_policies->push(["policy" => $pol, "rate"  => $rate]);
+                $valid_policies->push(["policy" => $pol, "cond"  => $rate]);
             }
         }
         return $valid_policies;
@@ -147,7 +147,7 @@ class Policy extends Model
     }
 
     ///model functions
-    public function getRateByCarOrValue(CustomersCar $customer_car, $value = null)
+    public function getConditionByCarOrValue(CustomersCar $customer_car, $value = null)
     {
         if (!in_array($this->business, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]))
             throw new Exception("Invalid business type. Can't get policy rate by car");
@@ -158,18 +158,18 @@ class Policy extends Model
             switch ($cond->scope) {
                 case PolicyCondition::SCOPE_MODEL:
                     if ($customer_car->car->car_model_id == $cond->value)
-                        return $cond->rate;
+                        return $cond;
                     break;
                 case PolicyCondition::SCOPE_BRAND:
                     $customer_car->car->loadMissing('car_model');
                     if ($customer_car->car->car_model->brand_id == $cond->value)
-                        return $cond->rate;
+                        return $cond;
                     break;
 
                 case PolicyCondition::SCOPE_COUNTRY:
                     $customer_car->car->loadMissing('car_model', 'car_model.brand');
                     if ($customer_car->car->car_model->brand->country_id == $cond->value)
-                        return $cond->rate;
+                        return $cond;
                     break;
 
                 case PolicyCondition::SCOPE_YEAR:
@@ -177,27 +177,27 @@ class Policy extends Model
                     switch ($cond->operator) {
                         case PolicyCondition::OP_EQUAL:
                             if ($customer_car->model_year == $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_GREATER:
                             if ($customer_car->model_year > $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_GREATER_OR_EQUAL:
                             if ($customer_car->model_year >= $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_LESS:
                             if ($customer_car->model_year < $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_LESS_OR_EQUAL:
                             if ($customer_car->model_year <= $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
                     }
 
@@ -207,27 +207,27 @@ class Policy extends Model
                     switch ($cond->operator) {
                         case PolicyCondition::OP_EQUAL:
                             if ($checkValue == $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_GREATER:
                             if ($checkValue > $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_GREATER_OR_EQUAL:
                             if ($checkValue >= $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_LESS:
                             if ($checkValue < $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_LESS_OR_EQUAL:
                             if ($checkValue <= $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
                     }
             }
@@ -235,7 +235,7 @@ class Policy extends Model
         return 0;
     }
 
-    public function getRateByAge($age)
+    public function getConditionByAge($age)
     {
         if (!in_array($this->business, [self::BUSINESS_PERSONAL_MEDICAL, self::BUSINESS_CORPORATE_MEDICAL]))
             throw new Exception("Invalid business type. Can't get rate by age");
@@ -243,7 +243,7 @@ class Policy extends Model
             switch ($cond->scope) {
                 case PolicyCondition::SCOPE_AGE:
                     if ($age == $cond->value)
-                        return $cond->rate;
+                        return $cond;
             }
         }
         return 0;

@@ -196,11 +196,14 @@
                                                         </th>
 
                                                         <th scope="col" class=" table-th ">
-                                                            L.O.B
+                                                            Type
                                                         </th>
 
                                                         <th scope="col" class=" table-th ">
-                                                            Rate
+                                                            Net
+                                                        </th>
+                                                        <th scope="col" class=" table-th ">
+                                                            GROSS
                                                         </th>
 
                                                         <th scope="col" class=" table-th ">
@@ -226,12 +229,19 @@
                                                             <td class="table-td ">
 
                                                                 <div class=" text-success-500">
-                                                                    {{ $policy['rate'] }} %
+                                                                    {{ $policy['cond']['rate'] }}% {{ number_format(($policy['cond']['rate']/100)*$offer->item_value) }}EGP
                                                                 </div>
 
                                                             </td>
                                                             <td class="table-td ">
-                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['policy']['conditions'][0]->id }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp;
+
+                                                                {{-- <div class=" text-success-500">
+                                                                    {{ $policy['cond']['rate'] }} %
+                                                                </div> --}}
+
+                                                            </td>
+                                                            <td class="table-td ">
+                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['cond']['id'] }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp;
                                                                     Generate Option</button>
                                                             </td>
                                                         </tr>
@@ -1109,7 +1119,7 @@
                             @enderror
                             @if ($policyId)
                                 <label for="lastName" class="form-label" style="margin: 0">Policy</label>
-                                <p>{{ $policyData->company->name }} | {{ $policyData->company->name }}</p><br>
+                                <p>{{ $policyData->company->name }} | {{ $policyData->name }}</p><br>
                             @else
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">
@@ -1133,11 +1143,7 @@
                             @if ($policyConditions)
                                 @if ($conditionId)
                                     <label for="lastName" class="form-label" style="margin:0">Condition</label>
-                                    <p>{{ ucwords(str_replace('_', ' ', $conditionData->scope)) }}
-                                        <b>
-                                            {{ $conditionData->operator == 'gte' ? '>=' : ($conditionData->operator == 'gt' ? '>' : ($conditionData->operator == 'lte' ? '<=' : ($conditionData->operator == 'lt' ? '<' : ($conditionData->operator == 'e' ? '=' : '')))) }}
-                                        </b>
-                                        {{ $conditionData->value }} | Rate:{{ $conditionData->rate }}
+                                    <p> Rate:{{ $conditionData->rate }}
                                     </p>
                                     <br>
                                 @else
@@ -1149,7 +1155,7 @@
                                                     {{ $condition->operator == 'gte' ? '>=' : ($condition->operator == 'gt' ? '>' : ($condition->operator == 'lte' ? '<=' : ($condition->operator == 'lt' ? '<' : ($condition->operator == 'e' ? '=' : '')))) }}
                                                 </b>
 
-                                                {{ $condition->value }} | Rate:{{ $condition->value }}
+                                                {{ $condition->value }} | Rate:{{ $condition->rate }}
 
                                                 <Span wire:click="selectCondition({{ $condition->id }})" class="cursor-pointer text-primary-500">Select Condition</Span>
                                             </p>
