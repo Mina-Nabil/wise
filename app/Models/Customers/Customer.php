@@ -207,6 +207,7 @@ class Customer extends Model
                         $car["insurance_payment"] ?? null,
                         $car["payment_frequency"] ?? null,
                         $car["insurance_company_id"] ?? null,
+                        $car["model_year"] ?? null,
                         $car["renewal_date"] ?? null,
                         $car["wise_insured"] ?? false
                     );
@@ -219,7 +220,7 @@ class Customer extends Model
         }
     }
 
-    public function addCar($car_id, $sum_insured = null, $insurance_payment = null, $payment_frequency = null, $insurance_company_id = null, Carbon $renewal_date = null, $wise_insured = false): Car|false
+    public function addCar($car_id, $sum_insured = null, $insurance_payment = null, $payment_frequency = null, $insurance_company_id = null, $model_year = null, Carbon $renewal_date = null, $wise_insured = false): Car|false
     {
         try {
             $tmp = $this->cars()->create([
@@ -228,6 +229,7 @@ class Customer extends Model
                 "insurance_payment"    =>  $insurance_payment,
                 "payment_frequency"     =>  $payment_frequency,
                 "insurance_company_id"     =>  $insurance_company_id,
+                "model_year"     =>  $model_year,
                 "renewal_date"     =>  $renewal_date ? $renewal_date->format('Y-m-d H:i:s') : null,
                 'wise_insured' =>   $wise_insured
             ]);
