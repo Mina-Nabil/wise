@@ -53,13 +53,13 @@ class Offer extends Model
     protected $fillable = [
         'creator_id', 'type', 'status', 'item_id', 'item_type', 'is_renewal',
         'item_title', 'item_value', 'item_desc', 'selected_option_id',
-        'note', 'due', 'closed_by_id', 'assignee_id'
+        'note', 'due', 'closed_by_id', 'assignee_id', 'in_favor_to'
 
     ];
 
 
     ////static functions
-    public function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false): self|false
+    public function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false, $in_favor_to = null): self|false
     {
         $newOffer = new self([
             "creator_id"    =>  Auth::id(),
@@ -69,6 +69,7 @@ class Offer extends Model
             "item_value"    =>  $item_value,
             "item_title"    =>  $item_title,
             "item_desc"     =>  $item_desc,
+            "in_favor_to"   =>  $in_favor_to,
             "note"          =>  $note,
             "is_renewal"    =>  $is_renewal,
             "due"           =>  $due->format('Y-m-d H:i:s'),
@@ -90,25 +91,26 @@ class Offer extends Model
     }
 
     ////model functions
-    public function setNote(string $note = null)
+    public function setNote(string $in_favor_to = null, string $note = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateNote', $this)) return false;
 
         $this->update([
-            "note"          =>  $note
+            "note"          =>  $note,
+            "in_favor_to"   =>  $in_favor_to,
         ]);
 
         try {
             if ($this->save()) {
-                AppLog::info("Offer note Updated", loggable: $this);
+                AppLog::info("Offer details Updated", loggable: $this);
                 return true;
             }
             return false;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't edit offer note", desc: $e->getMessage());
+            AppLog::error("Can't edit offer details", desc: $e->getMessage());
             return false;
         }
     }
@@ -398,11 +400,11 @@ class Offer extends Model
         }
     }
 
-    public function assignTo($user_id_or_type, $comment = null)
+    public function assignTo($user_id_or_type, $comment = null, $bypassUserCheck = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updateAssignTo', $this)) return false;
+        if (!$bypassUserCheck && !$loggedInUser?->can('updateAssignTo', $this)) return false;
 
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
@@ -458,6 +460,8 @@ class Offer extends Model
             $this->save();
             $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
             $this->addComment("Offer option accepted", false);
+            $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+            $this->setStatus(self::STATUS_PENDING_OPERATIONS);
             return true;
         } catch (Exception $e) {
             report($e);

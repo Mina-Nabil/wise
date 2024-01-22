@@ -12,9 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class Policy extends Model
 {
@@ -112,12 +110,12 @@ class Policy extends Model
         $valid_policies = new Collection();
         foreach ($policies as $pol) {
             if ($car)
-                $rate = $pol->getConditionByCarOrValue($car, $offerValue);
+                $cond = $pol->getConditionByCarOrValue($car, $offerValue);
             else if ($age)
-                $rate = $pol->getConditionByAge($age);
+                $cond = $pol->getConditionByAge($age);
 
-            if ($rate) {
-                $valid_policies->push(["policy" => $pol, "cond"  => $rate]);
+            if ($cond) {
+                $valid_policies->push(["policy" => $pol, "cond"  => $cond]);
             }
         }
         return $valid_policies;

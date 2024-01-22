@@ -17,6 +17,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('offers', function(Blueprint $table){
+            $table->string('in_favor_to')->nullable();
             $table->boolean('is_renewal')->default(false);
         });
 
