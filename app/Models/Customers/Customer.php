@@ -637,8 +637,7 @@ class Customer extends Model
                         ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.email', 'LIKE', "%$tmp%")
-                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_name', 'LIKE', "%$tmp%");
+                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%");
                 });
             }
         });

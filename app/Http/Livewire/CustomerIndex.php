@@ -25,7 +25,6 @@ class CustomerIndex extends Component
     public $ArabicFirstName;
     public $ArabicMiddleName;
     public $ArabicLastName;
-    public $arabic_name;
     public $email;
     public $bdate;
     public $gender;
@@ -106,7 +105,6 @@ class CustomerIndex extends Component
             'ArabicFirstName' => 'nullable|string|max:255',
             'ArabicMiddleName' => 'nullable|string|max:255',
             'ArabicLastName' => 'nullable|string|max:255',
-            'arabic_name' => 'nullable|string|max:255',
             'bdate' => 'nullable|date',
             'email' => 'required|email',
             'gender' => 'required|in:' . implode(',', Customer::GENDERS),

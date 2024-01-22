@@ -33,10 +33,14 @@ class CustomersSeeder extends Seeder
         for ($i = 0; $i < 50; $i++) {
             $newCust = Customer::newCustomer(
                 owner_id: $faker->randomElement([10, 11, 6]), //mina (admin) , michael(admin), sandy(sales),
-                name: $faker->name,
+                first_name: $faker->firstName,
+                last_name: $faker->lastName,
                 gender: $faker->randomElement(Customer::GENDERS),
                 email: rand(0, 2) == 0 ? $faker->email : null, // 1/3 is null
-                arabic_name: rand(0, 1) == 0 ? $faker->name : null, //half is null
+                middle_name: rand(0, 1) == 0 ? $faker->firstName : null, //half is null
+                arabic_middle_name: rand(0, 1) == 0 ? $faker->firstName : null, //half is null
+                arabic_first_name: rand(0, 1) == 0 ? $faker->firstName : null, //half is null
+                arabic_last_name: rand(0, 1) == 0 ? $faker->lastName : null, //half is null
                 birth_date: rand(0, 3) == 0 ? $faker->date('Y-m-d', '2010-01-01') : null,
                 marital_status: rand(0, 9) == 0 ? $faker->randomElement(Customer::MARITALSTATUSES) : null,
                 id_type: $is_id_null == 0 ? $faker->randomElement(Customer::IDTYPES) : null,
@@ -93,9 +97,13 @@ class CustomersSeeder extends Seeder
         //create 50 leads
         for ($i = 0; $i < 50; $i++) {
             $newCust = Customer::newLead(
-                name: $faker->name,
+                first_name: $faker->firstName,
+                last_name: $faker->lastName,
                 phone: $faker->phoneNumber,
-                arabic_name: rand(0, 1) == 0 ? $faker->name : null, //half is null
+                middle_name: rand(0, 1) == 0 ? $faker->firstName : null, //half is null
+                arabic_middle_name: rand(0, 1) == 0 ? $faker->firstName : null, //half is null
+                arabic_first_name: rand(0, 1) == 0 ? $faker->firstName : null, //half is null
+                arabic_last_name: rand(0, 1) == 0 ? $faker->lastName : null, //half is null
                 birth_date: rand(0, 3) == 0 ? $faker->date('Y-m-d', '2010-01-01') : null,
                 email: rand(0, 2) == 0 ? $faker->email : null, // 1/3 is null
                 gender: $faker->randomElement(Customer::GENDERS),
