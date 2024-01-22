@@ -19,6 +19,7 @@ class NewLead extends Component
     public $leadArabicFirstName;
     public $leadArabicMiddleName;
     public $leadArabicLastName;
+    public $corporateName;
     public $LeadPhone;
     public $LeadEmail;
     public $leadType = 'customer';
@@ -59,14 +60,14 @@ class NewLead extends Component
             );
         } elseif ($this->leadType === 'corporate') {
             $this->validate([
-                'LeadName' => 'required|string|max:255',
+                'corporateName' => 'required|string|max:255',
                 'LeadPhone' => 'nullable|string|max:255',
                 'LeadEmail' => 'nullable|email',
             ]);
 
             $corporate = new Corporate();
             $res = $corporate->newLead(
-                $this->LeadName,
+                $this->corporateName,
                 email: $this->LeadEmail
             );
 

@@ -34,27 +34,57 @@
                                             <option value="corporate" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Corporate</option>
                                         </select>
                                     </div>
-                                    <div class="input-area">
-                                        <label for="Name" class="form-label">Lead Name</label>
-                                        <input id="Name" type="text" class="form-control @error('LeadName') !border-danger-500 @enderror" wire:model="LeadName">
+                                    <div class="col-span-2">
+                                        @if ($leadType === 'customer')
+                                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                                                <div class="input-area">
+                                                    <label for="leadFirstName" class="form-label">First Name</label>
+                                                    <input id="leadFirstName" type="text" class="form-control @error('leadFirstName') !border-danger-500 @enderror" wire:model.defer="leadFirstName">
+                                                </div>
+                                                <div class="input-area">
+                                                    <label for="firstName" class="form-label">Middle Name</label>
+                                                    <input id="firstName" type="text" class="form-control @error('leadMiddleName') !border-danger-500 @enderror" wire:model.defer="leadMiddleName">
+                                                </div>
+                                                <div class="input-area">
+                                                    <label for="firstName" class="form-label">Last Name</label>
+                                                    <input id="firstName" type="text" class="form-control @error('leadLastName') !border-danger-500 @enderror" wire:model.defer="leadLastName">
+                                                </div>
+                                            </div>
+                                            @error('leadFirstName')
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                            @enderror
+
+                                            @error('leadMiddleName')
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                            @enderror
+
+                                            @error('leadLastName')
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                            @enderror
+                                        @elseif($leadType === 'corporate')
+                                            <div class="input-area">
+                                                <label for="corporateName" class="form-label">Corporate Name</label>
+                                                <input id="corporateName" type="text" class="form-control @error('corporateName') !border-danger-500 @enderror" wire:model.defer="corporateName">
+                                            </div>
+                                            @error('corporateName')
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                            @enderror
+                                        @endif
                                     </div>
-                                    <div class="input-area">
+                                    <div class="input-area col-span-2 mb-3">
                                         <label for="phone" class="form-label">Phone</label>
-                                        <input id="phone" type="text" class="form-control @error('LeadPhone') !border-danger-500 @enderror" wire:model="LeadPhone">
+                                        <input id="phone" type="text" class="form-control @error('LeadPhone') !border-danger-500 @enderror" wire:model.defer="LeadPhone">
                                     </div>
                                 </div>
-                                @error('LeadName')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
                                 @error('LeadPhone')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                                 <div class="input-area">
                                     <label for="email" class="form-label">Email</label>
-                                    <input id="email" type="email" class="form-control @error('LeadEmail') !border-danger-500 @enderror" wire:model="LeadEmail">
+                                    <input id="email" type="email" class="form-control @error('LeadEmail') !border-danger-500 @enderror" wire:model.defer="LeadEmail">
                                     @error('LeadEmail')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>

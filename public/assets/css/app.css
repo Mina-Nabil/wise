@@ -11335,7 +11335,7 @@ ul.custom-list ul {
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 400;
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
     --tw-text-opacity: 1;
     color: rgb(71 85 105 / var(--tw-text-opacity));
 }
@@ -17360,24 +17360,23 @@ ul.custom-list ul {
     border-radius: 10px;
     margin-top: 40px;
     position: relative;
-            height: 100px;
-            font-size: 12px;
-            margin-bottom: 5px;
+    height: 100px;
+    font-size: 12px;
+    margin-bottom: 5px;
 }
-
 
 .dropzone-input {
     width: 100%;
     opacity: 0;
 }
 
-.dropzone-para{
+.dropzone-para {
     position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
 }
 
 /* Your existing styles here */
@@ -17385,4 +17384,3 @@ ul.custom-list ul {
 .drag-over {
     background-color: #e7e7e7; /* Set the background color when file is dragged over */
 }
-
