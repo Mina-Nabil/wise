@@ -73,12 +73,14 @@ class SlaRecord extends Model
 
 
     ////scopes
-    public function scopePageData($query, Carbon $from, Carbon $to, $showIgnored = false)
+    public function scopePageData($query, Carbon $from, Carbon $to, $showIgnored = false, $user_id = null, $team_type = null)
     {
         return $query->with('created_by', 'assigned_to', 'reply_by')->whereBetween('created_at', [
             $from->format('Y-m-d H:i:s'),
             $to->format('Y-m-d H:i:s')
-        ])->when($showIgnored == false, fn ($q) => $q->where('is_ignore', false));
+        ])->when($user_id, fn ($q) => $q->where('assigned_to_id', $user_id))
+            ->when($team_type == false, fn ($q) => $q->where('assigned_to_team', $team_type))
+            ->when($showIgnored == false, fn ($q) => $q->where('is_ignore', false));
     }
 
     ////relations
