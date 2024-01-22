@@ -4,7 +4,7 @@
         <div class="max-w-screen-lg">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                    <b>{{ $customer->first_name }} {{ $customer->middle_name }} {{ $customer->last_name }} </b><iconify-icon class="ml-3" style="position: absolute" wire:loading wire:target="changeSection" icon="svg-spinners:180-ring"></iconify-icon>
+                    <b>{{ $customer->first_name }} {{ $customer->middle_name }} {{ $customer->last_name }} {{ $customer->arabic_first_name ? '-' : '' }} {{ $customer->arabic_first_name }} {{ $customer->arabic_middle_name }} {{ $customer->arabic_last_name }} </b><iconify-icon class="ml-3" style="position: absolute" wire:loading wire:target="changeSection" icon="svg-spinners:180-ring"></iconify-icon>
                 </div>
                 <div class="card-body flex flex-col col-span-2" wire:ignore>
                     <div class="card-text h-full">
@@ -1063,20 +1063,55 @@
                                     </div>
                                 @endif
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
                                     <div class="input-area">
-                                        <label for="firstName" class="form-label">Customer Name</label>
-                                        <input id="firstName" type="text" class="form-control @error('name') !border-danger-500 @enderror" wire:model="name">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('firstName') !border-danger-500 @enderror" wire:model.defer="firstName">
                                     </div>
                                     <div class="input-area">
-                                        <label for="lastName" class="form-label">Arabic Name</label>
-                                        <input id="lastName" type="text" class="form-control @error('arabic_name') !border-danger-500 @enderror" wire:model="arabic_name">
+                                        <label for="firstName" class="form-label">Middle Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('middleName') !border-danger-500 @enderror" wire:model.defer="middleName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Last Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('lastName') !border-danger-500 @enderror" wire:model.defer="lastName">
                                     </div>
                                 </div>
-                                @error('name')
+                                @error('firstName')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
-                                @error('arabic_name')
+
+                                @error('middleName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                @error('lastName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Arabic First Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('ArabicFirstName') !border-danger-500 @enderror" wire:model.defer="ArabicFirstName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Arabic Middle Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('ArabicMiddleName') !border-danger-500 @enderror" wire:model.defer="ArabicMiddleName">
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="firstName" class="form-label">Arabic Last Name</label>
+                                        <input id="firstName" type="text" class="form-control @error('ArabicLastName') !border-danger-500 @enderror" wire:model.defer="ArabicLastName">
+                                    </div>
+                                </div>
+                                @error('ArabicFirstName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                @error('ArabicMiddleName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                @error('ArabicLastName')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                                 <div class="input-area mt-2">

@@ -32,8 +32,13 @@ class CustomerShow extends Component
 
     public $customer;
 
-    public $name;
-    public $arabic_name;
+    public $firstName;
+    public $middleName;
+    public $lastName;
+    public $ArabicFirstName;
+    public $ArabicMiddleName;
+    public $ArabicLastName;
+
     public $email;
     public $bdate;
     public $gender;
@@ -168,56 +173,64 @@ class CustomerShow extends Component
         $this->mount($this->customer->id);
     }
 
-    public function deleteThisRelativeCustomer($id){
+    public function deleteThisRelativeCustomer($id)
+    {
         $this->deleteRelativeCustId = $id;
     }
 
-    public function dismissDeleteRelativeCustomer(){
+    public function dismissDeleteRelativeCustomer()
+    {
         $this->deleteRelativeCustId = null;
     }
 
-    public function deleteRelativeCustomer(){
+    public function deleteRelativeCustomer()
+    {
         $this->customer->customer_relatives()->detach($this->deleteRelativeCustId);
         $this->dismissDeleteRelativeCustomer();
         $this->mount($this->customer->id);
     }
 
-    public function addRelariveCustomer(){
+    public function addRelariveCustomer()
+    {
         $this->validate([
             'custRelation' => 'required|in:' . implode(',', Relative::RELATIONS),
         ]);
 
-        
-        $res = $this->customer->addCustomerRelative($this->selectedRelative->id,$this->custRelation);
+
+        $res = $this->customer->addCustomerRelative($this->selectedRelative->id, $this->custRelation);
 
         if ($res) {
-            $this->alert('success' ,'Customer relative added');
+            $this->alert('success', 'Customer relative added');
             $this->selectedRelative = null;
             $this->custRelation = null;
             $this->toggleAddCustomerRelative();
             $this->mount($this->customer->id);
-        }else{
-            $this->alert('failed' , 'server error');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
 
-    public function clearCustomerRelative(){
+    public function clearCustomerRelative()
+    {
         $this->selectedRelative = null;
     }
 
-    public function selectCustomerRelative($id){
+    public function selectCustomerRelative($id)
+    {
         $this->selectedRelative = Customer::find($id);
 
         $this->customerResult = null;
         $this->searchCustomer = null;
     }
 
-    public function updatedSearchCustomer(){
+    public function updatedSearchCustomer()
+    {
         $this->customerResult = Customer::userData($this->searchCustomer)->get()->take(5);
     }
 
-    public function toggleAddCustomerRelative(){
+    public function toggleAddCustomerRelative()
+    {
         $this->toggle($this->addCustomerRelativeSection);
     }
 
@@ -1067,8 +1080,12 @@ class CustomerShow extends Component
         }
 
         $this->validate([
-            'name' => 'required|string|max:255',
-            'arabic_name' => 'nullable|string|max:255',
+            'firstName' => 'required|string|max:255',
+            'middleName' => 'nullable|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'ArabicFirstName' => 'nullable|string|max:255',
+            'ArabicMiddleName' => 'nullable|string|max:255',
+            'ArabicLastName' => 'nullable|string|max:255',
             'bdate' => 'nullable|date',
             'email' =>  'nullable|email',
             'gender' =>  'nullable|in:' . implode(',', Customer::GENDERS),
@@ -1094,8 +1111,12 @@ class CustomerShow extends Component
         }
 
         $c = $customer->editCustomer(
-            $this->name,
-            $this->arabic_name,
+            $this->firstName,
+            $this->lastName,
+            $this->middleName,
+            $this->ArabicFirstName,
+            $this->ArabicMiddleName,
+            $this->ArabicLastName,
             $this->bdate,
             $this->email,
             $this->gender,
@@ -1122,8 +1143,12 @@ class CustomerShow extends Component
     {
         $this->customer = Customer::findOrFail($customerId);
 
-        $this->name = $this->customer->name;
-        $this->arabic_name = $this->customer->arabic_name;
+        $this->firstName = $this->customer->first_name;
+        $this->middleName = $this->customer->middle_name;
+        $this->lastName = $this->customer->last_name;
+        $this->ArabicFirstName = $this->customer->arabic_first_name;
+        $this->ArabicMiddleName = $this->customer->arabic_middle_name;
+        $this->ArabicLastName = $this->customer->arabic_last_name;
         $this->email = $this->customer->email;
         $this->bdate = ($this->customer->birth_date ? $this->customer->birth_date->toDateString() : null);
         $this->gender = $this->customer->gender;
@@ -1188,7 +1213,8 @@ class CustomerShow extends Component
         return redirect(Route('offers.show', $id));
     }
 
-    public function editThisInterest($id){
+    public function editThisInterest($id)
+    {
         $this->interestId = $id;
         $i = Interest::find($id);
         $this->lob  = $i->relation;
@@ -1196,11 +1222,13 @@ class CustomerShow extends Component
         $this->note = $i->note;
     }
 
-    public function closeEditInterest(){
+    public function closeEditInterest()
+    {
         $this->interestId = null;
     }
 
-    public function editInterest(){
+    public function editInterest()
+    {
         $this->validate([
             'lob' => 'required|in:' . implode(',', policy::LINES_OF_BUSINESS),
             'interested' => 'required|boolean',
@@ -1220,13 +1248,14 @@ class CustomerShow extends Component
             $this->interested = null;
             $this->note = null;
             $this->mount($this->customer->id);
-            $this->alert('success','Interest edited!');
-        }else{
-            $this->alert('failed','Server error');
+            $this->alert('success', 'Interest edited!');
+        } else {
+            $this->alert('failed', 'Server error');
         }
     }
 
-    public function addInterest(){
+    public function addInterest()
+    {
         $this->validate([
             'lob' => 'required|in:' . implode(',', policy::LINES_OF_BUSINESS),
             'interested' => 'nullable|boolean',
@@ -1244,9 +1273,9 @@ class CustomerShow extends Component
             $this->interested = null;
             $this->interestNote = null;
             $this->mount($this->customer->id);
-            $this->alert('success','Interest Added!');
-        }else{
-            $this->alert('failed','Server error');
+            $this->alert('success', 'Interest Added!');
+        } else {
+            $this->alert('failed', 'Server error');
         }
     }
 
