@@ -18,6 +18,7 @@ use App\models\Insurance\Company;
 use App\models\Cars\CarModel;
 use App\models\Cars\Brand;
 use App\Models\Base\Country;
+use App\Models\Cars\CarPrice;
 use App\Models\Customers\Followup;
 use App\Models\Customers\Interest;
 use App\Models\Customers\Phone;
@@ -60,13 +61,15 @@ class CustomerShow extends Component
     public $models;
     public $carModel;
     public $CarCategory;
+    public $modelYears;
+    public $modelYear;
     public $cars;
     public $sumInsurance;
     public $insurancePayment;
     public $paymentFreqs;
     public $editedCarId = null;
     public $renewalDate;
-    public $wiseInsured;
+    public $wiseInsured = false;
     public $insuranceCompanyId;
 
     //add Address
@@ -754,6 +757,7 @@ class CustomerShow extends Component
         $this->carModel =  $c->car->car_model->id;
         $this->CarCategory =  $c->car->id;
         $this->sumInsurance  =  $c->sum_insured;
+        $this->modelYear = $c->model_year;
         $this->insurancePayment  =  $c->insurance_payment;
         $this->paymentFreqs =  $c->payment_frequency;
         $this->renewalDate = Carbon::parse($c->renewal_date)->toDateString();
@@ -761,12 +765,14 @@ class CustomerShow extends Component
         $this->insuranceCompanyId = $c->insurance_company_id;
         $this->models = CarModel::where('brand_id', $this->carBrand)->get();
         $this->cars = Car::where('car_model_id', $this->carModel)->get();
+        $this->modelYears = CarPrice::where('car_id', $c->id)->get();
     }
 
     public function updateCar()
     {
         $this->validate([
             'CarCategory' => 'required|integer|exists:cars,id',
+            'modelYear' => 'required|integer',
             'sumInsurance' => 'nullable|integer',
             'insurancePayment' => 'nullable|integer',
             'paymentFreqs' => 'nullable|in:' . implode(',', CustomerCar::PAYMENT_FREQS),
@@ -781,7 +787,7 @@ class CustomerShow extends Component
         $c = CustomerCar::find($this->editedCarId);
         $c->editInfo(
             $this->CarCategory,
-            null,
+            $this->modelYear,
             $this->sumInsurance,
             $this->insurancePayment,
             $this->paymentFreqs,
@@ -799,6 +805,7 @@ class CustomerShow extends Component
             $this->insurancePayment  = null;
             $this->paymentFreqs =  null;
             $this->models = null;
+            $this->modelYear = null;
             $this->cars = null;
             $this->paymentFreqs = null;
             $this->insuranceCompanyId = null;
@@ -818,6 +825,7 @@ class CustomerShow extends Component
         $this->CarCategory =  null;
         $this->sumInsurance  =  null;
         $this->insurancePayment  = null;
+        $this->modelYear = null;
         $this->paymentFreqs =  null;
         $this->models = null;
         $this->cars = null;
@@ -967,13 +975,14 @@ class CustomerShow extends Component
 
         $this->validate([
             'CarCategory' => 'required|integer|exists:cars,id',
+            'modelYear' => 'required|integer',
             'sumInsurance' => 'nullable|integer',
             'insurancePayment' => 'nullable|integer',
             'paymentFreqs' => 'nullable|in:' . implode(',', CustomerCar::PAYMENT_FREQS),
             'insuranceCompanyId' => 'nullable|integer|exists:insurance_companies,id',
             'renewalDate' => 'nullable|date',
             'wiseInsured' => 'nullable|boolean',
-        ]);
+        ], messages: []);
 
         $renewalDate = $this->renewalDate ? Carbon::parse($this->renewalDate) : null;
 
@@ -984,6 +993,7 @@ class CustomerShow extends Component
             $this->insurancePayment,
             $this->paymentFreqs,
             $this->insuranceCompanyId,
+            $this->modelYear,
             $renewalDate,
             $this->wiseInsured
         );
@@ -992,6 +1002,7 @@ class CustomerShow extends Component
             $this->CarCategory = null;
             $this->sumInsurance = null;
             $this->insurancePayment = null;
+            $this->modelYear = null;
             $this->paymentFreqs = null;
             $this->insuranceCompanyId = null;
             $this->renewalDate = null;
@@ -1176,6 +1187,13 @@ class CustomerShow extends Component
     public function updatedCarModel($value)
     {
         $this->cars = Car::where('car_model_id', $value)->get();
+    }
+
+    public function updatedCarCategory()
+    {
+        if ($this->CarCategory !== '') {
+            $this->modelYears = Car::find($this->CarCategory)->car_prices;
+        }
     }
 
     public function toggleAddAddress()

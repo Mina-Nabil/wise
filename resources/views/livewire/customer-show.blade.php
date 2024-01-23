@@ -118,6 +118,7 @@
                                                 </div>
 
                                             </div>
+                                            <p class="ml-4">Model year: <b>{{ $car->model_year }}</b> </p>
                                             <hr><br>
                                             <div class="grid grid-cols-3 mb-4">
                                                 <div class="border-r ml-5">
@@ -134,7 +135,7 @@
                                                 </div>
                                             </div>
                                             @if ($car->renewal_date)
-                                                <p class="m-4">Renewal Date: <b>{{ optional(\Carbon\Carbon::parse($car->renewal_date))->format('l d M Y') ?? '' }} </b></p>
+                                                <p class="m-4 mt-0">Renewal Date: <b>{{ optional(\Carbon\Carbon::parse($car->renewal_date))->format('l d M Y') ?? '' }} </b></p>
                                             @endif
                                         </div>
                                     @endforeach
@@ -1309,7 +1310,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <p class="text-lg"><b>Select Car Model</b></p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Car Brand</label>
                                         <select name="basicSelect" class="form-control w-full mt-2" wire:model="carBrand">
@@ -1346,8 +1347,21 @@
                                             </select>
                                         </div>
                                     @endif
+
+                                    @if ($CarCategory && $CarCategory !== '')
+                                        <div class="input-area">
+                                            <label for="lastName" class="form-label">Car Model Year</label>
+                                            <select name="basicSelect" class="form-control w-full mt-2 @error('modelYear') !border-danger-500 @enderror" wire:model="modelYear">
+                                                <option selected>Select an Option</option>
+                                                @foreach ($modelYears as $year)
+                                                    <option value="{{ $year->model_year }}">
+                                                        {{ $year->model_year }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    @endif
                                 </div>
-                                @error('CarCategory')
+                                @error('modelYear')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                                 <hr class="mt-5">
@@ -1454,7 +1468,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <p class="text-lg"><b>Select Car Model</b></p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Car Brand</label>
                                         <select name="basicSelect" class="form-control w-full mt-2 @error('carBrand') !border-danger-500 @enderror" wire:model="carBrand">
@@ -1491,8 +1505,22 @@
                                             </select>
                                         </div>
                                     @endif
+
+                                    @if ($CarCategory && $CarCategory !== '')
+                                        <div class="input-area">
+                                            <label for="lastName" class="form-label">Car Model Year</label>
+                                            <select name="basicSelect" class="form-control w-full mt-2 @error('modelYear') !border-danger-500 @enderror" wire:model="modelYear">
+                                                <option selected>Select an Option</option>
+                                                @foreach ($modelYears as $year)
+                                                    <option value="{{ $year->model_year }}">
+                                                        {{ $year->model_year }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    @endif
+
                                 </div>
-                                @error('CarCategory')
+                                @error('modelYear')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                                 <hr class="mt-5">

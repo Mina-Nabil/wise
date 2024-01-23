@@ -102,7 +102,7 @@ class OfferIndex extends Component
 
 
         $this->owner = $res;
-        $this->selectedClientName = $res->name;
+        $this->selectedClientName = $res->first_name . ' ' . $res->middle_name . ' ' . $res->last_name;
         $this->clientNames = null;
         $this->searchClient = null;
     }
@@ -159,21 +159,24 @@ class OfferIndex extends Component
         $this->CarCategory = null;
     }
 
-    public function updatedCarCategory(){
-        if($this->CarCategory){
-            $this->CarPrices = CarPrice::where('car_id',$this->CarCategory)->get();
+    public function updatedCarCategory()
+    {
+        if ($this->CarCategory) {
+            $this->CarPrices = CarPrice::where('car_id', $this->CarCategory)->get();
         }
     }
-    public function updatedCarPrice(){
-        if($this->carPrice){
+    public function updatedCarPrice()
+    {
+        if ($this->carPrice) {
             $this->selectedCarPriceArray = (array) json_decode($this->carPrice);
             $this->item_value = $this->selectedCarPriceArray['price'];
         }
     }
 
-    public function updatedItem(){
-        if($this->item){
-            $this->CarPrices = CarPrice::where('car_id',$this->item)->get();
+    public function updatedItem()
+    {
+        if ($this->item) {
+            $this->CarPrices = CarPrice::where('car_id', $this->item)->get();
         }
     }
 
@@ -198,7 +201,7 @@ class OfferIndex extends Component
             $this->owner->setRelatives($this->relatives);
             $this->owner->editCustomer(name: $this->owner->name, birth_date: $this->bdate, gender: $this->gender);
         } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && is_Null($this->item)) {
-            if(!$this->CarCategory || !$this->selectedCarPriceArray) return $this->alert('failed', 'Please select a car');
+            if (!$this->CarCategory || !$this->selectedCarPriceArray) return $this->alert('failed', 'Please select a car');
             $item = $this->owner->addCar(car_id: $this->CarCategory, model_year: $this->selectedCarPriceArray['model_year']);
             $this->item_title = null;
         } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer') {
