@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Policy extends Model
 {
@@ -113,8 +114,10 @@ class Policy extends Model
         foreach ($policies as $pol) {
             if ($car) {
                 $cond = $pol->getConditionByCarOrValue($car, $offerValue);
-                $net_value = ($cond->rate/100) * $offerValue;
-                $gross_value = $pol->calculateGrossValue($net_value);
+                if ($cond) {
+                    $net_value = ($cond->rate / 100) * $offerValue;
+                    $gross_value = $pol->calculateGrossValue($net_value);
+                }
             } else if ($age)
                 $cond = $pol->getConditionByAge($age);
 
@@ -239,7 +242,7 @@ class Policy extends Model
                     }
             }
         }
-        return 0;
+        return null;
     }
 
     public function getConditionByAge($age)
@@ -260,12 +263,12 @@ class Policy extends Model
     {
         $gross_premium = $net_premium;
         foreach ($this->gross_calculations as $g) {
-            switch ($g->type) {
+            switch ($g->calculation_type) {
                 case GrossCalculation::TYPE_PERCENTAGE:
-                    $gross_premium += (($g->value/100) * $net_premium);
+                    $gross_premium += (($g->value / 100) * $net_premium);
                     break;
 
-                case GrossCalculation::TYPE_PERCENTAGE:
+                case GrossCalculation::TYPE_VALUE:
                     $gross_premium += $g->value;
                     break;
             }
