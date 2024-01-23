@@ -22,6 +22,8 @@ class NewLead extends Component
     public $corporateName;
     public $LeadPhone;
     public $LeadEmail;
+    public $note;
+    public $followupCallDateTime;
     public $leadType = 'customer';
 
 
@@ -32,7 +34,7 @@ class NewLead extends Component
 
     public function addLead()
     {
-
+        if($this->followupCallDateTime === ''){$this->followupCallDateTime = null ;}
 
         if ($this->leadType === 'customer') {
             $this->validate([
@@ -44,6 +46,8 @@ class NewLead extends Component
                 'leadArabicLastName' => 'nullable|string|max:255',
                 'LeadPhone' => 'required|string|max:255',
                 'LeadEmail' => 'nullable|email',
+                'note' => 'nullable|string|max:255',
+                'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
             ]);
 
             $customer = new Customer();
@@ -56,27 +60,43 @@ class NewLead extends Component
                 $this->leadArabicMiddleName,
                 $this->leadArabicLastName,
                 email: $this->LeadEmail,
-                owner_id: auth()->id()
+                owner_id: auth()->id(),
+                note: $this->note
             );
+
+            if ($this->followupCallDateTime) {
+                $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->note);
+            }else{
+                $fres = true;
+            }
         } elseif ($this->leadType === 'corporate') {
             $this->validate([
                 'corporateName' => 'required|string|max:255',
                 'LeadPhone' => 'nullable|string|max:255',
                 'LeadEmail' => 'nullable|email',
+                'note' => 'nullable|string|max:255',
+                'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
             ]);
 
             $corporate = new Corporate();
             $res = $corporate->newLead(
                 $this->corporateName,
-                email: $this->LeadEmail
+                email: $this->LeadEmail,
+                note: $this->note
             );
 
             $res->addPhone('home', $this->LeadPhone);
+
+            if ($this->followupCallDateTime) {
+                $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->note);
+            }else{
+                $fres = true;
+            }
         }
 
 
 
-        if ($res) {
+        if ($res && $fres) {
             $this->alert('success', 'Lead Added!');
             $this->toggleAddLead();
         } else {

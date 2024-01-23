@@ -117,7 +117,7 @@ class OfferIndex extends Component
     {
 
         if ($this->clientType == 'Customer' && !$this->searchClient == '') {
-            $this->clientNames = Customer::where('first_name', 'like', '%' . $this->searchClient . '%')->get()->take(5);
+            $this->clientNames = Customer::userData(searchText: $this->searchClient)->get()->take(5);
         } elseif ($this->clientType == 'Corporate' && !$this->searchClient == '') {
             $this->clientNames = Corporate::where('name', 'like', '%' . $this->searchClient . '%')->get()->take(5);
         }

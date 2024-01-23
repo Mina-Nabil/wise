@@ -52,6 +52,8 @@ class CustomerShow extends Component
     public $incomeSource;
     public $idDoc;
     public $driverLicenseDoc;
+    public $customerNote;
+    public $customerNoteSec = false;
 
     public $editCustomerSection = false;
 
@@ -210,6 +212,28 @@ class CustomerShow extends Component
             $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');
+        }
+    }
+
+    public function openEditNote(){
+        $this->customerNoteSec = true;
+        $this->customerNote = $this->customer->note;
+    }
+
+    public function closeEditNote(){
+        $this->customerNoteSec = false;
+        $this->customerNote = null;
+    }
+
+    public function setNote(){
+        if( $this->customerNote === '' ){ $this->customerNote = null; }
+        $res = $this->customer->setCustomerNote($this->customerNote);
+        if($res){
+            $this->closeEditNote();
+            $this->mount($this->customer->id);
+            $this->alert('success','Note updated!');
+        }else{
+            $this->alert('failed','server error');
         }
     }
 

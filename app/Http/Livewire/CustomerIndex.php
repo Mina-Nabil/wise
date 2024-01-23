@@ -8,6 +8,7 @@ use App\Models\Customers\Status;
 use App\Models\Customers\Profession;
 use App\Models\Base\Country;
 use App\Traits\AlertFrontEnd;
+use Carbon\Carbon;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
 
@@ -35,6 +36,8 @@ class CustomerIndex extends Component
     public $profession_id;
     public $salaryRange;
     public $incomeSource;
+    public $note;
+    public $followupCallDateTime;
 
     public $addLeadSection;
     public $leadFirstName;
@@ -44,6 +47,7 @@ class CustomerIndex extends Component
     public $leadArabicMiddleName;
     public $leadArabicLastName;
     public $LeadPhone;
+    public $LeadNote;
 
     public $changeCustStatusId;
     public $changeCustStatusStatus;
@@ -76,6 +80,8 @@ class CustomerIndex extends Component
 
     public function addLead()
     {
+        if($this->followupCallDateTime === ''){$this->followupCallDateTime = null ;}
+        
         $this->validate([
             'leadFirstName' => 'required|string|max:255',
             'leadMiddleName' => 'nullable|string|max:255',
@@ -84,11 +90,21 @@ class CustomerIndex extends Component
             'leadArabicMiddleName' => 'nullable|string|max:255',
             'leadArabicLastName' => 'nullable|string|max:255',
             'LeadPhone' => 'required|string|max:255',
+            'LeadNote' => 'nullable|string|max:255',
+            'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
         ]);
 
         $customer = new Customer();
-        $res = $customer->newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: auth()->id());
-        if ($res) {
+        $res = $customer->newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: auth()->id(), note:$this->LeadNote);
+
+        
+        if ($this->followupCallDateTime) {
+            $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->LeadNote);
+        }else{
+            $fres = true;
+        }
+
+        if ($res && $fres) {
             $this->alert('success', 'Lead Added!');
             $this->toggleAddLead();
         } else {
@@ -98,6 +114,8 @@ class CustomerIndex extends Component
 
     public function addCustomer()
     {
+        if($this->followupCallDateTime === ''){$this->followupCallDateTime = null ;}
+
         $this->validate([
             'firstName' => 'required|string|max:255',
             'middleName' => 'nullable|string|max:255',
@@ -115,11 +133,21 @@ class CustomerIndex extends Component
             'profession_id' => 'nullable|exists:professions,id',
             'salaryRange' => 'nullable|in:' . implode(',', Customer::SALARY_RANGES),
             'incomeSource' => 'nullable|in:' . implode(',', Customer::INCOME_SOURCES),
+            'note' => 'nullable|string|max:255',
+            'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
         ]);
 
         $customer = new Customer();
-        $res = $customer->newCustomer(auth()->id(), $this->firstName, $this->lastName, $this->gender, $this->email, $this->middleName, $this->ArabicFirstName, $this->ArabicMiddleName, $this->ArabicLastName, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource);
-        if ($res) {
+        $res = $customer->newCustomer(auth()->id(), $this->firstName, $this->lastName, $this->gender, $this->email, $this->middleName, $this->ArabicFirstName, $this->ArabicMiddleName, $this->ArabicLastName, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource ,note: $this->note);
+        
+        if ($this->followupCallDateTime) {
+            $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->note);
+        }else{
+            $fres = true;
+        }
+        
+        
+        if ($res && $fres) {
             redirect()->route('customers.show', $res->id);
         } else {
             $this->alert('failed', 'server error');

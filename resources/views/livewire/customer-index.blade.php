@@ -342,6 +342,27 @@
                                 @error('incomeSource')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+
+                                <div class="input-area">
+                                    <label for="note" class="form-label">Note</label>
+                                    <input id="note" type="text" class="form-control @error('note') !border-danger-500 @enderror" wire:model.defer="note">
+                                </div>
+                                @error('note')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <hr class="mt-5">
+                                <div class="from-group">
+                                    <p class="text-lg mt-3"><b>Followup</b></p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                        <div class="input-area">
+                                            <label for="followupCallDateTime" class="form-label">Call Date Time</label>
+                                            <input id="followupCallDateTime" type="datetime-local" class="form-control @error('followupCallDateTime') !border-danger-500 @enderror" wire:model.defer="followupCallDateTime">
+                                        </div>
+                                        @error('followupCallDateTime')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- Modal footer -->
@@ -413,6 +434,27 @@
                                 @error('LeadPhone')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+
+                                <div class="input-area">
+                                    <label for="LeadNote" class="form-label">Note</label>
+                                    <input id="LeadNote" type="text" class="form-control @error('LeadNote') !border-danger-500 @enderror" wire:model.defer="LeadNote">
+                                </div>
+                                @error('LeadNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="from-group">
+                                <p class="text-lg"><b>Followup</b></p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="followupCallDateTime" class="form-label">Call Date Time</label>
+                                        <input id="followupCallDateTime" type="datetime-local" class="form-control @error('followupCallDateTime') !border-danger-500 @enderror" wire:model.defer="followupCallDateTime">
+                                    </div>
+                                    @error('followupCallDateTime')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                         <!-- Modal footer -->
