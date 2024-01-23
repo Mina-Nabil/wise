@@ -314,7 +314,7 @@
                                         <select name="basicSelect" class="form-control w-full mt-2 @error('carPrice') !border-danger-500 @enderror text-dark" wire:model="carPrice">
                                             <option selected>Select an Option</option>
                                             @foreach ($CarPrices as $price)
-                                                <option value="{{ $price->price }}" class="">
+                                                <option value="{{ $price }}" class="">
                                                     {{ 'Model Year: ' . $price->model_year . ' ·  Price: ' . $price->price . '' }}</option>
                                             @endforeach
                                         </select>

@@ -17,6 +17,7 @@ use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Log;
 
 use function PHPUnit\Framework\isNull;
 
@@ -54,6 +55,7 @@ class OfferIndex extends Component
     public $cars;
     public $CarPrices;
     public $carPrice;
+    public $selectedCarPriceArray;
 
     public $relatives = [];
 
@@ -164,7 +166,8 @@ class OfferIndex extends Component
     }
     public function updatedCarPrice(){
         if($this->carPrice){
-            $this->item_value = $this->carPrice;
+            $this->selectedCarPriceArray = (array) json_decode($this->carPrice);
+            $this->item_value = $this->selectedCarPriceArray['price'];
         }
     }
 
@@ -195,8 +198,8 @@ class OfferIndex extends Component
             $this->owner->setRelatives($this->relatives);
             $this->owner->editCustomer(name: $this->owner->name, birth_date: $this->bdate, gender: $this->gender);
         } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && is_Null($this->item)) {
-            if(!$this->CarCategory) return $this->alert('failed', 'Please select a car');
-            $item = $this->owner->addCar(car_id: $this->CarCategory);
+            if(!$this->CarCategory || !$this->selectedCarPriceArray) return $this->alert('failed', 'Please select a car');
+            $item = $this->owner->addCar(car_id: $this->CarCategory, model_year: $this->selectedCarPriceArray['model_year']);
             $this->item_title = null;
         } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer') {
             $this->item_title = null;

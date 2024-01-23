@@ -229,15 +229,15 @@
                                                             <td class="table-td ">
 
                                                                 <div class=" text-success-500">
-                                                                    {{ $policy['cond']['rate'] }}% {{ number_format(($policy['cond']['rate']/100)*$offer->item_value) }}EGP
+                                                                    {{ $policy['cond']['rate'] }}% {{ number_format($policy['net_value']) }}EGP
                                                                 </div>
 
                                                             </td>
                                                             <td class="table-td ">
 
-                                                                {{-- <div class=" text-success-500">
-                                                                    {{ $policy['cond']['rate'] }} %
-                                                                </div> --}}
+                                                                <div class=" text-success-500">
+                                                                    {{ number_format($policy['gross_value']) }}EGP
+                                                                </div>
 
                                                             </td>
                                                             <td class="table-td ">

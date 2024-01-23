@@ -108,14 +108,23 @@ class Policy extends Model
         $policies = self::byType($type)->withCompany()->withConditions()->get();
 
         $valid_policies = new Collection();
+        $net_value = 0;
+        $gross_value = 0;
         foreach ($policies as $pol) {
-            if ($car)
+            if ($car) {
                 $cond = $pol->getConditionByCarOrValue($car, $offerValue);
-            else if ($age)
+                $net_value = ($cond->rate/100) * $offerValue;
+                $gross_value = $pol->calculateGrossValue($net_value);
+            } else if ($age)
                 $cond = $pol->getConditionByAge($age);
 
             if ($cond) {
-                $valid_policies->push(["policy" => $pol, "cond"  => $cond]);
+                $valid_policies->push([
+                    "policy"        => $pol,
+                    "cond"          => $cond,
+                    "net_value"     => $net_value,
+                    "gross_value"   => $gross_value,
+                ]);
             }
         }
         return $valid_policies;
@@ -247,6 +256,23 @@ class Policy extends Model
         return 0;
     }
 
+    public function calculateGrossValue($net_premium)
+    {
+        $gross_premium = $net_premium;
+        foreach ($this->gross_calculations as $g) {
+            switch ($g->type) {
+                case GrossCalculation::TYPE_PERCENTAGE:
+                    $gross_premium += (($g->value/100) * $net_premium);
+                    break;
+
+                case GrossCalculation::TYPE_PERCENTAGE:
+                    $gross_premium += $g->value;
+                    break;
+            }
+        }
+        return $gross_premium;
+    }
+
     public function editInfo($name, $business, $note = null)
     {
         /** @var User */
@@ -319,6 +345,27 @@ class Policy extends Model
         }
     }
 
+    public function addGrossCalculation($title, $calculation_type, $value)
+    {
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('update', $this)) return false;
+        try {
+            AppLog::info("Adding gross calculation", loggable: $this);
+
+            return $this->gross_calculations()->updateOrCreate([
+                "title"   =>  $title,
+            ], [
+                "calculation_type"  =>  $calculation_type,
+                "value"             =>  $value,
+            ]);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Adding gross calculation failed", loggable: $this, desc: $e->getMessage());
+            return false;
+        }
+    }
+
 
     //scopes
     public function scopeTableData($query)
@@ -367,5 +414,10 @@ class Policy extends Model
     public function conditions(): HasMany
     {
         return $this->hasMany(PolicyCondition::class);
+    }
+
+    public function gross_calculations(): HasMany
+    {
+        return $this->hasMany(GrossCalculation::class);
     }
 }
