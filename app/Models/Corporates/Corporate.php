@@ -94,7 +94,7 @@ class Corporate extends Model
         'type', 'name', 'arabic_name', 'email', 'commercial_record',
         'commercial_record_doc', 'tax_id', 'tax_id_doc', 'kyc',
         'kyc_doc', 'contract_doc', 'main_bank_evidence', 'creator_id',
-        'owner_id'
+        'owner_id', 'note'
     ];
 
     ///model functions
@@ -127,7 +127,8 @@ class Corporate extends Model
         $kyc = null,
         $kyc_doc = null,
         $contract_doc = null,
-        $main_bank_evidence = null
+        $main_bank_evidence = null,
+        $note = null,
     ): bool {
         $this->update([
             "name"          =>  $name,
@@ -140,6 +141,7 @@ class Corporate extends Model
             "kyc"           =>  $kyc,
             "kyc_doc"       =>  $kyc_doc,
             "contract_doc"  =>  $contract_doc,
+            "note"          =>  $note,
             "main_bank_evidence"    =>  $main_bank_evidence
         ]);
 
@@ -334,6 +336,20 @@ class Corporate extends Model
                 "note"    =>  $note,
             ]);
         } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function setCorporateNote($note): bool
+    {
+        try {
+            AppLog::info("Updating corporate note", loggable: $this);
+            return $this->update([
+                "note"    =>  $note,
+            ]);
+        } catch (Exception $e) {
+            AppLog::error("Updating corporate note", loggable: $this, desc: $e->getMessage());
             report($e);
             return false;
         }

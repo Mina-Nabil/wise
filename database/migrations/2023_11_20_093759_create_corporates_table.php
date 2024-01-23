@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('kyc_doc')->nullable(); 
             $table->string('contract_doc')->nullable(); 
             $table->string('main_bank_evidence')->nullable(); 
+            $table->text('note')->nullable(); 
             $table->foreignIdFor(User::class, 'creator_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignIdFor(User::class, 'owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
