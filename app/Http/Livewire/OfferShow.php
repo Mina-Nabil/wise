@@ -590,9 +590,9 @@ class OfferShow extends Component
         $this->insured_value = $this->offer->item_value;
 
         if ($this->conditionData)
-            $this->netPremium = $this->offer->item_value * ($this->conditionData->rate / 100);
+            $this->netPremium = round($this->offer->item_value * ($this->conditionData->rate / 100), 2);
         if ($this->policyData && $this->netPremium)
-            $this->grossPremium = $this->policyData->calculateGrossValue($this->netPremium);
+            $this->grossPremium = round($this->policyData->calculateGrossValue($this->netPremium), 2);
         // dd($this->conditionData);
     }
 
