@@ -383,7 +383,7 @@ class Corporate extends Model
             "kyc_doc"       =>  $kyc_doc,
             "contract_doc"  =>  $contract_doc,
             "main_bank_evidence"    =>  $main_bank_evidence,
-            "owner_id"      =>  $owner_id,
+            "owner_id"      =>  $owner_id ?? Auth::id(),
             "creator_id"    => Auth::id()
         ]);
         try {
@@ -424,7 +424,7 @@ class Corporate extends Model
             "kyc_doc"       =>  $kyc_doc,
             "contract_doc"  =>  $contract_doc,
             "main_bank_evidence"    =>  $main_bank_evidence,
-            "owner_id"  =>  $owner_id,
+            "owner_id"      =>  $owner_id ?? Auth::id(),
             "creator_id"    => Auth::id()
         ]);
 

@@ -178,6 +178,20 @@ class User extends Authenticatable
         } else return "Incorrect password";
     }
 
+    /////scope
+    public function scopeSales($query)
+    {
+        return $query->where('type', self::TYPE_SALES);
+    }
+    public function scopeAdmins($query)
+    {
+        return $query->where('type', self::TYPE_ADMIN);
+    }
+    public function scopeOperations($query)
+    {
+        return $query->where('type', self::TYPE_OPERATIONS);
+    }
+
     /////attributes
     public function getIsAdminAttribute()
     {
