@@ -4,6 +4,8 @@ namespace App\Models\Offers;
 
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
+use App\Models\Insurance\Policy;
+use App\Models\Insurance\PolicyBenefit;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use App\Traits\Loggable;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Offer extends Model
 {
@@ -91,6 +94,37 @@ class Offer extends Model
     }
 
     ////model functions
+    public function exportComparison($ids = [])
+    {
+        $template = IOFactory::load(resource_path('import/comparison_template.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+        $i = 7;
+        foreach (PolicyBenefit::BENEFITS as $b) {
+            $cell = $activeSheet->getCell('A' . $i++);
+            $cell->setValue($b);
+        }
+        $options = $this->options()->with('policy', 'policy.company', 'policy.benefits')->when(count($ids), function ($q) use ($ids) {
+            $q->whereIn('id', $ids);
+        })->get();
+        $startChar = 'B';
+        foreach ($options as $op) {
+            $activeSheet->getCell($startChar . '1')->setValue($op->policy->company->name  . " - " . $op->policy->company->name);
+            $activeSheet->getCell($startChar . '2')->setValue($op->rate);
+            $activeSheet->getCell($startChar . '3')->setValue($op->net_premium);
+            $activeSheet->getCell($startChar . '4')->setValue($op->gross_premium);
+            $j = 6;
+            foreach ($op->policy->benefits as $b) {
+                $activeSheet->getCell($startChar . $j++)->setValue($b->value);
+            }
+            $startChar++;
+        }
+        return response()->download($newFile);
+    }
+
     public function setNote(string $in_favor_to = null, string $note = null)
     {
         /** @var User */

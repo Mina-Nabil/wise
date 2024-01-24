@@ -96,17 +96,12 @@ class Car extends Model
                 'category' => $category,
                 'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
             ]);
-            Log::debug('Highest col: ' . $highestColIndex);
             for ($p_i = 5; $p_i <= $highestColIndex; $p_i++) {
-                Log::debug('Reading prices');
+
                 $cellCharFromIndex = Coordinate::stringFromColumnIndex($p_i);
                 $price = $activeSheet->getCell($cellCharFromIndex . $i)->getValue();
                 $year = $activeSheet->getCell($cellCharFromIndex . '2')->getValue();
-                Log::debug('Year: ' . $year);
-                Log::debug('Price: ' . $price);
-
                 if (is_numeric($price)) {
-                    Log::debug('Saving price');
                     $car->car_prices()->updateOrCreate(
                         [
                             'model_year' => $year,
