@@ -381,7 +381,7 @@
 
                     <div class="md:flex-1 rounded-md overlay  max-w-[400px] min-w-[310px] sm:col-span-2">
 
-                        {{-- Interests section --}}
+                        {{-- note section --}}
                         <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                             <div class="card-text flex flex-col justify-between h-full menu-open">
                                 <p>
@@ -390,11 +390,7 @@
                                         <iconify-icon icon="material-symbols:edit-outline"></iconify-icon>
                                     </span>
                                 </p>
-
                                 <p class="text-wrap">{{ $customer->note  }}</p>
-                                
-
-
                             </div>
                         </div>
 
@@ -556,6 +552,14 @@
 
 
 
+                        <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active  mt-5">
+                            <div class="card-text flex flex-col justify-between h-full menu-open">
+                                <p>
+                                    Owned by
+                                </p>
+                                <p class="text-wrap"><b>{{ $customer->owner->first_name  }} {{ $customer->owner->last_name  }}</b></p>
+                            </div>
+                        </div>
 
 
                     </div>

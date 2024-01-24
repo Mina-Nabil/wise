@@ -368,7 +368,8 @@ class Corporate extends Model
         $kyc_doc = null,
         $contract_doc = null,
         $main_bank_evidence = null,
-        $owner_id = null
+        $owner_id = null,
+        $note = null
     ): self|false {
         $newLead = new self([
             "type"          =>  self::TYPE_LEAD,
@@ -384,7 +385,8 @@ class Corporate extends Model
             "contract_doc"  =>  $contract_doc,
             "main_bank_evidence"    =>  $main_bank_evidence,
             "owner_id"      =>  $owner_id ?? Auth::id(),
-            "creator_id"    => Auth::id()
+            "creator_id"    => Auth::id(),
+            "note"          =>  $note
         ]);
         try {
             $newLead->save();
@@ -410,6 +412,7 @@ class Corporate extends Model
         $kyc_doc = null,
         $contract_doc = null,
         $main_bank_evidence = null,
+        $note = null
     ): self|false {
         $newCorporate = new self([
             "type"          =>  self::TYPE_LEAD,
@@ -425,7 +428,8 @@ class Corporate extends Model
             "contract_doc"  =>  $contract_doc,
             "main_bank_evidence"    =>  $main_bank_evidence,
             "owner_id"      =>  $owner_id ?? Auth::id(),
-            "creator_id"    => Auth::id()
+            "creator_id"    => Auth::id(),
+            "note"          =>  $note
         ]);
 
         try {
@@ -477,6 +481,11 @@ class Corporate extends Model
     public function status(): HasOne
     {
         return $this->hasOne(Status::class);
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     public function followups(): MorphMany

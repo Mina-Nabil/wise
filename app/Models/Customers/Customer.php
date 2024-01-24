@@ -685,6 +685,11 @@ class Customer extends Model
         return $this->belongsTo(Profession::class);
     }
 
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'nationality_id');

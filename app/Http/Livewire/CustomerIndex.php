@@ -7,6 +7,7 @@ use App\Models\Customers\Customer;
 use App\Models\Customers\Status;
 use App\Models\Customers\Profession;
 use App\Models\Base\Country;
+use App\Models\Users\User;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
 use Livewire\WithPagination;
@@ -54,6 +55,8 @@ class CustomerIndex extends Component
     public $statusReason;
     public $statusNote;
 
+    public $usersList;
+
     public function changeThisStatus($id, $status)
     {
         $this->changeCustStatusId = $id;
@@ -92,10 +95,11 @@ class CustomerIndex extends Component
             'LeadPhone' => 'required|string|max:255',
             'LeadNote' => 'nullable|string|max:255',
             'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
+            'ownerId' => 'nullable|integer|exists:users,id',
         ]);
 
         $customer = new Customer();
-        $res = $customer->newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: auth()->id(), note:$this->LeadNote);
+        $res = $customer->newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note:$this->LeadNote);
 
         
         if ($this->followupCallDateTime) {
@@ -135,10 +139,12 @@ class CustomerIndex extends Component
             'incomeSource' => 'nullable|in:' . implode(',', Customer::INCOME_SOURCES),
             'note' => 'nullable|string|max:255',
             'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
+            'ownerId' => 'nullable|integer|exists:users,id',
+
         ]);
 
         $customer = new Customer();
-        $res = $customer->newCustomer(auth()->id(), $this->firstName, $this->lastName, $this->gender, $this->email, $this->middleName, $this->ArabicFirstName, $this->ArabicMiddleName, $this->ArabicLastName, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource ,note: $this->note);
+        $res = $customer->newCustomer($this->ownerId, $this->firstName, $this->lastName, $this->gender, $this->email, $this->middleName, $this->ArabicFirstName, $this->ArabicMiddleName, $this->ArabicLastName, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource ,note: $this->note);
         
         if ($this->followupCallDateTime) {
             $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->note);
@@ -180,6 +186,9 @@ class CustomerIndex extends Component
         $customerStatus = Status::STATUSES;
         $countries = Country::all();
         $customers = Customer::userData($this->search)->paginate(10);
+        $users = User::all();
+
+        // dd($usersList);
 
         return view('livewire.customer-index', [
             'customers' => $customers,
@@ -191,6 +200,7 @@ class CustomerIndex extends Component
             'INCOME_SOURCES' => $INCOME_SOURCES,
             'countries' => $countries,
             'customerStatus' => $customerStatus,
+            'users' => $users,
         ]);
     }
 }

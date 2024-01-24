@@ -255,6 +255,14 @@
                         </div>
                     </div>
 
+                    <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active  mt-5">
+                        <div class="card-text flex flex-col justify-between h-full menu-open">
+                            <p>
+                                Owned by
+                            </p>
+                            <p class="text-wrap"><b>{{ $corporate->owner->first_name  }} {{ $corporate->owner->last_name  }}</b></p>
+                        </div>
+                    </div>
                     
 
                 </div>
