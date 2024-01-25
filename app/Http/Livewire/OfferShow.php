@@ -97,7 +97,7 @@ class OfferShow extends Component
 
     public function exportComparison()
     {
-        $this->offer->exportComparison($this->selectedOptions);
+        return $this->offer->exportComparison($this->selectedOptions);
     }
 
     public function UpdatedUpoadfiler()

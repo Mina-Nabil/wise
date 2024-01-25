@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Offer extends Model
@@ -107,22 +108,25 @@ class Offer extends Model
             $cell = $activeSheet->getCell('A' . $i++);
             $cell->setValue($b);
         }
-        $options = $this->options()->with('policy', 'policy.company', 'policy.benefits')->when(count($ids), function ($q) use ($ids) {
+        $options = $this->options()->with('policy_condition', 'policy', 'policy.company', 'policy.benefits')->when(count($ids), function ($q) use ($ids) {
             $q->whereIn('id', $ids);
         })->get();
         $startChar = 'B';
         foreach ($options as $op) {
-            $activeSheet->getCell($startChar . '1')->setValue($op->policy->company->name  . " - " . $op->policy->company->name);
-            $activeSheet->getCell($startChar . '2')->setValue($op->rate);
+            $activeSheet->getCell($startChar . '1')->setValue($op->policy->name  . " - " . $op->policy?->company->name);
+            $activeSheet->getCell($startChar . '2')->setValue($op->policy_condition?->rate);
             $activeSheet->getCell($startChar . '3')->setValue($op->net_premium);
             $activeSheet->getCell($startChar . '4')->setValue($op->gross_premium);
-            $j = 6;
+
             foreach ($op->policy->benefits as $b) {
-                $activeSheet->getCell($startChar . $j++)->setValue($b->value);
+                $activeSheet->getCell($startChar . 7 + array_search($b->benefit, PolicyBenefit::BENEFITS))->setValue($b->value);
             }
             $startChar++;
         }
-        return response()->download($newFile);
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($newFile);
+        Log::info("GEET");
+        $writer->save(public_path("offer{$this->id}_comparison.xlsx"));
+        return response()->download(public_path("offer{$this->id}_comparison.xlsx"));
     }
 
     public function setNote(string $in_favor_to = null, string $note = null)
