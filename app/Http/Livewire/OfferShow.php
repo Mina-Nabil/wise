@@ -46,6 +46,7 @@ class OfferShow extends Component
 
     public $editNoteSec = false;
     public $offerNote;
+    public $inFavorTo;
 
     public $addOptionSection;
     public $searchPolicy; //search client policies
@@ -496,11 +497,17 @@ class OfferShow extends Component
     {
         $this->toggle($this->editNoteSec);
         $this->offerNote = $this->offer->note;
+        $this->inFavorTo = $this->offer->in_favor_to;
     }
 
     public function editNote()
     {
-        $res = $this->offer->setNote($this->offerNote);
+        $this->validate([
+            'inFavorTo'     => 'nullable|string|max:255',
+            'offerNote'     => 'nullable|string|max:255'
+        ]);
+
+        $res = $this->offer->setNote($this->inFavorTo, $this->offerNote);
         if ($res) {
             $this->alert('success', 'Note Changed!');
             $this->toggleEditNote();

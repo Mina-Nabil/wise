@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Log;
 
+use function PHPUnit\Framework\isEmpty;
 use function PHPUnit\Framework\isNull;
 
 class OfferIndex extends Component
@@ -44,6 +45,7 @@ class OfferIndex extends Component
     public $dueDate;
     public $dueTime;
     public $isRenewal = false;
+    public $inFavorTo;
 
     public $bdate;
     public $gender;
@@ -83,11 +85,10 @@ class OfferIndex extends Component
 
     public function selectClient($id)
     {
-
         if ($this->clientType == 'Customer') {
             $res = Customer::find($id);
 
-            $this->bdate = ($res->birth_date ? $res->birth_date->toDateString() : null);
+            $this->bdate = $res->birth_date ? $res->birth_date->toDateString() : null;
             // dd($this->bdate);
             $this->gender = $res->gender;
 
@@ -98,8 +99,6 @@ class OfferIndex extends Component
         } elseif ($this->clientType == 'Corporate') {
             $res = Corporate::find($id);
         }
-
-
 
         $this->owner = $res;
         $this->selectedClientName = $res->first_name . ' ' . $res->middle_name . ' ' . $res->last_name;
@@ -115,11 +114,14 @@ class OfferIndex extends Component
 
     public function updatedSearchClient()
     {
-
         if ($this->clientType == 'Customer' && !$this->searchClient == '') {
-            $this->clientNames = Customer::userData(searchText: $this->searchClient)->get()->take(5);
+            $this->clientNames = Customer::userData(searchText: $this->searchClient)
+                ->get()
+                ->take(5);
         } elseif ($this->clientType == 'Corporate' && !$this->searchClient == '') {
-            $this->clientNames = Corporate::where('name', 'like', '%' . $this->searchClient . '%')->get()->take(5);
+            $this->clientNames = Corporate::where('name', 'like', '%' . $this->searchClient . '%')
+                ->get()
+                ->take(5);
         }
 
         // dd($this->clientNames);
@@ -189,7 +191,8 @@ class OfferIndex extends Component
             'item_title' => 'nullable|string|max:255',
             'item_desc' => 'nullable|string',
             'note' => 'nullable|string',
-            'isRenewal' => 'boolean'
+            'isRenewal' => 'boolean',
+            'inFavorTo' => 'nullable|string|max:255',
         ]);
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : Carbon::tomorrow();
@@ -198,31 +201,35 @@ class OfferIndex extends Component
 
         // dd($this->item);
         if ($this->type === 'personal_medical' && $this->clientType === 'Customer') {
-            $this->owner->setRelatives($this->relatives);
-            $this->owner->editCustomer(name: $this->owner->name, birth_date: $this->bdate, gender: $this->gender);
+            if (!empty($this->relatives)) {
+                $this->validate([
+                    'relatives.*.name' => 'required|string|max:255',
+                    'relatives.*.relation' => 'required|in:' . implode(',', Relative::RELATIONS),
+                    'relatives.*.gender' => 'nullable|in:' . implode(',', Customer::GENDERS),
+                    'relatives.*.phone' => 'nullable|string|max:255',
+                    'relatives.*.birth_date' => 'nullable|date',
+                ]);
+                $this->owner->setRelatives($this->relatives);
+            }
+            $this->owner->editCustomer(first_name: $this->owner->first_name, last_name: $this->owner->last_name, birth_date: $this->bdate, gender: $this->gender);
+            $item = null;
         } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer' && is_Null($this->item)) {
-            if (!$this->CarCategory || !$this->selectedCarPriceArray) return $this->alert('failed', 'Please select a car');
+            if (!$this->CarCategory || !$this->selectedCarPriceArray) {
+                return $this->alert('failed', 'Please select a car');
+            }
             $item = $this->owner->addCar(car_id: $this->CarCategory, model_year: $this->selectedCarPriceArray['model_year']);
             $this->item_title = null;
         } elseif ($this->type === 'personal_motor' && $this->clientType === 'Customer') {
             $this->item_title = null;
             $item = CustomerCar::find($this->item);
+        } else {
+            $item = null;
         }
 
         $offer = new Offer();
-        $res = $offer->newOffer(
-            $this->owner,
-            $this->type,
-            $this->item_value,
-            $this->item_title,
-            $this->item_desc,
-            $this->note,
-            $combinedDateTime,
-            $item,
-            $this->isRenewal
-        );
+        $res = $offer->newOffer($this->owner, $this->type, $this->item_value, $this->item_title, $this->item_desc, $this->note, $combinedDateTime, $item, $this->isRenewal, $this->inFavorTo);
         if ($res) {
-            return redirect(route('offers.show',  $res->id));
+            return redirect(route('offers.show', $res->id));
         } else {
             $this->alert('failed', 'Server error');
         }

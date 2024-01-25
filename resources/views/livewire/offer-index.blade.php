@@ -355,13 +355,13 @@
                                             <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
                                                 <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
                                                     <div class="input-area col-span-4">
-                                                        <input class="form-control w-full mt-2  @error('relatives.{{ $index }}.name') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.name" type="text" placeholder="Relative name">
+                                                        <input class="form-control w-full mt-2  @error('relatives.' . $index . '.name') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.name" type="text" placeholder="Relative name">
                                                     </div>
                                                     <div class="input-area col-span-4">
-                                                        <input class="form-control w-full mt-2   @error('relatives.{{ $index }}.phone') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.phone" type="number" placeholder="Relative phone">
+                                                        <input class="form-control w-full mt-2  @error('relatives.' . $index . '.phone') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.phone" type="number" placeholder="Relative phone">
                                                     </div>
                                                     <div class="input-area col-span-3">
-                                                        <select name="basicSelect" class="form-control w-full mt-2  @error('relatives.{{ $index }}.relation') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.relation">
+                                                        <select name="basicSelect" class="form-control w-full mt-2  @error('relatives.' . $index . '.relation') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.relation">
                                                             <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Relation...</option>
                                                             @foreach ($RELATIONS as $relation)
                                                                 <option value="{{ $relation }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($relation) }}</option>
@@ -369,7 +369,7 @@
                                                         </select>
                                                     </div>
                                                     <div class="input-area col-span-2">
-                                                        <select name="basicSelect" class="form-control w-full mt-2   @error('relatives.{{ $index }}.gender') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.gender">
+                                                        <select name="basicSelect" class="form-control w-full mt-2   @error('relatives.' . $index . '.gender') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.gender">
                                                             <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Gender...</option>
                                                             @foreach ($GENDERS as $gender)
                                                                 <option value="{{ $gender }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($gender) }}</option>
@@ -378,7 +378,7 @@
                                                     </div>
 
                                                     <div class="input-area col-span-3">
-                                                        <input class="form-control w-full mt-2   @error('relatives.{{ $index }}.birth_date') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.birth_date" type="date" placeholder="birth_date">
+                                                        <input class="form-control w-full mt-2   @error('relatives.' . $index . '.birth_date') !border-danger-500 @enderror" wire:model="relatives.{{ $index }}.birth_date" type="date" placeholder="birth_date">
                                                     </div>
                                                     <div class="col-span-1 flex items-center">
                                                         <button class="action-btn" wire:click="removeRelative({{ $index }})" type="button">
@@ -438,6 +438,13 @@
                                 <label for="lastName" class="form-label">Note</label>
                                 <textarea class="form-control mt-2 w-full" wire:model.defer="note"></textarea>
                                 @error('note')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area mb-3">
+                                <label for="inFavorTo" class="form-label">In Favor To</label>
+                                <input name="inFavorTo" class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('inFavorTo') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="inFavorTo" autocomplete="off">
+                                @error('inFavorTo')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>

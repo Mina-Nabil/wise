@@ -40,8 +40,7 @@
                                         <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
                                     </span>
                                 </button>
-                                <ul
-                                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                     @foreach ($STATUSES as $status)
                                         @if (!($status === $offer->status))
@@ -139,12 +138,10 @@
                                                 <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                 </button>
-                                                <ul
-                                                    class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                     <li>
-                                                        <button wire:click="toggleEditItem"
-                                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                        <button wire:click="toggleEditItem" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                             Edit</button>
                                                     </li>
@@ -244,8 +241,7 @@
 
                                                             </td>
                                                             <td class="table-td ">
-                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['cond']['id'] }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars"
-                                                                        class="text-primary-600"></iconify-icon>&nbsp;
+                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['cond']['id'] }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp;
                                                                     Generate Option</button>
                                                             </td>
                                                         </tr>
@@ -303,7 +299,7 @@
                                                 <input type="checkbox" class="hidden" name="checkbox" value="{{ $option->id }}" wire:model="selectedOptions" value="true">
                                                 <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900" style="background-color: #575757">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0"></span>
-                                                
+
                                             </label>
 
                                         </div>
@@ -351,8 +347,7 @@
                                                                     Add Field</button>
                                                             </li>
                                                             <li>
-                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})"
-                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                                                                     Add Doc
                                                                 </label>
                                                                 <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedOptionFile">
@@ -610,6 +605,12 @@
                                 <span class="mt-2">{{ $offer->note ?? 'No notes for this offer.' }}</span>
 
                             </p>
+                            @if (!is_Null($offer->in_favor_to) && $offer->in_favor_to !== '')
+                                <p class="mb-2 text-wrap">
+                                    <b><iconify-icon icon="mdi:book-favorite-outline"></iconify-icon> In Favor To</b><br>
+                                    <span class="mt-2">{{ $offer->in_favor_to }}</span>
+                                </p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -807,18 +808,15 @@
                                                                     <button class="text-xl text-center block w-full " type="button" id="transactionDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                                                                         <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                     </button>
-                                                                    <ul
-                                                                        class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                                    <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                                     shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                         <li>
-                                                                            <a wire:click="editThisDicount({{ $discount->id }})"
-                                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                            <a wire:click="editThisDicount({{ $discount->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                             dark:hover:text-white">
                                                                                 Edit</a>
                                                                         </li>
                                                                         <li>
-                                                                            <a wire:click="deleteThisDiscount({{ $discount->id }})"
-                                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                            <a wire:click="deleteThisDiscount({{ $discount->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                             dark:hover:text-white">
                                                                                 Delete</a>
                                                                         </li>
@@ -1241,8 +1239,7 @@
                                     <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
                                         <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                                             <input type="checkbox" checked class="sr-only peer" wire:model="optionIsRenewal">
-                                            <div
-                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
                                             <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
                                             <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
@@ -1409,9 +1406,17 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="input-area mb-3">
-                                <label for="time-date-picker" class="form-label">Due Date</label>
+                                <label for="time-date-picker" class="form-label">Note</label>
                                 <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('offerNote') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="offerNote" autocomplete="off">
                                 @error('offerNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="input-area mb-3">
+                                <label for="inFavorTo" class="form-label">In Favor To</label>
+                                <input name="inFavorTo" class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('inFavorTo') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="inFavorTo" autocomplete="off">
+                                @error('inFavorTo')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -1556,8 +1561,7 @@
                                     <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
                                         <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                                             <input type="checkbox" checked class="sr-only peer" wire:model="optionIsRenewal">
-                                            <div
-                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
                                             <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
                                             <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
@@ -1640,8 +1644,7 @@
                                 Delete Discount
                             </h3>
                             <button wire:click="dismissDeleteDiscount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1677,8 +1680,7 @@
                                 Delete Option
                             </h3>
                             <button wire:click="dismissDeleteOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1714,8 +1716,7 @@
                                 Delete Offer
                             </h3>
                             <button wire:click="dismissDeleteOffer" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
