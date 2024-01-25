@@ -49,7 +49,7 @@ class OfferShow extends Component
 
     public $addOptionSection;
     public $searchPolicy; //search client policies
-    public $policiesData; // client policies search result 
+    public $policiesData; // client policies search result
     public $policyId; //seected policy id
     public $policyData; //selected policy data
     public $policyConditions; //conditions of selected policy
@@ -93,6 +93,12 @@ class OfferShow extends Component
     public $newAsignee;
 
     public $upoadfiler;
+    public $selectedOptions = [];
+
+    public function exportComparison()
+    {
+        $this->offer->exportComparison($this->selectedOptions);
+    }
 
     public function UpdatedUpoadfiler()
     {
@@ -121,8 +127,8 @@ class OfferShow extends Component
     {
         $this->discountId = $id;
         $discount = OfferDiscount::find($id);
-        $this->discountType  = $discount->type;
-        $this->discountValue  = $discount->value;
+        $this->discountType = $discount->type;
+        $this->discountValue = $discount->value;
         $this->discountNote = $discount->note;
     }
 
@@ -157,17 +163,13 @@ class OfferShow extends Component
         $this->validate([
             'discountType' => 'required|in:' . implode(',', OfferDiscount::TYPES),
             'discountValue' => 'required|numeric',
-            'discountNote' => 'nullable|string|max:255'
+            'discountNote' => 'nullable|string|max:255',
         ]);
-        $res = $this->offer->addDiscount(
-            $this->discountType,
-            $this->discountValue,
-            $this->discountNote
-        );
+        $res = $this->offer->addDiscount($this->discountType, $this->discountValue, $this->discountNote);
         if ($res) {
-            $this->discountType =  null;
+            $this->discountType = null;
             $this->discountValue = null;
-            $this->discountNote =  null;
+            $this->discountNote = null;
             $this->toggleAddDiscount();
             $this->mount($this->offer->id);
             $this->alert('success', 'Discount Added!');
@@ -181,18 +183,14 @@ class OfferShow extends Component
         $this->validate([
             'discountType' => 'required|in:' . implode(',', OfferDiscount::TYPES),
             'discountValue' => 'required|numeric',
-            'discountNote' => 'nullable|string|max:255'
+            'discountNote' => 'nullable|string|max:255',
         ]);
 
-        $res = OfferDiscount::find($this->discountId)->editInfo(
-            $this->discountType,
-            $this->discountValue,
-            $this->discountNote
-        );
+        $res = OfferDiscount::find($this->discountId)->editInfo($this->discountType, $this->discountValue, $this->discountNote);
         if ($res) {
-            $this->discountType =  null;
+            $this->discountType = null;
             $this->discountValue = null;
-            $this->discountNote =  null;
+            $this->discountNote = null;
             $this->closeEditDiscount();
             $this->mount($this->offer->id);
             $this->alert('success', 'Discount Added!');
@@ -236,7 +234,6 @@ class OfferShow extends Component
         }
     }
 
-
     public function deleteThisOption($id)
     {
         $this->deleteOptionId = $id;
@@ -261,7 +258,7 @@ class OfferShow extends Component
 
     public function editThisOption($id)
     {
-        $this->editOptionId  =  $id;
+        $this->editOptionId = $id;
         $option = OfferOption::find($id);
 
         // dd($option);
@@ -278,10 +275,10 @@ class OfferShow extends Component
     public function closeEditOption()
     {
         $this->editOptionId = null;
-        $this->policyData =  null;
-        $this->conditionData =  null;
+        $this->policyData = null;
+        $this->conditionData = null;
         $this->insured_value = null;
-        $this->payment_frequency =  null;
+        $this->payment_frequency = null;
     }
 
     public function acceptOption($id)
@@ -297,14 +294,7 @@ class OfferShow extends Component
     public function editOption()
     {
         $option = OfferOption::find($this->editOptionId);
-        $res = $option->editInfo(
-            $this->insured_value,
-            $this->netPremium,
-            $this->grossPremium,
-            $this->payment_frequency,
-            $this->optionIsRenewal,
-            $this->installmentsCount
-        );
+        $res = $option->editInfo($this->insured_value, $this->netPremium, $this->grossPremium, $this->payment_frequency, $this->optionIsRenewal, $this->installmentsCount);
         if ($res) {
             $this->alert('success', 'Option updated');
             $this->closeEditOption();
@@ -313,7 +303,6 @@ class OfferShow extends Component
             $this->alert('failed', 'Server error');
         }
     }
-
 
     public function clearPolicy()
     {
@@ -484,7 +473,7 @@ class OfferShow extends Component
     {
         $this->validate([
             'newFieldName' => 'required|string|max:255',
-            'newFieldValue' => 'required|string|max:255'
+            'newFieldValue' => 'required|string|max:255',
         ]);
 
         $option = OfferOption::find($this->addFieldSection_id);
@@ -523,7 +512,7 @@ class OfferShow extends Component
     public function editDue()
     {
         $dueDateTime = $this->dueDate . ' ' . $this->dueTime;
-        $res  = $this->offer->changeDue(Carbon::parse($dueDateTime));
+        $res = $this->offer->changeDue(Carbon::parse($dueDateTime));
         if ($res) {
             $this->alert('success', 'Due Updated');
             $this->toggleEditDue();
@@ -551,12 +540,7 @@ class OfferShow extends Component
 
         $item = CustomerCar::find($this->carId);
 
-        $res = $this->offer->setItemDetails(
-            $this->item_value,
-            $item,
-            $this->item_title,
-            $this->item_desc
-        );
+        $res = $this->offer->setItemDetails($this->item_value, $item, $this->item_title, $this->item_desc);
 
         if ($res) {
             $this->alert('success', 'Item updated');
@@ -573,51 +557,57 @@ class OfferShow extends Component
 
     public function updatedSearchPolicy()
     {
-        $this->policiesData = Policy::tableData()->SearchBy($this->searchPolicy)->get()->take(5);
+        $this->policiesData = Policy::tableData()
+            ->SearchBy($this->searchPolicy)
+            ->get()
+            ->take(5);
     }
 
     public function selectPolicy($id)
     {
         $this->policyId = $id;
-        $this->policyData =  Policy::find($id);
-        $this->policyConditions =  Policy::find($id)->conditions;
+        $this->policyData = Policy::find($id);
+        $this->policyConditions = Policy::find($id)->conditions;
     }
 
     public function selectCondition($id)
     {
         $this->conditionId = $id;
-        $this->conditionData =  PolicyCondition::find($this->conditionId);
+        $this->conditionData = PolicyCondition::find($this->conditionId);
         $this->insured_value = $this->offer->item_value;
 
-        if ($this->conditionData)
+        if ($this->conditionData) {
             $this->netPremium = round($this->offer->item_value * ($this->conditionData->rate / 100), 2);
-        if ($this->policyData && $this->netPremium)
+        }
+        if ($this->policyData && $this->netPremium) {
             $this->grossPremium = round($this->policyData->calculateGrossValue($this->netPremium), 2);
+        }
         // dd($this->conditionData);
     }
 
     public function addOption()
     {
-        $this->validate([
-            'policyId' => 'required|integer|exists:policies,id',
-            'conditionId' => 'required|integer|exists:policy_conditions,id',
-            'insured_value' => 'nullable|numeric',
-            'payment_frequency' =>  'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
-            'grossPremium' => 'nullable|numeric',
-            'netPremium' => 'nullable|numeric',
-            'installmentsCount' => 'nullable|numeric',
-            'optionIsRenewal' => 'boolean',
-            'files' => 'nullable|array',
-            'files.*' => 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
-            'fields' => 'nullable|array',
-        ], messages: [
-            'conditionId' => 'Policy is required!',
-            'files.*'   =>  'File :position is invalid. Please upload a file of type: pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp'
-        ]);
+        $this->validate(
+            [
+                'policyId' => 'required|integer|exists:policies,id',
+                'conditionId' => 'required|integer|exists:policy_conditions,id',
+                'insured_value' => 'nullable|numeric',
+                'payment_frequency' => 'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
+                'grossPremium' => 'nullable|numeric',
+                'netPremium' => 'nullable|numeric',
+                'installmentsCount' => 'nullable|numeric',
+                'optionIsRenewal' => 'boolean',
+                'files' => 'nullable|array',
+                'files.*' => 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+                'fields' => 'nullable|array',
+            ],
+            messages: [
+                'conditionId' => 'Policy is required!',
+                'files.*' => 'File :position is invalid. Please upload a file of type: pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp',
+            ],
+        );
 
         $validationRules = [];
-
-
 
         if (!empty($this->fields)) {
             foreach ($this->fields as $index => $field) {
@@ -632,21 +622,7 @@ class OfferShow extends Component
                 $files[$i] = ['name' => $file->getClientOriginalName(), 'url' => $file->store(OptionDoc::FILES_DIRECTORY, 's3')];
             }
         }
-        $res = $this->offer->addOption(
-            $this->policyId,
-            $this->conditionId,
-            $this->insured_value,
-            $this->payment_frequency,
-            $this->netPremium,
-            $this->grossPremium,
-            $this->optionIsRenewal,
-            $this->installmentsCount,
-            $this->fields,
-            $files
-        );
-
-
-
+        $res = $this->offer->addOption($this->policyId, $this->conditionId, $this->insured_value, $this->payment_frequency, $this->netPremium, $this->grossPremium, $this->optionIsRenewal, $this->installmentsCount, $this->fields, $files);
 
         if ($res) {
             $this->alert('success', 'options created');
@@ -678,7 +654,7 @@ class OfferShow extends Component
     public function addComment()
     {
         $this->validate([
-            'newComment' => 'required|string|max:255'
+            'newComment' => 'required|string|max:255',
         ]);
         $res = $this->offer->addComment($this->newComment);
         if ($res) {
@@ -715,9 +691,9 @@ class OfferShow extends Component
         $this->offer = Offer::find($offerId);
         $this->item_value = $this->offer->item_value;
         $this->item_title = $this->offer->item_title;
-        $this->item_desc  = $this->offer->item_desc;
+        $this->item_desc = $this->offer->item_desc;
 
-        $this->dueDate =  Carbon::parse($this->offer->due)->toDateString();
+        $this->dueDate = Carbon::parse($this->offer->due)->toDateString();
         $this->dueTime = Carbon::parse($this->offer->due)->toTimeString();
     }
 
@@ -739,19 +715,14 @@ class OfferShow extends Component
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
 
-        $this->available_pols = Policy::getAvailablePolicies(
-            type: Policy::BUSINESS_PERSONAL_MOTOR,
-            car: $this->offer->item,
-            age: null,
-            offerValue: $this->offer->item_value
-        );
+        $this->available_pols = Policy::getAvailablePolicies(type: Policy::BUSINESS_PERSONAL_MOTOR, car: $this->offer->item, age: null, offerValue: $this->offer->item_value);
 
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
             'users' => $users,
             'usersTypes' => $usersTypes,
-            'DISCOUNT_TYPES' => $DISCOUNT_TYPES
+            'DISCOUNT_TYPES' => $DISCOUNT_TYPES,
         ]);
     }
 }
