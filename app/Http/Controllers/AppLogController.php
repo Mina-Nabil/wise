@@ -10,4 +10,9 @@ class AppLogController extends Controller
     {
         return view('users.app-log-index');
     }
+
+    public function slaRecordsIndex()
+    {
+        return view('users.sla-record-index');
+    }
 }

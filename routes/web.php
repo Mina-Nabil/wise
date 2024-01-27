@@ -60,6 +60,7 @@ Route::middleware('auth', 'active')->group(function () {
 
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::get('/logs', [AppLogController::class, 'index'])->name('logs.index');
+    Route::get('/slarecords', [AppLogController::class, 'slaRecordsIndex'])->name('slarecords.index');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);
