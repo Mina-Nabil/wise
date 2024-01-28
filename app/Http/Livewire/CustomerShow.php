@@ -1090,6 +1090,24 @@ class CustomerShow extends Component
         }
     }
 
+    function generateUrl($fieldName, $property)
+{
+    $idDoc_url = null;
+
+    if (is_null($this->customer->$fieldName) && (is_null($this->$property))) {
+        $idDoc_url = null;
+    } elseif (!is_null($this->customer->$fieldName) && (is_null($this->$property))) {
+        $idDoc_url = null;
+    } elseif (!is_null($this->customer->$fieldName) && (!is_null($this->$property))) {
+        if (is_string($this->$property)) {
+            $this->$property = null;
+            $idDoc_url = $this->customer->$fieldName;
+        }
+    }
+
+    return $idDoc_url;
+}
+
     public function editInfo()
     {
         if (is_null($this->customer->id_doc) && (is_null($this->idDoc))) {

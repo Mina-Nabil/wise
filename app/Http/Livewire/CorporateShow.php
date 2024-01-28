@@ -7,6 +7,7 @@ use App\Models\Base\City;
 use App\Models\Base\Country;
 use Livewire\Component;
 use App\Models\Corporates\Corporate;
+use App\Models\Customers\Customer;
 use App\Models\Corporates\Address;
 use App\Models\Corporates\BankAccount;
 use App\Models\Corporates\Contact;
@@ -14,10 +15,13 @@ use App\Models\Corporates\Phone;
 use App\Models\Customers\Followup;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
+
 
 class CorporateShow extends Component
 {
-    use ToggleSectionLivewire, AlertFrontEnd;
+    use ToggleSectionLivewire, AlertFrontEnd, WithFileUploads;
     public $corporate;
 
     //corporate
@@ -46,7 +50,6 @@ class CorporateShow extends Component
     public $editAddressId;
     public $deleteAddressId;
     public $addAddressSection = false;
-
 
     //phone
     public $phoneType;
@@ -90,11 +93,34 @@ class CorporateShow extends Component
     public $callerNoteId;
     public $note;
 
-
     public $section = 'profile';
 
     protected $queryString = ['section'];
-    
+
+    public function clearCommercialRecordDoc()
+    {
+        $this->commercialRecordDoc = null;
+    }
+
+    public function clearTaxIdDoc()
+    {
+        $this->taxIdDoc = null;
+    }
+
+    public function clearKycDoc()
+    {
+        $this->kycDoc = null;
+    }
+
+    public function clearContractDoc()
+    {
+        $this->contractDoc = null;
+    }
+
+    public function clearMainBandEvidence()
+    {
+        $this->mainBandEvidence = null;
+    }
 
     public function changeSection($section)
     {
@@ -102,26 +128,35 @@ class CorporateShow extends Component
         $this->mount($this->corporate->id);
     }
 
-    
-    public function toggleCallerNote($type = null ,$id = null){
-
+    public function toggleCallerNote($type = null, $id = null)
+    {
         $this->callerNotetype = $type;
         $this->callerNoteId = $id;
         $this->toggle($this->callerNoteSec);
-
     }
 
-    public function submitCallerNote(){
-        
+    public function submitCallerNote()
+    {
         if ($this->callerNotetype === 'called') {
-            $this->setFollowupAsCalled($this->callerNoteId,$this->note);
-        }elseif($this->callerNotetype =='cancelled'){
-            $this->setFollowupAsCancelled($this->callerNoteId,$this->note);
+            $this->setFollowupAsCalled($this->callerNoteId, $this->note);
+        } elseif ($this->callerNotetype == 'cancelled') {
+            $this->setFollowupAsCancelled($this->callerNoteId, $this->note);
         }
     }
 
     public function toggleEditCorporate()
     {
+        $this->name = $this->corporate->name;
+        $this->arabicName = $this->corporate->arabic_name;
+        $this->email = $this->corporate->email;
+        $this->commercialRecord = $this->corporate->commercial_record;
+        $this->commercialRecordDoc = $this->corporate->commercial_record_doc;
+        $this->taxId = $this->corporate->tax_id;
+        $this->taxIdDoc = $this->corporate->tax_id_doc;
+        $this->kyc = $this->corporate->kyc;
+        $this->kycDoc = $this->corporate->kyc_doc;
+        $this->contractDoc = $this->corporate->contract_doc;
+        $this->mainBandEvidence = $this->corporate->main_bank_evidence;
         $this->toggle($this->editCorporateSection);
     }
 
@@ -157,11 +192,13 @@ class CorporateShow extends Component
         $this->flat = null;
     }
 
-    public function deleteThisAddress($id){
+    public function deleteThisAddress($id)
+    {
         $this->deleteAddressId = $id;
     }
 
-    public function closeDeleteAddress(){
+    public function closeDeleteAddress()
+    {
         $this->deleteAddressId = null;
     }
 
@@ -175,7 +212,7 @@ class CorporateShow extends Component
         $this->PhoneId = $id;
         $p = Phone::find($id);
         $this->phoneType = $p->type;
-        $this->number  = $p->number;
+        $this->number = $p->number;
     }
 
     public function closeEditPhone()
@@ -183,11 +220,13 @@ class CorporateShow extends Component
         $this->PhoneId = null;
     }
 
-    public function deleteThisPhone($id){
+    public function deleteThisPhone($id)
+    {
         $this->deletePhoneId = $id;
     }
 
-    public function closeDeletePhone(){
+    public function closeDeletePhone()
+    {
         $this->deletePhoneId = null;
     }
 
@@ -215,14 +254,15 @@ class CorporateShow extends Component
         $this->contactPhone = null;
     }
 
-    public function deleteThisContact($id){
+    public function deleteThisContact($id)
+    {
         $this->deleteContactId = $id;
     }
 
-    public function closeDeleteContact(){
+    public function closeDeleteContact()
+    {
         $this->deleteContactId = null;
     }
-
 
     public function toggleAddBankAccount()
     {
@@ -254,11 +294,13 @@ class CorporateShow extends Component
         $this->bankBranch = null;
     }
 
-    public function deleteThisBankAccount($id){
+    public function deleteThisBankAccount($id)
+    {
         $this->deleteBankAccountId = $id;
     }
 
-    public function closeDeleteBankAccount(){
+    public function closeDeleteBankAccount()
+    {
         $this->deleteBankAccountId = null;
     }
 
@@ -285,7 +327,8 @@ class CorporateShow extends Component
         $this->addFollowupSection = true;
     }
 
-    public function editThisFollowup($id){
+    public function editThisFollowup($id)
+    {
         $this->followupId = $id;
         $f = Followup::find($id);
         $this->followupTitle = $f->title;
@@ -295,15 +338,18 @@ class CorporateShow extends Component
         $this->followupDesc = $f->desc;
     }
 
-    public function deleteThisFollowup($id){
+    public function deleteThisFollowup($id)
+    {
         $this->deleteFollowupId = $id;
     }
 
-    public function dismissDeleteFollowup(){
+    public function dismissDeleteFollowup()
+    {
         $this->deleteFollowupId = null;
     }
 
-    public function deleteFollowup(){
+    public function deleteFollowup()
+    {
         $res = Followup::find($this->deleteFollowupId)->delete();
         if ($res) {
             $this->alert('success', 'Followup Deleted successfuly');
@@ -320,7 +366,7 @@ class CorporateShow extends Component
             'followupTitle' => 'required|string|max:255',
             'followupCallDate' => 'nullable|date',
             'followupCallTime' => 'nullable',
-            'followupDesc' => 'nullable|string|max:255'
+            'followupDesc' => 'nullable|string|max:255',
         ]);
 
         $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
@@ -328,17 +374,13 @@ class CorporateShow extends Component
 
         $corporate = Corporate::find($this->corporate->id);
 
-        $res = $corporate->addFollowup(
-            $this->followupTitle,
-            $combinedDateTime,
-            $this->followupDesc
-        );
+        $res = $corporate->addFollowup($this->followupTitle, $combinedDateTime, $this->followupDesc);
 
         if ($res) {
             $this->alert('success', 'Followup added successfuly');
             $this->closeFollowupSection();
             $this->mount($this->corporate->id);
-            return redirect()->route('corporates.show' , $this->corporate->id);
+            return redirect()->route('corporates.show', $this->corporate->id);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -350,7 +392,7 @@ class CorporateShow extends Component
             'followupTitle' => 'required|string|max:255',
             'followupCallDate' => 'nullable|date',
             'followupCallTime' => 'nullable',
-            'followupDesc' => 'nullable|string|max:255'
+            'followupDesc' => 'nullable|string|max:255',
         ]);
 
         $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
@@ -358,11 +400,7 @@ class CorporateShow extends Component
 
         $followup = Followup::find($this->followupId);
 
-        $res = $followup->editInfo(
-            $this->followupTitle,
-            $combinedDateTime,
-            $this->followupDesc
-        );
+        $res = $followup->editInfo($this->followupTitle, $combinedDateTime, $this->followupDesc);
 
         if ($res) {
             $this->alert('success', 'Followup updated successfuly');
@@ -411,39 +449,70 @@ class CorporateShow extends Component
         $this->kycDoc = $this->corporate->kyc_doc;
         $this->contractDoc = $this->corporate->contract_doc;
         $this->mainBandEvidence = $this->corporate->main_bank_evidence;
+    }
 
+    public function downloadDoc($url, $fileType)
+    {
+        $filename = $this->corporate->name . '_'.$fileType.'.' . pathinfo($url, PATHINFO_EXTENSION);
+        $fileContents = Storage::disk('s3')->get($url);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    function generateUrl($fieldName, $property)
+    {
+        $url = null;
+
+        if (is_null($this->corporate->$fieldName) && is_null($this->$property)) {
+            $url = null;
+        } elseif (!is_null($this->corporate->$fieldName) && is_null($this->$property)) {
+            $url = null;
+        } elseif (!is_null($this->corporate->$fieldName) && !is_null($this->$property) && (is_string($this->$property)) ) {
+                $this->$property = null;
+                $url = $this->corporate->$fieldName;
+        } else{
+
+            $this->validate([
+                $property => ['file', 'nullable' , 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp' , 'max:5120'],
+            ]);
+
+            $url =  $this->$property->store(Customer::FILES_DIRECTORY, 's3');
+        }
+
+        return $url;
     }
 
     public function editCorporate()
     {
+        
+        
         $this->validate([
             'name' => 'required|string|max:255',
             'arabicName' => 'nullable|string|max:255',
             'email' => 'nullable|email',
             'commercialRecord' => 'nullable|string|max:255',
-            'commercialRecordDoc' => 'nullable|string|max:255',
             'taxId' => 'nullable|string|max:255',
-            'taxIdDoc' => 'nullable|string|max:255',
             'kyc' => 'nullable|string|max:255',
-            'kycDoc' => 'nullable|string|max:255',
-            'contractDoc' => 'nullable|string|max:255',
-            'mainBandEvidence' => 'nullable|string|max:255'
         ]);
 
+        $commercialRecordDoc = $this->generateUrl('commercial_record_doc','commercialRecordDoc');
+        $taxIdDoc = $this->generateUrl('tax_id_doc','taxIdDoc');
+        $kycDoc = $this->generateUrl('kyc_doc','kycDoc');
+        $contractDoc = $this->generateUrl('contract_doc','contractDoc');
+        $mainBandEvidence = $this->generateUrl('main_bank_evidence','mainBandEvidence');
+
         $c = Corporate::find($this->corporate->id);
-        $res = $c->editInfo(
-            $this->name,
-            $this->arabicName,
-            $this->email,
-            $this->commercialRecord,
-            $this->commercialRecordDoc,
-            $this->taxId,
-            $this->taxIdDoc,
-            $this->kyc,
-            $this->kycDoc,
-            $this->contractDoc,
-            $this->mainBandEvidence
-        );
+        $res = $c->editInfo($this->name, $this->arabicName, $this->email, $this->commercialRecord, $commercialRecordDoc, $this->taxId, $taxIdDoc, $this->kyc, $kycDoc, $contractDoc, $mainBandEvidence);
         if ($res) {
             $this->alert('success', 'Corporate edited successfuly');
             $this->name = null;
@@ -474,22 +543,11 @@ class CorporateShow extends Component
             'city' => 'nullable|string|max:255',
             'area' => 'nullable|string|max:255',
             'building' => 'nullable|string|max:255',
-            'flat' => 'nullable|string|max:255'
-
+            'flat' => 'nullable|string|max:255',
         ]);
         /** @var Corporate */
         $c = Corporate::find($this->corporate->id);
-        $c->addAddress(
-            $this->type,
-            $this->line1,
-            $this->line2,
-            $this->country,
-            $this->city,
-            $this->area,
-            $this->building,
-            $this->flat,
-            false
-        );
+        $c->addAddress($this->type, $this->line1, $this->line2, $this->country, $this->city, $this->area, $this->building, $this->flat, false);
         if ($c) {
             $this->alert('success', 'Address added successfuly');
             $this->type = null;
@@ -517,21 +575,11 @@ class CorporateShow extends Component
             'area' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'building' => 'nullable|string|max:255',
-            'flat' => 'nullable|string|max:255'
-
+            'flat' => 'nullable|string|max:255',
         ]);
         /** @var Address */
         $a = Address::find($this->editAddressId);
-        $res = $a->editInfo(
-            $this->type,
-            $this->line1,
-            $this->line2,
-            $this->country,
-            $this->city,
-            $this->building,
-            $this->flat,
-            $this->area,
-        );
+        $res = $a->editInfo($this->type, $this->line1, $this->line2, $this->country, $this->city, $this->building, $this->flat, $this->area);
         if ($res) {
             $this->alert('success', 'Address edited successfuly');
             $this->closeEditAddress();
@@ -556,14 +604,11 @@ class CorporateShow extends Component
     public function addPhone()
     {
         $this->validate([
-            'phoneType' =>  'required|in:' . implode(',', Phone::TYPES),
+            'phoneType' => 'required|in:' . implode(',', Phone::TYPES),
             'number' => 'required|string|max:255',
         ]);
         $c = Corporate::find($this->corporate->id);
-        $res = $c->addPhone(
-            $this->phoneType,
-            $this->number
-        );
+        $res = $c->addPhone($this->phoneType, $this->number);
         if ($res) {
             $this->alert('success', 'Phone Added successfuly');
             $this->phoneType = null;
@@ -578,15 +623,11 @@ class CorporateShow extends Component
     public function editPhone()
     {
         $this->validate([
-            'phoneType' =>  'required|in:' . implode(',', Phone::TYPES),
+            'phoneType' => 'required|in:' . implode(',', Phone::TYPES),
             'number' => 'required|string|max:255',
         ]);
         $p = Phone::find($this->PhoneId);
-        $res = $p->editInfo(
-            $this->phoneType,
-            $this->number,
-            false
-        );
+        $res = $p->editInfo($this->phoneType, $this->number, false);
         if ($res) {
             $this->alert('success', 'Phone Edited successfuly');
             $this->phoneType = null;
@@ -610,12 +651,13 @@ class CorporateShow extends Component
         }
     }
 
-    public function setPhoneAsDefault($id){
+    public function setPhoneAsDefault($id)
+    {
         $r = Phone::find($id)->setAsDefault();
         if ($r) {
             $this->alert('success', 'Phone updated!');
             $this->mount($this->corporate->id);
-        }else {
+        } else {
             $this->alert('failed', 'server error');
         }
     }
@@ -626,16 +668,10 @@ class CorporateShow extends Component
             'contactName' => 'required|string|max:255',
             'jobTitle' => 'nullable|string|max:255',
             'contactEmail' => 'nullable|email',
-            'contactPhone' => 'nullable|string|max:255'
+            'contactPhone' => 'nullable|string|max:255',
         ]);
         $c = Corporate::find($this->corporate->id);
-        $res = $c->addContact(
-            $this->contactName,
-            $this->jobTitle,
-            $this->contactEmail,
-            $this->contactPhone,
-            false
-        );
+        $res = $c->addContact($this->contactName, $this->jobTitle, $this->contactEmail, $this->contactPhone, false);
         if ($res) {
             $this->alert('success', 'Contact Added successfuly');
             $this->contactName = null;
@@ -655,15 +691,10 @@ class CorporateShow extends Component
             'contactName' => 'required|string|max:255',
             'jobTitle' => 'nullable|string|max:255',
             'contactEmail' => 'nullable|email',
-            'contactPhone' => 'nullable|string|max:255'
+            'contactPhone' => 'nullable|string|max:255',
         ]);
         $c = Contact::find($this->contactId);
-        $res = $c->editInfo(
-            $this->contactName,
-            $this->jobTitle,
-            $this->contactEmail,
-            $this->contactPhone,
-        );
+        $res = $c->editInfo($this->contactName, $this->jobTitle, $this->contactEmail, $this->contactPhone);
         if ($res) {
             $this->alert('success', 'Contact Edited successfuly');
             $this->contactName = null;
@@ -692,25 +723,16 @@ class CorporateShow extends Component
     public function addBankAccount()
     {
         $this->validate([
-            'accountType' =>  'required|in:' . implode(',', BankAccount::TYPES),
+            'accountType' => 'required|in:' . implode(',', BankAccount::TYPES),
             'bankName' => 'required|string|max:255',
-            'accountNumber' =>  'required|string|max:255',
-            'ownerName' =>  'required|string|max:255',
-            'evidenceDoc' =>  'nullable|string|max:255',
+            'accountNumber' => 'required|string|max:255',
+            'ownerName' => 'required|string|max:255',
+            'evidenceDoc' => 'nullable|string|max:255',
             'iban' => 'nullable|string|max:255',
             'bankBranch' => 'nullable|string|max:255',
         ]);
         $c = Corporate::find($this->corporate->id);
-        $res = $c->addBankAccount(
-            $this->accountType,
-            $this->bankName,
-            $this->accountNumber,
-            $this->ownerName,
-            $this->evidenceDoc,
-            $this->iban,
-            $this->bankBranch,
-            false
-        );
+        $res = $c->addBankAccount($this->accountType, $this->bankName, $this->accountNumber, $this->ownerName, $this->evidenceDoc, $this->iban, $this->bankBranch, false);
         if ($res) {
             $this->alert('success', 'Account Added successfuly');
             $this->accountType = null;
@@ -730,25 +752,16 @@ class CorporateShow extends Component
     public function editBankAccount()
     {
         $this->validate([
-            'accountType' =>  'required|in:' . implode(',', BankAccount::TYPES),
+            'accountType' => 'required|in:' . implode(',', BankAccount::TYPES),
             'bankName' => 'required|string|max:255',
-            'accountNumber' =>  'required|string|max:255',
-            'ownerName' =>  'required|string|max:255',
-            'evidenceDoc' =>  'nullable|string|max:255',
+            'accountNumber' => 'required|string|max:255',
+            'ownerName' => 'required|string|max:255',
+            'evidenceDoc' => 'nullable|string|max:255',
             'iban' => 'nullable|string|max:255',
             'bankBranch' => 'nullable|string|max:255',
         ]);
         $b = BankAccount::find($this->bankAccountId);
-        $res = $b->editInfo(
-            $this->accountType,
-            $this->bankName,
-            $this->accountNumber,
-            $this->ownerName,
-            $this->evidenceDoc,
-            $this->iban,
-            $this->bankBranch,
-            false
-        );
+        $res = $b->editInfo($this->accountType, $this->bankName, $this->accountNumber, $this->ownerName, $this->evidenceDoc, $this->iban, $this->bankBranch, false);
         if ($res) {
             $this->alert('success', 'Account edited successfuly');
             $this->closeEditBankAccount();
@@ -780,15 +793,15 @@ class CorporateShow extends Component
         $countries = Country::all();
         $tasks = $this->corporate->tasks;
         $offers = $this->corporate->offers;
-        return view('livewire.corporate-show',[
+        return view('livewire.corporate-show', [
             'addressTypes' => $addressTypes,
             'bankAccTypes' => $bankAccTypes,
-            'phoneTypes'  => $phoneTypes,
+            'phoneTypes' => $phoneTypes,
             'tasks' => $tasks,
             'areas' => $areas,
             'cities' => $cities,
             'countries' => $countries,
-            'offers' => $offers
+            'offers' => $offers,
         ]);
     }
 }

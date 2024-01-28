@@ -724,7 +724,7 @@
                                 @endforeach
 
 
-                                <div class="dropzone-container cursor-pointer">
+                                <div class="border-dashed border dropzone-container cursor-pointer" style="border-color: #aeaeae">
                                     <p class="dropzone-para" wire:loading wire:target="uploadedFile" style="font-size:20px"><iconify-icon icon="svg-spinners:tadpole"></iconify-icon></p>
                                     <p class="dropzone-para" wire:loading.remove wire:target="uploadedFile">Choose a file or drop it here...</p>
                                     <input name="file" id="fileInput" type="file" class="dropzone dropzone-input" multiple wire:model="uploadedFile" />
