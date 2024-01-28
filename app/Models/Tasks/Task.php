@@ -38,6 +38,7 @@ class Task extends Model
         'last_action_by_id',
         'due',
         'file_url',
+        'type',
         'status'
 
     ];
@@ -56,6 +57,16 @@ class Task extends Model
         self::STATUS_PENDING,
         self::STATUS_COMPLETED,
         self::STATUS_CLOSED,
+    ];
+
+    const TYPE_TASK = 'new'; //open but not assigned to anybode
+    const TYPE_CLAIM = 'assigned'; //open and assigned
+    const TYPE_ENDORSMENT = 'in_progress'; //open and assigned and the assignee set it as in-progress
+
+    const TYPES = [
+        self::TYPE_TASK,
+        self::TYPE_CLAIM,
+        self::TYPE_ENDORSMENT
     ];
 
     /////model functions
@@ -261,6 +272,11 @@ class Task extends Model
         $this->addComment("Changing status from $this->status to $status", false);
         $this->status = $status;
         $this->save();
+        if ($status == self::STATUS_COMPLETED) {
+            foreach ($this->actions as $a) {
+                $a->confirmAction();
+            }
+        }
         $this->addComment($comment, false);
         $this->last_action_by()->associate($loggedInUser);
         $this->sendTaskNotifications("Status changed", "Task#$this->id is set to $status");
@@ -294,11 +310,29 @@ class Task extends Model
         }
     }
 
+    public function addAction($column_name, $value)
+    {
+        if ($this->taskable == null) return false;
+        try {
+            $newVal = $value ?? "'empty'";
+            $this->actions()->firstOrCreate([
+                "column_name"   =>  $column_name
+            ], [
+                "title"     =>  "Change {$column_name} to {$newVal}",
+                "value"     =>  $value
+            ]);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't set task action", $e->getMessage());
+            return false;
+        }
+    }
+
     /////static functions
     /**
      * @param array $files .. must contain array of ['name' => filename, 'file_url' => url] records
      */
-    public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $files = [], $watchers = [])
+    public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $files = [], $watchers = [], $type = Task::TYPE_TASK)
     {
         try {
             $loggedInUser = Auth::user();
@@ -310,6 +344,7 @@ class Task extends Model
                 "last_action_by_id" =>  $loggedInUser?->id,
                 "open_by_id" =>  $loggedInUser?->id,
                 "desc"      =>  $desc,
+                "type"      =>  $type
             ]);
             $newTask->save();
 
@@ -324,7 +359,6 @@ class Task extends Model
                 ]);
             }
             if ($assign_to_id_or_type) {
-                Log::debug("Assigned to: " . $assign_to_id_or_type);
                 $newTask->assignTo($assign_to_id_or_type);
             }
             if ($taskable) {
@@ -413,6 +447,11 @@ class Task extends Model
         return $query->whereIn("tasks.status", $states);
     }
 
+    public function scopeByTypes($query, array $types)
+    {
+        return $query->whereIn('tasks.type', $types);
+    }
+
     public function scopeOpenBy($query, $user_id)
     {
         return $query->where('tasks.open_by_id', $user_id);
@@ -470,6 +509,11 @@ class Task extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(TaskComment::class);
+    }
+
+    public function actions(): HasMany
+    {
+        return $this->hasMany(TaskAction::class);
     }
 
     public function files(): HasMany

@@ -9,6 +9,7 @@ use App\Models\Cars\Car;
 use App\Models\Cars\CarPrice;
 use App\Models\Cars\CarModel;
 use App\Models\Base\Country;
+use App\Models\Business\SoldPolicy;
 use App\Models\Corporates\Address;
 use App\Models\Corporates\BankAccount;
 use App\Models\Corporates\Contact;
@@ -83,6 +84,7 @@ class AppServiceProvider extends ServiceProvider
             TaskWatcher::MORPH_TYPE => TaskWatcher::class,
             Offer::MORPH_TYPE => Offer::class,
             OfferOption::MORPH_TYPE => OfferOption::class,
+            SoldPolicy::MORPH_TYPE => SoldPolicy::class
         ]);
     }
 }

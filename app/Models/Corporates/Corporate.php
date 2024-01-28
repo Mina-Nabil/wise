@@ -474,7 +474,7 @@ class Corporate extends Model
                 });
             }
         });
-        return $query;
+        return $query->latest();
     }
 
     ///relations

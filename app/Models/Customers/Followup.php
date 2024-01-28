@@ -143,7 +143,7 @@ class Followup extends Model
                 });
             }
         });
-        return $query;
+        return $query->latest();
     }
 
 

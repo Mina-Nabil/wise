@@ -81,6 +81,11 @@ class AppLog extends Model
             $query->whereDate('created_at', '<=', $end_date->format('Y-m-d'));
         });
     }
+    public function scopeExpired(Builder $query)
+    {
+        $expired_date = Carbon::now()->subMonths(2);
+        $query->whereDate('created_at', '<=', $expired_date->format('Y-m-d'));
+    }
 
     ///relations
     public function loggable(): MorphTo

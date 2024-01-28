@@ -35,7 +35,7 @@ class Car extends Model
         "payment_frequency",
         "insurance_company_id",
         "renewal_date",
-        "wise_insured",
+        "wise_insured"
     ];
 
 
