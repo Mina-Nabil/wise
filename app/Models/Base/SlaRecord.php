@@ -64,6 +64,8 @@ class SlaRecord extends Model
         try {
             AppLog::info("SLA Record added", loggable: $action_item);
             $newSlaRecord->save();
+            $newSlaRecord->action_item()->associate($action_item);
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Failed adding SLA Record", desc: $e->getMessage());
