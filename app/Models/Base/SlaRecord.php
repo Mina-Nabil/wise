@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 
 class SlaRecord extends Model
@@ -97,5 +98,9 @@ class SlaRecord extends Model
     public function reply_by(): BelongsTo
     {
         return $this->belongsTo(User::class, "reply_by");
+    }
+    public function action_item(): MorphTo
+    {
+        return $this->morphTo();
     }
 }
