@@ -17,7 +17,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -30,6 +32,8 @@ class Offer extends Model
     protected $casts = [
         'due' => 'datetime',
     ];
+
+    const FILES_DIRECTORY = 'offers/comparisons/';
 
     const MORPH_TYPE = 'offer';
 
@@ -94,8 +98,14 @@ class Offer extends Model
         }
     }
 
+    public static function cleanOffersDirectory()
+    {
+        $file = new Filesystem;
+        $file->cleanDirectory(public_path(self::FILES_DIRECTORY));
+    }
+
     ////model functions
-    public function exportComparison($ids = [])
+    public function exportComparison($ids = [], $saveAndGetFileUrl = false)
     {
         $template = IOFactory::load(resource_path('import/comparison_template.xlsx'));
         if (!$template) {
@@ -124,9 +134,31 @@ class Offer extends Model
             $startChar++;
         }
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($newFile);
-        Log::info("GEET");
-        $writer->save(public_path("offer{$this->id}_comparison.xlsx"));
+        $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.xlsx";
+        $public_file_path = public_path($file_path);
+        $writer->save($public_file_path);
+        if ($saveAndGetFileUrl) {
+            if (Storage::put($file_path, file_get_contents($public_file_path))) {
+                File::delete($public_file_path);
+                return Storage::url($file_path);
+            }
+        }
         return response()->download(public_path("offer{$this->id}_comparison.xlsx"));
+    }
+
+    public function generateWhatsappUrl($client_phone, $ids = [])
+    {
+        $num = "2" . preg_replace('/\D/', '', $client_phone);
+        $whatsapp_url = "https://wa.me/" . $num;
+        $exportFileUrl = $this->exportComparison($ids, true);
+        return $whatsapp_url . "?text=" . urlencode("Please find the offer comparison url: " . $exportFileUrl);
+    }
+
+    public function generateEmailUrl($client_email, $ids = [])
+    {
+        $mailto_url = "mailto:" . $client_email;
+        $exportFileUrl = $this->exportComparison($ids, true);
+        return $mailto_url . "?subject:" . urlencode("New Offer Comparison") . "?body=" . urlencode("Please find the offer comparison url: " . $exportFileUrl);
     }
 
     public function setNote(string $in_favor_to = null, string $note = null)

@@ -163,6 +163,29 @@ class Task extends Model
         }
     }
 
+    public function addField($title, $value): TaskField|false
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        try {
+            $field = $this->fields()->updateOrCreate([
+                "title"   =>  $title,
+            ], [
+                "value"   =>  $value
+            ]);
+            if ($field) {
+                AppLog::info("Field added", loggable: $this);
+                $this->last_action_by()->associate(Auth::id());
+                $this->sendTaskNotifications("Field added", "Task#{$this->id} has a new field by $loggedInUser->username");
+            }
+            return $field;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add field", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
     public function addComment($comment, $logEvent = true): TaskComment|false
     {
         /** @var User */
@@ -504,6 +527,11 @@ class Task extends Model
     public function last_action_by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'last_action_by_id');
+    }
+
+    public function fields(): HasMany
+    {
+        return $this->hasMany(TaskField::class);
     }
 
     public function comments(): HasMany

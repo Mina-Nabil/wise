@@ -60,7 +60,7 @@ class TaskAction extends Model
             $this->task->taskable->{$this->column_name} = $this->value;
             $this->task->taskable->save();
             $new_val = $this->value ?? 'NULL';
-            AppLog::info("Tast Action done", desc: "Changed column {$this->column_name} - {$this->table_name} to $new_val", loggable: $this);
+            AppLog::info("Tast Action done", desc: "Changed column {$this->column_name} - {$this->value} to $new_val", loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);

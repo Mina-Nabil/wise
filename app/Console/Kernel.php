@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Models\Offers\Offer;
 use App\Models\Users\AppLog;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -18,6 +19,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(fn () => AppLog::expired()->delete())
             ->environments(['production'])->dailyAt('3:00');
+        $schedule->call(fn () => Offer::cleanOffersDirectory())
+            ->environments(['production'])->dailyAt('4:00');
     }
 
     /**

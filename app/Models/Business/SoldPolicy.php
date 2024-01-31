@@ -124,9 +124,14 @@ class SoldPolicy extends Model
         return $newEndors;
     }
 
-    public function addClaim($due = null, $desc = null)
+    public function addClaim($due = null, $desc = null, $fields = [])
     {
-        return $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim", $desc, $due);
+        $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim", $desc, $due);
+        if (!$newTask) return false;
+        foreach ($fields as $f) {
+            $newTask->addField($f['title'], $f['value']);
+        }
+        return $newTask;
     }
 
     private function addTask($type, $title, $desc, Carbon $due = null): Task|false
@@ -246,6 +251,69 @@ class SoldPolicy extends Model
     }
 
     ///scopes
+    public function scopeUserData($query, $searchText = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        $query->select('sold_policy.*')
+            ->join('users', "sold_policy.creator_id", '=', 'users.id');
+
+        if ($loggedInUser->type !== User::TYPE_ADMIN) {
+            $query->where(function ($q) use ($loggedInUser) {
+                $q->where('users.manager_id', $loggedInUser->id)
+                    ->orwhere('users.id', $loggedInUser->id);
+            });
+        }
+
+        $query->when($searchText, function ($q, $v) {
+            $q->leftjoin('corporates', function ($j) {
+                $j->on('sold_policy.client_id', '=', 'corporates.id')
+                    ->where('sold_policy.client_type', Corporate::MORPH_TYPE);
+            })->leftjoin('customers', function ($j) {
+                $j->on('sold_policy.client_id', '=', 'customers.id')
+                    ->where('sold_policy.client_type', Customer::MORPH_TYPE);
+            })->groupBy('sold_policy.id');
+
+            $splittedText = explode(' ', $v);
+
+            foreach ($splittedText as $tmp) {
+                $q->where(function ($qq) use ($tmp) {
+                    //search using customer info
+                    $qq->where('customers.name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                        //search using customer info
+                        ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                        //search using policy info
+                        ->orwhere('policy_number', 'LIKE', "%$tmp%")
+                        //search using car info
+                        ->orwhere('car_chassis', 'LIKE', "%$tmp%")
+                        ->orwhere('car_engine', 'LIKE', "%$tmp%")
+                        ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
+                });
+            }
+        });
+        return $query->latest();
+    }
+
+    public function scopeWithTableRelations($query)
+    {
+        return $query->with('client', 'policy', 'creator', 'customer_car');
+    }
+
+    public function scopeWithProfileRelations($query)
+    {
+        return $query->with(
+            'client',
+            'policy',
+            'creator',
+            'customer_car',
+            'claims',
+            'endorsements',
+            'benefits',
+            'exclusions'
+        );
+    }
 
     ///relations
     public function client(): MorphTo

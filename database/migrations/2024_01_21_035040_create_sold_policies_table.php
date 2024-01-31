@@ -72,6 +72,15 @@ return new class extends Migration
             $table->string('value')->nullable();
             $table->timestamps();
         });
+
+        Schema::create('task_fields', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Task::class);
+            $table->string('title');
+            $table->string('value');
+            $table->timestamps();
+        });
+
     }
 
     /**
@@ -82,6 +91,7 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('task_actions');
+        Schema::dropIfExists('task_fields');
         Schema::table('tasks', function (Blueprint $table) {
             $table->dropColumn('type');
         });
