@@ -16,6 +16,7 @@ class SoldPolicyExclusion extends Model
     protected $fillable = [
         'title', 'value'
     ];
+    public $timestamps = false;
 
     ///model functions
     public function editInfo($title, $value)

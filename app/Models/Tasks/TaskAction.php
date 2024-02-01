@@ -35,6 +35,7 @@ class TaskAction extends Model
     const COLUMNS = [
         'sold_policies' => [
             'car_chassis',
+            'car_engine',
             'car_plate_no',
             'insured_value',
             'expiry',

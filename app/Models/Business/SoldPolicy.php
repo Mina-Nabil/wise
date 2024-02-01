@@ -217,10 +217,10 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true): self|true
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true): self|bool
     {
         $newSoldPolicy = new self([
-            'creator_id' => Auth::id(),
+            'creator_id' => Auth::id() ?? 10,
             'policy_number' => $policy_number,
             'offer_id'      => $offer_id,
             'policy_id'     => $policy_id,

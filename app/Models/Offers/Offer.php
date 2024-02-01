@@ -101,7 +101,7 @@ class Offer extends Model
     public static function cleanOffersDirectory()
     {
         $file = new Filesystem;
-        $file->cleanDirectory(public_path(self::FILES_DIRECTORY));
+        $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
     ////model functions
@@ -135,7 +135,7 @@ class Offer extends Model
         }
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($newFile);
         $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.xlsx";
-        $public_file_path = public_path($file_path);
+        $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
         if ($saveAndGetFileUrl) {
             if (Storage::put($file_path, file_get_contents($public_file_path))) {
@@ -143,7 +143,7 @@ class Offer extends Model
                 return Storage::url($file_path);
             }
         }
-        return response()->download(public_path("offer{$this->id}_comparison.xlsx"));
+        return response()->download(storage_path("offer{$this->id}_comparison.xlsx"));
     }
 
     public function generateWhatsappUrl($client_phone, $ids = [])

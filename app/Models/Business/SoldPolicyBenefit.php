@@ -16,6 +16,7 @@ class SoldPolicyBenefit extends Model
     protected $fillable = [
         'benefit', 'value'
     ];
+    public $timestamps = false;
 
     ///model functions
     public function editInfo($benefit, $value)
