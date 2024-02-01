@@ -176,7 +176,8 @@ class Task extends Model
             if ($field) {
                 AppLog::info("Field added", loggable: $this);
                 $this->last_action_by()->associate(Auth::id());
-                $this->sendTaskNotifications("Field added", "Task#{$this->id} has a new field by $loggedInUser->username");
+                if ($loggedInUser)
+                    $this->sendTaskNotifications("Field added", "Task#{$this->id} has a new field by $loggedInUser->username");
             }
             return $field;
         } catch (Exception $e) {

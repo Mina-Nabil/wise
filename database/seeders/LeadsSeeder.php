@@ -53,6 +53,7 @@ class LeadsSeeder extends Seeder
             for ($i = 0; $i < $carsCount; $i++) {
                 $newCust->addCar(
                     $cars->random()->id,
+                    $faker->numberBetween(2000, 2024),
                     rand(0, 9) == 0 ? $faker->numberBetween(10000, 5000000) : null,
                     rand(0, 9) == 0 ? $faker->numberBetween(5000, 50000) : null,
                     rand(0, 9) == 0 ? $faker->numberBetween(100, 3000) : null,

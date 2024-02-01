@@ -59,6 +59,7 @@ class CustomersSeeder extends Seeder
             for ($k = 0; $k < $carsCount; $k++) {
                 $newCust->addCar(
                     car_id: $cars->random()->id,
+                    model_year: $faker->numberBetween(2000, 2023),
                     sum_insured: rand(0, 9) == 0 ? $faker->numberBetween(10000, 5000000) : null,
                     insurance_payment: rand(0, 9) == 0 ? $faker->numberBetween(5000, 50000) : null,
                     payment_frequency: rand(0, 9) == 0 ? $faker->randomElement(CustomersCar::PAYMENT_FREQS) : null,
@@ -128,6 +129,7 @@ class CustomersSeeder extends Seeder
                     sum_insured: rand(0, 9) == 0 ? $faker->numberBetween(10000, 5000000) : null,
                     insurance_payment: rand(0, 9) == 0 ? $faker->numberBetween(5000, 50000) : null,
                     payment_frequency: rand(0, 9) == 0 ? $faker->randomElement(CustomersCar::PAYMENT_FREQS) : null,
+                    model_year: $faker->numberBetween(2000,2024)
                 );
             }
             for ($m = 0; $m < $relativesCount; $m++) {
