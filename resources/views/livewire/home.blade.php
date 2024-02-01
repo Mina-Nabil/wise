@@ -448,6 +448,7 @@
                 </div>
             </div>
 
+            @if (!Auth::user()->isOperations)
             {{-- Folowups --}}
             <div class="lg:col-span-4 col-span-12">
                 <div class="card ">
@@ -707,6 +708,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
         </div>
     </div>
