@@ -30,6 +30,7 @@ class SlaRecord extends Model
             $this->update([
                 "is_ignore"  =>  true
             ]);
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("SLA Reply failed", desc: $e->getMessage(), loggable: $this);
@@ -87,7 +88,7 @@ class SlaRecord extends Model
     }
 
     ////relations
-    public function created_by(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, "created_by");
     }
@@ -95,7 +96,7 @@ class SlaRecord extends Model
     {
         return $this->belongsTo(User::class, "assigned_to_id");
     }
-    public function reply_by(): BelongsTo
+    public function replier(): BelongsTo
     {
         return $this->belongsTo(User::class, "reply_by");
     }

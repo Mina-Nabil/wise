@@ -198,6 +198,15 @@
                                 </span>
                             </a>
                         </li>
+
+                        <li>
+                            <a href="{{ url('/slarecords') }}" class="navItem @yield('sla-record')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="vaadin:records"></iconify-icon>
+                                    <span>SLA Records</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </div>
