@@ -1013,11 +1013,11 @@ class CustomerShow extends Component
         $customer = Customer::find($this->customer->id);
         $c = $customer->addCar(
             $this->CarCategory,
+            $this->modelYear,
             $this->sumInsurance,
             $this->insurancePayment,
             $this->paymentFreqs,
             $this->insuranceCompanyId,
-            $this->modelYear,
             $renewalDate,
             $this->wiseInsured
         );

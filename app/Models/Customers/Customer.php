@@ -220,7 +220,7 @@ class Customer extends Model
         }
     }
 
-    public function addCar($car_id, $sum_insured = null, $insurance_payment = null, $payment_frequency = null, $insurance_company_id = null, $model_year = null, Carbon $renewal_date = null, $wise_insured = false): Car|false
+    public function addCar($car_id, $model_year, $sum_insured = null, $insurance_payment = null, $payment_frequency = null, $insurance_company_id = null, Carbon $renewal_date = null, $wise_insured = false): Car|false
     {
         try {
             $tmp = $this->cars()->create([

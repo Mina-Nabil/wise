@@ -37,7 +37,7 @@ class SoldPolicySeeder extends Seeder
             $tmpCond = $tmpPolicy->conditions->random();
             $insuredValue = $faker->biasedNumberBetween(100000, 9999999, 'Faker\Provider\Biased::linearHigh');
             $tmpPaymentFreq = $faker->randomElement(OfferOption::PAYMENT_FREQS);
-            $tmpInstallementCount = $tmpPaymentFreq == OfferOption::PAYMENT_INSTALLEMENTS ? $faker->numberBetween(3, 12) : null;
+            $tmpInstallementCount = $faker->numberBetween(1, 12);
 
             $tmpStart = $faker->dateTimeThisDecade('-1 year');
             $tmpEnd = (new Carbon($tmpStart))->addYear();
@@ -135,7 +135,7 @@ class SoldPolicySeeder extends Seeder
             $tmpCond = $tmpPolicy->conditions->random();
             $insuredValue = $faker->biasedNumberBetween(100000, 9999999, 'Faker\Provider\Biased::linearHigh');
             $tmpPaymentFreq = $faker->randomElement(OfferOption::PAYMENT_FREQS);
-            $tmpInstallementCount = $tmpPaymentFreq == OfferOption::PAYMENT_INSTALLEMENTS ? $faker->numberBetween(3, 12) : null;
+            $tmpInstallementCount = $faker->numberBetween(1, 12);
 
             $tmpStart = $faker->dateTimeThisDecade('-1 year');
             $tmpEnd = (new Carbon($tmpStart))->addYear();
@@ -188,7 +188,7 @@ class SoldPolicySeeder extends Seeder
                     $tmpColumn = $faker->randomElement(TaskAction::COLUMNS['sold_policies']);
                     switch ($tmpColumn) {
                         case 'expiry':
-                            $tmpValue = $faker->dateTimeBetween("+1 year", "+4 years");
+                            $tmpValue = (new Carbon($faker->dateTimeBetween("+1 year", "+4 years")))->format('Y-m-d H:i');
                             break;
                         case 'insured_value':
                             $tmpValue = $faker->biasedNumberBetween(100000, 9999999, 'Faker\Provider\Biased::linearHigh');
