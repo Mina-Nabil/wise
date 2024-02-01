@@ -1,4 +1,11 @@
 <div>
+    @if (count($selectedOptions) > 0)
+    <div class="grid md:grid-cols-3 select-action-btns-container gap-2">
+        <button class="btn btn-sm btn-primary float-right" wire:click="exportComparison">Export Comparison</button>
+        <button class="btn btn-sm btn-success float-right" wire:click="toggleWhatsappSection"><iconify-icon icon="ic:baseline-whatsapp"></iconify-icon> Send WhatAapp Message</button>
+        <button class="btn btn-sm btn-dark float-right" wire:click="toggleEmailMsgSection"><iconify-icon icon="ic:outline-email"></iconify-icon> Send Email</button>
+    </div>
+    @endif
     <div>
         <div class="max-w-screen-lg grid grid-cols-1 md:grid-cols-8 gap-5 mb-5">
             <div class="grid-cols-1 gap-5 mb-5 col-span-5">
@@ -273,9 +280,14 @@
                                     <b>Options ({{ $offer->options->count() }})</b>
 
                                 </p>
-                                @if (count($selectedOptions) > 0)
+                                {{-- @if (count($selectedOptions) > 0)
+                                <div>
+                                    
                                     <button class="btn btn-sm btn-primary float-right" wire:click="exportComparison">Export Comparison</button>
-                                @endif
+                                    <button class="btn btn-sm btn-success float-right mr-2" wire:click=""><iconify-icon icon="ic:baseline-whatsapp"></iconify-icon> Send WhatAapp Message</button>
+                                    <button class="btn btn-sm btn-dark float-right mr-2" wire:click=""><iconify-icon icon="ic:outline-email"></iconify-icon> Send Email</button>
+                                </div>
+                                @endif --}}
                             </div>
 
                             @if ($offer->options->isEmpty())
@@ -393,7 +405,7 @@
 
                                                 <tr>
 
-                                                    <td class="table-td ">
+                                                    <td class="table-td " style="vertical-align: top;">
                                                         <h6>
                                                             {{ number_format($option->insured_value, 0, '.', ',') }}
                                                             <span class="text-sm text-slate-400 block">
@@ -401,13 +413,13 @@
                                                         </h6>
                                                     </td>
 
-                                                    <td class="table-td ">
+                                                    <td class="table-td " style="vertical-align: top;">
                                                         <h6>
                                                             {{ number_format($option->gross_premium, 0, '.', ',') }}
                                                         </h6>
                                                     </td>
 
-                                                    <td class="table-td  ">
+                                                    <td class="table-td  " style="vertical-align: top;">
                                                         <h6>
                                                             {{ number_format($option->net_premium, 0, '.', ',') }}
                                                         </h6>
@@ -1733,6 +1745,134 @@
                         <!-- Modal footer -->
                         <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="deleteOffer" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($whatsappMsgSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Send Comparison via Whatsapp Message
+                            </h3>
+                            <button wire:click="toggleWhatsappSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="whatsappMsgPhone" class="form-label">Phone</label>
+                                <select name="whatsappMsgPhone" id="basicSelect" class="form-control w-full mt-2 @error('whatsappMsgPhone') !border-danger-500 @enderror" wire:model="whatsappMsgPhone">
+                                    <option> Select an option...</option>
+                                    @foreach ($offer->client->phones as $phone)
+                                        <option value="{{ $phone->number }}">{{ $phone->number }}</option>
+                                    @endforeach
+                                    @if($offer->client_type === 'corporate')
+                                        @foreach ($offer->client->contacts as $contact)
+                                            <option value="{{ $contact->phone }}">{{ $contact->name }} | {{ $contact->phone }}</option>
+                                        @endforeach
+                                    @endif
+                                    <option value="other">other</option>
+                                </select>
+                            </div>
+                            @if ($whatsappMsgPhone === 'other')
+                                    <input type="number" class="form-control w-full mt-2 @error('otherPhone') !border-danger-500 @enderror" wire:model="otherPhone" placeholder="Enter Phone...">
+                                    @error('otherPhone')
+                                            <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">{{ $message }}</span>
+                                    @enderror
+                                @endif
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="submitWhastappMsg" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+    @if ($emailMsgSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Send Comparison via Email
+                            </h3>
+                            <button wire:click="toggleEmailMsgSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+
+                            @if($offer->client_type === 'customer')
+
+                                <div class="from-group">
+                                    <label for="whatsappMsgPhone" class="form-label">Email</label>
+                                    <select name="whatsappMsgPhone" id="basicSelect" class="form-control w-full mt-2 @error('emailMsgEmail') !border-danger-500 @enderror" wire:model="emailMsgEmail">
+                                        <option>Select an option...</option>
+                                        <option value="{{ $offer->client->email }}">{{ $offer->client->email }}</option>
+                                        <option value="other">other</option>
+                                    </select>
+                                </div>
+                                @if ($emailMsgEmail === 'other')
+                                    <input type="email" class="form-control w-full mt-2 @error('otherEmail') !border-danger-500 @enderror" wire:model="otherEmail" placeholder="Enter Email...">
+                                    @error('otherEmail')
+                                            <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">{{ $message }}</span>
+                                    @enderror
+                                @endif
+
+                            @elseif($offer->client_type === 'corporate')
+
+                                <div class="from-group">
+                                    <label for="whatsappMsgPhone" class="form-label">Email</label>
+                                    <select name="whatsappMsgPhone" id="basicSelect" class="form-control w-full mt-2 @error('emailMsgEmail') !border-danger-500 @enderror" wire:model="emailMsgEmail">
+                                        <option>Select an option...</option>
+                                        <option value="{{ $phone->client->email }}">Corporate email: {{ $phone->client->email }}</option>
+                                        @foreach ($offer->client->contacts as $contact)
+                                            <option value="{{ $contact->email }}">Contact email: {{ $contact->name }} | {{ $contact->email }}</option>
+                                        @endforeach
+                                        <option value="other">other</option>
+                                    </select>
+                                </div>
+                                @if ($emailMsgEmail === 'other')
+                                    <input type="email" class="form-control w-full mt-2 @error('otherEmail') !border-danger-500 @enderror" wire:model="otherEmail" placeholder="Enter Email...">
+                                    @error('otherEmail')
+                                        <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">{{ $message }}</span>
+                                    @enderror
+                                @endif
+
+                            @endif
+
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="submitEmailMsg" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
                         </div>
                     </div>
                 </div>

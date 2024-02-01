@@ -68,7 +68,12 @@
                                     <tr wire:click="redirectToShowPage({{ $offer->id }})" class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
 
                                         <td class="table-td ">
-                                            <b>{{ $offer->client->name }}</b>
+                                            @if ($offer->client_type === 'corporate')
+                                                <b>{{ $offer->client->name }}</b>
+                                            @elseif($offer->client_type === 'customer')
+                                                <b>{{ $offer->client->first_name.' '.$offer->client->middle_name.' '.$offer->client->last_name}}</b>
+                                            @endif
+                                            
                                         </td>
 
                                         <td class="table-td ">

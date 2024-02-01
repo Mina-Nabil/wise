@@ -96,6 +96,69 @@ class OfferShow extends Component
     public $upoadfiler;
     public $selectedOptions = [];
 
+    public $whatsappMsgSec = false;
+    public $whatsappMsgPhone;
+    public $emailMsgSec = false;
+    public $emailMsgEmail; 
+    public $otherEmail;
+    public $otherPhone;
+
+    public function toggleWhatsappSection(){
+        $this->toggle($this->whatsappMsgSec);
+    }
+
+    public function toggleEmailMsgSection(){
+        $this->toggle($this->emailMsgSec);
+    }
+
+    public function submitWhastappMsg(){
+        if($this->whatsappMsgPhone === 'other'){
+            $this->validate([
+                'otherPhone' => 'required|string|max:255'
+            ]);
+            $phone = $this->otherPhone;
+        }else{
+            $this->validate([
+                'whatsappMsgPhone' => 'required|string|max:255'
+            ]);
+            $phone = $this->whatsappMsgPhone;
+        }
+
+        $res = $this->offer->generateWhatsappUrl($phone,$this->selectedOptions);
+        if ($res) {
+            $this->alert('success', 'Message Sent');
+            $this->whatsappMsgPhone = null;
+            $this->whatsappMsgSec = false;
+        } else {
+            $this->alert('failed', 'Server Error');
+        }
+    }
+
+    public function submitEmailMsg(){
+
+        if($this->emailMsgEmail === 'other'){
+            $this->validate([
+                'otherEmail' => 'required|email'
+            ]);
+            $email = $this->otherEmail;
+        }else{
+            $this->validate([
+                'emailMsgEmail' => 'required|email'
+            ]);
+            $email = $this->emailMsgEmail;
+        }
+
+        $res = $this->offer->generateEmailUrl($email,$this->selectedOptions);
+
+        if ($res) {
+            $this->alert('success', 'Message Sent');
+            $this->emailMsgEmail = null;
+            $this->emailMsgSec = false;
+        } else {
+            $this->alert('failed', 'Server Error');
+        }
+    }
+
     public function exportComparison()
     {
         return $this->offer->exportComparison($this->selectedOptions);
@@ -104,6 +167,10 @@ class OfferShow extends Component
     public function UpdatedUpoadfiler()
     {
         dd($this->upoadfiler);
+    }
+
+    public function generateWhatsappMsg(){
+
     }
 
     public function changeAsignee()
@@ -714,6 +781,7 @@ class OfferShow extends Component
         }
     }
 
+
     public function render()
     {
         $users = User::all();
@@ -722,7 +790,7 @@ class OfferShow extends Component
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
 
-        $this->available_pols = Policy::getAvailablePolicies(type: Policy::BUSINESS_PERSONAL_MOTOR, car: $this->offer->item, age: null, offerValue: $this->offer->item_value);
+        $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, age: null, offerValue: $this->offer->item_value);
 
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,
