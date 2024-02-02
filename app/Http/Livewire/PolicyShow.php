@@ -8,6 +8,7 @@ use App\Models\Cars\CarModel;
 use App\Models\Base\Country;
 use App\Models\Insurance\PolicyBenefit;
 use App\Models\Insurance\PolicyCondition;
+use App\Models\Insurance\GrossCalculation;
 use App\Traits\AlertFrontEnd;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -50,65 +51,160 @@ class PolicyShow extends Component
     public $newValue;
     public $deleteBenefitId;
 
-    public function addBenefit(){
+    public $calcId;
+    public $editCalcId;
+    public $eTitle;
+    public $eType;
+    public $eValue;
+    public $deleteCalcId;
+    public $newCalcTitle;
+    public $newCalcType = '%';
+    public $newCalcValue;
+
+    public function addCalc()
+    {
+        $this->validate([
+            'newCalcTitle' => 'required|string|max:255',
+            'newCalcType' => 'required|in:' . implode(",", GrossCalculation::TYPES),
+            'newCalcValue' => 'required|numeric',
+        ]);
+
+        $res = Policy::find($this->policyId)->addGrossCalculation($this->newCalcTitle, $this->newCalcType, $this->newCalcValue);
+        if ($res) {
+            $this->mount();
+            $this->newCalcTitle = null;
+            $this->newCalcType = '%';
+            $this->newCalcValue = null;
+            $this->alert('success', 'Calculation added!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editCalc()
+    {
+        $this->validate([
+            'eTitle' => 'required|string|max:255',
+            'eType' => 'required|in:' . implode(",", GrossCalculation::TYPES),
+            'eValue' => 'required|numeric',
+        ]);
+
+        $res = GrossCalculation::find($this->editCalcId)->editInfo($this->eTitle, $this->eType, $this->eValue);
+        if ($res) {
+            $this->mount();
+            $this->editCalcId = null;
+            $this->eTitle = null;
+            $this->eType = null;
+            $this->eValue = null;
+            $this->alert('success', 'Calculation updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function deleteThisCalc($id)
+    {
+        $this->deleteCalcId = $id;
+    }
+
+    public function dismissDeleteCalculation()
+    {
+        $this->deleteCalcId = null;
+    }
+
+    public function deleteCalc()
+    {
+        $res = GrossCalculation::find($this->deleteCalcId)->delete();
+        if ($res) {
+            $this->mount();
+            $this->deleteCalcId = null;
+            $this->alert('success', 'Calculation deleted!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editThisCalc($id)
+    {
+        $this->editCalcId = $id;
+        $g = GrossCalculation::find($id);
+        $this->eTitle = $g->title;
+        $this->eType = $g->calculation_type;
+        $this->eValue = $g->value;
+    }
+
+    public function closeEditCalc()
+    {
+        $this->editCalcId = null;
+        $this->eTitle = null;
+        $this->eType = null;
+        $this->eValue = null;
+    }
+
+    public function addBenefit()
+    {
         $this->validate([
             'newBenefit' =>  'required|in:' . implode(",", PolicyBenefit::BENEFITS),
             'newValue' => 'required|string|max:255'
         ]);
-        $res = Policy::find($this->policyId)->addBenefit($this->newBenefit,$this->newValue);
-        if($res){
+        $res = Policy::find($this->policyId)->addBenefit($this->newBenefit, $this->newValue);
+        if ($res) {
             $this->mount();
-            $this->newBenefit= null;
-            $this->newValue= null;
-            $this->alert('success' , 'Benefit added!');
-        }else{
-            $this->alert('failed','server error');
+            $this->newBenefit = null;
+            $this->newValue = null;
+            $this->alert('success', 'Benefit added!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
-    public function editBenefit(){
-        $res = PolicyBenefit::find($this->editBenefitId)->editInfo($this->ebenefit,$this->benefitValue);
-        if($res){
+    public function editBenefit()
+    {
+        $res = PolicyBenefit::find($this->editBenefitId)->editInfo($this->ebenefit, $this->benefitValue);
+        if ($res) {
             $this->mount();
-            $this->ebenefit= null;
-            $this->benefitValue= null;
+            $this->ebenefit = null;
+            $this->benefitValue = null;
             $this->editBenefitId = null;
-            $this->alert('success' , 'Benefit updated!');
-        }else{
-            $this->alert('failed','server error');
+            $this->alert('success', 'Benefit updated!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
-    public function deleteThisBenefit($id){
+    public function deleteThisBenefit($id)
+    {
         $this->deleteBenefitId = $id;
-        
     }
 
-    public function dismissDeleteOption(){
+    public function dismissDeleteOption()
+    {
         $this->deleteBenefitId = null;
     }
 
-    public function deleteBenefit(){
+    public function deleteBenefit()
+    {
         $res = PolicyBenefit::find($this->deleteBenefitId)->delete();
-        if($res){
+        if ($res) {
             $this->mount();
-            $this->deleteBenefitId= null;
-            $this->alert('success' , 'Benefit deleted!');
-        }else{
-            $this->alert('failed','server error');
+            $this->deleteBenefitId = null;
+            $this->alert('success', 'Benefit deleted!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
 
-    public function editThisBenefit($id){
+    public function editThisBenefit($id)
+    {
         $this->editBenefitId = $id;
         $b = PolicyBenefit::find($id);
         $this->ebenefit = $b->benefit;
         $this->benefitValue = $b->value;
-        
     }
 
-    public function closeEditBenefit(){
+    public function closeEditBenefit()
+    {
         $this->editBenefitId = null;
         $this->ebenefit = null;
         $this->benefitValue = null;
@@ -190,8 +286,6 @@ class PolicyShow extends Component
                 break;
             }
         }
-
-        
     }
 
     public function editRow($id)
@@ -300,6 +394,7 @@ class PolicyShow extends Component
         $policy_name = $policy->name;
         $policy_business = $policy->business;
         $policy_note = $policy->note;
+        $calcTypes = GrossCalculation::TYPES;
 
         // $this->addedScope = 'age';
 
@@ -307,7 +402,7 @@ class PolicyShow extends Component
         $linesOfBusiness = Policy::LINES_OF_BUSINESS;
         $scopes = PolicyCondition::SCOPES;
         $operators = PolicyCondition::OPERATORS;
-        
+
 
         // Fetch the conditions related to the policy (assuming $policy is available)
         $conditions = $policy->conditions;
@@ -326,6 +421,7 @@ class PolicyShow extends Component
             'brands' => $this->brands,
             'models' => $this->models,
             'countries' => $this->countries,
+            'calcTypes' => $calcTypes
         ]);
     }
 }
