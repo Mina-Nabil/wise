@@ -99,32 +99,35 @@ class OfferShow extends Component
     public $whatsappMsgSec = false;
     public $whatsappMsgPhone;
     public $emailMsgSec = false;
-    public $emailMsgEmail; 
+    public $emailMsgEmail;
     public $otherEmail;
     public $otherPhone;
 
-    public function toggleWhatsappSection(){
+    public function toggleWhatsappSection()
+    {
         $this->toggle($this->whatsappMsgSec);
     }
 
-    public function toggleEmailMsgSection(){
+    public function toggleEmailMsgSection()
+    {
         $this->toggle($this->emailMsgSec);
     }
 
-    public function submitWhastappMsg(){
-        if($this->whatsappMsgPhone === 'other'){
+    public function submitWhastappMsg()
+    {
+        if ($this->whatsappMsgPhone === 'other') {
             $this->validate([
                 'otherPhone' => 'required|string|max:255'
             ]);
             $phone = $this->otherPhone;
-        }else{
+        } else {
             $this->validate([
                 'whatsappMsgPhone' => 'required|string|max:255'
             ]);
             $phone = $this->whatsappMsgPhone;
         }
 
-        $res = $this->offer->generateWhatsappUrl($phone,$this->selectedOptions);
+        $res = $this->offer->generateWhatsappUrl($phone, $this->selectedOptions);
         if ($res) {
             $this->alert('success', 'Message Sent');
             $this->whatsappMsgPhone = null;
@@ -134,21 +137,22 @@ class OfferShow extends Component
         }
     }
 
-    public function submitEmailMsg(){
+    public function submitEmailMsg()
+    {
 
-        if($this->emailMsgEmail === 'other'){
+        if ($this->emailMsgEmail === 'other') {
             $this->validate([
                 'otherEmail' => 'required|email'
             ]);
             $email = $this->otherEmail;
-        }else{
+        } else {
             $this->validate([
                 'emailMsgEmail' => 'required|email'
             ]);
             $email = $this->emailMsgEmail;
         }
 
-        $res = $this->offer->generateEmailUrl($email,$this->selectedOptions);
+        $res = $this->offer->generateEmailUrl($email, $this->selectedOptions);
 
         if ($res) {
             $this->alert('success', 'Message Sent');
@@ -169,8 +173,8 @@ class OfferShow extends Component
         dd($this->upoadfiler);
     }
 
-    public function generateWhatsappMsg(){
-
+    public function generateWhatsappMsg()
+    {
     }
 
     public function changeAsignee()
@@ -789,8 +793,8 @@ class OfferShow extends Component
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
-
-        $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, age: null, offerValue: $this->offer->item_value);
+        if ($this->offer->item)
+            $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, age: null, offerValue: $this->offer->item_value);
 
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,

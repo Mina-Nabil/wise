@@ -221,7 +221,14 @@
                             <div class="text-sm">
                                 @if ($clientNames)
                                     @foreach ($clientNames as $client)
+                                    @if ($clientType !== 'Customer')
+                                        <p><iconify-icon icon="material-symbols:person"></iconify-icon>
+                                        {{ $client->name }} | {{ $client->email ?? 'N/A' }} | <Span
+                                            wire:click="selectClient({{ $client->id }})"
+                                            class="cursor-pointer text-primary-500">Select Client</Span></p>
+                                    @else
                                         <p><iconify-icon icon="material-symbols:person"></iconify-icon> {{ $client->first_name }} {{ $client->middle_name }} {{ $client->last_name }} | {{ $client->email ?? 'N/A' }} | <Span wire:click="selectClient({{ $client->id }})" class="cursor-pointer text-primary-500">Select Client</Span></p>
+                                    @endif
                                     @endforeach
 
                                 @endif
