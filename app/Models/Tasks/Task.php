@@ -287,7 +287,7 @@ class Task extends Model
         }
     }
 
-    public function setStatus($status, $comment)
+    public function setStatus($status, $comment, $accepted_actions_ids = [])
     {
         if (!in_array($status, self::STATUSES)) return false;
         /** @var User */
@@ -298,7 +298,11 @@ class Task extends Model
         $this->save();
         if ($status == self::STATUS_COMPLETED) {
             foreach ($this->actions as $a) {
-                $a->confirmAction();
+                if (in_array($a->id, $accepted_actions_ids)) {
+                    $a->confirmAction();
+                } else {
+                    $a->rejectAction();
+                }
             }
         }
         $this->addComment($comment, false);
@@ -348,6 +352,20 @@ class Task extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't set task action", $e->getMessage());
+            return false;
+        }
+    }
+
+    public function editAction($id, $value)
+    {
+        try {
+            if ($this->actions()->where("id", $id)->update([
+                "value"     =>  $value
+            ])) {
+                $this->addComment("Action set to {$value}", true);
+            }
+        } catch (Exception $e) {
+            report($e);
             return false;
         }
     }
