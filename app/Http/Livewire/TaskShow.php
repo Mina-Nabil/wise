@@ -8,6 +8,7 @@ use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskFile;
 use App\Models\Users\User;
 use App\Models\Tasks\TaskComment;
+use App\Models\Tasks\TaskField;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
@@ -51,6 +52,65 @@ class TaskShow extends Component
     public $SetTempAssignSection = false;
     public $deleteSection = false;
 
+    public $fieldId;
+    public $editedFieldValue;
+    public $deleteFieldId;
+    public $addFieldSec = false;
+    public $newTitle;
+    public $newValue;
+
+    public function openAddField()
+    {
+        $this->addFieldSec = true;
+    }
+
+    public function closeAddField()
+    {
+        $this->addFieldSec = false;
+        $this->newTitle = null;
+        $this->newValue = null;
+    }
+
+    public function addField()
+    {
+        $this->validate([
+            'newTitle' => 'required|in:' . implode(',', TaskField::TITLES),
+            'newValue' => 'required|string|max:255'
+        ]);
+
+        $res = Task::find($this->taskId)->addField($this->newTitle, $this->newValue);
+
+        if ($res) {
+            $this->closeAddField();
+            $this->mount($this->taskId);
+            $this->alert('success', 'Field added!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function deleteThisField($id)
+    {
+        $this->deleteFieldId = $id;
+    }
+
+    public function deleteField()
+    {
+        $res = TaskField::find($this->deleteFieldId)->delete();
+        if ($res) {
+            $this->deleteFieldId = null;
+            $this->mount($this->taskId);
+            $this->alert('success', 'Claim deleted!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function dismissDeleteField()
+    {
+        $this->deleteFieldId = null;
+    }
+
     public function mount($taskId)
     {
         $this->taskId = $taskId;
@@ -72,6 +132,31 @@ class TaskShow extends Component
 
         $this->taskableType = $task->taskable_type;
         $this->task = $task;
+    }
+
+    public function editThisField($id)
+    {
+        $this->fieldId = $id;
+        $field = TaskField::find($id);
+        $this->editedFieldValue = $field->value;
+    }
+
+    public function editField()
+    {
+        $this->validate([
+            'editedFieldValue' => 'required|string|max:255'
+        ]);
+
+        $field = TaskField::find($this->fieldId);
+        $res = $field->editInfo($field->title, $this->editedFieldValue);
+
+        if ($res) {
+            $this->fieldId = null;
+            $this->mount($this->taskId);
+            $this->alert('success', 'Claim updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function toggleDelete()
@@ -455,6 +540,8 @@ class TaskShow extends Component
             $users = User::where('type', $this->task->assigned_to_type)->get();
         else $users = User::all();
 
+        $fieldTitles = TaskField::TITLES;
+
         return view('livewire.task-show', [
             'comments' => $comments,
             'taskId' => $this->taskId,
@@ -469,6 +556,7 @@ class TaskShow extends Component
             // 'fileUrl' => $this->fileUrl,
             'taskableType' => $this->taskableType,
             'watchersList' => $this->watchersList,
+            'fieldTitles' => $fieldTitles
         ]);
     }
 }
