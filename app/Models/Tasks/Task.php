@@ -59,9 +59,9 @@ class Task extends Model
         self::STATUS_CLOSED,
     ];
 
-    const TYPE_TASK = 'new'; //open but not assigned to anybode
-    const TYPE_CLAIM = 'assigned'; //open and assigned
-    const TYPE_ENDORSMENT = 'in_progress'; //open and assigned and the assignee set it as in-progress
+    const TYPE_TASK = 'task';
+    const TYPE_CLAIM = 'claim';
+    const TYPE_ENDORSMENT = 'endorsement';
 
     const TYPES = [
         self::TYPE_TASK,
@@ -346,7 +346,7 @@ class Task extends Model
             $this->actions()->firstOrCreate([
                 "column_name"   =>  $column_name
             ], [
-                "title"     =>  "Change {$column_name} to {$newVal}",
+                "title"     =>  "Change {$column_name}",
                 "value"     =>  $value
             ]);
         } catch (Exception $e) {

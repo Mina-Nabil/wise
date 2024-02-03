@@ -12,6 +12,7 @@ use App\Models\Tasks\TaskTempAssignee;
 use App\Traits\CanBeDisabled;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -80,6 +81,27 @@ class User extends Authenticatable
             AppLog::error("Updating user failed", $e->getMessage());
             report($e);
             return false;
+        }
+    }
+
+    public function addTempAccess($to, Carbon $expiry)
+    {
+        try {
+            $this->tmp_access_from()->create([
+                "to_id"     =>  $to,
+                "expiry"    =>  $expiry->format('Y-m-d')
+            ]);
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function getAvailableSessions()
+    {
+        $users = new Collection();
+        foreach ($this->tmp_access_from as $ta) {
+           $tmpUser = User::find($ta->from_id);
         }
     }
 
@@ -327,6 +349,16 @@ class User extends Authenticatable
     public function tasks_watcher(): BelongsToMany
     {
         return $this->belongsToMany(Task::class, 'task_watchers');
+    }
+
+    public function tmp_access(): HasMany
+    {
+        return $this->hasMany(TmpAccess::class, 'from_id')->where('expiry', ">", Carbon::now()->format('Y-m-d'));
+    }
+
+    public function users_access_me(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'tmp_access', 'to_id', 'from_id')->where('expiry', ">", Carbon::now()->format('Y-m-d'));
     }
 
     //auth
