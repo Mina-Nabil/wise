@@ -59,6 +59,14 @@ class TaskShow extends Component
     public $newTitle;
     public $newValue;
 
+    public $completeEndorsmentSec = false;
+    public $actionsIds = [];
+
+    public function closeCompleteEndorsmenet()
+    {
+        $this->completeEndorsmentSec = false;
+    }
+
     public function openAddField()
     {
         $this->addFieldSec = true;
@@ -122,6 +130,11 @@ class TaskShow extends Component
         $this->taskStatus = $task->status;
         $this->watchersList = $task->watcher_ids;
         $this->editedStatus = $task->status;
+
+
+        foreach ($task->actions as $action) {
+            array_push($this->actionsIds, $action->id);
+        }
 
 
         // dd($this->watchersList->pluck('user_id')->all());
@@ -398,6 +411,12 @@ class TaskShow extends Component
     }
     public function saveStatuses()
     {
+        if ($this->task->type === Task::TYPE_ENDORSMENT && !empty($this->task->actions) && $this->editedStatus === Task::STATUS_COMPLETED && !$this->completeEndorsmentSec) {
+            $this->completeEndorsmentSec = true;
+            return;
+        } else {
+            $this->completeEndorsmentSec = false;
+        }
         $this->validate([
             'statusComment' => 'nullable|string',
             'editedStatus' => 'required|in:' . implode(',', Task::STATUSES),
