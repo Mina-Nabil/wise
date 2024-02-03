@@ -1,6 +1,7 @@
 <div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
         <div class="w-full sm:w-1/2" style="max-width: 600px">
+
             <div class="card mb-5">
                 <div class="card-body">
                     <div class="card-text h-full">
@@ -180,6 +181,78 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card mb-5">
+                <div class="card-body flex flex-col p-6 active">
+                    <header class="flex mb-5 items-center">
+                        <div class="flex-1">
+                            <div class="card-title font-Inter text-slate-900 dark:text-white">
+                                Claim Fields
+                                <span class="float-right">
+                                    <button wire:click="openAddField" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm">Add Field</button>
+                                </span>
+                            </div>
+                            <div class="card-subtitle font-Inter">Task Fields</div>
+
+                        </div>
+                    </header>
+                    <div class="card-text h-full menu-open">
+                        @if ($task->fields->isEmpty())
+                            <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                No Claims added to this task.
+                            </div>
+                        @else
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class="">
+                                    <tr>
+
+                                        <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                            Value
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">* click on value to edit</p>
+                                        </th>
+
+                                        <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                            Title
+                                        </th>
+
+                                        <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                            Actions
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 text-wrap">
+
+                                    @foreach ($task->fields as $field)
+                                        <tr>
+                                            <td @if ($field->id !== $fieldId) wire:click="editThisField({{ $field->id }})" @endif class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                                @if ($field->id === $fieldId)
+                                                    <textarea wire:model="editedFieldValue" style="width:100%;height:100%;" class="@error('editedFieldValue') !border-danger-500  @enderror"></textarea>
+                                                @else
+                                                    {{ $field->value }}
+                                                @endif
+
+                                            </td>
+                                            <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $field->title }}</td>
+                                            <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
+                                                @if ($field->id === $fieldId)
+                                                    <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="editField" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                    <button class="btn inline-flex justify-center btn-success light btn-sm" wire:loading.remove wire:target="editField" wire:click="editField">Save</button>
+                                                @else
+                                                    <button class="btn inline-flex justify-center btn-danger light btn-sm" wire:click="deleteThisField({{ $field->id }})">Delete</button>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+
             <div class="card">
                 <div class="card-body flex flex-col p-6">
                     <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
@@ -601,4 +674,111 @@
 
         </div>
     </div>
+    @if ($deleteFieldId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                            rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                Delete Claim
+                            </h3>
+                            <button wire:click="dismissDeleteField" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                        dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                Are you sure ! you Want to delete this Claim ?
+                            </h6>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteField" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">
+                                <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="deleteField" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove wire:target="deleteField">Yes, Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($addFieldSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Field
+                            </h3>
+                            <button wire:click="closeAddField" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            @if (empty(array_diff($fieldTitles, $task->fields->pluck('title')->toArray())))
+                                <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
+                                    <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                        <div class="flex-1">
+                                            All claim fields added to a task!
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="input-area mb-3">
+                                    <label class="form-label">Field Title</label>
+                                    <select class="form-control py-2 @error('newTitle') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="newTitle">
+                                        <option>None</option>
+                                        @foreach ($fieldTitles as $atitle)
+                                            @if (!in_array($atitle, $task->fields->pluck('title')->toArray()))
+                                                <option value="{{ $atitle }}">{{ $atitle }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    @error('newTitle')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="input-area mb-3">
+                                    <label class="form-label">Value </label>
+                                    <input type="text" class="form-control  @error('newValue') !border-danger-500 @enderror" wire:model.defer="newValue" autocomplete="off" />
+                                    {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
+                                    @error('newValue')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+
+                        </div>
+                        <!-- Modal footer -->
+                        @if (!empty(array_diff($fieldTitles, $task->fields->pluck('title')->toArray())))
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="addField" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="addField" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <span wire:loading.remove wire:target="addField">Submit</span>
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 </div>
