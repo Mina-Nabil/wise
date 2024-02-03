@@ -116,9 +116,11 @@ class SoldPolicy extends Model
 
     public function addEndorsement($due = null, $desc = null, $actions = [])
     {
-        $newEndors = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim", $desc, $due);
+        $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement", $desc, $due);
         if (!$newEndors) return false;
         foreach ($actions as $a) {
+            //expiry
+            //2025-06-01
             $newEndors->addAction($a['column_name'], $a['value']);
         }
         return $newEndors;

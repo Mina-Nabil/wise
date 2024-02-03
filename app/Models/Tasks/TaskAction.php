@@ -28,12 +28,14 @@ class TaskAction extends Model
         self::STATUS_REJECTED
     ];
 
+    const TABLE_SOLD_POLICY = 'sold_policies';
+
     const TABLES = [
-        'sold_policies'
+        self::TABLE_SOLD_POLICY
     ];
 
     const COLUMNS = [
-        'sold_policies' => [
+        self::TABLE_SOLD_POLICY => [
             'car_chassis',
             'car_engine',
             'car_plate_no',
