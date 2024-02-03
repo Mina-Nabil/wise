@@ -23,6 +23,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class User extends Authenticatable
 {
@@ -84,11 +85,21 @@ class User extends Authenticatable
         }
     }
 
+    public function switchSession($user_id)
+    {
+        $availableSessions = $this->tmp_access_to()->get()->pluck('from_id')->toArray();
+        if (!in_array($user_id, $availableSessions)) return false;
+        Auth::loginUsingId($this->from_id);
+        Session::put("original_session_id", $this->to_id);
+    }
+
     public function addTempAccess($to, Carbon $expiry)
     {
+        if (Session::get('original_session_id')) return false;
         try {
-            $this->tmp_access_from()->create([
+            $this->tmp_access()->firstOrCreate([
                 "to_id"     =>  $to,
+            ], [
                 "expiry"    =>  $expiry->format('Y-m-d')
             ]);
         } catch (Exception $e) {
@@ -100,9 +111,15 @@ class User extends Authenticatable
     public function getAvailableSessions()
     {
         $users = new Collection();
-        foreach ($this->tmp_access_from as $ta) {
-           $tmpUser = User::find($ta->from_id);
+        $original_session = Session::get('original_session_id');
+        if ($original_session) {
+            $users->push(User::find($original_session));
+        } else {
+            foreach ($this->tmp_access_to as $ta) {
+                $users->push(User::find($ta->from_id));
+            }
         }
+        return $users;
     }
 
     public function pushNotification($title, $message, $route)
@@ -353,12 +370,19 @@ class User extends Authenticatable
 
     public function tmp_access(): HasMany
     {
-        return $this->hasMany(TmpAccess::class, 'from_id')->where('expiry', ">", Carbon::now()->format('Y-m-d'));
+        return $this->hasMany(TmpAccess::class, 'from_id');
+    }
+
+    public function tmp_access_to(): HasMany
+    {
+        return $this->hasMany(TmpAccess::class, 'to_id')->where('expiry', '>', Carbon::now()->format('Y-m-d'));
     }
 
     public function users_access_me(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'tmp_access', 'to_id', 'from_id')->where('expiry', ">", Carbon::now()->format('Y-m-d'));
+        return $this->belongsToMany(User::class, 'tmp_access', 'to_id', 'from_id')
+            ->withPivot("expiry")
+            ->where('expiry', ">", Carbon::now()->format('Y-m-d'));
     }
 
     //auth

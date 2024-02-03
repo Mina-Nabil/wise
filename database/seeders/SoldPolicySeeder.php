@@ -31,7 +31,7 @@ class SoldPolicySeeder extends Seeder
         $policies = Policy::all();
 
         //60 customer sold policies
-        for ($i = 0; $i < 60; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $tmpCustomer = $customers->random();
             $tmpPolicy = $policies->random();
             $tmpCond = $tmpPolicy->conditions->random();
@@ -129,7 +129,7 @@ class SoldPolicySeeder extends Seeder
         }
 
         //40 customer sold policies
-        for ($i = 0; $i < 40; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $tmpCorporate = $corporates->random();
             $tmpPolicy = $policies->random();
             $tmpCond = $tmpPolicy->conditions->random();

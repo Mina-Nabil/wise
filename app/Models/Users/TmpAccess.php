@@ -5,6 +5,8 @@ namespace App\Models\Users;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class TmpAccess extends Model
 {
@@ -14,6 +16,11 @@ class TmpAccess extends Model
     protected $fillable = ['from_id', 'to_id', 'expiry'];
     public $timestamps = false;
 
+    ///model functions
+    public function switchSession()
+    {
+  
+    }
 
     ///relations
     public function user_from(): BelongsTo
