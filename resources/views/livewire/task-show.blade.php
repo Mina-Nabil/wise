@@ -326,10 +326,8 @@
                                 <span style="display: flex; align-items: center;"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFile" icon="line-md:loading-twotone-loop"></iconify-icon></span>
                                 <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove wire:target="uploadedFile" icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
                             </span>
-
                         </label>
                         <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedFile"><br>
-
                     </header>
                     <div class="loader" wire:loading wire:target="downloadFile">
                         <div class="loaderBar"></div>

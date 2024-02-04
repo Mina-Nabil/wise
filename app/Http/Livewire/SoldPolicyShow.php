@@ -7,6 +7,9 @@ use App\models\Business\SoldPolicy;
 use App\models\Business\SoldPolicyBenefit;
 use App\models\Business\SoldPolicyExclusion;
 use App\models\Insurance\PolicyBenefit;
+use App\models\Offers\OfferOption;
+use App\Models\Tasks\TaskAction;
+use App\Models\Tasks\TaskField;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use PhpParser\Node\Expr\FuncCall;
@@ -33,11 +36,80 @@ class SoldPolicyShow extends Component
     public $newExcValue;
     public $newExcSection = false;
 
+    public $editPaymentInfoSection = false;
+    public $insured_value;
+    public $net_rate;
+    public $net_premium;
+    public $gross_premium;
+    public $installements_count;
+    public $payment_frequency;
+    
+    public $actions = [];
+    public $fiels = [];
+
+    public function removeAcion($index)
+    {
+        unset($this->actions[$index]);
+        $this->actions = array_values($this->actions);
+    }
+
+    public function addAnotherAction()
+    {
+        $this->actions[] = ['column_name' => '', 'value' => ''];
+    }
+
+    public function removeField($index)
+    {
+        unset($this->fiels[$index]);
+        $this->fiels = array_values($this->fiels);
+    }
+
+    public function addAnotherField()
+    {
+        $this->fiels[] = ['title' => '', 'value' => ''];
+    }
+
+    //paymentInfo
+    public function togglePaymentInfoSection(){
+        $this->toggle($this->editPaymentInfoSection);
+    }
+
+    public function editPaymentInfo(){
+        $this->validate([
+            'insured_value' => 'required|numeric',
+            'net_rate' => 'required|numeric',
+            'net_premium' => 'required|numeric',
+            'gross_premium' => 'required|numeric',
+            'installements_count' => 'required|numeric',
+            'payment_frequency' => 'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
+        ]);
+
+        $res = $this->soldPolicy->updatePaymentInfo(
+            $this->insured_value,
+            $this->net_rate,
+            $this->net_premium,
+            $this->gross_premium,
+            $this->installements_count,
+            $this->payment_frequency
+        );
+
+        if ($res) {
+            $this->togglePaymentInfoSection();
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success' , 'info updated!');
+        }else{
+            $this->alert('failed','server error!');
+        }
+
+    }
+
     //benefits functions
     public function openNewBenefitSec()
     {
         $this->newBenefitSec = true;
     }
+
+    
 
     public function closeNewBenefitSec()
     {
@@ -207,13 +279,23 @@ class SoldPolicyShow extends Component
     public function mount($id)
     {
         $this->soldPolicy = SoldPolicy::find($id);
+        $this->insured_value = $this->soldPolicy->insured_value;
+        $this->net_rate = $this->soldPolicy->net_rate;
+        $this->net_premium = $this->soldPolicy->net_premium;
+        $this->gross_premium = $this->soldPolicy->gross_premium;
+        $this->installements_count = $this->soldPolicy->installements_count;
+        $this->payment_frequency = $this->soldPolicy->payment_frequency;
     }
 
     public function render()
     {
         $BENEFITS = PolicyBenefit::BENEFITS;
+        $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
+        $COLUMNS = TaskAction::COLUMNS[TaskAction::TABLE_SOLD_POLICY];
         return view('livewire.sold-policy-show', [
-            'BENEFITS' => $BENEFITS
+            'BENEFITS' => $BENEFITS,
+            'PAYMENT_FREQS' => $PAYMENT_FREQS,
+            'COLUMNS' => $COLUMNS
         ]);
     }
 }
