@@ -27,4 +27,9 @@ class PoliciesController extends Controller
         Policy::findOrFail($policyId);
         return view('policies.policy_show', compact('policyId'));
     }
+
+    public function soldPolicyShow($id)
+    {
+        return view('policies.sold-policy_show', compact('id'));
+    }
 }
