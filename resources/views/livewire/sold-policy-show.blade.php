@@ -8,24 +8,19 @@
             <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                         z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                 <li>
-                    <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                    <a wire:click="openEditInfoSection" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white">
                         Edit</a>
                 </li>
                 <li>
-                    <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                    <a wire:click="" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white">
                         Set as Valid</a>
                 </li>
                 <li>
-                    <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                    <a wire:click="" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white">
-                        Set as Valid</a>
-                </li>
-                <li>
-                    <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
-                        Sign out</a>
+                        Set as invalid</a>
                 </li>
             </ul>
         </div>
@@ -556,6 +551,85 @@
                             <button wire:click="createTask" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="createTask">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="createTask" icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($editInfoSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Sold Policy
+                            </h3>
+                            <button wire:click="closeEditInfoSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
+                                <div class="from-group">
+                                    <label for="start" class="form-label">Start Date</label>
+                                    <input name="start" type="date" class="form-control mt-2 w-full @error('start') !border-danger-500 @enderror" wire:model.defer="start">
+                                    @error('start')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="expiry" class="form-label">Expiry Date</label>
+                                    <input name="expiry" type="date" class="form-control mt-2 w-full @error('expiry') !border-danger-500 @enderror" wire:model.defer="expiry">
+                                    @error('expiry')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="from-group">
+                                <label for="policy_number" class="form-label">Policy Number</label>
+                                <input name="policy_number" type="text" class="form-control mt-2 w-full @error('policy_number') !border-danger-500 @enderror" wire:model.defer="policy_number">
+                                @error('policy_number')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="from-group">
+                                <label for="car_chassis" class="form-label">Car Chassis</label>
+                                <input name="car_chassis" type="text" class="form-control mt-2 w-full @error('car_chassis') !border-danger-500 @enderror" wire:model.defer="car_chassis">
+                                @error('car_chassis')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="from-group">
+                                <label for="car_plate_no" class="form-label">Car Plate No</label>
+                                <input name="car_plate_no" type="text" class="form-control mt-2 w-full @error('car_plate_no') !border-danger-500 @enderror" wire:model.defer="car_plate_no">
+                                @error('car_plate_no')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="from-group">
+                                <label for="car_engine" class="form-label">Car Plate No</label>
+                                <input name="car_engine" type="text" class="form-control mt-2 w-full @error('car_engine') !border-danger-500 @enderror" wire:model.defer="car_engine">
+                                @error('car_plate_no')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editInfo" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="editInfo">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="editInfo" icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>

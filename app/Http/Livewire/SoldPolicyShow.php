@@ -20,6 +20,13 @@ class SoldPolicyShow extends Component
     use AlertFrontEnd, ToggleSectionLivewire;
 
     public $soldPolicy;
+    public $start;
+    public $expiry;
+    public $policy_number;
+    public $car_chassis;
+    public $car_plate_no;
+    public $car_engine;
+    public $editInfoSec = false;
 
     public $deleteBenefitId;
     public $benefitId;  //for edit
@@ -51,6 +58,51 @@ class SoldPolicyShow extends Component
     public $newTaskDesc;
     public $newTaskDue;
     public $newTaskSection = false;
+
+    public function openEditInfoSection()
+    {
+        $this->editInfoSec = true;
+        $this->start = Carbon::parse($this->soldPolicy->start)->toDateString();
+        $this->expiry = Carbon::parse($this->soldPolicy->expiry)->toDateString();
+        $this->policy_number = $this->soldPolicy->policy_number;
+        $this->car_chassis = $this->soldPolicy->car_chassis;
+        $this->car_plate_no = $this->soldPolicy->car_plate_no;
+        $this->car_engine = $this->soldPolicy->car_engine;
+    }
+
+    public function editInfo()
+    {
+        $this->validate([
+            'start' => 'required|date',
+            'expiry' => 'required|date',
+            'policy_number' => 'required|string|max:255',
+            'car_chassis' => 'nullable|string|max:255',
+            'car_plate_no' => 'nullable|string|max:255',
+            'car_engine' => 'nullable|string|max:255',
+        ]);
+
+        $res = $this->soldPolicy->editInfo(
+            Carbon::parse($this->start),
+            Carbon::parse($this->expiry),
+            $this->policy_number,
+            $this->car_chassis,
+            $this->car_plate_no,
+            $this->car_engine
+        );
+
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closeEditInfoSection();
+            $this->alert('success', 'Policy updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function closeEditInfoSection()
+    {
+        $this->editInfoSec = false;
+    }
 
     public function toggleNewTaskSection()
     {
