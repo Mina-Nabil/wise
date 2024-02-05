@@ -12,6 +12,7 @@ use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskField;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Carbon\Carbon;
 use PhpParser\Node\Expr\FuncCall;
 
 class SoldPolicyShow extends Component
@@ -43,14 +44,68 @@ class SoldPolicyShow extends Component
     public $gross_premium;
     public $installements_count;
     public $payment_frequency;
-    
+
     public $actions = [];
-    public $fiels = [];
+    public $fields = [];
+    public $newTaskType = 'claim';
+    public $newTaskDesc;
+    public $newTaskDue;
+    public $newTaskSection = false;
+
+    public function toggleNewTaskSection()
+    {
+        $this->toggle($this->newTaskSection);
+    }
+    public function createTask()
+    {
+        $this->validate([
+            'newTaskDesc' => 'nullable|string',
+            'newTaskDue' => 'nullable|date'
+        ]);
+
+        if ($this->newTaskType === 'claim') {
+
+            $this->validate([
+                'fields.*.title' => 'required|string|max:255',
+                'fields.*.value' => 'required|string|max:255',
+            ]);
+
+            $res = $this->soldPolicy->addClaim(Carbon::parse($this->newTaskDue), $this->newTaskDesc, $this->fields);
+
+            if ($res) {
+                $this->mount($this->soldPolicy->id);
+                $this->newTaskSection = false;
+                $this->fields = [];
+                $this->alert('success', 'Claim added!');
+            } else {
+                $this->alert('failed', 'server error');
+            }
+        } elseif ($this->newTaskType === 'endorsement') {
+
+            $this->validate([
+                'actions.*.column_name' => 'required|string|max:255',
+                'actions.*.value' => 'required|string|max:255',
+            ]);
+
+            $res = $this->soldPolicy->addEndorsement(Carbon::parse($this->newTaskDue), $this->newTaskDesc, $this->actions);
+
+            if ($res) {
+                $this->mount($this->soldPolicy->id);
+                $this->newTaskSection = false;
+                $this->actions = [];
+                $this->alert('success', 'Endorsement added!');
+            } else {
+                $this->alert('failed', 'server error');
+            }
+        }
+    }
 
     public function removeAcion($index)
     {
-        unset($this->actions[$index]);
-        $this->actions = array_values($this->actions);
+        if (count($this->actions) > 1) {
+            unset($this->actions[$index]);
+            $this->actions = array_values($this->actions);
+        }
     }
 
     public function addAnotherAction()
@@ -60,21 +115,25 @@ class SoldPolicyShow extends Component
 
     public function removeField($index)
     {
-        unset($this->fiels[$index]);
-        $this->fiels = array_values($this->fiels);
+        if (count($this->fields) > 1) {
+            unset($this->fields[$index]);
+            $this->fields = array_values($this->fields);
+        }
     }
 
     public function addAnotherField()
     {
-        $this->fiels[] = ['title' => '', 'value' => ''];
+        $this->fields[] = ['title' => '', 'value' => ''];
     }
 
     //paymentInfo
-    public function togglePaymentInfoSection(){
+    public function togglePaymentInfoSection()
+    {
         $this->toggle($this->editPaymentInfoSection);
     }
 
-    public function editPaymentInfo(){
+    public function editPaymentInfo()
+    {
         $this->validate([
             'insured_value' => 'required|numeric',
             'net_rate' => 'required|numeric',
@@ -96,11 +155,10 @@ class SoldPolicyShow extends Component
         if ($res) {
             $this->togglePaymentInfoSection();
             $this->mount($this->soldPolicy->id);
-            $this->alert('success' , 'info updated!');
-        }else{
-            $this->alert('failed','server error!');
+            $this->alert('success', 'info updated!');
+        } else {
+            $this->alert('failed', 'server error!');
         }
-
     }
 
     //benefits functions
@@ -109,7 +167,7 @@ class SoldPolicyShow extends Component
         $this->newBenefitSec = true;
     }
 
-    
+
 
     public function closeNewBenefitSec()
     {
@@ -285,6 +343,8 @@ class SoldPolicyShow extends Component
         $this->gross_premium = $this->soldPolicy->gross_premium;
         $this->installements_count = $this->soldPolicy->installements_count;
         $this->payment_frequency = $this->soldPolicy->payment_frequency;
+        $this->actions[] = ['column_name' => '', 'value' => ''];
+        $this->fields[] = ['title' => '', 'value' => ''];
     }
 
     public function render()
