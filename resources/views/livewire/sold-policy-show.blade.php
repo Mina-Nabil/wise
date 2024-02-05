@@ -9,19 +9,24 @@
                         z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                 <li>
                     <a wire:click="openEditInfoSection" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white">
+                                dark:hover:text-white cursor-pointer">
                         Edit</a>
                 </li>
-                <li>
-                    <a wire:click="" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white">
-                        Set as Valid</a>
-                </li>
-                <li>
-                    <a wire:click="" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white">
-                        Set as invalid</a>
-                </li>
+                @if ($soldPolicy->is_valid)
+                    <li>
+                        <a wire:click="setInvalid" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Set as invalid</a>
+                    </li>
+                @else
+                    <li>
+                        <a wire:click="setValid" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Set as Valid</a>
+                    </li>
+                @endif
+
+
             </ul>
         </div>
     </div>
@@ -70,6 +75,14 @@
                     <div>
                         <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
                             Policy Number
+                            <span class="float-right">
+                                @if ($soldPolicy->is_valid)
+                                    <span class="badge bg-success-500 text-white capitalize">Valid</span>
+                                @else
+                                    <span class="badge bg-warning-500 text-white capitalize">Invalid</span>
+                                @endif
+
+                            </span>
                         </span>
                         <span class="text-lg font-medium text-slate-900 dark:text-white block">
                             {{ $soldPolicy->policy_number }}

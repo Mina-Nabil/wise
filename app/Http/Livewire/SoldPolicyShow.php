@@ -59,6 +59,29 @@ class SoldPolicyShow extends Component
     public $newTaskDue;
     public $newTaskSection = false;
 
+    public function setInvalid()
+    {
+        $res = $this->soldPolicy->setAsInvalid();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'status updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setValid()
+    {
+        $res = $this->soldPolicy->setAsValid();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'status updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+
     public function openEditInfoSection()
     {
         $this->editInfoSec = true;
