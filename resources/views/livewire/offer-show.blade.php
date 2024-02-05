@@ -1,10 +1,10 @@
 <div>
     @if (count($selectedOptions) > 0)
-    <div class="grid md:grid-cols-3 select-action-btns-container gap-2">
-        <button class="btn btn-sm btn-primary float-right" wire:click="exportComparison">Export Comparison</button>
-        <button class="btn btn-sm btn-success float-right" wire:click="toggleWhatsappSection"><iconify-icon icon="ic:baseline-whatsapp"></iconify-icon> Send WhatAapp Message</button>
-        <button class="btn btn-sm btn-dark float-right" wire:click="toggleEmailMsgSection"><iconify-icon icon="ic:outline-email"></iconify-icon> Send Email</button>
-    </div>
+        <div class="grid md:grid-cols-3 select-action-btns-container gap-2">
+            <button class="btn btn-sm btn-primary float-right" wire:click="exportComparison">Export Comparison</button>
+            <button class="btn btn-sm btn-success float-right" wire:click="toggleWhatsappSection"><iconify-icon icon="ic:baseline-whatsapp"></iconify-icon> Send WhatAapp Message</button>
+            <button class="btn btn-sm btn-dark float-right" wire:click="toggleEmailMsgSection"><iconify-icon icon="ic:outline-email"></iconify-icon> Send Email</button>
+        </div>
     @endif
     <div>
         <div class="max-w-screen-lg grid grid-cols-1 md:grid-cols-8 gap-5 mb-5">
@@ -346,7 +346,7 @@
                                             <div class="ml-auto">
                                                 <div class="relative">
                                                     <div class="dropdown relative">
-                                                        <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <button class="text-xl text-center block w-full " type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                             <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                         </button>
                                                         <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
@@ -1779,7 +1779,7 @@
                                     @foreach ($offer->client->phones as $phone)
                                         <option value="{{ $phone->number }}">{{ $phone->number }}</option>
                                     @endforeach
-                                    @if($offer->client_type === 'corporate')
+                                    @if ($offer->client_type === 'corporate')
                                         @foreach ($offer->client->contacts as $contact)
                                             <option value="{{ $contact->phone }}">{{ $contact->name }} | {{ $contact->phone }}</option>
                                         @endforeach
@@ -1788,11 +1788,11 @@
                                 </select>
                             </div>
                             @if ($whatsappMsgPhone === 'other')
-                                    <input type="number" class="form-control w-full mt-2 @error('otherPhone') !border-danger-500 @enderror" wire:model="otherPhone" placeholder="Enter Phone...">
-                                    @error('otherPhone')
-                                            <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">{{ $message }}</span>
-                                    @enderror
-                                @endif
+                                <input type="number" class="form-control w-full mt-2 @error('otherPhone') !border-danger-500 @enderror" wire:model="otherPhone" placeholder="Enter Phone...">
+                                @error('otherPhone')
+                                    <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">{{ $message }}</span>
+                                @enderror
+                            @endif
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1828,7 +1828,7 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
 
-                            @if($offer->client_type === 'customer')
+                            @if ($offer->client_type === 'customer')
 
                                 <div class="from-group">
                                     <label for="whatsappMsgPhone" class="form-label">Email</label>
@@ -1841,12 +1841,10 @@
                                 @if ($emailMsgEmail === 'other')
                                     <input type="email" class="form-control w-full mt-2 @error('otherEmail') !border-danger-500 @enderror" wire:model="otherEmail" placeholder="Enter Email...">
                                     @error('otherEmail')
-                                            <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">{{ $message }}</span>
+                                        <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">{{ $message }}</span>
                                     @enderror
                                 @endif
-
                             @elseif($offer->client_type === 'corporate')
-
                                 <div class="from-group">
                                     <label for="whatsappMsgPhone" class="form-label">Email</label>
                                     <select name="whatsappMsgPhone" id="basicSelect" class="form-control w-full mt-2 @error('emailMsgEmail') !border-danger-500 @enderror" wire:model="emailMsgEmail">
