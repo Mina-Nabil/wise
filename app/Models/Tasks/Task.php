@@ -388,6 +388,9 @@ class Task extends Model
                 "desc"      =>  $desc,
                 "type"      =>  $type
             ]);
+            if ($taskable) {
+                $newTask->taskable()->associate($taskable);
+            }
             $newTask->save();
 
             if ($loggedInUser) {
@@ -403,9 +406,7 @@ class Task extends Model
             if ($assign_to_id_or_type) {
                 $newTask->assignTo($assign_to_id_or_type);
             }
-            if ($taskable) {
-                $newTask->taskable()->associate($taskable);
-            }
+        
 
             if ($files && count($files) > 0 && $loggedInUser) {
                 foreach ($files as $f) {

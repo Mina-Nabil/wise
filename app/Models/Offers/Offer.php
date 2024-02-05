@@ -2,7 +2,9 @@
 
 namespace App\Models\Offers;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Corporates\Corporate;
+use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\PolicyBenefit;
@@ -105,6 +107,51 @@ class Offer extends Model
     }
 
     ////model functions
+    /** 
+     * Generate sold policy from selected option
+     * Policy number, start and expiry shall be presented as new empty fields
+     * Other fields can be populated from the selected option, expect the car details(chassis, engine & plate)
+     */
+    public function generateSoldPolicy($policy_number, Carbon $start, Carbon $expiry, $insured_value = null, $net_rate = null, $net_premium = null, $gross_premium = null, $installements_count = null, $payment_frequency = null, $car_chassis = null, $car_engine = null, $car_plate_no = null)
+    {
+        if (!$this->selected_option_id) return false;
+        $this->loadMissing('client');
+        $this->loadMissing('policy');
+        $this->loadMissing('policy.benefits');
+        $this->loadMissing('selected_option');
+        $this->loadMissing('selected_option.policy');
+        $this->loadMissing('selected_option.policy_condition');
+
+        assert($insured_value || $this->selected_option->insured_value, "No insured value found");
+        assert($net_rate || $this->selected_option->policy_condition->rate, "No net rate found");
+        assert($net_premium || $this->selected_option->net_premium, "No net premium found");
+        assert($gross_premium || $this->selected_option->gross_premium, "No gross premium found");
+        // assert($installements_count || $this->selected_option->installements_count, "No installement count found"); 
+
+        $customer_car = ($this->item_type == Car::MORPH_TYPE) ? $this->item_id : null;
+        $soldPolicy = SoldPolicy::newSoldPolicy(
+            client: $this->client,
+            policy_id: $this->selected_option->policy_id,
+            policy_number: $policy_number,
+            insured_value: $insured_value ?? $this->selected_option->insured_value,
+            net_rate: $net_rate ?? $this->selected_option->policy_condition->rate,
+            net_premium: $net_premium ?? $this->selected_option->net_premium,
+            gross_premium: $gross_premium ?? $this->selected_option->gross_premium,
+            installements_count: $installements_count ?? $this->selected_option->installements_count ?? 1,
+            payment_frequency: $payment_frequency ?? $this->selected_option->payment_frequency,
+            start: $start,
+            expiry: $expiry,
+            offer_id: $this->id,
+            customer_car_id: $customer_car,
+            car_chassis: $car_chassis,
+            car_plate_no: $car_plate_no,
+            car_engine: $car_engine,
+        );
+        foreach ($this->selected_option->policy->benefits as $b) {
+            $soldPolicy->addBenefit($b->benefit, $b->value);
+        }
+    }
+
     public function exportComparison($ids = [], $saveAndGetFileUrl = false)
     {
         $template = IOFactory::load(resource_path('import/comparison_template.xlsx'));
@@ -544,13 +591,14 @@ class Offer extends Model
     private function sendOfferNotifications($title, $message)
     {
         $notifier_id = Auth::id();
+
         if ($notifier_id != $this->assignee_id) {
             $this->loadMissing('assignee');
             $this->assignee?->pushNotification($title, $message, "offers/" . $this->id);
         }
         if ($notifier_id != $this->creator_id) {
             $this->loadMissing('creator');
-            $this->assignee?->pushNotification($title, $message, "offers/" . $this->id);
+            $this->creator?->pushNotification($title, $message, "offers/" . $this->id);
         }
     }
 
