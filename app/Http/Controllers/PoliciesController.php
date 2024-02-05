@@ -32,4 +32,8 @@ class PoliciesController extends Controller
     {
         return view('policies.sold-policy_show', compact('id'));
     }
+
+    public function soldPolicyIndex(){
+        return view('policies.sold-policy-index');
+    }
 }

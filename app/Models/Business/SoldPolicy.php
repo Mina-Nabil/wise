@@ -257,8 +257,8 @@ class SoldPolicy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        $query->select('sold_policy.*')
-            ->join('users', "sold_policy.creator_id", '=', 'users.id');
+        $query->select('sold_policies.*')
+            ->join('users', "sold_policies.creator_id", '=', 'users.id');
 
         if ($loggedInUser->type !== User::TYPE_ADMIN) {
             $query->where(function ($q) use ($loggedInUser) {
@@ -269,12 +269,12 @@ class SoldPolicy extends Model
 
         $query->when($searchText, function ($q, $v) {
             $q->leftjoin('corporates', function ($j) {
-                $j->on('sold_policy.client_id', '=', 'corporates.id')
-                    ->where('sold_policy.client_type', Corporate::MORPH_TYPE);
+                $j->on('sold_policies.client_id', '=', 'corporates.id')
+                    ->where('sold_policies.client_type', Corporate::MORPH_TYPE);
             })->leftjoin('customers', function ($j) {
-                $j->on('sold_policy.client_id', '=', 'customers.id')
-                    ->where('sold_policy.client_type', Customer::MORPH_TYPE);
-            })->groupBy('sold_policy.id');
+                $j->on('sold_policies.client_id', '=', 'customers.id')
+                    ->where('sold_policies.client_type', Customer::MORPH_TYPE);
+            })->groupBy('sold_policies.id');
 
             $splittedText = explode(' ', $v);
 
