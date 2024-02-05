@@ -390,7 +390,7 @@
                                         <iconify-icon icon="material-symbols:edit-outline"></iconify-icon>
                                     </span>
                                 </p>
-                                <p class="text-wrap">{{ $customer->note  }}</p>
+                                <p class="text-wrap">{{ $customer->note }}</p>
                             </div>
                         </div>
 
@@ -557,7 +557,7 @@
                                 <p>
                                     Owned by
                                 </p>
-                                <p class="text-wrap"><b>{{ $customer->owner->first_name  }} {{ $customer->owner->last_name  }}</b></p>
+                                <p class="text-wrap"><b>{{ $customer->owner?->first_name }} {{ $customer->owner?->last_name }}</b></p>
                             </div>
                         </div>
 
@@ -852,10 +852,10 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-                                    <div class="input-area">
-                                        <label for="customerNote" class="form-label">Note</label>
-                                        <input id="customerNote" type="text" class="form-control @error('customerNote') !border-danger-500 @enderror" wire:model.defer="customerNote">
-                                    </div>
+                                <div class="input-area">
+                                    <label for="customerNote" class="form-label">Note</label>
+                                    <input id="customerNote" type="text" class="form-control @error('customerNote') !border-danger-500 @enderror" wire:model.defer="customerNote">
+                                </div>
                                 @error('customerNote')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

@@ -1,4 +1,7 @@
 <div>
+    <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4 mb-3">
+        <b>{{ $task->type }}</b>
+    </h4>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
         <div class="w-full sm:w-1/2" style="max-width: 600px">
 
@@ -182,6 +185,7 @@
                 </div>
             </div>
 
+            {{-- task fields --}}
             <div class="card mb-5">
                 <div class="card-body flex flex-col p-6 active">
                     <header class="flex mb-5 items-center">
@@ -252,6 +256,62 @@
                 </div>
             </div>
 
+            {{-- endorsment --}}
+            <div class="card mb-5">
+                <div class="card-body flex flex-col p-6 active">
+                    <header class="flex mb-5 items-center">
+                        <div class="flex-1">
+                            <div class="card-title font-Inter text-slate-900 dark:text-white">
+                                Endorsment
+                            </div>
+
+                        </div>
+                    </header>
+                    <div class="card-text h-full menu-open">
+                        @if ($task->actions->isEmpty())
+                            <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                No Actions added to this task.
+                            </div>
+                        @else
+                            @foreach ($task->actions as $action)
+                                <div class="bg-slate-50 dark:bg-slate-900 rounded p-4 mt-8 flex-wrap">
+                                    <div class="space-y-1">
+                                        <h4 class="text-slate-600 dark:text-slate-200 text-base font-normal">
+                                            <b>{{ ucwords(str_replace('_', ' ', $action->title)) }}</b>
+                                            <span class="float-right">
+                                                @if ($action->status === 'new')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                                        New
+                                                    </div>
+                                                @elseif($action->status === 'done')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                                        Done
+                                                    </div>
+                                                @elseif($action->status === 'rejected')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
+                                                        Rejected
+                                                    </div>
+                                                @endif
+                                            </span>
+
+                                        </h4>
+                                        <div class="text-sm font-medium text-slate-900 dark:text-white">
+                                            <span class="text-slate-500 dark:text-slate-300 font-normal">
+                                                665666
+                                            </span>
+                                            <span>
+                                                <iconify-icon icon="maki:arrow"></iconify-icon> {{ $action->value }}
+                                            </span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+
 
             <div class="card">
                 <div class="card-body flex flex-col p-6">
@@ -266,10 +326,8 @@
                                 <span style="display: flex; align-items: center;"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFile" icon="line-md:loading-twotone-loop"></iconify-icon></span>
                                 <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove wire:target="uploadedFile" icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
                             </span>
-
                         </label>
                         <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedFile"><br>
-
                     </header>
                     <div class="loader" wire:loading wire:target="downloadFile">
                         <div class="loaderBar"></div>
@@ -780,5 +838,69 @@
             </div>
         </div>
     @endif
+
+    @if ($completeEndorsmentSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Complete Changes
+                            </h3>
+                            <button wire:click="closeCompleteEndorsmenet" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            @foreach ($task->actions as $action)
+                                <div class="bg-slate-50 dark:bg-slate-900 rounded p-4 mt-8 flex-wrap">
+                                    <div class="space-y-1">
+
+                                        <h4 class="text-slate-600 dark:text-slate-200 text-base font-normal">
+                                            <b>{{ ucwords(str_replace('_', ' ', $action->title)) }}</b>
+                                            <span class="float-right">
+                                                <div class="checkbox-area">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="hidden" name="checkbox" checked value="{{ $action->id }}" wire:model.defer="actionsIds">
+                                                        <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                                    </label>
+                                                </div>
+                                            </span>
+
+                                        </h4>
+                                        <div class="text-sm font-medium text-slate-900 dark:text-white">
+                                            <span class="text-slate-500 dark:text-slate-300 font-normal">
+                                                665666
+                                            </span>
+                                            <span>
+                                                <iconify-icon icon="maki:arrow"></iconify-icon> {{ $action->value }}
+                                            </span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <!-- Modal footer -->
+
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="saveStatuses" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveStatuses" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove wire:target="saveStatuses">Submit</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
 </div>

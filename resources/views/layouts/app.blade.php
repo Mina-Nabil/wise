@@ -171,6 +171,14 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ url('/sold-policies') }}" class="navItem @yield('sold-policies')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="iconoir:privacy-policy"></iconify-icon>
+                                <span>Sold Policies</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ url('/cars') }}" class="navItem @yield('cars')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="mingcute:car-line"></iconify-icon>
