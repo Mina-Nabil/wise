@@ -43,6 +43,7 @@ return new class extends Migration
             $table->string('car_chassis')->nullable();
             $table->string('car_plate_no')->nullable();
             $table->string('car_engine')->nullable();
+            $table->double('discount')->default(0);
             $table->timestamps();
         });
 

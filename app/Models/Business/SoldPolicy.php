@@ -31,7 +31,7 @@ class SoldPolicy extends Model
     protected $table = 'sold_policies';
     protected $fillable = [
         'creator_id', 'offer_id', 'policy_id', 'net_rate', 'net_premium',
-        'gross_premium', 'installements_count', 'start', 'expiry',
+        'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
         'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
         'car_chassis', 'car_plate_no', 'car_engine', 'policy_number'
     ];
@@ -93,7 +93,7 @@ class SoldPolicy extends Model
         }
     }
 
-    public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency)
+    public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, $discount)
     {
         $this->update([
             'insured_value' => $insured_value,
@@ -101,7 +101,8 @@ class SoldPolicy extends Model
             'net_premium'   => $net_premium,
             'gross_premium' => $gross_premium,
             'installements_count'   => $installements_count,
-            'payment_frequency'     => $payment_frequency
+            'payment_frequency'     => $payment_frequency,
+            'discount'      => $discount
         ]);
 
         try {
@@ -223,7 +224,7 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true): self|bool
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true): self|bool
     {
         $newSoldPolicy = new self([
             'creator_id' => Auth::id() ?? 10,
@@ -242,7 +243,8 @@ class SoldPolicy extends Model
             'customer_car_id' => $customer_car_id,
             'car_chassis'   => $car_chassis,
             'car_plate_no'  => $car_plate_no,
-            'car_engine'    => $car_engine
+            'car_engine'    => $car_engine,
+            'discount'      => $discount
         ]);
         $newSoldPolicy->client()->associate($client);
         try {
