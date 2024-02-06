@@ -20,6 +20,14 @@ class TaskField extends Model
         "title", "value"
     ];
 
+    const TITLE_SALES_CHECK_PAY = 'هل ابلغت العميل بالمصاريف؟';
+    const TITLE_SALES_CHECK_WORKSHOP = 'هل ابلغت العميل بمكان الاصلاح؟';
+
+    const SALES_CHECKLIST = [
+        self::TITLE_SALES_CHECK_PAY,
+        self::TITLE_SALES_CHECK_WORKSHOP,
+    ];
+
     const TITLE_ACCIDENT_PLACE = 'مكان الحادت';
     const TITLE_ACCIDENT_DESC = 'وصف الحادث';
     const TITLE_DAMAGES = 'تلفيات';

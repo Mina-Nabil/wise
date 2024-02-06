@@ -8,6 +8,7 @@ use App\Models\Customers\Customer;
 use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskField;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -130,6 +131,9 @@ class SoldPolicy extends Model
     {
         $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim", $desc, $due);
         if (!$newTask) return false;
+        foreach (TaskField::SALES_CHECKLIST as $s) {
+            $newTask->addField($s, "NO");
+        }
         foreach ($fields as $f) {
             $newTask->addField($f['title'], $f['value']);
         }
