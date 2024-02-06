@@ -5,8 +5,11 @@ namespace App\Models\Business;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
+use App\Models\Customers\Phone;
 use App\Models\Insurance\Policy;
+use App\Models\Insurance\PolicyCondition;
 use App\Models\Offers\Offer;
+use App\Models\Offers\OfferOption;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskField;
 use App\Models\Users\AppLog;
@@ -21,6 +24,9 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class SoldPolicy extends Model
 {
@@ -273,6 +279,125 @@ class SoldPolicy extends Model
             report($e);
             AppLog::error("Can't create Sold Policy", desc: $e->getMessage());
             return false;
+        }
+    }
+
+    public static function importData($file)
+    {
+        $spreadsheet = IOFactory::load($file);
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+
+        for ($i = 2; $i <= $highestRow; $i++) {
+            try {
+                //client data
+                $client_type = $activeSheet->getCell('C' . $i)->getValue() == "Indv" ? "client" : "corporate";
+                $full_name = $activeSheet->getCell('F' . $i)->getValue();
+                $is_renewal = $activeSheet->getCell('D' . $i)->getValue() == "Renewal";
+                $tel = ($activeSheet->getCell('J' . $i)->getValue() != "0" && is_numeric($activeSheet->getCell('J' . $i)->getValue())) ? $activeSheet->getCell('J' . $i)->getValue() : null;
+
+                //policy data
+                $company_name = $activeSheet->getCell('A' . $i)->getValue();
+                $policy_name = $activeSheet->getCell('U' . $i)->getValue();
+                $sheet_business = $activeSheet->getCell('B' . $i)->getValue();
+                $line_of_business = null;
+                switch ($sheet_business) {
+                    case 'Motor':
+                        if ($client_type == 'client') $line_of_business = Policy::BUSINESS_PERSONAL_MOTOR;
+                        else $line_of_business = Policy::BUSINESS_CORPORATE_MOTOR;
+                        break;
+                    case 'Medical':
+                        if ($client_type == 'client') $line_of_business = Policy::BUSINESS_PERSONAL_MEDICAL;
+                        else $line_of_business = Policy::BUSINESS_CORPORATE_MEDICAL;
+                        break;
+
+                    case 'Laibility':
+                        $line_of_business = Policy::BUSINESS_LIABILITY;
+                        break;
+
+                    default:
+                        $line_of_business = null;
+                        break;
+                }
+                if (!$line_of_business) {
+                    Log::warning("Row#$i missed, failed to get line of business");
+                    continue;
+                }
+
+                if ($policy_name == "0") {
+                    $policy1 = Policy::getPolicyByNameAndLineOfBusiness($company_name, $line_of_business, $company_name);
+                    $policy2 = Policy::getPolicyByNameAndLineOfBusiness($company_name, $line_of_business,  $policy_name);
+                    if ($policy1) $policy = $policy1;
+                    else if ($policy2) $policy = $policy2;
+                } else {
+                    $policy = Policy::getPolicyByNameAndLineOfBusiness($company_name, $line_of_business, $policy_name == "0" ? $company_name :  $policy_name);
+                }
+                if (!$policy) {
+                    Log::warning("Row#$i missed, failed to get policy");
+                    continue;
+                }
+
+                //sold policy data
+                $policy_number = $activeSheet->getCell('E' . $i)->getValue();
+                $start_date = $activeSheet->getCell('G' . $i)->getValue() ? Carbon::createFromFormat("d/m/Y", ($activeSheet->getCell('G' . $i)->getFormattedValue())) : new Carbon();
+                $expiry = $activeSheet->getCell('H' . $i)->getValue() ? Carbon::createFromFormat("d/m/Y",  $activeSheet->getCell('G' . $i)->getFormattedValue()) : new Carbon();
+                $net_premium = $activeSheet->getCell('M' . $i)->getValue() ?? 0;
+                $gross_premium = $activeSheet->getCell('N' . $i)->getValue() ?? 0;
+                $insured_value = $activeSheet->getCell('V' . $i)->getValue() ?? 0;
+                $chassis = $activeSheet->getCell('W' . $i)->getValue();
+                $discount = $activeSheet->getCell('AC' . $i)->getValue();
+                $note = $activeSheet->getCell('BG' . $i)->getValue();
+                
+                $tmpClient = null;
+                if ($client_type == 'client') {
+                    $name_array = explode(" " ,$full_name);
+                    $middle_name = "";
+                    for ($j = 1; $j < count($name_array); $j++) $middle_name .= "$name_array[$j] ";
+                    $tmpClient = Customer::newCustomer(
+                        owner_id: 10,
+                        first_name: $name_array[0],
+                        last_name: $name_array[count($name_array) - 1],
+                        middle_name: trim($middle_name),
+                        gender: Customer::GENDER_MALE,
+                        email: "test@mail"
+                    );
+                    if ($tel) $tmpClient->addPhone(Phone::TYPE_MOBILE, $tel, true);
+                } else {
+                    $name_array = str_split($full_name);
+                    $middle_name = "";
+                    for ($j = 1; $j < count($name_array); $j++) $middle_name .= "$name_array[$j] ";
+                    $tmpClient = Corporate::newCorporate(
+                        owner_id: 10,
+                        name: $full_name
+                    );
+                    if ($tel) $tmpClient->addPhone(Phone::TYPE_MOBILE, $tel, true);
+                }
+                if (is_numeric($net_premium) && is_numeric($insured_value))
+                    SoldPolicy::newSoldPolicy(
+                        client: $tmpClient,
+                        policy_id: $policy->id,
+                        policy_number: $policy_number,
+                        insured_value: $insured_value ?? 0,
+                        net_rate: $insured_value ? ($net_premium / $insured_value) : 0,
+                        net_premium: $net_premium ?? 0,
+                        gross_premium: $gross_premium ?? 0,
+                        installements_count: 1,
+                        payment_frequency: OfferOption::PAYMENT_FREQ_YEARLY,
+                        start: $start_date,
+                        expiry: $expiry,
+                        car_chassis: $chassis,
+                        discount: $discount,
+                        note: $note
+                    );
+                else Log::warning("Invalid insured / net prem on Row#$i");
+            } catch (Exception $e) {
+                Log::warning("Row#$i crashed");
+                Log::warning($e->getMessage());
+                Log::warning($e->getFile() . " " . $e->getLine());
+            }
         }
     }
 

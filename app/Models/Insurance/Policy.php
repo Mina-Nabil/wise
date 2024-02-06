@@ -156,6 +156,16 @@ class Policy extends Model
         }
     }
 
+    public static function getPolicyByNameAndLineOfBusiness($company_name, $business, $policy_name)
+    {
+        return self::select("policies.*")
+        ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
+        ->where('business', $business)
+        ->where('insurance_companies.name', $company_name)
+        ->where('policies.name', $policy_name)
+        ->first();
+    }
+
     ///model functions
     public function getConditionByCarOrValue(CustomersCar $customer_car, $value = null)
     {

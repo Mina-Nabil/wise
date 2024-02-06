@@ -28,10 +28,10 @@ class DatabaseSeeder extends Seeder
         $this->call(ProfessionsSeeder::class);
         if (App::environment('local')) {
             $this->call(InsuranceSeeder::class);
-            $this->call(TaskSeeder::class);
-            $this->call(CustomersSeeder::class);
-            $this->call(CorporatesSeeder::class);
-            $this->call(SoldPolicySeeder::class);
+            // $this->call(TaskSeeder::class);
+            // $this->call(CustomersSeeder::class);
+            // $this->call(CorporatesSeeder::class);
+            $this->call(SoldPolicyFileSeeder::class);
 
         } else {
             $this->call(ProdInsuranceSeeder::class);
