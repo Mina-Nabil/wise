@@ -57,7 +57,8 @@ class SoldPolicySeeder extends Seeder
                 customer_car_id: $tmpCustomer->cars->count() ? $tmpCustomer->cars->random()?->id : null,
                 car_chassis: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean13 : null,
                 car_engine: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null,
-                car_plate_no: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null
+                car_plate_no: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null,
+                discount: $faker->biasedNumberBetween(0, 5000, 'Faker\Provider\Biased::linearLow')
             );
             if (!$newSoldPolciy) continue;
             $noOfClaims = $faker->biasedNumberBetween(0, 5, 'Faker\Provider\Biased::linearHigh');
@@ -154,7 +155,8 @@ class SoldPolicySeeder extends Seeder
                 expiry: new Carbon($tmpEnd),
                 car_chassis: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean13 : null,
                 car_engine: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null,
-                car_plate_no: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null
+                car_plate_no: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null,
+                discount: $faker->biasedNumberBetween(0, 5000, 'Faker\Provider\Biased::linearLow')
             );
 
             if (!$newSoldPolciy) continue;
