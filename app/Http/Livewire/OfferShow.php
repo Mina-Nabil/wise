@@ -129,6 +129,7 @@ class OfferShow extends Component
 
         $res = $this->offer->generateWhatsappUrl($phone, $this->selectedOptions);
         if ($res) {
+            // return $this->redirect($res); //we need redirect to a new tab
             $this->alert('success', 'Message Sent');
             $this->whatsappMsgPhone = null;
             $this->whatsappMsgSec = false;

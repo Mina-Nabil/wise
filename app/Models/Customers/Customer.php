@@ -607,6 +607,12 @@ class Customer extends Model
         }
     }
 
+    ///attributes
+    public function getNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
     ///scopes
     public function scopeUserData($query, $searchText = null)
     {
