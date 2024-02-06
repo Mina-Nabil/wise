@@ -116,6 +116,23 @@ class SoldPolicy extends Model
         }
     }
 
+    public function setNote($note)
+    {
+        $this->update([
+            'note'      => $note
+        ]);
+
+        try {
+            $this->save();
+            AppLog::info("Sold Policy note edited", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit Sold Policy note", desc: $e->getMessage());
+            return false;
+        }
+    }
+
     public function addEndorsement($due = null, $desc = null, $actions = [])
     {
         $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement", $desc, $due);
@@ -224,7 +241,7 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true): self|bool
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null): self|bool
     {
         $newSoldPolicy = new self([
             'creator_id' => Auth::id() ?? 10,
@@ -244,7 +261,8 @@ class SoldPolicy extends Model
             'car_chassis'   => $car_chassis,
             'car_plate_no'  => $car_plate_no,
             'car_engine'    => $car_engine,
-            'discount'      => $discount
+            'discount'      => $discount,
+            'note'          => $note,
         ]);
         $newSoldPolicy->client()->associate($client);
         try {
