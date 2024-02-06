@@ -58,7 +58,8 @@ class SoldPolicySeeder extends Seeder
                 car_chassis: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean13 : null,
                 car_engine: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null,
                 car_plate_no: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null,
-                discount: $faker->biasedNumberBetween(0, 5000, 'Faker\Provider\Biased::linearLow')
+                discount: $faker->biasedNumberBetween(0, 5000, 'Faker\Provider\Biased::linearLow'),
+                note: rand(0, 5) == 0 ? $faker->text : null
             );
             if (!$newSoldPolciy) continue;
             $noOfClaims = $faker->biasedNumberBetween(0, 5, 'Faker\Provider\Biased::linearHigh');
@@ -156,7 +157,8 @@ class SoldPolicySeeder extends Seeder
                 car_chassis: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean13 : null,
                 car_engine: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null,
                 car_plate_no: (($tmpPolicy->type == Policy::BUSINESS_PERSONAL_MOTOR || $tmpPolicy->type == Policy::BUSINESS_CORPORATE_MOTOR) && rand(0, 5) !== 0) ? $faker->ean8 : null,
-                discount: $faker->biasedNumberBetween(0, 5000, 'Faker\Provider\Biased::linearLow')
+                discount: $faker->biasedNumberBetween(0, 5000, 'Faker\Provider\Biased::linearLow'),
+                note: rand(0, 5) == 0 ? $faker->text : null
             );
 
             if (!$newSoldPolciy) continue;
