@@ -161,7 +161,8 @@ class OfferShow extends Component
         );
         if ($res) {
             $this->reset();
-            $this->alert('success', 'Sold Policy added');
+            return redirect(route('sold.policy.show', $res->id));
+            // $this->alert('success', 'Sold Policy added');
         } else {
             $this->alert('failed', 'server error');
         }
