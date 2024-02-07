@@ -189,7 +189,7 @@ class Offer extends Model
                 return Storage::url($file_path);
             }
         }
-        return response()->download(storage_path("offer{$this->id}_comparison.xlsx"));
+        return response()->download(storage_path($public_file_path));
     }
 
     public function generateWhatsappUrl($client_phone, $ids = [])
