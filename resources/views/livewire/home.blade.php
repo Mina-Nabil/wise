@@ -630,7 +630,7 @@
                                                 class=" hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
 
                                                 <td class="table-td">
-                                                    <b>{{ $customer->first_name }} {{ $customer->middle_name }}
+                                                    <b>{{ $customer->first_name }}
                                                         {{ $customer->last_name }}</b>
                                                 </td>
 
