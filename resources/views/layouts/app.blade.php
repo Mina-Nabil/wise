@@ -138,6 +138,14 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ url('/sold-policies') }}" class="navItem @yield('sold-policies')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="iconoir:privacy-policy"></iconify-icon>
+                                <span>Sold Policies</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
@@ -167,14 +175,6 @@
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="material-symbols:policy-outline-rounded"></iconify-icon>
                                 <span>Policies</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url('/sold-policies') }}" class="navItem @yield('sold-policies')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="iconoir:privacy-policy"></iconify-icon>
-                                <span>Sold Policies</span>
                             </span>
                         </a>
                     </li>
