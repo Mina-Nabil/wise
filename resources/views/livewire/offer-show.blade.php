@@ -1014,7 +1014,15 @@
                                 </div>
                                 <div class="from-group">
                                     <label for="sold_payment_frequency" class="form-label">Sold Payment Frequency</label>
-                                    <input type="number" name="sold_payment_frequency" class="form-control mt-2 w-full" wire:model.defer="sold_payment_frequency">
+                                    <select name="sold_payment_frequency" id="basicSelect" class="form-control w-full mt-2  @error('sold_payment_frequency') !border-danger-500 @enderror" wire:model="sold_payment_frequency">
+                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select an option...</option>
+                                        @foreach ($PAYMENT_FREQS as $freqs)
+                                            <option value="{{ $freqs }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ ucwords($freqs) }}
+                                            </option>
+                                        @endforeach
+
+                                    </select>
                                     @error('sold_payment_frequency')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
