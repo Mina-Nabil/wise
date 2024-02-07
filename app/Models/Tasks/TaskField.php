@@ -30,6 +30,7 @@ class TaskField extends Model
 
     const TITLE_ACCIDENT_PLACE = 'مكان الحادت';
     const TITLE_ACCIDENT_DESC = 'وصف الحادث';
+    const TITLE_ACCIDENT_DATE = 'تاريخ الحادث';
     const TITLE_DAMAGES = 'تلفيات';
     const TITLE_DRIVER = 'قائد السياره';
     const TITLE_WORKSHOP = 'مكان الاصلاح';
@@ -39,6 +40,7 @@ class TaskField extends Model
     const TITLES = [
         self::TITLE_ACCIDENT_PLACE,
         self::TITLE_ACCIDENT_DESC,
+        self::TITLE_ACCIDENT_DATE,
         self::TITLE_DAMAGES,
         self::TITLE_DRIVER,
         self::TITLE_WORKSHOP,

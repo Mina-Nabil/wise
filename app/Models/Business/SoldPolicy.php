@@ -166,7 +166,7 @@ class SoldPolicy extends Model
 
     private function addTask($type, $title, $desc, Carbon $due = null): Task|false
     {
-        return Task::newTask($title, taskable: $this, desc: $desc, due: $due, assign_to_id_or_type: $this->creator_id, type: $type);
+        return Task::newTask($title, taskable: $this, desc: $desc, due: $due, assign_to_id_or_type: User::TYPE_OPERATIONS, type: $type);
     }
 
     /**
@@ -351,12 +351,12 @@ class SoldPolicy extends Model
                 $chassis = $activeSheet->getCell('W' . $i)->getValue();
                 $discount = $activeSheet->getCell('AC' . $i)->getValue();
                 $note = $activeSheet->getCell('BG' . $i)->getValue();
-                
+
                 $tmpClient = null;
                 if ($client_type == 'client') {
-                    $name_array = explode(" " ,$full_name);
+                    $name_array = explode(" ", $full_name);
                     $middle_name = "";
-                    for ($j = 1; $j < count($name_array)-1; $j++) $middle_name .= "$name_array[$j] ";
+                    for ($j = 1; $j < count($name_array) - 1; $j++) $middle_name .= "$name_array[$j] ";
                     $tmpClient = Customer::newCustomer(
                         owner_id: 10,
                         first_name: $name_array[0],
