@@ -208,6 +208,7 @@ class OfferShow extends Component
             $this->alert('success', 'Message Sent');
             $this->whatsappMsgPhone = null;
             $this->whatsappMsgSec = false;
+            $this->dispatchBrowserEvent('openNewTab', ['url' => $res]);
         } else {
             $this->alert('failed', 'Server Error');
         }
@@ -251,6 +252,14 @@ class OfferShow extends Component
 
     public function generateWhatsappMsg()
     {
+        if ($this->whatsappMsgPhone === 'other') {
+            $phone = $this->otherPhone;
+        } else {
+            $phone = $this->whatsappMsgPhone;
+        }
+
+        $res = $this->offer->generateWhatsappUrl($phone, $this->selectedOptions);
+        return '<script>window.open("' . $res . '", "_blank");</script>';
     }
 
     public function changeAsignee()

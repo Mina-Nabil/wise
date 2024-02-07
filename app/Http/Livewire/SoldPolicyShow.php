@@ -131,6 +131,12 @@ class SoldPolicyShow extends Component
     {
         $this->toggle($this->newTaskSection);
     }
+
+    public function closeNewTaskSection()
+    {
+        $this->toggle($this->newTaskSection);
+    }
+
     public function createTask()
     {
         $this->validate([
@@ -427,10 +433,12 @@ class SoldPolicyShow extends Component
         $BENEFITS = PolicyBenefit::BENEFITS;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $COLUMNS = TaskAction::COLUMNS[TaskAction::TABLE_SOLD_POLICY];
+        $FIELDSTITLES = TaskField::TITLES;
         return view('livewire.sold-policy-show', [
             'BENEFITS' => $BENEFITS,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
-            'COLUMNS' => $COLUMNS
+            'COLUMNS' => $COLUMNS,
+            'FIELDSTITLES' => $FIELDSTITLES
         ]);
     }
 }
