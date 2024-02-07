@@ -3,11 +3,11 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\models\Business\SoldPolicy;
-use App\models\Business\SoldPolicyBenefit;
-use App\models\Business\SoldPolicyExclusion;
-use App\models\Insurance\PolicyBenefit;
-use App\models\Offers\OfferOption;
+use App\Models\Business\SoldPolicy;
+use App\Models\Business\SoldPolicyBenefit;
+use App\Models\Business\SoldPolicyExclusion;
+use App\Models\Insurance\PolicyBenefit;
+use App\Models\Offers\OfferOption;
 use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskField;
 use App\Traits\AlertFrontEnd;
