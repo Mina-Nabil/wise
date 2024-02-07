@@ -26,15 +26,15 @@ class DatabaseSeeder extends Seeder
         $this->call(CitiesSeeder::class);
         $this->call(CarsSeeder::class);
         $this->call(ProfessionsSeeder::class);
-        if (App::environment('local')) {
-            $this->call(InsuranceSeeder::class);
-            // $this->call(TaskSeeder::class);
-            // $this->call(CustomersSeeder::class);
-            // $this->call(CorporatesSeeder::class);
-            $this->call(SoldPolicyFileSeeder::class);
+        $this->call(InsuranceSeeder::class);
+        $this->call(SoldPolicyFileSeeder::class);
+        // if (App::environment('local')) {
+        //     // $this->call(TaskSeeder::class);
+        //     // $this->call(CustomersSeeder::class);
+        //     // $this->call(CorporatesSeeder::class);
 
-        } else {
-            $this->call(ProdInsuranceSeeder::class);
-        }
+        // } else {
+        //     $this->call(ProdInsuranceSeeder::class);
+        // }
     }
 }
