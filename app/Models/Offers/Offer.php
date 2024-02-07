@@ -613,7 +613,8 @@ class Offer extends Model
         if ($loggedInUser->type !== User::TYPE_ADMIN) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
-                    ->orwhere('users.id', $loggedInUser->id);
+                    ->orwhere('offers.creator_id', $loggedInUser->id)
+                    ->orwhere('offers.assignee_id', $loggedInUser->id);
             });
         }
 
