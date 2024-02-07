@@ -608,7 +608,7 @@ class Offer extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('offers.*')
-            ->join('users', "offers.assignee_id", '=', 'users.id');
+            ->join('users', "offers.creator_id", '=', 'users.id');
 
         if ($loggedInUser->type !== User::TYPE_ADMIN) {
             $query->where(function ($q) use ($loggedInUser) {
