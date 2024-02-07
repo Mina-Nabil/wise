@@ -280,14 +280,11 @@
                                     <b>Options ({{ $offer->options->count() }})</b>
 
                                 </p>
-                                {{-- @if (count($selectedOptions) > 0)
-                                <div>
-                                    
-                                    <button class="btn btn-sm btn-primary float-right" wire:click="exportComparison">Export Comparison</button>
-                                    <button class="btn btn-sm btn-success float-right mr-2" wire:click=""><iconify-icon icon="ic:baseline-whatsapp"></iconify-icon> Send WhatAapp Message</button>
-                                    <button class="btn btn-sm btn-dark float-right mr-2" wire:click=""><iconify-icon icon="ic:outline-email"></iconify-icon> Send Email</button>
-                                </div>
-                                @endif --}}
+                                @if ($offer->selected_option_id)
+                                    <div>
+                                        <button class="btn btn-sm btn-primary float-right" wire:click="openGenerateSoldPolicy">Generate Sold Policy</button>
+                                    </div>
+                                @endif
                             </div>
 
                             @if ($offer->options->isEmpty())
@@ -933,6 +930,150 @@
             </div>
         </div>
     </div>
+
+
+
+    @if ($genarteSoldPolicySection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Create Sold Policy
+                            </h3>
+
+                            <button wire:click="closeGenerateSoldPolicy" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
+                                <div class="from-group">
+                                    <label for="policy_number" class="form-label">policy_number</label>
+                                    <input type="number" name="policy_number" class="form-control mt-2 w-full" wire:model.defer="policy_number">
+                                    @error('policy_number')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="sold_insured_value" class="form-label">sold_insured_value</label>
+                                    <input type="number" name="sold_insured_value" class="form-control mt-2 w-full" wire:model.defer="sold_insured_value">
+                                    @error('sold_insured_value')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-2">
+                                <div class="from-group">
+                                    <label for="net_rate" class="form-label">net_rate</label>
+                                    <input type="number" name="net_rate" class="form-control mt-2 w-full" wire:model.defer="net_rate">
+                                    @error('net_rate')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="net_premium" class="form-label">net_premium</label>
+                                    <input type="number" name="net_premium" class="form-control mt-2 w-full" wire:model.defer="net_premium">
+                                    @error('net_premium')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="gross_premium" class="form-label">gross_premium</label>
+                                    <input type="number" name="gross_premium" class="form-control mt-2 w-full" wire:model.defer="gross_premium">
+                                    @error('gross_premium')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
+                                <div class="from-group">
+                                    <label for="installments_count" class="form-label">installments_count</label>
+                                    <input type="number" name="installments_count" class="form-control mt-2 w-full" wire:model.defer="installments_count">
+                                    @error('installments_count')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="sold_payment_frequency" class="form-label">sold_payment_frequency</label>
+                                    <input type="number" name="sold_payment_frequency" class="form-control mt-2 w-full" wire:model.defer="sold_payment_frequency">
+                                    @error('sold_payment_frequency')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
+                                <div class="from-group">
+                                    <label for="start" class="form-label">start</label>
+                                    <input type="date" name="start" class="form-control mt-2 w-full" wire:model.defer="start">
+                                    @error('start')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="expiry" class="form-label">expiry</label>
+                                    <input type="date" name="expiry" class="form-control mt-2 w-full" wire:model.defer="expiry">
+                                    @error('expiry')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-2">
+                                <div class="from-group">
+                                    <label for="car_chassis" class="form-label">car_chassis</label>
+                                    <input type="text" name="car_chassis" class="form-control mt-2 w-full" wire:model.defer="car_chassis">
+                                    @error('car_chassis')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="car_plate_no" class="form-label">car_plate_no</label>
+                                    <input type="text" name="car_plate_no" class="form-control mt-2 w-full" wire:model.defer="car_plate_no">
+                                    @error('car_plate_no')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="car_engine" class="form-label">car_engine</label>
+                                    <input type="text" name="car_engine" class="form-control mt-2 w-full" wire:model.defer="car_engine">
+                                    @error('car_engine')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="generateSoldPolicy" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
     @if ($discountId)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">

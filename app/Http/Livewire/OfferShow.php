@@ -103,6 +103,70 @@ class OfferShow extends Component
     public $otherEmail;
     public $otherPhone;
 
+    public $genarteSoldPolicySection = false;
+    public $policy_number;
+    public $sold_insured_value;
+    public $net_rate;
+    public $net_premium;
+    public $gross_premium;
+    public $installments_count;
+    public $sold_payment_frequency;
+    public $start;
+    public $expiry;
+    public $car_chassis = null;
+    public $car_plate_no = null;
+    public $car_engine = null;
+
+    public function openGenerateSoldPolicy()
+    {
+        $this->genarteSoldPolicySection  = true;
+    }
+
+    public function closeGenerateSoldPolicy()
+    {
+        $this->genarteSoldPolicySection  = false;
+    }
+
+
+    public function generateSoldPolicy()
+    {
+        $this->validate([
+            'policy_number' => 'required|string|max:255',
+            'sold_insured_value' => 'required|numeric',
+            'net_rate' => 'required|numeric',
+            'net_premium' => 'required|numeric',
+            'gross_premium' => 'required|numeric',
+            'installments_count' => 'required|numeric',
+            'sold_payment_frequency' => 'required|string|max:255',
+            'start' => 'required|date',
+            'expiry' => 'required|date|after:start',
+            'car_chassis' => 'nullable|string|max:255',
+            'car_plate_no' => 'nullable|string|max:255',
+            'car_engine' => 'nullable|string|max:255',
+        ]);
+
+        $res = $this->offer->generateSoldPolicy(
+            $this->policy_number,
+            Carbon::parse($this->start),
+            Carbon::parse($this->expiry),
+            $this->sold_insured_value,
+            $this->net_rate,
+            $this->net_premium,
+            $this->gross_premium,
+            $this->installments_count,
+            $this->sold_payment_frequency,
+            $this->car_chassis,
+            $this->car_engine,
+            $this->car_plate_no
+        );
+        if ($res) {
+            $this->reset();
+            $this->alert('success', 'Sold Policy added');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
     public function toggleWhatsappSection()
     {
         $this->toggle($this->whatsappMsgSec);
