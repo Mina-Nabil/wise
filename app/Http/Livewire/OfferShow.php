@@ -120,6 +120,17 @@ class OfferShow extends Component
     public function openGenerateSoldPolicy()
     {
         $this->genarteSoldPolicySection  = true;
+        $option = OfferOption::find($this->offer->selected_option_id);
+        $this->sold_insured_value = $option->insured_value;
+        $this->net_rate = $option->policy_condition->rate;
+        $this->net_premium = $option->net_premium;
+        $this->gross_premium = $option->gross_premium;
+        $this->installments_count = $option->installements_count;
+        $this->sold_payment_frequency = $option->payment_frequency;
+        $this->start = date('Y-m-d');
+        $this->start = (string) $this->start;
+        $this->expiry = date('Y-m-d', strtotime('+1 year'));
+        $this->expiry = (string) $this->expiry;
     }
 
     public function closeGenerateSoldPolicy()
