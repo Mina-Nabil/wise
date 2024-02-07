@@ -343,8 +343,8 @@ class SoldPolicy extends Model
 
                 //sold policy data
                 $policy_number = $activeSheet->getCell('E' . $i)->getValue();
-                $start_date = $activeSheet->getCell('G' . $i)->getValue() ? new Carbon($activeSheet->getCell('G' . $i)->getFormattedValue()) : new Carbon();
-                $expiry = $activeSheet->getCell('H' . $i)->getValue() ? new Carbon ($activeSheet->getCell('H' . $i)) : new Carbon();
+                $start_date = $activeSheet->getCell('G' . $i)->getValue() ? Carbon::createFromFormat("d/m/Y", ($activeSheet->getCell('G' . $i)->getFormattedValue())) : new Carbon();
+                $expiry = $start_date->addYear();
                 $net_premium = $activeSheet->getCell('M' . $i)->getValue() ?? 0;
                 $gross_premium = $activeSheet->getCell('N' . $i)->getValue() ?? 0;
                 $insured_value = $activeSheet->getCell('V' . $i)->getValue() ?? 0;
