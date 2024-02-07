@@ -43,7 +43,7 @@ class SoldPolicy extends Model
     ];
 
     ///model functions
-    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null): self|true
+    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null): self|bool
     {
         $this->update([
             'policy_number' => $policy_number,
