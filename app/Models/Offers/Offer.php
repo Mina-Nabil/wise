@@ -614,6 +614,7 @@ class Offer extends Model
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('offers.creator_id', $loggedInUser->id)
+                    ->orwhere('offers.assignee_type', $loggedInUser->type)
                     ->orwhere('offers.assignee_id', $loggedInUser->id);
             });
         }
