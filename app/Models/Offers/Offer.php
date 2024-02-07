@@ -116,7 +116,6 @@ class Offer extends Model
     {
         if (!$this->selected_option_id) return false;
         $this->loadMissing('client');
-        $this->loadMissing('policy');
         $this->loadMissing('policy.benefits');
         $this->loadMissing('selected_option');
         $this->loadMissing('selected_option.policy');
@@ -150,6 +149,7 @@ class Offer extends Model
         foreach ($this->selected_option->policy->benefits as $b) {
             $soldPolicy->addBenefit($b->benefit, $b->value);
         }
+        return $soldPolicy;
     }
 
     public function exportComparison($ids = [], $saveAndGetFileUrl = false)
