@@ -129,8 +129,7 @@ class OfferShow extends Component
         $this->sold_payment_frequency = $option->payment_frequency;
         $this->start = date('Y-m-d');
         $this->start = (string) $this->start;
-        $this->expiry = date('Y-m-d', strtotime('+1 year'));
-        $this->expiry = (string) $this->expiry;
+        $this->expiry =  (new Carbon("+1 year"))->subDay()->format("Y-m-d");
     }
 
     public function closeGenerateSoldPolicy()
