@@ -116,7 +116,6 @@ class Offer extends Model
     {
         if (!$this->selected_option_id) return false;
         $this->loadMissing('client');
-        $this->loadMissing('policy.benefits');
         $this->loadMissing('selected_option');
         $this->loadMissing('selected_option.policy');
         $this->loadMissing('selected_option.policy_condition');
