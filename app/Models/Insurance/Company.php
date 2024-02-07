@@ -50,8 +50,8 @@ class Company extends Model
     public function editInfo($name, $note = null): bool
     {
         /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
 
         try {
             $this->update([
