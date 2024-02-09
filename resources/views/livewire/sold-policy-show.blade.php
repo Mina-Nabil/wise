@@ -834,8 +834,12 @@
                                         @enderror
                                     </div>
                                     <div class="from-group col-span-4">
-                                        <label for="newExcValue" class="form-label">Value</label>
-                                        <input name="newExcValue" type="text" class="form-control mt-2 w-full @error('fields.' . $index . '.value') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.value">
+                                        <label for="claim_fields" class="form-label">Value</label>
+                                        <input list="claim_fields" class="form-control mt-2 w-full @error('fields.' . $index . '.value') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.value">
+                                        <datalist id="claim_fields">
+                                                <option>Yes</option>
+                                                <option>No</option>
+                                        </datalist>
                                         @error('fields.{{ $index }}.value')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
