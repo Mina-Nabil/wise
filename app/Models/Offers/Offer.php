@@ -112,7 +112,7 @@ class Offer extends Model
      * Policy number, start and expiry shall be presented as new empty fields
      * Other fields can be populated from the selected option, expect the car details(chassis, engine & plate)
      */
-    public function generateSoldPolicy($policy_number, Carbon $start, Carbon $expiry, $insured_value = null, $net_rate = null, $net_premium = null, $gross_premium = null, $installements_count = null, $payment_frequency = null, $car_chassis = null, $car_engine = null, $car_plate_no = null)
+    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry, $insured_value = null, $net_rate = null, $net_premium = null, $gross_premium = null, $installements_count = null, $payment_frequency = null, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null)
     {
         if (!$this->selected_option_id) return false;
         $this->loadMissing('client');
@@ -137,6 +137,7 @@ class Offer extends Model
             gross_premium: $gross_premium ?? $this->selected_option->gross_premium,
             installements_count: $installements_count ?? $this->selected_option->installements_count ?? 1,
             payment_frequency: $payment_frequency ?? $this->selected_option->payment_frequency,
+            in_favor_to: $in_favor_to ?? $this->in_favor_to,
             start: $start,
             expiry: $expiry,
             offer_id: $this->id,
@@ -144,6 +145,7 @@ class Offer extends Model
             car_chassis: $car_chassis,
             car_plate_no: $car_plate_no,
             car_engine: $car_engine,
+            policy_doc: $policy_doc
         );
         foreach ($this->selected_option->policy->benefits as $b) {
             $soldPolicy->addBenefit($b->benefit, $b->value);
@@ -287,15 +289,15 @@ class Offer extends Model
                 break;
 
             case self::STATUS_PENDING_CUSTOMER:
-                $approvedCount = $this->options()->where('status', OfferOption::STATUS_APPROVED)
+                $approvedCount = $this->options()->where('status', OfferOption::STATUS_QTTN_RECV)
                     ->get()->count();
                 if (!($this->assignee?->is_sales || $this->assignee?->is_manager))
                     return "Offer not assigned to sales";
-                if (!$approvedCount) return "No offer options approved";
+                if (!$approvedCount) return "No qoutation received";
                 break;
 
             case self::STATUS_APPROVED:
-                $approvedCount = $this->options()->where('status', OfferOption::STATUS_APPROVED)
+                $approvedCount = $this->options()->where('status', OfferOption::STATUS_CLNT_ACPT)
                     ->get()->count();
                 if (!$approvedCount) return "No offer options approved";
                 break;
@@ -555,23 +557,19 @@ class Offer extends Model
         }
     }
 
-    public function acceptOption($option_id)
+    public function setOptionState($option_id, $state)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateOptions', $this)) return false;
 
-
         if ($this->status == self::STATUS_APPROVED)
             throw new Exception('Offer already approved');
 
         $option = OfferOption::findOrFail($option_id);
-        $option->status = OfferOption::STATUS_APPROVED;
+        $option->status = $state;
         $this->selected_option_id = $option_id;
         try {
-            $this->options()->where('status', OfferOption::STATUS_APPROVED)->update([
-                'status'    =>  OfferOption::STATUS_DECLINED
-            ]);
             $option->save();
             $this->save();
             $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
@@ -640,6 +638,16 @@ class Offer extends Model
             }
         });
         return $query->latest();
+    }
+
+    public function scopeIsRenewal($query)
+    {
+        return $query->where('is_renewal', 1);
+    }
+
+    public function scopeNotRenewal($query)
+    {
+        return $query->where('is_renewal', 0);
     }
 
     ////relations

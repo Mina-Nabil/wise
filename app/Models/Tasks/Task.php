@@ -490,6 +490,21 @@ class Task extends Model
         return $query->whereIn("tasks.status", $states);
     }
 
+    public function scopeClaims($query)
+    {
+        return $query->where('tasks.type', self::TYPE_CLAIM);
+    }
+
+    public function scopeEndorsments($query)
+    {
+        return $query->where('tasks.type', self::TYPE_ENDORSMENT);
+    }
+
+    public function scopeNormalTasks($query)
+    {
+        return $query->where('tasks.type', self::TYPE_TASK);
+    }
+
     public function scopeByTypes($query, array $types)
     {
         return $query->whereIn('tasks.type', $types);

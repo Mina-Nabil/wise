@@ -57,6 +57,7 @@ return new class extends Migration
             $table->enum('business', Policy::LINES_OF_BUSINESS);
             $table->boolean('interested')->default(true);
             $table->string('note')->nullable();
+            $table->timestamps();
         });
         
     }

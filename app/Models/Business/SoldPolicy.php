@@ -7,7 +7,6 @@ use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
 use App\Models\Customers\Phone;
 use App\Models\Insurance\Policy;
-use App\Models\Insurance\PolicyCondition;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
 use App\Models\Tasks\Task;
@@ -25,7 +24,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class SoldPolicy extends Model
@@ -39,11 +37,12 @@ class SoldPolicy extends Model
         'creator_id', 'offer_id', 'policy_id', 'net_rate', 'net_premium',
         'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
         'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
-        'car_chassis', 'car_plate_no', 'car_engine', 'policy_number'
+        'car_chassis', 'car_plate_no', 'car_engine', 'policy_number',
+        "in_favor_to", "policy_doc"
     ];
 
     ///model functions
-    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null): self|bool
+    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null): self|bool
     {
         $this->update([
             'policy_number' => $policy_number,
@@ -51,6 +50,7 @@ class SoldPolicy extends Model
             'expiry' => $expiry->format('Y-m-d H:i:s'),
             'car_chassis' => $car_chassis,
             'car_plate_no' => $car_plate_no,
+            'in_favor_to' => $in_favor_to,
             'car_engine' => $car_engine
         ]);
 
@@ -73,11 +73,28 @@ class SoldPolicy extends Model
 
         try {
             $this->save();
-            AppLog::info("Sold Policy inactivated", loggable: $this);
+            AppLog::info("Sold Policy activated", loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't invalidate Sold Policy", desc: $e->getMessage());
+            AppLog::error("Can't validate Sold Policy", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function setPolicyDoc($policy_doc)
+    {
+        $this->update([
+            'policy_doc' => $policy_doc,
+        ]);
+
+        try {
+            $this->save();
+            AppLog::info("Sold Policy doc updated", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't set Sold Policy doc", desc: $e->getMessage());
             return false;
         }
     }
@@ -247,7 +264,7 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null): self|bool
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null): self|bool
     {
         $newSoldPolicy = new self([
             'creator_id' => Auth::id() ?? 10,
@@ -269,6 +286,8 @@ class SoldPolicy extends Model
             'car_engine'    => $car_engine,
             'discount'      => $discount,
             'note'          => $note,
+            'in_favor_to'   => $in_favor_to,
+            'policy_doc'    => $policy_doc,
         ]);
         $newSoldPolicy->client()->associate($client);
         try {
@@ -403,7 +422,7 @@ class SoldPolicy extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, $searchText = null)
+    public function scopeUserData($query, $searchText = null, $is_expiring = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -444,6 +463,15 @@ class SoldPolicy extends Model
                         ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
                 });
             }
+        });
+
+        $query->when($is_expiring, function ($q) {
+            $now = Carbon::now();
+            $now->addMonth();
+            $q->whereBetween("expiry", [
+                $now->format('Y-m-01'),
+                $now->format('Y-m-t'),
+            ]);
         });
         return $query->latest();
     }

@@ -20,14 +20,20 @@ class OfferOption extends Model
 
     const MORPH_TYPE = 'offer_options';
 
-    const STATUS_NEW = 'new';
-    const STATUS_DECLINED = 'declined';
-    const STATUS_APPROVED = 'approved';
+    const STATUS_RQST_QTTN = 'request_qoutation';
+    const STATUS_RJCT_BY_OPER = 'rejected_by_operation';
+    const STATUS_RJCT_BY_INS = 'rejected_by_insurance';
+    const STATUS_QTTN_RECV = 'qoutation_received';
+    const STATUS_CLNT_ACPT = 'client_accepted';
+    const STATUS_ISSUED = 'issued';
 
     const STATUSES = [
-        self::STATUS_NEW,
-        self::STATUS_DECLINED,
-        self::STATUS_APPROVED,
+        self::STATUS_RQST_QTTN,
+        self::STATUS_RJCT_BY_OPER,
+        self::STATUS_RJCT_BY_INS,
+        self::STATUS_QTTN_RECV,
+        self::STATUS_CLNT_ACPT,
+        self::STATUS_ISSUED,
     ];
 
     const PAYMENT_FREQ_YEARLY = 'yearly';

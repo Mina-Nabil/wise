@@ -35,7 +35,6 @@ return new class extends Migration
             $table->double('gross_premium');
             $table->integer('installements_count')->default(1);
             $table->enum('payment_frequency', OfferOption::PAYMENT_FREQS)->nullable();
-            
             $table->dateTime('start');
             $table->dateTime('expiry');
             $table->boolean('is_valid')->default(true); //valid or cancelled
@@ -45,6 +44,8 @@ return new class extends Migration
             $table->string('car_engine')->nullable();
             $table->double('discount')->default(0);
             $table->text('note')->nullable();
+            $table->string('in_favor_to')->nullable();
+            $table->string('policy_doc')->nullable();
             $table->timestamps();
         });
 
