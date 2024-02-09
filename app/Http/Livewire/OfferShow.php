@@ -235,6 +235,7 @@ class OfferShow extends Component
             $this->alert('success', 'Message Sent');
             $this->emailMsgEmail = null;
             $this->emailMsgSec = false;
+            $this->dispatchBrowserEvent('openNewTab', ['url' => $res]);
         } else {
             $this->alert('failed', 'Server Error');
         }

@@ -120,7 +120,7 @@ class SoldPolicyIndex extends Component
 
         $this->policyStatus = $res;
 
-        $this->selectedPolicyName = $res->company->name.' | '.$res->name;
+        $this->selectedPolicyName = $res->company->name.' · '.$res->name;
         $this->policy_id  = $res->id;
         $this->policyData = null;
         $this->searchPolicy = null;
