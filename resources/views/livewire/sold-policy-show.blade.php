@@ -306,6 +306,198 @@
                 </div>
             </div>
 
+            {{-- Claims --}}
+            <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                <div class="card-body flex flex-col p-6 active">
+                    <header class="flex mb-5 items-center">
+                        <div class="flex-1">
+                            <div class="card-title font-Inter text-slate-900 dark:text-white">
+                                <iconify-icon icon="ic:round-add-task"></iconify-icon>
+                                Claims
+                                <button wire:click="toggleNewClaimSection" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">Create</button>
+                            </div>
+
+                        </div>
+                    </header>
+                    <div>
+
+                        @if (!$soldPolicy->claims->isEmpty())
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                    <tr>
+
+                                        <th scope="col" class=" table-th ">
+                                            title
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Fields
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Due
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            status
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                    @if ($soldPolicy->claims)
+                                        @foreach ($soldPolicy->claims as $claim)
+                                            <tr>
+                                                <td class="table-td">
+                                                    <a class="hover:underline cursor-pointer" href="{{ route('tasks.show', $claim->id) }}">
+                                                        <b>{{ $claim->title }}</b>
+                                                    </a>
+                                                </td>
+                                                <td class="table-td ">{{ $claim->fields->count() }}</td>
+                                                <td class="table-td ">{{ \Carbon\Carbon::parse($claim->due)->format('l d/m/Y') }}</td>
+                                                <td class="table-td ">
+
+                                                    @if ($claim->status === 'new')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                                            New
+                                                        </div>
+                                                    @elseif($claim->status === 'assigned')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
+                                                            Assigned
+                                                        </div>
+                                                    @elseif($claim->status === 'in_progress')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
+                                                            in Progress
+                                                        </div>
+                                                    @elseif($claim->status === 'pending')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
+                                                            Pending
+                                                        </div>
+                                                    @elseif($claim->status === 'completed')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                                            Completed
+                                                        </div>
+                                                    @elseif($claim->status === 'closed')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
+                                                            Closed
+                                                        </div>
+                                                    @endif
+
+                                                </td>
+
+                                            </tr>
+                                        @endforeach
+                                    @endif
+
+
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="text-center">
+                                <p class="text-center text-sm m-5 text-primary">No Claims for this sold policy!</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            {{-- Endorsement --}}
+            <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                <div class="card-body flex flex-col p-6 active">
+                    <header class="flex mb-5 items-center">
+                        <div class="flex-1">
+                            <div class="card-title font-Inter text-slate-900 dark:text-white">
+                                <iconify-icon icon="ic:round-add-task"></iconify-icon>
+                                Endorsement
+                                <button wire:click="toggleNewEndorsementSection" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">Create</button>
+                            </div>
+
+                        </div>
+                    </header>
+                    <div>
+
+                        @if (!$soldPolicy->endorsements->isEmpty())
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                    <tr>
+
+                                        <th scope="col" class=" table-th ">
+                                            title
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Actions
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Due
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            status
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                    @if ($soldPolicy->endorsements)
+                                        @foreach ($soldPolicy->endorsements as $endorsement)
+                                            <tr>
+                                                <td class="table-td">
+                                                    <a class="hover:underline cursor-pointer" href="{{ route('tasks.show', $endorsement->id) }}">
+                                                        <b>{{ $endorsement->title }}</b>
+                                                    </a>
+                                                </td>
+                                                <td class="table-td ">{{ $endorsement->actions->count() }}</td>
+                                                <td class="table-td ">{{ \Carbon\Carbon::parse($endorsement->due)->format('l d/m/Y') }}</td>
+                                                <td class="table-td ">
+
+                                                    @if ($endorsement->status === 'new')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                                            New
+                                                        </div>
+                                                    @elseif($endorsement->status === 'assigned')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
+                                                            Assigned
+                                                        </div>
+                                                    @elseif($endorsement->status === 'in_progress')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
+                                                            in Progress
+                                                        </div>
+                                                    @elseif($endorsement->status === 'pending')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
+                                                            Pending
+                                                        </div>
+                                                    @elseif($endorsement->status === 'completed')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                                            Completed
+                                                        </div>
+                                                    @elseif($endorsement->status === 'closed')
+                                                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
+                                                            Closed
+                                                        </div>
+                                                    @endif
+
+                                                </td>
+
+                                            </tr>
+                                        @endforeach
+                                    @endif
+
+
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="text-center">
+                                <p class="text-center text-sm m-5 text-primary">No endorsement for this sold policy!</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             {{-- benefits --}}
             <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
                 <div class="card-body flex flex-col p-6 active">
@@ -569,6 +761,200 @@
                             <button wire:click="createTask" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="createTask">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="createTask" icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($newClaimSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                New Claim
+                            </h3>
+                            <button wire:click="closeNewClaimSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+
+                        <!-- Modal body -->
+                        <div class="p-6 py-1">
+
+                            <div class="input-area mt-3">
+                                <label for="textarea" class="form-label">Claim Description</label>
+                                <textarea wire:model.defer="newTaskDesc" id="textarea" class="form-control" placeholder="Text Area"></textarea>
+                            </div>
+
+                            <div class="input-area mt-3">
+                                <label for="textarea" class="form-label">Due Date</label>
+                                <input wire:model.defer="newTaskDue" id="textarea" type="date" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="p-6 py-1">
+                            <p class="text-lg"><b>Enter Fields</b></p>
+                        </div>
+                        @foreach ($fields as $index => $field)
+                            <div class="p-6 py-1">
+                                <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
+                                    <div class="from-group col-span-3">
+                                        <label for="newExcValue" class="form-label">Title</label>
+                                        <input list="claim_title" class="form-control text-center @error('fields.' . $index . '.title') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.title" />
+                                        <datalist id="claim_title">
+                                            @foreach ($FIELDSTITLES as $FIELDSTITLE)
+                                                <option>{{ $FIELDSTITLE }}</option>
+                                            @endforeach
+                                        </datalist>
+                                        @error('fields.{{ $index }}.title')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="from-group col-span-4">
+                                        <label for="newExcValue" class="form-label">Value</label>
+                                        <input name="newExcValue" type="text" class="form-control mt-2 w-full @error('fields.' . $index . '.value') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.value">
+                                        @error('fields.{{ $index }}.value')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="from-group col-span-1">
+                                        <label for="newExcValue" class="form-label">remove</label>
+                                        <button class="action-btn" wire:click="removeField({{ $index }})" type="button">
+                                            <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        <div class="p-6 space-y-4">
+                            <button wire:click="addAnotherField" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Field</button>
+                        </div>
+
+
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="createClaim" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="createClaim">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="createClaim" icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($newEndorsementSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                New Endorsement
+                            </h3>
+                            <button wire:click="closeNewEndorsementSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+
+                        <!-- Modal body -->
+                        <div class="p-6 py-1">
+                            <div class="input-area mt-3">
+                                <label for="textarea" class="form-label">Text Description</label>
+                                <textarea wire:model.defer="newTaskDesc" id="textarea" class="form-control" placeholder="Text Area"></textarea>
+                            </div>
+
+                            <div class="input-area mt-3">
+                                <label for="textarea" class="form-label">Due Date</label>
+                                <input wire:model.defer="newTaskDue" id="textarea" type="date" class="form-control">
+                            </div>
+                        </div>
+
+
+
+                            <div class="p-6 py-1">
+                                <p class="text-lg"><b>Enter Actions</b></p>
+                            </div>
+                            @foreach ($actions as $index => $action)
+                                <div class="p-6 py-1">
+                                    <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
+                                        <div class="from-group col-span-3">
+                                            <label for="newExcValue" class="form-label">Title</label>
+                                            <select name="basicSelect" class="form-control w-full mt-2  @error('actions.' . $index . '.column_name') !border-danger-500 @enderror" wire:model="actions.{{ $index }}.column_name">
+                                                <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Relation...</option>
+                                                @foreach ($COLUMNS as $COLUMN)
+                                                    <option value="{{ $COLUMN }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords(str_replace('_', ' ', $COLUMN)) }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="from-group col-span-4">
+                                            <label for="newExcValue" class="form-label">Value</label>
+                                            <input name="newExcValue" type="text" class="form-control mt-2 w-full @error('actions.' . $index . '.value') !border-danger-500 @enderror" wire:model="actions.{{ $index }}.value">
+                                            @error('actions.{{ $index }}.value')
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="from-group col-span-1">
+                                            <label for="newExcValue" class="form-label">remove</label>
+                                            <button class="action-btn" wire:click="removeAcion({{ $index }})" type="button">
+                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                            <div class="p-6 space-y-4">
+                                <button wire:click="addAnotherAction" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Action</button>
+                            </div>
+
+
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="createEndorsement" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="createEndorsement">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="createEndorsement" icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
@@ -963,7 +1349,8 @@
                                 Delete Benefit
                             </h3>
                             <button wire:click="dismissDeleteBenefit" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -999,7 +1386,8 @@
                                 Delete Exclusions
                             </h3>
                             <button wire:click="dismissDeleteExc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>

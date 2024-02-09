@@ -58,6 +58,8 @@ class SoldPolicyShow extends Component
     public $newTaskDesc;
     public $newTaskDue;
     public $newTaskSection = false;
+    public $newClaimSection = false;
+    public $newEndorsementSection= false;
 
     public function setInvalid()
     {
@@ -137,49 +139,73 @@ class SoldPolicyShow extends Component
         $this->toggle($this->newTaskSection);
     }
 
-    public function createTask()
+    public function toggleNewClaimSection()
     {
+        $this->toggle($this->newClaimSection);
+    }
+
+    public function closeNewClaimSection()
+    {
+        $this->toggle($this->newClaimSection);
+        $this->newTaskDesc = null;
+        $this->newTaskDue = null;
+        $this->actions[] = [];
+        $this->actions[] = ['column_name' => '', 'value' => ''];
+    }
+
+    public function toggleNewEndorsementSection()
+    {
+        $this->toggle($this->newEndorsementSection);
+    }
+
+    public function closeNewEndorsementSection()
+    {
+        $this->newEndorsementSection = false;
+        $this->newTaskDesc = null;
+        $this->newTaskDue = null;
+        $this->actions[] = [];
+        $this->actions[] = ['column_name' => '', 'value' => ''];
+    }
+
+    public function createClaim(){
         $this->validate([
             'newTaskDesc' => 'nullable|string',
-            'newTaskDue' => 'nullable|date'
+            'newTaskDue' => 'nullable|date',
+            'fields.*.title' => 'required|string|max:255',
+            'fields.*.value' => 'required|string|max:255',
         ]);
 
-        if ($this->newTaskType === 'claim') {
-
-            $this->validate([
-                'fields.*.title' => 'required|string|max:255',
-                'fields.*.value' => 'required|string|max:255',
-            ]);
-
-            $res = $this->soldPolicy->addClaim(Carbon::parse($this->newTaskDue), $this->newTaskDesc, $this->fields);
+        $res = $this->soldPolicy->addClaim(Carbon::parse($this->newTaskDue), $this->newTaskDesc, $this->fields);
 
             if ($res) {
                 $this->mount($this->soldPolicy->id);
-                $this->newTaskSection = false;
-                $this->fields = [];
+                $this->closeNewClaimSection();
                 $this->alert('success', 'Claim added!');
             } else {
                 $this->alert('failed', 'server error');
             }
-        } elseif ($this->newTaskType === 'endorsement') {
+            
+    }
 
-            $this->validate([
-                'actions.*.column_name' => 'required|string|max:255',
-                'actions.*.value' => 'required|string|max:255',
-            ]);
+    public function createEndorsement(){
+        $this->validate([
+            'newTaskDesc' => 'nullable|string',
+            'newTaskDue' => 'nullable|date',
+            'actions.*.column_name' => 'required|string|max:255',
+            'actions.*.value' => 'required|string|max:255',
+        ]);
 
-            $res = $this->soldPolicy->addEndorsement(Carbon::parse($this->newTaskDue), $this->newTaskDesc, $this->actions);
+        $res = $this->soldPolicy->addEndorsement(Carbon::parse($this->newTaskDue), $this->newTaskDesc, $this->actions);
 
-            if ($res) {
-                $this->mount($this->soldPolicy->id);
-                $this->newTaskSection = false;
-                $this->actions = [];
-                $this->alert('success', 'Endorsement added!');
-            } else {
-                $this->alert('failed', 'server error');
-            }
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closeNewEndorsementSection();
+            $this->alert('success', 'Endorsement added!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
+
 
     public function removeAcion($index)
     {
