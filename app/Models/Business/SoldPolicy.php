@@ -44,6 +44,21 @@ class SoldPolicy extends Model
     ];
 
     ///model functions
+    public function generateRenewalOffer(Carbon $due)
+    {
+        return Offer::newOffer(
+            client: $this->client, 
+            type: $this->policy->business, 
+            item_value: $this->insured_value,
+            item_title: "Renewal Offer",
+            note: "Policy#$this->policy_number Renewal Offer", 
+            due: $due, 
+            item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null, 
+            is_renewal: true, 
+            in_favor_to: $this->in_favor_to
+        );
+    }
+
     public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null): self|bool
     {
         $this->update([
