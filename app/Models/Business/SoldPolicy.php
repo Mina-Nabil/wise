@@ -30,6 +30,8 @@ class SoldPolicy extends Model
 {
     use HasFactory;
 
+    const FILES_DIRECTORY = 'sold_policies/';
+
     const MORPH_TYPE = 'sold_policy';
 
     protected $table = 'sold_policies';
@@ -38,11 +40,11 @@ class SoldPolicy extends Model
         'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
         'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
         'car_chassis', 'car_plate_no', 'car_engine', 'policy_number',
-        "in_favor_to", "policy_doc"
+        'in_favor_to', 'policy_doc'
     ];
 
     ///model functions
-    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null): self|bool
+    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null): self|bool
     {
         $this->update([
             'policy_number' => $policy_number,
@@ -50,7 +52,6 @@ class SoldPolicy extends Model
             'expiry' => $expiry->format('Y-m-d H:i:s'),
             'car_chassis' => $car_chassis,
             'car_plate_no' => $car_plate_no,
-            'in_favor_to' => $in_favor_to,
             'car_engine' => $car_engine
         ]);
 
@@ -61,6 +62,23 @@ class SoldPolicy extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't edit Sold Policy", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function setInFavorTo($in_favor_to)
+    {
+        $this->update([
+            'in_favor_to' => $in_favor_to,
+        ]);
+
+        try {
+            $this->save();
+            AppLog::info("Set Sold Policy in favor to", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't set Sold Policy in favor", desc: $e->getMessage());
             return false;
         }
     }
@@ -161,8 +179,6 @@ class SoldPolicy extends Model
         $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement", $desc, $due);
         if (!$newEndors) return false;
         foreach ($actions as $a) {
-            //expiry
-            //2025-06-01
             $newEndors->addAction($a['column_name'], $a['value']);
         }
         return $newEndors;
