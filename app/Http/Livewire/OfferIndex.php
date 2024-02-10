@@ -226,8 +226,7 @@ class OfferIndex extends Component
             $item = null;
         }
 
-        $offer = new Offer();
-        $res = $offer->newOffer($this->owner, $this->type, $this->item_value, $this->item_title, $this->item_desc, $this->note, $combinedDateTime, $item, $this->isRenewal, $this->inFavorTo);
+        $res = Offer::newOffer($this->owner, $this->type, $this->item_value, $this->item_title, $this->item_desc, $this->note, $combinedDateTime, $item, $this->isRenewal, $this->inFavorTo);
         if ($res) {
             return redirect(route('offers.show', $res->id));
         } else {

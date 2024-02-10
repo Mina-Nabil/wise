@@ -69,7 +69,7 @@ class Offer extends Model
 
 
     ////static functions
-    public function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false, $in_favor_to = null): self|false
+    public static function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false, $in_favor_to = null): self|false
     {
         $newOffer = new self([
             "creator_id"    =>  Auth::id(),
