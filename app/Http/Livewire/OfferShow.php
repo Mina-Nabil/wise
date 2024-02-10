@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use App\models\Business\SoldPolicy;
 
 class OfferShow extends Component
 {
@@ -116,6 +117,8 @@ class OfferShow extends Component
     public $car_chassis = null;
     public $car_plate_no = null;
     public $car_engine = null;
+    public $soldInFavorTo;
+    public $policyDoc;
 
     public function openGenerateSoldPolicy()
     {
@@ -153,10 +156,20 @@ class OfferShow extends Component
             'car_chassis' => 'nullable|string|max:255',
             'car_plate_no' => 'nullable|string|max:255',
             'car_engine' => 'nullable|string|max:255',
+            'soldInFavorTo' =>  'nullable|string|max:255',
+            'policyDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
+
+        if($this->policyDoc){
+            $url = $this->policyDoc->store(SoldPolicy::FILES_DIRECTORY, 's3');
+        }else{
+            $url = null;
+        }
+        
 
         $res = $this->offer->generateSoldPolicy(
             $this->policy_number,
+            $url,
             Carbon::parse($this->start),
             Carbon::parse($this->expiry),
             $this->sold_insured_value,
@@ -167,7 +180,9 @@ class OfferShow extends Component
             $this->sold_payment_frequency,
             $this->car_chassis,
             $this->car_engine,
-            $this->car_plate_no
+            $this->car_plate_no,
+            $this->soldInFavorTo    
+
         );
         if ($res) {
             $this->reset();

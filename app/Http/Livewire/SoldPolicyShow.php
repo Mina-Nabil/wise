@@ -13,6 +13,7 @@ use App\Models\Tasks\TaskField;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use PhpParser\Node\Expr\FuncCall;
 
 class SoldPolicyShow extends Component
@@ -60,6 +61,23 @@ class SoldPolicyShow extends Component
     public $newTaskSection = false;
     public $newClaimSection = false;
     public $newEndorsementSection= false;
+
+    public function downloadDoc(){
+        $fileContents = Storage::disk('s3')->get($this->soldPolicy->policy_doc);
+        $extension = pathinfo($this->soldPolicy->policy_doc, PATHINFO_EXTENSION);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number.'_document.'. $extension . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
 
     public function setInvalid()
     {

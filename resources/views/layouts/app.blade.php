@@ -738,7 +738,7 @@
                                 @yield('Breadcrumb')
 
                                 <div class=" space-y-5">
-                                    <h6>@yield('content')</h6>
+                                    @yield('content')
                                 </div>
 
                             </div>

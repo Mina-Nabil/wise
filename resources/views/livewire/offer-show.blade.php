@@ -981,6 +981,13 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="input-area mb-3">
+                                <label for="policyDoc" class="form-label">Policy Document</label>
+                                <input name="policyDoc" class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('policyDoc') !border-danger-500 @enderror" id="default-picker" type="file" wire:model.defer="policyDoc">
+                                @error('policyDoc')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-2">
                                 <div class="from-group">
                                     <label for="net_rate" class="form-label">Net Rate</label>
@@ -1066,6 +1073,13 @@
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
+                            </div>
+                            <div class="from-group">
+                                <label for="inFavorTo" class="form-label">in Favor To</label>
+                                <input type="text" name="inFavorTo" class="form-control mt-2 w-full" wire:model.defer="inFavorTo">
+                                @error('inFavorTo')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                             </div>
 
                         </div>

@@ -49,6 +49,8 @@ class SoldPolicyIndex extends Component
     public $car_engine = null;
     public $is_valid = true;
     public $note = null;
+    public $inFavorTo = null;
+    public $policyDoc = null;
 
     public $newPolicySection = false;
 
@@ -81,7 +83,16 @@ class SoldPolicyIndex extends Component
             'car_engine' => 'nullable|string|max:255',
             'is_valid' => 'required|boolean',
             'note' => 'nullable|string|max:255',
+            'inFavorTo' => 'nullable|string|max:255',
+            'policyDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
+
+        if($this->policyDoc){
+            $url = $this->policyDoc->store(SoldPolicy::FILES_DIRECTORY, 's3');
+        }else{
+            $url = null;
+        }
+        
 
         $res = SoldPolicy::newSoldPolicy(
             $this->client,
@@ -102,7 +113,9 @@ class SoldPolicyIndex extends Component
             $this->car_plate_no,
             $this->car_engine,
             $this->is_valid,
-            $this->note
+            $this->note,
+            $this->inFavorTo,
+            $this->$url
         );
 
         if($res){
