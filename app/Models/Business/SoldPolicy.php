@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class SoldPolicy extends Model
@@ -128,6 +129,24 @@ class SoldPolicy extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't set Sold Policy doc", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function deletePolicyDoc()
+    {
+        $this->policy_doc = null;
+        if($this->save()){
+            Storage::delete($this->policy_doc);
+        }
+
+        try {
+            $this->save();
+            AppLog::info("Sold Policy doc deleted", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't delete Sold Policy doc", desc: $e->getMessage());
             return false;
         }
     }
