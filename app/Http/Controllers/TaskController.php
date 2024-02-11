@@ -19,6 +19,14 @@ class TaskController extends Controller
         ]);
     }
 
+    public function claimsIndex(){
+        return view('tasks.claims-index');
+    }
+
+    public function endorsementIndex(){
+        return view('tasks.endorsement-index');
+    }
+
     public function tempTasksIndex(){
         return view('tasks.temp-index');
     }

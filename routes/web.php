@@ -48,6 +48,8 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/sold-policies', [PoliciesController::class, 'soldPolicyIndex'])->name('sold.policy.index');
 
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/claims', [TaskController::class, 'claimsIndex'])->name('claims.index');
+    Route::get('/endorsement', [TaskController::class, 'endorsementIndex'])->name('endorsement.index');
     Route::get('/tasks/temp', [TaskController::class, 'tempTasksIndex'])->name('/temptasks.index');
     Route::get('/tasks/my', [TaskController::class, 'my'])->name('tasks.show');
     Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');

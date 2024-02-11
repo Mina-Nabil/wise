@@ -454,16 +454,6 @@ class OfferShow extends Component
         $this->payment_frequency = null;
     }
 
-    public function acceptOption($id)
-    {
-        $res = $this->offer->acceptOption($id);
-        if ($res) {
-            $this->alert('success', 'Option Accepted');
-            $this->mount($this->offer->id);
-        } else {
-            $this->alert('failed', 'Server error');
-        }
-    }
     public function editOption()
     {
         $option = OfferOption::find($this->editOptionId);
@@ -886,6 +876,16 @@ class OfferShow extends Component
         }
     }
 
+    public function changeOptionState($optionId, $status){
+        $res = $this->offer->setOptionState($optionId , $status);
+        if ($res) {
+            $this->mount($this->offer->id);
+            $this->alert('info', $res);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
 
     public function render()
     {
@@ -894,6 +894,7 @@ class OfferShow extends Component
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
+        $optionStatuses = OfferOption::STATUSES;
         if ($this->offer->item)
             $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, age: null, offerValue: $this->offer->item_value);
 
@@ -903,6 +904,7 @@ class OfferShow extends Component
             'users' => $users,
             'usersTypes' => $usersTypes,
             'DISCOUNT_TYPES' => $DISCOUNT_TYPES,
+            'optionStatuses' => $optionStatuses
         ]);
     }
 }

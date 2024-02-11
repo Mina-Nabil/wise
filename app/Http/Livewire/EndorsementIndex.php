@@ -12,7 +12,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Traits\ToggleSectionLivewire;
 
-class TaskIndex extends Component
+class EndorsementIndex extends Component
 {
     use WithPagination, AlertFrontEnd, WithFileUploads, ToggleSectionLivewire;
 
@@ -166,6 +166,7 @@ class TaskIndex extends Component
         $this->resetPage();
     }
 
+
     public function render()
     {
         $statuses = Task::STATUSES;
@@ -188,13 +189,13 @@ class TaskIndex extends Component
             ->when($this->filteredStatus == null, function ($query) {
                 return $query->byStates(['active']);
             })
-            ->normalTasks()
+            ->endorsments()
             ->paginate(10);
 
         //fixing assignedTo when a user adds a test without changing the assigned to list
         $this->assignedTo = $this->assignedTo ?? $users->first()?->id;
 
-        return view('livewire.task-index', [
+        return view('livewire.endorsement-index', [
             'tasks' => $tasks,
             'statuses' => $statuses,
             'filteredStatus' => $this->filteredStatus,

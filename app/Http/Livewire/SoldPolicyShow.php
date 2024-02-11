@@ -66,6 +66,25 @@ class SoldPolicyShow extends Component
     public $deleteDocSec = false;
     public $docFile;
 
+    public $generateRenewalOfferSec = false;
+    public $renewalOfferDue;
+
+    public function toggleGenerateRenewalOfferSec(){
+        $this->toggle($this->generateRenewalOfferSec);
+    }
+
+    public function generateRenewalOffer(){
+        $res = $this->soldPolicy->generateRenewalOffer(Carbon::parse($this->renewalOfferDue));
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->toggleGenerateRenewalOfferSec();
+            $this->alert('success', 'document deleted');
+            $this->dispatchBrowserEvent('openNewTab', ['url' => '/offers'.'/'.$res->id]);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
     public function toggleDeleteDoc()
     {
         $this->toggle($this->deleteDocSec);

@@ -119,14 +119,37 @@
                             </span>
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ url('/tasks') }}" class="navItem @yield('tasks')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="ic:round-add-task"></iconify-icon>
                                 <span>Tasks</span>
                             </span>
                         </a>
+                    </li> --}}
+
+                    <li class="">
+                        <a href="javascript:void(0)" class="navItem">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="ic:round-add-task"></iconify-icon>
+                                <span>Operational</span>
+                            </span>
+                            <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
+                        </a>
+                        <ul class="sidebar-submenu">
+                            <li>
+                                <a href="{{ url('/tasks') }}"  class="@yield('tasks')">Tasks</a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/claims') }}" class="@yield('claims')">Claims</a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/endorsement') }}" class="@yield('endorsement')">Endorsement</a>
+                            </li>
+                        </ul>
                     </li>
+
+
                     <!-- Apps Area -->
                     <li class="sidebar-menu-title">CRM</li>
                     <li>
@@ -576,9 +599,7 @@
 
                                 <!-- BEGIN: Notification Dropdown -->
                                 @php
-                                    $notfCount = auth()
-                                        ->user()
-                                        ->getUnseenNotfCount();
+                                    $notfCount = auth()->user()->getUnseenNotfCount();
                                 @endphp
                                 <!-- Notifications Dropdown area -->
                                 <div class="relative md:block hidden">
@@ -609,7 +630,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex-1">
-                                                            <a href="{{ $notification->route }}"  class="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1 before:w-full before:h-full before:absolute before:top-0 before:left-0">
+                                                            <a href="{{ $notification->route }}" class="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1 before:w-full before:h-full before:absolute before:top-0 before:left-0">
                                                                 @if (!$notification->is_seen)
                                                                     *
                                                                 @endif
