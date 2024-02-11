@@ -2,6 +2,7 @@
     <div class="flex justify-end mb-5">
         <div class="dropdown relative">
             <button class="btn btn-sm inline-flex justify-center btn-secondary items-center" type="button" id="secondaryDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="docFile" icon="line-md:loading-twotone-loop"></iconify-icon>
                 Actions
                 <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
             </button>
@@ -25,10 +26,21 @@
                             Set as Valid</a>
                     </li>
                 @endif
-
+                @if (!$soldPolicy->policy_doc)
+                    <label for="uploadDoc">
+                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Add document</a>
+                    </label>
+                    <input type="file" style="display: none" name="uploadDoc" id="uploadDoc" wire:model="docFile">
+                @endif
 
             </ul>
         </div>
+
+        @error('docFile')
+            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+        @enderror
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -159,7 +171,7 @@
                         <hr class="mb-3 w-[96px]" style="margin: 0 auto;margin-top:10px;">
                     </header>
 
-                    <div class="grid grid-cols-3 gap-3 mb-4 text-base text-center">
+                    <div class="grid md:grid-cols-4 gap-3 mb-4 text-base text-center">
                         <div class="border-r">
                             <h5>{{ number_format($soldPolicy->net_premium, 0, '.', ',') }}</h5>
                             <p class="text-xs">Net Premium</p>
@@ -172,6 +184,10 @@
                         <div class="border-l">
                             <h5>{{ number_format($soldPolicy->gross_premium, 0, '.', ',') }}</h5>
                             <p class="text-xs">Gross Premium</p>
+                        </div>
+                        <div class="border-l">
+                            <h5>{{ $soldPolicy->discount }} %</h5>
+                            <p class="text-xs">Discount</p>
                         </div>
                     </div>
                 </div>
@@ -207,11 +223,19 @@
             @if ($soldPolicy->policy_doc)
                 <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
                     <div class="card-body flex flex-col p-6 active justify-center">
-                        <div>
-                            <button wire:click="downloadDoc" class="btn inline-flex justify-center btn-success block-btn btn-sm">
+                        <div class="flex justify-between gap-2">
+                            <button wire:click="downloadDoc" class="btn inline-flex justify-center btn-success block-btn btn-sm w-3/4">
                                 <span class="flex items-center">
-                                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="material-symbols:download"></iconify-icon>
+                                    <iconify-icon wire:loading.remove wire:target="downloadDoc" class="text-xl" icon="material-symbols:download"></iconify-icon>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
                                     <span>Download document</span>
+                                </span>
+                            </button>
+                            <button wire:click="toggleDeleteDoc" class="btn inline-flex justify-center  btn-danger  btn-sm w-1/4">
+                                <span class="flex items-center">
+                                    <iconify-icon wire:loading.remove wire:target="toggleDeleteDoc" class="text-xl  ltr:mr-2 rtl:ml-2" icon="material-symbols:delete-outline"></iconify-icon>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="toggleDeleteDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <span>Remove</span>
                                 </span>
                             </button>
                         </div>
@@ -1157,6 +1181,17 @@
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
+                            <div class="from-group">
+                                <div class="relative">
+                                    <input type="number" class="form-control !px-9 @error('discount') !border-danger-500 @enderror" placeholder="100" wire:model.defer="discount">
+                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center"> % </span>
+                                </div>
+                                <label for="discount" class="form-label">Discount</label>
+                                <input name="discount" max="12" min="1" type="number" class="form-control mt-2 w-full @error('discount') !border-danger-500 @enderror">
+                                @error('discount')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1396,8 +1431,7 @@
                                 Delete Benefit
                             </h3>
                             <button wire:click="dismissDeleteBenefit" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1433,8 +1467,7 @@
                                 Delete Exclusions
                             </h3>
                             <button wire:click="dismissDeleteExc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1457,5 +1490,42 @@
             </div>
         </div>
     @endif
+
+    @if ($deleteDocSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                Delete Document File
+                            </h3>
+                            <button wire:click="toggleDeleteDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                Are you sure ! you Want to delete this Document ?
+                            </h6>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteDucment" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
 </div>

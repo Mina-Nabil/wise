@@ -14,11 +14,12 @@ use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Livewire\WithFileUploads;
 use PhpParser\Node\Expr\FuncCall;
 
 class SoldPolicyShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
 
     public $soldPolicy;
     public $start;
@@ -52,6 +53,7 @@ class SoldPolicyShow extends Component
     public $gross_premium;
     public $installements_count;
     public $payment_frequency;
+    public $discount;
 
     public $actions = [];
     public $fields = [];
@@ -60,14 +62,51 @@ class SoldPolicyShow extends Component
     public $newTaskDue;
     public $newTaskSection = false;
     public $newClaimSection = false;
-    public $newEndorsementSection= false;
+    public $newEndorsementSection = false;
+    public $deleteDocSec = false;
+    public $docFile;
 
-    public function downloadDoc(){
+    public function toggleDeleteDoc()
+    {
+        $this->toggle($this->deleteDocSec);
+    }
+
+    public function deleteDucment()
+    {
+        $res = $this->soldPolicy->deletePolicyDoc();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->toggleDeleteDoc();
+            $this->alert('success', 'document deleted');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function updatedDocFile()
+    {
+        $this->validate([
+            'docFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+        ]);
+
+        $url = $this->docFile->store(SoldPolicy::FILES_DIRECTORY, 's3');
+
+        $res = $this->soldPolicy->setPolicyDoc($url);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'document added');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function downloadDoc()
+    {
         $fileContents = Storage::disk('s3')->get($this->soldPolicy->policy_doc);
         $extension = pathinfo($this->soldPolicy->policy_doc, PATHINFO_EXTENSION);
         $headers = [
             'Content-Type' => 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number.'_document.'. $extension . '"',
+            'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number . '_document.' . $extension . '"',
         ];
 
         return response()->stream(
@@ -185,7 +224,8 @@ class SoldPolicyShow extends Component
         $this->actions[] = ['column_name' => '', 'value' => ''];
     }
 
-    public function createClaim(){
+    public function createClaim()
+    {
         $this->validate([
             'newTaskDesc' => 'nullable|string',
             'newTaskDue' => 'nullable|date',
@@ -195,17 +235,17 @@ class SoldPolicyShow extends Component
 
         $res = $this->soldPolicy->addClaim(Carbon::parse($this->newTaskDue), $this->newTaskDesc, $this->fields);
 
-            if ($res) {
-                $this->mount($this->soldPolicy->id);
-                $this->closeNewClaimSection();
-                $this->alert('success', 'Claim added!');
-            } else {
-                $this->alert('failed', 'server error');
-            }
-            
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closeNewClaimSection();
+            $this->alert('success', 'Claim added!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
-    public function createEndorsement(){
+    public function createEndorsement()
+    {
         $this->validate([
             'newTaskDesc' => 'nullable|string',
             'newTaskDue' => 'nullable|date',
@@ -266,6 +306,7 @@ class SoldPolicyShow extends Component
             'gross_premium' => 'required|numeric',
             'installements_count' => 'required|numeric',
             'payment_frequency' => 'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
+            'discount' => 'required|numeric',
         ]);
 
         $res = $this->soldPolicy->updatePaymentInfo(
@@ -274,7 +315,8 @@ class SoldPolicyShow extends Component
             $this->net_premium,
             $this->gross_premium,
             $this->installements_count,
-            $this->payment_frequency
+            $this->payment_frequency,
+            $this->discount
         );
 
         if ($res) {
@@ -468,6 +510,7 @@ class SoldPolicyShow extends Component
         $this->gross_premium = $this->soldPolicy->gross_premium;
         $this->installements_count = $this->soldPolicy->installements_count;
         $this->payment_frequency = $this->soldPolicy->payment_frequency;
+        $this->discount = $this->soldPolicy->discount;
         $this->actions[] = ['column_name' => '', 'value' => ''];
         $this->fields[] = ['title' => '', 'value' => ''];
     }
