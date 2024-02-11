@@ -372,7 +372,7 @@ class Task extends Model
 
     /////static functions
     /**
-     * @param array $files .. must contain array of ['name' => filename, 'file_url' => url] records
+     * @param array $files must contain array of ['name' => filename, 'file_url' => url, 'user_id'  => user_id] records
      */
     public static function newTask($title, Model $taskable = null, $assign_to_id_or_type = null, Carbon $due = null, $desc = null, $files = [], $watchers = [], $type = Task::TYPE_TASK)
     {
@@ -406,13 +406,10 @@ class Task extends Model
             if ($assign_to_id_or_type) {
                 $newTask->assignTo($assign_to_id_or_type);
             }
-        
 
-            if ($files && count($files) > 0 && $loggedInUser) {
-                foreach ($files as $f) {
-                    $f['user_id']   =  $loggedInUser->id;
-                }
-                $newTask->files()->create($files);
+
+            if ($files && count($files) > 0) {
+                $newTask->files()->createMany($files);
             }
 
             if ($watchers && count($watchers) > 0) {
@@ -456,7 +453,8 @@ class Task extends Model
             ->when($includeWatchers, function ($q) use ($loggedInUser) {
                 $q->orwhere('task_watchers.user_id', $loggedInUser->id);
             })
-            ->groupBy('tasks.id');
+            ->groupBy('tasks.id')
+            ->orderBy('tasks.due');
 
         if ($loggedInUser->type === User::TYPE_ADMIN && !$assignedToMeOnly) {
             return $query;
@@ -487,6 +485,15 @@ class Task extends Model
 
     public function scopeByStates($query, array $states)
     {
+        if (in_array('all', $states)) {
+            return $query;
+        }
+        if (in_array('active', $states)) {
+            array_push($states, self::STATUS_ASSIGNED);
+            array_push($states, self::STATUS_IN_PROGRESS);
+            array_push($states, self::STATUS_NEW);
+            array_push($states, self::STATUS_PENDING);
+        }
         return $query->whereIn("tasks.status", $states);
     }
 
@@ -508,6 +515,11 @@ class Task extends Model
     public function scopeByTypes($query, array $types)
     {
         return $query->whereIn('tasks.type', $types);
+    }
+    
+    public function scopeSearchByTitle($query, $text)
+    {
+        return $query->where('tasks.title', 'LIKE', "%" . $text . "%");
     }
 
     public function scopeOpenBy($query, $user_id)

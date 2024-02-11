@@ -20,6 +20,7 @@ class TaskIndex extends Component
     public $startDate;
     public $endDate;
     public $filteredStatus;
+    public $searchText;
     public $myTasks;
     public $watcherTasks;
 
@@ -90,10 +91,17 @@ class TaskIndex extends Component
             ],
         );
 
-        if ($this->file) {
-            $url = $this->file->store(Task::FILES_DIRECTORY, 's3');
+        if ($this->files) {
+            $urls  = [];
+            foreach ($this->files as $file) {
+                array_push($urls, [
+                    'name'      => $file->getClientOriginalName(),
+                    'file_url'  => $file->store(Task::FILES_DIRECTORY, 's3'),
+                    'user_id'   => Auth::id()
+                ]);
+            }
         } else {
-            $url = null;
+            $urls = [];
         }
 
 
@@ -101,7 +109,7 @@ class TaskIndex extends Component
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
         $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
 
-        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $url, $this->setWatchersList ?? []);
+        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $urls, $this->setWatchersList ?? []);
 
         if ($t) {
             $this->alert('success', 'Task Added!');
@@ -121,14 +129,10 @@ class TaskIndex extends Component
         $this->file = null;
         $this->showNewTask = null;
     }
+
     public function filterByStatus($status)
     {
         $this->filteredStatus = [$status];
-    }
-
-    public function resetStatusFilter()
-    {
-        $this->filteredStatus = null;
     }
 
     public function mount($filters)
@@ -141,11 +145,10 @@ class TaskIndex extends Component
             }
         }
 
-        $this->startDate = (new Carbon('last week'))->format('Y-m-d');
-        $this->endDate = now()
-            ->addMonths(3)
-            ->format('Y-m-d');
-        $this->dateRange = $this->startDate . ' to ' . $this->endDate;
+        $this->searchText = null;
+        $this->startDate = null;
+        $this->endDate = null;
+        $this->dateRange = ($this->startDate && $this->endDate) ? $this->startDate . ' to ' . $this->endDate : "N/A";
         $this->watcherTasks = false;
     }
 
@@ -158,18 +161,32 @@ class TaskIndex extends Component
         }
     }
 
+    public function updatedSearchText()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $statuses = Task::STATUSES;
-        $startDate = Carbon::parse($this->startDate);
-        $endDate = Carbon::parse($this->endDate);
+
         $users = User::all();
         $user_types = User::TYPES;
 
         $tasks = Task::myTasksQuery($this->myTasks, $this->watcherTasks)
-            ->fromTo($startDate, $endDate)
+            ->when($this->startDate && $this->endDate, function ($query) {
+                $startDate = Carbon::parse($this->startDate);
+                $endDate = Carbon::parse($this->endDate);
+                return $query->fromTo($startDate, $endDate);
+            })
+            ->when($this->searchText, function ($query) {
+                return $query->searchByTitle($this->searchText);
+            })
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);
+            })
+            ->when($this->filteredStatus == null, function ($query) {
+                return $query->byStates(['active']);
             })
             ->paginate(10);
 

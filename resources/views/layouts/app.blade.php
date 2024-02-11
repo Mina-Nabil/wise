@@ -609,7 +609,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex-1">
-                                                            <a href="{{ $notification->route }}" class="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1 before:w-full before:h-full before:absolute before:top-0 before:left-0">
+                                                            <a href="{{ $notification->route }}"  class="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1 before:w-full before:h-full before:absolute before:top-0 before:left-0">
                                                                 @if (!$notification->is_seen)
                                                                     *
                                                                 @endif

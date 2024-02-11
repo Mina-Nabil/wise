@@ -11,6 +11,7 @@ use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\AppLogController;
 use App\Models\Customers\Customer;
+use App\Models\Users\ContactInfo;
 use Illuminate\Support\Facades\Route;
 
 
@@ -79,3 +80,13 @@ Route::middleware('auth', 'active')->group(function () {
 Route::post('/login', [HomeController::class, 'authenticate']);
 Route::get('/login', [HomeController::class, 'login'])->name('login');
 Route::get('/logout', [HomeController::class, 'logout'])->name('logout');
+
+Route::get('/contact/{id}', function($id){
+    $contact = ContactInfo::findOrFail($id);
+    return $contact->downloadvCard();
+});
+
+Route::get('/contact/generate/{id}', function($id){
+    $contact = ContactInfo::findOrFail($id);
+    return $contact->generateQRCode();
+});
