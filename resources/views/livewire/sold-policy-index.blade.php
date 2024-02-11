@@ -324,14 +324,14 @@
                         </div> --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
                                 <div class="from-group">
-                                    <label for="policy_number" class="form-label">policy_number</label>
+                                    <label for="policy_number" class="form-label">Policy Number</label>
                                     <input type="number" name="policy_number" class="form-control mt-2 w-full" wire:model.defer="policy_number">
                                     @error('policy_number')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group">
-                                    <label for="insured_value" class="form-label">insured_value</label>
+                                    <label for="insured_value" class="form-label">Insured Value</label>
                                     <input type="number" name="insured_value" class="form-control mt-2 w-full" wire:model.defer="insured_value">
                                     @error('insured_value')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -340,21 +340,21 @@
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-2">
                                 <div class="from-group">
-                                    <label for="net_rate" class="form-label">net_rate</label>
+                                    <label for="net_rate" class="form-label">Net Rate</label>
                                     <input type="number" name="net_rate" class="form-control mt-2 w-full" wire:model.defer="net_rate">
                                     @error('net_rate')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group">
-                                    <label for="net_premium" class="form-label">net_premium</label>
+                                    <label for="net_premium" class="form-label">Net Premium</label>
                                     <input type="number" name="net_premium" class="form-control mt-2 w-full" wire:model.defer="net_premium">
                                     @error('net_premium')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group">
-                                    <label for="gross_premium" class="form-label">gross_premium</label>
+                                    <label for="gross_premium" class="form-label">Gross Premium</label>
                                     <input type="number" name="gross_premium" class="form-control mt-2 w-full" wire:model.defer="gross_premium">
                                     @error('gross_premium')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -363,14 +363,14 @@
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
                                 <div class="from-group">
-                                    <label for="installments_count" class="form-label">installments_count</label>
+                                    <label for="installments_count" class="form-label">Installments Count</label>
                                     <input type="number" name="installments_count" class="form-control mt-2 w-full" wire:model.defer="installments_count">
                                     @error('installments_count')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group">
-                                    <label for="payment_frequency" class="form-label">payment_frequency</label>
+                                    <label for="payment_frequency" class="form-label">Payment Frequency</label>
                                     <input type="number" name="payment_frequency" class="form-control mt-2 w-full" wire:model.defer="payment_frequency">
                                     @error('payment_frequency')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -386,7 +386,7 @@
                                     @enderror
                                 </div>
                                 <div class="from-group">
-                                    <label for="expiry" class="form-label">expiry</label>
+                                    <label for="expiry" class="form-label">Expiry</label>
                                     <input type="date" name="expiry" class="form-control mt-2 w-full" wire:model.defer="expiry">
                                     @error('expiry')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -394,7 +394,7 @@
                                 </div>
                             </div>
                             <div class="from-group">
-                                <label for="discount" class="form-label">discount</label>
+                                <label for="discount" class="form-label">Discount</label>
                                 <input type="number" name="discount" class="form-control mt-2 w-full" wire:model.defer="discount">
                                 @error('discount')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -402,21 +402,21 @@
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-2">
                                 <div class="from-group">
-                                    <label for="car_chassis" class="form-label">car_chassis</label>
+                                    <label for="car_chassis" class="form-label">Car Chassis</label>
                                     <input type="text" name="car_chassis" class="form-control mt-2 w-full" wire:model.defer="car_chassis">
                                     @error('car_chassis')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group">
-                                    <label for="car_plate_no" class="form-label">car_plate_no</label>
+                                    <label for="car_plate_no" class="form-label">Car Plate No.</label>
                                     <input type="text" name="car_plate_no" class="form-control mt-2 w-full" wire:model.defer="car_plate_no">
                                     @error('car_plate_no')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group">
-                                    <label for="car_engine" class="form-label">car_engine</label>
+                                    <label for="car_engine" class="form-label">Car Engine</label>
                                     <input type="text" name="car_engine" class="form-control mt-2 w-full" wire:model.defer="car_engine">
                                     @error('car_engine')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -424,9 +424,23 @@
                                 </div>
                             </div>
                             <div class="from-group">
-                                <label for="note" class="form-label">note</label>
+                                <label for="note" class="form-label">Note</label>
                                 <input type="text" name="note" class="form-control mt-2 w-full" wire:model.defer="note">
                                 @error('note')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area mb-3">
+                                <label for="inFavorTo" class="form-label">In Favor To</label>
+                                <input name="inFavorTo" class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('inFavorTo') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="inFavorTo" autocomplete="off">
+                                @error('inFavorTo')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area mb-3">
+                                <label for="policyDoc" class="form-label">Policy Document</label>
+                                <input name="policyDoc" class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('policyDoc') !border-danger-500 @enderror" id="default-picker" type="file" wire:model.defer="policyDoc">
+                                @error('policyDoc')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>

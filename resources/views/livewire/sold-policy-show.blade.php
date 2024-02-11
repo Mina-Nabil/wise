@@ -176,6 +176,49 @@
                     </div>
                 </div>
             </div>
+
+            @if ($soldPolicy->in_favor_to || $soldPolicy->note)
+                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                    <div class="card-body flex flex-col p-6 active justify-center">
+                        @if ($soldPolicy->in_favor_to)
+                            <div>
+                                <p>
+                                    <b>In favor to</b>
+                                </p>
+                                <p class="mb-5">
+                                    {{ $soldPolicy->in_favor_to ?? 'in favor to not added.' }}
+                                </p>
+                            </div>
+                        @endif
+                        @if ($soldPolicy->note)
+                            <div>
+                                <p>
+                                    <b>Note</b>
+                                </p>
+                                <p class="mb-5">
+                                    {{ $soldPolicy->note ?? 'No note added for this sold policy.' }}
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            @if ($soldPolicy->policy_doc)
+                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                    <div class="card-body flex flex-col p-6 active justify-center">
+                        <div>
+                            <button wire:click="downloadDoc" class="btn inline-flex justify-center btn-success block-btn btn-sm">
+                                <span class="flex items-center">
+                                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="material-symbols:download"></iconify-icon>
+                                    <span>Download document</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
         </div>
         <div>
 
@@ -837,8 +880,8 @@
                                         <label for="claim_fields" class="form-label">Value</label>
                                         <input list="claim_fields" class="form-control mt-2 w-full @error('fields.' . $index . '.value') !border-danger-500 @enderror" wire:model="fields.{{ $index }}.value">
                                         <datalist id="claim_fields">
-                                                <option>Yes</option>
-                                                <option>No</option>
+                                            <option>Yes</option>
+                                            <option>No</option>
                                         </datalist>
                                         @error('fields.{{ $index }}.value')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -918,40 +961,40 @@
 
 
 
+                        <div class="p-6 py-1">
+                            <p class="text-lg"><b>Enter Actions</b></p>
+                        </div>
+                        @foreach ($actions as $index => $action)
                             <div class="p-6 py-1">
-                                <p class="text-lg"><b>Enter Actions</b></p>
-                            </div>
-                            @foreach ($actions as $index => $action)
-                                <div class="p-6 py-1">
-                                    <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
-                                        <div class="from-group col-span-3">
-                                            <label for="newExcValue" class="form-label">Title</label>
-                                            <select name="basicSelect" class="form-control w-full mt-2  @error('actions.' . $index . '.column_name') !border-danger-500 @enderror" wire:model="actions.{{ $index }}.column_name">
-                                                <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Relation...</option>
-                                                @foreach ($COLUMNS as $COLUMN)
-                                                    <option value="{{ $COLUMN }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords(str_replace('_', ' ', $COLUMN)) }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="from-group col-span-4">
-                                            <label for="newExcValue" class="form-label">Value</label>
-                                            <input name="newExcValue" type="text" class="form-control mt-2 w-full @error('actions.' . $index . '.value') !border-danger-500 @enderror" wire:model="actions.{{ $index }}.value">
-                                            @error('actions.{{ $index }}.value')
-                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <div class="from-group col-span-1">
-                                            <label for="newExcValue" class="form-label">remove</label>
-                                            <button class="action-btn" wire:click="removeAcion({{ $index }})" type="button">
-                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                            </button>
-                                        </div>
+                                <div class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
+                                    <div class="from-group col-span-3">
+                                        <label for="newExcValue" class="form-label">Title</label>
+                                        <select name="basicSelect" class="form-control w-full mt-2  @error('actions.' . $index . '.column_name') !border-danger-500 @enderror" wire:model="actions.{{ $index }}.column_name">
+                                            <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Select Relation...</option>
+                                            @foreach ($COLUMNS as $COLUMN)
+                                                <option value="{{ $COLUMN }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords(str_replace('_', ' ', $COLUMN)) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="from-group col-span-4">
+                                        <label for="newExcValue" class="form-label">Value</label>
+                                        <input name="newExcValue" type="text" class="form-control mt-2 w-full @error('actions.' . $index . '.value') !border-danger-500 @enderror" wire:model="actions.{{ $index }}.value">
+                                        @error('actions.{{ $index }}.value')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="from-group col-span-1">
+                                        <label for="newExcValue" class="form-label">remove</label>
+                                        <button class="action-btn" wire:click="removeAcion({{ $index }})" type="button">
+                                            <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                        </button>
                                     </div>
                                 </div>
-                            @endforeach
-                            <div class="p-6 space-y-4">
-                                <button wire:click="addAnotherAction" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Action</button>
                             </div>
+                        @endforeach
+                        <div class="p-6 space-y-4">
+                            <button wire:click="addAnotherAction" class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Action</button>
+                        </div>
 
 
                         <!-- Modal footer -->
