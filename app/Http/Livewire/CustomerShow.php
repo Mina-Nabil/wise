@@ -151,10 +151,10 @@ class CustomerShow extends Component
 
     //interests
     public $interestSection = false;
-    public $lob;
+    public $editedLob;
     public $interested;
     public $interestNote;
-    public $interestId;
+    public $editInteresetSec = false;
 
     //customer ralative
     public $addCustomerRelativeSection;
@@ -215,25 +215,30 @@ class CustomerShow extends Component
         }
     }
 
-    public function openEditNote(){
+    public function openEditNote()
+    {
         $this->customerNoteSec = true;
         $this->customerNote = $this->customer->note;
     }
 
-    public function closeEditNote(){
+    public function closeEditNote()
+    {
         $this->customerNoteSec = false;
         $this->customerNote = null;
     }
 
-    public function setNote(){
-        if( $this->customerNote === '' ){ $this->customerNote = null; }
+    public function setNote()
+    {
+        if ($this->customerNote === '') {
+            $this->customerNote = null;
+        }
         $res = $this->customer->setCustomerNote($this->customerNote);
-        if($res){
+        if ($res) {
             $this->closeEditNote();
             $this->mount($this->customer->id);
-            $this->alert('success','Note updated!');
-        }else{
-            $this->alert('failed','server error');
+            $this->alert('success', 'Note updated!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
@@ -1091,22 +1096,22 @@ class CustomerShow extends Component
     }
 
     function generateUrl($fieldName, $property)
-{
-    $idDoc_url = null;
+    {
+        $idDoc_url = null;
 
-    if (is_null($this->customer->$fieldName) && (is_null($this->$property))) {
-        $idDoc_url = null;
-    } elseif (!is_null($this->customer->$fieldName) && (is_null($this->$property))) {
-        $idDoc_url = null;
-    } elseif (!is_null($this->customer->$fieldName) && (!is_null($this->$property))) {
-        if (is_string($this->$property)) {
-            $this->$property = null;
-            $idDoc_url = $this->customer->$fieldName;
+        if (is_null($this->customer->$fieldName) && (is_null($this->$property))) {
+            $idDoc_url = null;
+        } elseif (!is_null($this->customer->$fieldName) && (is_null($this->$property))) {
+            $idDoc_url = null;
+        } elseif (!is_null($this->customer->$fieldName) && (!is_null($this->$property))) {
+            if (is_string($this->$property)) {
+                $this->$property = null;
+                $idDoc_url = $this->customer->$fieldName;
+            }
         }
-    }
 
-    return $idDoc_url;
-}
+        return $idDoc_url;
+    }
 
     public function editInfo()
     {
@@ -1273,40 +1278,50 @@ class CustomerShow extends Component
         return redirect(Route('offers.show', $id));
     }
 
-    public function editThisInterest($id)
+    public function removeInterest($id)
     {
-        $this->interestId = $id;
-        $i = Interest::find($id);
-        $this->lob  = $i->relation;
-        $this->interested = $i->interested;
-        $this->note = $i->note;
+        $res = Interest::find($id)->delete();
+        if ($res) {
+            $this->mount($this->customer->id);
+            $this->alert('success', 'Interest removed!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function editThisInterest($status, $lob)
+    {
+        $this->editInteresetSec = true;
+        $this->editedLob  = $lob;
+        $this->interested = $status;
     }
 
     public function closeEditInterest()
     {
-        $this->interestId = null;
+        $this->editInteresetSec = false;
     }
 
     public function editInterest()
     {
+        if ($this->interested === 'YES') {
+            $this->interested = true;
+        } else {
+            $this->interested = false;
+        }
+
         $this->validate([
-            'lob' => 'required|in:' . implode(',', policy::LINES_OF_BUSINESS),
+            'editedLob' => 'required|in:' . implode(',', policy::LINES_OF_BUSINESS),
             'interested' => 'required|boolean',
             'interestNote' => 'nullable|string|max:255'
         ]);
 
-        $i = Interest::find($this->interestId);
-
-        $res = $i->editInterest(
-            $this->lob,
-            $this->interested,
-            $this->note,
-        );
+        $res = $this->customer->addInterest($this->editedLob, $this->interested, $this->interestNote);
 
         if ($res) {
-            $this->lob = null;
+            $this->editInteresetSec = false;
+            $this->editedLob = null;
             $this->interested = null;
-            $this->note = null;
+            $this->interestNote = null;
             $this->mount($this->customer->id);
             $this->alert('success', 'Interest edited!');
         } else {
@@ -1314,30 +1329,6 @@ class CustomerShow extends Component
         }
     }
 
-    public function addInterest()
-    {
-        $this->validate([
-            'lob' => 'required|in:' . implode(',', policy::LINES_OF_BUSINESS),
-            'interested' => 'nullable|boolean',
-            'interestNote' => 'nullable|string|max:255'
-        ]);
-
-        $res = $this->customer->addInterest(
-            $this->lob,
-            $this->interested ?? false,
-            $this->interestNote,
-        );
-
-        if ($res) {
-            $this->lob = null;
-            $this->interested = null;
-            $this->interestNote = null;
-            $this->mount($this->customer->id);
-            $this->alert('success', 'Interest Added!');
-        } else {
-            $this->alert('failed', 'Server error');
-        }
-    }
 
     public function render()
     {
