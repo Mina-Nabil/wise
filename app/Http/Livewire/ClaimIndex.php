@@ -25,35 +25,6 @@ class ClaimIndex extends Component
     public $myTasks;
     public $watcherTasks;
 
-    public $taskTitle;
-    public $assignedTo;
-    public $desc;
-    public $dueDate;
-    public $dueTime;
-    public $file;
-    public $addWatchersSection;
-    public $setWatchersList;
-
-    public $files = [];
-
-
-    public $showNewTask = false;
-
-    public function toggleAddWatchers()
-    {
-        $this->toggle($this->addWatchersSection);
-    }
-
-    public function openNewTask()
-    {
-        $this->showNewTask = true;
-    }
-
-    public function closeNewTask()
-    {
-        $this->resetFormFields();
-        $this->resetValidation();
-    }
 
     protected $queryString = [
         'startDate' => ['except' => ''],
@@ -65,71 +36,6 @@ class ClaimIndex extends Component
         return redirect(route('tasks.show', ['id' => $id]));
     }
 
-    public function createTask()
-    {
-
-        $this->validate(
-            [
-                'taskTitle' => 'required|string|max:255',
-                'assignedTo' => 'required',
-                'desc' => 'nullable|string',
-                'dueDate' => 'required|date',
-                'dueTime' => 'nullable|date_format:H:i',
-                'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
-                'setWatchersList' => 'nullable|array',
-                'setWatchersList.*' => 'integer|exists:users,id',
-            ],
-            [
-                'file.max' => 'The file must not be greater than 5MB.',
-            ],
-            [
-                'taskTitle' => 'Title',
-                'assignedTo' => 'Assignee',
-                'desc' => 'Description',
-                'dueDate' => 'Date',
-                'dueTime' => 'Time',
-                'setWatchersList' => 'Watchers',
-            ],
-        );
-
-        if ($this->files) {
-            $urls  = [];
-            foreach ($this->files as $file) {
-                array_push($urls, [
-                    'name'      => $file->getClientOriginalName(),
-                    'file_url'  => $file->store(Task::FILES_DIRECTORY, 's3'),
-                    'user_id'   => Auth::id()
-                ]);
-            }
-        } else {
-            $urls = [];
-        }
-
-
-        $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
-        $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
-        $combinedDateTime = $dueTime ? $dueDate->setTime($dueTime->hour, $dueTime->minute, $dueTime->second) : $dueDate;
-
-        $t = Task::newTask($this->taskTitle, null, $this->assignedTo, $combinedDateTime, $this->desc, $urls, $this->setWatchersList ?? []);
-
-        if ($t) {
-            $this->alert('success', 'Task Added!');
-            $this->resetFormFields();
-        } else {
-            $this->alert('failed', 'Error Adding Task!');
-        }
-    }
-
-    private function resetFormFields()
-    {
-        $this->taskTitle = null;
-        $this->assignedTo = null;
-        $this->desc = null;
-        $this->dueDate = null;
-        $this->dueTime = null;
-        $this->file = null;
-        $this->showNewTask = null;
-    }
 
     public function filterByStatus($status)
     {
@@ -192,8 +98,6 @@ class ClaimIndex extends Component
             ->claims()
             ->paginate(10);
 
-        //fixing assignedTo when a user adds a test without changing the assigned to list
-        $this->assignedTo = $this->assignedTo ?? $users->first()?->id;
 
         return view('livewire.claim-index', [
             'tasks' => $tasks,
