@@ -7,19 +7,22 @@ use App\models\Business\SoldPolicy;
 use App\models\Insurance\Policy;
 use App\Models\Customers\Customer;
 use App\Models\Corporates\Corporate;
+use App\Models\Offers\OfferOption;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Support\Facades\Log;
+use Livewire\WithFileUploads;
 
 class SoldPolicyIndex extends Component
 {
-    use WithPagination,AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, WithFileUploads;
 
     public $search;
 
     public $clientStatus;
     public $clientType = 'Customer';
-    public $searchClient ;
+    public $searchClient;
     public $clientNames;
     public $selectedClientId;
     public $selectedClientName;
@@ -54,21 +57,24 @@ class SoldPolicyIndex extends Component
 
     public $newPolicySection = false;
 
-    public function openNewPolicySection(){
+    public function openNewPolicySection()
+    {
         $this->newPolicySection = true;
     }
 
-    public function closeNewPolicySection(){
+    public function closeNewPolicySection()
+    {
         $this->newPolicySection = false;
         $this->reset();
     }
 
-    public function addSoldPolicy(){
+    public function addSoldPolicy()
+    {
         $this->validate([
             'policy_id' => 'required|numeric|exists:policies,id',
             'policy_number' => 'required|string|max:255',
             'insured_value' => 'required|numeric',
-            'net_rate' => 'required|numeric',
+            'net_rate' => 'required|numeric|between:0,100',
             'net_premium' => 'required|numeric',
             'gross_premium' => 'required|numeric',
             'installments_count' => 'required|numeric',
@@ -84,15 +90,15 @@ class SoldPolicyIndex extends Component
             'is_valid' => 'required|boolean',
             'note' => 'nullable|string|max:255',
             'inFavorTo' => 'nullable|string|max:255',
-            'policyDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'policyDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
 
-        if($this->policyDoc){
+        if ($this->policyDoc) {
             $url = $this->policyDoc->store(SoldPolicy::FILES_DIRECTORY, 's3');
-        }else{
+        } else {
             $url = null;
         }
-        
+
 
         $res = SoldPolicy::newSoldPolicy(
             $this->client,
@@ -115,25 +121,24 @@ class SoldPolicyIndex extends Component
             $this->is_valid,
             $this->note,
             $this->inFavorTo,
-            $this->$url
+            $url
         );
 
-        if($res){
+        if ($res) {
             $this->reset();
             $this->closeNewPolicySection();
             $this->alert('success', 'Sold Policy added');
-        }else{
+        } else {
             $this->alert('failed', 'server error');
         }
-        
     }
     public function selectPolicy($id)
     {
-            $res = Policy::find($id);
+        $res = Policy::find($id);
 
         $this->policyStatus = $res;
 
-        $this->selectedPolicyName = $res->company->name.' · '.$res->name;
+        $this->selectedPolicyName = $res->company->name . ' · ' . $res->name;
         $this->policy_id  = $res->id;
         $this->policyData = null;
         $this->searchPolicy = null;
@@ -141,24 +146,25 @@ class SoldPolicyIndex extends Component
 
     public function updatedSearchPolicy()
     {
-            $this->policyData = Policy::searchBy(text: $this->searchPolicy)
-                ->get()
-                ->take(5);
+        $this->policyData = Policy::searchBy(text: $this->searchPolicy)
+            ->get()
+            ->take(5);
+        $tmp = $this->policyData;
+        Log::info($tmp);
     }
 
     public function selectClient($id)
     {
         if ($this->clientType == 'Customer') {
             $this->client = Customer::find($id);
-
         } elseif ($this->clientType == 'Corporate') {
             $this->client = Corporate::find($id);
         }
 
         $this->clientStatus = $this->client;
         if ($this->clientType == 'Customer') {
-        $this->selectedClientName = $this->client->first_name . ' ' . $this->client->middle_name . ' ' . $this->client->last_name;
-        }else{
+            $this->selectedClientName = $this->client->first_name . ' ' . $this->client->middle_name . ' ' . $this->client->last_name;
+        } else {
             $this->selectedClientName = $this->client->name;
         }
         $this->clientNames = null;
@@ -186,9 +192,14 @@ class SoldPolicyIndex extends Component
 
     public function render()
     {
-        $soldPolicies = SoldPolicy::userData(searchText:$this->search)->paginate(20);
-        return view('livewire.sold-policy-index',[
-            'soldPolicies' => $soldPolicies,
+        $soldPolicies = SoldPolicy::userData(searchText: $this->search)->paginate(20);
+        $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
+
+        return view(
+            'livewire.sold-policy-index',
+            [
+                'soldPolicies' => $soldPolicies,
+                'PAYMENT_FREQS' => $PAYMENT_FREQS,
             ]
         );
     }

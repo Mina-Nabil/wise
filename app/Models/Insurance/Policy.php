@@ -159,11 +159,11 @@ class Policy extends Model
     public static function getPolicyByNameAndLineOfBusiness($company_name, $business, $policy_name)
     {
         return self::select("policies.*")
-        ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
-        ->where('business', $business)
-        ->where('insurance_companies.name', $company_name)
-        ->where('policies.name', $policy_name)
-        ->first();
+            ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
+            ->where('business', $business)
+            ->where('insurance_companies.name', $company_name)
+            ->where('policies.name', $policy_name)
+            ->first();
     }
 
     ///model functions
@@ -383,8 +383,7 @@ class Policy extends Model
     //scopes
     public function scopeTableData($query)
     {
-        $query->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
-            ->select('policies.*');
+        $query->select('policies.*');
     }
 
     /**
@@ -392,10 +391,12 @@ class Policy extends Model
      **/
     public function scopeSearchBy($query, $text)
     {
-        return $query->where(function ($q) use ($text) {
-            $q->where('policies.name', 'LIKE', "%$text%")
-                ->orWhere('insurance_companies.name', 'LIKE', "%$text%");
-        });
+        return $query->select('policies.*')
+            ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
+            ->where(function ($q) use ($text) {
+                $q->where('policies.name', 'LIKE', "%$text%")
+                    ->orWhere('insurance_companies.name', 'LIKE', "%$text%");
+            });
     }
 
     public function scopeWithConditions($query)

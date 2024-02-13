@@ -80,7 +80,13 @@ class TaskAction extends Model
         return $this->save();
     }
 
-    //relations
+    ////attributes
+    public function getOldValueAttribute()
+    {
+        return $this->task->taskable?->{$this->column_name};
+    }
+
+    ////relations
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);

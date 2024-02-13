@@ -305,7 +305,8 @@ class Task extends Model
                 }
             }
         }
-        $this->addComment($comment, false);
+        if ($comment)
+            $this->addComment($comment, false);
         $this->last_action_by()->associate($loggedInUser);
         $this->sendTaskNotifications("Status changed", "Task#$this->id is set to $status");
         return true;
@@ -441,6 +442,22 @@ class Task extends Model
         });
     }
 
+    ////attributes
+    public function getIsClaimAttribute()
+    {
+        return $this->type == self::TYPE_CLAIM;
+    }
+
+    public function getIsEndorsmentAttribute()
+    {
+        return $this->type == self::TYPE_ENDORSMENT;
+    }
+
+    public function getIsTaskAttribute()
+    {
+        return $this->type == self::TYPE_TASK;
+    }
+
     ////scopes
     public static function scopeMyTasksQuery($query, $assignedToMeOnly = true, $includeWatchers = true): Builder
     {
@@ -516,7 +533,7 @@ class Task extends Model
     {
         return $query->whereIn('tasks.type', $types);
     }
-    
+
     public function scopeSearchByTitle($query, $text)
     {
         return $query->where('tasks.title', 'LIKE', "%" . $text . "%");

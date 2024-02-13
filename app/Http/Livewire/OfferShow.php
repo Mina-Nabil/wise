@@ -150,7 +150,7 @@ class OfferShow extends Component
             'net_premium' => 'required|numeric',
             'gross_premium' => 'required|numeric',
             'installments_count' => 'required|numeric',
-            'sold_payment_frequency' => 'required|string|max:255',
+            'sold_payment_frequency' => 'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
             'start' => 'required|date',
             'expiry' => 'required|date|after:start',
             'car_chassis' => 'nullable|string|max:255',

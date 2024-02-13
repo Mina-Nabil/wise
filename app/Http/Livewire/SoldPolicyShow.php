@@ -28,6 +28,7 @@ class SoldPolicyShow extends Component
     public $car_chassis;
     public $car_plate_no;
     public $car_engine;
+    public $in_favor_to;
     public $editInfoSec = false;
 
     public $deleteBenefitId;
@@ -169,6 +170,7 @@ class SoldPolicyShow extends Component
         $this->car_chassis = $this->soldPolicy->car_chassis;
         $this->car_plate_no = $this->soldPolicy->car_plate_no;
         $this->car_engine = $this->soldPolicy->car_engine;
+        $this->in_favor_to = $this->soldPolicy->in_favor_to;
     }
 
     public function editInfo()
@@ -180,6 +182,7 @@ class SoldPolicyShow extends Component
             'car_chassis' => 'nullable|string|max:255',
             'car_plate_no' => 'nullable|string|max:255',
             'car_engine' => 'nullable|string|max:255',
+            'in_favor_to' => 'nullable|string|max:255',
         ]);
 
         $res = $this->soldPolicy->editInfo(
@@ -188,7 +191,8 @@ class SoldPolicyShow extends Component
             $this->policy_number,
             $this->car_chassis,
             $this->car_plate_no,
-            $this->car_engine
+            $this->car_engine,
+            $this->in_favor_to
         );
 
         if ($res) {

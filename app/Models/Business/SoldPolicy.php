@@ -60,7 +60,7 @@ class SoldPolicy extends Model
         );
     }
 
-    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null): self|bool
+    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null): self|bool
     {
         $this->update([
             'policy_number' => $policy_number,
@@ -68,6 +68,7 @@ class SoldPolicy extends Model
             'expiry' => $expiry->format('Y-m-d H:i:s'),
             'car_chassis' => $car_chassis,
             'car_plate_no' => $car_plate_no,
+            'in_favor_to' => $in_favor_to,
             'car_engine' => $car_engine
         ]);
 
@@ -78,23 +79,6 @@ class SoldPolicy extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't edit Sold Policy", desc: $e->getMessage());
-            return false;
-        }
-    }
-
-    public function setInFavorTo($in_favor_to)
-    {
-        $this->update([
-            'in_favor_to' => $in_favor_to,
-        ]);
-
-        try {
-            $this->save();
-            AppLog::info("Set Sold Policy in favor to", loggable: $this);
-            return true;
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Can't set Sold Policy in favor", desc: $e->getMessage());
             return false;
         }
     }

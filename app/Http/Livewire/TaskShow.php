@@ -421,7 +421,7 @@ class TaskShow extends Component
             'editedStatus' => 'required|in:' . implode(',', Task::STATUSES),
         ]);
         $task = Task::findOrFail($this->taskId);
-        $t = $task->setStatus($this->editedStatus, $this->statusComment);
+        $t = $task->setStatus($this->editedStatus, $this->statusComment, $this->actionsIds);
         if ($t) {
             $this->alert('success', 'Status Updated!');
             $this->toggleEditStatus();

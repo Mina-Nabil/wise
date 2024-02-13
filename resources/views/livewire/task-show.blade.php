@@ -39,7 +39,6 @@
                                             <iconify-icon icon="carbon:edit"></iconify-icon>
                                         </span>
                                     </h6>
-                                    <p class="text-sm mb-3">Task description</p>
                                     <p class="text-sm mb-3">{{ $task->desc }}</p>
                                 @endif
                             </div>
@@ -186,6 +185,7 @@
             </div>
 
             {{-- task fields --}}
+            @if ($task->is_claim)
             <div class="card mb-5">
                 <div class="card-body flex flex-col p-6 active">
                     <header class="flex mb-5 items-center">
@@ -255,8 +255,10 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             {{-- endorsment --}}
+            @if ($task->is_endorsment)
             <div class="card mb-5">
                 <div class="card-body flex flex-col p-6 active">
                     <header class="flex mb-5 items-center">
@@ -297,7 +299,7 @@
                                         </h4>
                                         <div class="text-sm font-medium text-slate-900 dark:text-white">
                                             <span class="text-slate-500 dark:text-slate-300 font-normal">
-                                                665666
+                                                {{ $action->old_value }}
                                             </span>
                                             <span>
                                                 <iconify-icon icon="maki:arrow"></iconify-icon> {{ $action->value }}
@@ -311,7 +313,7 @@
                     </div>
                 </div>
             </div>
-
+            @endif
 
             <div class="card">
                 <div class="card-body flex flex-col p-6">
@@ -877,7 +879,7 @@
                                         </h4>
                                         <div class="text-sm font-medium text-slate-900 dark:text-white">
                                             <span class="text-slate-500 dark:text-slate-300 font-normal">
-                                                665666
+                                                {{ $action->old_value }}
                                             </span>
                                             <span>
                                                 <iconify-icon icon="maki:arrow"></iconify-icon> {{ $action->value }}
