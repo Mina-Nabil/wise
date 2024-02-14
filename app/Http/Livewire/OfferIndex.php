@@ -47,6 +47,8 @@ class OfferIndex extends Component
     public $isRenewal = false;
     public $inFavorTo;
 
+    public $isRenewalCB = 'isRenewal';
+
     public $bdate;
     public $gender;
 
@@ -242,7 +244,13 @@ class OfferIndex extends Component
         $GENDERS = Customer::GENDERS;
         $RELATIONS = Relative::RELATIONS;
         $brands = Brand::all();
-        $offers = Offer::userData($this->search)->paginate(10);
+
+        if($this->isRenewalCB === 'isRenewal'){
+            $offers = Offer::userData($this->search)->isRenewal()->paginate(10);
+        }elseif(($this->isRenewalCB === 'notRenewal')){
+            $offers = Offer::userData($this->search)->notRenewal()->paginate(10);
+        }
+        
         return view('livewire.offer-index', [
             'offers' => $offers,
             'clientNames' => $this->clientNames,

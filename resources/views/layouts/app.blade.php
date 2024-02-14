@@ -169,6 +169,14 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ url('/exp-sold-policies') }}" class="navItem @yield('exp-sold-policies')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="iconoir:privacy-policy"></iconify-icon>
+                                <span>Expiry Sold Policies</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>

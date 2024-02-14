@@ -22,6 +22,8 @@ class PoliciesController extends Controller
         return view('policies.create_policy', compact('linesOfBusiness', 'companies'));
     }
 
+    
+
     public function show($policyId)
     {
         Policy::findOrFail($policyId);
@@ -35,5 +37,9 @@ class PoliciesController extends Controller
 
     public function soldPolicyIndex(){
         return view('policies.sold-policy-index');
+    }
+
+    public function expSoldPolicyIndex() {
+        return view('policies.exp-sold-policy-index');
     }
 }

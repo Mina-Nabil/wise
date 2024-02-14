@@ -13,6 +13,18 @@
         </div>
     </div>
 
+    <ul class="radio-switch mb-5">
+        <li class="radio-switch__item">
+            <input class="radio-switch__input ri5-sr-only" type="radio" name="radio-switch-name" id="radio-1" value="isRenewal" wire:model="isRenewalCB">
+            <label class="radio-switch__label" for="radio-1">Renewal</label>
+        </li>
+
+        <li class="radio-switch__item">
+            <input class="radio-switch__input ri5-sr-only" type="radio" name="radio-switch-name" id="radio-2" value="notRenewal" wire:model="isRenewalCB">
+            <label class="radio-switch__label" for="radio-2">Not Renewal</label>
+            <div aria-hidden="true" class="radio-switch__marker"></div>
+        </li>
+    </ul>
 
     <div class="card">
         <header class="card-header cust-card-header noborder">
@@ -71,9 +83,9 @@
                                             @if ($offer->client_type === 'corporate')
                                                 <b>{{ $offer->client->name }}</b>
                                             @elseif($offer->client_type === 'customer')
-                                                <b>{{ $offer->client->first_name.' '.$offer->client->middle_name.' '.$offer->client->last_name}}</b>
+                                                <b>{{ $offer->client->first_name . ' ' . $offer->client->middle_name . ' ' . $offer->client->last_name }}</b>
                                             @endif
-                                            
+
                                         </td>
 
                                         <td class="table-td ">
@@ -224,14 +236,13 @@
                             <div class="text-sm">
                                 @if ($clientNames)
                                     @foreach ($clientNames as $client)
-                                    @if ($clientType !== 'Customer')
-                                        <p><iconify-icon icon="material-symbols:person"></iconify-icon>
-                                        {{ $client->name }} | {{ $client->email ?? 'N/A' }} | <Span
-                                            wire:click="selectClient({{ $client->id }})"
-                                            class="cursor-pointer text-primary-500">Select Client</Span></p>
-                                    @else
-                                        <p><iconify-icon icon="material-symbols:person"></iconify-icon> {{ $client->first_name }} {{ $client->last_name }} | {{ $client->email ?? 'N/A' }} | <Span wire:click="selectClient({{ $client->id }})" class="cursor-pointer text-primary-500">Select Client</Span></p>
-                                    @endif
+                                        @if ($clientType !== 'Customer')
+                                            <p><iconify-icon icon="material-symbols:person"></iconify-icon>
+                                                {{ $client->name }} | {{ $client->email ?? 'N/A' }} | <Span wire:click="selectClient({{ $client->id }})" class="cursor-pointer text-primary-500">Select Client</Span></p>
+                                        @else
+                                            <p><iconify-icon icon="material-symbols:person"></iconify-icon> {{ $client->first_name }} {{ $client->last_name }} | {{ $client->email ?? 'N/A' }} | <Span wire:click="selectClient({{ $client->id }})" class="cursor-pointer text-primary-500">Select
+                                                    Client</Span></p>
+                                        @endif
                                     @endforeach
 
                                 @endif
@@ -426,7 +437,8 @@
                                     <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
                                         <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                                             <input type="checkbox" checked class="sr-only peer" wire:model="isRenewal">
-                                            <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            <div
+                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
                                             <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
                                             <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>

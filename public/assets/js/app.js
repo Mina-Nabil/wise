@@ -1001,30 +1001,28 @@ document.addEventListener("DOMContentLoaded", function () {
 // END: Select Multi Rows in a Table
 
 // Use JavaScript to add the "hide" class after 3 seconds
-setTimeout(function() {
-    document.querySelector('.alert').classList.add('hide');
-  }, 3000);
-  
+setTimeout(function () {
+    document.querySelector(".alert").classList.add("hide");
+}, 3000);
 
-
-
-window.addEventListener('toastalert', event => {
+window.addEventListener("toastalert", (event) => {
     var x = document.getElementById("simpleToast");
-    
-    const { message, type } = event.detail;
-    let icon = '';
 
-    if (type === 'success') {
-        x.style.backgroundColor = '#50C793';
+    const { message, type } = event.detail;
+    let icon = "";
+
+    if (type === "success") {
+        x.style.backgroundColor = "#50C793";
         icon = '<iconify-icon icon="material-symbols:check"></iconify-icon>';
-    } else if (type === 'failed') {
-        x.style.backgroundColor = '#F1595C';
+    } else if (type === "failed") {
+        x.style.backgroundColor = "#F1595C";
         icon = '<iconify-icon icon="ph:warning"></iconify-icon>';
-    } else if (type === 'info') {
-        x.style.backgroundColor = 'black';
-        icon = '<iconify-icon icon="material-symbols:info-outline"></iconify-icon>';
+    } else if (type === "info") {
+        x.style.backgroundColor = "black";
+        icon =
+            '<iconify-icon icon="material-symbols:info-outline"></iconify-icon>';
     } else {
-        x.style.backgroundColor = 'gray';
+        x.style.backgroundColor = "gray";
     }
 
     x.innerHTML = message;
@@ -1036,25 +1034,24 @@ window.addEventListener('toastalert', event => {
     }, 3000);
 });
 
-
-document.addEventListener('livewire:load', function () {
+document.addEventListener("livewire:load", function () {
     // Initialize the Select2 plugin
-    $('#select2basic').select2();
+    $("#select2basic").select2();
 });
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     var dropzones = document.getElementsByClassName("dropzone-container");
 
     // Convert the HTMLCollection to an array for easier iteration
     var dropzonesArray = Array.from(dropzones);
 
-    dropzonesArray.forEach(function(dropzone) {
-        dropzone.addEventListener("dragenter", function(event) {
+    dropzonesArray.forEach(function (dropzone) {
+        dropzone.addEventListener("dragenter", function (event) {
             event.preventDefault();
             dropzone.classList.add("drag-over");
         });
 
-        dropzone.addEventListener("dragleave", function(event) {
+        dropzone.addEventListener("dragleave", function (event) {
             event.preventDefault();
             dropzone.classList.remove("drag-over");
         });
@@ -1071,7 +1068,110 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
-window.addEventListener('openNewTab', function(event) {
-    window.open(event.detail.url, '_blank');
+window.addEventListener("openNewTab", function (event) {
+    window.open(event.detail.url, "_blank");
 });
+
+// radio btn new
+
+/* ------------------------ Watermark (Please Ignore) ----------------------- */
+const createSVG = (width, height, className, childType, childAttributes) => {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+    const child = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        childType
+    );
+
+    for (const attr in childAttributes) {
+        child.setAttribute(attr, childAttributes[attr]);
+    }
+
+    svg.appendChild(child);
+
+    return { svg, child };
+};
+
+document.querySelectorAll(".generate-button").forEach((button) => {
+    const width = button.offsetWidth;
+    const height = button.offsetHeight;
+
+    const style = getComputedStyle(button);
+
+    const strokeGroup = document.createElement("div");
+    strokeGroup.classList.add("stroke");
+
+    const { svg: stroke } = createSVG(width, height, "stroke-line", "rect", {
+        x: "0",
+        y: "0",
+        width: "100%",
+        height: "100%",
+        rx: parseInt(style.borderRadius, 10),
+        ry: parseInt(style.borderRadius, 10),
+        pathLength: "30",
+    });
+
+    strokeGroup.appendChild(stroke);
+    button.appendChild(strokeGroup);
+
+    const stars = gsap.to(button, {
+        repeat: -1,
+        repeatDelay: 0.5,
+        paused: true,
+        keyframes: [
+            {
+                "--generate-button-star-2-scale": ".5",
+                "--generate-button-star-2-opacity": ".25",
+                "--generate-button-star-3-scale": "1.25",
+                "--generate-button-star-3-opacity": "1",
+                duration: 0.3,
+            },
+            {
+                "--generate-button-star-1-scale": "1.5",
+                "--generate-button-star-1-opacity": ".5",
+                "--generate-button-star-2-scale": ".5",
+                "--generate-button-star-3-scale": "1",
+                "--generate-button-star-3-opacity": ".5",
+                duration: 0.3,
+            },
+            {
+                "--generate-button-star-1-scale": "1",
+                "--generate-button-star-1-opacity": ".25",
+                "--generate-button-star-2-scale": "1.15",
+                "--generate-button-star-2-opacity": "1",
+                duration: 0.3,
+            },
+            {
+                "--generate-button-star-2-scale": "1",
+                duration: 0.35,
+            },
+        ],
+    });
+
+    button.addEventListener("pointerenter", () => {
+        gsap.to(button, {
+            "--generate-button-dots-opacity": "1",
+            duration: 0.5,
+            onStart: () => {
+                setTimeout(() => stars.restart().play(), 500);
+            },
+        });
+    });
+
+    button.addEventListener("pointerleave", () => {
+        gsap.to(button, {
+            "--generate-button-dots-opacity": "0",
+            "--generate-button-star-1-opacity": ".25",
+            "--generate-button-star-1-scale": "1",
+            "--generate-button-star-2-opacity": "1",
+            "--generate-button-star-2-scale": "1",
+            "--generate-button-star-3-opacity": ".5",
+            "--generate-button-star-3-scale": "1",
+            duration: 0.15,
+            onComplete: () => {
+                stars.pause();
+            },
+        });
+    });
+});
+// END radio btn new
