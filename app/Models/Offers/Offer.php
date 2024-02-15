@@ -172,9 +172,8 @@ class Offer extends Model
         $startChar = 'B';
         foreach ($options as $op) {
             $activeSheet->getCell($startChar . '1')->setValue($op->policy->name  . " - " . $op->policy?->company->name);
-            $activeSheet->getCell($startChar . '2')->setValue($op->policy_condition?->rate);
-            $activeSheet->getCell($startChar . '3')->setValue($op->net_premium);
-            $activeSheet->getCell($startChar . '4')->setValue($op->gross_premium);
+            $activeSheet->getCell($startChar . '2')->setValue($op->net_premium);
+            $activeSheet->getCell($startChar . '3')->setValue($op->gross_premium);
 
             foreach ($op->policy->benefits as $b) {
                 $activeSheet->getCell($startChar . 7 + array_search($b->benefit, PolicyBenefit::BENEFITS))->setValue($b->value);
