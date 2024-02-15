@@ -187,7 +187,7 @@ class Offer extends Model
         if ($saveAndGetFileUrl) {
             if (Storage::put($file_path, file_get_contents($public_file_path))) {
                 File::delete($public_file_path);
-                return Storage::get($file_path);
+                return Storage::url($file_path);
             }
         }
         return response()->download(storage_path(self::FILES_DIRECTORY . "offer{$this->id}_comparison.xlsx"));
