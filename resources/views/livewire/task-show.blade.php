@@ -13,19 +13,25 @@
                                 @if ($changeTitleDesc)
                                     <div class="input-area flex">
                                         <label for="firstName" class="form-label">Title</label>
-                                        <button wire:click="saveTitleAndDesc" class="btn inline-flex justify-center btn-success btn-sm mb-2 float-right">
-                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <button wire:click="saveTitleAndDesc"
+                                            class="btn inline-flex justify-center btn-success btn-sm mb-2 float-right">
+                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                                wire:loading wire:target="saveTitleAndDesc"
+                                                icon="line-md:loading-twotone-loop"></iconify-icon>
                                             <span>Save</span>
                                         </button>
                                     </div>
-                                    <input type="text" class="form-control @error('taskTitle') !border-danger-500 @enderror" value="Bill" placeholder="Title" wire:model="taskTitle">
+                                    <input type="text"
+                                        class="form-control @error('taskTitle') !border-danger-500 @enderror"
+                                        value="Bill" placeholder="Title" wire:model="taskTitle">
                                     @error('taskTitle')
                                         <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">*
                                             {{ $message }}</span>
                                     @enderror
                                     <div class="input-area mb-3">
                                         <label for="name" class="form-label">Description</label>
-                                        <textarea class="form-control @error('desc') !border-danger-500 @enderror" placeholder="Write Description" wire:model="desc" style="min-height: 150px"></textarea>
+                                        <textarea class="form-control @error('desc') !border-danger-500 @enderror" placeholder="Write Description"
+                                            wire:model="desc" style="min-height: 150px"></textarea>
                                         @error('desc')
                                             <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">*
                                                 {{ $message }}</span>
@@ -45,42 +51,48 @@
 
 
                             @if ($task->status === 'new')
-                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                <div
+                                    class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
                                     New
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
                                 </div>
                             @elseif($task->status === 'assigned')
-                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
+                                <div
+                                    class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
                                     Assigned
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
                                 </div>
                             @elseif($task->status === 'in_progress')
-                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
+                                <div
+                                    class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
                                     in Progress
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
                                 </div>
                             @elseif($task->status === 'pending')
-                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
+                                <div
+                                    class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
                                     Pending
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
                                 </div>
                             @elseif($task->status === 'completed')
-                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                <div
+                                    class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
                                     Completed
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
                                 </div>
                             @elseif($task->status === 'closed')
-                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
+                                <div
+                                    class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
                                     Closed
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
@@ -110,9 +122,13 @@
 
                                         <div class="flex justify-between items-end space-x-6">
                                             <div class="input-area">
-                                                <button wire:click="saveDue" class="inline-flex items-center justify-center h-10 w-10 bg-success-500 text-lg border rounded border-success-500 text-white rb-zeplin-focused">
-                                                    <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveDue" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                                    <iconify-icon icon="material-symbols:save-outline" wire:loading.remove wire:target="saveDue"></iconify-icon>
+                                                <button wire:click="saveDue"
+                                                    class="inline-flex items-center justify-center h-10 w-10 bg-success-500 text-lg border rounded border-success-500 text-white rb-zeplin-focused">
+                                                    <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]"
+                                                        wire:loading wire:target="saveDue"
+                                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                    <iconify-icon icon="material-symbols:save-outline"
+                                                        wire:loading.remove wire:target="saveDue"></iconify-icon>
                                                 </button>
                                             </div>
                                         </div>
@@ -132,16 +148,23 @@
                                 <div class="mt-2">
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="assigned" @if ($task->status === 'assigned') checked="checked" @endif>
-                                            <span class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                                name="basicradios" value="assigned"
+                                                @if ($task->status === 'assigned') checked="checked" @endif>
+                                            <span
+                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Assigned</span>
+                                            <span
+                                                class="text-secondary-500 text-sm leading-6 capitalize">Assigned</span>
                                         </label>
                                     </div>
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="in_progress"@if ($task->status === 'in_progress') checked="checked" @endif>
-                                            <span class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                                name="basicradios"
+                                                value="in_progress"@if ($task->status === 'in_progress') checked="checked" @endif>
+                                            <span
+                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                                             <span class="text-secondary-500 text-sm leading-6 capitalize">in
                                                 Progress</span>
@@ -149,32 +172,47 @@
                                     </div>
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="pending" @if ($task->status === 'pending') checked="checked" @endif>
-                                            <span class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                                name="basicradios" value="pending"
+                                                @if ($task->status === 'pending') checked="checked" @endif>
+                                            <span
+                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Pending</span>
+                                            <span
+                                                class="text-secondary-500 text-sm leading-6 capitalize">Pending</span>
                                         </label>
                                     </div>
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="completed" @if ($task->status === 'completed') checked="checked" @endif>
-                                            <span class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                                name="basicradios" value="completed"
+                                                @if ($task->status === 'completed') checked="checked" @endif>
+                                            <span
+                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Completed</span>
+                                            <span
+                                                class="text-secondary-500 text-sm leading-6 capitalize">Completed</span>
                                         </label>
                                     </div>
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden" name="basicradios" value="closed" @if ($task->status === 'closed') checked="checked" @endif>
-                                            <span class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
+                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                                name="basicradios" value="closed"
+                                                @if ($task->status === 'closed') checked="checked" @endif>
+                                            <span
+                                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                                             <span class="text-secondary-500 text-sm leading-6 capitalize">Closed</span>
                                         </label>
                                     </div>
-                                    <input type="text" wire:model="statusComment" placeholder="Leave a note..." class="form-control w-full">
+                                    <input type="text" wire:model="statusComment" placeholder="Leave a note..."
+                                        class="form-control w-full">
 
-                                    <button wire:click="saveStatuses" class="btn inline-flex justify-center btn-success btn-sm mt-2">
-                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveStatuses" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <button wire:click="saveStatuses"
+                                        class="btn inline-flex justify-center btn-success btn-sm mt-2">
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                            wire:loading wire:target="saveStatuses"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
                                         <span>Save Status</span>
                                     </button>
                                 </div>
@@ -186,138 +224,163 @@
 
             {{-- task fields --}}
             @if ($task->is_claim)
-            <div class="card mb-5">
-                <div class="card-body flex flex-col p-6 active">
-                    <header class="flex mb-5 items-center">
-                        <div class="flex-1">
-                            <div class="card-title font-Inter text-slate-900 dark:text-white">
-                                Claim Fields
-                                <span class="float-right">
-                                    <button wire:click="openAddField" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm">Add Field</button>
-                                </span>
+                <div class="card mb-5">
+                    <div class="card-body flex flex-col p-6 active">
+                        <header class="flex mb-5 items-center">
+                            <div class="flex-1">
+                                <div class="card-title font-Inter text-slate-900 dark:text-white">
+                                    Claim Fields
+                                    <span class="float-right">
+                                        <button wire:click="openAddField"
+                                            class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm">Add
+                                            Field</button>
+                                    </span>
+                                </div>
+                                <div class="card-subtitle font-Inter">Task Fields</div>
+
                             </div>
-                            <div class="card-subtitle font-Inter">Task Fields</div>
-
-                        </div>
-                    </header>
-                    <div class="card-text h-full menu-open">
-                        @if ($task->fields->isEmpty())
-                            <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                No Claims added to this task.
-                            </div>
-                        @else
-                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                <thead class="">
-                                    <tr>
-
-                                        <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
-                                            Value
-                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">* click on value to edit</p>
-                                        </th>
-
-                                        <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
-                                            Title
-                                        </th>
-
-                                        <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
-                                            Actions
-                                        </th>
-
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 text-wrap">
-
-                                    @foreach ($task->fields as $field)
+                        </header>
+                        <div class="card-text h-full menu-open">
+                            @if ($task->fields->isEmpty())
+                                <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    No Claims added to this task.
+                                </div>
+                            @else
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                    <thead class="">
                                         <tr>
-                                            <td @if ($field->id !== $fieldId) wire:click="editThisField({{ $field->id }})" @endif class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
-                                                @if ($field->id === $fieldId)
-                                                    <textarea wire:model="editedFieldValue" style="width:100%;height:100%;" class="@error('editedFieldValue') !border-danger-500  @enderror"></textarea>
-                                                @else
-                                                    {{ $field->value }}
-                                                @endif
 
-                                            </td>
-                                            <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $field->title }}</td>
-                                            <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
-                                                @if ($field->id === $fieldId)
-                                                    <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="editField" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                                    <button class="btn inline-flex justify-center btn-success light btn-sm" wire:loading.remove wire:target="editField" wire:click="editField">Save</button>
-                                                @else
-                                                    <button class="btn inline-flex justify-center btn-danger light btn-sm" wire:click="deleteThisField({{ $field->id }})">Delete</button>
-                                                @endif
-                                            </td>
+                                            <th scope="col"
+                                                class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                                Value
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">* click on
+                                                    value to edit</p>
+                                            </th>
+
+                                            <th scope="col"
+                                                class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                                Title
+                                            </th>
+
+                                            <th scope="col"
+                                                class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                                Actions
+                                            </th>
+
                                         </tr>
-                                    @endforeach
+                                    </thead>
+                                    <tbody
+                                        class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 text-wrap">
 
-                                </tbody>
-                            </table>
-                        @endif
+                                        @foreach ($task->fields as $field)
+                                            <tr>
+                                                <td @if ($field->id !== $fieldId) wire:click="editThisField({{ $field->id }})" @endif
+                                                    class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                                    @if ($field->id === $fieldId)
+                                                        <textarea wire:model="editedFieldValue" style="width:100%;height:100%;"
+                                                            class="@error('editedFieldValue') !border-danger-500  @enderror"></textarea>
+                                                    @else
+                                                        {{ $field->value }}
+                                                    @endif
+
+                                                </td>
+                                                <td
+                                                    class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
+                                                    {{ $field->title }}</td>
+                                                <td
+                                                    class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
+                                                    @if ($field->id === $fieldId)
+                                                        <iconify-icon
+                                                            class="text-xl spin-slow rtl:ml-2 relative top-[1px]"
+                                                            wire:loading wire:target="editField"
+                                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                        <button
+                                                            class="btn inline-flex justify-center btn-success light btn-sm"
+                                                            wire:loading.remove wire:target="editField"
+                                                            wire:click="editField">Save</button>
+                                                    @else
+                                                        <button
+                                                            class="btn inline-flex justify-center btn-danger light btn-sm"
+                                                            wire:click="deleteThisField({{ $field->id }})">Delete</button>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+
+                                    </tbody>
+                                </table>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
             @endif
 
             {{-- endorsment --}}
             @if ($task->is_endorsment)
-            <div class="card mb-5">
-                <div class="card-body flex flex-col p-6 active">
-                    <header class="flex mb-5 items-center">
-                        <div class="flex-1">
-                            <div class="card-title font-Inter text-slate-900 dark:text-white">
-                                Endorsment
+                <div class="card mb-5">
+                    <div class="card-body flex flex-col p-6 active">
+                        <header class="flex mb-5 items-center">
+                            <div class="flex-1">
+                                <div class="card-title font-Inter text-slate-900 dark:text-white">
+                                    Endorsment
+                                </div>
+
                             </div>
+                        </header>
+                        <div class="card-text h-full menu-open">
+                            @if ($task->actions->isEmpty())
+                                <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    No Actions added to this task.
+                                </div>
+                            @else
+                                @foreach ($task->actions as $action)
+                                    <div class="bg-slate-50 dark:bg-slate-900 rounded p-4 mt-8 flex-wrap">
+                                        <div class="space-y-1">
+                                            <h4 class="text-slate-600 dark:text-slate-200 text-base font-normal">
+                                                <b>{{ ucwords(str_replace('_', ' ', $action->title)) }}</b>
+                                                <span class="float-right">
+                                                    @if ($action->status === 'new')
+                                                        <div
+                                                            class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                                            New
+                                                        </div>
+                                                    @elseif($action->status === 'done')
+                                                        <div
+                                                            class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                                            Done
+                                                        </div>
+                                                    @elseif($action->status === 'rejected')
+                                                        <div
+                                                            class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
+                                                            Rejected
+                                                        </div>
+                                                    @endif
+                                                </span>
 
-                        </div>
-                    </header>
-                    <div class="card-text h-full menu-open">
-                        @if ($task->actions->isEmpty())
-                            <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                No Actions added to this task.
-                            </div>
-                        @else
-                            @foreach ($task->actions as $action)
-                                <div class="bg-slate-50 dark:bg-slate-900 rounded p-4 mt-8 flex-wrap">
-                                    <div class="space-y-1">
-                                        <h4 class="text-slate-600 dark:text-slate-200 text-base font-normal">
-                                            <b>{{ ucwords(str_replace('_', ' ', $action->title)) }}</b>
-                                            <span class="float-right">
-                                                @if ($action->status === 'new')
-                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
-                                                        New
-                                                    </div>
-                                                @elseif($action->status === 'done')
-                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
-                                                        Done
-                                                    </div>
-                                                @elseif($action->status === 'rejected')
-                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
-                                                        Rejected
-                                                    </div>
-                                                @endif
-                                            </span>
+                                            </h4>
+                                            <div class="text-sm font-medium text-slate-900 dark:text-white">
+                                                <span class="text-slate-500 dark:text-slate-300 font-normal">
+                                                    {{ $action->old_value }}
+                                                </span>
+                                                <span>
+                                                    <iconify-icon icon="maki:arrow"></iconify-icon>
+                                                    {{ $action->value }}
+                                                </span>
 
-                                        </h4>
-                                        <div class="text-sm font-medium text-slate-900 dark:text-white">
-                                            <span class="text-slate-500 dark:text-slate-300 font-normal">
-                                                {{ $action->old_value }}
-                                            </span>
-                                            <span>
-                                                <iconify-icon icon="maki:arrow"></iconify-icon> {{ $action->value }}
-                                            </span>
-
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        @endif
+                                @endforeach
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
             @endif
 
             <div class="card">
                 <div class="card-body flex flex-col p-6">
-                    <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                    <header
+                        class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                         <div class="flex-1">
                             <div class="card-title text-slate-900 dark:text-white">
                                 <h6>files</h6>
@@ -325,11 +388,17 @@
                         </div>
                         <label for="myFile" class="custom-file-label cursor-pointer">
                             <span class="btn inline-flex justify-center btn-sm btn-outline-dark float-right">
-                                <span style="display: flex; align-items: center;"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFile" icon="line-md:loading-twotone-loop"></iconify-icon></span>
-                                <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove wire:target="uploadedFile" icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
+                                <span style="display: flex; align-items: center;"><iconify-icon
+                                        class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                        wire:target="uploadedFile"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon></span>
+                                <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove
+                                        wire:target="uploadedFile"
+                                        icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
                             </span>
                         </label>
-                        <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedFile"><br>
+                        <input type="file" id="myFile" name="filename" style="display: none;"
+                            wire:model="uploadedFile"><br>
                     </header>
                     <div class="loader" wire:loading wire:target="downloadFile">
                         <div class="loaderBar"></div>
@@ -391,7 +460,9 @@
                                                         }
                                                     @endphp
 
-                                                    <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}" alt="" class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
+                                                    <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}"
+                                                        alt=""
+                                                        class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
                                                 </div>
 
                                             </div>
@@ -401,19 +472,23 @@
                                                 </span>
                                                 <span class="block font-normal text-xs text-slate-500 mt-1">
                                                     uploaded by
-                                                    {{ $file->user?->first_name . ' ' . $file->user?->last_name }} / <span class="cursor-pointer" onclick="confirm('Are you sure ?')" wire:click="removeFile({{ $file->id }})">remove</span>
+                                                    {{ $file->user?->first_name . ' ' . $file->user?->last_name }} /
+                                                    <span class="cursor-pointer" onclick="confirm('Are you sure ?')"
+                                                        wire:click="removeFile({{ $file->id }})">remove</span>
                                                 </span>
                                             </div>
                                         </div>
 
                                         <div class="flex-none">
                                             @if ($view)
-                                                <button type="button" wire:click="previewFile({{ $file->id }})" class="font-normal text-xs text-slate-500 mt-1">
+                                                <button type="button" wire:click="previewFile({{ $file->id }})"
+                                                    class="font-normal text-xs text-slate-500 mt-1">
                                                     Preview |
                                                 </button>
                                             @endif
                                             <span class="font-normal text-xs text-slate-500 mt-1"></span>
-                                            <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
+                                            <button type="button" wire:click="downloadFile({{ $file->id }})"
+                                                class="text-xs text-slate-900 dark:text-white">
                                                 Download
                                             </button>
                                         </div>
@@ -436,25 +511,35 @@
 
 
             <div class="mt-4">
-                <button class="btn inline-flex justify-center btn-outline-danger" wire:click="toggleDelete">Delete Task</button>
+                <button class="btn inline-flex justify-center btn-outline-danger" wire:click="toggleDelete">Delete
+                    Task</button>
             </div>
 
             @if ($deleteSection)
-                <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+                    tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
+                    style="display: block;">
                     <div class="modal-dialog relative w-auto pointer-events-none">
-                        <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                        <div
+                            class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                             <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                                 <!-- Modal header -->
-                                <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                                <div
+                                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                                     <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                         Delete Task
                                     </h3>
-                                    <button wire:click="toggleDelete" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    <button wire:click="toggleDelete" type="button"
+                                        class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                        data-bs-dismiss="modal">
+                                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         <span class="sr-only">Close modal</span>
                                     </button>
@@ -466,8 +551,11 @@
                                     </h6>
                                 </div>
                                 <!-- Modal footer -->
-                                <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                    <button wire:click="delete" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+                                <div
+                                    class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                    <button wire:click="delete" data-bs-dismiss="modal"
+                                        class="btn inline-flex justify-center text-white bg-danger-500">Yes,
+                                        Delete</button>
                                 </div>
                             </div>
                         </div>
@@ -488,8 +576,11 @@
                                 <iconify-icon icon="material-symbols:task"></iconify-icon>
                                 Assignied to
                                 @if ($changeAsignee)
-                                    <button wire:click="saveAsignee" class="btn inline-flex justify-center btn-success btn-sm mb-2 float-right">
-                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveAsignee" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <button wire:click="saveAsignee"
+                                        class="btn inline-flex justify-center btn-success btn-sm mb-2 float-right">
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                            wire:loading wire:target="saveAsignee"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
                                         <span>Save</span>
                                     </button>
                                 @else
@@ -499,19 +590,24 @@
                                 @endif
                             </div>
                             @if ($changeAsignee)
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('assignedTo') !border-danger-500 @enderror" wire:model.defer="assignedTo">
+                                <select name="basicSelect" id="basicSelect"
+                                    class="form-control w-full mt-2 @error('assignedTo') !border-danger-500 @enderror"
+                                    wire:model.defer="assignedTo">
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" {{ $assignedTo == $user->id ? 'selected' : '' }}>
+                                        <option value="{{ $user->id }}"
+                                            {{ $assignedTo == $user->id ? 'selected' : '' }}>
                                             {{ $user->first_name }} {{ $user->last_name }} <span class="text-sm">(
                                                 {{ $user->type }} )</span>
                                         </option>
                                     @endforeach
                                 </select>
                                 @error('assignedTo')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
-                                <input type="text" wire:model="assignedToComment" placeholder="Leave a note..." class="form-control w-full mt-2">
+                                <input type="text" wire:model="assignedToComment" placeholder="Leave a note..."
+                                    class="form-control w-full mt-2">
                             @else
                                 @if ($task->assigned_to_id)
                                     <h6>{{ $task->assigned_to->first_name . ' ' . $task->assigned_to->last_name }}</h6>
@@ -530,17 +626,24 @@
                         </div>
                         <div {{ $changeWatchers ? '' : "style=display:none;'" }}>
                             <div class="w-full">
-                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2" multiple="multiple" style="height: 250px">
+                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple
+                                    aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2"
+                                    multiple="multiple" style="height: 250px">
                                     @foreach ($users as $user)
-                                        <option {{ in_array($user->id, $watchersList->pluck('user_id')->all()) ? 'selected="selected"' : '' }} value="{{ $user->id }}" class="">
+                                        <option
+                                            {{ in_array($user->id, $watchersList->pluck('user_id')->all()) ? 'selected="selected"' : '' }}
+                                            value="{{ $user->id }}" class="">
                                             {{ $user->first_name . ' ' . $user->last_name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
-                            <button wire:click="saveWatchers" class="btn inline-flex justify-center btn-success mt-3 float-right btn-sm">
+                            <button wire:click="saveWatchers"
+                                class="btn inline-flex justify-center btn-success mt-3 float-right btn-sm">
                                 <div class="flex items-center">
-                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveWatchers" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                        wire:loading wire:target="saveWatchers"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
                                     <span>Save Watchers</span>
                                 </div>
                             </button>
@@ -552,7 +655,8 @@
 
                         <div {{ $changeWatchers ? "style=display:none;'" : '' }}>
                             @foreach ($watchersList as $watcher)
-                                <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">{{ $watcher->user->first_name }}
+                                <span
+                                    class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">{{ $watcher->user->first_name }}
                                     {{ $watcher->user->last_name }}</span>
                             @endforeach
                         </div>
@@ -560,7 +664,8 @@
                     </div>
                     <div class="card-text h-full menu-open">
                         <div class="card-subtitle font-Inter mb-1">
-                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="material-symbols:timer-outline"></iconify-icon>
+                            <iconify-icon class="ltr:mr-1 rtl:ml-1"
+                                icon="material-symbols:timer-outline"></iconify-icon>
                             Temporary Assigned:
                         </div>
 
@@ -574,75 +679,106 @@
                                 <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">
                                     {{ $task->temp_assignee->user->first_name . ' ' . $task->temp_assignee->user->last_name }}
                                 </span>
-                                <span class="float-right">Ends on {{ \Carbon\Carbon::parse($task->temp_assignee->end_date)->format('l, d/m') }}
+                                <span class="float-right">Ends on
+                                    {{ \Carbon\Carbon::parse($task->temp_assignee->end_date)->format('l, d/m') }}
                                 </span>
                             @endif
                         @else
                             @if ($sendTempAssignSection)
                                 <label for="name" class="form-label">Set end date</label>
-                                <input type="date" class="form-control  @error('TempAssignDate') !border-danger-500 @enderror" wire:model="TempAssignDate">
+                                <input type="date"
+                                    class="form-control  @error('TempAssignDate') !border-danger-500 @enderror"
+                                    wire:model="TempAssignDate">
                                 @error('TempAssignDate')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                                 <label for="name" class="form-label mt-2">Note</label>
-                                <input type="text" class="form-control  @error('TempAssignNote') !border-danger-500 @enderror" value="Bill" placeholder="Leave a note..." wire:model="TempAssignNote">
+                                <input type="text"
+                                    class="form-control  @error('TempAssignNote') !border-danger-500 @enderror"
+                                    value="Bill" placeholder="Leave a note..." wire:model="TempAssignNote">
                                 @error('TempAssignNote')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
-                                <button wire:click="submitTempAssignRequest" class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
-                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <button wire:click="submitTempAssignRequest"
+                                    class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                        wire:loading wire:target="saveTitleAndDesc"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
                                     <span>Submit Request</span>
                                 </button>
-                                <button wire:click="toggleSendTempAssign" class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
-                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveTitleAndDesc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <button wire:click="toggleSendTempAssign"
+                                    class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                        wire:loading wire:target="saveTitleAndDesc"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
                                     <span>Cancel</span>
                                 </button>
                             @else
                                 @if (!$SetTempAssignSection)
-                                    <button class="btn inline-flex justify-center btn-outline-light btn-sm" wire:click="toggleSendTempAssign">Send Temp Assign Request</button>
+                                    <button class="btn inline-flex justify-center btn-outline-light btn-sm"
+                                        wire:click="toggleSendTempAssign">Send Temp Assign Request</button>
                                 @endif
 
                                 @if ($SetTempAssignSection)
 
-                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 !border-success-500 @error('TempAssignUser') !border-danger-500 @enderror" wire:model.defer="TempAssignUser">
+                                    <select name="basicSelect" id="basicSelect"
+                                        class="form-control w-full mt-2 !border-success-500 @error('TempAssignUser') !border-danger-500 @enderror"
+                                        wire:model.defer="TempAssignUser">
                                         @foreach ($users as $user)
-                                            <option value="{{ $user->id }}" {{ $assignedTo == $user->id ? 'selected' : '' }}>
-                                                {{ $user->first_name }} {{ $user->last_name }} <span class="text-sm">(
+                                            <option value="{{ $user->id }}"
+                                                {{ $assignedTo == $user->id ? 'selected' : '' }}>
+                                                {{ $user->first_name }} {{ $user->last_name }} <span
+                                                    class="text-sm">(
                                                     {{ $user->type }} )</span>
                                             </option>
                                         @endforeach
                                     </select>
                                     @error('TempAssignUser')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                     <br>
 
                                     <label for="name" class="form-label">Set end date</label>
-                                    <input type="date" class="form-control !border-success-500  @error('TempAssignDate') !border-danger-500 @enderror" wire:model="TempAssignDate">
+                                    <input type="date"
+                                        class="form-control !border-success-500  @error('TempAssignDate') !border-danger-500 @enderror"
+                                        wire:model="TempAssignDate">
                                     @error('TempAssignDate')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                     <br>
 
                                     <label for="name" class="form-label">Note</label>
-                                    <input type="text" wire:model="TempAssignNote" placeholder="Leave a note..." class="form-control w-full mt-2   @error('TempAssignNote') !border-danger-500 @enderror">
+                                    <input type="text" wire:model="TempAssignNote" placeholder="Leave a note..."
+                                        class="form-control w-full mt-2   @error('TempAssignNote') !border-danger-500 @enderror">
                                     @error('TempAssignNote')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
 
 
-                                    <button wire:click="submitSetTempAssign" class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
-                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="submitSetTempAssign" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <button wire:click="submitSetTempAssign"
+                                        class="btn inline-flex justify-center btn-success btn-sm mt-2 float-right">
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                            wire:loading wire:target="submitSetTempAssign"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
                                         <span>Save</span>
                                     </button>
-                                    <button wire:click="toggleSetTempAssign" class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
-                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="toggleSetTempAssign" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <button wire:click="toggleSetTempAssign"
+                                        class="btn inline-flex justify-center btn-outline-secondary btn-sm mr-2 mt-2 float-right">
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                            wire:loading wire:target="toggleSetTempAssign"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
                                         <span>Cancel</span>
                                     </button>
                                 @else
                                     @if (!$sendTempAssignSection)
-                                        <button class="btn inline-flex justify-center btn-outline-light btn-sm" wire:click="toggleSetTempAssign">Set Temp Assignee</button>
+                                        <button class="btn inline-flex justify-center btn-outline-light btn-sm"
+                                            wire:click="toggleSetTempAssign">Set Temp Assignee</button>
                                     @endif
                                 @endif
                             @endif
@@ -663,21 +799,27 @@
                 <div class="card-body">
                     <div class="card-text h-full">
                         <div class="mt-5">
-                            <div class="text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
+                            <div
+                                class="text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
                                 <div class="flex ltr:text-left rtl:text-right">
                                     <div class="flex-none ltr:mr-3 rtl:ml-3">
                                         <div class="h-8 w-8 rounded-full relative text-white bg-blue-500">
 
-                                            <span class="block w-full h-full object-cover text-center text-lg leading-8">
+                                            <span
+                                                class="block w-full h-full object-cover text-center text-lg leading-8">
                                                 {{ strtoupper(substr('michael', 0, 1)) }}
                                             </span>
                                         </div>
                                     </div>
                                     <div class="flex-1">
-                                        <input type="text" class="form-control border-0" placeholder="Leave a comment..." wire:model="newComment" wire:keydown.enter="addComment" style="border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.5);">
+                                        <input type="text" class="form-control border-0"
+                                            placeholder="Leave a comment..." wire:model="newComment"
+                                            wire:keydown.enter="addComment"
+                                            style="border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.5);">
                                     </div>
                                     <div class="">
-                                        <button class="btn inline-flex justify-center btn-primary btn-sm" wire:click="addComment">
+                                        <button class="btn inline-flex justify-center btn-primary btn-sm"
+                                            wire:click="addComment">
                                             <span class="flex items-center">
                                                 <span>Post</span>
                                             </span>
@@ -695,12 +837,14 @@
                     <div class="card-body">
                         <div class="card-text h-full">
                             <div class="mt-5">
-                                <div class="text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
+                                <div
+                                    class="text-slate-600 dark:text-slate-300 block w-full px-4 py-3 text-sm mb-2 last:mb-0">
                                     <div class="flex ltr:text-left rtl:text-right">
                                         <div class="flex-none ltr:mr-3 rtl:ml-3">
                                             <div class="h-8 w-8 rounded-full relative text-white bg-blue-500">
 
-                                                <span class="block w-full h-full object-cover text-center text-lg leading-8">
+                                                <span
+                                                    class="block w-full h-full object-cover text-center text-lg leading-8">
                                                     {{ strtoupper(substr($comment->user?->username ?? 'System', 0, 1)) }}
                                                 </span>
                                             </div>
@@ -709,7 +853,8 @@
                                             <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1`">
                                                 {{ $comment->user?->username ?? 'System' }}
                                             </div>
-                                            <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">
+                                            <div
+                                                class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">
                                                 {{ $comment->comment }}
                                             </div>
                                         </div>
@@ -735,21 +880,30 @@
         </div>
     </div>
     @if ($deleteFieldId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                             rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                 Delete Claim
                             </h3>
-                            <button wire:click="dismissDeleteField" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                        dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            <button wire:click="dismissDeleteField" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                        dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -761,9 +915,12 @@
                             </h6>
                         </div>
                         <!-- Modal footer -->
-                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="deleteField" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">
-                                <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="deleteField" icon="line-md:loading-twotone-loop"></iconify-icon>
+                        <div
+                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteField" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-danger-500">
+                                <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading
+                                    wire:target="deleteField" icon="line-md:loading-twotone-loop"></iconify-icon>
                                 <span wire:loading.remove wire:target="deleteField">Yes, Delete</span>
                             </button>
                         </div>
@@ -774,18 +931,27 @@
     @endif
 
     @if ($addFieldSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Add Field
                             </h3>
-                            <button wire:click="closeAddField" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            <button wire:click="closeAddField" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -793,7 +959,8 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             @if (empty(array_diff($fieldTitles, $task->fields->pluck('title')->toArray())))
-                                <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
+                                <div
+                                    class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
                                     <div class="flex items-start space-x-3 rtl:space-x-reverse">
                                         <div class="flex-1">
                                             All claim fields added to a task!
@@ -803,7 +970,8 @@
                             @else
                                 <div class="input-area mb-3">
                                     <label class="form-label">Field Title</label>
-                                    <select class="form-control py-2 @error('newTitle') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="newTitle">
+                                    <select class="form-control py-2 @error('newTitle') !border-danger-500 @enderror"
+                                        id="default-picker" type="text" wire:model.defer="newTitle">
                                         <option>None</option>
                                         @foreach ($fieldTitles as $atitle)
                                             @if (!in_array($atitle, $task->fields->pluck('title')->toArray()))
@@ -812,15 +980,19 @@
                                         @endforeach
                                     </select>
                                     @error('newTitle')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="input-area mb-3">
                                     <label class="form-label">Value </label>
-                                    <input type="text" class="form-control  @error('newValue') !border-danger-500 @enderror" wire:model.defer="newValue" autocomplete="off" />
+                                    <input type="text"
+                                        class="form-control  @error('newValue') !border-danger-500 @enderror"
+                                        wire:model.defer="newValue" autocomplete="off" />
                                     {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
                                     @error('newValue')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                             @endif
@@ -828,9 +1000,12 @@
                         </div>
                         <!-- Modal footer -->
                         @if (!empty(array_diff($fieldTitles, $task->fields->pluck('title')->toArray())))
-                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                <button wire:click="addField" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                    <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="addField" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            <div
+                                class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="addField" data-bs-dismiss="modal"
+                                    class="btn inline-flex justify-center text-white bg-black-500">
+                                    <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading
+                                        wire:target="addField" icon="line-md:loading-twotone-loop"></iconify-icon>
                                     <span wire:loading.remove wire:target="addField">Submit</span>
                                 </button>
                             </div>
@@ -842,18 +1017,27 @@
     @endif
 
     @if ($completeEndorsmentSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Complete Changes
                             </h3>
-                            <button wire:click="closeCompleteEndorsmenet" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            <button wire:click="closeCompleteEndorsmenet" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -869,9 +1053,14 @@
                                             <span class="float-right">
                                                 <div class="checkbox-area">
                                                     <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="checkbox" class="hidden" name="checkbox" checked value="{{ $action->id }}" wire:model.defer="actionsIds">
-                                                        <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                                        <input type="checkbox" class="hidden" name="checkbox" checked
+                                                            value="{{ $action->id }}"
+                                                            wire:model.defer="actionsIds">
+                                                        <span
+                                                            class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
+                                                                alt=""
+                                                                class="h-[10px] w-[10px] block m-auto opacity-0"></span>
                                                     </label>
                                                 </div>
                                             </span>
@@ -892,9 +1081,12 @@
                         </div>
                         <!-- Modal footer -->
 
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="saveStatuses" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveStatuses" icon="line-md:loading-twotone-loop"></iconify-icon>
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="saveStatuses" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading
+                                    wire:target="saveStatuses" icon="line-md:loading-twotone-loop"></iconify-icon>
                                 <span wire:loading.remove wire:target="saveStatuses">Submit</span>
                             </button>
                         </div>

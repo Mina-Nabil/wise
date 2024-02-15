@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CitiesSeeder::class);
         $this->call(CarsSeeder::class);
         $this->call(ProfessionsSeeder::class);
-        $this->call(InsuranceSeeder::class);
+        $this->call(ProdInsuranceSeeder::class);
         $this->call(SoldPolicyFileSeeder::class);
         // if (App::environment('local')) {
         //     // $this->call(TaskSeeder::class);
