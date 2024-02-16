@@ -98,6 +98,8 @@ class NewLead extends Component
 
         if ($res && $fres) {
             $this->alert('success', 'Lead Added!');
+            // dd($res->id);
+            $this->emit('dataReceived', ['clientTypeRecieved' => $this->leadType , 'clientIdRecieved' => $res->id]);
             $this->toggleAddLead();
         } else {
             $this->alert('failed', 'server error');
