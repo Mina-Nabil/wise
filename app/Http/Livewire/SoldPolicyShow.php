@@ -70,6 +70,32 @@ class SoldPolicyShow extends Component
     public $generateRenewalOfferSec = false;
     public $renewalOfferDue;
 
+    public $note;
+    public $noteSection = false;
+    
+    public function toggleNoteSection() {
+        $this->toggle($this->noteSection);
+        if($this->noteSection){
+            $this->note = $this->soldPolicy->note;
+        }
+    }
+
+    public function editNote(){
+        $this->validate([
+            'note' => 'required|string|max:255'
+        ]);
+
+        $res = $this->soldPolicy->setNote($this->note);
+        
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->toggleNoteSection();
+            $this->alert('success', 'note updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
     public function toggleGenerateRenewalOfferSec(){
         $this->toggle($this->generateRenewalOfferSec);
     }

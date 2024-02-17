@@ -63,6 +63,14 @@ class OfferIndex extends Component
 
     public $relatives = [];
 
+    protected $listeners = ['dataReceived'];
+
+    public function dataReceived($data)
+    {
+        $this->clientType = ucwords($data['clientTypeRecieved']);
+        $this->selectClient($data['clientIdRecieved']);
+    }
+
     public function removeRelative($index)
     {
         unset($this->relatives[$index]);
@@ -98,12 +106,13 @@ class OfferIndex extends Component
             if ($this->clientCars->isEmpty()) {
                 $this->clientCars = null;
             }
+            $this->selectedClientName = $res->first_name . ' ' . $res->middle_name . ' ' . $res->last_name;
         } elseif ($this->clientType == 'Corporate') {
             $res = Corporate::find($id);
+            $this->selectedClientName = $res->name;
         }
 
         $this->owner = $res;
-        $this->selectedClientName = $res->first_name . ' ' . $res->middle_name . ' ' . $res->last_name;
         $this->clientNames = null;
         $this->searchClient = null;
     }
