@@ -181,7 +181,7 @@ class Offer extends Model
             foreach ($op->policy->benefits as $b) {
                 $cellIndex = $startChar . 7 + array_search($b->benefit, PolicyBenefit::BENEFITS);
                 $activeSheet->getCell($cellIndex)->setValue($b->value);
-                $activeSheet->getColumnDimension($startChar . 7)->setAutoSize(true);
+                $activeSheet->getColumnDimension($startChar)->setAutoSize(true);
             }
             $startChar++;
         }
