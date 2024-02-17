@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Tcpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Offer extends Model
@@ -186,7 +187,7 @@ class Offer extends Model
             $startChar++;
         }
 
-        $writer = new Mpdf($newFile);
+        $writer = new Tcpdf($newFile);
         $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.pdf";
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
