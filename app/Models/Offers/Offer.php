@@ -193,7 +193,7 @@ class Offer extends Model
                 return Storage::url($file_path);
             }
         }
-        return response()->download(storage_path(self::FILES_DIRECTORY . "offer{$this->id}_comparison.pdf"));
+        return response()->download($public_file_path);
     }
 
     public function generateWhatsappUrl($client_phone, $ids = [])
