@@ -176,12 +176,15 @@ class Offer extends Model
             $activeSheet->getCell($startChar . '3')->setValue($op->gross_premium);
 
             foreach ($op->policy->benefits as $b) {
-                $activeSheet->getCell($startChar . 7 + array_search($b->benefit, PolicyBenefit::BENEFITS))->setValue($b->value);
+                $cellIndex = $startChar . 7 + array_search($b->benefit, PolicyBenefit::BENEFITS);
+                $activeSheet->getCell($cellIndex)->setValue($b->value);
+                $activeSheet->getColumnDimension($startChar . 7)->setAutoSize(true);
             }
             $startChar++;
         }
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($newFile);
-        $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.xlsx";
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf($newFile);
+        $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.pdf";
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
         if ($saveAndGetFileUrl) {
