@@ -168,6 +168,7 @@ class Offer extends Model
             $cell = $activeSheet->getCell('A' . $i++);
             $cell->setValue($b);
         }
+        $activeSheet->getColumnDimension('A')->setAutoSize(true);
         $options = $this->options()->with('policy_condition', 'policy', 'policy.company', 'policy.benefits')->when(count($ids), function ($q) use ($ids) {
             $q->whereIn('id', $ids);
         })->get();
