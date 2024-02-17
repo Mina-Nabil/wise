@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Offer extends Model
 {
@@ -183,8 +184,8 @@ class Offer extends Model
             $startChar++;
         }
 
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf($newFile);
-        $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.pdf";
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.xlsx";
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
         if ($saveAndGetFileUrl) {
