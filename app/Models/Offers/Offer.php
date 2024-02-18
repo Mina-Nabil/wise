@@ -26,6 +26,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Tcpdf;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Offer extends Model
 {
@@ -162,9 +165,11 @@ class Offer extends Model
         }
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
-        $i = 7;
+     
+        $i = 5;
         foreach (PolicyBenefit::BENEFITS as $b) {
-            $cell = $activeSheet->getCell('A' . $i++);
+            $activeSheet->insertNewRowBefore($i++);
+            $cell = $activeSheet->getCell('A' . $i-1);
             $cell->setValue($b);
         }
         $activeSheet->getColumnDimension('A')->setAutoSize(true);
@@ -173,19 +178,33 @@ class Offer extends Model
         })->get();
         $startChar = 'B';
         foreach ($options as $op) {
+            $activeSheet->insertNewColumnBefore($startChar);
             $activeSheet->getCell($startChar . '1')->setValue($op->policy->name  . " - " . $op->policy?->company->name);
             $activeSheet->getCell($startChar . '2')->setValue($op->net_premium);
             $activeSheet->getCell($startChar . '3')->setValue($op->gross_premium);
 
             foreach ($op->policy->benefits as $b) {
-                $cellIndex = $startChar . 7 + array_search($b->benefit, PolicyBenefit::BENEFITS);
+                $cellIndex = $startChar . 5 + array_search($b->benefit, PolicyBenefit::BENEFITS);
                 $activeSheet->getCell($cellIndex)->setValue($b->value);
                 $activeSheet->getColumnDimension($startChar)->setAutoSize(true);
             }
             $startChar++;
         }
-
-        $writer = new Dompdf($newFile);
+        $i++;
+        $activeSheet->getStyle("A1:$startChar$i")->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    'color' => ['argb' => '00000000'],
+                ],
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
+        $activeSheet->setRightToLeft(false);
+        
+        $writer = new Mpdf($newFile);
         $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.pdf";
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);

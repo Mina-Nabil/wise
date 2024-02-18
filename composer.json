@@ -6,7 +6,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
-        "dompdf/dompdf": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "jeroendesloovere/vcard": "^1.7",
         "laravel/framework": "^9.19",
@@ -14,6 +13,7 @@
         "laravel/tinker": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/livewire": "^2.12",
+        "mpdf/mpdf": "^8.2",
         "phpoffice/phpspreadsheet": "^1.29",
         "pusher/pusher-php-server": "^7.2",
         "sentry/sentry-laravel": "^3.8"
