@@ -193,6 +193,7 @@ class Offer extends Model
         $activeSheet->removeColumn($activeSheet->getHighestColumn());
         $activeSheet->removeRow($activeSheet->getHighestRow());
         $startChar--;
+        $i--;
         $activeSheet->getStyle("A1:$startChar$i")->applyFromArray([
             'borders' => [
                 'allBorders' => [
