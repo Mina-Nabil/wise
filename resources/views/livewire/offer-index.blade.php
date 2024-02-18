@@ -15,13 +15,17 @@
 
     <ul class="radio-switch mb-5">
         <li class="radio-switch__item">
-            <input class="radio-switch__input ri5-sr-only" type="radio" name="radio-switch-name" id="radio-1" value="isRenewal" wire:model="isRenewalCB">
-            <label class="radio-switch__label" for="radio-1">Renewal</label>
+            <input class="radio-switch__input ri5-sr-only" type="radio" name="radio-switch-name" id="radio-1" value="all" wire:model="isRenewalCB">
+            <label class="radio-switch__label" for="radio-1">All</label>
+        </li>
+        <li class="radio-switch__item">
+            <input class="radio-switch__input ri5-sr-only" type="radio" name="radio-switch-name" id="radio-2" value="isRenewal" wire:model="isRenewalCB">
+            <label class="radio-switch__label" for="radio-2">Renewal</label>
         </li>
 
         <li class="radio-switch__item">
-            <input class="radio-switch__input ri5-sr-only" type="radio" name="radio-switch-name" id="radio-2" value="notRenewal" wire:model="isRenewalCB">
-            <label class="radio-switch__label" for="radio-2">Not Renewal</label>
+            <input class="radio-switch__input ri5-sr-only" type="radio" name="radio-switch-name" id="radio-3" value="notRenewal" wire:model="isRenewalCB">
+            <label class="radio-switch__label" for="radio-3">Not Renewal</label>
             <div aria-hidden="true" class="radio-switch__marker"></div>
         </li>
     </ul>
