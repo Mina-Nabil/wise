@@ -79,6 +79,10 @@ class OfferPolicy
     {
         return true;
     }
+    public function setInsuranceStatuses(User $user, Offer $offer)
+    {
+        return $user->is_operations;
+    }
 
     /**
      * Determine whether the user can update the model.
