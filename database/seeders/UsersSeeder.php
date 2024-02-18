@@ -26,10 +26,10 @@ class UsersSeeder extends Seeder
         User::newUser("youmna.soliman", "Youmna", "Soliman", User::TYPE_OPERATIONS, "youmna.soliman"); //9
         User::newUser("minabil", "Mina", "Nabil", User::TYPE_ADMIN, "mina@wise", "mina9492@hotmail.com", "01225212014"); //10
         User::newUser("michael", "Michael", "Hani", User::TYPE_ADMIN, "michael@wise"); //11
+
         User::newUser("fady.atef", "Fady", "Atef", User::TYPE_OPERATIONS, "fady@wise"); //12
-        User::newUser("fady.atef", "Fady", "Atef", User::TYPE_OPERATIONS, "fady@wise"); //13
-        User::newUser("abdelghany.mahmoud", "Omar", "Khaled", User::TYPE_MANAGER, "abdelghany.mahmoud"); //14
-        User::newUser("omar.khaled", "Omar", "Khaled", User::TYPE_OPERATIONS, "omar.khaled", manager_id: 14); //15
-        User::newUser("rana.mohamed", "Rana", "Mohamed", User::TYPE_OPERATIONS, "rana.mohamed", manager_id: 14); //16
+        User::newUser("abdelghany.mahmoud", "Omar", "Khaled", User::TYPE_MANAGER, "abdelghany.mahmoud"); //13
+        User::newUser("omar.khaled", "Omar", "Khaled", User::TYPE_OPERATIONS, "omar.khaled", manager_id: 13); //14
+        User::newUser("rana.mohamed", "Rana", "Mohamed", User::TYPE_OPERATIONS, "rana.mohamed", manager_id: 13); //15
     }
 }
