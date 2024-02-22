@@ -41,7 +41,7 @@ class SoldPolicy extends Model
         'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
         'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
         'car_chassis', 'car_plate_no', 'car_engine', 'policy_number',
-        'in_favor_to', 'policy_doc'
+        'in_favor_to', 'policy_doc', 'note'
     ];
 
     ///model functions
