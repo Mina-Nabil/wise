@@ -18,6 +18,9 @@ use App\Models\Offers\OptionField;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use App\Models\Cars\Brand;
+use App\Models\Cars\CarModel;
+use App\Models\Cars\CarPrice;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
@@ -119,6 +122,16 @@ class OfferShow extends Component
     public $car_engine = null;
     public $soldInFavorTo;
     public $policyDoc;
+
+    public $carBrand;
+    public $models;
+    public $carModel;
+    public $CarCategory;
+    public $cars;
+    public $CarPrices;
+    public $carPrice;
+    public $selectedCarPriceArray;
+    public $item;
 
     public function openGenerateSoldPolicy()
     {
@@ -707,7 +720,12 @@ class OfferShow extends Component
             'item_desc' => 'nullable|string',
         ]);
 
-        $item = CustomerCar::find($this->carId);
+        if($this->carId){
+            $item = CustomerCar::find($this->carId);
+        }else{
+            $item = $this->offer->client->addCar(car_id: $this->CarCategory, model_year: $this->selectedCarPriceArray['model_year']);
+        }
+        
 
         $res = $this->offer->setItemDetails($this->item_value, $item, $this->item_title, $this->item_desc);
 
@@ -886,6 +904,43 @@ class OfferShow extends Component
         }
     }
 
+    public function updatedCarBrand($value)
+    {
+        $this->models = CarModel::where('brand_id', $value)->get();
+        if ($value === '') {
+            $this->carModel = null;
+            $this->CarCategory = null;
+        }
+        $this->CarCategory = null;
+    }
+
+    public function updatedCarModel($value)
+    {
+        $this->cars = Car::where('car_model_id', $value)->get();
+        $this->CarCategory = null;
+    }
+
+    public function updatedCarCategory()
+    {
+        if ($this->CarCategory) {
+            $this->CarPrices = CarPrice::where('car_id', $this->CarCategory)->get();
+        }
+    }
+    public function updatedCarPrice()
+    {
+        if ($this->carPrice) {
+            $this->selectedCarPriceArray = (array) json_decode($this->carPrice);
+            $this->item_value = $this->selectedCarPriceArray['price'];
+        }
+    }
+
+    public function updatedItem()
+    {
+        if ($this->item) {
+            $this->CarPrices = CarPrice::where('car_id', $this->item)->get();
+        }
+    }
+
 
     public function render()
     {
@@ -895,6 +950,7 @@ class OfferShow extends Component
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
         $optionStatuses = OfferOption::STATUSES;
+        $brands = Brand::all();
         if ($this->offer->item)
             $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, age: null, offerValue: $this->offer->item_value);
 
@@ -904,7 +960,8 @@ class OfferShow extends Component
             'users' => $users,
             'usersTypes' => $usersTypes,
             'DISCOUNT_TYPES' => $DISCOUNT_TYPES,
-            'optionStatuses' => $optionStatuses
+            'optionStatuses' => $optionStatuses,
+            'brands' => $brands
         ]);
     }
 }
