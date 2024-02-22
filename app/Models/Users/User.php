@@ -180,6 +180,8 @@ class User extends Authenticatable
     public static function newUser($username, $first_name, $last_name, $type, $password, $email = null, $phone = null, $manager_id = null): self|false
     {
         try {
+            $exists = self::userExists($username);
+            if ($exists) return $exists;
             $user = new self([
                 "username"      =>  $username,
                 "first_name"    =>  $first_name,
@@ -198,6 +200,11 @@ class User extends Authenticatable
             report($e);
             return false;
         }
+    }
+
+    public static function userExists($username)
+    {
+        return self::where('username', $username)->first();
     }
 
     /**
