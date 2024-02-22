@@ -40,9 +40,9 @@
                                         Type
                                     </th>
 
-                                    <th scope="col" class=" table-th ">
+                                    {{-- <th scope="col" class=" table-th ">
                                         Phone
-                                    </th>
+                                    </th> --}}
 
                                     <th scope="col" class=" table-th ">
                                         Email
@@ -67,12 +67,12 @@
                                             {{ $corporate->type }}
                                         </td>
 
-                                        <td class="table-td ">
+                                        {{-- <td class="table-td ">
                                             @foreach ($corporate->phones->take(1) as $phones)
                                                 {{ $phones->number }}
                                             @endforeach
 
-                                        </td>
+                                        </td> --}}
 
                                         <td class="table-td ">
                                             {{ $corporate->email ?? 'N/A' }}

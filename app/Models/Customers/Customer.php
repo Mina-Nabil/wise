@@ -621,7 +621,7 @@ class Customer extends Model
         $query->select('customers.*')->with('status')
             ->join('users', 'customers.owner_id', '=', 'users.id');
 
-        if ($loggedInUser->type !== User::TYPE_ADMIN) {
+        if (!in_array($loggedInUser->type, [User::TYPE_ADMIN, User::TYPE_OPERATIONS])) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);

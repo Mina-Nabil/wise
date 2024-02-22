@@ -48,14 +48,14 @@ class SoldPolicy extends Model
     public function generateRenewalOffer(Carbon $due)
     {
         return Offer::newOffer(
-            client: $this->client, 
-            type: $this->policy->business, 
+            client: $this->client,
+            type: $this->policy->business,
             item_value: $this->insured_value,
             item_title: "Renewal Offer",
-            note: "Policy#$this->policy_number Renewal Offer", 
-            due: $due, 
-            item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null, 
-            is_renewal: true, 
+            note: "Policy#$this->policy_number Renewal Offer",
+            due: $due,
+            item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null,
+            is_renewal: true,
             in_favor_to: $this->in_favor_to
         );
     }
@@ -120,7 +120,7 @@ class SoldPolicy extends Model
     public function deletePolicyDoc()
     {
         $this->policy_doc = null;
-        if($this->save()){
+        if ($this->save()) {
             Storage::delete($this->policy_doc);
         }
 
@@ -463,7 +463,7 @@ class SoldPolicy extends Model
         $query->select('sold_policies.*')
             ->join('users', "sold_policies.creator_id", '=', 'users.id');
 
-        if ($loggedInUser->type !== User::TYPE_ADMIN) {
+        if (!in_array($loggedInUser->type, [User::TYPE_ADMIN, User::TYPE_OPERATIONS])) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);
