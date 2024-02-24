@@ -22,10 +22,10 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
         $this->call(UsersSeeder::class);
-        $this->call(CountriesSeeder::class);
-        $this->call(CitiesSeeder::class);
-        $this->call(CarsSeeder::class);
-        $this->call(ProfessionsSeeder::class);
+        // $this->call(CountriesSeeder::class);
+        // $this->call(CitiesSeeder::class);
+        // $this->call(CarsSeeder::class);
+        // $this->call(ProfessionsSeeder::class);
         $this->call(ProdInsuranceSeeder::class);
         $this->call(SoldPolicyFileSeeder::class);
         // if (App::environment('local')) {
