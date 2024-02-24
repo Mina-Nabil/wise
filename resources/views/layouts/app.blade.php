@@ -193,6 +193,14 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ url('/contacts') }}" class="navItem @yield('contacts')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
+                                <span>Contacts</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="icon-park-outline:cycle-arrow"></iconify-icon>

@@ -34,6 +34,7 @@ Route::middleware('auth', 'active')->group(function () {
 
     //Users routes
     Route::get('/users', [UserController::class, 'index']);
+    Route::get('/contacts', [UserController::class, 'contactIndex']);
     Route::get('/profile', [UserController::class, 'show']);
 
     Route::get('/notifications', [UserController::class, 'notfIndex']);
