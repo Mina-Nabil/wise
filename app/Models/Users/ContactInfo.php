@@ -11,7 +11,7 @@ use JeroenDesloovere\VCard\VCard;
 class ContactInfo extends Model
 {
     use HasFactory;
-
+    const FILES_DIRECTORY = 'contacts/';
     protected $table = 'contact_info';
     protected $fillable = [
         'first_name', 'last_name', 'job_title', 'email', 'mob_number1',
