@@ -175,6 +175,23 @@ class SoldPolicy extends Model
         }
     }
 
+    public function setCustomerCar($customer_car_id)
+    {
+        $this->update([
+            'customer_car_id'      => $customer_car_id
+        ]);
+
+        try {
+            $this->save();
+            AppLog::info("Sold Policy customer car edited", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit Sold Policy customer car", desc: $e->getMessage());
+            return false;
+        }
+    }
+
     public function setNote($note)
     {
         $this->update([
