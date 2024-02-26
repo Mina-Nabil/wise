@@ -37,7 +37,7 @@ class OfferDoc extends Model
             $this->loadMissing('offer');
             $tmpOffer = $this->offer;
             if (parent::delete()) {
-                Storage::delete($this->url);
+                Storage::disk('s3')->delete($this->url);
                 AppLog::info("File deleted", loggable: $tmpOffer);
                 return true;
             } else {

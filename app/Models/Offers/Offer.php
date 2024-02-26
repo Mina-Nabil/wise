@@ -212,9 +212,9 @@ class Offer extends Model
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
         if ($saveAndGetFileUrl) {
-            if (Storage::put($file_path, file_get_contents($public_file_path))) {
+            if (Storage::disk('s3')->put($file_path, file_get_contents($public_file_path))) {
                 File::delete($public_file_path);
-                return Storage::url($file_path);
+                return Storage::disk('s3')->url($file_path);
             }
         }
         return response()->download($public_file_path);

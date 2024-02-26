@@ -121,7 +121,7 @@ class SoldPolicy extends Model
     {
         $this->policy_doc = null;
         if ($this->save()) {
-            Storage::delete($this->policy_doc);
+            Storage::disk('s3')->delete($this->policy_doc);
         }
 
         try {

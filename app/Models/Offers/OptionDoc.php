@@ -34,7 +34,7 @@ class OptionDoc extends Model
             $this->loadMissing('option');
             $tmpOption = $this->option;
             if (parent::delete()) {
-                Storage::delete($this->url);
+                Storage::disk('s3')->delete($this->url);
                 AppLog::info("Option File deleted", loggable: $tmpOption);
                 return true;
             } else {
@@ -47,7 +47,7 @@ class OptionDoc extends Model
             return false;
         }
     }
-    
+
     ///relations
     public function option(): BelongsTo
     {
@@ -56,6 +56,6 @@ class OptionDoc extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class , 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
