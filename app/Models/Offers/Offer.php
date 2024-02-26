@@ -165,11 +165,11 @@ class Offer extends Model
         }
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
-     
+
         $i = 5;
         foreach (PolicyBenefit::BENEFITS as $b) {
             $activeSheet->insertNewRowBefore($i++);
-            $cell = $activeSheet->getCell('A' . $i-1);
+            $cell = $activeSheet->getCell('A' . $i - 1);
             $cell->setValue($b);
         }
         $activeSheet->getColumnDimension('A')->setAutoSize(true);
@@ -206,7 +206,7 @@ class Offer extends Model
             ],
         ]);
         $activeSheet->setRightToLeft(false);
-        
+
         $writer = new Mpdf($newFile);
         $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.pdf";
         $public_file_path = storage_path($file_path);
@@ -598,10 +598,14 @@ class Offer extends Model
         try {
             $option->save();
             $this->save();
-            $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
-            $this->addComment("Offer option accepted", false);
-            $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
-            $this->setStatus(self::STATUS_PENDING_OPERATIONS);
+            if ($state == OfferOption::STATUS_CLNT_ACPT) {
+                $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
+                $this->addComment("Offer option accepted", false);
+                if (!$this->with_operations) {
+                    $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+                }
+                $this->setStatus(self::STATUS_PENDING_OPERATIONS);
+            }
             return true;
         } catch (Exception $e) {
             report($e);
@@ -623,6 +627,13 @@ class Offer extends Model
             $this->loadMissing('creator');
             $this->creator?->pushNotification($title, $message, "offers/" . $this->id);
         }
+    }
+
+    ////attributes
+    public function getWithOperationsAttribute()
+    {
+        $this->loadMissing('assignee');
+        return $this->assignee_type === User::TYPE_OPERATIONS || $this->assignee?->type == User::TYPE_OPERATIONS;
     }
 
 
