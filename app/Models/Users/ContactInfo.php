@@ -16,7 +16,7 @@ class ContactInfo extends Model
     protected $fillable = [
         'first_name', 'last_name', 'job_title', 'email', 'mob_number1',
         'mob_number2', 'home_number1', 'home_number2', 'work_number1', 'work_number2',
-        'address_line1', 'address_line2', 'address_district', 'address_governate',
+        'address_street', 'address_district', 'address_governate',
         'address_country', 'url', 'image'
     ];
 
