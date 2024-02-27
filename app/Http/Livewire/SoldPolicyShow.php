@@ -69,6 +69,7 @@ class SoldPolicyShow extends Component
 
     public $generateRenewalOfferSec = false;
     public $renewalOfferDue;
+    public $inFavorTo;
 
     public $note;
     public $noteSection = false;
@@ -101,7 +102,7 @@ class SoldPolicyShow extends Component
     }
 
     public function generateRenewalOffer(){
-        $res = $this->soldPolicy->generateRenewalOffer(Carbon::parse($this->renewalOfferDue));
+        $res = $this->soldPolicy->generateRenewalOffer(Carbon::parse($this->renewalOfferDue), $this->inFavorTo);
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->toggleGenerateRenewalOfferSec();
