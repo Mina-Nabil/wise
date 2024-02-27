@@ -464,8 +464,7 @@ class SoldPolicy extends Model
             ->join('users', "sold_policies.creator_id", '=', 'users.id');
 
         if (!($loggedInUser->is_admin
-            || ($loggedInUser->is_operations && $searchText)
-            || ($loggedInUser->is_operations && !$is_expiring))) {
+            || ($loggedInUser->is_operations && ($searchText && !$is_expiring)))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);
