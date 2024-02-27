@@ -621,29 +621,41 @@ class Customer extends Model
         $query->select('customers.*')->with('status')
             ->join('users', 'customers.owner_id', '=', 'users.id');
 
-        if (!in_array($loggedInUser->type, [User::TYPE_ADMIN, User::TYPE_OPERATIONS])) {
+        if (!($loggedInUser->is_admin
+            || ($loggedInUser->is_operations && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);
             });
         }
 
-        $query->when($searchText, function ($q, $v) {
+        $query->when($searchText, function ($q, $v) use ($loggedInUser) {
             $q->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')
                 ->groupBy('customers.id');
 
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp) {
-                    $qq->where('customers.first_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
-                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%");
+                $q->where(function ($qq) use ($tmp, $loggedInUser) {
+                    if ($loggedInUser->is_operations) {
+                        $qq->where('customers.first_name', '=', "$tmp")
+                            ->orwhere('customers.last_name', '=', "$tmp")
+                            ->orwhere('customers.middle_name', '=', "$tmp")
+                            ->orwhere('customers.arabic_first_name', '=', "$tmp")
+                            ->orwhere('customers.arabic_last_name', '=', "$tmp")
+                            ->orwhere('customers.arabic_middle_name', '=', "$tmp")
+                            ->orwhere('customers.email', '=', "$tmp")
+                            ->orwhere('customer_phones.number', '=', "$tmp");
+                    } else {
+                        $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                            ->orwhere('customer_phones.number', 'LIKE', "%$tmp%");
+                    }
                 });
             }
         });
