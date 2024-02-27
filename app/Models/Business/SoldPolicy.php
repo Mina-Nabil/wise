@@ -474,10 +474,12 @@ class SoldPolicy extends Model
         $query->when($searchText, function ($q, $v) use ($loggedInUser, $is_expiring) {
             $q->leftjoin('corporates', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'corporates.id')
-                    ->where('sold_policies.client_type', Corporate::MORPH_TYPE);
+                    ->where('sold_policies.client_type', Corporate::MORPH_TYPE)
+                    ->join('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id');
             })->leftjoin('customers', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'customers.id')
-                    ->where('sold_policies.client_type', Customer::MORPH_TYPE);
+                    ->where('sold_policies.client_type', Customer::MORPH_TYPE)
+                    ->join('customer_phones', 'customer_phones.customer_id', '=', 'customers.id');
             })->groupBy('sold_policies.id');
 
             $splittedText = explode(' ', $v);
@@ -492,6 +494,8 @@ class SoldPolicy extends Model
                             ->orwhere('corporates.email', '=', "$tmp")
                             //search using policy info
                             ->orwhere('policy_number', '=', "$tmp")
+                            ->orwhere('customer_phones.number', '=', "$tmp")
+                            ->orwhere('corporate_phones.number', '=', "$tmp")
                             //search using car info
                             ->orwhere('car_chassis', '=', "$tmp")
                             ->orwhere('car_engine', '=', "$tmp")
@@ -505,10 +509,12 @@ class SoldPolicy extends Model
                             ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
                             ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
                             ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                            ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
                             // ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
                             //search using customer info
                             ->orwhere('corporates.name', 'LIKE', "%$tmp%")
                             ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                            ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
                             //search using policy info
                             ->orwhere('policy_number', 'LIKE', "%$tmp%")
                             //search using car info
