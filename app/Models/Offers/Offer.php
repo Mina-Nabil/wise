@@ -296,7 +296,9 @@ class Offer extends Model
         $updates = array();
         //perform checks
         switch ($status) {
-            case self::STATUS_CANCELLED | self::STATUS_DECLINED_INSUR | self::STATUS_DECLINED_CUSTOMER:
+            case self::STATUS_CANCELLED:
+            case self::STATUS_DECLINED_INSUR:
+            case self::STATUS_DECLINED_CUSTOMER:
                 //closing the offer, no need to check
                 $updates['closed_by_id']    =   Auth::id();
                 break;
