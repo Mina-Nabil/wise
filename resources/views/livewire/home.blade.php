@@ -244,7 +244,7 @@
 
                     </div>
                 </div>
-            </div> --}}
+            </div> 
 
             {{-- Assigned Offers --}}
             <div class="lg:col-span-4 col-span-12">
