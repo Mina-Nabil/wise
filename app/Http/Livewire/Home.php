@@ -35,7 +35,9 @@ class Home extends Component
             ->whereMonth('updated_at', Carbon::now()->month)
             ->count();
 
-        $recentTasks =  Task::assignedTo(auth()->user()->id)->get()->take(5);
+        $recentTasks =  Task::assignedTo(auth()->user()->id)
+        ->whereNotIn('status', [Task::STATUS_COMPLETED, Task::STATUS_CLOSED])
+        ->get()->take(5);
 
         $countCars = Car::all()->count();
         $homeAssignedOffers = Auth::user()->homeAssignedOffers(5);
