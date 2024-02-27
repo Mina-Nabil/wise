@@ -225,7 +225,7 @@
                 </div>
             </div> --}}
 
-            <div class="lg:col-span-6 col-span-12">
+            <div class="lg:col-span-3 col-span-12">
                 <div class="card ">
                     <div class="card-header ">
                         <h4 class="card-title">Created Offers</h4>
@@ -332,7 +332,7 @@
             </div>
 
             {{-- Assigned Offers --}}
-            <div class="lg:col-span-4 col-span-12">
+            <div class="lg:col-span-3 col-span-12">
                 <div class="card ">
                     <div class="card-header ">
                         <h4 class="card-title">Assigned Offers</h4>
@@ -443,7 +443,7 @@
         </div>
 
         {{-- Tasks --}}
-        <div class="lg:col-span-4 col-span-12">
+        <div class="lg:col-span-3 col-span-12">
             <div class="card ">
                 <div class="card-header ">
                     <h4 class="card-title">Recent Tasks</h4>
@@ -582,7 +582,7 @@
 
         @if (!Auth::user()->isOperations)
             {{-- Folowups --}}
-            <div class="lg:col-span-4 col-span-12">
+            <div class="lg:col-span-3 col-span-12">
                 <div class="card ">
                     <div class="card-header ">
                         <h4 class="card-title">Follow Ups</h4>
