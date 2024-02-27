@@ -174,65 +174,73 @@
                     <div class="card-body p-6">
 
                         <!-- BEGIN: Activity Card -->
+ --}}
+            <div>
+                <ul class="list-item space-y-3 h-full overflow-x-auto">
 
-                        <div>
-                            <ul class="list-item space-y-3 h-full overflow-x-auto">
-
-                                @if ($homeCreatedOffers->isEmpty())
-                                    <li class="text-center text-xs">
-                                        <h2><iconify-icon icon="mdi:tick-circle" class="text-success-500"></iconify-icon><br></h2>
-                                        You have no recent offers!
-                                    </li>
-                                @endif
-                                @foreach ($homeCreatedOffers as $offer)
-                                    <li class="flex items-center space-x-3 rtl:space-x-reverse border-b border-slate-100 dark:border-slate-700 last:border-b-0 pb-3 last:pb-0">
-                                        <div class="text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]">
-                                            <p class="text-sm text-slate-400  font-light" wire:click="setStatus">
-                                                {{ ucwords($offer->client_type) }}
-                                            </p>
-                                            <a href="{{ route('offers.show', $offer->id) }}">
-                                                <div class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap hover:underline cursor-pointer">
-                                                    <b>{{ $offer->client->name }}</b>
-                                                </div>
-                                            </a>
-                                            <p class="text-sm">{{ ucwords(str_replace('_', ' ', $offer->type)) }}</p>
-                                        </div>
-                                        <div class="flex-1 ltr:text-right rtl:text-left">
-                                            <div class="text-sm font-light  text-slate-900 dark:text-slate-900">
-                                                @if ($offer->status === 'new')
-                                                    <span class="badge bg-info-500 h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                                    </span>
-                                                @elseif(str_contains($offer->status, 'pending'))
-                                                    <span class="badge bg-warning-500 h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                                    </span>
-                                                @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
-                                                    <span class="badge bg-danger-500 h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                                    </span>
-                                                @elseif($offer->status === 'approved')
-                                                    <span class="badge bg-success-500 h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                                    </span>
-                                                @endif
-
-                                                @if ($offer->is_renewal)
-                                                    <span class="badge bg-success-500 text-success-900 bg-opacity-30 capitalize rounded-3xl" style="vertical-align: top;">Renewal</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-
-
-                            </ul>
-                            <div class="card pb-4">
-                                {{ $homeCreatedOffers->links('vendor.livewire.bootstrap') }}
+                    @if ($homeCreatedOffers->isEmpty())
+                        <li class="text-center text-xs">
+                            <h2><iconify-icon icon="mdi:tick-circle" class="text-success-500"></iconify-icon><br></h2>
+                            You have no recent offers!
+                        </li>
+                    @endif
+                    @foreach ($homeCreatedOffers as $offer)
+                        <li
+                            class="flex items-center space-x-3 rtl:space-x-reverse border-b border-slate-100 dark:border-slate-700 last:border-b-0 pb-3 last:pb-0">
+                            <div class="text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]">
+                                <p class="text-sm text-slate-400  font-light" wire:click="setStatus">
+                                    {{ ucwords($offer->client_type) }}
+                                </p>
+                                <a href="{{ route('offers.show', $offer->id) }}">
+                                    <div
+                                        class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap hover:underline cursor-pointer">
+                                        <b>{{ $offer->client->name }}</b>
+                                    </div>
+                                </a>
+                                <p class="text-sm">{{ ucwords(str_replace('_', ' ', $offer->type)) }}</p>
                             </div>
-                        </div>
-                        <!-- END: Activity Card -->
+                            <div class="flex-1 ltr:text-right rtl:text-left">
+                                <div class="text-sm font-light  text-slate-900 dark:text-slate-900">
+                                    @if ($offer->status === 'new')
+                                        <span class="badge bg-info-500 h-auto">
+                                            <iconify-icon
+                                                icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                        </span>
+                                    @elseif(str_contains($offer->status, 'pending'))
+                                        <span class="badge bg-warning-500 h-auto">
+                                            <iconify-icon
+                                                icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                        </span>
+                                    @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
+                                        <span class="badge bg-danger-500 h-auto">
+                                            <iconify-icon
+                                                icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                        </span>
+                                    @elseif($offer->status === 'approved')
+                                        <span class="badge bg-success-500 h-auto">
+                                            <iconify-icon
+                                                icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                        </span>
+                                    @endif
 
+                                    @if ($offer->is_renewal)
+                                        <span
+                                            class="badge bg-success-500 text-success-900 bg-opacity-30 capitalize rounded-3xl"
+                                            style="vertical-align: top;">Renewal</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </li>
+                    @endforeach
+
+
+                </ul>
+                <div class="card pb-4">
+                    {{ $homeCreatedOffers->links('vendor.livewire.bootstrap') }}
+                </div>
+            </div>
+            <!-- END: Activity Card -->
+            {{--
 
                     </div>
                 </div>
