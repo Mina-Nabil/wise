@@ -4,20 +4,7 @@
             <h4
                 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4 mb-4 sm:mb-0 flex space-x-3 rtl:space-x-reverse">
                 Dashboard</h4>
-            {{-- <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center rtl:space-x-reverse">
-                <button class="btn leading-0 inline-flex justify-center bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 !font-normal">
-                    <span class="flex items-center">
-                        <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2 font-light" icon="heroicons-outline:calendar"></iconify-icon>
-                        <span>Weekly</span>
-                    </span>
-                </button>
-                <button class="btn leading-0 inline-flex justify-center bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 !font-normal">
-                    <span class="flex items-center">
-                        <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2 font-light" icon="heroicons-outline:filter"></iconify-icon>
-                        <span>Select Date</span>
-                    </span>
-                </button>
-            </div> --}}
+
         </div>
         <div class="grid grid-cols-12 gap-5 mb-5">
 
@@ -238,6 +225,112 @@
                 </div>
             </div> --}}
 
+            <div class="lg:col-span-6 col-span-12">
+                <div class="card ">
+                    <div class="card-header ">
+                        <h4 class="card-title">Created Offers</h4>
+                        <div>
+                            <!-- BEGIN: Card Dropdown -->
+                            <div class="relative">
+                                <div class="dropdown relative">
+                                    <button class="text-xl text-center block w-full " type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span
+                                            class="text-lg inline-flex h-6 w-6 flex-col items-center justify-center border border-slate-200 dark:border-slate-700 rounded dark:text-slate-400">
+                                            <iconify-icon icon="heroicons-outline:dots-horizontal"></iconify-icon>
+                                        </span>
+                                    </button>
+                                    <ul
+                                        class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700  shadow z-[2] overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                        <li>
+                                            <a href="{{ route('offers.index') }}"
+                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                Show all offers</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- END: Card Droopdown -->
+                        </div>
+                    </div>
+                    <div class="card-body p-6">
+
+                        <!-- BEGIN: Activity Card -->
+
+                        <div>
+                            <ul class="list-item space-y-3 h-full overflow-x-auto">
+
+                                @if ($homeCreatedOffers->isEmpty())
+                                    <li class="text-center text-xs">
+                                        <h2><iconify-icon icon="mdi:tick-circle"
+                                                class="text-success-500"></iconify-icon><br></h2>
+                                        You have no recent offers!
+                                    </li>
+                                @endif
+                                @foreach ($homeCreatedOffers as $offer)
+                                    <li
+                                        class="flex items-center space-x-3 rtl:space-x-reverse border-b border-slate-100 dark:border-slate-700 last:border-b-0 pb-3 last:pb-0">
+                                        <div
+                                            class="text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]">
+                                            <p class="text-sm text-slate-400  font-light" wire:click="setStatus">
+                                                {{ ucwords($offer->client_type) }}
+                                            </p>
+                                            <a href="{{ route('offers.show', $offer->id) }}">
+                                                <div
+                                                    class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap hover:underline cursor-pointer">
+                                                    <b>{{ $offer->client->name }}</b>
+                                                </div>
+                                            </a>
+                                            <p class="text-sm">{{ ucwords(str_replace('_', ' ', $offer->type)) }}</p>
+                                        </div>
+                                        <div class="flex-1 ltr:text-right rtl:text-left">
+                                            <div class="text-sm font-light  text-slate-900 dark:text-slate-900">
+                                                @if ($offer->status === 'new')
+                                                    <span class="badge bg-info-500 h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                    </span>
+                                                @elseif(str_contains($offer->status, 'pending'))
+                                                    <span class="badge bg-warning-500 h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                    </span>
+                                                @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
+                                                    <span class="badge bg-danger-500 h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                    </span>
+                                                @elseif($offer->status === 'approved')
+                                                    <span class="badge bg-success-500 h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                    </span>
+                                                @endif
+
+                                                @if ($offer->is_renewal)
+                                                    <span
+                                                        class="badge bg-success-500 text-success-900 bg-opacity-30 capitalize rounded-3xl"
+                                                        style="vertical-align: top;">Renewal</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+
+
+                            </ul>
+                            <div class="card pb-4">
+                                {{ $homeCreatedOffers->links('vendor.livewire.bootstrap') }}
+                            </div>
+                        </div>
+                        <!-- END: Activity Card -->
+
+
+                    </div>
+                </div>
+            </div>
+
             {{-- Assigned Offers --}}
             <div class="lg:col-span-4 col-span-12">
                 <div class="card ">
@@ -407,7 +500,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]">
+                                    <div
+                                        class="text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]">
                                         <a href="{{ route('tasks.show', $task->id) }}">
                                             <div
                                                 class="text-sm text-slate-600 dark:text-slate-300  hover:underline cursor-pointer">
