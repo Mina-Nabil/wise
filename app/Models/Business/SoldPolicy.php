@@ -486,14 +486,7 @@ class SoldPolicy extends Model
             foreach ($splittedText as $tmp) {
                 $q->where(function ($qq) use ($tmp, $loggedInUser, $is_expiring) {
                     if ($loggedInUser->is_operations && !$is_expiring) {
-                        $qq->where('customers.first_name', '=', "$tmp")
-                            //search using customer info
-                            ->orwhere('customers.last_name', '=', "$tmp")
-                            ->orwhere('customers.middle_name', '=', "$tmp")
-                            ->orwhere('customers.arabic_first_name', '=', "$tmp")
-                            ->orwhere('customers.arabic_last_name', '=', "$tmp")
-                            ->orwhere('customers.arabic_middle_name', '=', "$tmp")
-                            ->orwhere('customers.email', '=', "$tmp")
+                        $qq->where('customers.email', '=', "$tmp")
                             // ->orwhere('customer_phones.number', '=', "%$tmp%")
                             //search using customer info
                             ->orwhere('corporates.name', '=', "$tmp")
