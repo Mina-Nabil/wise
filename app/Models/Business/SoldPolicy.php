@@ -489,7 +489,7 @@ class SoldPolicy extends Model
                         $qq->where('customers.email', '=', "$tmp")
                             // ->orwhere('customer_phones.number', '=', "%$tmp%")
                             //search using customer info
-                            ->orwhere('corporates.name', '=', "$tmp")
+                            ->orwhere('corporates.name', 'LIKE', "%$tmp%")
                             ->orwhere('corporates.email', '=', "$tmp")
                             //search using policy info
                             ->orwhere('policy_number', '=', "$tmp")
