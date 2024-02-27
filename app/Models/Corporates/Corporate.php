@@ -451,26 +451,35 @@ class Corporate extends Model
         $query->select('corporates.*')->with('status')
             ->join('users', "corporates.owner_id", '=', 'users.id');
 
-        if (!in_array($loggedInUser->type, [User::TYPE_ADMIN, User::TYPE_OPERATIONS])) {
+        if (!($loggedInUser->is_admin
+            || ($loggedInUser->is_operations && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);
             });
         }
 
-        $query->when($searchText, function ($q, $v) {
+        $query->when($searchText, function ($q, $v) use ($loggedInUser) {
             $q->leftjoin('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id')
                 ->groupBy('corporates.id');
 
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp) {
-                    $qq->where('corporates.name', 'LIKE', "%$tmp%")
-                        ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%")
-                        ->orwhere('corporates.email', 'LIKE', "%$tmp%")
-                        ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
-                        ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%");
+                $q->where(function ($qq) use ($tmp, $loggedInUser) {
+                    if ($loggedInUser->is_operations) {
+                        $qq->where('corporates.name', '=', "$tmp")
+                            ->orwhere('corporates.arabic_name', '=', "$tmp")
+                            ->orwhere('corporates.email', '=', "$tmp")
+                            ->orwhere('corporate_phones.number', '=', "$tmp")
+                            ->orwhere('corporates.arabic_name', '=', "$tmp");
+                    } else {
+                        $qq->where('corporates.name', 'LIKE', "%$tmp%")
+                            ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%")
+                            ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                            ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
+                            ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%");
+                    }
                 });
             }
         });

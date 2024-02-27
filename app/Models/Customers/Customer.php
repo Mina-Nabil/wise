@@ -638,13 +638,7 @@ class Customer extends Model
             foreach ($splittedText as $tmp) {
                 $q->where(function ($qq) use ($tmp, $loggedInUser) {
                     if ($loggedInUser->is_operations) {
-                        $qq->where('customers.first_name', '=', "$tmp")
-                            ->orwhere('customers.last_name', '=', "$tmp")
-                            ->orwhere('customers.middle_name', '=', "$tmp")
-                            ->orwhere('customers.arabic_first_name', '=', "$tmp")
-                            ->orwhere('customers.arabic_last_name', '=', "$tmp")
-                            ->orwhere('customers.arabic_middle_name', '=', "$tmp")
-                            ->orwhere('customers.email', '=', "$tmp")
+                        $qq->where('customers.email', '=', "$tmp")
                             ->orwhere('customer_phones.number', '=', "$tmp");
                     } else {
                         $qq->where('customers.first_name', 'LIKE', "%$tmp%")
