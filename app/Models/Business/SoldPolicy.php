@@ -463,14 +463,14 @@ class SoldPolicy extends Model
         $query->select('sold_policies.*')
             ->join('users', "sold_policies.creator_id", '=', 'users.id');
 
-        if (!in_array($loggedInUser->type, [User::TYPE_ADMIN, User::TYPE_OPERATIONS])) {
+        if (!($loggedInUser->is_admin || ($loggedInUser->is_operations && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);
             });
         }
 
-        $query->when($searchText, function ($q, $v) {
+        $query->when($searchText, function ($q, $v) use ($loggedInUser) {
             $q->leftjoin('corporates', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'corporates.id')
                     ->where('sold_policies.client_type', Corporate::MORPH_TYPE);
@@ -482,25 +482,46 @@ class SoldPolicy extends Model
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp) {
-                    //search using customer info
-                    $qq->where('customers.first_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
-                        // ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
-                        //search using customer info
-                        ->orwhere('corporates.name', 'LIKE', "%$tmp%")
-                        ->orwhere('corporates.email', 'LIKE', "%$tmp%")
-                        //search using policy info
-                        ->orwhere('policy_number', 'LIKE', "%$tmp%")
-                        //search using car info
-                        ->orwhere('car_chassis', 'LIKE', "%$tmp%")
-                        ->orwhere('car_engine', 'LIKE', "%$tmp%")
-                        ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
+                $q->where(function ($qq) use ($tmp, $loggedInUser) {
+                    if ($loggedInUser->is_operations) {
+                        $qq->where('customers.first_name', '=', "$tmp")
+                            //search using customer info
+                            ->orwhere('customers.last_name', '=', "$tmp")
+                            ->orwhere('customers.middle_name', '=', "$tmp")
+                            ->orwhere('customers.arabic_first_name', '=', "$tmp")
+                            ->orwhere('customers.arabic_last_name', '=', "$tmp")
+                            ->orwhere('customers.arabic_middle_name', '=', "$tmp")
+                            ->orwhere('customers.email', '=', "$tmp")
+                            // ->orwhere('customer_phones.number', '=', "%$tmp%")
+                            //search using customer info
+                            ->orwhere('corporates.name', '=', "$tmp")
+                            ->orwhere('corporates.email', '=', "$tmp")
+                            //search using policy info
+                            ->orwhere('policy_number', '=', "$tmp")
+                            //search using car info
+                            ->orwhere('car_chassis', '=', "$tmp")
+                            ->orwhere('car_engine', '=', "$tmp")
+                            ->orwhere('car_plate_no', '=', "$tmp");
+                    } else {
+                        $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                            //search using customer info
+                            ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                            // ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                            //search using customer info
+                            ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                            ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                            //search using policy info
+                            ->orwhere('policy_number', 'LIKE', "%$tmp%")
+                            //search using car info
+                            ->orwhere('car_chassis', 'LIKE', "%$tmp%")
+                            ->orwhere('car_engine', 'LIKE', "%$tmp%")
+                            ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
+                    }
                 });
             }
         });
