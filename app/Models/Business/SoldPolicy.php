@@ -463,14 +463,16 @@ class SoldPolicy extends Model
         $query->select('sold_policies.*')
             ->join('users', "sold_policies.creator_id", '=', 'users.id');
 
-        if (!($loggedInUser->is_admin || ($loggedInUser->is_operations && $searchText))) {
+        if (!($loggedInUser->is_admin
+            || ($loggedInUser->is_operations && $searchText)
+            || ($loggedInUser->is_operations && !$is_expiring))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);
             });
         }
 
-        $query->when($searchText, function ($q, $v) use ($loggedInUser) {
+        $query->when($searchText, function ($q, $v) use ($loggedInUser, $is_expiring) {
             $q->leftjoin('corporates', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'corporates.id')
                     ->where('sold_policies.client_type', Corporate::MORPH_TYPE);
@@ -482,8 +484,8 @@ class SoldPolicy extends Model
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp, $loggedInUser) {
-                    if ($loggedInUser->is_operations) {
+                $q->where(function ($qq) use ($tmp, $loggedInUser, $is_expiring) {
+                    if ($loggedInUser->is_operations && !$is_expiring) {
                         $qq->where('customers.first_name', '=', "$tmp")
                             //search using customer info
                             ->orwhere('customers.last_name', '=', "$tmp")
