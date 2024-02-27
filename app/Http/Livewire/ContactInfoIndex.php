@@ -22,22 +22,45 @@ class ContactInfoIndex extends Component
     public $home_number2;
     public $work_number1;
     public $work_number2;
-    public $address_line1;
-    public $address_line2;
+    public $address_street;
     public $address_district;
     public $address_governate;
     public $address_country;
     public $url;
     public $image;
 
+    public $contactId;
+
     public $addContactSec = false;
 
     public function toggleAddSection()
     {   
         $this->toggle($this->addContactSec);
-        // if($this->addContactSec){
-        //     $this->reset();
-        // }
+    }
+
+    public function closeEditSec(){
+        $this->reset();
+    }
+
+    public function editThisContact($id){
+        $this->contactId = $id;
+        $c = ContactInfo::find($id);
+        $this->first_name = $c->first_name  ;
+            $this->last_name = $c->last_name  ;
+            $this->job_title = $c->job_title  ;
+            $this->email = $c->email  ;
+            $this->mob_number1 = $c->mob_number1  ;
+            $this->mob_number2 = $c->mob_number2  ;
+            $this->home_number1 = $c->home_number1  ;
+            $this->home_number2 = $c->home_number2  ;
+            $this->work_number1 = $c->work_number1  ;
+            $this->work_number2 = $c->work_number2  ;
+            $this->address_street = $c->address_street;
+            $this->address_district = $c->address_district  ;
+            $this->address_governate = $c->address_governate  ;
+            $this->address_country = $c->address_country  ;
+            $this->url = $c->url  ;
+            $this->image = $c->image  ;
     }
 
     public function addContact(){
@@ -52,6 +75,7 @@ class ContactInfoIndex extends Component
             'home_number2' => 'nullable|string|max:255',
             'work_number1' => 'nullable|string|max:255',
             'work_number2' => 'nullable|string|max:255',
+            'address_street' => 'nullable|string|max:255',
             'address_district' => 'nullable|string|max:255',
             'address_governate' => 'nullable|string|max:255',
             'address_country' => 'nullable|string|max:255',
@@ -76,8 +100,7 @@ class ContactInfoIndex extends Component
             $this->home_number2,
             $this->work_number1,
             $this->work_number2,
-            $this->address_line1,
-            $this->address_line2,
+            $this->address_street,
             $this->address_district,
             $this->address_governate,
             $this->address_country,

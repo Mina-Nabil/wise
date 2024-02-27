@@ -21,10 +21,10 @@
         </header>
 
         <div class="card-body px-6 pb-6">
-            <div class=" -mx-6">
+            <div class="overflow-x-auto -mx-6 dashcode-data-table">
                 <div class="inline-block min-w-full align-middle">
                     <div class="overflow-hidden ">
-                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 no-wrap">
                             <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                 <tr>
 
@@ -93,7 +93,7 @@
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                 @foreach ($contacts as $contact)
-                                    <tr wire:click="redirectToShowPage({{ $contact->id }})" class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                    <tr wire:click="editThisContact({{ $contact->id }})" class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
 
                                         <td class="table-td ">
                                             <b>{{ $contact->first_name }} {{ $contact->last_name }}</b>
@@ -199,7 +199,7 @@
                         <!-- Modal header -->
                         <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Add Corporate
+                                Add Contact
                             </h3>
                             <button wire:click="toggleAddSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -304,21 +304,193 @@
                                 </div>
 
                                 <div class="input-area mt-3">
-                                    <label for="address_line1" class="form-label">Address 1</label>
-                                    <input id="address_line1" type="text" class="form-control @error('address_line1') !border-danger-500 @enderror" wire:model.defer="address_line1">
-                                    @error('address_line1')
+                                    <label for="address_street" class="form-label">Address street</label>
+                                    <input id="address_street" type="text" class="form-control @error('address_street') !border-danger-500 @enderror" wire:model.defer="address_street">
+                                    @error('address_street')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="address_district" class="form-label">District</label>
+                                        <input id="address_district" type="text" class="form-control @error('address_district') !border-danger-500 @enderror" wire:model.defer="address_district">
+                                        @error('address_district')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="input-area">
+                                        <label for="address_governate" class="form-label">Governerate</label>
+                                        <input id="address_governate" type="text" class="form-control @error('address_governate') !border-danger-500 @enderror" wire:model.defer="address_governate">
+                                        @error('address_governate')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="input-area">
+                                        <label for="address_country" class="form-label">Country</label>
+                                        <input id="address_country" type="text" class="form-control @error('address_country') !border-danger-500 @enderror" wire:model.defer="address_country">
+                                        @error('address_country')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                </div>
+
+                                <div class="input-area mt-3">
+                                    <label for="url" class="form-label">Url</label>
+                                    <input id="url" type="text" class="form-control @error('url') !border-danger-500 @enderror" wire:model.defer="url">
+                                    @error('url')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                                <div class="input-area mt-3">
+                                    <label for="image" class="form-label">Image</label>
+                                    <input id="image" type="file" class="form-control @error('image') !border-danger-500 @enderror" wire:model.defer="image">
+                                    @error('image')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addContact" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($contactId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Contact
+                            </h3>
+                            <button wire:click="closeEditSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                    <div class="input-area">
+                                        <label for="first_name" class="form-label">First name</label>
+                                        <input id="first_name" type="text" class="form-control @error('first_name') !border-danger-500 @enderror" wire:model.defer="first_name">
+                                        @error('first_name')
+                                            <span class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="input-area">
+                                        <label for="last_name" class="form-label">Last name</label>
+                                        <input id="last_name" type="text" class="form-control @error('last_name') !border-danger-500 @enderror" wire:model.defer="last_name">
+                                        @error('last_name')
+                                            <span class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="input-area  mt-3">
+                                    <label for="job_title" class="form-label">Job title</label>
+                                    <input id="job_title" type="text" class="form-control @error('job_title') !border-danger-500 @enderror" wire:model.defer="job_title">
+                                    @error('job_title')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
 
                                 <div class="input-area mt-3">
-                                    <label for="address_line2" class="form-label">Address 2</label>
-                                    <input id="address_line2" type="text" class="form-control @error('address_line2') !border-danger-500 @enderror" wire:model.defer="address_line2">
-                                    @error('address_line2')
+                                    <label for="email" class="form-label">Email</label>
+                                    <input id="email" type="text" class="form-control @error('email') !border-danger-500 @enderror" wire:model.defer="email">
+                                    @error('email')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
 
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="mob_number1" class="form-label">Mobile 1</label>
+                                        <input id="mob_number1" type="text" class="form-control @error('mob_number1') !border-danger-500 @enderror" wire:model.defer="mob_number1">
+                                        @error('mob_number1')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="input-area">
+                                        <label for="mob_number2" class="form-label">Mobile 2</label>
+                                        <input id="mob_number2" type="text" class="form-control @error('mob_number2') !border-danger-500 @enderror" wire:model.defer="mob_number2">
+                                        @error('mob_number2')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="home_number1" class="form-label">Home number 1</label>
+                                        <input id="home_number1" type="text" class="form-control @error('home_number1') !border-danger-500 @enderror" wire:model.defer="home_number1">
+                                        @error('home_number1')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="input-area">
+                                        <label for="home_number2" class="form-label">Home number 2</label>
+                                        <input id="home_number2" type="text" class="form-control @error('home_number2') !border-danger-500 @enderror" wire:model.defer="home_number2">
+                                        @error('home_number2')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="work_number1" class="form-label">Work number 1</label>
+                                        <input id="work_number1" type="text" class="form-control @error('work_number1') !border-danger-500 @enderror" wire:model.defer="work_number1">
+                                        @error('work_number1')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="input-area">
+                                        <label for="work_number2" class="form-label">Work number 2</label>
+                                        <input id="work_number2" type="text" class="form-control @error('work_number2') !border-danger-500 @enderror" wire:model.defer="work_number2">
+                                        @error('work_number2')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                </div>
+
+                                <div class="input-area mt-3">
+                                    <label for="address_street" class="form-label">Address street</label>
+                                    <input id="address_street" type="text" class="form-control @error('address_street') !border-danger-500 @enderror" wire:model.defer="address_street">
+                                    @error('address_street')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3">
                                     <div class="input-area">
