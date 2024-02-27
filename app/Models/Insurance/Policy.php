@@ -43,7 +43,6 @@ class Policy extends Model
         self::BUSINESS_ACCIDENT,
         self::BUSINESS_HOME,
         self::BUSINESS_BUSINESS,
-        self::BUSINESS_PERSONAL_MEDICAL,
     ];
 
     const CORPORATE_TYPES = [
