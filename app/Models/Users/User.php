@@ -328,7 +328,7 @@ class User extends Authenticatable
 
     public function assigned_offers(): HasMany
     {
-        return $this->hasMany(Offer::class, 'creator_id');
+        return $this->hasMany(Offer::class, 'assignee_id');
     }
 
     public function latest_notifications(): HasMany
