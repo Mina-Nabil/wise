@@ -42,7 +42,7 @@ class PolicyPolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_operations;
     }
 
     /**
@@ -54,7 +54,7 @@ class PolicyPolicy
      */
     public function update(User $user, Policy $policy)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_operations;
     }
 
     /**
@@ -66,7 +66,7 @@ class PolicyPolicy
      */
     public function delete(User $user, Policy $policy)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_operations;
     }
 
 }
