@@ -467,35 +467,23 @@ class Task extends Model
             ->leftjoin('users', 'tasks.assigned_to_id', '=', 'users.id')
             ->leftjoin('task_temp_assignee', 'task_temp_assignee.task_id', '=', 'tasks.id')
             ->leftjoin('task_watchers', 'task_watchers.task_id', '=', 'tasks.id')
-            ->when($includeWatchers, function ($q) use ($loggedInUser) {
-                $q->orwhere('task_watchers.user_id', $loggedInUser->id);
-            })
             ->groupBy('tasks.id')
             ->orderBy('tasks.due');
 
-        if ($loggedInUser->type === User::TYPE_ADMIN && !$assignedToMeOnly) {
-            return $query;
+        if (!($loggedInUser->is_admin && !$assignedToMeOnly)) {
+            $query->where(function ($q) use ($loggedInUser, $includeWatchers) {
+                $q->where('users.manager_id', $loggedInUser->id)
+                    ->orwhere('tasks.assigned_to_type', $loggedInUser->type)
+                    ->orwhere('tasks.assigned_to_id', $loggedInUser->id)
+                    ->orwhere('tasks.open_by_id', $loggedInUser->id)
+                    ->orwhere(function ($qu) use ($loggedInUser) {
+                        $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
+                            ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
+                            ->whereDate('task_temp_assignee.end_date', '>=', Carbon::now()->format('Y-m-d'));
+                    });
+                $q->when($includeWatchers, fn ($qq) => $qq->orwhere('task_watchers.user_id', $loggedInUser->id));
+            })->when($assignedToMeOnly, fn ($qq) => $qq->where('assigned_to_id', $loggedInUser->id));
         }
-
-        if ($loggedInUser->type !== User::TYPE_ADMIN || $assignedToMeOnly) {
-            //filter all if not admin or only assigned
-            $query->whereNull('tasks.id');
-        }
-
-        $query->orwhere('users.manager_id', $loggedInUser->id);
-        $query->orwhere('tasks.assigned_to_type', $loggedInUser->type);
-        $query->orwhere('tasks.assigned_to_id', $loggedInUser->id);
-        $query->orwhere(function ($qu) use ($loggedInUser) {
-            $qu->where('task_temp_assignee.user_id', $loggedInUser->id)
-                ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
-                ->whereDate('task_temp_assignee.end_date', '>=', Carbon::now()->format('Y-m-d'));
-        });
-
-
-        if (!$assignedToMeOnly) {
-            $query->orwhere('tasks.open_by_id', $loggedInUser->id);
-        }
-
 
         return $query;
     }
