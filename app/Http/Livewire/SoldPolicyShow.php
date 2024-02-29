@@ -10,6 +10,7 @@ use App\Models\Insurance\PolicyBenefit;
 use App\Models\Offers\OfferOption;
 use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskField;
+use App\Models\Users\User;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
@@ -73,21 +74,23 @@ class SoldPolicyShow extends Component
 
     public $note;
     public $noteSection = false;
-    
-    public function toggleNoteSection() {
+
+    public function toggleNoteSection()
+    {
         $this->toggle($this->noteSection);
-        if($this->noteSection){
+        if ($this->noteSection) {
             $this->note = $this->soldPolicy->note;
         }
     }
 
-    public function editNote(){
+    public function editNote()
+    {
         $this->validate([
             'note' => 'required|string|max:255'
         ]);
 
         $res = $this->soldPolicy->setNote($this->note);
-        
+
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->toggleNoteSection();
@@ -97,17 +100,19 @@ class SoldPolicyShow extends Component
         }
     }
 
-    public function toggleGenerateRenewalOfferSec(){
+    public function toggleGenerateRenewalOfferSec()
+    {
         $this->toggle($this->generateRenewalOfferSec);
     }
 
-    public function generateRenewalOffer(){
+    public function generateRenewalOffer()
+    {
         $res = $this->soldPolicy->generateRenewalOffer(Carbon::parse($this->renewalOfferDue), $this->inFavorTo);
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->toggleGenerateRenewalOfferSec();
             $this->alert('success', 'document deleted');
-            $this->dispatchBrowserEvent('openNewTab', ['url' => '/offers'.'/'.$res->id]);
+            $this->dispatchBrowserEvent('openNewTab', ['url' => '/offers' . '/' . $res->id]);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -549,7 +554,37 @@ class SoldPolicyShow extends Component
         }
     }
 
+    /////watchers sections
+    public $changeWatchers = false;
+    public $watchersList = [];
+    public $setWatchersList;
 
+    public function OpenChangeWatchers()
+    {
+        $this->changeWatchers = true;
+    }
+    public function closeChangeWatchers()
+    {
+        $this->changeWatchers = false;
+    }
+    public function saveWatchers()
+    {
+        $this->validate([
+            'setWatchersList' => 'nullable|array',
+            'setWatchersList.*' => 'integer|exists:users,id',
+        ], [], [
+            'setWatchersList' => 'Watchers',
+        ]);
+
+        $t = $this->soldPolicy->setWatchers($this->setWatchersList);
+        if ($t) {
+            $this->alert('success', 'Watchers Updated!');
+            $this->closeChangeWatchers();
+            $this->mount($this->soldPolicy->id);
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
 
     public function mount($id)
     {
@@ -563,6 +598,8 @@ class SoldPolicyShow extends Component
         $this->discount = $this->soldPolicy->discount;
         $this->actions[] = ['column_name' => '', 'value' => ''];
         $this->fields[] = ['title' => '', 'value' => ''];
+        //watchers code
+        $this->watchersList = $this->soldPolicy->watcher_ids;
     }
 
     public function render()
@@ -571,11 +608,14 @@ class SoldPolicyShow extends Component
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $COLUMNS = TaskAction::COLUMNS[TaskAction::TABLE_SOLD_POLICY];
         $FIELDSTITLES = TaskField::TITLES;
+        $users = User::all();
+
         return view('livewire.sold-policy-show', [
-            'BENEFITS' => $BENEFITS,
+            'BENEFITS'      => $BENEFITS,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
-            'COLUMNS' => $COLUMNS,
-            'FIELDSTITLES' => $FIELDSTITLES
+            'COLUMNS'       => $COLUMNS,
+            'FIELDSTITLES'  => $FIELDSTITLES,
+            "users"         =>  $users
         ]);
     }
 }

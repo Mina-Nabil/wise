@@ -327,7 +327,6 @@ class SoldPolicy extends Model
         try {
             $this->sendPolicyNotifications("Policy#$this->id watchers change", Auth::user()->username . " changed watcher list");
             $this->watchers()->sync($user_ids);
-            $this->addComment("Changed watchers list", false);
             return true;
         } catch (Exception $e) {
             report($e);
@@ -340,10 +339,6 @@ class SoldPolicy extends Model
     {
         $notifier_id = Auth::id();
 
-        if ($notifier_id != $this->assignee_id) {
-            $this->loadMissing('assignee');
-            $this->assignee?->pushNotification($title, $message, "sold-policies/" . $this->id);
-        }
         if ($notifier_id != $this->creator_id) {
             $this->loadMissing('creator');
             $this->creator?->pushNotification($title, $message, "sold-policies/" . $this->id);
