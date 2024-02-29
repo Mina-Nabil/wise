@@ -611,7 +611,7 @@ class Offer extends Model
         }
     }
 
-    public function setWatchers(array $user_ids)
+    public function setWatchers(array $user_ids = [])
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -656,7 +656,7 @@ class Offer extends Model
         $loggedInUser = Auth::user();
         $query->select('offers.*')
             ->join('users', "offers.creator_id", '=', 'users.id')
-            ->leftjoin('offers_watchers', 'offers_watchers.offer_id', '=', 'offers.id');
+            ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
 
         if ($loggedInUser->type !== User::TYPE_ADMIN) {
             $query->where(function ($q) use ($loggedInUser) {
@@ -664,7 +664,7 @@ class Offer extends Model
                     ->orwhere('offers.creator_id', $loggedInUser->id)
                     ->orwhere('offers.assignee_type', $loggedInUser->type)
                     ->orwhere('offers.assignee_id', $loggedInUser->id)
-                    ->orwhere('offers_watchers.user_id', $loggedInUser->id);
+                    ->orwhere('offer_watchers.user_id', $loggedInUser->id);
             });
         }
 
@@ -751,8 +751,13 @@ class Offer extends Model
         return $this->belongsTo(User::class, 'closed_by_id');
     }
 
+    public function watcher_ids(): HasMany
+    {
+        return $this->hasMany(OfferWatcher::class);
+    }
+
     public function watchers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'offers_watchers');
+        return $this->belongsToMany(User::class, 'offer_watchers');
     }
 }

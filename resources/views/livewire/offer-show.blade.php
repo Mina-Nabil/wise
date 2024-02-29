@@ -699,6 +699,51 @@
                                     class="mt-2">{{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type) : 'No one/team assigned') }}</span>
                             </p>
                         </div>
+                  
+                    <div class="card-text h-full menu-open mb-5">
+                        <div class="card-subtitle font-Inter mb-1">
+                            <iconify-icon icon="carbon:view-filled"></iconify-icon> Watchers
+                            <span class="float-right cursor-pointer" wire:click="OpenChangeWatchers">
+                                <iconify-icon icon="carbon:edit"></iconify-icon>
+                            </span>
+                        </div>
+                        <div {{ $changeWatchers ? '' : "style=display:none;'" }}>
+                            <div class="w-full">
+                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple
+                                    aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2"
+                                    multiple="multiple" style="height: 250px">
+                                    @foreach ($users as $user)
+                                        <option
+                                            {{ in_array($user->id, $watchersList->pluck('user_id')->all()) ? 'selected="selected"' : '' }}
+                                            value="{{ $user->id }}" class="">
+                                            {{ $user->first_name . ' ' . $user->last_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button wire:click="saveWatchers"
+                                class="btn inline-flex justify-center btn-success mt-3 float-right btn-sm">
+                                <div class="flex items-center">
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                        wire:loading wire:target="saveWatchers"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <span>Save Watchers</span>
+                                </div>
+                            </button>
+
+                            {{-- <button class="toolTip onTop action-btn m-1 h-full" data-tippy-content="saveWatchers" type="button" wire:click="saveWatchers">
+                                <iconify-icon icon="material-symbols:save"></iconify-icon>
+                            </button> --}}
+                        </div>
+
+                        <div {{ $changeWatchers ? "style=display:none;'" : '' }}>
+                            @foreach ($watchersList as $watcher)
+                                <span
+                                    class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">{{ $watcher->user->first_name }}
+                                    {{ $watcher->user->last_name }}</span>
+                            @endforeach
+                        </div>
+                    </div>
                     </div>
                 </div>
                 {{-- End assignee --}}

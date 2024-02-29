@@ -49,14 +49,14 @@ class SoldPolicy extends Model
     public function generateRenewalOffer(Carbon $due)
     {
         return Offer::newOffer(
-            client: $this->client, 
-            type: $this->policy->business, 
+            client: $this->client,
+            type: $this->policy->business,
             item_value: $this->insured_value,
             item_title: "Renewal Offer",
-            note: "Policy#$this->policy_number Renewal Offer", 
-            due: $due, 
-            item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null, 
-            is_renewal: true, 
+            note: "Policy#$this->policy_number Renewal Offer",
+            due: $due,
+            item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null,
+            is_renewal: true,
             in_favor_to: $this->in_favor_to
         );
     }
@@ -122,7 +122,7 @@ class SoldPolicy extends Model
     public function deletePolicyDoc()
     {
         $this->policy_doc = null;
-        if($this->save()){
+        if ($this->save()) {
             Storage::delete($this->policy_doc);
         }
 
@@ -322,7 +322,7 @@ class SoldPolicy extends Model
         }
     }
 
-    public function setWatchers(array $user_ids)
+    public function setWatchers(array $user_ids = [])
     {
         try {
             $this->sendPolicyNotifications("Policy#$this->id watchers change", Auth::user()->username . " changed watcher list");
@@ -635,6 +635,11 @@ class SoldPolicy extends Model
     public function exclusions(): HasMany
     {
         return $this->hasMany(SoldPolicyExclusion::class);
+    }
+
+    public function watcher_ids(): HasMany
+    {
+        return $this->hasMany(SoldPolicyWatcher::class);
     }
 
     public function watchers(): BelongsToMany

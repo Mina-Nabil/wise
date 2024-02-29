@@ -16,7 +16,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('offers_watchers', function (Blueprint $table) {
+        Schema::create('offer_watchers', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Offer::class)->constrained();
             $table->foreignIdFor(User::class)->constrained();
@@ -36,6 +36,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('watchers');
+        Schema::dropIfExists('offer_watchers');
+        Schema::dropIfExists('policy_watchers');
     }
 };
