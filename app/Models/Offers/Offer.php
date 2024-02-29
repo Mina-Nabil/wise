@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -95,6 +96,7 @@ class Offer extends Model
         try {
             if ($newOffer->save()) {
                 AppLog::info("New Offer", loggable: $newOffer);
+                $newOffer->addComment("Created offer", false);
             }
             return $newOffer;
         } catch (Exception $e) {
@@ -214,6 +216,7 @@ class Offer extends Model
         if ($saveAndGetFileUrl) {
             if (Storage::disk('s3')->put($file_path, file_get_contents($public_file_path))) {
                 File::delete($public_file_path);
+                /** @disregard */
                 return Storage::disk('s3')->url($file_path);
             }
         }
@@ -339,7 +342,7 @@ class Offer extends Model
             if ($this->update($updates)) {
                 AppLog::info("Changed status to " . $status, loggable: $this);
                 $this->sendOfferNotifications("Offer status changed", "Offer#$this->id's status changed");
-                $this->addComment("Status set to $status", false);
+                $this->addComment("set Status to $status", false);
 
                 return true;
             } else {
@@ -493,8 +496,6 @@ class Offer extends Model
         }
     }
 
-
-
     public function addComment($comment, $logEvent = true): OfferComment|false
     {
         /** @var User */
@@ -616,6 +617,22 @@ class Offer extends Model
         }
     }
 
+    public function setWatchers(array $user_ids = [])
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updateItem', $this)) return false;
+
+        try {
+            $this->watchers()->sync($user_ids);
+            $this->addComment("Changed watchers list", false);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't Set watchers", $e->getMessage(), $this);
+            return false;
+        }
+    }
 
     private function sendOfferNotifications($title, $message)
     {
@@ -628,6 +645,12 @@ class Offer extends Model
         if ($notifier_id != $this->creator_id) {
             $this->loadMissing('creator');
             $this->creator?->pushNotification($title, $message, "offers/" . $this->id);
+        }
+        $this->loadMissing('watchers');
+        foreach ($this->watchers as $watcher) {
+            if ($notifier_id != $watcher->id) {
+                $watcher->pushNotification($title, $message, "offers/" . $this->id);
+            }
         }
     }
 
@@ -645,14 +668,16 @@ class Offer extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('offers.*')
-            ->join('users', "offers.creator_id", '=', 'users.id');
+            ->join('users', "offers.creator_id", '=', 'users.id')
+            ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
 
         if ($loggedInUser->type !== User::TYPE_ADMIN) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('offers.creator_id', $loggedInUser->id)
                     ->orwhere('offers.assignee_type', $loggedInUser->type)
-                    ->orwhere('offers.assignee_id', $loggedInUser->id);
+                    ->orwhere('offers.assignee_id', $loggedInUser->id)
+                    ->orwhere('offer_watchers.user_id', $loggedInUser->id);
             });
         }
 
@@ -738,5 +763,15 @@ class Offer extends Model
     public function closed_by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'closed_by_id');
+    }
+
+    public function watcher_ids(): HasMany
+    {
+        return $this->hasMany(OfferWatcher::class);
+    }
+
+    public function watchers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'offer_watchers');
     }
 }

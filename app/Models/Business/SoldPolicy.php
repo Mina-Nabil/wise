@@ -18,6 +18,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -91,6 +92,7 @@ class SoldPolicy extends Model
 
         try {
             $this->save();
+            $this->sendPolicyNotifications("Policy#$this->id activated", Auth::user()->username . " activated the policy");
             AppLog::info("Sold Policy activated", loggable: $this);
             return true;
         } catch (Exception $e) {
@@ -143,6 +145,7 @@ class SoldPolicy extends Model
 
         try {
             $this->save();
+            $this->sendPolicyNotifications("Policy#$this->id inactivated", Auth::user()->username . " inactivated the policy");
             AppLog::info("Sold Policy inactivated", loggable: $this);
             return true;
         } catch (Exception $e) {
@@ -166,11 +169,29 @@ class SoldPolicy extends Model
 
         try {
             $this->save();
+            $this->sendPolicyNotifications("Policy#$this->id payment info changed", Auth::user()->username . " updated payment info");
             AppLog::info("Sold Policy payment edited", loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't edit Sold Policy payment", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function setCustomerCar($customer_car_id)
+    {
+        $this->update([
+            'customer_car_id'      => $customer_car_id
+        ]);
+
+        try {
+            $this->save();
+            AppLog::info("Sold Policy customer car edited", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit Sold Policy customer car", desc: $e->getMessage());
             return false;
         }
     }
@@ -183,6 +204,7 @@ class SoldPolicy extends Model
 
         try {
             $this->save();
+            $this->sendPolicyNotifications("Policy#$this->id note changed", Auth::user()->username . " set the policy note");
             AppLog::info("Sold Policy note edited", loggable: $this);
             return true;
         } catch (Exception $e) {
@@ -196,6 +218,7 @@ class SoldPolicy extends Model
     {
         $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement", $desc, $due);
         if (!$newEndors) return false;
+        $this->sendPolicyNotifications("Policy#$this->id endorsement added", Auth::user()->username . " added a endorsement");
         foreach ($actions as $a) {
             $newEndors->addAction($a['column_name'], $a['value']);
         }
@@ -206,6 +229,8 @@ class SoldPolicy extends Model
     {
         $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim", $desc, $due);
         if (!$newTask) return false;
+        $this->sendPolicyNotifications("Policy#$this->id claim added", Auth::user()->username . " added a claim");
+
         foreach (TaskField::SALES_CHECKLIST as $s) {
             $newTask->addField($s, "NO");
         }
@@ -231,6 +256,7 @@ class SoldPolicy extends Model
                 foreach ($benefits as $b) {
                     $this->addBenefit($b['benefit'], $b['value']);
                 }
+                $this->sendPolicyNotifications("Policy#$this->id benefits change", Auth::user()->username . " changed benefits");
                 AppLog::info("Changing policy benefits", loggable: $this);
             });
             return true;
@@ -269,6 +295,7 @@ class SoldPolicy extends Model
                 foreach ($exclusions as $e) {
                     $this->addExclusion($e['title'], $e['value']);
                 }
+                $this->sendPolicyNotifications("Policy#$this->id exclusions change", Auth::user()->username . " changed exclusions");
                 AppLog::info("Changing policy exclusions", loggable: $this);
             });
             return true;
@@ -287,12 +314,45 @@ class SoldPolicy extends Model
             ], [
                 "value" =>  $value
             ]);
-            AppLog::info("Exclusion added", loggable: $this);
             return $exclusion;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting exclusions failed", desc: $e->getMessage(), loggable: $this);
             return false;
+        }
+    }
+
+    public function setWatchers(array $user_ids = [])
+    {
+        try {
+            $this->sendPolicyNotifications("Policy#$this->id watchers change", Auth::user()->username . " changed watcher list");
+            $this->watchers()->sync($user_ids);
+            $this->addComment("Changed watchers list", false);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't Set watchers", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+    private function sendPolicyNotifications($title, $message)
+    {
+        $notifier_id = Auth::id();
+
+        if ($notifier_id != $this->assignee_id) {
+            $this->loadMissing('assignee');
+            $this->assignee?->pushNotification($title, $message, "sold-policies/" . $this->id);
+        }
+        if ($notifier_id != $this->creator_id) {
+            $this->loadMissing('creator');
+            $this->creator?->pushNotification($title, $message, "sold-policies/" . $this->id);
+        }
+        $this->loadMissing('watchers');
+        foreach ($this->watchers as $watcher) {
+            if ($notifier_id != $watcher->id) {
+                $watcher->pushNotification($title, $message, "sold-policies/" . $this->id);
+            }
         }
     }
 
@@ -461,13 +521,15 @@ class SoldPolicy extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('sold_policies.*')
-            ->join('users', "sold_policies.creator_id", '=', 'users.id');
+            ->join('users', "sold_policies.creator_id", '=', 'users.id')
+            ->leftjoin('policy_watchers', 'policy_watchers.offer_id', '=', 'sold_policies.id');
 
         if (!($loggedInUser->is_admin
             || ($loggedInUser->is_operations && ($searchText || $is_expiring)))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
-                    ->orwhere('users.id', $loggedInUser->id);
+                    ->orwhere('users.id', $loggedInUser->id)
+                    ->orwhere('policy_watchers.user_id', $loggedInUser->id);
             });
         }
 
@@ -600,5 +662,15 @@ class SoldPolicy extends Model
     public function exclusions(): HasMany
     {
         return $this->hasMany(SoldPolicyExclusion::class);
+    }
+
+    public function watcher_ids(): HasMany
+    {
+        return $this->hasMany(SoldPolicyWatcher::class);
+    }
+
+    public function watchers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'policy_watchers');
     }
 }

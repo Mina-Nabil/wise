@@ -22,6 +22,10 @@ class UserController extends Controller
         return view('users.show', $data);
     }
 
+    public function contactIndex(){
+        return view('users.contact-index');
+    }
+
     public function show()
     {
         /** @var User */

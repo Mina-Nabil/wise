@@ -11,12 +11,12 @@ use JeroenDesloovere\VCard\VCard;
 class ContactInfo extends Model
 {
     use HasFactory;
-
+    const FILES_DIRECTORY = 'contacts/';
     protected $table = 'contact_info';
     protected $fillable = [
         'first_name', 'last_name', 'job_title', 'email', 'mob_number1',
         'mob_number2', 'home_number1', 'home_number2', 'work_number1', 'work_number2',
-        'address_line1', 'address_line2', 'address_district', 'address_governate',
+        'address_street', 'address_district', 'address_governate',
         'address_country', 'url', 'image'
     ];
 
@@ -86,8 +86,7 @@ class ContactInfo extends Model
         $home_number2,
         $work_number1,
         $work_number2,
-        $address_line1,
-        $address_line2,
+        $address_street,
         $address_district,
         $address_governate,
         $address_country,
@@ -106,8 +105,7 @@ class ContactInfo extends Model
                 "home_number2"  =>  $home_number2,
                 "work_number1"  =>  $work_number1,
                 "work_number2"  =>  $work_number2,
-                "address_line1" =>  $address_line1,
-                "address_line2" =>  $address_line2,
+                "address_street" =>  $address_street,
                 "address_district"  =>  $address_district,
                 "address_governate" =>  $address_governate,
                 "address_country"   =>  $address_country,
@@ -132,8 +130,7 @@ class ContactInfo extends Model
         $home_number2,
         $work_number1,
         $work_number2,
-        $address_line1,
-        $address_line2,
+        $address_street,
         $address_district,
         $address_governate,
         $address_country,
@@ -152,8 +149,7 @@ class ContactInfo extends Model
                 "home_number2"  =>  $home_number2,
                 "work_number1"  =>  $work_number1,
                 "work_number2"  =>  $work_number2,
-                "address_line1" =>  $address_line1,
-                "address_line2" =>  $address_line2,
+                "address_street" =>  $address_street,
                 "address_district"  =>  $address_district,
                 "address_governate" =>  $address_governate,
                 "address_country"   =>  $address_country,

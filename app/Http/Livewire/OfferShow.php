@@ -133,6 +133,8 @@ class OfferShow extends Component
     public $selectedCarPriceArray;
     public $item;
 
+    //watchers
+
     public function openGenerateSoldPolicy()
     {
         $this->genarteSoldPolicySection  = true;
@@ -882,6 +884,10 @@ class OfferShow extends Component
 
         $this->dueDate = Carbon::parse($this->offer->due)->toDateString();
         $this->dueTime = Carbon::parse($this->offer->due)->toTimeString();
+
+        //watchers code
+        $this->watchersList = $this->offer->watcher_ids;
+
     }
 
     public function setStatus($s)
@@ -941,6 +947,38 @@ class OfferShow extends Component
         }
     }
 
+    /////watchers sections
+    public $changeWatchers = false;
+    public $watchersList = [];
+    public $setWatchersList;
+
+
+    public function OpenChangeWatchers()
+    {
+        $this->changeWatchers = true;
+    }
+    public function closeChangeWatchers()
+    {
+        $this->changeWatchers = false;
+    }
+    public function saveWatchers()
+    {
+        $this->validate([
+            'setWatchersList' => 'nullable|array',
+            'setWatchersList.*' => 'integer|exists:users,id',
+        ], [], [
+            'setWatchersList' => 'Watchers',
+        ]);
+    
+        $t = $this->offer->setWatchers($this->setWatchersList);
+        if ($t) {
+            $this->alert('success', 'Watchers Updated!');
+            $this->closeChangeWatchers();
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
 
     public function render()
     {
