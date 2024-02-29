@@ -522,7 +522,7 @@ class SoldPolicy extends Model
         $loggedInUser = Auth::user();
         $query->select('sold_policies.*')
             ->join('users', "sold_policies.creator_id", '=', 'users.id')
-            ->leftjoin('policy_watchers', 'policy_watchers.offer_id', '=', 'sold_policies.id');
+            ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id');
 
         if (!($loggedInUser->is_admin
             || ($loggedInUser->is_operations && ($searchText || $is_expiring)))) {
