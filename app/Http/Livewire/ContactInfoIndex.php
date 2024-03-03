@@ -15,7 +15,7 @@ class ContactInfoIndex extends Component
     use WithPagination, AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
 
     public $search;
-    
+
     public $first_name;
     public $last_name;
     public $job_title;
@@ -48,7 +48,7 @@ class ContactInfoIndex extends Component
         $this->reset();
     }
 
-    
+
 
     public function editThisContact($id)
     {
@@ -85,7 +85,18 @@ class ContactInfoIndex extends Component
 
     public function downloadVcard($id)
     {
-        $res = ContactInfo::find($id)->downloadVcard();
+        $contact = ContactInfo::find($id);
+        $res = $contact->downloadVcard();
+        return response()->stream(
+            function () use ($res) {
+                echo $res;
+            },
+            200,
+            [
+                'Content-Type' => 'application/octet-stream',
+                'Content-Disposition' => "attachment; filename=\"$contact->full_name.vcf\"",
+            ],
+        );
         $this->dispatchBrowserEvent('openNewTab', ['url' => $res]);
     }
 
@@ -110,20 +121,20 @@ class ContactInfoIndex extends Component
             // 'image' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
 
-        
+
         $contact = ContactInfo::find($this->contactId);
 
         if (is_null($contact->image) && is_null($this->image)) {
             $imageurl = null;
         } elseif (!is_null($contact->image) && is_null($this->image)) {
             $imageurl = null;
-        } elseif (!is_null($contact->image) && !is_null($this->image) && (is_string($this->image)) ) {
-                $this->image = null;
-                $imageurl = $contact->image;
-        } else{
+        } elseif (!is_null($contact->image) && !is_null($this->image) && (is_string($this->image))) {
+            $this->image = null;
+            $imageurl = $contact->image;
+        } else {
 
             $this->validate([
-                'image' => ['file', 'nullable' , 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp' , 'max:5120'],
+                'image' => ['file', 'nullable', 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp', 'max:5120'],
             ]);
 
             $imageurl =  $this->image->store(ContactInfo::FILES_DIRECTORY, 's3');
@@ -184,13 +195,13 @@ class ContactInfoIndex extends Component
             $url = null;
         } elseif (!is_null($this->contact->$fieldName) && is_null($this->$property)) {
             $url = null;
-        } elseif (!is_null($this->contact->$fieldName) && !is_null($this->$property) && (is_string($this->$property)) ) {
-                $this->$property = null;
-                $url = $this->contact->$fieldName;
-        } else{
+        } elseif (!is_null($this->contact->$fieldName) && !is_null($this->$property) && (is_string($this->$property))) {
+            $this->$property = null;
+            $url = $this->contact->$fieldName;
+        } else {
 
             $this->validate([
-                $property => ['file', 'nullable' , 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp' , 'max:5120'],
+                $property => ['file', 'nullable', 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp', 'max:5120'],
             ]);
 
             $url =  $this->$property->store(ContactInfo::FILES_DIRECTORY, 's3');

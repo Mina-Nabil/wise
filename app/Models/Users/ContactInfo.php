@@ -118,6 +118,12 @@ class ContactInfo extends Model
         }
     }
 
+    ///attributes
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . " " . $this->last_name;
+    }
+
     ///static functions
     public static function createNewContact(
         $first_name,
