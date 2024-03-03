@@ -201,7 +201,7 @@ class ContactInfoIndex extends Component
 
     public function render()
     {
-        $contacts = ContactInfo::paginate(20);
+        $contacts = ContactInfo::search($this->search)->paginate(20);
         return view('livewire.contact-info-index', [
             'contacts' => $contacts,
         ]);
