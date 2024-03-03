@@ -20,7 +20,8 @@
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search by name, email or phone number" wire:model="search">
         </header>
 
-        <div class="card-body px-6 pb-6">
+
+        {{-- <div class="card-body px-6 pb-6">
             <div class="overflow-x-auto -mx-6 dashcode-data-table">
                 <div class="inline-block min-w-full align-middle">
                     <div class="overflow-hidden ">
@@ -162,7 +163,6 @@
                         </table>
 
                         @if ($contacts->isEmpty())
-                            {{-- START: empty filter result --}}
                             <div class="card m-5 p-5">
                                 <div class="card-body rounded-md bg-white dark:bg-slate-800">
                                     <div class="items-center text-center p-5">
@@ -177,19 +177,128 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- END: empty filter result --}}
                         @endif
-
                     </div>
-
-
-
                     {{ $contacts->links('vendor.livewire.bootstrap') }}
 
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
+
+    @foreach ($contacts as $contact)
+        <div class="vcard-container grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-5">
+            <div class="card p-5" style="text-align: -webkit-center;">
+                <div class="dropstart relative float-right">
+                    <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                        <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
+                    </button>
+                    <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                        <li wire:click="editThisContact({{ $contact->id }})">
+                            <a
+                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                <iconify-icon icon="bx:edit-alt"></iconify-icon>
+                                <span>Edit</span></a>
+                        </li>
+                        <li wire:click="generateQR({{ $contact->id }})">
+                            <a
+                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                <iconify-icon icon="bx:qr"></iconify-icon>
+                                <span>Generate QR Code</span></a>
+                        </li>
+                        <li wire:click="downloadVcard({{ $contact->id }})">
+                            <a
+                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                <iconify-icon icon="material-symbols:download"></iconify-icon>
+                                <span>Download Vcard</span></a>
+                        </li>
+                    </ul>
+                </div>
+                @if ($contact->image)
+                    <img src="https://wiseins.s3.eu-north-1.amazonaws.com/{{ preg_replace('/\//', '', $contact->image, 1) }}" alt="First Name Last Name" width="150px" style="border-radius: 50%">
+                @else
+                    <img src="{{ asset('assets\images\avatar\user.png') }}" alt="First Name Last Name" width="150px">
+                @endif
+
+                <div class="text-center">
+                    <h6 class="mt-2 mb-2">{{ ucwords($contact->first_name) }} {{ ucwords($contact->last_name) }}</h6>
+
+                    @if ($contact->job_title || $contact->email)
+                        <hr>
+                        @if ($contact->job_title)
+                            <p class="mt-2 text-slate-900 dark:text-slate-300"><iconify-icon icon="mdi:user"></iconify-icon>{{ $contact->job_title }}</p>
+                        @endif
+                        @if ($contact->email)
+                            <p class="mb-2 text-slate-900 dark:text-slate-300"><iconify-icon icon="mdi:envelope"></iconify-icon> {{ $contact->email }}</p>
+                        @endif
+                    @endif
+                    <hr>
+                    <div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-6 m-4">
+                        <!-- Container for phone numbers of type 1 -->
+                        @if ($contact->mob_number1 || $contact->mob_number2)
+                            <div class="text-center">
+                                <p class="text-slate-900 dark:text-slate-300"><iconify-icon icon="ic:baseline-phone"></iconify-icon></p>
+                                <p class="text-slate-900 dark:text-slate-300">{{ $contact->mob_number1 }}</p>
+                                <p class="text-slate-900 dark:text-slate-300">{{ $contact->mob_number2 }}</p>
+                            </div>
+                        @endif
+
+
+                        <!-- Container for phone numbers of type 2 -->
+                        @if ($contact->home_number1 || $contact->home_number2)
+                            <div>
+                                <p class="text-slate-900 dark:text-slate-300"><iconify-icon icon="mdi:phone-classic"></iconify-icon></p>
+                                <p class="text-slate-900 dark:text-slate-300">{{ $contact->home_number1 }}</p>
+                                <p class="text-slate-900 dark:text-slate-300">{{ $contact->home_number2 }}</p>
+                            </div>
+                        @endif
+
+                        <!-- Container for phone numbers of type 3 -->
+                        @if ($contact->work_number1 || $contact->work_number2)
+                            <div>
+                                <p class="text-slate-900 dark:text-slate-300"><iconify-icon icon="emojione-monotone:telephone-receiver"></iconify-icon></p>
+                                <p class="text-slate-900 dark:text-slate-300">{{ $contact->work_number1 }}</p>
+                                <p class="text-slate-900 dark:text-slate-300">{{ $contact->work_number2 }}</p>
+                            </div>
+                        @endif
+                    </div>
+                    <hr>
+
+                    <p class="text-slate-900 dark:text-slate-300 mt-2"><iconify-icon icon="mdi:location"></iconify-icon>
+                        @if ($contact->address_street)
+                            {{ $contact->address_street }}
+                        @endif
+                        @if ($contact->address_district)
+                            , {{ $contact->address_district }}
+                        @endif
+                        <iconify-icon icon="mdi:dot" width="1.2em" height="1.2em"></iconify-icon>
+                        {{ $contact->address_governate }}
+                        @if ($contact->address_district)
+                            ,{{ $contact->address_country }}
+                        @endif
+                    </p>
+                    <!-- Include icons and other contact information -->
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    @if ($contacts->isEmpty())
+        <div class="card mt-5">
+            <div class="card-body rounded-md bg-white dark:bg-slate-800">
+                <div class="items-center text-center p-5">
+                    <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
+                    <h2 class="card-title text-slate-900 dark:text-white mb-3">No Contacts info with the
+                        applied
+                        filters</h2>
+                    <p class="card-text">Try changing the filters or search terms for this view.
+                    </p>
+                    <a href="{{ url('/contacts') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
+                        all contacts info</a>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if ($addContactSec)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
@@ -527,14 +636,37 @@
                                     @enderror
                                 </div>
 
-
                                 <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Image</label>
+                                    @if (!$image)
+                                        <input wire:model="image" type="file" class="form-control w-full " name="basic" />
+                                    @else
+                                        <span class="block min-w-[140px] text-left">
+                                            <span class="inline-block text-center text-sm mx-auto py-1">
+                                                <span class="flex items-center space-x-3 rtl:space-x-reverse">
+                                                    <span class="h-[6px] w-[6px] bg-success-500 rounded-full inline-block ring-4 ring-opacity-30 ring-success-500"></span>
+                                                    <span>
+                                                        Document added
+                                                        <span wire:click="clearImage" class="text-xs text-slate-500 dark:text-slate-400 mt-1 cursor-pointer">| remove</span>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    @endif
+
+                                </div>
+                                @error('image')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+
+                                {{-- <div class="input-area mt-3">
                                     <label for="image" class="form-label">Image</label>
                                     <input id="image" type="file" class="form-control @error('image') !border-danger-500 @enderror" wire:model.defer="image">
                                     @error('image')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
-                                </div>
+                                </div> --}}
 
 
                             </div>
@@ -543,7 +675,7 @@
 
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addContact" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                            <button wire:click="editInfo" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>

@@ -138,7 +138,7 @@ class ContactInfo extends Model
         $image,
     ) {
         try {
-            return new self([
+            $tmpContact = new self([
                 "first_name"    =>  $first_name,
                 "last_name" =>  $last_name,
                 "job_title" =>  $job_title,
@@ -156,9 +156,29 @@ class ContactInfo extends Model
                 "url"   =>  $url,
                 "image" =>  $image,
             ]);
+            $tmpContact->save();
+            return $tmpContact;
         } catch (Exception $e) {
             report($e);
             return false;
+        }
+    }
+
+    ////scope
+    public function scopeSearch($query, $text)
+    {
+        $words = explode(" ", $text);
+        foreach ($words as $w) {
+            $query->where(function ($q) use ($w) {
+                $q->orWhere("first_name", "LIKE", "%$w%")
+                    ->orWhere("last_name", "LIKE", "%$w%")
+                    ->orWhere("job_title", "LIKE", "%$w%")
+                    ->orWhere("email", "LIKE", "%$w%")
+                    ->orWhere("mob_number1", "LIKE", "%$w%")
+                    ->orWhere("home_number1", "LIKE", "%$w%")
+                    ->orWhere("mob_number2", "LIKE", "%$w%")
+                    ->orWhere("home_number2", "LIKE", "%$w%");
+            });
         }
     }
 }
