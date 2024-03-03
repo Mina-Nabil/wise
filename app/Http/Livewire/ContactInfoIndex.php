@@ -97,7 +97,6 @@ class ContactInfoIndex extends Component
                 'Content-Disposition' => "attachment; filename=\"$contact->full_name.vcf\"",
             ],
         );
-        $this->dispatchBrowserEvent('openNewTab', ['url' => $res]);
     }
 
     public function editInfo()
