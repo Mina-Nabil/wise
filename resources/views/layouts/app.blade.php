@@ -200,14 +200,17 @@
                             </span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ url('/contacts') }}" class="navItem @yield('contacts')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
-                                <span>Contacts</span>
-                            </span>
-                        </a>
-                    </li>
+                    @if (Auth::user()->is_admin)
+                        <li>
+                            <a href="{{ url('/contacts') }}" class="navItem @yield('contacts')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon"
+                                        icon="material-symbols:corporate-fare"></iconify-icon>
+                                    <span>Contacts</span>
+                                </span>
+                            </a>
+                        </li>
+                    @endif
                     <li>
                         <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
                             <span class="flex items-center">
