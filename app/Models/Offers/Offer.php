@@ -6,7 +6,6 @@ use App\Models\Business\SoldPolicy;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
-use App\Models\Insurance\Policy;
 use App\Models\Insurance\PolicyBenefit;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -23,13 +22,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Tcpdf;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Offer extends Model
 {
@@ -68,17 +63,17 @@ class Offer extends Model
     protected $fillable = [
         'creator_id', 'type', 'status', 'item_id', 'item_type', 'is_renewal',
         'item_title', 'item_value', 'item_desc', 'selected_option_id',
-        'note', 'due', 'closed_by_id', 'assignee_id', 'in_favor_to'
+        'note', 'due', 'closed_by_id', 'assignee_id', 'in_favor_to', 'renewal_policy'
 
     ];
 
 
     ////static functions
-    public static function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false, $in_favor_to = null): self|false
+    public static function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false, $in_favor_to = null, $renewal_policy = null): self|false
     {
         $newOffer = new self([
             "creator_id"    =>  Auth::id(),
-            "assignee_id"    =>  Auth::id(),
+            "assignee_id"   =>  Auth::id(),
             "type"          =>  $type,
             "status"        =>  self::STATUS_NEW,
             "item_value"    =>  $item_value,
@@ -87,6 +82,7 @@ class Offer extends Model
             "in_favor_to"   =>  $in_favor_to,
             "note"          =>  $note,
             "is_renewal"    =>  $is_renewal,
+            "renewal_policy" =>  $renewal_policy,
             "due"           =>  $due->format('Y-m-d H:i:s'),
         ]);
         $newOffer->client()->associate($client);
@@ -697,6 +693,7 @@ class Offer extends Model
                     $qq->where('customers.first_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                        ->orwhere('renewal_policy', 'LIKE', "%$tmp%")
                         ->orwhere('customers.email', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.email', 'LIKE', "%$tmp%");
                 });

@@ -263,8 +263,8 @@ class OfferIndex extends Component
 
         $offers = Offer::userData($this->search)
             ->when($this->isRenewalCB, function ($q, $v) {
-                if ($v === 'isRenewal') return $q->byRenewal(true);
-                elseif ($v === 'notRenewal') return $q->byRenewal(false);
+                if ($v === 'isRenewal') return $q->byRenewal(1);
+                elseif ($v === 'notRenewal') return $q->byRenewal(0);
             })->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);
             })->when($this->filteredStatus == null, function ($query) {

@@ -42,23 +42,26 @@ class SoldPolicy extends Model
         'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
         'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
         'car_chassis', 'car_plate_no', 'car_engine', 'policy_number',
-        'in_favor_to', 'policy_doc', 'note'
+        'in_favor_to', 'policy_doc', 'note', 'is_renewed', 'is_paid'
     ];
 
     ///model functions
     public function generateRenewalOffer(Carbon $due, string $in_favor_to = null)
     {
-        return Offer::newOffer(
+        if (Offer::newOffer(
             client: $this->client,
             type: $this->policy->business,
             item_value: $this->insured_value,
+            renewal_policy: $this->policy_number,
             item_title: "Renewal Offer",
             note: "Policy#$this->policy_number Renewal Offer",
             due: $due,
             item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null,
             is_renewal: true,
             in_favor_to: $in_favor_to ?? $this->in_favor_to
-        );
+        ))   $this->update([
+            'is_renewal' => true,
+        ]);
     }
 
     public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null): self|bool
@@ -87,7 +90,7 @@ class SoldPolicy extends Model
     public function setAsValid()
     {
         $this->update([
-            'active' => 1,
+            'is_valid' => 1,
         ]);
 
         try {
@@ -140,7 +143,7 @@ class SoldPolicy extends Model
     public function setAsInvalid()
     {
         $this->update([
-            'active' => 0,
+            'is_valid' => 0,
         ]);
 
         try {
@@ -151,6 +154,26 @@ class SoldPolicy extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't invalidate Sold Policy", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function setPaid($is_paid)
+    {
+        $this->update([
+            'is_paid' => $is_paid,
+        ]);
+
+        try {
+            $this->save();
+            $is_paid ?
+                $this->sendPolicyNotifications("Policy#$this->id paid", Auth::user()->username . " set the policy as paid") :
+                $this->sendPolicyNotifications("Policy#$this->id unpaid", Auth::user()->username . " set the policy as unpaid");
+            AppLog::info("Sold Policy is_paid set to " . $is_paid, loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't update is_paid", desc: $e->getMessage());
             return false;
         }
     }
@@ -586,12 +609,18 @@ class SoldPolicy extends Model
         $query->when($is_expiring, function ($q) {
             $now = Carbon::now();
             $now->addMonth();
-            $q->whereBetween("expiry", [
+            $q->where('is_renewal', 0)->whereBetween("expiry", [
                 $now->format('Y-m-01'),
                 $now->format('Y-m-t'),
             ]);
         });
         return $query->latest();
+    }
+
+    public function scopeByPaid($query, $is_paid)
+    {
+        Log::info($is_paid);
+        return $query->where('sold_policies.is_paid', $is_paid);
     }
 
     public function scopeWithTableRelations($query)
