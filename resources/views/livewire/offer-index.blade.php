@@ -15,6 +15,44 @@
     </div>
 
     <div class="flex items-center space-x-7 flex-wrap h-[30px]">
+        <div class="dropdown relative">
+            <button class="btn inline-flex justify-center btn-dark items-center" type="button"
+                id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                @if ($filteredStatus)
+                    Status: {{ str_replace('_', ' ', $filteredStatus[0]) }}
+                @else
+                    Select Status
+                @endif
+
+                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+            </button>
+            <ul
+                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                <li wire:click="filterByStatus('active')">
+                    <a href="#"
+                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        Active
+                    </a>
+                </li>
+                <li wire:click="filterByStatus('all')">
+                    <a href="#"
+                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        All
+                    </a>
+                </li>
+                @foreach ($statuses as $status)
+                    <li wire:click="filterByStatus('{{ $status }}')">
+                        <a href="#"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                            {{ ucwords(str_replace('_', ' ', $status)) }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+
+
+
+        </div>
         <div class="secondary-radio">
             <label class="flex items-center cursor-pointer">
                 <input type="radio" class="hidden" value="all" wire:model="isRenewalCB">
@@ -47,7 +85,7 @@
     </div>
 
 
-    <div class="card">
+    <div class="card mt-5 pt-5">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4"

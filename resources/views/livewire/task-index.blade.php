@@ -28,7 +28,7 @@
             <button class="btn inline-flex justify-center btn-dark items-center" type="button"
                 id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 @if ($filteredStatus)
-                    Status: {{ $filteredStatus[0] }}
+                    Status: {{ str_replace('_', ' ', $filteredStatus[0]) }}
                 @else
                     Select Status
                 @endif

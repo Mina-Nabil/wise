@@ -60,6 +60,7 @@ class OfferIndex extends Component
     public $CarPrices;
     public $carPrice;
     public $selectedCarPriceArray;
+    public $filteredStatus;
 
     public $relatives = [];
 
@@ -245,6 +246,11 @@ class OfferIndex extends Component
         }
     }
 
+    public function filterByStatus($status)
+    {
+        $this->filteredStatus = [$status];
+    }
+
     public function render()
     {
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
@@ -253,14 +259,17 @@ class OfferIndex extends Component
         $GENDERS = Customer::GENDERS;
         $RELATIONS = Relative::RELATIONS;
         $brands = Brand::all();
+        $statuses = Offer::STATUSES;
 
-        if ($this->isRenewalCB === 'isRenewal') {
-            $offers = Offer::userData($this->search)->isRenewal()->paginate(10);
-        } elseif (($this->isRenewalCB === 'notRenewal')) {
-            $offers = Offer::userData($this->search)->notRenewal()->paginate(10);
-        } else {
-            $offers = Offer::userData($this->search)->paginate(10);
-        }
+        $offers = Offer::userData($this->search)
+            ->when($this->isRenewalCB, function ($q, $v) {
+                if ($v === 'isRenewal') return $q->byRenewal(true);
+                elseif ($v === 'notRenewal') return $q->byRenewal(false);
+            })->when($this->filteredStatus, function ($query) {
+                return $query->byStates($this->filteredStatus);
+            })->when($this->filteredStatus == null, function ($query) {
+                return $query->byStates(['active']);
+            })->paginate(10);
 
         return view('livewire.offer-index', [
             'offers' => $offers,
@@ -271,6 +280,8 @@ class OfferIndex extends Component
             'brands' => $brands,
             'PERSONAL_TYPES' => $PERSONAL_TYPES,
             'CORPORATE_TYPES' => $CORPORATE_TYPES,
+            'statuses' => $statuses,
+            'filteredStatus' => $this->filteredStatus,
         ]);
     }
 }

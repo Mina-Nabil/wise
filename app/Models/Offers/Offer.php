@@ -715,6 +715,27 @@ class Offer extends Model
         return $query->where('is_renewal', 0);
     }
 
+    public function scopeByRenewal($query, $val)
+    {
+        return $query->where('is_renewal', $val);
+    }
+
+    public function scopeByStates($query, array $states)
+    {
+        if (in_array('all', $states)) {
+            return $query;
+        }
+        if (in_array('active', $states)) {
+            array_push($states, self::STATUS_NEW);
+            array_push($states, self::STATUS_PENDING_OPERATIONS);
+            array_push($states, self::STATUS_PENDING_INSUR);
+            array_push($states, self::STATUS_PENDING_CUSTOMER);
+            array_push($states, self::STATUS_DECLINED_INSUR);
+            array_push($states, self::STATUS_DECLINED_CUSTOMER);
+        }
+        return $query->whereIn("offers.status", $states);
+    }
+
     ////relations
     public function client(): MorphTo
     {
