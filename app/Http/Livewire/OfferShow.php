@@ -175,12 +175,12 @@ class OfferShow extends Component
             'policyDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
 
-        if($this->policyDoc){
+        if ($this->policyDoc) {
             $url = $this->policyDoc->store(SoldPolicy::FILES_DIRECTORY, 's3');
-        }else{
+        } else {
             $url = null;
         }
-        
+
 
         $res = $this->offer->generateSoldPolicy(
             $this->policy_number,
@@ -196,7 +196,7 @@ class OfferShow extends Component
             $this->car_chassis,
             $this->car_engine,
             $this->car_plate_no,
-            $this->soldInFavorTo    
+            $this->soldInFavorTo
 
         );
         if ($res) {
@@ -721,13 +721,13 @@ class OfferShow extends Component
             'item_title' => 'nullable|string|max:255',
             'item_desc' => 'nullable|string',
         ]);
-
-        if($this->carId){
+        
+        if ($this->carId) {
             $item = CustomerCar::find($this->carId);
-        }else{
+        } elseif ($this->selectedCarPriceArray && $this->CarCategory) {
             $item = $this->offer->client->addCar(car_id: $this->CarCategory, model_year: $this->selectedCarPriceArray['model_year']);
         }
-        
+
 
         $res = $this->offer->setItemDetails($this->item_value, $item, $this->item_title, $this->item_desc);
 
@@ -887,7 +887,6 @@ class OfferShow extends Component
 
         //watchers code
         $this->watchersList = $this->offer->watcher_ids;
-
     }
 
     public function setStatus($s)
@@ -900,8 +899,9 @@ class OfferShow extends Component
         }
     }
 
-    public function changeOptionState($optionId, $status){
-        $res = $this->offer->setOptionState($optionId , $status);
+    public function changeOptionState($optionId, $status)
+    {
+        $res = $this->offer->setOptionState($optionId, $status);
         if ($res) {
             $this->mount($this->offer->id);
             $this->alert('info', $res);
@@ -969,7 +969,7 @@ class OfferShow extends Component
         ], [], [
             'setWatchersList' => 'Watchers',
         ]);
-    
+
         $t = $this->offer->setWatchers($this->setWatchersList);
         if ($t) {
             $this->alert('success', 'Watchers Updated!');
