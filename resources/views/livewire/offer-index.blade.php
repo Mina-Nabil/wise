@@ -106,7 +106,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Client Type
+                                        Type
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -122,11 +122,11 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Item Value
+                                        Value
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Assigned To
+                                        Assignee
                                     </th>
 
                                     <th scope="col" class=" table-th ">
