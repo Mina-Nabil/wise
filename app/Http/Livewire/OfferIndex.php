@@ -60,7 +60,7 @@ class OfferIndex extends Component
     public $CarPrices;
     public $carPrice;
     public $selectedCarPriceArray;
-    public $filteredStatus = 'active';
+    public $filteredStatus = ['active'];
 
     public $relatives = [];
 

@@ -19,7 +19,7 @@ class TaskIndex extends Component
     public $dateRange;
     public $startDate;
     public $endDate;
-    public $filteredStatus = 'active';
+    public $filteredStatus = ['active'];
     public $searchText;
     public $myTasks;
     public $watcherTasks;
