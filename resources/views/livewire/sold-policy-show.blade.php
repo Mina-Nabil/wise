@@ -100,12 +100,11 @@
                             </span>
                         @endif
                     </h4>
-
-                    <a href="{{ route('policies.show', $soldPolicy->policy->id) }}">
-                        <button class="btn btn-sm btn-dark text-left">
+                    @if ($soldPolicy->policy_doc)
+                    <button wire:click="downloadDoc" class="btn btn-sm btn-dark text-left">
                             Check policy details
                         </button>
-                    </a>
+                    @endif
                 </div>
             </div>
 
