@@ -60,7 +60,7 @@ class SoldPolicy extends Model
             is_renewal: true,
             in_favor_to: $in_favor_to ?? $this->in_favor_to
         ))   $this->update([
-            'is_renewal' => true,
+            'is_renewed' => true,
         ]);
     }
 
@@ -608,7 +608,7 @@ class SoldPolicy extends Model
         $query->when($is_expiring, function ($q) {
             $now = Carbon::now();
             $now->addMonth();
-            $q->where('is_renewal', 0)->whereBetween("expiry", [
+            $q->where('is_renewed', 0)->whereBetween("expiry", [
                 $now->format('Y-m-01'),
                 $now->format('Y-m-t'),
             ]);
