@@ -192,6 +192,28 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function setPaid()
+    {
+        $res = $this->soldPolicy->setPaid(1);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'paid info updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setUnpaid()
+    {
+        $res = $this->soldPolicy->setPaid(0);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'paid info updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
 
     public function openEditInfoSection()
     {

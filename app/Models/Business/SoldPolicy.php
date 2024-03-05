@@ -142,12 +142,12 @@ class SoldPolicy extends Model
 
     public function setAsInvalid()
     {
-        $this->update([
-            'is_valid' => 0,
-        ]);
+
 
         try {
-            $this->save();
+            $this->update([
+                'is_valid' => 0,
+            ]);
             $this->sendPolicyNotifications("Policy#$this->id inactivated", Auth::user()->username . " inactivated the policy");
             AppLog::info("Sold Policy inactivated", loggable: $this);
             return true;
@@ -160,12 +160,11 @@ class SoldPolicy extends Model
 
     public function setPaid($is_paid)
     {
-        $this->update([
-            'is_paid' => $is_paid,
-        ]);
-
         try {
-            $this->save();
+            $this->update([
+                'is_paid' => $is_paid,
+            ]);
+
             $is_paid ?
                 $this->sendPolicyNotifications("Policy#$this->id paid", Auth::user()->username . " set the policy as paid") :
                 $this->sendPolicyNotifications("Policy#$this->id unpaid", Auth::user()->username . " set the policy as unpaid");

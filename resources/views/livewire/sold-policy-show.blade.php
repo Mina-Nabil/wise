@@ -38,6 +38,21 @@
                             Set as Valid</a>
                     </li>
                 @endif
+                @if ($soldPolicy->is_paid)
+                    <li>
+                        <a wire:click="setUnpaid"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Set as unpaid</a>
+                    </li>
+                @else
+                    <li>
+                        <a wire:click="setPaid"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Set as Paid</a>
+                    </li>
+                @endif
                 @if (!$soldPolicy->policy_doc)
                     <label for="uploadDoc">
                         <a
