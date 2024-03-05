@@ -201,7 +201,7 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            {{ $offer->due }}
+                                            {{ date_format(date_create($offer->due), 'Y-m-d') }}
                                         </td>
 
 
