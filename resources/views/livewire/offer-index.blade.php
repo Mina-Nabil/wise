@@ -118,7 +118,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Item Title
+                                        Renewal
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -189,7 +189,7 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            <b>{{ $offer->item_title }}</b>
+                                            <b>{{ $offer->renewal_policy }}</b>
                                         </td>
 
                                         <td class="table-td ">
