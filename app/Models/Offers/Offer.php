@@ -328,7 +328,7 @@ class Offer extends Model
                 break;
 
             case self::STATUS_APPROVED:
-                $approvedCount = $this->options()->where('status', OfferOption::STATUS_CLNT_ACPT)
+                $approvedCount = $this->options()->whereIn('status', [OfferOption::STATUS_CLNT_ACPT, OfferOption::STATUS_ISSUED])
                     ->get()->count();
                 if (!$approvedCount) return "No offer options approved";
                 break;
