@@ -223,16 +223,20 @@ class Customer extends Model
     public function addCar($car_id, $model_year, $sum_insured = null, $insurance_payment = null, $payment_frequency = null, $insurance_company_id = null, Carbon $renewal_date = null, $wise_insured = false): Car|false
     {
         try {
-            $tmp = $this->cars()->create([
-                "car_id"      =>  $car_id,
-                "sum_insured"  =>  $sum_insured,
-                "insurance_payment"    =>  $insurance_payment,
-                "payment_frequency"     =>  $payment_frequency,
-                "insurance_company_id"     =>  $insurance_company_id,
-                "model_year"     =>  $model_year,
-                "renewal_date"     =>  $renewal_date ? $renewal_date->format('Y-m-d H:i:s') : null,
-                'wise_insured' =>   $wise_insured
-            ]);
+            $tmp = $this->cars()->updateOrCreate(
+                [
+                    "car_id"      =>  $car_id,
+                ],
+                [
+                    "sum_insured"  =>  $sum_insured,
+                    "insurance_payment"    =>  $insurance_payment,
+                    "payment_frequency"     =>  $payment_frequency,
+                    "insurance_company_id"     =>  $insurance_company_id,
+                    "model_year"     =>  $model_year,
+                    "renewal_date"     =>  $renewal_date ? $renewal_date->format('Y-m-d H:i:s') : null,
+                    'wise_insured' =>   $wise_insured
+                ]
+            );
             AppLog::info("Adding customer car", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -483,6 +487,34 @@ class Customer extends Model
             AppLog::error("Updating customer note", loggable: $this, desc: $e->getMessage());
             report($e);
             return false;
+        }
+    }
+
+    public function setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year, $insured_value)
+    {
+        try {
+            $name_array = explode(" ", $full_name);
+            $middle_name = "";
+            for ($j = 1; $j < count($name_array) - 1; $j++) $middle_name .= "$name_array[$j] ";
+
+            $this->first_name = $name_array[0];
+            $this->last_name = $name_array[count($name_array) - 1];
+            $this->middle_name = trim($middle_name);
+            $this->id_type = self::IDTYPE_NATIONAL_ID;
+            $this->id_number = $national_id;
+            if ($address)
+                $this->addAddress(Address::TYPE_HOME, $address, country: "Egypt");
+            if ($tel1) $this->addPhone(Phone::TYPE_MOBILE, $tel1, true);
+            if ($tel2) $this->addPhone(Phone::TYPE_HOME, $tel2, false);
+            $newCar = null;
+            if ($car) {
+                $newCar = $this->addCar($car->id, $model_year, $insured_value);
+            }
+
+            $this->save();
+            return $newCar?->id;
+        } catch (Exception $e) {
+            report($e);
         }
     }
 

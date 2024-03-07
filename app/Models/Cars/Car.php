@@ -117,6 +117,15 @@ class Car extends Model
         }
     }
 
+    public static function getByBrandAndModel($brand_name, $model_name)
+    {
+        return self::join("car_models", "cars.car_model_id", "=", "car_models.id")
+            ->join("brands", "car_models.brand_id", "=", "brands.id")
+            ->where("brands.name", $brand_name)
+            ->where("car_models.name", $model_name)
+            ->first();
+    }
+
     ///model functions
     public function editInfo(int $car_model_id, string $category, string $desc = null)
     {

@@ -355,6 +355,20 @@ class Corporate extends Model
         }
     }
 
+    public function setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year, $insured_value){
+        try{
+            $this->name = $full_name;
+            $this->commercial_record = $national_id;
+            if($address)
+            $this->addAddress(Address::TYPE_HQ, $address, country: "Egypt");
+            if ($tel1) $this->addPhone(Phone::TYPE_WORK, $tel1, true);
+            if ($tel2) $this->addPhone(Phone::TYPE_WORK, $tel2, false);
+            $this->save();
+        } catch (Exception $e){
+            report($e);
+        }
+    }
+
     ///static functions
     public static function newLead(
         $name,
