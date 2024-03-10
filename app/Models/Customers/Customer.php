@@ -671,6 +671,8 @@ class Customer extends Model
                 $q->where(function ($qq) use ($tmp, $loggedInUser) {
                     if ($loggedInUser->is_operations) {
                         $qq->where('customers.email', '=', "$tmp")
+                            ->orwhere('customers.first_name', '=', "$tmp")
+                            ->orwhere('customers.last_name', '=', "$tmp")
                             ->orwhere('customer_phones.number', '=', "$tmp");
                     } else {
                         $qq->where('customers.first_name', 'LIKE', "%$tmp%")
