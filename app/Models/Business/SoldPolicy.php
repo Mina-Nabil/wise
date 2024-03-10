@@ -358,8 +358,8 @@ class SoldPolicy extends Model
         $expiry,
         $chassis,
         $motor_no,
-        $note, 
-        $car_id
+        $note,
+        $car_id = NULL
     ) {
         try {
             $this->creator_id = 1;
@@ -633,7 +633,9 @@ class SoldPolicy extends Model
             $brandName = $activeSheet->getCell('AI' . $i)->getValue();
             $modelName = $activeSheet->getCell('AJ' . $i)->getValue();
             $car = CarsCar::getByBrandAndModel($brandName, $modelName);
-
+            if ($car) {
+                Log::info("Car found " . $car->id);
+            }
             $foundSoldPolicy = self::byPolicyNumber($policy_number)->first();
             if (!$full_name) {
                 Log::warning("Row#$i has no name");
@@ -642,7 +644,7 @@ class SoldPolicy extends Model
 
             if ($foundSoldPolicy) {
                 $client = $foundSoldPolicy->client;
-                $car_id = $client->setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year, $insured_value);
+                $car_id = $client->setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year);
                 $foundSoldPolicy->setDocInfo(
                     $policy->id,
                     $insured_value,
@@ -655,7 +657,6 @@ class SoldPolicy extends Model
                     $note,
                     $car_id
                 );
-                Log::info("Policy#$policy_number updated on row $i");
             } else {
                 try {
                     $tmpClient = null;
@@ -677,7 +678,10 @@ class SoldPolicy extends Model
                         if ($tel1) $tmpClient->addPhone(Phone::TYPE_MOBILE, $tel1, true);
                         if ($tel2) $tmpClient->addPhone(Phone::TYPE_HOME, $tel2, false);
                         if ($address) $tmpClient->addAddress(type: Address::TYPE_HOME, line_1: $address, country: "Egypt");
-                        if ($car) $tmpCar = $tmpClient->addCar($car->id, model_year: $model_year, sum_insured: $insured_value);
+                        if ($car) $tmpCar = $tmpClient->setCars([[
+                            "car_id"        => $car->id,
+                            "model_year"    => $model_year
+                        ]]);
                     } else {
                         $tmpClient = Corporate::newCorporate(
                             owner_id: 10,

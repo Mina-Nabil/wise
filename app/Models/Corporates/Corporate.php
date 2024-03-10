@@ -355,7 +355,7 @@ class Corporate extends Model
         }
     }
 
-    public function setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year, $insured_value){
+    public function setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car=NULL, $model_year=NULL, $insured_value=NULL){
         try{
             $this->name = $full_name;
             $this->commercial_record = $national_id;
