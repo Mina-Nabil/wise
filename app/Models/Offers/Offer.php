@@ -681,10 +681,13 @@ class Offer extends Model
             $q->leftjoin('corporates', function ($j) {
                 $j->on('offers.client_id', '=', 'corporates.id')
                     ->where('offers.client_type', Corporate::MORPH_TYPE);
-            })->leftjoin('customers', function ($j) {
-                $j->on('offers.client_id', '=', 'customers.id')
-                    ->where('offers.client_type', Customer::MORPH_TYPE);
-            })->groupBy('offers.id');
+            })
+                ->leftjoin('customers', function ($j) {
+                    $j->on('offers.client_id', '=', 'customers.id')
+                        ->where('offers.client_type', Customer::MORPH_TYPE);
+                })
+                ->leftjoin('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id')
+                ->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')->groupBy('offers.id');
 
             $splittedText = explode(' ', $v);
 
@@ -697,6 +700,8 @@ class Offer extends Model
                         ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                        ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
                         ->orwhere('renewal_policy', 'LIKE', "%$tmp%");
                 });
             }
