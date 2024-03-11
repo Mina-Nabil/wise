@@ -684,8 +684,7 @@ class Offer extends Model
             })->leftjoin('customers', function ($j) {
                 $j->on('offers.client_id', '=', 'customers.id')
                     ->where('offers.client_type', Customer::MORPH_TYPE);
-            })->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')
-                ->leftjoin('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id')->groupBy('offers.id');
+            })->groupBy('offers.id');
 
             $splittedText = explode(' ', $v);
 
