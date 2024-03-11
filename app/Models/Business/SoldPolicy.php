@@ -810,7 +810,7 @@ class SoldPolicy extends Model
                 $now->format('Y-m-t'),
             ]);
         });
-        return $query->latest();
+        return $query->orderBy("sold_policies.start");
     }
 
     public function scopeByPaid($query, $is_paid)
