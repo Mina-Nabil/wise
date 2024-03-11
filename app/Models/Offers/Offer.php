@@ -727,8 +727,6 @@ class Offer extends Model
             array_push($states, self::STATUS_PENDING_OPERATIONS);
             array_push($states, self::STATUS_PENDING_INSUR);
             array_push($states, self::STATUS_PENDING_CUSTOMER);
-            array_push($states, self::STATUS_DECLINED_INSUR);
-            array_push($states, self::STATUS_DECLINED_CUSTOMER);
         }
         return $query->whereIn("offers.status", $states);
     }
