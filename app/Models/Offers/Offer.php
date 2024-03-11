@@ -699,7 +699,7 @@ class Offer extends Model
                 });
             }
         });
-        return $query->orderByDesc('due');
+        return $query->orderBy('due');
     }
 
     public function scopeIsRenewal($query)
