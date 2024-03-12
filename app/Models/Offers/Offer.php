@@ -765,7 +765,7 @@ class Offer extends Model
 
     public function comments(): HasMany
     {
-        return $this->hasMany(OfferComment::class);
+        return $this->hasMany(OfferComment::class)->latest();
     }
 
     public function discounts(): HasMany
