@@ -42,6 +42,7 @@ return new class extends Migration
         Schema::create('client_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(SoldPolicy::class)->nullable();
+            $table->foreignIdFor(User::class, 'closed_by_id')->nullable();
             $table->enum('status', ClientPayment::PYMT_STATES)->default(ClientPayment::PYMT_STATE_NEW);
             $table->enum('type', ClientPayment::PYMT_TYPES);
             $table->date('due');
@@ -76,6 +77,8 @@ return new class extends Migration
             $table->double('comm_percentage');
             $table->double('amount')->nullable();
             $table->enum('status', SalesComm::PYMT_STATES)->default(SalesComm::PYMT_STATE_NEW);
+            $table->dateTime('payment_date')->nullable();
+            $table->text('doc_url')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -87,7 +90,6 @@ return new class extends Migration
             $table->double('total_sales_comm')->nullable();
             $table->double('total_comp_paid')->nullable(); //gai mn sherket t2meen
         });
-
     }
 
     /**

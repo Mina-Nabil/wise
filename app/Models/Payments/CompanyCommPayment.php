@@ -123,7 +123,7 @@ class CompanyCommPayment extends Model
     ///scopes
     public function scopePaid(Builder $query)
     {
-        $query->where('is_paid', 1);
+        $query->where('status', self::PYMT_STATE_PAID);
     }
 
     ///relations
