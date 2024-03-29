@@ -2,8 +2,8 @@
 
 namespace App\Models\Insurance;
 
-use App\Models\Cars\Car;
 use App\Models\Customers\Car as CustomersCar;
+use App\Models\Payments\PolicyCommConf;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -134,9 +134,9 @@ class Policy extends Model
 
     public static function newPolicy($company_id, $name, $business, $note = null)
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('create', self::class)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return false;
 
         $newPolicy = new self([
             "company_id" =>  $company_id,
@@ -314,9 +314,9 @@ class Policy extends Model
         $rate,
         $note = null
     ): false|PolicyCondition {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('update', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
 
         try {
             $order = $this->conditions()->count() + 1;
@@ -339,9 +339,9 @@ class Policy extends Model
 
     public function addBenefit($benefit, $value)
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('update', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
         try {
             AppLog::info("Adding benefit", loggable: $this);
 
@@ -359,9 +359,9 @@ class Policy extends Model
 
     public function addGrossCalculation($title, $calculation_type, $value)
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('update', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
         try {
             AppLog::info("Adding gross calculation", loggable: $this);
 
@@ -374,6 +374,29 @@ class Policy extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Adding gross calculation failed", loggable: $this, desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function addCostConfiguration($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+        try {
+            AppLog::info("Adding cost configuration", loggable: $this);
+
+            return $this->cost_configurations()->updateOrCreate([
+                "title"   =>  $title,
+            ], [
+                "calculation_type"  =>  $calculation_type,
+                "value"             =>  $value,
+                "due_penalty"       =>  $due_penalty,
+                "penalty_percent"   =>  $penalty_percent,
+            ]);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Adding cost configuration failed", loggable: $this, desc: $e->getMessage());
             return false;
         }
     }
@@ -432,5 +455,10 @@ class Policy extends Model
     public function gross_calculations(): HasMany
     {
         return $this->hasMany(GrossCalculation::class);
+    }
+
+    public function cost_configurations(): HasMany
+    {
+        return $this->hasMany(PolicyCommConf::class);
     }
 }

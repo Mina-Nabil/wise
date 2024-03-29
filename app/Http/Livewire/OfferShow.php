@@ -771,7 +771,6 @@ class OfferShow extends Component
         if ($this->policyData && $this->netPremium) {
             $this->grossPremium = round($this->policyData->calculateGrossValue($this->netPremium), 2);
         }
-        // dd($this->conditionData);
     }
 
     public function addOption()

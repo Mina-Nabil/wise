@@ -10,9 +10,13 @@ use App\Models\Customers\Address;
 use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
 use App\Models\Customers\Phone;
+use App\Models\Insurance\GrossCalculation;
 use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
+use App\Models\Payments\CompanyCommPayment;
+use App\Models\Payments\PolicyComm;
+use App\Models\Payments\PolicyCost;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskField;
 use App\Models\Users\AppLog;
@@ -68,8 +72,101 @@ class SoldPolicy extends Model
         ]);
     }
 
+    public function generatePolicyCommissions()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+        $this->loadMissing('policy');
+        $this->loadMissing('policy.cost_configurations');
+        try {
+            DB::transaction(function () {
+                $this->comms_details()->delete();
+                $clientPaymentDate = new Carbon($this->client_payment_date);
+                $policyStart = new Carbon($this->start);
+                $dueDays = $clientPaymentDate->diffInDays($policyStart);
+                $total_comm = 0;
+                foreach ($this->policy->cost_configurations as $conf) {
+                    $tmp_base_value = $conf->calculation_type == GrossCalculation::TYPE_VALUE ?
+                        $conf->value : (($conf->value / 100) * $this->gross_premium);
+                    if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
+                        $tmp_base_value = $tmp_base_value - (($conf->penalty_percent / 100) * $tmp_base_value);
+                    }
+                    $this->comms_details()->updateOrCreate([
+                        "title"     =>  $conf->title
+                    ], [
+                        "amount"    =>  $tmp_base_value
+                    ]);
+                    $total_comm += $tmp_base_value;
+                }
+                $this->total_policy_comm = $total_comm;
+                $this->save();
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function addPolicyCommission($title, $amount)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updatePayments', $this)) return false;
+
+        try {
+            DB::transaction(function () use ($title, $amount) {
+                $this->comms_details()->create([
+                    "title"     =>  $title,
+                    "amount"    =>  $amount
+                ]);
+                AppLog::info("Commission changed", loggable: $this, desc: "Sold Policy commission added manually");
+            });
+            $this->calculateTotalPolicyComm();
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function calculateTotalPolicyComm()
+    {
+        $tmp = 0;
+        foreach ($this->comms_details as $comm) {
+            $tmp += $comm->amount;
+        }
+        $this->total_policy_comm = $tmp;
+        try {
+            $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function calculateTotalCompanyPayments()
+    {
+        $tmp = 0;
+        foreach ($this->company_comm_payments()->paid()->get() as $comm) {
+            $tmp += $comm->amount;
+        }
+        $this->total_comp_paid = $tmp;
+        try {
+            $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null): self|bool
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         $this->update([
             'policy_number' => $policy_number,
             'start' => $start->format('Y-m-d H:i:s'),
@@ -93,6 +190,10 @@ class SoldPolicy extends Model
 
     public function setAsValid()
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         $this->update([
             'is_valid' => 1,
         ]);
@@ -146,7 +247,9 @@ class SoldPolicy extends Model
 
     public function setAsInvalid()
     {
-
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
 
         try {
             $this->update([
@@ -163,11 +266,16 @@ class SoldPolicy extends Model
         }
     }
 
-    public function setPaid($is_paid)
+    public function setPaid($is_paid, Carbon $client_payment_date = null)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updatePayments', $this)) return false;
+
         try {
             $this->update([
                 'is_paid' => $is_paid,
+                "client_payment_date"   =>  $client_payment_date->format('Y-m-d H:i')
             ]);
 
             $is_paid ?
@@ -184,6 +292,10 @@ class SoldPolicy extends Model
 
     public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, $discount)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updatePayments', $this)) return false;
+
         $this->update([
             'insured_value' => $insured_value,
             'net_rate'      => $net_rate,
@@ -208,6 +320,10 @@ class SoldPolicy extends Model
 
     public function setCustomerCar($customer_car_id)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         $this->update([
             'customer_car_id'      => $customer_car_id
         ]);
@@ -225,6 +341,10 @@ class SoldPolicy extends Model
 
     public function setNote($note)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         $this->update([
             'note'      => $note
         ]);
@@ -243,6 +363,10 @@ class SoldPolicy extends Model
 
     public function addEndorsement($due = null, $desc = null, $actions = [])
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement", $desc, $due);
         if (!$newEndors) return false;
         $this->sendPolicyNotifications("Policy#$this->id endorsement added", Auth::user()->username . " added a endorsement");
@@ -254,6 +378,10 @@ class SoldPolicy extends Model
 
     public function addClaim($due = null, $desc = null, $fields = [])
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim", $desc, $due);
         if (!$newTask) return false;
         $this->sendPolicyNotifications("Policy#$this->id claim added", Auth::user()->username . " added a claim");
@@ -277,6 +405,10 @@ class SoldPolicy extends Model
      */
     public function setBenefits(array $benefits = [])
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         try {
             DB::transaction(function () use ($benefits) {
                 $this->benefits()->delete();
@@ -296,6 +428,9 @@ class SoldPolicy extends Model
 
     public function addBenefit($benefit, $value): SoldPolicyBenefit|false
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
         try {
             $benefit = $this->benefits()->firstOrCreate([
                 "benefit"   =>  $benefit
@@ -316,6 +451,12 @@ class SoldPolicy extends Model
      */
     public function setExclusions(array $exclusions = [])
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
         try {
             DB::transaction(function () use ($exclusions) {
                 $this->exclusions()->delete();
@@ -335,6 +476,9 @@ class SoldPolicy extends Model
 
     public function addExclusion($title, $value): SoldPolicyExclusion|false
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
         try {
             $exclusion = $this->exclusions()->firstOrCreate([
                 "title"   =>  $title
@@ -567,7 +711,6 @@ class SoldPolicy extends Model
             }
         }
     }
-
 
     public static function importNewAllianzFile($file)
     {
@@ -893,5 +1036,15 @@ class SoldPolicy extends Model
     public function watchers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'policy_watchers');
+    }
+
+    public function comms_details(): HasMany
+    {
+        return $this->hasMany(PolicyComm::class);
+    }
+
+    public function company_comm_payments(): HasMany
+    {
+        return $this->hasMany(CompanyCommPayment::class);
     }
 }
