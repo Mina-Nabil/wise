@@ -14,9 +14,11 @@ use App\Models\Insurance\GrossCalculation;
 use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
+use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\PolicyComm;
 use App\Models\Payments\PolicyCost;
+use App\Models\Payments\SalesComm;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskField;
 use App\Models\Users\AppLog;
@@ -154,6 +156,47 @@ class SoldPolicy extends Model
         }
         $this->total_comp_paid = $tmp;
         try {
+            $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function calculateTotalClientPayments()
+    {
+        $tmp = 0;
+        foreach ($this->client_payments()->paid()->get() as $comm) {
+            $tmp += $comm->amount;
+        }
+        $this->total_client_paid = $tmp;
+        try {
+            $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function calculateTotalSalesCommPaid()
+    {
+        $tmp = 0;
+        foreach ($this->sales_comms()->paid()->get() as $comm) {
+            $tmp += $comm->amount;
+        }
+        $this->total_sales_comm = $tmp;
+        try {
+            $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function setClientPaymentDate(Carbon $date)
+    {
+        try {
+            $this->client_payment_date = $date->format('Y-m-d H:i');
             $this->save();
         } catch (Exception $e) {
             report($e);
@@ -502,7 +545,7 @@ class SoldPolicy extends Model
         $expiry,
         $chassis,
         $motor_no,
-        $note, 
+        $note,
         $car_id
     ) {
         try {
@@ -1046,5 +1089,15 @@ class SoldPolicy extends Model
     public function company_comm_payments(): HasMany
     {
         return $this->hasMany(CompanyCommPayment::class);
+    }
+
+    public function client_payments(): HasMany
+    {
+        return $this->hasMany(ClientPayment::class);
+    }
+
+    public function sales_comms(): HasMany
+    {
+        return $this->hasMany(SalesComm::class);
     }
 }

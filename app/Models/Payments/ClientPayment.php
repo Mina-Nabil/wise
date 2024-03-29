@@ -99,11 +99,16 @@ class ClientPayment extends Model
         try {
             $date = $date ?? new Carbon();
             AppLog::error("Setting Client Payment as paid", loggable: $this);
-            return $this->update([
+            if($this->update([
                 "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
-            ]);
+            ])){
+                $this->loadMissing('sold_policy');
+                $this->sold_policy->setClientPaymentDate($date);
+                $this->sold_policy->calculateTotalClientPayments();
+            }
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);

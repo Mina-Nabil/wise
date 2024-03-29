@@ -87,11 +87,16 @@ class CompanyCommPayment extends Model
         try {
             $date = $date ?? new Carbon();
             AppLog::error("Setting Company Comm as paid", loggable: $this);
-            return $this->update([
+            if($this->update([
                 "receiver_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
-            ]);
+            ]))
+            {
+                $this->loadMissing('sold_policy');
+                $this->sold_policy->calculateTotalCompanyPayments();
+            }
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Company Comm info failed", desc: $e->getMessage(), loggable: $this);
