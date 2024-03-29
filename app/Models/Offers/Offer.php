@@ -7,6 +7,7 @@ use App\Models\Corporates\Corporate;
 use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
 use App\Models\Insurance\PolicyBenefit;
+use App\Models\Payments\SalesComm;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use App\Traits\Loggable;
@@ -152,6 +153,9 @@ class Offer extends Model
         foreach ($this->selected_option->policy->benefits as $b) {
             $soldPolicy->addBenefit($b->benefit, $b->value);
         }
+        $this->sales_comms()->update([
+            "sold_policy_id"    =>  $soldPolicy->id
+        ]);
         return $soldPolicy;
     }
 
@@ -786,6 +790,11 @@ class Offer extends Model
     public function watcher_ids(): HasMany
     {
         return $this->hasMany(OfferWatcher::class);
+    }
+
+    public function sales_comms(): HasMany
+    {
+        return $this->hasMany(SalesComm::class);
     }
 
     public function watchers(): BelongsToMany
