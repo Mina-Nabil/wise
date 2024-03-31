@@ -259,6 +259,11 @@ class User extends Authenticatable
         return $this->type == self::TYPE_SALES;
     }
 
+    public function getIsFinanceAttribute()
+    {
+        return $this->type == self::TYPE_FINANCE;
+    }
+
     public function getNotfChannelAttribute()
     {
         return "user$this->id-channel";

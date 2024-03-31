@@ -79,6 +79,7 @@ return new class extends Migration
             $table->enum('status', SalesComm::PYMT_STATES)->default(SalesComm::PYMT_STATE_NEW);
             $table->dateTime('payment_date')->nullable();
             $table->text('doc_url')->nullable();
+            $table->text('note')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

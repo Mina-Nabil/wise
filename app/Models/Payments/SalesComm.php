@@ -36,6 +36,10 @@ class SalesComm extends Model
     ///model functions
     public function setInfo($title, $comm_percentage, $note = null)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         try {
             AppLog::error("Setting Sales Comm info", loggable: $this);
             $this->loadMissing('sold_policy');
@@ -55,6 +59,10 @@ class SalesComm extends Model
 
     public function refreshAmount()
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         AppLog::info("Calculating Sales Comm amount", loggable: $this);
         $this->loadMissing('sold_policy');
         $amount = ($this->comm_percentage / 100) * $this->sold_policy->gross_premium;
@@ -71,6 +79,10 @@ class SalesComm extends Model
 
     public function setAsPaid(Carbon $date = null)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
@@ -88,6 +100,10 @@ class SalesComm extends Model
 
     public function setAsCancelled(Carbon $date = null)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
@@ -105,6 +121,10 @@ class SalesComm extends Model
 
     public function setDocument($doc_url)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         try {
             if ($this->doc_url)
                 Storage::delete($this->doc_url);
@@ -122,6 +142,9 @@ class SalesComm extends Model
 
     public function deleteDocument()
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
         try {
             if ($this->doc_url)
                 Storage::delete($this->doc_url);

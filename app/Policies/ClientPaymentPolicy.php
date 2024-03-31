@@ -2,12 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Insurance\Policy;
+use App\Models\Payments\ClientPayment;
 use App\Models\Users\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
-class PolicyPolicy
+class ClientPaymentPolicy
 {
     use HandlesAuthorization;
 
@@ -19,19 +18,19 @@ class PolicyPolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Insurance\Policy  $policy
+     * @param  \App\Models\Payments\ClientPayment  $clientPayment
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Policy $policy)
+    public function view(User $user, ClientPayment $clientPayment)
     {
-        return true;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
@@ -42,31 +41,31 @@ class PolicyPolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin || $user->is_operations;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Insurance\Policy  $policy
+     * @param  \App\Models\Payments\ClientPayment  $clientPayment
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Policy $policy)
+    public function update(User $user, ClientPayment $clientPayment)
     {
-        return $user->is_admin || $user->is_operations || $user->is_finance;
+        $clientPayment->loadMissing('sold_policy');
+        return $user->is_admin || $user->is_finance || $user->id == $clientPayment->sold_policy->creator_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Insurance\Policy  $policy
+     * @param  \App\Models\Payments\ClientPayment  $clientPayment
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Policy $policy)
+    public function delete(User $user, ClientPayment $clientPayment)
     {
-        return $user->is_admin || $user->is_operations;
+        return $user->is_admin || $user->is_finance;
     }
-
 }

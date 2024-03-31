@@ -38,6 +38,10 @@ class CompanyCommPayment extends Model
     ///model functions
     public function setInfo($type, $note = null)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         try {
             AppLog::error("Setting Company Comm info", loggable: $this);
             return $this->update([
@@ -52,6 +56,10 @@ class CompanyCommPayment extends Model
 
     public function setDocument($doc_url)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         try {
             if ($this->doc_url)
                 Storage::delete($this->doc_url);
@@ -69,6 +77,10 @@ class CompanyCommPayment extends Model
 
     public function deleteDocument()
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         try {
             if ($this->doc_url)
                 Storage::delete($this->doc_url);
@@ -83,16 +95,19 @@ class CompanyCommPayment extends Model
 
     public function setAsPaid(Carbon $date = null)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
             AppLog::error("Setting Company Comm as paid", loggable: $this);
-            if($this->update([
+            if ($this->update([
                 "receiver_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
-            ]))
-            {
+            ])) {
                 $this->loadMissing('sold_policy');
                 $this->sold_policy->calculateTotalCompanyPayments();
             }
@@ -105,6 +120,10 @@ class CompanyCommPayment extends Model
 
     public function setAsCancelled(Carbon $date = null)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();

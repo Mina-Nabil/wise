@@ -153,9 +153,12 @@ class Offer extends Model
         foreach ($this->selected_option->policy->benefits as $b) {
             $soldPolicy->addBenefit($b->benefit, $b->value);
         }
-        $this->sales_comms()->update([
-            "sold_policy_id"    =>  $soldPolicy->id
-        ]);
+        foreach ($this->sales_comms()->get() as $commaya) {
+            $commaya->update([
+                "amount"            =>  $commaya->comm_percentage * $gross_premium,
+                "sold_policy_id"    =>  $soldPolicy->id
+            ]);
+        }
         return $soldPolicy;
     }
 
@@ -229,6 +232,30 @@ class Offer extends Model
         $whatsapp_url = "https://wa.me/" . $num;
         $exportFileUrl = $this->exportComparison($ids, true);
         return $whatsapp_url . "?text=" . urlencode("Please find the offer comparison url: " . $exportFileUrl);
+    }
+
+    public function addSalesCommission($title, $comm_percentage, $user_id = null, $note = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateCommission', $this)) return false;
+
+        try {
+            if ($this->sales_comms()->create([
+                "title"             => $title,
+                "comm_percentage"   => $comm_percentage,
+                "user_id"           => $user_id,
+                "note"              => $note
+            ])) {
+                AppLog::info("Offer commission added", loggable: $this);
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit offer commission", desc: $e->getMessage());
+            return false;
+        }
     }
 
     public function generateEmailUrl($client_email, $ids = [])

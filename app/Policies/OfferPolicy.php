@@ -157,6 +157,18 @@ class OfferPolicy
     }
 
     /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Offers\Offer  $offer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateCommission(User $user, Offer $offer)
+    {
+        return $user->is_finance || $user->is_admin || $user->is_manager;
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\Users\User  $user

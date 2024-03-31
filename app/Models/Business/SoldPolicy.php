@@ -204,6 +204,32 @@ class SoldPolicy extends Model
         }
     }
 
+
+    public function addSalesCommission($title, $comm_percentage, $user_id = null, $note = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updatePayments', $this)) return false;
+
+        try {
+            if ($this->sales_comms()->create([
+                "title"             => $title,
+                "comm_percentage"   => $comm_percentage,
+                "amount"            => $this->gross_premium * $comm_percentage,
+                "user_id"           => $user_id,
+                "note"              => $note
+            ])) {
+                AppLog::info("Offer commission added", loggable: $this);
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit offer commission", desc: $e->getMessage());
+            return false;
+        }
+    }
+
     public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null): self|bool
     {
         /** @var User */
