@@ -153,8 +153,9 @@ class Offer extends Model
         foreach ($this->selected_option->policy->benefits as $b) {
             $soldPolicy->addBenefit($b->benefit, $b->value);
         }
-        foreach ($this->sales_comms()->get() as $commaya) {
+        foreach ($this->sales_comms()->new()->get() as $commaya) {
             $commaya->update([
+                'state'     =>  SalesComm::PYMT_STATE_CONFIRMED,
                 "amount"            =>  $commaya->comm_percentage * $gross_premium,
                 "sold_policy_id"    =>  $soldPolicy->id
             ]);

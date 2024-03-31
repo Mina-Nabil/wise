@@ -76,7 +76,7 @@ return new class extends Migration
             $table->string('title');
             $table->double('comm_percentage');
             $table->double('amount')->nullable();
-            $table->enum('status', SalesComm::PYMT_STATES)->default(SalesComm::PYMT_STATE_NEW);
+            $table->enum('status', SalesComm::PYMT_STATES)->default(SalesComm::PYMT_STATE_NOT_CONFIRMED);
             $table->dateTime('payment_date')->nullable();
             $table->text('doc_url')->nullable();
             $table->text('note')->nullable();

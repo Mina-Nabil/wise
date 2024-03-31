@@ -18,11 +18,13 @@ use Illuminate\Support\Facades\Storage;
 class SalesComm extends Model
 {
     use HasFactory;
-    const PYMT_STATE_NEW    = 'new';
-    const PYMT_STATE_PAID   = 'paid';
-    const PYMT_STATE_CANCELLED    = 'cancelled';
+    const PYMT_STATE_NOT_CONFIRMED        = 'not_confirmed';
+    const PYMT_STATE_CONFIRMED  = 'confirmed';
+    const PYMT_STATE_PAID       = 'paid';
+    const PYMT_STATE_CANCELLED  = 'cancelled';
     const PYMT_STATES = [
-        self::PYMT_STATE_NEW,
+        self::PYMT_STATE_NOT_CONFIRMED,
+        self::PYMT_STATE_CONFIRMED,
         self::PYMT_STATE_PAID,
         self::PYMT_STATE_CANCELLED,
     ];
@@ -168,10 +170,15 @@ class SalesComm extends Model
     ///attributes
     public function getIsNewAttribute()
     {
-        return $this->status == self::PYMT_STATE_NEW;
+        return $this->status == self::PYMT_STATE_NOT_CONFIRMED;
     }
 
     ///scopes
+    public function scopeNew(Builder $query)
+    {
+        $query->where('status', self::PYMT_STATE_NOT_CONFIRMED);
+    }
+
     public function scopePaid(Builder $query)
     {
         $query->where('status', self::PYMT_STATE_PAID);
