@@ -151,6 +151,12 @@ class ClientPayment extends Model
             AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
+
+    public function delete()
+    {
+        return $this->setAsCancelled();
+    }
+
     ///attributes
     public function getIsNewAttribute()
     {

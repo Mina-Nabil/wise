@@ -133,6 +133,55 @@ class SoldPolicy extends Model
         }
     }
 
+    public function addSalesCommission($title, $comm_percentage, $user_id = null, $note = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updatePayments', $this)) return false;
+
+        try {
+            if ($this->sales_comms()->create([
+                "title"             => $title,
+                "comm_percentage"   => $comm_percentage,
+                "amount"            => $this->gross_premium * $comm_percentage,
+                "user_id"           => $user_id,
+                "note"              => $note
+            ])) {
+                AppLog::info("Sales commission added", loggable: $this);
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit sales commission", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function addClientPayment($type, $amount, Carbon $due, $note = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateClientPayments', $this)) return false;
+
+        try {
+            if ($this->client_payments()->create([
+                "type"      => $type,
+                "amount"    => $amount,
+                "due"       => $due->format('Y-m-d H:i:s'),
+                "note"              => $note
+            ])) {
+                AppLog::info("Client payment added", loggable: $this);
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add client payment", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function calculateTotalPolicyComm()
     {
         $tmp = 0;
@@ -200,32 +249,6 @@ class SoldPolicy extends Model
             $this->save();
         } catch (Exception $e) {
             report($e);
-            return false;
-        }
-    }
-
-
-    public function addSalesCommission($title, $comm_percentage, $user_id = null, $note = null)
-    {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updatePayments', $this)) return false;
-
-        try {
-            if ($this->sales_comms()->create([
-                "title"             => $title,
-                "comm_percentage"   => $comm_percentage,
-                "amount"            => $this->gross_premium * $comm_percentage,
-                "user_id"           => $user_id,
-                "note"              => $note
-            ])) {
-                AppLog::info("Offer commission added", loggable: $this);
-                return true;
-            }
-            return false;
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Can't edit offer commission", desc: $e->getMessage());
             return false;
         }
     }

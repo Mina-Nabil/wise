@@ -87,11 +87,14 @@ class SalesComm extends Model
         try {
             $date = $date ?? new Carbon();
             AppLog::error("Setting Sales Comm as paid", loggable: $this);
-            return $this->update([
+            if($this->update([
                 "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
-            ]);
+            ])){
+                $this->loadMissing('sold_policy');
+                $this->sold_policy->calculateTotalSalesCommPaid();
+            }
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
@@ -117,6 +120,11 @@ class SalesComm extends Model
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
         }
+    }
+
+    public function delete()
+    {
+        return $this->setAsCancelled();
     }
 
     public function setDocument($doc_url)

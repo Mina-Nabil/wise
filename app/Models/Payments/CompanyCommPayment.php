@@ -138,6 +138,10 @@ class CompanyCommPayment extends Model
             AppLog::error("Setting Company Comm info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
+    public function delete()
+    {
+        return $this->setAsCancelled();
+    }
     ///attributes
     public function getIsNewAttribute()
     {

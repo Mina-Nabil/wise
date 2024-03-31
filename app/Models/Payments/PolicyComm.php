@@ -39,7 +39,7 @@ class PolicyComm extends Model
         }
     }
 
-    public function deleteCommission($amount)
+    public function deleteCommission()
     {
         $this->loadMissing('sold_policy');
         /** @var User */
@@ -48,7 +48,7 @@ class PolicyComm extends Model
         try {
             AppLog::info("Deleting sold policy commission", loggable: $this->sold_policy);
 
-            DB::transaction(function () use ($amount) {
+            DB::transaction(function () {
                 parent::delete();
                 $this->sold_policy->calculateTotalPolicyComm();
             });
