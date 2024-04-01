@@ -378,7 +378,7 @@ class Policy extends Model
         }
     }
 
-    public function addCostConfiguration($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null)
+    public function addCommConf($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -386,7 +386,7 @@ class Policy extends Model
         try {
             AppLog::info("Adding cost configuration", loggable: $this);
 
-            return $this->cost_configurations()->updateOrCreate([
+            return $this->comm_confs()->updateOrCreate([
                 "title"   =>  $title,
             ], [
                 "calculation_type"  =>  $calculation_type,
@@ -457,7 +457,7 @@ class Policy extends Model
         return $this->hasMany(GrossCalculation::class);
     }
 
-    public function cost_configurations(): HasMany
+    public function comm_confs(): HasMany
     {
         return $this->hasMany(PolicyCommConf::class);
     }
