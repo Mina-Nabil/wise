@@ -32,7 +32,7 @@ class SalesComm extends Model
     const FILES_DIRECTORY = 'sold_policies/sales_comm_docs/';
     protected $table = 'sales_comms';
     protected $fillable = [
-        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id'
+        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id'
     ];
 
     ///model functions
