@@ -8,6 +8,7 @@ use App\Models\Business\SoldPolicyBenefit;
 use App\Models\Business\SoldPolicyExclusion;
 use App\Models\Insurance\PolicyBenefit;
 use App\Models\Offers\OfferOption;
+use App\Models\Payments\PolicyComm;
 use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskField;
 use App\Models\Users\User;
@@ -89,6 +90,54 @@ class SoldPolicyShow extends Component
     public $commStatus;
     public $deleteCommId;
     public $commId;
+
+    public $deletePolComSec;
+    public $updatePolComSec;
+    public $policyCommAmount;
+
+    public function openUpdatePolCom($id){
+        $res = PolicyComm::find($id);
+        $this->policyCommAmount = $res->amount;
+        $this->updatePolComSec = $id;
+
+    }
+
+    public function closeUpdatePolCom(){
+        $this->updatePolComSec = null;
+    }
+
+    public function updateCommAmount(){
+        $this->validate([
+            'policyCommAmount' => 'required|numeric',
+        ]);
+        $res = PolicyComm::find($this->updatePolComSec)->editAmount($this->policyCommAmount);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->updatePolComSec = null;
+            $this->alert('success', 'Commission updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function confirmDeletePolCom($id){
+        $this->deletePolComSec = $id;
+    }
+
+    public function dismissDeletePolCom(){
+        $this->deletePolComSec = null;
+    }
+
+    public function deletePolicyComm(){
+        $res = PolicyComm::find($this->deletePolComSec)->deleteCommission();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->deletePolComSec = null;
+            $this->alert('success', 'Commission deleted!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
 
     public function generatePolicyCommission(){
         $res = $this->soldPolicy->generatePolicyCommissions();

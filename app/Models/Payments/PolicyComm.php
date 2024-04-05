@@ -32,6 +32,7 @@ class PolicyComm extends Model
                 ]);
                 $this->sold_policy->calculateTotalPolicyComm();
             });
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Editing sold policy cost amount failed", loggable: $this->sold_policy, desc: $e->getMessage());
@@ -52,6 +53,7 @@ class PolicyComm extends Model
                 parent::delete();
                 $this->sold_policy->calculateTotalPolicyComm();
             });
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Deleting policy comp commission failed", loggable: $this->sold_policy, desc: $e->getMessage());

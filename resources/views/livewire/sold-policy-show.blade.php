@@ -267,6 +267,40 @@
                 </div>
             @endif
 
+            @if (!$soldPolicy->comms_details->isEmpty())
+                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                    <div class="card-body flex flex-col p-6 active justify-center">
+                        <header class="card-header noborder flex justify-between">
+                            <h4 class="card-title">
+                                Policy Commission
+                            </h4>
+                        </header>
+                        @foreach ($soldPolicy->comms_details as $commDetails)
+                            <div class="card-body px-6 pb-6">
+                                <div class="flex justify-between">
+                                    <div>
+                                        <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                            {{ $commDetails->title }}
+                                        </span>
+                                        <h5 class="text-slate-900 dark:text-white block">
+                                            {{ number_format($commDetails->amount, 0, '.', ',') }} EGP
+                                        </h5>
+                                    </div>
+                                    <div>
+                                        <button wire:click="confirmDeletePolCom({{ $commDetails->id }})" class="action-btn float-right text-sm" type="button">
+                                            <iconify-icon icon="material-symbols:delete"></iconify-icon>
+                                        </button>
+                                        <button wire:click="openUpdatePolCom({{ $commDetails->id }})" class="action-btn float-right text-sm mr-2" type="button">
+                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
 
             <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
                 <div class="card-body flex flex-col p-6 active justify-center">
@@ -355,7 +389,7 @@
                                                     </td>
 
                                                     <td class="table-td px-0">
-                                                        
+
                                                         @if ($comm->doc_url)
                                                             <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadCommDoc({{ $comm->id }})" wire:click="downloadCommDoc({{ $comm->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
                                                             <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadCommDoc({{ $comm->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
@@ -1177,7 +1211,50 @@
                                 {{ $commNote }}
                             </div>
                             <!-- Modal footer -->
-                        
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if ($updatePolComSec)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Update commission amount
+                                </h3>
+                                <button wire:click="closeUpdatePolCom" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+                                <div class="from-group">
+                                    <label for="policyCommAmount" class="form-label">Amount</label>
+                                    <input name="policyCommAmount" type="number" class="form-control mt-2 w-full @error('policyCommAmount') !border-danger-500 @enderror" wire:model.defer="policyCommAmount">
+                                    @error('policyCommAmount')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="updateCommAmount" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="updateCommAmount">Submit</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updateCommAmount" icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -1551,9 +1628,9 @@
                                 <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                     Delete Benefit
                                 </h3>
-                                <button wire:click="dismissDeleteBenefit" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                    data-bs-dismiss="modal">
+                                <button wire:click="dismissDeleteBenefit" type="button"
+                                    class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1654,6 +1731,44 @@
             </div>
         @endif
 
+        @if ($deletePolComSec)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog relative w-auto pointer-events-none">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                                <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                    Delete policy commission
+                                </h3>
+                                <button wire:click="dismissDeletePolCom" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                    data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+                                <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                    Are you sure ! you Want to delete this Policy commission ?
+                                </h6>
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="deletePolicyComm" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes,
+                                    Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         @if ($RemoveCommDocId)
             <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
                 <div class="modal-dialog relative w-auto pointer-events-none">
@@ -1694,73 +1809,73 @@
 
         {{-- addCommSec --}}
         @if ($addCommSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Add Sales Commission
-                            </h3>
-                            <button wire:click="toggleAddComm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Add Sales Commission
+                                </h3>
+                                <button wire:click="toggleAddComm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <!-- Modal body -->
-                        <div class="p-6 space-y-4">
-
-                            <div class="from-group">
-                                <label for="commTitle" class="form-label">Title</label>
-                                <input type="text" name="commTitle" class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror" wire:model.defer="commTitle">
-                                @error('commTitle')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
                             </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
 
-                            <div class="from-group">
-                                <label for="commPer" class="form-label">Percentage</label>
-                                <input type="number" min="0" max="100" name="commPer" class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror" wire:model.defer="commPer">
-                                @error('commPer')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
+                                <div class="from-group">
+                                    <label for="commTitle" class="form-label">Title</label>
+                                    <input type="text" name="commTitle" class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror" wire:model.defer="commTitle">
+                                    @error('commTitle')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
 
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Sales Person</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="commUser">
-                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                        Select user</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ $user->first_name . ' ' . $user->last_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                                <div class="from-group">
+                                    <label for="commPer" class="form-label">Percentage</label>
+                                    <input type="number" min="0" max="100" name="commPer" class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror" wire:model.defer="commPer">
+                                    @error('commPer')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
 
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Note</label>
-                                <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror" wire:model.defer="newcommNote"></textarea>
-                                @error('newcommNote')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Sales Person</label>
+                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="commUser">
+                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            Select user</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ $user->first_name . ' ' . $user->last_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Note</label>
+                                    <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror" wire:model.defer="newcommNote"></textarea>
+                                    @error('newcommNote')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
-                        </div>
-                        <!-- Modal footer -->
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addComm" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                Submit
-                            </button>
+                            <!-- Modal footer -->
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="addComm" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    Submit
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         @endif
 
     </div>
