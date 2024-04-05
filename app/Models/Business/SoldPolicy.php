@@ -80,7 +80,7 @@ class SoldPolicy extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
         $this->loadMissing('policy');
-        $this->loadMissing('policy.cost_configurations');
+        $this->loadMissing('policy.comm_confs');
         try {
             DB::transaction(function () {
                 $this->comms_details()->delete();
@@ -88,7 +88,7 @@ class SoldPolicy extends Model
                 $policyStart = new Carbon($this->start);
                 $dueDays = $clientPaymentDate->diffInDays($policyStart);
                 $total_comm = 0;
-                foreach ($this->policy->cost_configurations as $conf) {
+                foreach ($this->policy->comm_confs as $conf) {
                     $tmp_base_value = $conf->calculation_type == GrossCalculation::TYPE_VALUE ?
                         $conf->value : (($conf->value / 100) * $this->gross_premium);
                     if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
