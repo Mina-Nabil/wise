@@ -9,6 +9,7 @@ use App\Models\Base\Country;
 use App\Models\Insurance\PolicyBenefit;
 use App\Models\Insurance\PolicyCondition;
 use App\Models\Insurance\GrossCalculation;
+use App\Models\Payments\PolicyCommConf;
 use App\Traits\AlertFrontEnd;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -60,6 +61,112 @@ class PolicyShow extends Component
     public $newCalcTitle;
     public $newCalcType = '%';
     public $newCalcValue;
+
+    public $confId;
+    public $editConfId;
+    public $eConfTitle;
+    public $eConfType;
+    public $eConfValue;
+    public $eConfDue;
+    public $eConfPen;
+    public $deleteConfId;
+    public $newConfTitle;
+    public $newConfType = '%';
+    public $newConfValue;
+    public $newConfDue;
+    public $newConfPen;
+
+    public function addConf()
+    {
+        $this->validate([
+            'newConfTitle' => 'required|string|max:255',
+            'newConfType' => 'required|in:' . implode(",", GrossCalculation::TYPES),
+            'newConfValue' => 'required|numeric',
+            'newConfDue' => 'nullable|numeric',
+            'newConfPen' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $res = Policy::find($this->policyId)->addCommConf($this->newConfTitle, $this->newConfType, $this->newConfValue, $this->newConfDue, $this->newConfPen);
+        if ($res) {
+            $this->mount();
+            $this->newConfTitle = null;
+            $this->newConfType = '%';
+            $this->newConfValue = null;
+            $this->newConfDue = null;
+            $this->newConfPen = null;
+            $this->alert('success', 'Configuration added!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editConf()
+    {
+        $this->validate([
+            'eConfTitle' => 'required|string|max:255',
+            'eConfType' => 'required|in:' . implode(",", GrossCalculation::TYPES),
+            'eConfValue' => 'required|numeric',
+            'eConfDue' => 'nullable|numeric',
+            'eConfPen' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $res = PolicyCommConf::find($this->editConfId)->editInfo($this->eConfTitle, $this->eConfType, $this->eConfValue, $this->eConfDue, $this->eConfPen);
+        if ($res) {
+            $this->mount();
+            $this->editConfId = null;
+            $this->eConfTitle = null;
+            $this->eConfType = null;
+            $this->eConfValue = null;
+            $this->eConfDue = null;
+            $this->eConfPen = null;
+            $this->alert('success', 'Configurations updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function deleteThisConf($id)
+    {
+        $this->deleteConfId = $id;
+    }
+
+    public function dismissDeleteConf()
+    {
+        $this->deleteConfId = null;
+    }
+
+    public function deleteConf()
+    {
+        $res = PolicyCommConf::find($this->deleteConfId)->delete();
+        if ($res) {
+            $this->mount();
+            $this->deleteConfId = null;
+            $this->alert('success', 'Configuration deleted!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function editThisConf($id)
+    {
+        $this->editConfId = $id;
+        $g = PolicyCommConf::find($id);
+        $this->eConfTitle = $g->title;
+        $this->eConfType = $g->calculation_type;
+        $this->eConfValue = $g->value;
+        $this->eConfDue = $g->due_penalty;
+        $this->eConfPen = $g->penalty_percent;
+    }
+
+    public function closeEditConf()
+    {
+        $this->editConfId = null;
+        $this->eConfTitle = null;
+        $this->eConfType = null;
+        $this->eConfValue = null;
+        $this->eConfDue = null;
+        $this->eConfPen = null;
+    }
 
     public function addCalc()
     {

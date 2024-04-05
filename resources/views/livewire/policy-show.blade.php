@@ -500,6 +500,176 @@
 </div>
 </div>
 
+<div class="card mb-5">
+<div class="card-body">
+<div class="card-text h-full">
+    <div class="px-4 pt-4 pb-3">
+        <div class="flex justify-between">
+            <label class="form-label">Commission Configurations</label>
+        </div>
+
+        <div class="card-body px-6 pb-6">
+            <div class="overflow-x-auto ">
+                <div class="inline-block min-w-full align-middle">
+                    <div class="overflow-hidden ">
+
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                            <thead class="">
+                                <tr>
+
+                                    <th scope="col" class=" table-th ">
+                                        Title
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Calculation Type
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Value
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Due penalty
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Penalty percent
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Actions
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                @foreach ($policy->comm_confs as $conf)
+                                    @if ($editConfId && $conf->id === $editConfId)
+                                        <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
+                                            <td class="table-td">
+                                                <input type="text" class="form-control text-center @error('eConfTitle') !border-danger-500 @else !border-success-500 @enderror" wire:model="eConfTitle">
+                                            </td>
+
+                                            <td class="table-td">
+                                                <select class="form-control text-center @error('eConfType') !border-danger-500 @else !border-success-500 @enderror" wire:model="eConfType">
+                                                    @foreach ($calcTypes as $type)
+                                                        <option value="{{ $type }}">{{ $type }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+
+                                            <td class="table-td">
+                                                <input type="number" class="form-control text-center @error('eConfValue') !border-danger-500 @else !border-success-500 @enderror" wire:model="eConfValue">
+                                            </td>
+
+                                            <td class="table-td">
+                                                <input type="number" class="form-control text-center @error('eConfDue') !border-danger-500 @else !border-success-500 @enderror" wire:model="eConfDue">
+                                            </td>
+
+                                            <td class="table-td">
+                                                <input type="number" class="form-control text-center @error('eConfPen') !border-danger-500 @else !border-success-500 @enderror" wire:model="eConfPen"> %
+                                            </td>
+
+                                            <td class="table-td  p-1">
+                                                <div class="flex">
+                                                    <button class="bg-slate-900 text-white action-btn m-1" wire:click="editConf" type="button">
+                                                        <iconify-icon icon="material-symbols:save"></iconify-icon>
+                                                    </button>
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+                                    @else
+                                        <tr class="">
+
+                                            <td class="table-td">
+                                                {{ $conf->title }}
+                                            </td>
+
+                                            <td>
+                                                {{ $conf->calculation_type }}
+                                            </td>
+
+                                            <td class="table-td">
+                                                {{ $conf->value }}
+                                            </td>
+
+                                            <td class="table-td">
+                                                {{ $conf->due_penalty }}
+                                            </td>
+
+                                            <td class="table-td">
+                                                {{ $conf->penalty_percent }}
+                                            </td>
+
+
+                                            <td class="table-td  p-1">
+                                                <div class="flex">
+                                                    <button class=" bg-slate-900 text-white action-btn m-1" wire:click="editThisConf({{ $conf->id }})" type="button">
+                                                        <iconify-icon icon="carbon:edit"></iconify-icon>
+                                                    </button>
+                                                    <button class=" bg-slate-900 text-white action-btn m-1" wire:click="deleteThisConf({{ $conf->id }})" type="button">
+                                                        <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                    </button>
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+                                    @endif
+                                @endforeach
+
+                                <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
+                                    <td class="table-td">
+                                        <input type="text" wire:model="newConfTitle" class=" @error('newConfTitle') !border-danger-500  @enderror form-control w-full text-center">
+                                    </td>
+
+                                    <td class="table-td">
+                                        <select class="form-control text-center @error('newConfType') !border-danger-500 @else !border-success-500 @enderror" wire:model="newConfType">
+                                            @foreach ($calcTypes as $type)
+                                                <option value="{{ $type }}">{{ $type }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+
+                                    <td class="table-td">
+                                        <input type="text" wire:model="newConfValue" class=" @error('newConfValue') !border-danger-500  @enderror form-control w-full text-center">
+                                    </td>
+
+                                    <td class="table-td">
+                                        <input type="text" wire:model="newConfDue" class=" @error('newConfDue') !border-danger-500  @enderror form-control w-full text-center">
+                                    </td>
+
+                                    <td class="table-td">
+                                        <input type="text" wire:model="newConfPen" class=" @error('newConfPen') !border-danger-500  @enderror form-control w-full text-center">
+                                    </td>
+
+                                    <td class="table-td  p-1">
+                                        <div class="flex">
+                                            <button wire:click="addConf" class="btn btn-sm inline-flex justify-center btn-success shadow-base2">Add</button>
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+</div>
+
 
 <div class="card mb-5">
 <div class="card-body">
@@ -718,6 +888,42 @@
 </div>
 @endif
 
+
+@if ($deleteConfId)
+<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+<div class="modal-dialog relative w-auto pointer-events-none">
+<div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+<div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+    <!-- Modal header -->
+    <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+        <h3 class="text-base font-medium text-white dark:text-white capitalize">
+            Delete Configuration
+        </h3>
+        <button wire:click="dismissDeleteConf" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="sr-only">Close modal</span>
+        </button>
+    </div>
+    <!-- Modal body -->
+    <div class="p-6 space-y-4">
+        <h6 class="text-base text-slate-900 dark:text-white leading-6">
+            Are you sure ! you Want to delete this Configuration ?
+        </h6>
+    </div>
+    <!-- Modal footer -->
+    <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+        <button wire:click="deleteConf" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes, Delete</button>
+    </div>
+</div>
+</div>
+</div>
+</div>
+@endif
 
 
 </div>
