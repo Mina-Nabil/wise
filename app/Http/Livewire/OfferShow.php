@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use App\models\Business\SoldPolicy;
+use App\Models\Payments\SalesComm;
 
 class OfferShow extends Component
 {
@@ -76,6 +77,18 @@ class OfferShow extends Component
     public $discountNote;
     public $deleteDiscountId;
     public $discountId;
+
+    //sales comm
+    public $addCommSec = false;
+    public $commTitle;
+    public $commUser;
+    public $commPer;
+    public $commNote;
+    public $commStatus;
+    public $deleteCommId;
+    public $commId;
+
+
 
     public $editOptionId;
 
@@ -133,7 +146,54 @@ class OfferShow extends Component
     public $selectedCarPriceArray;
     public $item;
 
-    //watchers
+    public function addComm()
+    {
+        $this->validate([
+            'commTitle' => 'required|string|max:255',
+            'commPer' => 'required|numeric',
+            'commUser' => 'nullable|integer|exists:users,id',
+            'commNote' => 'nullable|string',
+        ]);
+
+        $res = $this->offer->addSalesCommission($this->commTitle, $this->commPer, $this->commUser, $this->commNote);
+        if ($res) {
+            $this->toggleAddComm();
+            $this->commTitle = null;
+            $this->commPer = null;
+            $this->commUser = null;
+            $this->commNote = null;
+            $this->mount($this->offer->id);
+            $this->alert('success', 'Commission added!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function toggleAddComm()
+    {
+        $this->toggle($this->addCommSec);
+    }
+    public function deleteThisComm($id)
+    {
+        $this->deleteCommId = $id;
+    }
+
+    public function dismissDeleteComm()
+    {
+        $this->deleteCommId = null;
+    }
+
+    public function deleteComm()
+    {
+        $res = SalesComm::find($this->deleteCommId)->delete();
+        if ($res) {
+            $this->dismissDeleteComm();
+            $this->mount($this->offer->id);
+            $this->alert('success', 'Commission deleted!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
 
     public function openGenerateSoldPolicy()
     {
@@ -721,7 +781,7 @@ class OfferShow extends Component
             'item_title' => 'nullable|string|max:255',
             'item_desc' => 'nullable|string',
         ]);
-        
+
         if ($this->carId) {
             $item = CustomerCar::find($this->carId);
         } elseif ($this->selectedCarPriceArray && $this->CarCategory) {
