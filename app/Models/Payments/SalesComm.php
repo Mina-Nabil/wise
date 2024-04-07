@@ -96,7 +96,9 @@ class SalesComm extends Model
             ])){
                 $this->loadMissing('sold_policy');
                 $this->sold_policy->calculateTotalSalesCommPaid();
+                return true;
             }
+            
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);

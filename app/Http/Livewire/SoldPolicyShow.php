@@ -8,9 +8,12 @@ use App\Models\Business\SoldPolicyBenefit;
 use App\Models\Business\SoldPolicyExclusion;
 use App\Models\Insurance\PolicyBenefit;
 use App\Models\Offers\OfferOption;
+use App\Models\Payments\PolicyComm;
 use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskField;
 use App\Models\Users\User;
+use App\Models\Payments\SalesComm;
+use App\Models\Payments\ClientPayment;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
@@ -74,6 +77,353 @@ class SoldPolicyShow extends Component
 
     public $note;
     public $noteSection = false;
+
+    public $RemoveCommDocId;
+    public $commDoc;
+    public $commDocId;
+    public $commNote;
+    //sales comm
+    public $addCommSec = false;
+    public $commTitle;
+    public $commUser;
+    public $commPer;
+    public $newcommNote;
+    public $commStatus;
+    public $deleteCommId;
+    public $commId;
+
+    public $deletePolComSec;
+    public $updatePolComSec;
+    public $policyCommAmount;
+
+    public $addClientPaymentSec;
+    public $paymentType;
+    public $paymentAmount;
+    public $paymentDue;
+    public $paymentNote;
+    public $RemovePaymentDocId;
+    public $paymentDocId;
+    public $paymentDoc;
+    public $paymentNoteSec;
+
+    public function showPaymentNote($id)
+    {
+        $n = ClientPayment::find($id);
+        $this->paymentNoteSec = $n->note;
+    }
+
+    public function downloadPaymentDoc($id)
+    {
+        $payment = ClientPayment::find($id);
+        $fileContents = Storage::disk('s3')->get($payment->doc_url);
+        $extension = pathinfo($payment->doc_url, PATHINFO_EXTENSION);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number . '_client_payment_document.' . $extension . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function hidePaymentComment()
+    {
+        $this->paymentNoteSec = null;
+    }
+
+    public function removePaymentDoc()
+    {
+        $res = ClientPayment::find($this->RemovePaymentDocId)->deleteDocument();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->RemovePaymentDocId = null;
+            $this->alert('success', 'payment removed');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function updatedPaymentDoc()
+    {
+        $this->validate([
+            'paymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+        ]);
+
+        $url = $this->paymentDoc->store(ClientPayment::FILES_DIRECTORY, 's3');
+
+        $res = ClientPayment::find($this->paymentDocId)->setDocument($url);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'document added');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function ConfirmRemovePaymentDoc($id)
+    {
+        $this->RemovePaymentDocId = $id;
+    }
+
+    public function DissRemovePaymentDoc($id)
+    {
+        $this->RemovePaymentDocId = null;
+    }
+
+    public function setPaymentDoc($id)
+    {
+        $this->paymentDocId = $id;
+    }
+
+    public function setPaymentPaid($id)
+    {
+        $res = ClientPayment::find($id)->setAsPaid();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Payment updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setPaymentCancelled($id)
+    {
+        $res = ClientPayment::find($id)->setAsCancelled();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Payment updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function addClientPayment()
+    {
+        $this->validate([
+            'paymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
+            'paymentAmount' => 'required|numeric',
+            'paymentDue' => 'required|date',
+            'paymentNote' => 'nullable|string',
+        ]);
+
+        $res = $this->soldPolicy->addClientPayment($this->paymentType, $this->paymentAmount, Carbon::parse($this->paymentDue), $this->paymentNote);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->addClientPaymentSec = false;
+            $this->paymentType = null;
+            $this->paymentAmount = null;
+            $this->paymentDue = null;
+            $this->paymentNote = null;
+            $this->alert('success', 'Payment added!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function toggleAddClientPayment()
+    {
+        $this->toggle($this->addClientPaymentSec);
+    }
+
+    public function openUpdatePolCom($id)
+    {
+        $res = PolicyComm::find($id);
+        $this->policyCommAmount = $res->amount;
+        $this->updatePolComSec = $id;
+    }
+
+    public function closeUpdatePolCom()
+    {
+        $this->updatePolComSec = null;
+    }
+
+    public function updateCommAmount()
+    {
+        $this->validate([
+            'policyCommAmount' => 'required|numeric',
+        ]);
+        $res = PolicyComm::find($this->updatePolComSec)->editAmount($this->policyCommAmount);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->updatePolComSec = null;
+            $this->alert('success', 'Commission updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function confirmDeletePolCom($id)
+    {
+        $this->deletePolComSec = $id;
+    }
+
+    public function dismissDeletePolCom()
+    {
+        $this->deletePolComSec = null;
+    }
+
+    public function deletePolicyComm()
+    {
+        $res = PolicyComm::find($this->deletePolComSec)->deleteCommission();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->deletePolComSec = null;
+            $this->alert('success', 'Commission deleted!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function generatePolicyCommission()
+    {
+        $res = $this->soldPolicy->generatePolicyCommissions();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Commissions generated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function addComm()
+    {
+        $this->validate([
+            'commTitle' => 'required|string|max:255',
+            'commPer' => 'required|numeric',
+            'commUser' => 'nullable|integer|exists:users,id',
+            'commNote' => 'nullable|string',
+        ]);
+
+        $res = $this->soldPolicy->addSalesCommission($this->commTitle, $this->commPer, $this->commUser, $this->newcommNote);
+        if ($res) {
+            $this->toggleAddComm();
+            $this->commTitle = null;
+            $this->commPer = null;
+            $this->commUser = null;
+            $this->newcommNote = null;
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Commission added!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function toggleAddComm()
+    {
+        $this->toggle($this->addCommSec);
+    }
+
+    public function showCommNote($id)
+    {
+        $n = SalesComm::find($id);
+        $this->commNote = $n->note;
+    }
+
+    public function hideCommComment()
+    {
+        $this->commNote = null;
+    }
+
+    public function setCommDoc($id)
+    {
+        $this->commDocId = $id;
+    }
+
+    public function updatedCommDoc()
+    {
+        $this->validate([
+            'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+        ]);
+
+        $url = $this->commDoc->store(SalesComm::FILES_DIRECTORY, 's3');
+
+        $res = SalesComm::find($this->commDocId)->setDocument($url);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'document added');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function downloadCommDoc($id)
+    {
+        $comm = SalesComm::find($id);
+        $fileContents = Storage::disk('s3')->get($comm->doc_url);
+        $extension = pathinfo($comm->doc_url, PATHINFO_EXTENSION);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number . '_sale_comm_document.' . $extension . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function ConfirmRemoveCommDoc($id)
+    {
+        $this->RemoveCommDocId = $id;
+    }
+
+    public function DissRemoveCommDoc($id)
+    {
+        $this->RemoveCommDocId = null;
+    }
+
+    public function removeCommDoc()
+    {
+        $res = SalesComm::find($this->RemoveCommDocId)->deleteDocument();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->RemoveCommDocId = null;
+            $this->alert('success', 'Commission updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setCommPaid($id)
+    {
+        $res =  SalesComm::find($id)->setAsPaid();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Commission updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setCommCancelled($id)
+    {
+        $res =  SalesComm::find($id)->setAsCancelled();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Commission updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function refreshCommAmmount($id)
+    {
+        $res =  SalesComm::find($id)->refreshAmount();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Commission updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
 
     public function toggleNoteSection()
     {
@@ -631,13 +981,15 @@ class SoldPolicyShow extends Component
         $COLUMNS = TaskAction::COLUMNS[TaskAction::TABLE_SOLD_POLICY];
         $FIELDSTITLES = TaskField::TITLES;
         $users = User::all();
+        $PYMT_TYPES = ClientPayment::PYMT_TYPES;
 
         return view('livewire.sold-policy-show', [
             'BENEFITS'      => $BENEFITS,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
             'COLUMNS'       => $COLUMNS,
             'FIELDSTITLES'  => $FIELDSTITLES,
-            "users"         =>  $users
+            "users"         =>  $users,
+            'PYMT_TYPES'    => $PYMT_TYPES
         ]);
     }
 }
