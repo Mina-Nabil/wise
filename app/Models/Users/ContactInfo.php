@@ -48,7 +48,7 @@ class ContactInfo extends Model
             $vcard->addPhoneNumber($this->home_number1, 'HOME');
 
         if ($this->home_number2)
-            $vcard->addLabel($this->home_number2, 'Hotline');
+            $vcard->addLabel("Hotline:  $this->home_number2");
 
         if ($this->work_number1)
             $vcard->addPhoneNumber($this->work_number1, 'WORK');
