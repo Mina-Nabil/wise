@@ -1,6 +1,10 @@
 <?php
 
 use App\Models\Insurance\Policy;
+use App\Models\Offers\Offer;
+use App\Models\Payments\CommProfile;
+use App\Models\Payments\CommProfileConf;
+use App\Models\Payments\Target;
 use App\Models\Users\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,26 +19,37 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sales_profile', function(Blueprint $table){
-            $table->foreignIdFor(User::class)->nullable()->constrained()->nullOnDelete();
-            $table->enum('type', ['sales_in', 'sales_out']);
-            $table->boolean('per_policy');
-        });
-        
-        Schema::create('sales_comm_conf', function (Blueprint $table) {
-            $table->foreignIdFor('sales_profile')->constrained()->cascadeOnDelete();
+        Schema::create('comm_profiles', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(User::class)->nullable()->constrained()->cascadeOnDelete();
+            $table->string('title');
+            $table->enum('type', CommProfile::TYPES);
+            $table->boolean('per_policy');
+            $table->text('desc')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('comm_profile_confs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(CommProfile::class)->constrained()->cascadeOnDelete();
             $table->double('percentage');
-            $table->enum('from', ['net_premium', 'net_commission']);
+            $table->enum('from', CommProfileConf::FROMS);
             $table->enum('line_of_business', Policy::LINES_OF_BUSINESS)->nullable();
             $table->nullableMorphs('condition');
-            
-
-            $table->timestamps();
         });
+
         Schema::create('targets', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignIdFor(CommProfile::class)->constrained()->cascadeOnDelete();
+            $table->enum('period', Target::PERIODS);
+            $table->double('amount');
+            $table->double('extra_percentage');
+        });
+
+        Schema::create('offer_comm_profiles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Offer::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(CommProfile::class)->constrained()->cascadeOnDelete();
         });
     }
 
