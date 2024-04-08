@@ -105,6 +105,33 @@ class SoldPolicyShow extends Component
     public $paymentDocId;
     public $paymentDoc;
     public $paymentNoteSec;
+    public $clientPaymentDateSec = false;
+    public $clientPaymentDate;
+
+    public function openPaymentDateSec()
+    {
+        $this->clientPaymentDateSec = true;
+        if ($this->clientPaymentDate) {
+            $this->clientPaymentDate = Carbon::parse($this->clientPaymentDate)->toDateString();
+        }
+    }
+
+    public function closePaymentDateSec()
+    {
+        $this->clientPaymentDate = $this->soldPolicy->client_payment_date;
+        $this->clientPaymentDateSec = false;
+    }
+
+    public function changePaymentDate()
+    {
+        $res = $this->soldPolicy->setClientPaymentDate(Carbon::parse($this->clientPaymentDate));
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'date updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
 
     public function showPaymentNote($id)
     {
@@ -968,6 +995,7 @@ class SoldPolicyShow extends Component
         $this->installements_count = $this->soldPolicy->installements_count;
         $this->payment_frequency = $this->soldPolicy->payment_frequency;
         $this->discount = $this->soldPolicy->discount;
+        $this->clientPaymentDate = $this->soldPolicy->client_payment_date ?? null;
         $this->actions[] = ['column_name' => '', 'value' => ''];
         $this->fields[] = ['title' => '', 'value' => ''];
         //watchers code
