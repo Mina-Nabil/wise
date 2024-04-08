@@ -5,6 +5,7 @@ use App\Models\Insurance\GrossCalculation;
 use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use App\Models\Payments\ClientPayment;
+use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\SalesComm;
 use App\Models\Users\User;
@@ -75,6 +76,7 @@ return new class extends Migration
             $table->foreignIdFor(SoldPolicy::class)->nullable();
             $table->string('title');
             $table->double('comm_percentage');
+            $table->enum('from', CommProfileConf::FROMS);
             $table->double('amount')->nullable();
             $table->enum('status', SalesComm::PYMT_STATES)->default(SalesComm::PYMT_STATE_NOT_CONFIRMED);
             $table->dateTime('payment_date')->nullable();

@@ -7,6 +7,7 @@ use App\Models\Corporates\Corporate;
 use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
 use App\Models\Insurance\PolicyBenefit;
+use App\Models\Payments\CommProfile;
 use App\Models\Payments\SalesComm;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -235,7 +236,42 @@ class Offer extends Model
         return $whatsapp_url . "?text=" . urlencode("Please find the offer comparison url: " . $exportFileUrl);
     }
 
-    public function addSalesCommission($title, $comm_percentage, $user_id = null, $note = null)
+    public function setCommProfiles(array $profiles_ids = [])
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updateCommission', $this)) return false;
+
+        try {
+            $this->comm_profiles()->sync($profiles_ids);
+            if ($this->selected_option_id)
+                $this->generateSalesCommissions();
+            $this->addComment("Changed commission profiles", false);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't Set commission profiles", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+
+    public function generateSalesCommissions()
+    {
+        if (!$this->is_approved) throw new Exception("Offer already approved");
+        if (!$this->selected_option_id) throw new Exception("No option selected");
+        $this->sales_comms()->delete();
+        $this->loadMissing('comm_profiles', 'selected_option');
+        foreach ($this->comm_profiles as $prof) {
+            $valid_conf = $prof->getValidCommissionConf($this->selected_option);
+            if (!$valid_conf) continue;
+            $prof->loadMissing('user');
+            $title = $prof->user ? $prof->user->username . " - " . $prof->type : $prof->title;
+            $this->addSalesCommission($title, $valid_conf->from, $valid_conf->percentage, $prof->user_id, "Added automatically using commission profile");
+        }
+    }
+
+    private function addSalesCommission($title, $from, $comm_percentage, $user_id = null, $note = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -244,8 +280,9 @@ class Offer extends Model
         try {
             if ($this->sales_comms()->create([
                 "title"             => $title,
-                "comm_percentage"   => $comm_percentage,
                 "user_id"           => $user_id,
+                "from"              => $from,
+                "comm_percentage"   => $comm_percentage,
                 "note"              => $note
             ])) {
                 AppLog::info("Offer commission added", loggable: $this);
@@ -625,11 +662,12 @@ class Offer extends Model
 
         $option = OfferOption::findOrFail($option_id);
         $option->status = $state;
-        $this->selected_option_id = $option_id;
         try {
             $option->save();
-            $this->save();
             if ($state == OfferOption::STATUS_CLNT_ACPT) {
+                $this->selected_option_id = $option_id;
+                $this->generateSalesCommissions();
+                $this->save();
                 $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
                 $this->addComment("Offer option accepted", false);
                 if (!$this->with_operations) {
@@ -687,6 +725,10 @@ class Offer extends Model
     {
         $this->loadMissing('assignee');
         return $this->assignee_type === User::TYPE_OPERATIONS || $this->assignee?->type == User::TYPE_OPERATIONS;
+    }
+    public function getIsApprovedAttribute()
+    {
+        return $this->status == self::STATUS_APPROVED;
     }
 
 
@@ -828,5 +870,10 @@ class Offer extends Model
     public function watchers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'offer_watchers');
+    }
+
+    public function comm_profiles(): BelongsToMany
+    {
+        return $this->belongsToMany(CommProfile::class, "offer_comm_profiles");
     }
 }

@@ -82,8 +82,11 @@ class CompanyCommPayment extends Model
         if (!$user->can('update', $this)) return false;
 
         try {
-            if ($this->doc_url)
+            if ($this->doc_url){
                 Storage::delete($this->doc_url);
+                $this->doc_url = null;
+                $this->save();
+            }
             AppLog::info("Deleting Comm Payment document", loggable: $this);
             return true;
         } catch (Exception $e) {

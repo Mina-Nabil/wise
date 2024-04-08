@@ -32,7 +32,7 @@ class SalesComm extends Model
     const FILES_DIRECTORY = 'sold_policies/sales_comm_docs/';
     protected $table = 'sales_comms';
     protected $fillable = [
-        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id'
+        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from'
     ];
 
     ///model functions
@@ -67,7 +67,17 @@ class SalesComm extends Model
 
         AppLog::info("Calculating Sales Comm amount", loggable: $this);
         $this->loadMissing('sold_policy');
-        $amount = ($this->comm_percentage / 100) * $this->sold_policy->gross_premium;
+        switch ($this->from) {
+            case CommProfileConf::FROM_NET_PREM:
+                $from_amount = $this->sold_policy->net_premium;
+                break;
+            case CommProfileConf::FROM_NET_COMM:
+                $this->sold_policy->calculateTotalPolicyComm();
+                $from_amount =  $this->sold_policy->total_policy_comm;
+                break;
+        }
+
+        $amount = ($this->comm_percentage / 100) * $from_amount;
         try {
             return $this->update([
                 "amount"            =>  $amount,
@@ -89,16 +99,15 @@ class SalesComm extends Model
         try {
             $date = $date ?? new Carbon();
             AppLog::error("Setting Sales Comm as paid", loggable: $this);
-            if($this->update([
+            if ($this->update([
                 "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
-            ])){
+            ])) {
                 $this->loadMissing('sold_policy');
                 $this->sold_policy->calculateTotalSalesCommPaid();
                 return true;
             }
-            
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
@@ -128,7 +137,11 @@ class SalesComm extends Model
 
     public function delete()
     {
-        return $this->setAsCancelled();
+        $this->loadMissing('offer');
+        if ($this->offer->is_approved) $this->setAsCancelled();
+        else {
+            return parent::delete();
+        }
     }
 
     public function setDocument($doc_url)
@@ -158,8 +171,11 @@ class SalesComm extends Model
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
         try {
-            if ($this->doc_url)
+            if ($this->doc_url) {
                 Storage::delete($this->doc_url);
+                $this->doc_url = null;
+                $this->save();
+            }
             AppLog::info("Deleting Sales Comm document", loggable: $this);
             return true;
         } catch (Exception $e) {

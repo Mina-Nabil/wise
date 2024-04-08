@@ -36,6 +36,7 @@ return new class extends Migration
             $table->enum('from', CommProfileConf::FROMS);
             $table->enum('line_of_business', Policy::LINES_OF_BUSINESS)->nullable();
             $table->nullableMorphs('condition');
+            $table->integer('order');
         });
 
         Schema::create('targets', function (Blueprint $table) {
@@ -44,6 +45,7 @@ return new class extends Migration
             $table->enum('period', Target::PERIODS);
             $table->double('amount');
             $table->double('extra_percentage');
+            $table->integer('order');
         });
 
         Schema::create('offer_comm_profiles', function (Blueprint $table) {

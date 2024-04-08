@@ -133,23 +133,25 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addSalesCommission($title, $comm_percentage, $user_id = null, $note = null)
+    public function addSalesCommission($title, $from, $comm_percentage, $user_id = null, $note = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updatePayments', $this)) return false;
 
         try {
-            if ($this->sales_comms()->create([
+            /** @var SalesComm */
+            $tmp = $this->sales_comms()->create([
                 "title"             => $title,
+                "from"              => $from,
                 "comm_percentage"   => $comm_percentage,
-                "amount"            => $this->gross_premium * $comm_percentage,
                 "user_id"           => $user_id,
                 "note"              => $note
-            ])) {
-                AppLog::info("Sales commission added", loggable: $this);
-                return true;
-            }
+            ]);
+            $tmp->refreshAmount();
+            AppLog::info("Sales commission added", loggable: $this);
+            return true;
+
             return false;
         } catch (Exception $e) {
             report($e);
