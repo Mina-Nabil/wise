@@ -709,6 +709,33 @@ class Offer extends Model
         return $query->orderBy('due');
     }
 
+    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null)
+    {
+        $query->userData();
+        $query->select('offers.*')
+        ->when($from, function ($q, $v) {
+            $q->where('created_at', ">=", $v->format('Y-m-d 00:00:00'));
+        })->when($to, function ($q, $v) {
+            $q->where('created_at', "<=", $v->format('Y-m-d 23:59:59'));
+        })->when(count($statuses) > 0, function ($q, $v) use ($statuses) {
+            $q->byStates($statuses);
+        })->when($creator_id, function ($q, $v) {
+            $q->where('creator_id', "=", $v);
+        })->when($assignee_id, function ($q, $v) {
+            $q->where('assignee_id', "=", $v);
+        })->when($closed_by_id, function ($q, $v) {
+            $q->where('closed_by_id', "=", $v);
+        })->when($value_from, function ($q, $v) {
+            $q->where('item_value', ">=", $v);
+        })->when($value_to, function ($q, $v) {
+            $q->where('item_value', "<=", $v);
+        })->when($line_of_business, function ($q, $v) {
+            $q->where('type', "<=", $v);
+        });
+        $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
+        return $query;
+    }
+
     public function scopeIsRenewal($query)
     {
         return $query->where('is_renewal', 1);

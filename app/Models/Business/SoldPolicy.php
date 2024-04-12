@@ -813,6 +813,51 @@ class SoldPolicy extends Model
         return $query->orderBy("sold_policies.start");
     }
 
+
+    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premuim_to = null, $net_premuim_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null)
+    {
+        $query->userData();
+        $query->select('sold_policies.*')
+            ->when($start_from, function ($q, $v) {
+                $q->where('start', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($start_to, function ($q, $v) {
+                $q->where('start', "<=", $v->format('Y-m-d 23:59:59'));
+            })->when($expiry_from, function ($q, $v) {
+                $q->where('expiry', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($expiry_to, function ($q, $v) {
+                $q->where('expiry', "<=", $v->format('Y-m-d 23:59:59'));
+            })->when($brand_ids, function ($q, $v) {
+                $q->join('customer_cars', 'customer_car_id', '=', 'customer_cars.id')
+                    ->join('cars', 'cars.id', '=', 'customer_cars.car_id')
+                    ->join('car_models', 'car_models.id', '=', 'cars.car_model_id')
+                    ->whereIn('brand_id', $v);
+            })->when($creator_id, function ($q, $v) {
+                $q->where('creator_id', "=", $v);
+            })->when($is_valid !== null, function ($q, $v) use ($is_valid) {
+                $q->where('is_valid', "=", $is_valid);
+            })->when($value_from, function ($q, $v) {
+                $q->where('insured_value', ">=", $v);
+            })->when($value_to, function ($q, $v) {
+                $q->where('insured_value', "<=", $v);
+            })->when($net_premuim_from, function ($q, $v) {
+                $q->where('net_premium', ">=", $v);
+            })->when($net_premuim_to, function ($q, $v) {
+                $q->where('net_premium', "<=", $v);
+            })->when($line_of_business || $company_ids || $policy_ids, function ($q) use ($line_of_business, $company_ids, $policy_ids) {
+                $q->join('policies', 'policies.id', '=', 'sold_policies.policy_id')
+                    ->when($line_of_business, function ($qq, $vv) {
+                        $qq->where('policies.type', $vv);
+                    })->when($company_ids, function ($qq, $vv) {
+                        $qq->whereIn('policies.company_id', $vv);
+                    })->when($policy_ids, function ($qq, $vv) {
+                        $qq->whereIn('policies.id', $vv);
+                    });
+            });
+        $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
+        return $query;
+    }
+
+
     public function scopeByPaid($query, $is_paid)
     {
         Log::info($is_paid);
