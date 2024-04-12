@@ -106,9 +106,9 @@ class CommProfile extends Model
         Policy|Company $condition = null, //include a policy or a company as a condition
         $line_of_business = null // or select a line of business as the condition - line of business is on of Policy::LINES_OF_BUSINESS
     ) {
-        assert($condition || $line_of_business, "Must include a condition or a line of business");
 
         assert(($condition && !$line_of_business) || (!$condition && $line_of_business), "Must include only a condition or a line of business");
+        
         try {
             AppLog::info("Creating comm profile configuration", loggable: $this);
             $order = $this->configurations()->count() + 1;
