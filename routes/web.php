@@ -62,6 +62,8 @@ Route::middleware('auth', 'active')->group(function () {
 
     Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
     Route::get('/offers/{id}', [OfferController::class, 'show'])->name('offers.show');
+    Route::get('/commissions', [OfferController::class, 'commissionsIndex'])->name('comm.profile.index');
+    Route::get('/commissions/{id}', [OfferController::class, 'commissionsShow'])->name('comm.profile.show');
 
     Route::get('/corporates', [CorporateController::class, 'index'])->name('corporates.index');
     Route::get('/corporates/{id}', [CorporateController::class, 'show'])->name('corporates.show');
@@ -85,12 +87,12 @@ Route::post('/login', [HomeController::class, 'authenticate']);
 Route::get('/login', [HomeController::class, 'login'])->name('login');
 Route::get('/logout', [HomeController::class, 'logout'])->name('logout');
 
-Route::get('/contact/{id}', function($id){
+Route::get('/contact/{id}', function ($id) {
     $contact = ContactInfo::findOrFail($id);
     return $contact->downloadvCard();
 });
 
-Route::get('/contact/generate/{id}', function($id){
+Route::get('/contact/generate/{id}', function ($id) {
     $contact = ContactInfo::findOrFail($id);
     return $contact->generateQRCode();
 });
