@@ -44,7 +44,7 @@ class CommProfile extends Model
         assert($user_id !== null || $title != null, "Must include a title or select a user");
         try {
             $formattedTitle = $title;
-            if ($user_id & !$formattedTitle) {
+            if ($user_id) {
                 $user = User::findOrFail($user_id);
                 $formattedTitle = "$user->username's $type";
             }
