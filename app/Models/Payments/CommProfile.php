@@ -30,7 +30,7 @@ class CommProfile extends Model
     ];
 
     protected $fillable = [
-        'title', 'type', 'per_policy', 'desc'
+        'title', 'type', 'per_policy', 'desc', 'user_id'
     ];
 
     ///static functions
