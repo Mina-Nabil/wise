@@ -211,6 +211,14 @@
                     @if (Auth::user()->is_admin)
                         <li class="sidebar-menu-title">Settings</li>
                         <li>
+                            <a href="{{ url('/commissions') }}" class="navItem @yield('commissions')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="flowbite:sale-percent-outline"></iconify-icon>
+                                    <span>Commissions</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
                                 <span class="flex items-center">
                                     <iconify-icon class="nav-icon"

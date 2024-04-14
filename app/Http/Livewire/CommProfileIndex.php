@@ -21,6 +21,10 @@ class CommProfileIndex extends Component
     public $newTitle;
     public $newDesc;
 
+    public function redirectToShowPage($id){
+        redirect(route('comm.profile.show',$id));
+    }
+
     public function addComm()
     {
         if ($this->newUserId) {
