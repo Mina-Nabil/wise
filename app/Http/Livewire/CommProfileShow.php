@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Payments\CommProfile;
 use App\Models\Users\User;
 use App\Models\Payments\CommProfileConf;
+use App\Models\Payments\Target;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
 use Livewire\WithPagination;
@@ -14,6 +15,7 @@ use App\Traits\ToggleSectionLivewire;
 
 class CommProfileShow extends Component
 {
+    use AlertFrontEnd ,ToggleSectionLivewire;
     public $profile;
 
     public $updatedCommSec = false;
@@ -38,6 +40,115 @@ class CommProfileShow extends Component
 
     public $deleteConfId;
     public $editConfId;
+
+    public $newTargetSec;
+    public $period;
+    public $amount;
+    public $extra_percentage;
+    public $deleteTargetId;
+    public $editTargetId;
+
+    public function closeNewTargetSection(){
+        $this->newTargetSec = false;
+    }
+
+    public function openNewTargetSection(){
+        $this->newTargetSec = true;
+    }
+
+    public function editThisTarget($id){
+        $this->editTargetId = $id;
+        $t = Target::find($id);
+        $this->period = $t->period;
+        $this->amount = $t->amount;
+        $this->extra_percentage = $t->extra_percentage;
+    }
+
+    public function closeEditTargetSection(){
+        $this->editTargetId = null;
+        $this->period = null;
+        $this->amount = null;
+        $this->extra_percentage = null;
+    }
+
+    public function editarget(){
+
+        $this->validate([
+            'period' => 'required|in:' . implode(',', Target::PERIODS),
+            'amount' => 'required|numeric',
+            'extra_percentage' => 'required|numeric',
+        ]);
+
+        $res = Target::find($this->editTargetId)->editInfo($this->period,$this->amount,$this->extra_percentage);
+        if ($res) {
+            $this->closeEditTargetSection();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'target updated!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function dismissDeleteTarget(){
+        $this->deleteTargetId = null;
+    }
+
+    public function confirmDeleteTarget($id){
+        $this->deleteTargetId = $id;
+    }
+
+
+    public function deleteTarget() {
+        $res = Target::find($this->deleteTargetId)->deleteTarget();
+        if ($res) {
+            $this->dismissDeleteTarget();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'target deleted!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function addTarget(){
+        $this->validate([
+            'period' => 'required|in:' . implode(',', Target::PERIODS),
+            'amount' => 'required|numeric',
+            'extra_percentage' => 'required|numeric',
+        ]);
+        
+        $res = $this->profile->addTarget($this->period,$this->amount,$this->extra_percentage);
+
+        if ($res) {
+            $this->closeNewTargetSection();
+            $this->period = null;
+            $this->amount = null;
+            $this->extra_percentage = null;
+            $this->mount($this->profile->id);
+            $this->alert('success', 'target added!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function targetMoveup($id)  {
+        $res = Target::find($id)->moveUp();
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->alert('success', 'target moved!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function targetMovedown($id)  {
+        $res = Target::find($id)->moveDown();
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->alert('success', 'target moved!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
 
     public function editThisConf($id)
     {
@@ -232,11 +343,13 @@ class CommProfileShow extends Component
         $FROMS = CommProfileConf::FROMS;
         $users = User::all();
         $LOBs = Policy::LINES_OF_BUSINESS;
+        $PERIODS = Target::PERIODS;
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
             'FROMS' => $FROMS,
-            'LOBs' => $LOBs
+            'LOBs' => $LOBs,
+            'PERIODS' => $PERIODS
         ]);
     }
 }
