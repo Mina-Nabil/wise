@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use App\models\Business\SoldPolicy;
+use App\Models\Payments\CommProfile;
 use App\Models\Payments\SalesComm;
 
 class OfferShow extends Component
@@ -145,6 +146,41 @@ class OfferShow extends Component
     public $carPrice;
     public $selectedCarPriceArray;
     public $item;
+
+    public $commSearch;
+    public $profilesRes;
+
+    public function updatedCommSearch() {
+        if (!empty($this->commSearch)) {
+            // Perform the query using a scope or direct query
+            $this->profilesRes = CommProfile::searchBy($this->commSearch)->take(5)->get();
+        } else {
+            // Return an empty collection if the search term is empty
+            $this->profilesRes = collect(); // This creates an empty Laravel collection
+        }
+    }
+
+    public function addCommProfile($id) {
+        $res = $this->offer->addCommProfile($id);
+        if ($res) {
+            $this->addCommSec = false;
+            $this->profilesRes = collect();
+            $this->mount($this->offer->id);
+            $this->alert('success', 'Commission added!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function removeCommProfile($id) {
+        $res = $this->offer->removeCommProfile($id);
+        if ($res) {
+            $this->mount($this->offer->id);
+            $this->alert('success', 'Commission added!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
 
     public function addComm()
     {
@@ -943,6 +979,8 @@ class OfferShow extends Component
 
         $this->dueDate = Carbon::parse($this->offer->due)->toDateString();
         $this->dueTime = Carbon::parse($this->offer->due)->toTimeString();
+
+        $this->profilesRes = collect();
 
         //watchers code
         $this->watchersList = $this->offer->watcher_ids;

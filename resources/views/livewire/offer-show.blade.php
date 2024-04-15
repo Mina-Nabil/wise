@@ -47,7 +47,8 @@
                                         <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
                                     </span>
                                 </button>
-                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                <ul
+                                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                     @foreach ($STATUSES as $status)
                                         @if (!($status === $offer->status))
@@ -148,10 +149,12 @@
                                                 <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                 </button>
-                                                <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                <ul
+                                                    class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                             shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                     <li>
-                                                        <button wire:click="toggleEditItem" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                        <button wire:click="toggleEditItem"
+                                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white">
                                                             Edit</button>
                                                     </li>
@@ -252,7 +255,8 @@
 
                                                             </td>
                                                             <td class="table-td ">
-                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['cond']['id'] }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars" class="text-primary-600"></iconify-icon>&nbsp;
+                                                                <button wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['cond']['id'] }})" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon icon="bi:stars"
+                                                                        class="text-primary-600"></iconify-icon>&nbsp;
                                                                     Generate Option</button>
                                                             </td>
                                                         </tr>
@@ -357,7 +361,8 @@
                                                         <ul class=" dropdown-menu min-w-[184px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                             @foreach ($optionStatuses as $oStatus)
                                                                 <li>
-                                                                    <button wire:click="changeOptionState({{ $option->id }},'{{ $oStatus }}')" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                    <button wire:click="changeOptionState({{ $option->id }},'{{ $oStatus }}')"
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
                                                                         Set as
                                                                         {{ ucwords(str_replace('_', ' ', $oStatus)) }}</button>
                                                                 </li>
@@ -368,7 +373,8 @@
                                                                     Add Field</button>
                                                             </li>
                                                             <li>
-                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                                                                <label for="myFile" wire:click="uploadDocOptionId({{ $option->id }})"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                                                                     Add Doc
                                                                 </label>
                                                                 <input type="file" id="myFile" name="filename" style="display: none;" wire:model="uploadedOptionFile">
@@ -810,7 +816,7 @@
                         <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                             <div class="flex-1">
                                 <div class="card-title text-slate-900 dark:text-white">
-                                    <h6>Sales commission</h6>
+                                    <h6>Commissions</h6>
                                 </div>
                             </div>
                             <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
@@ -819,7 +825,7 @@
 
                         <div class="card-body">
                             <ul class="divide-y divide-slate-100 dark:divide-slate-700">
-                                @if ($offer->sales_comms->isEmpty())
+                                @if ($offer->comm_profiles->isEmpty())
                                     <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
                                         No commission added to this offers
                                     </div>
@@ -829,53 +835,39 @@
                                             <tr>
 
                                                 <th scope="col" class=" table-th ">
-                                                    user
+                                                    Title
                                                 </th>
 
 
                                                 <th scope="col" class=" table-th ">
-                                                    Percentage
+                                                    Type
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
-                                                    Status
+                                                    Actions
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                            @foreach ($offer->sales_comms as $comm)
+                                            @foreach ($offer->comm_profiles as $profile)
                                                 <tr>
                                                     <td class="table-td ">
-
-                                                        <div class="min-w-[170px]">
+                                                       <a href="{{ route('comm.profile.show',$profile->id) }}">
+                                                        <div class="min-w-[170px] hover:underline cursor-pointer">
                                                             <span class="text-slate-500 dark:text-slate-400">
-                                                                <span class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
+                                                                <span class="block text-slate-600 dark:text-slate-300">{{ $profile->title }}</span>
                                                                 <span class="block text-slate-500 text-xs">
-                                                                    {{-- {{ $comm->sales->username }}aaa --}}aaaa</span>
+                                                                    {{ $profile->user?->username }}
+                                                                </span>
                                                             </span>
                                                         </div>
+                                                        </a>
                                                     </td>
 
-                                                    <td class="table-td ">
-                                                        <span class=" text-success-500 text-lg">
-                                                            {{ $comm->comm_percentage }}%
-                                                        </span>
-
-                                                        @if (str_contains($comm->status, 'not_confirmed'))
-                                                            <span class="badge bg-warning-500 text-white h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @elseif(str_contains($comm->status, 'cancelled'))
-                                                            <span class="badge bg-danger-500 text-white h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
-                                                            <span class="badge bg-success-500 text-white h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @endif
-                                                    </td>
+                                                    <th scope="col" class=" table-th ">
+                                                        {{ ucwords(str_replace('_', ' ', $profile->type)) }}
+                                                    </th>
 
                                                     <td class="table-td flex justify-between">
 
@@ -886,10 +878,12 @@
                                                                     <button class="text-xl text-center block w-full " type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                                         <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                     </button>
-                                                                    <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                                    <ul
+                                                                        class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                                     shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                         <li>
-                                                                            <a wire:click="deleteThisComm({{ $comm->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                            <a wire:click="removeCommProfile({{ $profile->id }})"
+                                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                             dark:hover:text-white">
                                                                                 Delete</a>
                                                                         </li>
@@ -900,10 +894,6 @@
                                                     </td>
 
 
-                                                </tr>
-                                                <tr style="border: 0">
-                                                    <td class="table-td text-wrap pt-0" style="padding-top: 0; margin-bottom:5px;" colspan="3"><b>Note:</b>
-                                                        {{ $comm->note }}</td>
                                                 </tr>
                                             @endforeach
 
@@ -981,15 +971,18 @@
                                                                     <button class="text-xl text-center block w-full " type="button" id="transactionDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                                                                         <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                     </button>
-                                                                    <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                                    <ul
+                                                                        class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                                     shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                         <li>
-                                                                            <a wire:click="editThisDicount({{ $discount->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                            <a wire:click="editThisDicount({{ $discount->id }})"
+                                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                             dark:hover:text-white">
                                                                                 Edit</a>
                                                                         </li>
                                                                         <li>
-                                                                            <a wire:click="deleteThisDiscount({{ $discount->id }})" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                            <a wire:click="deleteThisDiscount({{ $discount->id }})"
+                                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                             dark:hover:text-white">
                                                                                 Delete</a>
                                                                         </li>
@@ -1106,7 +1099,8 @@
                                 Delete Commission
                             </h3>
                             <button wire:click="dismissDeleteComm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                        dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                        dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -1367,7 +1361,7 @@
                         <!-- Modal header -->
                         <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Add Sales Commission
+                                Add Commission
                             </h3>
                             <button wire:click="toggleAddComm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -1381,48 +1375,49 @@
                         <div class="p-6 space-y-4">
 
                             <div class="from-group">
-                                <label for="commTitle" class="form-label">Title</label>
-                                <input type="text" name="commTitle" class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror" wire:model.defer="commTitle">
-                                @error('commTitle')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                                <label for="commSearch" class="form-label">Search</label>
+                                <input type="text" placeholder="Search..." name="commSearch" class="form-control mt-2 w-full @error('commSearch') !border-danger-500 @enderror" wire:model="commSearch">
                             </div>
 
-                            <div class="from-group">
-                                <label for="commPer" class="form-label">Percentage</label>
-                                <input type="number" min="0" max="100" name="commPer" class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror" wire:model.defer="commPer">
-                                @error('commPer')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class="bg-slate-200 dark:bg-slate-700">
+                                    <tr>
 
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Sales Person</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="commUser">
-                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                        Select user</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ $user->first_name . ' ' . $user->last_name }}
-                                        </option>
+                                        <th scope="col" class=" table-th ">
+                                            Title
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Type
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            User
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                    @foreach ($profilesRes as $profileRes)
+                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                        <td class="table-td">{{ $profileRes->title }}</td>
+                                        <td class="table-td">{{ ucwords(str_replace('_', ' ', $profileRes->type)) }}</td>
+                                        <td class="table-td">{{ $profileRes->user?->username}}</td>
+                                        <td class="table-td"><button class="btn inline-flex justify-center btn-success light btn-sm" wire:click="addCommProfile({{ $profileRes->id }})">Add</button></td>
+                                    </tr>
                                     @endforeach
-                                </select>
-                            </div>
-
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Note</label>
-                                <textarea class="form-control mt-2 w-full @error('commNote') !border-danger-500 @enderror" wire:model.defer="commNote"></textarea>
-                                @error('commNote')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
                         <!-- Modal footer -->
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                        {{-- <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="addComm" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -1749,7 +1744,8 @@
                                     <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
                                         <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                                             <input type="checkbox" checked class="sr-only peer" wire:model="optionIsRenewal">
-                                            <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            <div
+                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
                                             <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
                                             <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
@@ -1786,7 +1782,8 @@
                                                     @endif
                                                 </span>
                                             </span>
-                                            <span class="file-name flex-none cursor-pointer border-l px-4 border-slate-200 dark:border-slate-700 h-full inline-flex items-center bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm rounded-tr rounded-br font-normal">Browse</span>
+                                            <span
+                                                class="file-name flex-none cursor-pointer border-l px-4 border-slate-200 dark:border-slate-700 h-full inline-flex items-center bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm rounded-tr rounded-br font-normal">Browse</span>
                                         </span>
                                     </label>
                                     @error('files')
@@ -2073,7 +2070,8 @@
                                     <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
                                         <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                                             <input type="checkbox" checked class="sr-only peer" wire:model="optionIsRenewal">
-                                            <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                            <div
+                                                class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
                                             <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">On</span>
                                             <span class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">Off</span>
@@ -2156,7 +2154,8 @@
                                 Delete Discount
                             </h3>
                             <button wire:click="dismissDeleteDiscount" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2192,7 +2191,8 @@
                                 Delete Option
                             </h3>
                             <button wire:click="dismissDeleteOption" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2228,7 +2228,8 @@
                                 Delete Offer
                             </h3>
                             <button wire:click="dismissDeleteOffer" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
