@@ -66,8 +66,8 @@ class CommProfile extends Model
     }
 
     ///model functions
-    public function generateCommissionFromTargets(){
-
+    public function generateCommissionFromTargets()
+    {
     }
 
     public function getValidCommissionConf(OfferOption $option): CommProfileConf|false
@@ -112,7 +112,7 @@ class CommProfile extends Model
     ) {
 
         assert(($condition && !$line_of_business) || (!$condition && $line_of_business), "Must include only a condition or a line of business");
-        
+
         try {
             AppLog::info("Creating comm profile configuration", loggable: $this);
             $order = $this->configurations()->count() + 1;
@@ -154,6 +154,12 @@ class CommProfile extends Model
             AppLog::error("Can't create comm profile target", desc: $e->getMessage());
             return false;
         }
+    }
+
+    ///scopes
+    public function scopeSearchBy($query, $text)
+    {
+        return $query->where('title', 'LIKE', "%$text%");
     }
 
     ///relations
