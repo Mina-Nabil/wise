@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use PhpParser\Node\Expr\FuncCall;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 
 class SoldPolicyShow extends Component
 {
@@ -109,6 +110,9 @@ class SoldPolicyShow extends Component
     public $paymentNoteSec;
     public $clientPaymentDateSec = false;
     public $clientPaymentDate;
+
+    public $client_payment_date;
+    public $setPaidSec;
 
     public function openPaymentDateSec()
     {
@@ -573,10 +577,25 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function openSetPaidSec()
+    {
+        $this->setPaidSec = true;
+    }
+
+    public function closeSetPaidSec()
+    {
+        $this->setPaidSec = false;
+        $this->client_payment_date = null;
+    }
+
     public function setPaid()
     {
-        $res = $this->soldPolicy->setPaid(1);
+        $this->validate([
+            'client_payment_date' => 'required|date'
+        ]);
+        $res = $this->soldPolicy->setPaid(1, Carbon::parse($this->client_payment_date));
         if ($res) {
+            $this->closeSetPaidSec();
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'paid info updated');
         } else {
@@ -586,7 +605,7 @@ class SoldPolicyShow extends Component
 
     public function setUnpaid()
     {
-        $res = $this->soldPolicy->setPaid(0);
+        $res = $this->soldPolicy->setNotPaid();
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'paid info updated');
