@@ -114,6 +114,16 @@ class SoldPolicyShow extends Component
     public $client_payment_date;
     public $setPaidSec;
 
+    public $section = 'profile';
+
+    protected $queryString = ['section'];
+
+    public function changeSection($section)
+    {
+        $this->section = $section;
+        $this->mount($this->soldPolicy->id);
+    }
+
     public function openPaymentDateSec()
     {
         $this->clientPaymentDateSec = true;
