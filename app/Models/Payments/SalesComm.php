@@ -209,7 +209,7 @@ class SalesComm extends Model
     }
     public function sales(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
     public function offer(): BelongsTo
     {

@@ -14,6 +14,7 @@ use App\Models\Tasks\TaskField;
 use App\Models\Users\User;
 use App\Models\Payments\SalesComm;
 use App\Models\Payments\ClientPayment;
+use App\Models\Payments\CommProfileConf;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
@@ -85,6 +86,7 @@ class SoldPolicyShow extends Component
     //sales comm
     public $addCommSec = false;
     public $commTitle;
+    public $commFrom;
     public $commUser;
     public $commPer;
     public $newcommNote;
@@ -320,19 +322,21 @@ class SoldPolicyShow extends Component
     public function addComm()
     {
         $this->validate([
-            'commTitle' => 'required|string|max:255',
-            'commPer' => 'required|numeric',
-            'commUser' => 'nullable|integer|exists:users,id',
-            'commNote' => 'nullable|string',
+            'commTitle'  => 'required|string|max:255',
+            'commPer'    => 'required|numeric',
+            'commUser'   => 'nullable|integer|exists:users,id',
+            'commNote'   => 'nullable|string',
+            'commFrom'   => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
 
-        $res = $this->soldPolicy->addSalesCommission($this->commTitle, $this->commPer, $this->commUser, $this->newcommNote);
+        $res = $this->soldPolicy->addSalesCommission($this->commTitle, $this->commFrom, $this->commPer, $this->commUser, $this->newcommNote);
         if ($res) {
             $this->toggleAddComm();
             $this->commTitle = null;
             $this->commPer = null;
             $this->commUser = null;
             $this->newcommNote = null;
+            $this->commFrom = null;
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'Commission added!');
         } else {
@@ -1010,6 +1014,7 @@ class SoldPolicyShow extends Component
         $FIELDSTITLES = TaskField::TITLES;
         $users = User::all();
         $PYMT_TYPES = ClientPayment::PYMT_TYPES;
+        $FROMS = CommProfileConf::FROMS;
 
         return view('livewire.sold-policy-show', [
             'BENEFITS'      => $BENEFITS,
@@ -1017,7 +1022,8 @@ class SoldPolicyShow extends Component
             'COLUMNS'       => $COLUMNS,
             'FIELDSTITLES'  => $FIELDSTITLES,
             "users"         =>  $users,
-            'PYMT_TYPES'    => $PYMT_TYPES
+            'PYMT_TYPES'    => $PYMT_TYPES,
+            'FROMS'         => $FROMS
         ]);
     }
 }

@@ -895,6 +895,10 @@
                                             </th>
 
                                             <th scope="col" class=" table-th ">
+                                                From
+                                            </th>
+
+                                            <th scope="col" class=" table-th ">
                                                 Payment Date
                                             </th>
 
@@ -923,7 +927,7 @@
                                                         <span class="text-slate-500 dark:text-slate-400">
                                                             <span class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
                                                             <span class="block text-slate-500 text-xs">
-                                                                {{-- {{ $comm->sales->username }} --}}Michael
+                                                                {{ $comm->sales->first_name }} {{ $comm->sales->last_name }}
                                                             </span>
                                                         </span>
                                                     </div>
@@ -933,6 +937,10 @@
                                                     <div class="text-lg text-success-500">
                                                         {{ number_format($comm->amount, 0, '.', ',') }} EGP
                                                     </div>
+                                                </td>
+
+                                                <td class="table-td ">
+                                                    {{ ucwords(str_replace('_', ' ', $comm->from)) }}
                                                 </td>
 
                                                 <td class="table-td ">{{ $comm->payment_date ? \Carbon\Carbon::parse($comm->payment_date)->format('D d/m/Y') : 'Not set.' }}</td>
@@ -968,7 +976,7 @@
 
                                                 <td class="table-td ">
                                                     <div class="dropstart relative">
-                                                        <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                             <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                         </button>
                                                         <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
@@ -2113,6 +2121,19 @@
                                 @error('commTitle')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+                            </div>
+
+                            <div class="from-group">
+                                <label for="commFrom" class="form-label">From</label>
+                                <select name="commFrom" id="commFrom" class="form-control w-full mt-2" wire:model="commFrom">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" value="">
+                                        Select option</option>
+                                    @foreach ($FROMS as $FROM)
+                                        <option value="{{ $FROM }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ ucwords(str_replace('_', ' ', $FROM)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="from-group">
