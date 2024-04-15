@@ -256,6 +256,44 @@ class Offer extends Model
     }
 
 
+    public function addCommProfile(int $profile_id)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updateCommission', $this)) return false;
+
+        try {
+            $this->comm_profiles()->syncWithoutDetaching([$profile_id]);
+            if ($this->selected_option_id)
+                $this->generateSalesCommissions();
+            $this->addComment("Added commission profiles", false);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add commission profiles", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+    public function removeCommProfile(int $profile_id)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updateCommission', $this)) return false;
+
+        try {
+            $this->comm_profiles()->detach([$profile_id]);
+            if ($this->selected_option_id)
+                $this->generateSalesCommissions();
+            $this->addComment("Removed commission profiles", false);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't remove commission profiles", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
     public function generateSalesCommissions()
     {
         if (!$this->is_approved) throw new Exception("Offer already approved");
