@@ -5,6 +5,7 @@ use App\Models\Insurance\GrossCalculation;
 use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use App\Models\Payments\ClientPayment;
+use App\Models\Payments\CommProfile;
 use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\SalesComm;
@@ -71,7 +72,7 @@ return new class extends Migration
 
         Schema::create('sales_comms', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->nullable();
+            $table->foreignIdFor(CommProfile::class);
             $table->foreignIdFor(Offer::class)->nullable();
             $table->foreignIdFor(SoldPolicy::class)->nullable();
             $table->string('title');

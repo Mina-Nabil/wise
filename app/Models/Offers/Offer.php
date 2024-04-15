@@ -267,11 +267,11 @@ class Offer extends Model
             if (!$valid_conf) continue;
             $prof->loadMissing('user');
             $title = $prof->user ? $prof->user->username . " - " . $prof->type : $prof->title;
-            $this->addSalesCommission($title, $valid_conf->from, $valid_conf->percentage, $prof->user_id, "Added automatically using commission profile");
+            $this->addSalesCommission($title, $valid_conf->from, $valid_conf->percentage, $prof->id, "Added automatically using commission profile");
         }
     }
 
-    private function addSalesCommission($title, $from, $comm_percentage, $user_id = null, $note = null)
+    private function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -280,7 +280,7 @@ class Offer extends Model
         try {
             if ($this->sales_comms()->create([
                 "title"             => $title,
-                "user_id"           => $user_id,
+                "comm_profile_id"           => $comm_profile_id,
                 "from"              => $from,
                 "comm_percentage"   => $comm_percentage,
                 "note"              => $note

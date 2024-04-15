@@ -133,7 +133,7 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addSalesCommission($title, $from, $comm_percentage, $user_id = null, $note = null)
+    public function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -145,7 +145,7 @@ class SoldPolicy extends Model
                 "title"             => $title,
                 "from"              => $from,
                 "comm_percentage"   => $comm_percentage,
-                "user_id"           => $user_id,
+                "comm_profile_id"   => $comm_profile_id,
                 "note"              => $note
             ]);
             $tmp->refreshAmount();

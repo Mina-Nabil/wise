@@ -30,7 +30,7 @@ class CommProfile extends Model
     ];
 
     protected $fillable = [
-        'title', 'type', 'per_policy', 'desc', 'user_id'
+        'title', 'type', 'per_policy', 'desc', 'comm_profile_id'
     ];
 
     ///static functions
@@ -66,6 +66,10 @@ class CommProfile extends Model
     }
 
     ///model functions
+    public function generateCommissionFromTargets(){
+
+    }
+
     public function getValidCommissionConf(OfferOption $option): CommProfileConf|false
     {
         $option->loadMissing('policy');
@@ -156,6 +160,11 @@ class CommProfile extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function sales_comm(): HasMany
+    {
+        return $this->hasMany(SalesComm::class);
     }
 
     public function configurations(): HasMany
