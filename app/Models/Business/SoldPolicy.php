@@ -384,6 +384,27 @@ class SoldPolicy extends Model
         }
     }
 
+    public function setNotPaid()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updatePayments', $this)) return false;
+
+        try {
+            $this->update([
+                'is_paid' => 0,
+                "client_payment_date"   =>  null
+            ]);
+
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't update is_paid", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+
     public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, $discount)
     {
         /** @var User */
