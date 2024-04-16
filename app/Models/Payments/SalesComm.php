@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Storage;
 
 class SalesComm extends Model
 {
+    const MORPH_TYPE = 'sales_comm';
+
     use HasFactory;
     const PYMT_STATE_NOT_CONFIRMED        = 'not_confirmed';
     const PYMT_STATE_CONFIRMED  = 'confirmed';

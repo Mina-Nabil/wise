@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ClientPayment extends Model
 {
+    const MORPH_TYPE = 'client_payment';
     use HasFactory;
 
     const FILES_DIRECTORY = 'sold_policies/client_pymt_docs/';

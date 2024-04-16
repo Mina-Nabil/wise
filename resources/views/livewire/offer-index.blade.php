@@ -309,7 +309,7 @@
                                         @if ($owner)
                                             {{ $selectedClientName }}
                                         @else
-                                            <input placeholder="Serach..." type="text" class="form-control"
+                                            <input placeholder="Search..." type="text" class="form-control"
                                                 wire:model="searchClient">
                                         @endif
 

@@ -23,7 +23,9 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
@@ -156,10 +158,10 @@ class Offer extends Model
         }
         foreach ($this->sales_comms()->new()->get() as $commaya) {
             $commaya->update([
-                'state'     =>  SalesComm::PYMT_STATE_CONFIRMED,
-                "amount"            =>  $commaya->comm_percentage * $gross_premium,
+                'status'     =>  SalesComm::PYMT_STATE_CONFIRMED,
                 "sold_policy_id"    =>  $soldPolicy->id
             ]);
+            $commaya->refreshAmount();
         }
         return $soldPolicy;
     }
@@ -263,7 +265,7 @@ class Offer extends Model
         if (!$loggedInUser->can('updateCommission', $this)) return false;
 
         try {
-            $this->comm_profiles()->syncWithoutDetaching([$profile_id]);
+            $this->comm_profiles()->attach($profile_id);
             if ($this->selected_option_id)
                 $this->generateSalesCommissions();
             $this->addComment("Added commission profiles", false);
@@ -296,12 +298,14 @@ class Offer extends Model
 
     public function generateSalesCommissions()
     {
-        if (!$this->is_approved) throw new Exception("Offer already approved");
+        if ($this->is_approved) throw new Exception("Offer already approved");
         if (!$this->selected_option_id) throw new Exception("No option selected");
         $this->sales_comms()->delete();
-        $this->loadMissing('comm_profiles', 'selected_option');
+        $this->load('comm_profiles', 'selected_option');
         foreach ($this->comm_profiles as $prof) {
+            Log::info("Checking " . $prof->title);
             $valid_conf = $prof->getValidCommissionConf($this->selected_option);
+            Log::info("Conf found: " . $valid_conf);
             if (!$valid_conf) continue;
             $prof->loadMissing('user');
             $title = $prof->user ? $prof->user->username . " - " . $prof->type : $prof->title;
@@ -314,7 +318,8 @@ class Offer extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateCommission', $this)) return false;
-
+        Log::info("Gai 22ad " . $title);
+        Log::info("Gai id " . $comm_profile_id);
         try {
             if ($this->sales_comms()->create([
                 "title"             => $title,
@@ -764,9 +769,15 @@ class Offer extends Model
         $this->loadMissing('assignee');
         return $this->assignee_type === User::TYPE_OPERATIONS || $this->assignee?->type == User::TYPE_OPERATIONS;
     }
+
     public function getIsApprovedAttribute()
     {
-        return $this->status == self::STATUS_APPROVED;
+        return $this->status === self::STATUS_APPROVED;
+    }
+
+    public function getSoldPolicyIdAttribute()
+    {
+        return DB::table('sold_policies')->where('offer_id', $this->id)->first()?->id;
     }
 
 

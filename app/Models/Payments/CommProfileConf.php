@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 
 class CommProfileConf extends Model
 {
+    const MORPH_TYPE = 'comm_profile_conf';
+
     use HasFactory;
 
     const FROM_NET_PREM = 'net_premium';
@@ -143,6 +145,21 @@ class CommProfileConf extends Model
         }
     }
 
+    ///attributes
+    public function getConditionTitleAttribute(){
+        if($this->line_of_business === null && $this->condition_type == null) return 'Default';
+
+        if($this->line_of_business) return ucwords(str_replace('_', ' ', $this->line_of_business));
+
+        $this->loadMissing('condition');
+
+        if($this->condition_type == Policy::MORPH_TYPE){
+            $this->loadMissing('condition.policy');
+            return $this->condition->company->name  . " - " . $this->condition->name;
+        } else {
+            return $this->condition->name ;
+        }
+    }
 
     ///relations
     public function comm_profile(): BelongsTo

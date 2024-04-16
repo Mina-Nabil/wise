@@ -332,7 +332,7 @@
                                     @if ($clientStatus)
                                         {{ $selectedClientName }}
                                     @else
-                                        <input placeholder="Serach..." type="text" class="form-control"
+                                        <input placeholder="Search..." type="text" class="form-control"
                                             wire:model="searchClient">
                                     @endif
 
@@ -378,7 +378,7 @@
                                 @if ($policyStatus)
                                     {{ $selectedPolicyName }}
                                 @else
-                                    <input placeholder="Serach..." type="text" class="form-control"
+                                    <input placeholder="Search..." type="text" class="form-control"
                                         wire:model="searchPolicy">
                                 @endif
                             </div>

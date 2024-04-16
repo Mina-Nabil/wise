@@ -176,7 +176,7 @@ class OfferShow extends Component
         $res = $this->offer->removeCommProfile($id);
         if ($res) {
             $this->mount($this->offer->id);
-            $this->alert('success', 'Commission added!');
+            $this->alert('success', 'Commission removed!');
         } else {
             $this->alert('failed', 'Server error');
         }

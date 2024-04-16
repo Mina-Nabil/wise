@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CommProfile extends Model
 {
+    const MORPH_TYPE = 'comm_profile';
     use HasFactory;
 
     const TYPE_SALES_IN = 'sales_in';
@@ -30,7 +31,7 @@ class CommProfile extends Model
     ];
 
     protected $fillable = [
-        'title', 'type', 'per_policy', 'desc', 'comm_profile_id'
+        'title', 'type', 'per_policy', 'desc', 'comm_profile_id', 'user_id'
     ];
 
     ///static functions
@@ -111,7 +112,10 @@ class CommProfile extends Model
         $line_of_business = null // or select a line of business as the condition - line of business is on of Policy::LINES_OF_BUSINESS
     ) {
 
-        assert(($condition && !$line_of_business) || (!$condition && $line_of_business), "Must include only a condition or a line of business");
+        assert(
+            (!$condition && !$line_of_business) ||
+            ($condition && !$line_of_business) || 
+            (!$condition && $line_of_business), "Must either a condition or a line of business or both empty");
 
         try {
             AppLog::info("Creating comm profile configuration", loggable: $this);

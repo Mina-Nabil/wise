@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 
 class PolicyComm extends Model
 {
+    const MORPH_TYPE = 'policy_comm';
+
     use HasFactory;
 
     protected $table = 'sold_policy_comms';

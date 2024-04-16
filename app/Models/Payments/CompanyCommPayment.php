@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Storage;
 
 class CompanyCommPayment extends Model
 {
+    const MORPH_TYPE = 'comp_comm_payment';
+
     use HasFactory, SoftDeletes;
 
     const FILES_DIRECTORY = 'sold_policies/company_comm_docs/';

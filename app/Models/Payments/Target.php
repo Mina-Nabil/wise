@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class Target extends Model
 {
+    const MORPH_TYPE = 'target';
+
     use HasFactory;
 
     const PERIOD_MONTH = 'month';

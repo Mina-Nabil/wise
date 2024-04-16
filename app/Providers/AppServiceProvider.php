@@ -28,6 +28,14 @@ use App\Models\Insurance\Policy;
 use App\Models\Insurance\PolicyCondition;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
+use App\Models\Payments\ClientPayment;
+use App\Models\Payments\CommProfile;
+use App\Models\Payments\CommProfileConf;
+use App\Models\Payments\CompanyCommPayment;
+use App\Models\Payments\PolicyComm;
+use App\Models\Payments\PolicyCommConf;
+use App\Models\Payments\SalesComm;
+use App\Models\Payments\Target;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskComment;
 use App\Models\Tasks\TaskFile;
@@ -84,7 +92,18 @@ class AppServiceProvider extends ServiceProvider
             TaskWatcher::MORPH_TYPE => TaskWatcher::class,
             Offer::MORPH_TYPE => Offer::class,
             OfferOption::MORPH_TYPE => OfferOption::class,
-            SoldPolicy::MORPH_TYPE => SoldPolicy::class
+            SoldPolicy::MORPH_TYPE => SoldPolicy::class,
+            
+            PolicyCommConf::MORPH_TYPE => PolicyCommConf::class,
+            PolicyComm::MORPH_TYPE => PolicyComm::class,
+            CompanyCommPayment::MORPH_TYPE => CompanyCommPayment::class,
+            CommProfileConf::MORPH_TYPE => CommProfileConf::class,
+            CommProfile::MORPH_TYPE => CommProfile::class,
+            ClientPayment::MORPH_TYPE => ClientPayment::class,
+            SalesComm::MORPH_TYPE => SalesComm::class,
+            Target::MORPH_TYPE => Target::class,
+
+
         ]);
     }
 }

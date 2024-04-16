@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class PolicyCommConf extends Model
 {
+    const MORPH_TYPE = 'policy_comm_conf';
+
     use HasFactory;
 
     protected $table = 'policy_comm_conf';
