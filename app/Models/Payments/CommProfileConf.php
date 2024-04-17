@@ -154,7 +154,7 @@ class CommProfileConf extends Model
         $this->loadMissing('condition');
 
         if($this->condition_type == Policy::MORPH_TYPE){
-            $this->loadMissing('condition.policy');
+            $this->loadMissing('condition.company');
             return $this->condition->company->name  . " - " . $this->condition->name;
         } else {
             return $this->condition->name ;
