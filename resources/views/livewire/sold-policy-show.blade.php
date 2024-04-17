@@ -1,852 +1,1081 @@
 <div>
-    {{-- Action btn --}}
-    <div class="flex justify-end mb-5">
-        <div class="dropdown relative">
-            <button class="btn btn-sm inline-flex justify-center btn-secondary items-center" type="button" id="secondaryDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="docFile" icon="line-md:loading-twotone-loop"></iconify-icon>
-                Actions
-                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
-            </button>
-            <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
-                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                <li>
-                    <a wire:click="openEditInfoSection" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                        Edit</a>
-                </li>
-                <li>
-                    <a wire:click="toggleGenerateRenewalOfferSec" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                        Generate Renewal Offer</a>
-                </li>
-                <li>
-                    <a wire:click="generatePolicyCommission" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                        Generate Policy Commission</a>
-                </li>
-                @if (!$soldPolicy->client_payment_date)
-                    <li>
-                        <a wire:click="openPaymentDateSec" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                            Set client payment date</a>
-                    </li>
-                @endif
-                @if ($soldPolicy->is_valid)
-                    <li>
-                        <a wire:click="setInvalid" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                            Set as invalid</a>
-                    </li>
-                @else
-                    <li>
-                        <a wire:click="setValid" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                            Set as Valid</a>
-                    </li>
-                @endif
-                @if ($soldPolicy->is_paid)
-                    <li>
-                        <a wire:click="setUnpaid" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                            Set as unpaid</a>
-                    </li>
-                @else
-                    <li>
-                        <a wire:click="openSetPaidSec" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                            Set as Paid</a>
-                    </li>
-                @endif
-                @if (!$soldPolicy->policy_doc)
-                    <label for="uploadDoc">
-                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                dark:hover:text-white cursor-pointer">
-                            Add document</a>
-                    </label>
-                    <input type="file" style="display: none" name="uploadDoc" id="uploadDoc" wire:model="docFile">
-                @endif
+    <div class="bg-no-repeat bg-cover mb-5 p-5 rounded-[6px] relative  flex justify-between" style="background-color: black; padding: 30px;padding-bottom: 5px;">
+        <div class="max-w-xl">
 
-            </ul>
+            <h4 class=" font-medium text-white mb-2">
+                <div>
+                    <span class="block"><b><iconify-icon icon="iconoir:privacy-policy"></iconify-icon>
+                        {{ $soldPolicy->policy->company->name }} - {{ $soldPolicy->policy->name }}
+                    </b></span>
+
+                
+                </div>
+                <span class="block mb-3">
+                    <p class="text-sm text-slate-400  font-light">
+                        {{ ucwords($soldPolicy->client_type) }}
+                    </p>
+                    <a class="hover:underline cursor-pointer" href="{{ route($soldPolicy->client_type . 's.show', $soldPolicy->client_id) }}">
+                        @if ($soldPolicy->client_type === 'customer')
+                            <iconify-icon icon="raphael:customer"></iconify-icon>
+                            {{ $soldPolicy->client->first_name . ' ' . $soldPolicy->client->middle_name . ' ' . $soldPolicy->client->last_name }}
+                        @elseif($soldPolicy->client_type === 'corporate')
+                            <iconify-icon icon="mdi:company"></iconify-icon> {{ $soldPolicy->client->name }}
+                        @endif
+                    </a>
+                </span>
+                @if ($soldPolicy->in_favor_to)
+                    <span class="block mb-3">
+                        <p class="text-sm text-slate-400  font-light">
+                            In Favor To
+                        </p>
+                        <iconify-icon icon="mdi:company"></iconify-icon>
+                        {{ ucwords($soldPolicy->in_favor_to) }}
+                    </span>
+                @endif
+                
+                
+
+            </h4>
+            @if ($soldPolicy->policy_doc)
+                <button wire:click="downloadDoc" class="btn btn-sm btn-dark text-left">
+                    Check policy details
+                </button>
+            @endif
+        </div>
+        <h4 class=" font-medium text-white mb-2">
+            
+
+            <p class="text-sm text-white font-normal">
+                Start: {{ \Carbon\Carbon::parse($soldPolicy->start)->format('l d/m/Y') }}
+
+            </p>
+            <p class="text-sm text-white font-normal mb-3">
+                Expired: {{ \Carbon\Carbon::parse($soldPolicy->expiry)->format('l d/m/Y') }}
+            </p>
+            </h4>
+        
+    </div>
+
+    <div class="flex justify-between">
+
+        {{-- Nav --}}
+        <div class="card-body flex flex-col col-span-2 mb-5" wire:ignore>
+            <div class="card-text h-full">
+                <div>
+                    <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab" role="tablist">
+                        <li class="nav-item" role="presentation" wire:click="changeSection('profile')">
+                            <a href="#tabs-profile-withIcon"
+                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'profile') active @endif dark:text-slate-300"
+                                id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon" aria-selected="false">
+                                <iconify-icon class="mr-1" icon="heroicons-outline:user"></iconify-icon>
+                                Profile</a>
+                        </li>
+                        <li class="nav-item" role="presentation" wire:click="changeSection('payments')">
+                            <a href="#tabs-messages-withIcon"
+                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300"
+                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                <iconify-icon class="mr-1" icon="material-symbols:payments"></iconify-icon>
+                                Payments</a>
+                        </li>
+                        <li class="nav-item" role="presentation" wire:click="changeSection('cars')">
+                            <a href="#tabs-messages-withIcon"
+                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300"
+                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                <iconify-icon class="mr-1" icon="mingcute:car-line"></iconify-icon>
+                                Car Specs</a>
+                        </li>
+                        <li class="nav-item" role="presentation" wire:click="changeSection('operations')">
+                            <a href="#tabs-messages-withIcon"
+                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300"
+                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                <iconify-icon class="mr-1" icon="cib:when-i-work"></iconify-icon>
+                                Operations</a>
+                        </li>
+                        <li class="nav-item" role="presentation" wire:click="changeSection('policydetails')">
+                            <a href="#tabs-messages-withIcon"
+                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300"
+                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                <iconify-icon class="mr-1" icon="ic:outline-info"></iconify-icon>
+                                Details</a>
+                        </li>
+
+                        {{-- <li class="nav-item" role="presentation" wire:click="changeSection('claims')">
+                        <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'claims') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                            aria-selected="false">
+                            <iconify-icon class="mr-1" icon="academicons:acclaim"></iconify-icon>
+                            Claims</a>
+                    </li> --}}
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        @error('docFile')
-            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-        @enderror
+        {{-- Action btn --}}
+        <div class="flex justify-end mb-5">
+            <div class="dropdown relative">
+                <button class="btn btn-sm inline-flex justify-center btn-secondary items-center" type="button" id="secondaryDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="docFile" icon="line-md:loading-twotone-loop"></iconify-icon>
+                    Actions
+                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                </button>
+                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                    <li>
+                        <a wire:click="openEditInfoSection" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Edit</a>
+                    </li>
+                    <li>
+                        <a wire:click="toggleGenerateRenewalOfferSec" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Generate Renewal Offer</a>
+                    </li>
+                    <li>
+                        <a wire:click="generatePolicyCommission" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Generate Policy Commission</a>
+                    </li>
+                    @if (!$soldPolicy->client_payment_date)
+                        <li>
+                            <a wire:click="openPaymentDateSec" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                Set client payment date</a>
+                        </li>
+                    @endif
+                    @if ($soldPolicy->is_valid)
+                        <li>
+                            <a wire:click="setInvalid" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                Set as invalid</a>
+                        </li>
+                    @else
+                        <li>
+                            <a wire:click="setValid" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                Set as Valid</a>
+                        </li>
+                    @endif
+                    @if ($soldPolicy->is_paid)
+                        <li>
+                            <a wire:click="setUnpaid" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                Set as unpaid</a>
+                        </li>
+                    @else
+                        <li>
+                            <a wire:click="openSetPaidSec" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                Set as Paid</a>
+                        </li>
+                    @endif
+                    @if (!$soldPolicy->policy_doc)
+                        <label for="uploadDoc">
+                            <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                Add document</a>
+                        </label>
+                        <input type="file" style="display: none" name="uploadDoc" id="uploadDoc" wire:model="docFile">
+                    @endif
+
+                </ul>
+            </div>
+
+            @error('docFile')
+                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+            @enderror
+        </div>
+
     </div>
 
     {{-- Profile --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    @if ($section === 'profile')
 
-        <div>
+        
 
-            <div class="bg-no-repeat bg-cover mb-5 p-5 rounded-[6px] relative" style="background-image: url({{ asset('assets/images/all-img/policy-bg.jpg') }}); padding: 30px">
-                <div class="max-w-xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    <h4 class=" font-medium text-white mb-2">
-                        <span class="block"><b><iconify-icon icon="iconoir:privacy-policy"></iconify-icon>
-                                {{ $soldPolicy->policy->company->name }} - {{ $soldPolicy->policy->name }}
-                            </b></span>
-
-                        <p class="text-sm text-white font-normal">
-                            Start: {{ \Carbon\Carbon::parse($soldPolicy->start)->format('l d/m/Y') }}
-
-                        </p>
-                        <p class="text-sm text-white font-normal mb-3">
-                            Expired: {{ \Carbon\Carbon::parse($soldPolicy->expiry)->format('l d/m/Y') }}
-                        </p>
-
-                        <span class="block mb-3">
-                            <p class="text-sm text-slate-400  font-light">
-                                {{ ucwords($soldPolicy->client_type) }}
-                            </p>
-                            <a class="hover:underline cursor-pointer" href="{{ route($soldPolicy->client_type . 's.show', $soldPolicy->client_id) }}">
-                                @if ($soldPolicy->client_type === 'customer')
-                                    <iconify-icon icon="raphael:customer"></iconify-icon>
-                                    {{ $soldPolicy->client->first_name . ' ' . $soldPolicy->client->middle_name . ' ' . $soldPolicy->client->last_name }}
-                                @elseif($soldPolicy->client_type === 'corporate')
-                                    <iconify-icon icon="mdi:company"></iconify-icon> {{ $soldPolicy->client->name }}
-                                @endif
-                            </a>
-                        </span>
-                        @if ($soldPolicy->in_favor_to)
-                            <span class="block mb-3">
-                                <p class="text-sm text-slate-400  font-light">
-                                    In Favor To
-                                </p>
-                                <iconify-icon icon="mdi:company"></iconify-icon>
-                                {{ ucwords($soldPolicy->in_favor_to) }}
-                            </span>
-                        @endif
-                    </h4>
-                    @if ($soldPolicy->policy_doc)
-                        <button wire:click="downloadDoc" class="btn btn-sm btn-dark text-left">
-                            Check policy details
-                        </button>
-                    @endif
-                </div>
-            </div>
-
-            <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-                <div class="card-body flex flex-col p-6 active justify-center">
-                    <div>
-                        <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                            Policy Number
-                            <span class="float-right">
-                                @if ($soldPolicy->is_valid)
-                                    <span class="badge bg-success-500 text-white capitalize">Valid</span>
-                                @else
-                                    <span class="badge bg-warning-500 text-white capitalize">Invalid</span>
-                                @endif
-
-                            </span>
-                        </span>
-                        <span class="text-lg font-medium text-slate-900 dark:text-white block">
-                            {{ $soldPolicy->policy_number }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            @if ($clientPaymentDate)
+            <div>
                 <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
                     <div class="card-body flex flex-col p-6 active justify-center">
                         <div>
                             <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                                Client payment Date
+                                Policy Number
                                 <span class="float-right">
-                                    <iconify-icon wire:click="openPaymentDateSec" class="cursor-pointer" icon="carbon:edit"></iconify-icon>
+                                    @if ($soldPolicy->is_valid)
+                                        <span class="badge bg-success-500 text-white capitalize">Valid</span>
+                                    @else
+                                        <span class="badge bg-warning-500 text-white capitalize">Invalid</span>
+                                    @endif
+
                                 </span>
                             </span>
                             <span class="text-lg font-medium text-slate-900 dark:text-white block">
-                                {{ \Carbon\Carbon::parse($clientPaymentDate)->format('l d/m/Y') }}
+                                {{ $soldPolicy->policy_number }}
                             </span>
                         </div>
                     </div>
                 </div>
-            @endif
 
+                @if ($clientPaymentDate)
+                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                        <div class="card-body flex flex-col p-6 active justify-center">
+                            <div>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                    Client payment Date
+                                    <span class="float-right">
+                                        <iconify-icon wire:click="openPaymentDateSec" class="cursor-pointer" icon="carbon:edit"></iconify-icon>
+                                    </span>
+                                </span>
+                                <span class="text-lg font-medium text-slate-900 dark:text-white block">
+                                    {{ \Carbon\Carbon::parse($clientPaymentDate)->format('l d/m/Y') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
+                @if ($soldPolicy->in_favor_to)
+                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                        <div class="card-body flex flex-col p-6 active justify-center">
+                            <div>
+                                <p>
+                                    <b>In favor to</b>
+                                </p>
+                                <p class="mb-5">
+                                    {{ $soldPolicy->in_favor_to ?? 'in favor to not added.' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
+                @if ($soldPolicy->policy_doc)
+                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                        <div class="card-body flex flex-col p-6 active justify-center">
+                            <div class="flex justify-between gap-2">
+                                <button wire:click="downloadDoc" class="btn inline-flex justify-center btn-success block-btn btn-sm w-3/4">
+                                    <span class="flex items-center">
+                                        <iconify-icon wire:loading.remove wire:target="downloadDoc" class="text-xl" icon="material-symbols:download"></iconify-icon>
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <span>Download document</span>
+                                    </span>
+                                </button>
+                                <button wire:click="toggleDeleteDoc" class="btn inline-flex justify-center  btn-danger  btn-sm w-1/4">
+                                    <span class="flex items-center">
+                                        <iconify-icon wire:loading.remove wire:target="toggleDeleteDoc" class="text-xl  ltr:mr-2 rtl:ml-2" icon="material-symbols:delete-outline"></iconify-icon>
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="toggleDeleteDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <span>Remove</span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
+                @if (!$soldPolicy->comms_details->isEmpty())
+                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                        <div class="card-body flex flex-col p-6 active justify-center">
+                            <header class="card-header noborder flex justify-between">
+                                <h4 class="card-title">
+                                    Policy Commission
+                                </h4>
+                            </header>
+                            @foreach ($soldPolicy->comms_details as $commDetails)
+                                <div class="card-body px-6 pb-6">
+                                    <div class="flex justify-between">
+                                        <div>
+                                            <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                                {{ $commDetails->title }}
+                                            </span>
+                                            <h5 class="text-slate-900 dark:text-white block">
+                                                {{ number_format($commDetails->amount, 0, '.', ',') }} EGP
+                                            </h5>
+                                        </div>
+                                        <div>
+                                            <button wire:click="confirmDeletePolCom({{ $commDetails->id }})" class="action-btn float-right text-sm" type="button">
+                                                <iconify-icon icon="material-symbols:delete"></iconify-icon>
+                                            </button>
+                                            <button wire:click="openUpdatePolCom({{ $commDetails->id }})" class="action-btn float-right text-sm mr-2" type="button">
+                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
-            @if ($soldPolicy->in_favor_to)
-                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                {{-- Insured values --}}
+                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                    <div class="card-body flex flex-col p-6 active text-center">
+                        <header class=" mb-5 items-center">
+                            <button wire:click="togglePaymentInfoSection" class="action-btn float-right text-sm" type="button">
+                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                            </button>
+                            <div class="flex-1">
+                                <div class="card-title font-Inter text-slate-900 dark:text-white">
+                                    {{ number_format($soldPolicy->insured_value, 0, '.', ',') }}</div>
+                                <div class="card-subtitle font-Inter">Insured Value</div>
+                                @if ($soldPolicy->payment_frequency)
+                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 bg-warning-500 text-xs">
+                                        {{ ucwords(str_replace('-', ' ', $soldPolicy->payment_frequency)) }}
+                                        @if ($soldPolicy->installements_count)
+                                            <span class="w-5 h-5 inline-flex items-center justify-center bg-danger-500 text-white rounded-full font-Inter text-xs ltr:ml-1 rtl:mr-1 relative">
+                                                {{ $soldPolicy->installements_count }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                            <hr class="mb-3 w-[96px]" style="margin: 0 auto;margin-top:10px;">
+                        </header>
+
+                        <div class="grid md:grid-cols-4 gap-3 mb-4 text-base text-center">
+                            <div class="border-r">
+                                <h5>{{ number_format($soldPolicy->net_premium, 0, '.', ',') }}</h5>
+                                <p class="text-xs">Net Premium</p>
+
+                            </div>
+                            <div class="">
+                                <h5 class="text-info-500">{{ $soldPolicy->net_rate }}%</h5>
+                                <p class="mr-2 text-xs">Net Rate</p>
+                            </div>
+                            <div class="border-l">
+                                <h5>{{ number_format($soldPolicy->gross_premium, 0, '.', ',') }}</h5>
+                                <p class="text-xs">Gross Premium</p>
+                            </div>
+                            <div class="border-l">
+                                <h5>{{ $soldPolicy->discount }} %</h5>
+                                <p class="text-xs">Discount</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div>
+                @if ($soldPolicy->is_paid)
+                    <span class="badge bg-success-500 text-white capitalize rounded-3xl w-full mb-5"><iconify-icon class="text-lg" icon="mdi:tick-circle"></iconify-icon>&nbsp; Paid: {{ \Carbon\Carbon::parse($soldPolicy->client_payment_date)->format('l d/m/Y') }}</span>
+                @endif
+
+                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
                     <div class="card-body flex flex-col p-6 active justify-center">
                         <div>
                             <p>
-                                <b>In favor to</b>
-                            </p>
-                            <p class="mb-5">
-                                {{ $soldPolicy->in_favor_to ?? 'in favor to not added.' }}
+                                <iconify-icon icon="carbon:view-filled"></iconify-icon> Watchers
+                                <span class="float-right cursor-pointer" wire:click="OpenChangeWatchers">
+                                    <iconify-icon icon="carbon:edit"></iconify-icon>
+                                </span>
                             </p>
                         </div>
-                    </div>
-                </div>
-            @endif
 
-            @if ($soldPolicy->policy_doc)
-                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
-                    <div class="card-body flex flex-col p-6 active justify-center">
-                        <div class="flex justify-between gap-2">
-                            <button wire:click="downloadDoc" class="btn inline-flex justify-center btn-success block-btn btn-sm w-3/4">
-                                <span class="flex items-center">
-                                    <iconify-icon wire:loading.remove wire:target="downloadDoc" class="text-xl" icon="material-symbols:download"></iconify-icon>
-                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                    <span>Download document</span>
-                                </span>
-                            </button>
-                            <button wire:click="toggleDeleteDoc" class="btn inline-flex justify-center  btn-danger  btn-sm w-1/4">
-                                <span class="flex items-center">
-                                    <iconify-icon wire:loading.remove wire:target="toggleDeleteDoc" class="text-xl  ltr:mr-2 rtl:ml-2" icon="material-symbols:delete-outline"></iconify-icon>
-                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="toggleDeleteDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                    <span>Remove</span>
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            @if (!$soldPolicy->comms_details->isEmpty())
-                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
-                    <div class="card-body flex flex-col p-6 active justify-center">
-                        <header class="card-header noborder flex justify-between">
-                            <h4 class="card-title">
-                                Policy Commission
-                            </h4>
-                        </header>
-                        @foreach ($soldPolicy->comms_details as $commDetails)
-                            <div class="card-body px-6 pb-6">
-                                <div class="flex justify-between">
-                                    <div>
-                                        <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                                            {{ $commDetails->title }}
-                                        </span>
-                                        <h5 class="text-slate-900 dark:text-white block">
-                                            {{ number_format($commDetails->amount, 0, '.', ',') }} EGP
-                                        </h5>
-                                    </div>
-                                    <div>
-                                        <button wire:click="confirmDeletePolCom({{ $commDetails->id }})" class="action-btn float-right text-sm" type="button">
-                                            <iconify-icon icon="material-symbols:delete"></iconify-icon>
-                                        </button>
-                                        <button wire:click="openUpdatePolCom({{ $commDetails->id }})" class="action-btn float-right text-sm mr-2" type="button">
-                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                        </button>
-                                    </div>
+                        <div {{ $changeWatchers ? '' : "style=display:none;'" }}>
+                            <div class="w-full">
+                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2" multiple="multiple" style="height: 250px">
+                                    @foreach ($users as $user)
+                                        <option {{ in_array($user->id, $watchersList->pluck('user_id')->all()) ? 'selected="selected"' : '' }} value="{{ $user->id }}" class="">
+                                            {{ $user->first_name . ' ' . $user->last_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button wire:click="saveWatchers" class="btn inline-flex justify-center btn-success mt-3 float-right btn-sm">
+                                <div class="flex items-center">
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveWatchers" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <span>Save Watchers</span>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
+                            </button>
 
-
-
-        </div>
-
-        <div>
-            @if ($soldPolicy->is_paid)
-                <span class="badge bg-success-500 text-white capitalize rounded-3xl w-full mb-5"><iconify-icon class="text-lg" icon="mdi:tick-circle"></iconify-icon>&nbsp; Paid: {{ \Carbon\Carbon::parse($soldPolicy->client_payment_date)->format('l d/m/Y') }}</span>
-            @endif
-
-            <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-                <div class="card-body flex flex-col p-6 active justify-center">
-                    <div>
-                        <p>
-                            <iconify-icon icon="carbon:view-filled"></iconify-icon> Watchers
-                            <span class="float-right cursor-pointer" wire:click="OpenChangeWatchers">
-                                <iconify-icon icon="carbon:edit"></iconify-icon>
-                            </span>
-                        </p>
-                    </div>
-
-                    <div {{ $changeWatchers ? '' : "style=display:none;'" }}>
-                        <div class="w-full">
-                            <select wire:model.defer="setWatchersList" id="multiSelect" multiple aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2" multiple="multiple" style="height: 250px">
-                                @foreach ($users as $user)
-                                    <option {{ in_array($user->id, $watchersList->pluck('user_id')->all()) ? 'selected="selected"' : '' }} value="{{ $user->id }}" class="">
-                                        {{ $user->first_name . ' ' . $user->last_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <button wire:click="saveWatchers" class="btn inline-flex justify-center btn-success mt-3 float-right btn-sm">
-                            <div class="flex items-center">
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="saveWatchers" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                <span>Save Watchers</span>
-                            </div>
-                        </button>
-
-                        {{-- <button class="toolTip onTop action-btn m-1 h-full" data-tippy-content="saveWatchers" type="button" wire:click="saveWatchers">
+                            {{-- <button class="toolTip onTop action-btn m-1 h-full" data-tippy-content="saveWatchers" type="button" wire:click="saveWatchers">
                             <iconify-icon icon="material-symbols:save"></iconify-icon>
                         </button> --}}
-                    </div>
+                        </div>
 
-                    <div {{ $changeWatchers ? "style=display:none;'" : '' }}>
-                        @foreach ($watchersList as $watcher)
-                            <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">{{ $watcher->user->first_name }}
-                                {{ $watcher->user->last_name }}</span>
-                        @endforeach
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-                <div class="card-body flex flex-col p-6 active justify-center">
-                    <div>
-                        <p>
-                            <b>Note</b>
-                            <button wire:click="toggleNoteSection" class="action-btn float-right text-sm" type="button">
-                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                            </button>
-                        </p>
-                        <p class="mb-5">
-                            {{ $soldPolicy->note ?? 'No note added for this sold policy.' }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-
-    </div>
-
-    {{-- Car Specs --}}
-    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-        <div class="card-body flex flex-col p-6 active justify-center">
-            <header class=" mb-2 items-center text-center">
-                <div class="flex-1">
-                    <div class=" text-base font-Inter text-slate-900 dark:text-white">Car specifications
-                    </div>
-                </div>
-                <hr class="mb-3 w-[96px]" style="margin: 0 auto;">
-            </header>
-            @if ($soldPolicy->customer_car)
-                <div class="text-center">
-                    {{ $soldPolicy->customer_car->model_year }}
-                    {{ $soldPolicy->customer_car->car->car_model->brand->name }}
-                    {{ $soldPolicy->customer_car->car->car_model->name }}
-                    {{ $soldPolicy->customer_car->car->category }}
-                </div>
-            @endif
-
-            <hr class="mt-3 m-5">
-
-            <table class=" divide-slate-100 dark:divide-slate-700">
-                <tbody class="bg-white dark:bg-slate-800 ">
-
-                    <tr>
-                        <td class="table-td ">Car Chassis</td>
-                        <td class="table-td  !text-lg"><b>{{ $soldPolicy->car_chassis }}</b></td>
-                    </tr>
-
-                    <tr>
-                        <td class="table-td ">Car Plate No.</td>
-                        <td class="table-td  !text-lg"><b>{{ $soldPolicy->car_plate_no }}</b></td>
-                    </tr>
-
-                    <tr>
-                        <td class="table-td ">Car Engine</td>
-                        <td class="table-td  !text-lg"><b>{{ $soldPolicy->car_engine }}</b></td>
-                    </tr>
-
-
-
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    {{-- Claims --}}
-    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-        <div class="card-body flex flex-col p-6 active">
-            <header class="flex mb-5 items-center">
-                <div class="flex-1">
-                    <div class="card-title font-Inter text-slate-900 dark:text-white">
-                        <iconify-icon icon="ic:round-add-task"></iconify-icon>
-                        Claims
-                        <button wire:click="toggleNewClaimSection" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">Create</button>
-                    </div>
-
-                </div>
-            </header>
-            <div>
-
-                @if (!$soldPolicy->claims->isEmpty())
-                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                        <thead class=" border-t border-slate-100 dark:border-slate-800">
-                            <tr>
-
-                                <th scope="col" class=" table-th ">
-                                    title
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    Fields
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    Due
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    status
-                                </th>
-
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
-                            @if ($soldPolicy->claims)
-                                @foreach ($soldPolicy->claims as $claim)
-                                    <tr>
-                                        <td class="table-td">
-                                            <a class="hover:underline cursor-pointer" href="{{ route('tasks.show', $claim->id) }}">
-                                                <b>{{ $claim->title }}</b>
-                                            </a>
-                                        </td>
-                                        <td class="table-td ">{{ $claim->fields->count() }}</td>
-                                        <td class="table-td ">
-                                            {{ \Carbon\Carbon::parse($claim->due)->format('l d/m/Y') }}</td>
-                                        <td class="table-td ">
-
-                                            @if ($claim->status === 'new')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
-                                                    New
-                                                </div>
-                                            @elseif($claim->status === 'assigned')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
-                                                    Assigned
-                                                </div>
-                                            @elseif($claim->status === 'in_progress')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
-                                                    in Progress
-                                                </div>
-                                            @elseif($claim->status === 'pending')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
-                                                    Pending
-                                                </div>
-                                            @elseif($claim->status === 'completed')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
-                                                    Completed
-                                                </div>
-                                            @elseif($claim->status === 'closed')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
-                                                    Closed
-                                                </div>
-                                            @endif
-
-                                        </td>
-
-                                    </tr>
-                                @endforeach
-                            @endif
-
-
-                        </tbody>
-                    </table>
-                @else
-                    <div class="text-center">
-                        <p class="text-center text-sm m-5 text-primary">No Claims for this sold policy!</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    {{-- Endorsement --}}
-    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-        <div class="card-body flex flex-col p-6 active">
-            <header class="flex mb-5 items-center">
-                <div class="flex-1">
-                    <div class="card-title font-Inter text-slate-900 dark:text-white">
-                        <iconify-icon icon="ic:round-add-task"></iconify-icon>
-                        Endorsement
-                        <button wire:click="toggleNewEndorsementSection" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">Create</button>
-                    </div>
-
-                </div>
-            </header>
-            <div>
-
-                @if (!$soldPolicy->endorsements->isEmpty())
-                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                        <thead class=" border-t border-slate-100 dark:border-slate-800">
-                            <tr>
-
-                                <th scope="col" class=" table-th ">
-                                    title
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    Actions
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    Due
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    status
-                                </th>
-
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
-                            @if ($soldPolicy->endorsements)
-                                @foreach ($soldPolicy->endorsements as $endorsement)
-                                    <tr>
-                                        <td class="table-td">
-                                            <a class="hover:underline cursor-pointer" href="{{ route('tasks.show', $endorsement->id) }}">
-                                                <b>{{ $endorsement->title }}</b>
-                                            </a>
-                                        </td>
-                                        <td class="table-td ">{{ $endorsement->actions->count() }}</td>
-                                        <td class="table-td ">
-                                            {{ \Carbon\Carbon::parse($endorsement->due)->format('l d/m/Y') }}
-                                        </td>
-                                        <td class="table-td ">
-
-                                            @if ($endorsement->status === 'new')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
-                                                    New
-                                                </div>
-                                            @elseif($endorsement->status === 'assigned')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
-                                                    Assigned
-                                                </div>
-                                            @elseif($endorsement->status === 'in_progress')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
-                                                    in Progress
-                                                </div>
-                                            @elseif($endorsement->status === 'pending')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
-                                                    Pending
-                                                </div>
-                                            @elseif($endorsement->status === 'completed')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
-                                                    Completed
-                                                </div>
-                                            @elseif($endorsement->status === 'closed')
-                                                <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
-                                                    Closed
-                                                </div>
-                                            @endif
-
-                                        </td>
-
-                                    </tr>
-                                @endforeach
-                            @endif
-
-
-                        </tbody>
-                    </table>
-                @else
-                    <div class="text-center">
-                        <p class="text-center text-sm m-5 text-primary">No endorsement for this sold policy!
-                        </p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    {{-- benefits --}}
-    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-        <div class="card-body flex flex-col p-6 active">
-            <header class="flex mb-5 items-center">
-                <div class="flex-1">
-                    <div class="card-title font-Inter text-slate-900 dark:text-white">
-                        <iconify-icon icon="subway:save"></iconify-icon>
-                        benefits
-                        <button wire:click="openNewBenefitSec" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">New
-                            Benefit</button>
-                    </div>
-
-                </div>
-            </header>
-            <div>
-                @if (!$soldPolicy->benefits->isEmpty())
-                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                        <thead class=" border-t border-slate-100 dark:border-slate-800">
-                            <tr>
-
-                                <th scope="col" class=" table-th ">
-                                    Benefit
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    Value
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    Action
-                                </th>
-
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
-                            @foreach ($soldPolicy->benefits as $benefit)
-                                <tr>
-                                    <td class="table-td">{{ $benefit->benefit }}</td>
-                                    <td class="table-td ">{{ $benefit->value }}</td>
-                                    <td class="table-td ">
-                                        <div class="flex space-x-3 rtl:space-x-reverse">
-                                            <button wire:click="editThisBenefit({{ $benefit->id }})" class="action-btn" type="button">
-                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                            </button>
-                                            <button wire:click="deleteThisBenefit({{ $benefit->id }})" class="action-btn" type="button">
-                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                        <div {{ $changeWatchers ? "style=display:none;'" : '' }}>
+                            @foreach ($watchersList as $watcher)
+                                <span class="badge bg-slate-200 text-slate-900 capitalize rounded-3xl mb-1 me-1">{{ $watcher->user->first_name }}
+                                    {{ $watcher->user->last_name }}</span>
                             @endforeach
+                        </div>
 
-                        </tbody>
-                    </table>
-                @else
-                    <div class="text-center">
-                        <p class="text-center text-sm m-5 text-primary">No benefits for this sold policy!</p>
                     </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    {{-- Exclusions --}}
-    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base">
-        <div class="card-body flex flex-col p-6 active">
-            <header class="flex mb-5 items-center">
-                <div class="flex-1">
-                    <div class="card-title font-Inter text-slate-900 dark:text-white">
-                        <iconify-icon icon="ooui:special-pages-ltr"></iconify-icon>
-                        Exclusions
-                        <button wire:click="openAddExcSec" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">New
-                            Exclusions</button>
-                    </div>
-
                 </div>
-            </header>
-            <div>
-                @if (!$soldPolicy->exclusions->isEmpty())
-                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                        <thead class=" border-t border-slate-100 dark:border-slate-800">
-                            <tr>
 
-                                <th scope="col" class=" table-th ">
-                                    Title
-                                </th>
 
-                                <th scope="col" class=" table-th ">
-                                    Value
-                                </th>
+                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                    <div class="card-body flex flex-col p-6 active justify-center">
+                        <div>
+                            <p>
+                                <b>Note</b>
+                                <button wire:click="toggleNoteSection" class="action-btn float-right text-sm" type="button">
+                                    <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                </button>
+                            </p>
+                            <p class="mb-5">
+                                {{ $soldPolicy->note ?? 'No note added for this sold policy.' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-                                <th scope="col" class=" table-th ">
-                                    Action
-                                </th>
 
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+            </div>
 
-                            @foreach ($soldPolicy->exclusions as $exclusion)
-                                <tr>
-                                    <td class="table-td">{{ $exclusion->title }}</td>
-                                    <td class="table-td ">{{ $exclusion->value }}</td>
-                                    <td class="table-td ">
-                                        <div class="flex space-x-3 rtl:space-x-reverse">
-                                            <button wire:click="editThisExc({{ $exclusion->id }})" class="action-btn" type="button">
-                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                            </button>
-                                            <button wire:click="deleteThisExc({{ $exclusion->id }})" class="action-btn" type="button">
-                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
+        </div>
 
-                        </tbody>
-                    </table>
-                @else
+
+    @endif
+
+    @if ($section === 'cars')
+        {{-- Car Specs --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+            <div class="card-body flex flex-col p-6 active justify-center">
+                <header class=" mb-2 items-center text-center">
+                    <div class="flex-1">
+                        <div class=" text-base font-Inter text-slate-900 dark:text-white">Car specifications
+                        </div>
+                    </div>
+                    <hr class="mb-3 w-[96px]" style="margin: 0 auto;">
+                </header>
+                @if ($soldPolicy->customer_car)
                     <div class="text-center">
-                        <p class="text-center text-sm m-5 text-primary">No exclusions for this sold policy!</p>
+                        {{ $soldPolicy->customer_car->model_year }}
+                        {{ $soldPolicy->customer_car->car->car_model->brand->name }}
+                        {{ $soldPolicy->customer_car->car->car_model->name }}
+                        {{ $soldPolicy->customer_car->car->category }}
                     </div>
                 @endif
+
+                <hr class="mt-3 m-5">
+
+                <table class=" divide-slate-100 dark:divide-slate-700">
+                    <tbody class="bg-white dark:bg-slate-800 ">
+
+                        <tr>
+                            <td class="table-td ">Car Chassis</td>
+                            <td class="table-td  !text-lg"><b>{{ $soldPolicy->car_chassis }}</b></td>
+                        </tr>
+
+                        <tr>
+                            <td class="table-td ">Car Plate No.</td>
+                            <td class="table-td  !text-lg"><b>{{ $soldPolicy->car_plate_no }}</b></td>
+                        </tr>
+
+                        <tr>
+                            <td class="table-td ">Car Engine</td>
+                            <td class="table-td  !text-lg"><b>{{ $soldPolicy->car_engine }}</b></td>
+                        </tr>
+
+
+
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
+    @endif
 
-    {{-- Insured values --}}
-    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-        <div class="card-body flex flex-col p-6 active text-center">
-            <header class=" mb-5 items-center">
-                <button wire:click="togglePaymentInfoSection" class="action-btn float-right text-sm" type="button">
-                    <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                </button>
-                <div class="flex-1">
-                    <div class="card-title font-Inter text-slate-900 dark:text-white">
-                        {{ number_format($soldPolicy->insured_value, 0, '.', ',') }}</div>
-                    <div class="card-subtitle font-Inter">Insured Value</div>
-                    @if ($soldPolicy->payment_frequency)
-                        <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 bg-warning-500 text-xs">
-                            {{ ucwords(str_replace('-', ' ', $soldPolicy->payment_frequency)) }}
-                            @if ($soldPolicy->installements_count)
-                                <span class="w-5 h-5 inline-flex items-center justify-center bg-danger-500 text-white rounded-full font-Inter text-xs ltr:ml-1 rtl:mr-1 relative">
-                                    {{ $soldPolicy->installements_count }}
-                                </span>
-                            @endif
+    @if ($section === 'operations')
+        {{-- Claims --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+            <div class="card-body flex flex-col p-6 active">
+                <header class="flex mb-5 items-center">
+                    <div class="flex-1">
+                        <div class="card-title font-Inter text-slate-900 dark:text-white">
+                            <iconify-icon icon="ic:round-add-task"></iconify-icon>
+                            Claims
+                            <button wire:click="toggleNewClaimSection" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">Create</button>
+                        </div>
+
+                    </div>
+                </header>
+                <div>
+
+                    @if (!$soldPolicy->claims->isEmpty())
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                            <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                <tr>
+
+                                    <th scope="col" class=" table-th ">
+                                        title
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Fields
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Due
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        status
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                @if ($soldPolicy->claims)
+                                    @foreach ($soldPolicy->claims as $claim)
+                                        <tr>
+                                            <td class="table-td">
+                                                <a class="hover:underline cursor-pointer" href="{{ route('tasks.show', $claim->id) }}">
+                                                    <b>{{ $claim->title }}</b>
+                                                </a>
+                                            </td>
+                                            <td class="table-td ">{{ $claim->fields->count() }}</td>
+                                            <td class="table-td ">
+                                                {{ \Carbon\Carbon::parse($claim->due)->format('l d/m/Y') }}</td>
+                                            <td class="table-td ">
+
+                                                @if ($claim->status === 'new')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                                        New
+                                                    </div>
+                                                @elseif($claim->status === 'assigned')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
+                                                        Assigned
+                                                    </div>
+                                                @elseif($claim->status === 'in_progress')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
+                                                        in Progress
+                                                    </div>
+                                                @elseif($claim->status === 'pending')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
+                                                        Pending
+                                                    </div>
+                                                @elseif($claim->status === 'completed')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                                        Completed
+                                                    </div>
+                                                @elseif($claim->status === 'closed')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
+                                                        Closed
+                                                    </div>
+                                                @endif
+
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+                                @endif
+
+
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center">
+                            <p class="text-center text-sm m-5 text-primary">No Claims for this sold policy!</p>
                         </div>
                     @endif
                 </div>
-                <hr class="mb-3 w-[96px]" style="margin: 0 auto;margin-top:10px;">
-            </header>
+            </div>
+        </div>
 
-            <div class="grid md:grid-cols-4 gap-3 mb-4 text-base text-center">
-                <div class="border-r">
-                    <h5>{{ number_format($soldPolicy->net_premium, 0, '.', ',') }}</h5>
-                    <p class="text-xs">Net Premium</p>
+        {{-- Endorsement --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+            <div class="card-body flex flex-col p-6 active">
+                <header class="flex mb-5 items-center">
+                    <div class="flex-1">
+                        <div class="card-title font-Inter text-slate-900 dark:text-white">
+                            <iconify-icon icon="ic:round-add-task"></iconify-icon>
+                            Endorsement
+                            <button wire:click="toggleNewEndorsementSection" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">Create</button>
+                        </div>
 
-                </div>
-                <div class="">
-                    <h5 class="text-info-500">{{ $soldPolicy->net_rate }}%</h5>
-                    <p class="mr-2 text-xs">Net Rate</p>
-                </div>
-                <div class="border-l">
-                    <h5>{{ number_format($soldPolicy->gross_premium, 0, '.', ',') }}</h5>
-                    <p class="text-xs">Gross Premium</p>
-                </div>
-                <div class="border-l">
-                    <h5>{{ $soldPolicy->discount }} %</h5>
-                    <p class="text-xs">Discount</p>
+                    </div>
+                </header>
+                <div>
+
+                    @if (!$soldPolicy->endorsements->isEmpty())
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                            <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                <tr>
+
+                                    <th scope="col" class=" table-th ">
+                                        title
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Actions
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Due
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        status
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                @if ($soldPolicy->endorsements)
+                                    @foreach ($soldPolicy->endorsements as $endorsement)
+                                        <tr>
+                                            <td class="table-td">
+                                                <a class="hover:underline cursor-pointer" href="{{ route('tasks.show', $endorsement->id) }}">
+                                                    <b>{{ $endorsement->title }}</b>
+                                                </a>
+                                            </td>
+                                            <td class="table-td ">{{ $endorsement->actions->count() }}</td>
+                                            <td class="table-td ">
+                                                {{ \Carbon\Carbon::parse($endorsement->due)->format('l d/m/Y') }}
+                                            </td>
+                                            <td class="table-td ">
+
+                                                @if ($endorsement->status === 'new')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                                        New
+                                                    </div>
+                                                @elseif($endorsement->status === 'assigned')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-info-500 bg-info-500 text-xs">
+                                                        Assigned
+                                                    </div>
+                                                @elseif($endorsement->status === 'in_progress')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-secondary-500 bg-secondary-500 text-xs">
+                                                        in Progress
+                                                    </div>
+                                                @elseif($endorsement->status === 'pending')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs">
+                                                        Pending
+                                                    </div>
+                                                @elseif($endorsement->status === 'completed')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                                        Completed
+                                                    </div>
+                                                @elseif($endorsement->status === 'closed')
+                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
+                                                        Closed
+                                                    </div>
+                                                @endif
+
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+                                @endif
+
+
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center">
+                            <p class="text-center text-sm m-5 text-primary">No endorsement for this sold policy!
+                            </p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 
-    {{-- Totals Numbers --}}
-    <div>
-        <div class="grid md:grid-cols-4 grid-cols-1 gap-4">
-
-            <!-- BEGIN: Group Chart -->
-
-
-            <div class="card">
-                <div class="card-body pt-4 pb-3 px-4">
-                    <div class="flex space-x-3 rtl:space-x-reverse">
-                        <div class="flex-none">
-                            <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#E5F9FF] dark:bg-slate-900	 text-info-500">
-                                <iconify-icon icon="ph:seal-percent-bold"></iconify-icon>
-                            </div>
+    @if ($section === 'policydetails')
+        {{-- benefits --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+            <div class="card-body flex flex-col p-6 active">
+                <header class="flex mb-5 items-center">
+                    <div class="flex-1">
+                        <div class="card-title font-Inter text-slate-900 dark:text-white">
+                            <iconify-icon icon="subway:save"></iconify-icon>
+                            benefits
+                            <button wire:click="openNewBenefitSec" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">New
+                                Benefit</button>
                         </div>
-                        <div class="flex-1">
-                            <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                                Total Policy Commission
-                            </div>
-                            <div class="text-slate-900 dark:text-white text-lg font-medium">
-                                {{ $soldPolicy->total_policy_comm ?? '-' }}
-                            </div>
-                        </div>
+
                     </div>
+                </header>
+                <div>
+                    @if (!$soldPolicy->benefits->isEmpty())
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                            <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                <tr>
+
+                                    <th scope="col" class=" table-th ">
+                                        Benefit
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Value
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Action
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                @foreach ($soldPolicy->benefits as $benefit)
+                                    <tr>
+                                        <td class="table-td">{{ $benefit->benefit }}</td>
+                                        <td class="table-td ">{{ $benefit->value }}</td>
+                                        <td class="table-td ">
+                                            <div class="flex space-x-3 rtl:space-x-reverse">
+                                                <button wire:click="editThisBenefit({{ $benefit->id }})" class="action-btn" type="button">
+                                                    <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                                </button>
+                                                <button wire:click="deleteThisBenefit({{ $benefit->id }})" class="action-btn" type="button">
+                                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center">
+                            <p class="text-center text-sm m-5 text-primary">No benefits for this sold policy!</p>
+                        </div>
+                    @endif
                 </div>
             </div>
-
-            <div class="card">
-                <div class="card-body pt-4 pb-3 px-4">
-                    <div class="flex space-x-3 rtl:space-x-reverse">
-                        <div class="flex-none">
-                            <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFEDE6] dark:bg-slate-900	 text-warning-500">
-                                <iconify-icon icon="tdesign:money"></iconify-icon>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                                Total Client Paid
-                            </div>
-                            <div class="text-slate-900 dark:text-white text-lg font-medium">
-                                {{ $soldPolicy->total_client_paid ?? '-' }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-body pt-4 pb-3 px-4">
-                    <div class="flex space-x-3 rtl:space-x-reverse">
-                        <div class="flex-none">
-                            <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#EAE6FF] dark:bg-slate-900	 text-[#5743BE]">
-                                <iconify-icon icon="fluent:money-hand-24-regular"></iconify-icon>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                                Total Sales Commission
-                            </div>
-                            <div class="text-slate-900 dark:text-white text-lg font-medium">
-                                {{ $soldPolicy->total_sales_comm ?? '-' }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-body pt-4 pb-3 px-4">
-                    <div class="flex space-x-3 rtl:space-x-reverse">
-                        <div class="flex-none">
-                            <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFDA00] dark:bg-slate-900	 text-[#CEAE00]">
-                                <iconify-icon icon="fa6-solid:money-bills"></iconify-icon>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                                Total Company Paid
-                            </div>
-                            <div class="text-slate-900 dark:text-white text-lg font-medium">
-                                {{ $soldPolicy->total_comp_paid ?? '-' }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- END: Group Chart -->
         </div>
-    </div>
 
-    {{-- Client Payments --}}
-    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
-        <div class="card-body flex flex-col p-6 active justify-center">
-            <header class="card-header noborder flex justify-between">
-                <h4 class="card-title">
-                    Client Payments
-                </h4>
-                <button wire:click="toggleAddClientPayment" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add payment</button>
-            </header>
-            <div class="card-body px-6 pb-6">
-                <div class="overflow-x-auto -mx-6 ">
-                    <div class="inline-block min-w-full align-middle">
-                        <div class="overflow-hidden ">
-                            @if ($soldPolicy->client_payments->isEmpty())
-                                <p class="text-sm text-center">
-                                    No client payments found.
-                                </p>
-                            @else
+        {{-- Exclusions --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base">
+            <div class="card-body flex flex-col p-6 active">
+                <header class="flex mb-5 items-center">
+                    <div class="flex-1">
+                        <div class="card-title font-Inter text-slate-900 dark:text-white">
+                            <iconify-icon icon="ooui:special-pages-ltr"></iconify-icon>
+                            Exclusions
+                            <button wire:click="openAddExcSec" class="btn inline-flex justify-center btn-dark shadow-base2 float-right btn-sm">New
+                                Exclusions</button>
+                        </div>
+
+                    </div>
+                </header>
+                <div>
+                    @if (!$soldPolicy->exclusions->isEmpty())
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                            <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                <tr>
+
+                                    <th scope="col" class=" table-th ">
+                                        Title
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Value
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Action
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                @foreach ($soldPolicy->exclusions as $exclusion)
+                                    <tr>
+                                        <td class="table-td">{{ $exclusion->title }}</td>
+                                        <td class="table-td ">{{ $exclusion->value }}</td>
+                                        <td class="table-td ">
+                                            <div class="flex space-x-3 rtl:space-x-reverse">
+                                                <button wire:click="editThisExc({{ $exclusion->id }})" class="action-btn" type="button">
+                                                    <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                                </button>
+                                                <button wire:click="deleteThisExc({{ $exclusion->id }})" class="action-btn" type="button">
+                                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center">
+                            <p class="text-center text-sm m-5 text-primary">No exclusions for this sold policy!</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($section === 'payments')
+        {{-- Totals Numbers --}}
+        <div>
+            <div class="grid md:grid-cols-4 grid-cols-1 gap-4">
+
+                <!-- BEGIN: Group Chart -->
+
+
+                <div class="card">
+                    <div class="card-body pt-4 pb-3 px-4">
+                        <div class="flex space-x-3 rtl:space-x-reverse">
+                            <div class="flex-none">
+                                <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#E5F9FF] dark:bg-slate-900	 text-info-500">
+                                    <iconify-icon icon="ph:seal-percent-bold"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
+                                    Total Policy Commission
+                                </div>
+                                <div class="text-slate-900 dark:text-white text-lg font-medium">
+                                    {{ $soldPolicy->total_policy_comm ?? '-' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body pt-4 pb-3 px-4">
+                        <div class="flex space-x-3 rtl:space-x-reverse">
+                            <div class="flex-none">
+                                <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFEDE6] dark:bg-slate-900	 text-warning-500">
+                                    <iconify-icon icon="tdesign:money"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
+                                    Total Client Paid
+                                </div>
+                                <div class="text-slate-900 dark:text-white text-lg font-medium">
+                                    {{ $soldPolicy->total_client_paid ?? '-' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body pt-4 pb-3 px-4">
+                        <div class="flex space-x-3 rtl:space-x-reverse">
+                            <div class="flex-none">
+                                <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#EAE6FF] dark:bg-slate-900	 text-[#5743BE]">
+                                    <iconify-icon icon="fluent:money-hand-24-regular"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
+                                    Total Sales Commission
+                                </div>
+                                <div class="text-slate-900 dark:text-white text-lg font-medium">
+                                    {{ $soldPolicy->total_sales_comm ?? '-' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body pt-4 pb-3 px-4">
+                        <div class="flex space-x-3 rtl:space-x-reverse">
+                            <div class="flex-none">
+                                <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFDA00] dark:bg-slate-900	 text-[#CEAE00]">
+                                    <iconify-icon icon="fa6-solid:money-bills"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
+                                    Total Company Paid
+                                </div>
+                                <div class="text-slate-900 dark:text-white text-lg font-medium">
+                                    {{ $soldPolicy->total_comp_paid ?? '-' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- END: Group Chart -->
+            </div>
+        </div>
+
+        {{-- Client Payments --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+            <div class="card-body flex flex-col p-6 active justify-center">
+                <header class="card-header noborder flex justify-between">
+                    <h4 class="card-title">
+                        Client Payments
+                    </h4>
+                    <button wire:click="toggleAddClientPayment" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add payment</button>
+                </header>
+                <div class="card-body px-6 pb-6">
+                    <div class="overflow-x-auto -mx-6 ">
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden ">
+                                @if ($soldPolicy->client_payments->isEmpty())
+                                    <p class="text-sm text-center">
+                                        No client payments found.
+                                    </p>
+                                @else
+                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                            <tr>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Due
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Amount
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Type
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Status
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Payment date
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Action
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                            @foreach ($soldPolicy->client_payments as $payment)
+                                                <tr>
+
+                                                    <td class="table-td ">{{ $payment->due ? \Carbon\Carbon::parse($payment->due)->format('D d/m/Y') : 'Not set.' }}</td>
+
+                                                    <td class="table-td ">
+                                                        <div class="text-lg text-success-500">
+                                                            {{ number_format($payment->amount, 0, '.', ',') }} EGP
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="table-td">
+                                                        <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }}</span>
+                                                    </td>
+
+
+                                                    <td class="table-td">
+                                                        @if (str_contains($payment->status, 'new'))
+                                                            <span class="badge bg-warning-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            </span>
+                                                        @elseif(str_contains($payment->status, 'cancelled'))
+                                                            <span class="badge bg-danger-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            </span>
+                                                        @elseif($payment->status === 'confirmed' || str_contains($payment->status, 'paid'))
+                                                            <span class="badge bg-success-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            </span>
+                                                        @endif
+                                                    </td>
+
+                                                    <td class="table-td ">{{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('D d/m/Y') : 'Not set.' }}</td>
+
+
+                                                    <td class="table-td px-0">
+
+                                                        @if ($payment->doc_url)
+                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadPaymentDoc({{ $payment->id }})" wire:click="downloadPaymentDoc({{ $payment->id }})" icon="pepicons-pop:file" width="1.2em"
+                                                                height="1.2em"></iconify-icon>
+                                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadPaymentDoc({{ $payment->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                        @endif
+                                                        @if ($payment->note)
+                                                            <iconify-icon class=" cursor-pointer" wire:click="showPaymentNote({{ $payment->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
+                                                        @endif
+                                                    </td>
+
+                                                    <td class="table-td ">
+                                                        <div class="dropstart relative">
+                                                            <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                            </button>
+                                                            <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                @if ($payment->is_new)
+                                                                    <li>
+                                                                        <a wire:click="setPaymentPaid({{ $payment->id }})"
+                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="material-symbols:paid"></iconify-icon>
+                                                                            <span>Set as paid</span></a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a wire:click="setPaymentCancelled({{ $payment->id }})"
+                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="line-md:cancel"></iconify-icon>
+                                                                            <span>Set as Cancelled</span></a>
+                                                                    </li>
+                                                                @endif
+
+                                                                @if ($payment->doc_url)
+                                                                    <li>
+                                                                        <a wire:click="ConfirmRemovePaymentDoc({{ $payment->id }})"
+                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="lucide:file-x"></iconify-icon>
+                                                                            <span>Remove document</span>
+                                                                        </a>
+                                                                    </li>
+                                                                @else
+                                                                    <li>
+                                                                        <label for="paymentDoc" wire:click="setPaymentDoc({{ $payment->id }})"
+                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="pepicons-pop:file"></iconify-icon>
+                                                                            <span>Add document</span></label>
+                                                                        <input type="file" id="paymentDoc" name="paymentDoc" style="display: none;" wire:model="paymentDoc">
+                                                                    </li>
+                                                                @endif
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+
+                                        </tbody>
+                                    </table>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Sales Commission --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+            <div class="card-body flex flex-col p-6 active justify-center">
+                <header class="card-header noborder flex justify-between">
+                    <h4 class="card-title">
+                        Sales Commission
+                    </h4>
+                    <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
+                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                </header>
+                <div class="card-body px-6 pb-6">
+                    <div class="overflow-x-auto -mx-6 ">
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden ">
+                                @if ($soldPolicy->sales_comms->isEmpty())
+                                    <p class="text-sm text-center">
+                                        No sales commissions found.
+                                    </p>
+                                @else
                                 <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                     <thead class=" border-t border-slate-100 dark:border-slate-800">
                                         <tr>
 
                                             <th scope="col" class=" table-th ">
-                                                Due
+                                                Title
                                             </th>
 
                                             <th scope="col" class=" table-th ">
@@ -854,15 +1083,15 @@
                                             </th>
 
                                             <th scope="col" class=" table-th ">
-                                                Type
+                                                From
+                                            </th>
+
+                                            <th scope="col" class=" table-th ">
+                                                Payment Date
                                             </th>
 
                                             <th scope="col" class=" table-th ">
                                                 Status
-                                            </th>
-
-                                            <th scope="col" class=" table-th ">
-                                                Payment date
                                             </th>
 
                                             <th scope="col" class=" table-th ">
@@ -877,250 +1106,109 @@
                                     </thead>
                                     <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                        @foreach ($soldPolicy->client_payments as $payment)
+                                        @foreach ($soldPolicy->sales_comms as $comm)
                                             <tr>
 
-                                                <td class="table-td ">{{ $payment->due ? \Carbon\Carbon::parse($payment->due)->format('D d/m/Y') : 'Not set.' }}</td>
 
                                                 <td class="table-td ">
-                                                    <div class="text-lg text-success-500">
-                                                        {{ number_format($payment->amount, 0, '.', ',') }} EGP
+                                                    <div class="">
+                                                        <span class="text-slate-500 dark:text-slate-400">
+                                                            <span class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
+                                                            <span class="block text-slate-500 text-xs">
+                                                                {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
+                                                            </span>
+                                                        </span>
                                                     </div>
                                                 </td>
 
-                                                <td class="table-td">
-                                                    <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }}</span>
+                                                <td class="table-td ">
+                                                    <div class="text-lg text-success-500">
+                                                        {{ number_format($comm->amount, 0, '.', ',') }} EGP
+                                                    </div>
                                                 </td>
 
+                                                <td class="table-td ">
+                                                    {{ ucwords(str_replace('_', ' ', $comm->from)) }}
+                                                </td>
+
+                                                <td class="table-td ">{{ $comm->payment_date ? \Carbon\Carbon::parse($comm->payment_date)->format('D d/m/Y') : 'Not set.' }}</td>
 
                                                 <td class="table-td">
-                                                    @if (str_contains($payment->status, 'new'))
+                                                    @if (str_contains($comm->status, 'not_confirmed'))
                                                         <span class="badge bg-warning-500 text-white h-auto">
-                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
                                                         </span>
-                                                    @elseif(str_contains($payment->status, 'cancelled'))
+                                                    @elseif(str_contains($comm->status, 'cancelled'))
                                                         <span class="badge bg-danger-500 text-white h-auto">
-                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
                                                         </span>
-                                                    @elseif($payment->status === 'confirmed' || str_contains($payment->status, 'paid'))
+                                                    @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
                                                         <span class="badge bg-success-500 text-white h-auto">
-                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
                                                         </span>
                                                     @endif
+
+
                                                 </td>
-
-                                                <td class="table-td ">{{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('D d/m/Y') : 'Not set.' }}</td>
-
 
                                                 <td class="table-td px-0">
 
-                                                    @if ($payment->doc_url)
-                                                        <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadPaymentDoc({{ $payment->id }})" wire:click="downloadPaymentDoc({{ $payment->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
-                                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadPaymentDoc({{ $payment->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                    @if ($comm->doc_url)
+                                                        <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadCommDoc({{ $comm->id }})" wire:click="downloadCommDoc({{ $comm->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
+                                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadCommDoc({{ $comm->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
                                                     @endif
-                                                    @if ($payment->note)
-                                                        <iconify-icon class=" cursor-pointer" wire:click="showPaymentNote({{ $payment->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
+                                                    @if ($comm->note)
+                                                        <iconify-icon class=" cursor-pointer" wire:click="showCommNote({{ $comm->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
                                                     @endif
                                                 </td>
 
                                                 <td class="table-td ">
                                                     <div class="dropstart relative">
-                                                        <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                             <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                         </button>
                                                         <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                            @if ($payment->is_new)
+                                                            @if ($comm->is_new)
                                                                 <li>
-                                                                    <a wire:click="setPaymentPaid({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                    <a wire:click="setCommPaid({{ $comm->id }})"
+                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                         <iconify-icon icon="material-symbols:paid"></iconify-icon>
                                                                         <span>Set as paid</span></a>
                                                                 </li>
                                                                 <li>
-                                                                    <a wire:click="setPaymentCancelled({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                    <a wire:click="setCommCancelled({{ $comm->id }})"
+                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                         <iconify-icon icon="line-md:cancel"></iconify-icon>
                                                                         <span>Set as Cancelled</span></a>
                                                                 </li>
                                                             @endif
 
-                                                            @if ($payment->doc_url)
+                                                            <li>
+                                                                <a wire:click="refreshCommAmmount({{ $comm->id }})"
+                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                    <iconify-icon icon="material-symbols:refresh"></iconify-icon>
+                                                                    <span>Refresh amount</span></a>
+                                                            </li>
+
+
+                                                            @if ($comm->doc_url)
                                                                 <li>
-                                                                    <a wire:click="ConfirmRemovePaymentDoc({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                    <a wire:click="ConfirmRemoveCommDoc({{ $comm->id }})"
+                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                         <iconify-icon icon="lucide:file-x"></iconify-icon>
                                                                         <span>Remove document</span>
                                                                     </a>
                                                                 </li>
                                                             @else
                                                                 <li>
-                                                                    <label for="paymentDoc" wire:click="setPaymentDoc({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                    <label for="commDoc" wire:click="setCommDoc({{ $comm->id }})"
+                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                         <iconify-icon icon="pepicons-pop:file"></iconify-icon>
                                                                         <span>Add document</span></label>
-                                                                    <input type="file" id="paymentDoc" name="paymentDoc" style="display: none;" wire:model="paymentDoc">
+                                                                    <input type="file" id="commDoc" name="filename" style="display: none;" wire:model="commDoc">
                                                                 </li>
                                                             @endif
-                                                        </ul>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-
-                                    </tbody>
-                                </table>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Sales Commission --}}
-    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
-        <div class="card-body flex flex-col p-6 active justify-center">
-            <header class="card-header noborder flex justify-between">
-                <h4 class="card-title">
-                    Sales Commission
-                </h4>
-                <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
-                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
-            </header>
-            <div class="card-body px-6 pb-6">
-                <div class="overflow-x-auto -mx-6 ">
-                    <div class="inline-block min-w-full align-middle">
-                        <div class="overflow-hidden ">
-                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                <thead class=" border-t border-slate-100 dark:border-slate-800">
-                                    <tr>
-
-                                        <th scope="col" class=" table-th ">
-                                            Title
-                                        </th>
-
-                                        <th scope="col" class=" table-th ">
-                                            Amount
-                                        </th>
-
-                                        <th scope="col" class=" table-th ">
-                                            From
-                                        </th>
-
-                                        <th scope="col" class=" table-th ">
-                                            Payment Date
-                                        </th>
-
-                                        <th scope="col" class=" table-th ">
-                                            Status
-                                        </th>
-
-                                        <th scope="col" class=" table-th ">
-
-                                        </th>
-
-                                        <th scope="col" class=" table-th ">
-                                            Action
-                                        </th>
-
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
-                                    @foreach ($soldPolicy->sales_comms as $comm)
-                                        <tr>
-
-
-                                            <td class="table-td ">
-                                                <div class="">
-                                                    <span class="text-slate-500 dark:text-slate-400">
-                                                        <span class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
-                                                        <span class="block text-slate-500 text-xs">
-                                                            {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
-                                                        </span>
-                                                    </span>
-                                                </div>
-                                            </td>
-
-                                            <td class="table-td ">
-                                                <div class="text-lg text-success-500">
-                                                    {{ number_format($comm->amount, 0, '.', ',') }} EGP
-                                                </div>
-                                            </td>
-
-                                            <td class="table-td ">
-                                                {{ ucwords(str_replace('_', ' ', $comm->from)) }}
-                                            </td>
-
-                                            <td class="table-td ">{{ $comm->payment_date ? \Carbon\Carbon::parse($comm->payment_date)->format('D d/m/Y') : 'Not set.' }}</td>
-
-                                            <td class="table-td">
-                                                @if (str_contains($comm->status, 'not_confirmed'))
-                                                    <span class="badge bg-warning-500 text-white h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                    </span>
-                                                @elseif(str_contains($comm->status, 'cancelled'))
-                                                    <span class="badge bg-danger-500 text-white h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                    </span>
-                                                @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
-                                                    <span class="badge bg-success-500 text-white h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                    </span>
-                                                @endif
-
-
-                                            </td>
-
-                                            <td class="table-td px-0">
-
-                                                @if ($comm->doc_url)
-                                                    <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadCommDoc({{ $comm->id }})" wire:click="downloadCommDoc({{ $comm->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
-                                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadCommDoc({{ $comm->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                                @endif
-                                                @if ($comm->note)
-                                                    <iconify-icon class=" cursor-pointer" wire:click="showCommNote({{ $comm->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
-                                                @endif
-                                            </td>
-
-                                            <td class="table-td ">
-                                                <div class="dropstart relative">
-                                                    <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
-                                                    </button>
-                                                    <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                        @if ($comm->is_new)
-                                                            <li>
-                                                                <a wire:click="setCommPaid({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                    <iconify-icon icon="material-symbols:paid"></iconify-icon>
-                                                                    <span>Set as paid</span></a>
-                                                            </li>
-                                                            <li>
-                                                                <a wire:click="setCommCancelled({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                    <iconify-icon icon="line-md:cancel"></iconify-icon>
-                                                                    <span>Set as Cancelled</span></a>
-                                                            </li>
-                                                        @endif
-
-                                                        <li>
-                                                            <a wire:click="refreshCommAmmount({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                <iconify-icon icon="material-symbols:refresh"></iconify-icon>
-                                                                <span>Refresh amount</span></a>
-                                                        </li>
-
-
-                                                        @if ($comm->doc_url)
-                                                            <li>
-                                                                <a wire:click="ConfirmRemoveCommDoc({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                    <iconify-icon icon="lucide:file-x"></iconify-icon>
-                                                                    <span>Remove document</span>
-                                                                </a>
-                                                            </li>
-                                                        @else
-                                                            <li>
-                                                                <label for="commDoc" wire:click="setCommDoc({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                    <iconify-icon icon="pepicons-pop:file"></iconify-icon>
-                                                                    <span>Add document</span></label>
-                                                                <input type="file" id="commDoc" name="filename" style="display: none;" wire:model="commDoc">
-                                                            </li>
-                                                        @endif
-                                                        {{-- <li>
+                                                            {{-- <li>
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#editModal"
                                                             class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
                                                             <iconify-icon icon="clarity:note-edit-line"></iconify-icon>
@@ -1132,20 +1220,22 @@
                                                             <iconify-icon icon="fluent:delete-28-regular"></iconify-icon>
                                                             <span>Delete</span></a>
                                                     </li> --}}
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
 
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 
     @if ($newClaimSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
@@ -2028,7 +2118,8 @@
                                 Delete Benefit
                             </h3>
                             <button wire:click="dismissDeleteBenefit" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2065,7 +2156,8 @@
                                 Delete Exclusions
                             </h3>
                             <button wire:click="dismissDeleteExc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2102,7 +2194,8 @@
                                 Delete Document File
                             </h3>
                             <button wire:click="toggleDeleteDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2139,7 +2232,8 @@
                                 Delete policy commission
                             </h3>
                             <button wire:click="dismissDeletePolCom" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2176,7 +2270,8 @@
                                 Remove Commission Document
                             </h3>
                             <button wire:click="DissRemoveCommDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2213,7 +2308,8 @@
                                 Remove Payment Document
                             </h3>
                             <button wire:click="DissRemovePaymentDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
