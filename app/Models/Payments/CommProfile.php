@@ -31,7 +31,8 @@ class CommProfile extends Model
     ];
 
     protected $fillable = [
-        'title', 'type', 'per_policy', 'desc', 'comm_profile_id', 'user_id'
+        'title', 'type', 'per_policy', 'desc', 'comm_profile_id',
+        'user_id', 'balance', 'unapproved_balance'
     ];
 
     ///static functions
@@ -96,11 +97,45 @@ class CommProfile extends Model
                 "title"         =>  $title,
                 "desc"          =>  $desc,
             ]);
-            AppLog::info("Can't edit comm profile",  loggable: $this);
+            AppLog::info("Edited comm profile",  loggable: $this);
             return $this->save();
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't edit comm profile", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    public function updateBalance(
+        float $amount
+    ) {
+        try {
+            $this->increment(
+                "balance",
+                $amount
+            );
+            AppLog::info("Updating comm profile balance",  loggable: $this);
+            return $this->save();
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't update comm profile balance", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    public function updateUnapprovedBalance(
+        float $amount
+    ) {
+        try {
+            $this->increment(
+                "unapproved_balance",
+                $amount
+            );
+            AppLog::info("Updating comm profile unapproved balance",  loggable: $this);
+            return $this->save();
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't update comm profile unapproved balance", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
@@ -111,11 +146,12 @@ class CommProfile extends Model
         Policy|Company $condition = null, //include a policy or a company as a condition
         $line_of_business = null // or select a line of business as the condition - line of business is on of Policy::LINES_OF_BUSINESS
     ) {
-
         assert(
             (!$condition && !$line_of_business) ||
-            ($condition && !$line_of_business) || 
-            (!$condition && $line_of_business), "Must either a condition or a line of business or both empty");
+                ($condition && !$line_of_business) ||
+                (!$condition && $line_of_business),
+            "Must either a condition or a line of business or both empty"
+        );
 
         try {
             AppLog::info("Creating comm profile configuration", loggable: $this);
@@ -160,6 +196,42 @@ class CommProfile extends Model
         }
     }
 
+    public function addPayment(
+        $amount,
+        $type, 
+        $note = null
+    ) {
+        //TODO - add needs approval check
+        try {
+            AppLog::info("Creating comm profile payment", loggable: $this);
+            $payment = $this->payments()->create([
+                "amount"    =>  $amount,
+                "type"      =>  $type,
+                "note"      =>  $note
+            ]);
+            $payment->save();
+            return $payment;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't create comm profile payment", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function addTargetCycle($day_of_month, $each_month)
+    {
+        try {
+            $this->target_cycles()->create([
+                "day_of_month"  =>  $day_of_month,
+                "each_month"    =>  $each_month,
+            ]);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     ///scopes
     public function scopeSearchBy($query, $text)
     {
@@ -182,9 +254,19 @@ class CommProfile extends Model
         return $this->hasMany(CommProfileConf::class);
     }
 
+    public function target_cycles(): HasMany
+    {
+        return $this->hasMany(TargetCycle::class);
+    }
+
     public function targets(): HasMany
     {
         return $this->hasMany(Target::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(CommProfilePayment::class);
     }
 
     public function offers(): BelongsToMany

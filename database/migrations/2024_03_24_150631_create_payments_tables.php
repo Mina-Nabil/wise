@@ -83,6 +83,10 @@ return new class extends Migration
             $table->dateTime('payment_date')->nullable();
             $table->text('doc_url')->nullable();
             $table->text('note')->nullable();
+            //with approval
+            $table->double('client_paid_percent')->default(0); 
+            //without approval
+            $table->double('company_paid_percent')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

@@ -34,10 +34,31 @@ class SalesComm extends Model
     const FILES_DIRECTORY = 'sold_policies/sales_comm_docs/';
     protected $table = 'sales_comms';
     protected $fillable = [
-        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from'
+        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from', 'client_paid_percent', 'company_paid_percent'
     ];
 
     ///model functions
+    public function setPaidInfo($client_paid_percent = null, $company_paid_percent = null)
+    {
+        //TODO : shof ezay hat update el comm profile balance
+        $updates = [];
+        if ($client_paid_percent && $this->client_paid_percent != $client_paid_percent) {
+            $updates['client_paid_percent'] = $client_paid_percent;
+        }
+        if ($company_paid_percent && $this->company_paid_percent != $company_paid_percent) {
+            $updates['company_paid_percent'] = $company_paid_percent;
+        }
+        try {
+            $this->update($updates);
+            AppLog::info("Setting comm profile paid info",  loggable: $this);
+            return $this->save();
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't set comm profile paid info", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function setInfo($title, $comm_percentage, $note = null)
     {
         /** @var User */
@@ -61,14 +82,14 @@ class SalesComm extends Model
         }
     }
 
-    public function refreshAmount()
+    public function refreshPaymentInfo()
     {
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
 
         AppLog::info("Calculating Sales Comm amount", loggable: $this);
-        $this->loadMissing('sold_policy');
+        $this->load('sold_policy');
         switch ($this->from) {
             case CommProfileConf::FROM_NET_PREM:
                 $from_amount = $this->sold_policy->net_premium;

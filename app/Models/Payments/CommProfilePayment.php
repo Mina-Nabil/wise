@@ -2,7 +2,6 @@
 
 namespace App\Models\Payments;
 
-use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -14,23 +13,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class ClientPayment extends Model
+class CommProfilePayment extends Model
 {
-    const MORPH_TYPE = 'client_payment';
     use HasFactory;
 
-    const FILES_DIRECTORY = 'sold_policies/client_pymt_docs/';
+    const FILES_DIRECTORY = 'sold_policies/comm_prof_pymt_docs/';
 
     const PYMT_TYPE_CASH = 'cash';
     const PYMT_TYPE_CHEQUE = 'cheque';
     const PYMT_TYPE_BANK_TRNSFR = 'bank_transfer';
-    const PYMT_TYPE_VISA = 'visa';
 
     const PYMT_TYPES = [
         self::PYMT_TYPE_CASH,
         self::PYMT_TYPE_CHEQUE,
         self::PYMT_TYPE_BANK_TRNSFR,
-        self::PYMT_TYPE_VISA,
     ];
 
     const PYMT_STATE_NEW = 'new';
@@ -44,26 +40,27 @@ class ClientPayment extends Model
 
     protected $table = 'client_payments';
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'due', 'closed_by_id'
+        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'needs_approval', 'creator_id', 'approver_id'
     ];
 
     ///model functions
-    public function setInfo(Carbon $due, $type, $note = null)
+    public function setInfo($amount, $type, $note = null)
     {
+        assert($this->status == self::PYMT_STATE_NEW, "Payment is not new, can't be updated");
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
 
         try {
-            AppLog::info("Setting Client Payment info", loggable: $this);
+            AppLog::info("Setting Profile Payment info", loggable: $this);
             return $this->update([
-                "due"   =>  $due->format('Y-m-d'),
+                "amount"  =>  $amount,
                 "type"  =>  $type,
                 "note"  =>  $note,
             ]);
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Setting Profile Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
 
@@ -76,13 +73,13 @@ class ClientPayment extends Model
         try {
             if ($this->doc_url)
                 Storage::delete($this->doc_url);
-            AppLog::info("Setting Client Payment document", loggable: $this);
+            AppLog::info("Setting Profile Payment document", loggable: $this);
             $this->update([
                 'doc_url'   =>  $doc_url
             ]);
             return true;
         } catch (Exception $e) {
-            AppLog::warning("Setting Client Payment document failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::warning("Setting Profile Payment document failed", desc: $e->getMessage(), loggable: $this);
             report($e);
             return false;
         }
@@ -95,22 +92,25 @@ class ClientPayment extends Model
         if (!$user->can('update', $this)) return false;
 
         try {
-            if ($this->doc_url){
+            if ($this->doc_url) {
                 Storage::delete($this->doc_url);
                 $this->doc_url = null;
                 $this->save();
             }
-            AppLog::info("Deleting Client Payment document", loggable: $this);
+            AppLog::info("Deleting Profile Payment document", loggable: $this);
             return true;
         } catch (Exception $e) {
-            AppLog::warning("Deleting Client Payment document failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::warning("Deleting Profile Payment document failed", desc: $e->getMessage(), loggable: $this);
             report($e);
             return false;
         }
     }
 
+    public function approve() {}
+
     public function setAsPaid(Carbon $date = null)
     {
+        //TODO - use DB::transaction w create decrementBalance
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
@@ -118,21 +118,18 @@ class ClientPayment extends Model
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
-            AppLog::info("Setting Client Payment as paid", loggable: $this);
+            AppLog::error("Setting Profile Payment as paid", loggable: $this);
             if ($this->update([
-                "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
             ])) {
                 $this->loadMissing('sold_policy');
-                $this->sold_policy->setClientPaymentDate($date);
-                $this->sold_policy->calculateTotalClientPayments();
-                $this->sold_policy->updateSalesCommsPaymentInfo();
+                $this->comm_profile->decrementBalance($this->amount);
             }
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Setting Profile Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
 
@@ -145,7 +142,7 @@ class ClientPayment extends Model
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
-            AppLog::info("Setting Client Payment as cancelled", loggable: $this);
+            AppLog::error("Setting Profile Payment as cancelled", loggable: $this);
             return $this->update([
                 "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
@@ -153,7 +150,7 @@ class ClientPayment extends Model
             ]);
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+            AppLog::error("Setting Profile Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
 
@@ -175,12 +172,16 @@ class ClientPayment extends Model
     }
 
     ///relations
-    public function sold_policy(): BelongsTo
+    public function comm_profile(): BelongsTo
     {
-        return $this->belongsTo(SoldPolicy::class);
+        return $this->belongsTo(CommProfile::class);
     }
-    public function closed_by(): BelongsTo
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'closed_by_id');
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approver_id');
     }
 }

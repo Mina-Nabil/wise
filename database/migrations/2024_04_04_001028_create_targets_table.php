@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('title');
             $table->enum('type', CommProfile::TYPES);
             $table->boolean('per_policy');
+            $table->double('balance')->default(0);
+            $table->double('unapproved_balance')->default(0);
             $table->text('desc')->nullable();
             $table->timestamps();
         });

@@ -34,7 +34,7 @@ class CompanyCommPayment extends Model
 
     protected $table = 'company_comm_payments';
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url'
+        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'receiver_id'
     ];
 
     ///model functions
@@ -115,6 +115,7 @@ class CompanyCommPayment extends Model
             ])) {
                 $this->loadMissing('sold_policy');
                 $this->sold_policy->calculateTotalCompanyPayments();
+                $this->sold_policy->updateSalesCommsPaymentInfo();
             }
             return true;
         } catch (Exception $e) {

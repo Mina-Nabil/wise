@@ -90,7 +90,7 @@ class SoldPolicy extends Model
                 $total_comm = 0;
                 foreach ($this->policy->comm_confs as $conf) {
                     $tmp_base_value = $conf->calculation_type == GrossCalculation::TYPE_VALUE ?
-                        $conf->value : (($conf->value / 100) * $this->gross_premium);
+                        $conf->value : (($conf->value / 100) * $this->net_premium);
                     if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
                         $tmp_base_value = $tmp_base_value - (($conf->penalty_percent / 100) * $tmp_base_value);
                     }
@@ -165,6 +165,8 @@ class SoldPolicy extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateClientPayments', $this)) return false;
+
+        assert($amount <= ($this->gross_premium - $this->total_client_paid), "Amount is more that what the client should pay. Please make sure the amount is less than the gross premium plus total paid");
 
         try {
             if ($this->client_payments()->create([
@@ -404,7 +406,6 @@ class SoldPolicy extends Model
         }
     }
 
-
     public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, $discount)
     {
         /** @var User */
@@ -429,6 +430,22 @@ class SoldPolicy extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't edit Sold Policy payment", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function updateSalesCommsPaymentInfo()
+    {
+        $client_paid_percentage = round($this->total_client_paid / $this->gross_premium, 2);
+        $company_paid_percentage = round($this->total_comp_paid / $this->total_policy_comm, 2);
+
+        try {
+            /** @var SalesComm */
+            foreach ($this->sales_comms()->get() as $commaya) {
+                $commaya->setPaidInfo(client_paid_percent: $client_paid_percentage, company_paid_percent: $company_paid_percentage);
+            }
+        } catch (Exception $e) {
+            report($e);
             return false;
         }
     }
