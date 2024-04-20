@@ -9,6 +9,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AppLogController;
 use App\Models\Customers\Customer;
 use App\Models\Users\ContactInfo;
@@ -69,6 +70,8 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::get('/logs', [AppLogController::class, 'index'])->name('logs.index');
     Route::get('/slarecords', [AppLogController::class, 'slaRecordsIndex'])->name('slarecords.index');
+
+    Route::get('/reports/sold-policy', [ReportController::class, 'soldPolicyIndex'])->name('reports.soldpolicy');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);
