@@ -46,6 +46,23 @@ class OfferReport extends Component
     public $Evalue_from;
     public $Evalue_to;
 
+    public function togglestatuses()
+    {
+        $this->toggle($this->statusesSection);
+        if ($this->statusesSection) {
+            $this->Estatuses = $this->statuses;
+        }
+    }
+
+    public function clearstatuses(){
+        $this->statuses = [];
+    }
+
+    public function setStatuses()
+    {
+        $this->statuses = $this->Estatuses;
+        $this->toggle($this->statusesSection);
+    }
 
     public function toggleCloser()
     {
@@ -168,7 +185,10 @@ class OfferReport extends Component
         $this->to = null;
     }
 
-
+    public function redirectToShowPage($id)
+    {
+        return redirect(route('offers.show', $id));
+    }
 
     public function render()
     {
@@ -192,15 +212,15 @@ class OfferReport extends Component
         }
 
         $offers = Offer::report(
-            // $this->from,
-            // $this->to,
-            // $this->statuses,
-            // $this->creator_id,
-            // $this->assignee_id,
-            // $this->closed_by_id,
-            // $this->line_of_business,
-            // $this->value_from,
-            // $this->value_to
+            $this->from,
+            $this->to,
+            $this->statuses,
+            $this->creator_id,
+            $this->assignee_id,
+            $this->closed_by_id,
+            $this->line_of_business,
+            $this->value_from,
+            $this->value_to
         )->paginate(30);
         return view('livewire.offer-report', [
             'offers' => $offers,

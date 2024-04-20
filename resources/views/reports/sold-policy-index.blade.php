@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('claims')
+@section('reports.sold-policy')
     active
 @endsection
 

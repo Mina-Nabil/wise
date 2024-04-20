@@ -208,7 +208,28 @@
                             </span>
                         </a>
                     </li>
+                    
                     @if (Auth::user()->is_admin)
+
+                    <li class="">
+                        <a href="javascript:void(0)" class="navItem">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="ic:round-add-task"></iconify-icon>
+                                <span>Reports</span>
+                            </span>
+                            <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
+                        </a>
+                        <ul class="sidebar-submenu">
+                            <li>
+                                <a href="{{ url('/reports/offers') }}" class="@yield('reports.offers')">Offers</a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold Policies</a>
+                            </li>
+
+                        </ul>
+                    </li>
+
                         <li class="sidebar-menu-title">Settings</li>
                         <li>
                             <a href="{{ url('/policies') }}" class="navItem @yield('policies')">

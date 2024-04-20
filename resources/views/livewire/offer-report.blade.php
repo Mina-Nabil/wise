@@ -2,7 +2,8 @@
     <div class="flex justify-between flex-wrap items-center">
         <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
             <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-                Offers
+                <b>Reports:</b> Offers
+                
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
@@ -17,40 +18,40 @@
                 <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                             z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                     <li wire:click="toggleDate">
-                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                    dark:hover:text-white">
-                            Date ( From-To )</a>
+                        <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Date ( From-To )</span>
                     </li>
-                    <li wire:click="toggleExpiryDate">
-                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                    dark:hover:text-white">
-                            Statuses</a>
+                    <li wire:click="togglestatuses">
+                        <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Statuses</span>
                     </li>
                     <li wire:click="toggleCreator">
-                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                    dark:hover:text-white">
-                            Creator</a>
+                        <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Creator</span>
                     </li>
                     <li wire:click="toggleAssignee">
-                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                    dark:hover:text-white">
-                            Assignee</a>
+                        <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Assignee</span>
                     </li>
                     <li wire:click="toggleCloser">
-                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                    dark:hover:text-white">
-                            Closed by</a>
+                        <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Closed by</span>
                     </li>
                     <li wire:click="toggleLob">
-                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                    dark:hover:text-white">
-                            Line of business</a>
+                        <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Line of business</span>
                     </li>
 
                     <li wire:click="toggleValues">
-                        <a class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                    dark:hover:text-white">
-                            Item Value ( From-To )</a>
+                        <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Item Value ( From-To )</span>
                     </li>
                 </ul>
             </div>
@@ -134,6 +135,25 @@
                         &nbsp;&nbsp;
                     </span>
                     <span wire:click="clearValues">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($statuses)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="togglestatuses">
+                        Status:&nbsp;(
+                        @foreach ($statuses as $status)
+                            {{ ucwords(str_replace('_', ' ', $status)) }}
+                            @if (!$loop->last)
+                                ,
+                            @endif
+                        @endforeach
+                        )
+                        &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearstatuses">
                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                     </span>
                 </button>
@@ -377,7 +397,7 @@
             </div>
         </div>
     @endif
-
+    {{-- statusesSection --}}
     @if ($statusesSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
@@ -388,7 +408,7 @@
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Statuses
                             </h3>
-                            <button wire:click="toggleLob" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                            <button wire:click="togglestatuses" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -399,23 +419,24 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-                                <label for="Eline_of_business" class="form-label">Line of business</label>
-                                <select name="Eline_of_business" id="Eline_of_business" class="form-control w-full mt-2" wire:model.defer="Eline_of_business">
-                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" value="">
-                                        Select user</option>
-                                    @foreach ($LINES_OF_BUSINESS as $LOB)
-                                        <option value="{{ $LOB }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ ucwords(str_replace('_', ' ', $LOB)) }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label for="Eline_of_business" class="form-label">Select statuses</label>
+                                @foreach ($STATUSES as $STATUS)
+                                    <div class="checkbox-area">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="hidden" value="{{ $STATUS }}" name="checkbox" wire:model="Estatuses">
+                                            <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                            <span class="text-slate-500 dark:text-slate-400 text-sm leading-6">{{ ucwords(str_replace('_', ' ', $STATUS)) }}</span>
+                                        </label>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setLob" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="setLob">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setLob" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            <button wire:click="setStatuses" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setStatuses">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setStatuses" icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
@@ -424,7 +445,7 @@
             </div>
         </div>
     @endif
-
+    
     @if ($creatorSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
