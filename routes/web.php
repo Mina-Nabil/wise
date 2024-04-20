@@ -72,6 +72,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/slarecords', [AppLogController::class, 'slaRecordsIndex'])->name('slarecords.index');
 
     Route::get('/reports/sold-policy', [ReportController::class, 'soldPolicyIndex'])->name('reports.soldpolicy');
+    Route::get('/reports/offers', [ReportController::class, 'offersIndex'])->name('reports.offers');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);
@@ -88,12 +89,12 @@ Route::post('/login', [HomeController::class, 'authenticate']);
 Route::get('/login', [HomeController::class, 'login'])->name('login');
 Route::get('/logout', [HomeController::class, 'logout'])->name('logout');
 
-Route::get('/contact/{id}', function($id){
+Route::get('/contact/{id}', function ($id) {
     $contact = ContactInfo::findOrFail($id);
     return $contact->downloadvCard();
 });
 
-Route::get('/contact/generate/{id}', function($id){
+Route::get('/contact/generate/{id}', function ($id) {
     $contact = ContactInfo::findOrFail($id);
     return $contact->generateQRCode();
 });
