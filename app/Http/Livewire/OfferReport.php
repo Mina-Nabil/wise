@@ -35,6 +35,7 @@ class OfferReport extends Component
     public $line_of_business;
     public $value_from;
     public $value_to;
+    public $search;
 
     public $Efrom;
     public $Eto;
@@ -220,7 +221,8 @@ class OfferReport extends Component
             $this->closed_by_id,
             $this->line_of_business,
             $this->value_from,
-            $this->value_to
+            $this->value_to,
+            $this->search
         )->paginate(30);
         return view('livewire.offer-report', [
             'offers' => $offers,

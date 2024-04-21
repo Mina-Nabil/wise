@@ -36,6 +36,7 @@ class SoldPolicyReport extends Component
     public $InsurancePolicies;
     public $searchPolicy;
 
+    public $search;
     public $start_from;
     public $start_to;
     public $expiry_from;
@@ -66,15 +67,18 @@ class SoldPolicyReport extends Component
     public $Epolicy_ids = [];
     public $Eis_valid;
 
-    public function clearvalid(){
+    public function clearvalid()
+    {
         $this->is_valid = null;
     }
 
-    public function toggleValidated(){
+    public function toggleValidated()
+    {
         $this->toggle($this->is_valid);
     }
 
-    public function togglePolicy(){
+    public function togglePolicy()
+    {
         $this->toggle($this->PolicySection);
         if ($this->PolicySection) {
             $this->Epolicy_ids = $this->policy_ids;
@@ -99,11 +103,13 @@ class SoldPolicyReport extends Component
         $this->togglePolicy();
     }
 
-    public function clearPolicy(){
+    public function clearPolicy()
+    {
         $this->policy_ids = [];
     }
 
-    public function toggleCompany(){
+    public function toggleCompany()
+    {
         $this->toggle($this->companySection);
         if ($this->companySection) {
             $this->Ecompany_ids = $this->company_ids;
@@ -121,7 +127,8 @@ class SoldPolicyReport extends Component
         $this->toggleCompany();
     }
 
-    public function clearCompany(){
+    public function clearCompany()
+    {
         $this->company_ids = [];
     }
 
@@ -143,14 +150,16 @@ class SoldPolicyReport extends Component
             ->get();
     }
 
-    public function toggleBrands(){
+    public function toggleBrands()
+    {
         $this->toggle($this->brandSection);
         if ($this->brandSection) {
             $this->Ebrand_ids = $this->brand_ids;
         }
     }
 
-    public function clearBrands(){
+    public function clearBrands()
+    {
         $this->brand_ids = [];
     }
 
@@ -296,7 +305,23 @@ class SoldPolicyReport extends Component
 
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $users = User::all();
-        $policies = SoldPolicy::report($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $this->creator_id, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premuim_to, $this->net_premuim_from, $this->brand_ids,$this->company_ids,$this->policy_ids,$this->is_valid)->paginate(30);
+        $policies = SoldPolicy::report(
+            $this->start_from,
+            $this->start_to,
+            $this->expiry_from,
+            $this->expiry_to,
+            $this->creator_id,
+            $this->line_of_business,
+            $this->value_from,
+            $this->value_to,
+            $this->net_premuim_to,
+            $this->net_premuim_from,
+            $this->brand_ids,
+            $this->company_ids,
+            $this->policy_ids,
+            $this->is_valid,
+            $this->search
+        )->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
             'users' => $users,
