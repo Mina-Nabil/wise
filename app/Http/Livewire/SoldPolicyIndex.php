@@ -151,7 +151,6 @@ class SoldPolicyIndex extends Component
             ->get()
             ->take(5);
         $tmp = $this->policyData;
-        Log::info($tmp);
     }
 
     public function selectClient($id)

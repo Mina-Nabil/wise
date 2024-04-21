@@ -425,7 +425,7 @@
                                     </div>
 
                                     <div class="input-area">
-                                        <label for="home_number2" class="form-label">Home number 2</label>
+                                        <label for="home_number2" class="form-label">Hotline</label>
                                         <input id="home_number2" type="text"
                                             class="form-control @error('home_number2') !border-danger-500 @enderror"
                                             wire:model.defer="home_number2">
@@ -665,7 +665,7 @@
                                     </div>
 
                                     <div class="input-area">
-                                        <label for="home_number2" class="form-label">Home number 2</label>
+                                        <label for="home_number2" class="form-label">Hotline</label>
                                         <input id="home_number2" type="text"
                                             class="form-control @error('home_number2') !border-danger-500 @enderror"
                                             wire:model.defer="home_number2">

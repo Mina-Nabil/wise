@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Customer extends Model
 {
@@ -203,11 +204,11 @@ class Customer extends Model
                 foreach ($cars as $car) {
                     $this->addCar(
                         $car["car_id"],
+                        $car["model_year"],
                         $car["sum_insured"] ?? null,
                         $car["insurance_payment"] ?? null,
                         $car["payment_frequency"] ?? null,
                         $car["insurance_company_id"] ?? null,
-                        $car["model_year"] ?? null,
                         $car["renewal_date"] ?? null,
                         $car["wise_insured"] ?? false
                     );
@@ -490,7 +491,7 @@ class Customer extends Model
         }
     }
 
-    public function setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year, $insured_value)
+    public function setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year)
     {
         try {
             $name_array = explode(" ", $full_name);
@@ -506,13 +507,17 @@ class Customer extends Model
                 $this->addAddress(Address::TYPE_HOME, $address, country: "Egypt");
             if ($tel1) $this->addPhone(Phone::TYPE_MOBILE, $tel1, true);
             if ($tel2) $this->addPhone(Phone::TYPE_HOME, $tel2, false);
-            $newCar = null;
+            $tmpCar = NULL;
             if ($car) {
-                $newCar = $this->addCar($car->id, $model_year, $insured_value);
+                $this->setCars([[
+                    "car_id"        => $car->id,
+                    "model_year"    => $model_year
+                ]]);
+                $tmpCar = $this->cars()->where("car_id", $car->id)->where("model_year", $model_year)->first();
             }
 
             $this->save();
-            return $newCar?->id;
+            return ($tmpCar) ? $tmpCar->id : null;
         } catch (Exception $e) {
             report($e);
         }
@@ -671,6 +676,8 @@ class Customer extends Model
                 $q->where(function ($qq) use ($tmp, $loggedInUser) {
                     if ($loggedInUser->is_operations) {
                         $qq->where('customers.email', '=', "$tmp")
+                            ->orwhere('customers.first_name', '=', "$tmp")
+                            ->orwhere('customers.last_name', '=', "$tmp")
                             ->orwhere('customer_phones.number', '=', "$tmp");
                     } else {
                         $qq->where('customers.first_name', 'LIKE', "%$tmp%")

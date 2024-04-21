@@ -787,10 +787,10 @@ class Offer extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('offers.*')
-            ->join('users', "offers.creator_id", '=', 'users.id')
+            ->join('users', "offers.assignee_id", '=', 'users.id')
             ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
 
-        if ($loggedInUser->type !== User::TYPE_ADMIN) {
+        if (!($loggedInUser->type == User::TYPE_ADMIN || ($loggedInUser->type == User::TYPE_OPERATIONS && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('offers.creator_id', $loggedInUser->id)
@@ -804,25 +804,67 @@ class Offer extends Model
             $q->leftjoin('corporates', function ($j) {
                 $j->on('offers.client_id', '=', 'corporates.id')
                     ->where('offers.client_type', Corporate::MORPH_TYPE);
-            })->leftjoin('customers', function ($j) {
-                $j->on('offers.client_id', '=', 'customers.id')
-                    ->where('offers.client_type', Customer::MORPH_TYPE);
-            })->groupBy('offers.id');
+            })
+                ->leftjoin('customers', function ($j) {
+                    $j->on('offers.client_id', '=', 'customers.id')
+                        ->where('offers.client_type', Customer::MORPH_TYPE);
+                })
+                ->leftjoin('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id')
+                ->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')->groupBy('offers.id');
 
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
                 $q->where(function ($qq) use ($tmp) {
                     $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.name', 'LIKE', "%$tmp%")
-                        ->orwhere('renewal_policy', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
-                        ->orwhere('corporates.email', 'LIKE', "%$tmp%");
+                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                        ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
+                        ->orwhere('renewal_policy', 'LIKE', "%$tmp%");
                 });
             }
         });
-        return $query->orderByDesc('due');
+        return $query->orderBy('due');
+    }
+
+    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
+    {
+        $query->userData($searchText);
+        $query->select('offers.*')
+            ->when($from, function ($q, $v) {
+                $q->where('offers.created_at', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($to, function ($q, $v) {
+                $q->where('offers.created_at', "<=", $v->format('Y-m-d 23:59:59'));
+            })->when(count($statuses) > 0, function ($q, $v) use ($statuses) {
+                $q->byStates($statuses);
+            })->when($creator_id, function ($q, $v) {
+                $q->where('creator_id', "=", $v);
+            })->when($assignee_id, function ($q, $v) {
+                $q->where('assignee_id', "=", $v);
+            })->when($closed_by_id, function ($q, $v) {
+                $q->where('closed_by_id', "=", $v);
+            })->when($value_from, function ($q, $v) {
+                $q->where('item_value', ">=", $v);
+            })->when($value_to, function ($q, $v) {
+                $q->where('item_value', "<=", $v);
+            })->when($line_of_business, function ($q, $v) {
+                $q->where('type', "<=", $v);
+            })->when($searchText, function ($q, $v) {
+                $q->leftJoin('customers', function ($j) {
+                    $j->on('customers.id', '=', 'offers.client_id')
+                        ->where('offers.client_type', '=', Customer::MORPH_TYPE);
+                })->leftJoin('corporates', function ($j) {
+                    $j->on('corporates.id', '=', 'offers.client_id')
+                        ->where('offers.client_type', '=', Corporate::MORPH_TYPE);
+                })->where('type', "LIKE", "%$v%");
+            });
+        $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
+        return $query;
     }
 
     public function scopeIsRenewal($query)
@@ -850,8 +892,6 @@ class Offer extends Model
             array_push($states, self::STATUS_PENDING_OPERATIONS);
             array_push($states, self::STATUS_PENDING_INSUR);
             array_push($states, self::STATUS_PENDING_CUSTOMER);
-            array_push($states, self::STATUS_DECLINED_INSUR);
-            array_push($states, self::STATUS_DECLINED_CUSTOMER);
         }
         return $query->whereIn("offers.status", $states);
     }
@@ -883,7 +923,7 @@ class Offer extends Model
 
     public function comments(): HasMany
     {
-        return $this->hasMany(OfferComment::class);
+        return $this->hasMany(OfferComment::class)->latest();
     }
 
     public function discounts(): HasMany
