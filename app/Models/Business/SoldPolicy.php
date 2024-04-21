@@ -846,7 +846,7 @@ class SoldPolicy extends Model
             })->when($line_of_business || $company_ids || $policy_ids, function ($q) use ($line_of_business, $company_ids, $policy_ids) {
                 $q->join('policies', 'policies.id', '=', 'sold_policies.policy_id')
                     ->when($line_of_business, function ($qq, $vv) {
-                        $qq->where('policies.type', $vv);
+                        $qq->where('policies.business', $vv);
                     })->when($company_ids, function ($qq, $vv) {
                         $qq->whereIn('policies.company_id', $vv);
                     })->when($policy_ids, function ($qq, $vv) {
