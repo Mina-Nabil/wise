@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CommProfile extends Model
 {
+    const FILES_DIRECTORY = 'comm_profile/payments/';
     const MORPH_TYPE = 'comm_profile';
     use HasFactory;
 
@@ -198,15 +199,20 @@ class CommProfile extends Model
 
     public function addPayment(
         $amount,
-        $type, 
+        $type,
+        $doc_url = null,
         $note = null
     ) {
-        //TODO - add needs approval check
+        if ($amount < $this->balance) $needs_approval = false;
+        else if ($amount < $this->balance + $this->unapproved_balance) $needs_approval = false;
+        else throw new Exception("Amount is more than the available balance");
         try {
             AppLog::info("Creating comm profile payment", loggable: $this);
             $payment = $this->payments()->create([
                 "amount"    =>  $amount,
                 "type"      =>  $type,
+                "doc_url"   =>  $doc_url,
+                "needs_approval"   =>  $needs_approval,
                 "note"      =>  $note
             ]);
             $payment->save();
