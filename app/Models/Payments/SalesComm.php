@@ -38,17 +38,34 @@ class SalesComm extends Model
     ];
 
     ///model functions
-    public function setPaidInfo($client_paid_percent = null, $company_paid_percent = null)
+    public function setPaidInfo(float $client_paid_percent, float $company_paid_percent)
     {
         //TODO : shof ezay hat update el comm profile balance
-        $updates = [];
-        if ($client_paid_percent && $this->client_paid_percent != $client_paid_percent) {
-            $updates['client_paid_percent'] = $client_paid_percent;
-        }
-        if ($company_paid_percent && $this->company_paid_percent != $company_paid_percent) {
-            $updates['company_paid_percent'] = $company_paid_percent;
-        }
+        $updates['client_paid_percent'] = $client_paid_percent;
+        $updates['company_paid_percent'] = $company_paid_percent;
+
         try {
+            $this->load('comm_profile');
+            //balance calculation
+            $company_diff_amount = round(($company_paid_percent - $this->company_paid_percent) * $this->amount / 100,2);
+            $add_to_balance = $company_diff_amount;
+
+            //unapproved balance calculation 
+            $client_diff_amount = round(($client_paid_percent - $this->client_paid_percent) * $this->amount / 100,2);
+
+            $old_unapproved_offset = round($this->client_paid_percent * $this->amount,2) - round($this->company_paid_percent * $this->amount,2);
+            $add_to_unapproved_balance = 0;
+            if ($company_diff_amount > 1 && $old_unapproved_offset > 0) {
+                $add_to_unapproved_balance += max($client_diff_amount - $company_diff_amount, $old_unapproved_offset);
+            } else if($client_diff_amount) {
+                $add_to_unapproved_balance += max($client_diff_amount - $old_unapproved_offset, 0);
+            }
+
+            $this->comm_profile->balance = $this->comm_profile->balance + $add_to_balance;
+            $this->comm_profile->unapproved_balance = $this->comm_profile->unapproved_balance + $add_to_unapproved_balance;
+
+
+            $this->comm_profile->save();
             $this->update($updates);
             AppLog::info("Setting comm profile paid info",  loggable: $this);
             return $this->save();
@@ -230,9 +247,9 @@ class SalesComm extends Model
     {
         return $this->belongsTo(SoldPolicy::class);
     }
-    public function sales(): BelongsTo
+    public function comm_profile(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(CommProfile::class);
     }
     public function offer(): BelongsTo
     {

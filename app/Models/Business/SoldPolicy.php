@@ -436,8 +436,8 @@ class SoldPolicy extends Model
 
     public function updateSalesCommsPaymentInfo()
     {
-        $client_paid_percentage = round($this->total_client_paid / $this->gross_premium, 2);
-        $company_paid_percentage = round($this->total_comp_paid / $this->total_policy_comm, 2);
+        $client_paid_percentage = round(100 * $this->total_client_paid / $this->gross_premium, 2);
+        $company_paid_percentage = round(100 * $this->total_comp_paid / $this->total_policy_comm, 2);
 
         try {
             /** @var SalesComm */

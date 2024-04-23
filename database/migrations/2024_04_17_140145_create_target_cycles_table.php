@@ -32,6 +32,7 @@ return new class extends Migration
             $table->enum('status', CommProfilePayment::PYMT_STATES);
             $table->enum('type', CommProfilePayment::PYMT_TYPES);
             $table->dateTime('payment_date')->nullable();
+            $table->dateTime('approval_date')->nullable();
             $table->foreignIdFor(User::class, 'creator_id')->constrained();
             $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained();
             $table->text('note')->nullable();

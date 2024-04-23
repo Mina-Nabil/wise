@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CommProfile extends Model
 {
@@ -203,12 +205,15 @@ class CommProfile extends Model
         $doc_url = null,
         $note = null
     ) {
-        if ($amount < $this->balance) $needs_approval = false;
-        else if ($amount < $this->balance + $this->unapproved_balance) $needs_approval = false;
+        if ($amount < $this->balance)
+            $needs_approval = false;
+        else if ($amount < $this->balance + $this->unapproved_balance)
+            $needs_approval = true;
         else throw new Exception("Amount is more than the available balance");
         try {
-            AppLog::info("Creating comm profile payment", loggable: $this);
+
             $payment = $this->payments()->create([
+                "creator_id"    =>  Auth::id(),
                 "amount"    =>  $amount,
                 "type"      =>  $type,
                 "doc_url"   =>  $doc_url,
@@ -217,6 +222,7 @@ class CommProfile extends Model
             ]);
             $payment->save();
             return $payment;
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't create comm profile payment", desc: $e->getMessage());

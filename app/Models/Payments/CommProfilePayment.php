@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class CommProfilePayment extends Model
@@ -31,10 +32,12 @@ class CommProfilePayment extends Model
 
     const PYMT_STATE_NEW = 'new';
     const PYMT_STATE_PAID = 'paid';
+    const PYMT_STATE_APPROVED = 'approved';
     const PYMT_STATE_CANCELLED = 'cancelled';
     const PYMT_STATES = [
         self::PYMT_STATE_NEW,
         self::PYMT_STATE_PAID,
+        self::PYMT_STATE_APPROVED,
         self::PYMT_STATE_CANCELLED,
     ];
 
@@ -106,26 +109,54 @@ class CommProfilePayment extends Model
         }
     }
 
-    public function approve() {}
+    public function approve()
+    {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('approve', $this)) return false;
+        try {
+            $this->update([
+                "approval_date" =>  Carbon::now()->format('Y-m-d H:i:s'),
+                "approver_id"   =>  Auth::id(),
+                "status"        =>  self::PYMT_STATE_APPROVED
+            ]);
+            AppLog::info("Comm Payment approved by " . Auth::user()->username, loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Comm Payment approve failed by " . Auth::user()->username, loggable: $this, desc: $e);
+            return false;
+        }
+    }
 
     public function setAsPaid(Carbon $date = null)
     {
-        //TODO - use DB::transaction w create decrementBalance
+        if ($this->needs_approve && !$this->is_approved) throw new Exception("Payment not approved");
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
 
-        if (!$this->is_new) return false;
+        if (!$this->is_new || !$this->is_approved) return false;
+
         try {
-            $date = $date ?? new Carbon();
-            AppLog::error("Setting Profile Payment as paid", loggable: $this);
-            if ($this->update([
-                "payment_date"  => $date->format('Y-m-d H:i'),
-                "status"  =>  self::PYMT_STATE_PAID,
-            ])) {
-                $this->loadMissing('sold_policy');
-                $this->comm_profile->decrementBalance($this->amount);
-            }
+            DB::transaction(function () use ($date) {
+                $this->load('comm_profile');
+                if ($this->needs_approve) {
+                    $this->comm_profile->unapproved_balance = $this->comm_profile->unapproved_balance - ($this->amount - $this->comm_profile->balance);
+                    $this->balance = 0;
+                } else {
+                    $this->comm_profile->balance = $this->comm_profile->balance - $this->amount;
+                }
+
+                $this->comm_profile->save();
+
+                $date = $date ?? new Carbon();
+                AppLog::error("Setting Profile Payment as paid", loggable: $this);
+                $this->update([
+                    "payment_date"  => $date->format('Y-m-d H:i'),
+                    "status"  =>  self::PYMT_STATE_PAID,
+                ]);
+            });
             return true;
         } catch (Exception $e) {
             report($e);
@@ -163,6 +194,10 @@ class CommProfilePayment extends Model
     public function getIsNewAttribute()
     {
         return $this->status == self::PYMT_STATE_NEW;
+    }
+    public function getIsApprovedAttribute()
+    {
+        return $this->status == self::PYMT_STATE_APPROVED;
     }
 
     ///scopes
