@@ -7,6 +7,7 @@ use App\Models\Payments\CommProfile;
 use App\Models\Users\User;
 use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\Target;
+use App\Models\Payments\TargetCycle;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
 use Livewire\WithPagination;
@@ -47,6 +48,84 @@ class CommProfileShow extends Component
     public $extra_percentage;
     public $deleteTargetId;
     public $editTargetId;
+
+    public $newCycleSec;
+    public $dayOfMonth;
+    public $eachMonth;
+    public $deleteCycleId;
+    public $editCycleId;
+
+    public function closeEditCycle(){
+        $this->editCycleId = null;
+        $this->dayOfMonth = null;
+        $this->eachMonth = null;
+    }
+
+    public function editCycle(){
+        $this->validate([
+            'dayOfMonth' => 'required|numeric|between:1,31',
+            'eachMonth' => 'required|numeric'
+        ]);
+        $res = TargetCycle::find($this->editCycleId)->editInfo($this->dayOfMonth,$this->eachMonth);
+        if ($res) {
+            $this->closeEditCycle();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'cycle updated!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function addCycle(){
+        $this->validate([
+            'dayOfMonth' => 'required|numeric|between:1,31',
+            'eachMonth' => 'required|numeric'
+        ]);
+        $res = $this->profile->addTargetCycle($this->dayOfMonth,$this->eachMonth);
+        if ($res) {
+            $this->closeNewCycleSection();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'cycle added!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function openNewCycleSection(){
+        $this->newCycleSec = true;
+    }
+
+    public function closeNewCycleSection(){
+        $this->newCycleSec = false;
+        $this->dayOfMonth = null;
+        $this->eachMonth = null;
+    }
+
+    public function editThisCycle($id){
+        $this->editCycleId = $id;
+        $c= TargetCycle::find($this->editCycleId);
+        $this->dayOfMonth = $c->day_of_month;
+        $this->eachMonth = $c->each_month;
+    }
+
+    public function confirmDeleteCycle($id){
+        $this->deleteCycleId = $id;
+    }
+
+    public function deleteCycle(){
+        $res = TargetCycle::find($this->deleteCycleId)->delete();
+        if ($res) {
+            $this->dismissDeleteCycle();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'cycle deleted!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function dismissDeleteCycle(){
+        $this->deleteCycleId = null;
+    }
 
     public function closeNewTargetSection(){
         $this->newTargetSec = false;
