@@ -8,15 +8,17 @@ use App\Models\Users\User;
 use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\Target;
 use App\Models\Payments\TargetCycle;
+use App\Models\Payments\CommProfilePayment;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Illuminate\Validation\ValidationException;
 
 class CommProfileShow extends Component
 {
-    use AlertFrontEnd ,ToggleSectionLivewire;
+    use AlertFrontEnd, ToggleSectionLivewire;
     public $profile;
 
     public $updatedCommSec = false;
@@ -55,18 +57,97 @@ class CommProfileShow extends Component
     public $deleteCycleId;
     public $editCycleId;
 
-    public function closeEditCycle(){
+    public $newPymtSec = false;
+    public $pymtAmount;
+    public $pymtType;
+    public $pymtDoc;
+    public $pymtNote;
+    public $pymtPaidId;
+    public $pymtPaidDate;
+
+    public function setPymtPaid()
+    {
+        $res = CommProfilePayment::find($this->pymtPaidId)->setAsPaid($this->pymtPaidDate);
+        if ($res) {
+            $this->closeSetPaidSec();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'payment added!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+
+    public function setPaidSec($id)
+    {
+        $this->pymtPaidId = $id;
+    }
+
+    public function closeSetPaidSec()
+    {
+        $this->pymtPaidId = null;
+    }
+
+    public function addPayment()
+    {
+        if (($this->pymtAmount) > ($this->profile->balance)) {
+            throw ValidationException::withMessages([
+                'pymtAmount' => 'Payment amount cannot exceed your balance.'
+            ]);
+        }
+
+        $this->validate([
+            'pymtAmount' => 'required|numeric|gt:0',
+            'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
+            'pymtDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'pymtNote' => 'nullable|string'
+        ]);
+
+        if ($this->pymtDoc) {
+            $docUrl = $this->pymtDoc->store(CommProfilePayment::FILES_DIRECTORY, 's3');
+        } else {
+            $docUrl = null;
+        }
+
+        $res = $this->profile->addPayment($this->pymtAmount, $this->pymtType, $docUrl, $this->pymtNote);
+
+        if ($res) {
+            $this->closeNewPymtSection();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'payment added!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function openNewPymtSection()
+    {
+        $this->newPymtSec = true;
+    }
+
+    public function closeNewPymtSection()
+    {
+        $this->newPymtSec = false;
+        $this->pymtAmount = null;
+        $this->pymtType = null;
+        $this->pymtDoc = null;
+        $this->pymtNote = null;
+    }
+
+    public function closeEditCycle()
+    {
         $this->editCycleId = null;
         $this->dayOfMonth = null;
         $this->eachMonth = null;
     }
 
-    public function editCycle(){
+    public function editCycle()
+    {
         $this->validate([
             'dayOfMonth' => 'required|numeric|between:1,31',
             'eachMonth' => 'required|numeric'
         ]);
-        $res = TargetCycle::find($this->editCycleId)->editInfo($this->dayOfMonth,$this->eachMonth);
+        $res = TargetCycle::find($this->editCycleId)->editInfo($this->dayOfMonth, $this->eachMonth);
         if ($res) {
             $this->closeEditCycle();
             $this->mount($this->profile->id);
@@ -76,12 +157,13 @@ class CommProfileShow extends Component
         }
     }
 
-    public function addCycle(){
+    public function addCycle()
+    {
         $this->validate([
             'dayOfMonth' => 'required|numeric|between:1,31',
             'eachMonth' => 'required|numeric'
         ]);
-        $res = $this->profile->addTargetCycle($this->dayOfMonth,$this->eachMonth);
+        $res = $this->profile->addTargetCycle($this->dayOfMonth, $this->eachMonth);
         if ($res) {
             $this->closeNewCycleSection();
             $this->mount($this->profile->id);
@@ -91,28 +173,33 @@ class CommProfileShow extends Component
         }
     }
 
-    public function openNewCycleSection(){
+    public function openNewCycleSection()
+    {
         $this->newCycleSec = true;
     }
 
-    public function closeNewCycleSection(){
+    public function closeNewCycleSection()
+    {
         $this->newCycleSec = false;
         $this->dayOfMonth = null;
         $this->eachMonth = null;
     }
 
-    public function editThisCycle($id){
+    public function editThisCycle($id)
+    {
         $this->editCycleId = $id;
-        $c= TargetCycle::find($this->editCycleId);
+        $c = TargetCycle::find($this->editCycleId);
         $this->dayOfMonth = $c->day_of_month;
         $this->eachMonth = $c->each_month;
     }
 
-    public function confirmDeleteCycle($id){
+    public function confirmDeleteCycle($id)
+    {
         $this->deleteCycleId = $id;
     }
 
-    public function deleteCycle(){
+    public function deleteCycle()
+    {
         $res = TargetCycle::find($this->deleteCycleId)->delete();
         if ($res) {
             $this->dismissDeleteCycle();
@@ -123,19 +210,23 @@ class CommProfileShow extends Component
         }
     }
 
-    public function dismissDeleteCycle(){
+    public function dismissDeleteCycle()
+    {
         $this->deleteCycleId = null;
     }
 
-    public function closeNewTargetSection(){
+    public function closeNewTargetSection()
+    {
         $this->newTargetSec = false;
     }
 
-    public function openNewTargetSection(){
+    public function openNewTargetSection()
+    {
         $this->newTargetSec = true;
     }
 
-    public function editThisTarget($id){
+    public function editThisTarget($id)
+    {
         $this->editTargetId = $id;
         $t = Target::find($id);
         $this->period = $t->period;
@@ -143,14 +234,16 @@ class CommProfileShow extends Component
         $this->extra_percentage = $t->extra_percentage;
     }
 
-    public function closeEditTargetSection(){
+    public function closeEditTargetSection()
+    {
         $this->editTargetId = null;
         $this->period = null;
         $this->amount = null;
         $this->extra_percentage = null;
     }
 
-    public function editarget(){
+    public function editarget()
+    {
 
         $this->validate([
             'period' => 'required|in:' . implode(',', Target::PERIODS),
@@ -158,7 +251,7 @@ class CommProfileShow extends Component
             'extra_percentage' => 'required|numeric',
         ]);
 
-        $res = Target::find($this->editTargetId)->editInfo($this->period,$this->amount,$this->extra_percentage);
+        $res = Target::find($this->editTargetId)->editInfo($this->period, $this->amount, $this->extra_percentage);
         if ($res) {
             $this->closeEditTargetSection();
             $this->mount($this->profile->id);
@@ -168,16 +261,19 @@ class CommProfileShow extends Component
         }
     }
 
-    public function dismissDeleteTarget(){
+    public function dismissDeleteTarget()
+    {
         $this->deleteTargetId = null;
     }
 
-    public function confirmDeleteTarget($id){
+    public function confirmDeleteTarget($id)
+    {
         $this->deleteTargetId = $id;
     }
 
 
-    public function deleteTarget() {
+    public function deleteTarget()
+    {
         $res = Target::find($this->deleteTargetId)->deleteTarget();
         if ($res) {
             $this->dismissDeleteTarget();
@@ -188,14 +284,15 @@ class CommProfileShow extends Component
         }
     }
 
-    public function addTarget(){
+    public function addTarget()
+    {
         $this->validate([
             'period' => 'required|in:' . implode(',', Target::PERIODS),
             'amount' => 'required|numeric',
             'extra_percentage' => 'required|numeric',
         ]);
-        
-        $res = $this->profile->addTarget($this->period,$this->amount,$this->extra_percentage);
+
+        $res = $this->profile->addTarget($this->period, $this->amount, $this->extra_percentage);
 
         if ($res) {
             $this->closeNewTargetSection();
@@ -209,7 +306,8 @@ class CommProfileShow extends Component
         }
     }
 
-    public function targetMoveup($id)  {
+    public function targetMoveup($id)
+    {
         $res = Target::find($id)->moveUp();
         if ($res) {
             $this->mount($this->profile->id);
@@ -219,7 +317,8 @@ class CommProfileShow extends Component
         }
     }
 
-    public function targetMovedown($id)  {
+    public function targetMovedown($id)
+    {
         $res = Target::find($id)->moveDown();
         if ($res) {
             $this->mount($this->profile->id);
@@ -423,12 +522,14 @@ class CommProfileShow extends Component
         $users = User::all();
         $LOBs = Policy::LINES_OF_BUSINESS;
         $PERIODS = Target::PERIODS;
+        $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
             'FROMS' => $FROMS,
             'LOBs' => $LOBs,
-            'PERIODS' => $PERIODS
+            'PERIODS' => $PERIODS,
+            'PYMT_TYPES' => $PYMT_TYPES,
         ]);
     }
 }
