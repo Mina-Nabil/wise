@@ -64,6 +64,40 @@ class CommProfileShow extends Component
     public $pymtNote;
     public $pymtPaidId;
     public $pymtPaidDate;
+    public $pymtCancelledId;
+    public $pymtCancelledDate;  
+
+    public function setPymtApprove($id){
+        $res = CommProfilePayment::find($id)->approve();
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->alert('success', 'payment approved!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function setCancelledSec($id)
+    {
+        $this->pymtCancelledId = $id;
+    }
+
+    public function closeSetCancelledSec()
+    {
+        $this->pymtCancelledId = null;
+    }
+
+    public function setPymtCancelled()
+    {
+        $res = CommProfilePayment::find($this->pymtCancelledId)->setAsCancelled($this->pymtCancelledDate);
+        if ($res) {
+            $this->closeSetCancelledSec();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'payment cancelled!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
 
     public function setPymtPaid()
     {
@@ -76,7 +110,6 @@ class CommProfileShow extends Component
             $this->alert('failed', 'server error!');
         }
     }
-
 
     public function setPaidSec($id)
     {

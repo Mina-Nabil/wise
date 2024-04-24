@@ -100,16 +100,16 @@
 
                                                     <td class="table-td">
                                                         @if ($payment->status === 'new')
-                                                            <span class="badge bg-info-500 h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            <span class="badge bg-info-500 h-auto text-white">
+                                                                {{ ucwords(str_replace('_', ' ', $payment->status)) }}
                                                             </span>
                                                         @elseif(str_contains($payment->status, 'declined') || str_contains($payment->status, 'cancelled'))
-                                                            <span class="badge bg-danger-500 h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            <span class="badge bg-danger-500 h-auto text-white">
+                                                                {{ ucwords(str_replace('_', ' ', $payment->status)) }}
                                                             </span>
-                                                        @elseif($payment->status === 'paid')
-                                                            <span class="badge bg-success-500 h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                        @elseif($payment->status === 'paid' || $payment->status = 'approved')
+                                                            <span class="badge bg-success-500 h-auto text-white">
+                                                                {{ ucwords(str_replace('_', ' ', $payment->status)) }}
                                                             </span>
                                                         @endif
                                                     </td>
@@ -122,20 +122,37 @@
                                                         @endif
                                                     </td>
 
-                                                    <td class="p-1">
-                                                        <div class=" flex justify-center">
-                                                            <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="editThisConf({{ $payment->id }})" type="button">
-                                                                <iconify-icon icon="iconamoon:edit-bold"></iconify-icon>
+                                                    <td class="table-td ">
+                                                        <div class="dropstart relative">
+                                                            <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                             </button>
-                                                            <button class="toolTip onTop action-btn m-1" data-tippy-content="Move Up" type="button" wire:click="moveup({{ $payment->id }})">
-                                                                <iconify-icon icon="ion:arrow-up"></iconify-icon>
-                                                            </button>
-                                                            <button class="toolTip onTop action-btn m-1" data-tippy-content="Move Down" type="button" wire:click="movedown({{ $payment->id }})">
-                                                                <iconify-icon icon="ion:arrow-down"></iconify-icon>
-                                                            </button>
-                                                            <button class="toolTip onTop action-btn m-1" data-tippy-content="Delete" type="button" wire:click="confirmDeleteConf({{ $payment->id }})">
-                                                                <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                                            </button>
+                                                            <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                @if ($payment->is_new && $payment->is_approved)
+                                                                    <li>
+                                                                        <a wire:click="setPaidSec({{ $payment->id }})"
+                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="material-symbols:paid"></iconify-icon>
+                                                                            <span>Set as paid</span></a>
+                                                                    </li>
+                                                                    @endif
+                                                                    @if ($payment->is_new)
+                                                                    <li>
+                                                                        <a wire:click="setCancelledSec({{ $payment->id }})"
+                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="line-md:cancel"></iconify-icon>
+                                                                            <span>Set as Cancelled</span></a>
+                                                                    </li>
+                                                                @endif
+    
+                                                                <li>
+                                                                    <a wire:click="setPymtApprove({{ $payment->id }})"
+                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                        <iconify-icon icon="mdi:approve"></iconify-icon>
+                                                                        <span>Approve</span></a>
+                                                                </li>
+    
+                                                            </ul>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -570,7 +587,7 @@
         </div>
     @endif
 
-    @if ($editConfId)
+    @if ($pymtPaidId)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
                 <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
@@ -593,7 +610,7 @@
                             <div class="from-group">
 
                                 <div class="input-area mt-3">
-                                    <label for="pymtPaidDate" class="form-label">pymtPaidDate</label>
+                                    <label for="pymtPaidDate" class="form-label">Payment date</label>
                                     <div class="relative">
                                         <input type="date" name="pymtPaidDate" class="form-control @error('pymtPaidDate') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtPaidDate">
                                     </div>
@@ -610,6 +627,54 @@
                             <button wire:click="setPymtPaid" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setPymtPaid">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setPymtPaid" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($pymtCancelledId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Set Cancelled
+                            </h3>
+
+                            <button wire:click="closeSetCancelledSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+
+                                <div class="input-area mt-3">
+                                    <label for="pymtCancelledDate" class="form-label">Cancellation date</label>
+                                    <div class="relative">
+                                        <input type="date" name="pymtCancelledDate" class="form-control @error('pymtCancelledDate') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtCancelledDate">
+                                    </div>
+                                </div>
+                                @error('pymtCancelledDate')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                            </div>
+
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setPymtCancelled" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setPymtCancelled">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setPymtCancelled" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
