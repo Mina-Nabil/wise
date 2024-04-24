@@ -41,7 +41,6 @@ class CommProfilePayment extends Model
         self::PYMT_STATE_CANCELLED,
     ];
 
-    protected $table = 'client_payments';
     protected $fillable = [
         'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'needs_approval', 'creator_id', 'approver_id'
     ];
