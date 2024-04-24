@@ -209,7 +209,7 @@ class CommProfilePayment extends Model
     ///relations
     public function comm_profile(): BelongsTo
     {
-        return $this->belongsTo(CommProfile::class, 'profile_id');
+        return $this->belongsTo(CommProfile::class);
     }
     public function creator(): BelongsTo
     {

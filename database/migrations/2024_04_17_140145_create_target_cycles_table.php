@@ -26,15 +26,15 @@ return new class extends Migration
 
         Schema::create('comm_profile_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(CommProfile::class, 'profile_id')->constrained()->nullOnDelete();
+            $table->foreignIdFor(CommProfile::class)->constrained()->cascadeOnDelete();
             $table->double('amount');
             $table->boolean('needs_approval');
             $table->enum('status', CommProfilePayment::PYMT_STATES);
             $table->enum('type', CommProfilePayment::PYMT_TYPES);
             $table->dateTime('payment_date')->nullable();
             $table->dateTime('approval_date')->nullable();
-            $table->foreignIdFor(User::class, 'creator_id')->constrained();
-            $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained();
+            $table->foreignIdFor(User::class, 'creator_id')->constrained('users');
+            $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained('users');
             $table->text('note')->nullable();
             $table->text('doc_url')->nullable();
 

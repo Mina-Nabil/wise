@@ -278,7 +278,7 @@ class CommProfile extends Model
 
     public function payments(): HasMany
     {
-        return $this->hasMany(CommProfilePayment::class, 'profile_id');
+        return $this->hasMany(CommProfilePayment::class);
     }
 
     public function offers(): BelongsToMany
