@@ -26,7 +26,7 @@ return new class extends Migration
 
         Schema::create('comm_profile_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(CommProfile::class)->constrained()->nullOnDelete();
+            $table->foreignIdFor(CommProfile::class, 'profile_id')->constrained()->nullOnDelete();
             $table->double('amount');
             $table->boolean('needs_approval');
             $table->enum('status', CommProfilePayment::PYMT_STATES);
