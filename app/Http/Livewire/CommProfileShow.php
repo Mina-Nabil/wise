@@ -14,11 +14,15 @@ use App\Models\Insurance\Company;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Aws\IoTThingsGraph\IoTThingsGraphClient;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Livewire\WithFileUploads;
 
 class CommProfileShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
     public $profile;
 
     public $updatedCommSec = false;
@@ -65,9 +69,97 @@ class CommProfileShow extends Component
     public $pymtPaidId;
     public $pymtPaidDate;
     public $pymtCancelledId;
-    public $pymtCancelledDate;  
+    public $pymtCancelledDate;
+    public $pymtNotePreview;
+    public $pymtDeleteId;
+    public $uploadPymtDocId;
+    public $pymtDocFile;
 
-    public function setPymtApprove($id){
+    public function setUploadPymtDocId($id)
+    {
+        $this->uploadPymtDocId = $id;
+    }
+
+    public function updatedPymtDocFile()
+    {
+        $this->validate(
+            [
+                'pymtDocFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            ],
+            [
+                'pymtDocFile.max' => 'The file must not be greater than 5MB.',
+            ],
+        );
+
+        $url = $this->pymtDocFile->store(CommProfilePayment::FILES_DIRECTORY, 's3');
+        $pymt = CommProfilePayment::find($this->uploadPymtDocId);
+        $p = $pymt->setDocument($url);
+        if ($p) {
+            $this->uploadPymtDocId = null;
+            $this->pymtDocFile = null;
+            $this->mount($this->profile->id);
+            $this->alert('success', 'document uploaded!');
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
+
+
+    public function dismissDeletePymtDoc()
+    {
+        $this->pymtDeleteId = null;
+    }
+
+    public function deleteThisPymtDoc($id)
+    {
+        $this->pymtDeleteId = $id;
+    }
+
+    public function deletePymtDoc()
+    {
+        $res = CommProfilePayment::find($this->pymtDeleteId)->deleteDocument();
+        if ($res) {
+            $this->dismissDeletePymtDoc();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'payment approved!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+    }
+
+    public function downloadPymtDoc($id)
+    {
+        $pymt = CommProfilePayment::find($id);
+        $fileContents = Storage::disk('s3')->get($pymt->doc_url);
+        $extension = pathinfo($pymt->doc_url, PATHINFO_EXTENSION);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $this->profile->title . '_payment.' . $extension . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function showPymtNote($id)
+    {
+        $note = CommProfilePayment::find($id)->note;
+        // dd('hello');
+        $this->pymtNotePreview = $note;
+    }
+
+    public function closePymtNote()
+    {
+        $this->pymtNotePreview = null;
+    }
+
+    public function setPymtApprove($id)
+    {
         $res = CommProfilePayment::find($id)->approve();
         if ($res) {
             $this->mount($this->profile->id);
@@ -89,7 +181,7 @@ class CommProfileShow extends Component
 
     public function setPymtCancelled()
     {
-        $res = CommProfilePayment::find($this->pymtCancelledId)->setAsCancelled($this->pymtCancelledDate);
+        $res = CommProfilePayment::find($this->pymtCancelledId)->setAsCancelled(Carbon::parse($this->pymtCancelledDate));
         if ($res) {
             $this->closeSetCancelledSec();
             $this->mount($this->profile->id);
@@ -101,7 +193,7 @@ class CommProfileShow extends Component
 
     public function setPymtPaid()
     {
-        $res = CommProfilePayment::find($this->pymtPaidId)->setAsPaid($this->pymtPaidDate);
+        $res = CommProfilePayment::find($this->pymtPaidId)->setAsPaid(Carbon::parse($this->pymtPaidDate));
         if ($res) {
             $this->closeSetPaidSec();
             $this->mount($this->profile->id);
