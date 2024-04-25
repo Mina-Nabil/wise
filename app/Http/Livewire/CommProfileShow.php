@@ -76,6 +76,16 @@ class CommProfileShow extends Component
     public $pymtDocFile;
     public $pymtId;
 
+    public $section = 'payments';
+
+    protected $queryString = ['section'];
+
+    public function changeSection($section)
+    {
+        $this->section = $section;
+        $this->mount($this->profile->id);
+    }
+
     public function closeEditPymtSection(){
         $this->pymtId = null;
         $this->pymtAmount = null;

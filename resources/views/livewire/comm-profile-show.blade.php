@@ -42,7 +42,84 @@
         </div>
     </div>
 
+    <div class="grid md:grid-cols-2 grid-cols-1 gap-4 mt-5">
+
+        <!-- BEGIN: Group Chart -->
+
+
+        <div class="card">
+            <div class="card-body pt-4 pb-3 px-4">
+                <div class="flex space-x-3 rtl:space-x-reverse">
+                    <div class="flex-none">
+                        <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#E5F9FF] dark:bg-slate-900	 text-info-500">
+                            <iconify-icon icon="tdesign:money"></iconify-icon>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
+                            Balance
+                        </div>
+                        <div class="text-slate-900 dark:text-white text-lg font-medium">
+                            <h5>{{ number_format($profile->balance, 0, '.', ',') }} EGP</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body pt-4 pb-3 px-4">
+                <div class="flex space-x-3 rtl:space-x-reverse">
+                    <div class="flex-none">
+                        <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFEDE6] dark:bg-slate-900	 text-warning-500">
+                            <iconify-icon icon="mdi:money-off"></iconify-icon>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
+                            Unapproved Balance
+                        </div>
+                        <div class="text-slate-900 dark:text-white text-lg font-medium">
+                            {{ number_format($profile->unapproved_balance, 0, '.', ',') }} EGP
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body flex flex-col col-span-2 mb-5 mt-5" wire:ignore>
+        <div class="card-text h-full">
+            <div>
+                <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab" role="tablist">
+                    <li class="nav-item" role="presentation" wire:click="changeSection('payments')">
+                        <a href="#tabs-messages-withIcon"
+                            class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'payments') active @endif dark:text-slate-300"
+                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            <iconify-icon class="mr-1" icon="material-symbols:payments"></iconify-icon>
+                            Payments</a>
+                    </li>
+                    <li class="nav-item" role="presentation" wire:click="changeSection('configurations')">
+                        <a href="#tabs-messages-withIcon"
+                            class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'configurations') active @endif dark:text-slate-300"
+                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            <iconify-icon class="mr-1" icon="grommet-icons:configure"></iconify-icon>
+                            Configurations</a>
+                    </li>
+                    <li class="nav-item" role="presentation" wire:click="changeSection('targets')">
+                        <a href="#tabs-messages-withIcon"
+                            class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'targets') active @endif dark:text-slate-300"
+                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            <iconify-icon class="mr-1" icon="lets-icons:target-fill"></iconify-icon>
+                            Targets</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     {{-- Payments --}}
+    @if ($section === 'payments')
     <div class="card mt-5">
         <div class="card-body">
             <div class="card-text h-full">
@@ -99,7 +176,7 @@
                                                 <tr>
 
                                                     <td class="table-td ">
-                                                        <p class="text-success-500 text-lg"><b>{{ $payment->amount }}
+                                                        <p class=" text-lg"><b>{{ number_format($payment->amount, 0, '.', ',') }} EGP
                                                     </td>
 
                                                     <td class="table-td">
@@ -255,8 +332,10 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Configurations --}}
+    @if ($section === 'configurations')
     <div class="card mt-5">
         <div class="card-body">
             <div class="card-text h-full">
@@ -363,8 +442,10 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Targets --}}
+    @if ($section === 'targets')
     <div class="card mt-5">
         <div class="card-body">
             <div class="card-text h-full">
@@ -473,7 +554,6 @@
             </div>
         </div>
     </div>
-
     {{-- Cycles --}}
     <div class="card mt-5">
         <div class="card-body">
@@ -570,6 +650,9 @@
             </div>
         </div>
     </div>
+    @endif
+
+    
 
     @if ($pymtNotePreview)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
