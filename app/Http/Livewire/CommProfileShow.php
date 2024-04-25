@@ -74,6 +74,47 @@ class CommProfileShow extends Component
     public $pymtDeleteId;
     public $uploadPymtDocId;
     public $pymtDocFile;
+    public $pymtId;
+
+    public function closeEditPymtSection(){
+        $this->pymtId = null;
+        $this->pymtAmount = null;
+        $this->pymtType = null;
+        $this->pymtNote = null;
+    }
+
+    public function editThisPayment($id){
+        $this->pymtId = $id;
+        $p = CommProfilePayment::find($id);
+        $this->pymtAmount = $p->amount;
+        $this->pymtType = $p->type;
+        $this->pymtNote = $p->note;
+    }
+
+    public function editPayment(){
+        
+        if (($this->pymtAmount) > ($this->profile->balance)) {
+            throw ValidationException::withMessages([
+                'pymtAmount' => 'Payment amount cannot exceed your balance.'
+            ]);
+        }
+
+        $this->validate([
+            'pymtAmount' => 'required|numeric|gt:0',
+            'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
+            'pymtNote' => 'nullable|string'
+        ]);
+
+        $res = CommProfilePayment::find($this->pymtId)->setInfo($this->pymtAmount,$this->pymtType,$this->pymtNote);
+        if ($res) {
+            $this->closeEditPymtSection();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'payment updated!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
+
+    }
 
     public function setUploadPymtDocId($id)
     {

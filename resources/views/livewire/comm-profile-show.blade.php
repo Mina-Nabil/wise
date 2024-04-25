@@ -84,6 +84,10 @@
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
+                                                    Details
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
                                                     Action
                                                 </th>
 
@@ -127,7 +131,7 @@
                                                     </td>
 
                                                     <td class="table-td">
-                                                        <div class=" flex justify-center" wire:loading.remove wire:target="pymtDocFile">
+                                                        <div class=" flex justify-center" wire:loading.remove wire:target="downloadPymtDoc({{ $payment->id }})">
                                                             @if ($payment->doc_url)
                                                                 <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="downloadPymtDoc({{ $payment->id }})" type="button">
                                                                     <iconify-icon icon="basil:document-outline"></iconify-icon>
@@ -139,7 +143,29 @@
                                                                 </button>
                                                             @endif
                                                         </div>
-                                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="pymtDocFile" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadPymtDoc({{ $payment->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                    </td>
+
+                                                    <td class="table-td">
+                                                    <div class="min-w-[170px]">
+                                                        <span class="text-slate-500 dark:text-slate-400">
+                                                            <span class="block text-slate-600 dark:text-slate-300" style="display: flex; align-items: center;">
+                                                                <iconify-icon icon="mdi:user" width="1.2em" height="1.2em"></iconify-icon>&nbsp;
+                                                                <span style="vertical-align: middle;">
+                                                                    Created by: <b>{{ $payment->creator->first_name.' '.$payment->creator->last_name }}</b>
+                                                                </span>
+                                                            </span>                                                            
+                                                            <span class="block text-slate-500 text-xs" style="display: flex; align-items: center;">
+                                                                @if($payment->approver)
+                                                                    <iconify-icon icon="mdi:approve" width="1.2em" height="1.2em"></iconify-icon>&nbsp;
+                                                                    <span style="vertical-align: middle;">
+                                                                        Approved by: <b>{{ $payment->approver->first_name.' '.$payment->approver->last_name }}</b>
+                                                                    </span>
+                                                                @endif
+                                                            </span>
+                                                            
+                                                        </span>
+                                                    </div>
                                                     </td>
 
                                                     <td class="table-td ">
@@ -148,6 +174,14 @@
                                                                 <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                             </button>
                                                             <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                @if ($payment->is_new)
+                                                                <li>
+                                                                    <a wire:click="editThisPayment({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                        <iconify-icon icon="fa-regular:edit"></iconify-icon>
+                                                                        <span>Edit</span></a>
+                                                                </li>
+                                                                @endif
+                                                                
                                                                 @if ($payment->is_new && $payment->is_approved)
                                                                     <li>
                                                                         <a wire:click="setPaidSec({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
@@ -616,7 +650,7 @@
                                 @enderror
 
                                 <div class="input-area mt-3">
-                                    <label for="pymtDoc" class="form-label">Amount</label>
+                                    <label for="pymtDoc" class="form-label">Document</label>
                                     <input id="pymtDoc" name="pymtDoc" type="file" class="form-control @error('pymtDoc') !border-danger-500 @enderror" wire:model="pymtDoc">
                                 </div>
                                 @error('pymtDoc')
@@ -641,6 +675,81 @@
                             <button wire:click="addPayment" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="addPayment">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="addPayment" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($pymtId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Payment
+                            </h3>
+
+                            <button wire:click="closeEditPymtSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+
+                                <div class="input-area mt-3">
+                                    <label for="pymtAmount" class="form-label">Amount</label>
+                                    <div class="relative">
+                                        <input type="number" name="pymtAmount" class="form-control @error('pymtAmount') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtAmount">
+                                        <span class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            EGP
+                                        </span>
+                                    </div>
+                                </div>
+                                @error('pymtAmount')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="pymtType" class="form-label">Payment type</label>
+                                    <select name="pymtType" class="form-control w-full mt-2 @error('pymtType') !border-danger-500 @enderror" wire:model.defer="pymtType">
+                                        <option value="">None</option>
+                                        @foreach ($PYMT_TYPES as $PYMT_TYPE)
+                                            <option value="{{ $PYMT_TYPE }}">
+                                                {{ ucwords(str_replace('_', ' ', $PYMT_TYPE)) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('pymtType')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="pymtNote" class="form-label">Note</label>
+                                    <div class="relative">
+                                        <input type="text" name="pymtNote" class="form-control @error('pymtNote') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtNote">
+                                    </div>
+                                </div>
+                                @error('pymtNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                            </div>
+
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editPayment" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="editPayment">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="editPayment" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
