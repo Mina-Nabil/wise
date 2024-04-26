@@ -2,7 +2,6 @@
 
 namespace App\Models\Corporates;
 
-use App\Models\Base\Country;
 use App\Models\Customers\Followup;
 use App\Models\Tasks\Task;
 use App\Models\Offers\Offer;
