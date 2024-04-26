@@ -77,13 +77,13 @@
                                         </li>
                                     @endif
                                     @if ($offer->sold_policy_id)
-                                    <li wire:click="goTo" class="cursor-pointer">
-                                        <a href="{{ route('sold.policy.show', $offer->sold_policy_id) }}" target="_blank">
-                                        <p class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        <li wire:click="goTo" class="cursor-pointer">
+                                            <a href="{{ route('sold.policy.show', $offer->sold_policy_id) }}" target="_blank">
+                                                <p class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white border-t border-slate-100 dark:border-slate-800">
-                                            Open Sold Policy</p>
-                                        </a>
-                                    </li>
+                                                    Open Sold Policy</p>
+                                            </a>
+                                        </li>
                                     @endif
 
                                     <li wire:click="confirmDeleteOffer">
@@ -827,7 +827,9 @@
                                     <h6>Commissions</h6>
                                 </div>
                             </div>
-                            <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
+                            @can('create', \App\Models\Payments\CommProfile::class)
+                                <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
+                            @endcan
 
                         </header>
 
@@ -852,7 +854,7 @@
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
-                                                    
+
                                                 </th>
                                             </tr>
                                         </thead>
@@ -861,15 +863,15 @@
                                             @foreach ($offer->comm_profiles as $profile)
                                                 <tr>
                                                     <td class="table-td ">
-                                                       <a href="{{ route('comm.profile.show',$profile->id) }}">
-                                                        <div class="min-w-[170px] hover:underline cursor-pointer">
-                                                            <span class="text-slate-500 dark:text-slate-400">
-                                                                <span class="block text-slate-600 dark:text-slate-300">{{ $profile->title }}</span>
-                                                                <span class="block text-slate-500 text-xs">
-                                                                    {{ $profile->user?->username }}
+                                                        <a href="{{ route('comm.profile.show', $profile->id) }}">
+                                                            <div class="min-w-[170px] hover:underline cursor-pointer">
+                                                                <span class="text-slate-500 dark:text-slate-400">
+                                                                    <span class="block text-slate-600 dark:text-slate-300">{{ $profile->title }}</span>
+                                                                    <span class="block text-slate-500 text-xs">
+                                                                        {{ $profile->user?->username }}
+                                                                    </span>
                                                                 </span>
-                                                            </span>
-                                                        </div>
+                                                            </div>
                                                         </a>
                                                     </td>
 
@@ -877,29 +879,29 @@
                                                         {{ ucwords(str_replace('_', ' ', $profile->type)) }}
                                                     </th>
 
-                                                    <td class="table-td flex justify-between">
-
-
-                                                        <div class="">
-                                                            <div class="relative">
-                                                                <div class="dropdown relative">
-                                                                    <button class="text-xl text-center block w-full " type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                        <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
-                                                                    </button>
-                                                                    <ul
-                                                                        class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                                    @can('delete', $profile)
+                                                        <td class="table-td flex justify-between">
+                                                            <div class="">
+                                                                <div class="relative">
+                                                                    <div class="dropdown relative">
+                                                                        <button class="text-xl text-center block w-full " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                            <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                        </button>
+                                                                        <ul
+                                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
                                                     shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                                        <li>
-                                                                            <a wire:click="removeCommProfile({{ $profile->id }})"
-                                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                                            <li>
+                                                                                <a wire:click="removeCommProfile({{ $profile->id }})"
+                                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                             dark:hover:text-white">
-                                                                                Delete</a>
-                                                                        </li>
-                                                                    </ul>
+                                                                                    Delete</a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </td>
+                                                        </td>
+                                                    @endcan
 
 
                                                 </tr>
@@ -1361,76 +1363,77 @@
     @endif
 
     {{-- addCommSec --}}
-    @if ($addCommSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Add Commission
-                            </h3>
-                            <button wire:click="toggleAddComm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <!-- Modal body -->
-                        <div class="p-6 space-y-4">
-
-                            <div class="from-group">
-                                <label for="commSearch" class="form-label">Search</label>
-                                <input type="text" placeholder="Search..." name="commSearch" class="form-control mt-2 w-full @error('commSearch') !border-danger-500 @enderror" wire:model="commSearch">
+    @can('create', \App\Models\Payments\CommProfile::class)
+        @if ($addCommSec)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Add Commission
+                                </h3>
+                                <button wire:click="toggleAddComm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
                             </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
 
-                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                <thead class="bg-slate-200 dark:bg-slate-700">
-                                    <tr>
+                                <div class="from-group">
+                                    <label for="commSearch" class="form-label">Search</label>
+                                    <input type="text" placeholder="Search..." name="commSearch" class="form-control mt-2 w-full @error('commSearch') !border-danger-500 @enderror" wire:model="commSearch">
+                                </div>
 
-                                        <th scope="col" class=" table-th ">
-                                            Title
-                                        </th>
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                    <thead class="bg-slate-200 dark:bg-slate-700">
+                                        <tr>
 
-                                        <th scope="col" class=" table-th ">
-                                            Type
-                                        </th>
+                                            <th scope="col" class=" table-th ">
+                                                Title
+                                            </th>
 
-                                        <th scope="col" class=" table-th ">
-                                            User
-                                        </th>
+                                            <th scope="col" class=" table-th ">
+                                                Type
+                                            </th>
 
-                                        <th scope="col" class=" table-th ">
-                                            Action
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                                    @foreach ($profilesRes as $profileRes)
-                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
-                                        <td class="table-td">{{ $profileRes->title }}</td>
-                                        <td class="table-td">{{ ucwords(str_replace('_', ' ', $profileRes->type)) }}</td>
-                                        <td class="table-td">{{ $profileRes->user?->username}}</td>
-                                        <td class="table-td"><button class="btn inline-flex justify-center btn-success light btn-sm" wire:click="addCommProfile({{ $profileRes->id }})">Add</button></td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- Modal footer -->
-                        {{-- <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                            <th scope="col" class=" table-th ">
+                                                User
+                                            </th>
+
+                                            <th scope="col" class=" table-th ">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                        @foreach ($profilesRes as $profileRes)
+                                            <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                <td class="table-td">{{ $profileRes->title }}</td>
+                                                <td class="table-td">{{ ucwords(str_replace('_', ' ', $profileRes->type)) }}</td>
+                                                <td class="table-td">{{ $profileRes->user?->username }}</td>
+                                                <td class="table-td"><button class="btn inline-flex justify-center btn-success light btn-sm" wire:click="addCommProfile({{ $profileRes->id }})">Add</button></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Modal footer -->
+                            {{-- <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="addComm" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div> --}}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
+    @endcan
 
     @if ($addDiscountSec)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">

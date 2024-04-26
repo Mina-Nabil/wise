@@ -19,6 +19,7 @@ use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
+use App\Models\Payments\SalesComm;
 
 class CommProfileShow extends Component
 {
@@ -76,6 +77,17 @@ class CommProfileShow extends Component
     public $pymtDocFile;
     public $pymtId;
 
+    public $commNote;
+    public $RemoveCommDocId;
+    public $commDocId;
+    public $commDoc;
+    public $addCommSec;
+    public $commTitle;
+    public $commFrom;
+    public $commPer;
+    public $commUser;
+    public $newcommNote;
+
     public $section = 'payments';
 
     protected $queryString = ['section'];
@@ -84,6 +96,144 @@ class CommProfileShow extends Component
     {
         $this->section = $section;
         $this->mount($this->profile->id);
+    }
+
+    public function addComm()
+    {
+        $this->validate([
+            'commTitle'  => 'required|string|max:255',
+            'commPer'    => 'required|numeric',
+            'commUser'   => 'nullable|integer|exists:users,id',
+            'commNote'   => 'nullable|string',
+            'commFrom'   => 'required|in:' . implode(',', CommProfileConf::FROMS),
+        ]);
+
+        $res = $this->profile->addSalesCommission($this->commTitle, $this->commFrom, $this->commPer, $this->commUser, $this->newcommNote);
+        if ($res) {
+            $this->toggleAddComm();
+            $this->commTitle = null;
+            $this->commPer = null;
+            $this->commUser = null;
+            $this->newcommNote = null;
+            $this->commFrom = null;
+            $this->mount($this->profile->id);
+            $this->alert('success', 'Commission added!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function hideCommComment()
+    {
+        $this->commNote = null;
+    }
+
+    public function DissRemoveCommDoc()
+    {
+        $this->RemoveCommDocId = null;
+    }
+
+    public function removeCommDoc()
+    {
+        $res = SalesComm::find($this->RemoveCommDocId)->deleteDocument();
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->RemoveCommDocId = null;
+            $this->alert('success', 'Commission updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function toggleAddComm()
+    {
+        $this->toggle($this->addCommSec);
+    }
+
+    public function ConfirmRemoveCommDoc($id)
+    {
+        $this->RemoveCommDocId = $id;
+    }
+
+    public function setCommDoc($id)
+    {
+        $this->commDocId = $id;
+    }
+
+
+    public function refreshCommAmmount($id)
+    {
+        $res =  SalesComm::find($id)->refreshPaymentInfo();
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->alert('success', 'Commission updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setCommCancelled($id)
+    {
+        $res =  SalesComm::find($id)->setAsCancelled();
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->alert('success', 'Commission updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setCommPaid($id)
+    {
+        $res =  SalesComm::find($id)->setAsPaid();
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->alert('success', 'Commission updated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function downloadCommDoc($id)
+    {
+        $comm = SalesComm::find($id);
+        $fileContents = Storage::disk('s3')->get($comm->doc_url);
+        $extension = pathinfo($comm->doc_url, PATHINFO_EXTENSION);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $this->profile->title . '_sale_comm_document.' . $extension . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function showCommNote($id)
+    {
+        $n = SalesComm::find($id);
+        $this->commNote = $n->note;
+    }
+
+    public function updatedCommDoc()
+    {
+        $this->validate([
+            'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+        ]);
+
+        $url = $this->commDoc->store(SalesComm::FILES_DIRECTORY, 's3');
+
+        $res = SalesComm::find($this->commDocId)->setDocument($url);
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->alert('success', 'document added');
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function closeEditPymtSection(){
