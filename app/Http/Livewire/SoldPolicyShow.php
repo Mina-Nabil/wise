@@ -461,7 +461,7 @@ class SoldPolicyShow extends Component
 
     public function refreshCommAmmount($id)
     {
-        $res =  SalesComm::find($id)->refreshAmount();
+        $res =  SalesComm::find($id)->refreshPaymentInfo();
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'Commission updated');

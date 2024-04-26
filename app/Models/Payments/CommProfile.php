@@ -249,6 +249,10 @@ class CommProfile extends Model
     {
         return $query->where('title', 'LIKE', "%$text%");
     }
+    public function scopeSalesIn($query)
+    {
+        return $query->where('type', self::TYPE_SALES_IN);
+    }
 
     ///relations
     public function user(): BelongsTo

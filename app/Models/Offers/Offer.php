@@ -96,6 +96,9 @@ class Offer extends Model
         try {
             if ($newOffer->save()) {
                 AppLog::info("New Offer", loggable: $newOffer);
+                $sales_in = Auth::user()->sales_in_profile;
+                if ($sales_in)
+                    $newOffer->addCommProfile($sales_in->id, true);
                 $newOffer->addComment("Created offer", false);
             }
             return $newOffer;
@@ -153,15 +156,18 @@ class Offer extends Model
             car_engine: $car_engine,
             policy_doc: $policy_doc
         );
-        foreach ($this->selected_option->policy->benefits as $b) {
-            $soldPolicy->addBenefit($b->benefit, $b->value);
-        }
-        foreach ($this->sales_comms()->new()->get() as $commaya) {
-            $commaya->update([
-                'status'     =>  SalesComm::PYMT_STATE_CONFIRMED,
-                "sold_policy_id"    =>  $soldPolicy->id
-            ]);
-            $commaya->refreshAmount();
+        if ($soldPolicy) {
+            $this->setStatus(self::STATUS_APPROVED);
+            foreach ($this->selected_option->policy->benefits as $b) {
+                $soldPolicy->addBenefit($b->benefit, $b->value);
+            }
+            foreach ($this->sales_comms()->new()->get() as $commaya) {
+                $commaya->update([
+                    'status'     =>  SalesComm::PYMT_STATE_CONFIRMED,
+                    "sold_policy_id"    =>  $soldPolicy->id
+                ]);
+                $commaya->refreshPaymentInfo();
+            }
         }
         return $soldPolicy;
     }
@@ -258,11 +264,13 @@ class Offer extends Model
     }
 
 
-    public function addCommProfile(int $profile_id)
+    public function addCommProfile(int $profile_id, bool $skipCheck = false)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('updateCommission', $this)) return false;
+        if (!$skipCheck) {
+            /** @var User */
+            $loggedInUser = Auth::user();
+            if (!$loggedInUser->can('updateCommission', $this)) return false;
+        }
 
         try {
             $this->comm_profiles()->attach($profile_id);

@@ -148,7 +148,7 @@ class SoldPolicy extends Model
                 "comm_profile_id"   => $comm_profile_id,
                 "note"              => $note
             ]);
-            $tmp->refreshAmount();
+            $tmp->refreshPaymentInfo();
             AppLog::info("Sales commission added", loggable: $this);
             return true;
 
@@ -436,8 +436,8 @@ class SoldPolicy extends Model
 
     public function updateSalesCommsPaymentInfo()
     {
-        $client_paid_percentage = round(100 * $this->total_client_paid / $this->gross_premium, 2);
-        $company_paid_percentage = round(100 * $this->total_comp_paid / $this->total_policy_comm, 2);
+        $client_paid_percentage = $this->gross_premium ? round(100 * $this->total_client_paid / $this->gross_premium, 2) : 0;
+        $company_paid_percentage = $this->total_policy_comm ? round(100 * $this->total_comp_paid / $this->total_policy_comm, 2) : 0;
 
         try {
             /** @var SalesComm */

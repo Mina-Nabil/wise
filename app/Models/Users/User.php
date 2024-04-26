@@ -7,6 +7,7 @@ use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
 use App\Models\Customers\Followup;
 use App\Models\Offers\Offer;
+use App\Models\Payments\CommProfile;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskTempAssignee;
 use App\Traits\CanBeDisabled;
@@ -267,6 +268,11 @@ class User extends Authenticatable
         return "user$this->id-channel";
     }
 
+    public function getSalesInProfileAttribute()
+    {
+        return $this->comm_profiles()->salesIn()->first();
+    }
+
     //dashboard queries
     public function homeAssignedOffers($paginated = false)
     {
@@ -299,6 +305,11 @@ class User extends Authenticatable
     }
 
     //relations
+    public function comm_profiles(): HasMany
+    {
+        return $this->hasMany(CommProfile::class);
+    }
+
     public function created_followups(): HasMany
     {
         return $this->hasMany(Followup::class, 'creator_id');
