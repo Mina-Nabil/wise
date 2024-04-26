@@ -27,10 +27,11 @@ use Illuminate\Support\Facades\Storage;
 use App\models\Business\SoldPolicy;
 use App\Models\Payments\CommProfile;
 use App\Models\Payments\SalesComm;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class OfferShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads,AuthorizesRequests;
 
     public $available_pols;
     public $offer;
@@ -161,6 +162,7 @@ class OfferShow extends Component
     }
 
     public function addCommProfile($id) {
+        $this->authorize('create', \App\Models\Payments\CommProfile::class);
         $res = $this->offer->addCommProfile($id);
         if ($res) {
             $this->addCommSec = false;
@@ -173,6 +175,7 @@ class OfferShow extends Component
     }
 
     public function removeCommProfile($id) {
+        $this->authorize('delete', \App\Models\Payments\CommProfile::class);
         $res = $this->offer->removeCommProfile($id);
         if ($res) {
             $this->mount($this->offer->id);
