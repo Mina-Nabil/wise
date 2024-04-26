@@ -115,6 +115,71 @@ class Offer extends Model
         $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
+    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
+    {
+        $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText)->get();
+        $template = IOFactory::load(resource_path('import/comparison_template.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 5;
+        foreach (PolicyBenefit::BENEFITS as $b) {
+            $activeSheet->insertNewRowBefore($i++);
+            $cell = $activeSheet->getCell('A' . $i - 1);
+            $cell->setValue($b);
+        }
+        $activeSheet->getColumnDimension('A')->setAutoSize(true);
+        $options = $this->options()->with('policy_condition', 'policy', 'policy.company', 'policy.benefits')->when(count($ids), function ($q) use ($ids) {
+            $q->whereIn('id', $ids);
+        })->get();
+        $startChar = 'B';
+        foreach ($options as $op) {
+            $activeSheet->insertNewColumnBefore($startChar);
+            $activeSheet->getCell($startChar . '1')->setValue($op->policy->name  . " - " . $op->policy?->company->name);
+            $activeSheet->getCell($startChar . '2')->setValue($op->net_premium);
+            $activeSheet->getCell($startChar . '3')->setValue($op->gross_premium);
+
+            foreach ($op->policy->benefits as $b) {
+                $cellIndex = $startChar . 5 + array_search($b->benefit, PolicyBenefit::BENEFITS);
+                $activeSheet->getCell($cellIndex)->setValue($b->value);
+                $activeSheet->getColumnDimension($startChar)->setAutoSize(true);
+            }
+            $startChar++;
+        }
+        $activeSheet->removeColumn($activeSheet->getHighestColumn());
+        $activeSheet->removeRow($activeSheet->getHighestRow());
+        $startChar--;
+        $i--;
+        $activeSheet->getStyle("A1:$startChar$i")->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    'color' => ['argb' => '00000000'],
+                ],
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
+        $activeSheet->setRightToLeft(false);
+
+        $writer = new Mpdf($newFile);
+        $file_path = self::FILES_DIRECTORY . "offer{$this->id}_comparison.pdf";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+        if ($saveAndGetFileUrl) {
+            if (Storage::disk('s3')->put($file_path, file_get_contents($public_file_path))) {
+                File::delete($public_file_path);
+                /** @disregard */
+                return Storage::disk('s3')->url($file_path);
+            }
+        }
+        return response()->download($public_file_path);
+    }
+
     ////model functions
     /** 
      * Generate sold policy from selected option
