@@ -141,7 +141,7 @@ class Offer extends Model
         }
 
         $writer = new Xlsx($newFile);
-        $file_path = self::FILES_DIRECTORY . "export_.xlsx";
+        $file_path = self::FILES_DIRECTORY . "offers_export.xlsx";
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
 

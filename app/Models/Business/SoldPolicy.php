@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class SoldPolicy extends Model
 {
@@ -723,6 +724,39 @@ class SoldPolicy extends Model
             return false;
         }
     }
+
+    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premuim_to = null, $net_premuim_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, $searchText = null)
+    {
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premuim_to, $net_premuim_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $searchText)->get();
+
+        $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 2;
+        foreach ($policies as $policy) {
+            $activeSheet->getCell('A' . $i)->setValue($policy->policy->company->name);
+            $activeSheet->getCell('B' . $i)->setValue($policy->policy->name);
+            $activeSheet->getCell('C' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
+            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
+            $activeSheet->getCell('E' . $i)->setValue($policy->policy_number);
+            $activeSheet->getCell('F' . $i)->setValue($policy->client->name);
+            $activeSheet->getCell('G' . $i)->setValue($policy->is_valid ? "Valid" : '' );
+            $activeSheet->getCell('H' . $i)->setValue($policy->is_paid ? 'Paid' : '');
+            $i++;
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "policies_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
 
     public static function importData($file)
     {
