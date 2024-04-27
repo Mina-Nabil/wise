@@ -7,6 +7,10 @@
                 </h4>
             </div>
             <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+                <button wire:click="exportReport" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
+                    <span wire:loading.remove wire:target="exportReport">Export</span>
+                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
+                </button>
                 <div class="dropdown relative ">
                     <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14" type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         Add filter
@@ -234,7 +238,6 @@
                                     <span wire:click="toggleValidated">
                                         @if ($is_valid)
                                             Valid:&nbsp;Yes
-                                            
                                         @else
                                             Valid:&nbsp;No
                                         @endif
@@ -339,11 +342,9 @@
                                                                                 <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                                                                                     <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                                 </button>
-                                                                                <ul
-                                                                                    class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                                <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                                     <li>
-                                                                                        <a href="{{ route('sold.policy.show', $policy->id) }}"
-                                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                        <a href="{{ route('sold.policy.show', $policy->id) }}" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                                             <iconify-icon icon="heroicons-outline:eye"></iconify-icon>
                                                                                             <span>View</span></a>
                                                                                     </li>
@@ -869,7 +870,7 @@
                                     @endphp
 
                                     <!-- Display brand name -->
-                                    <span class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $pol->company->name }} - {{ ucwords(str_replace('_',' ',$pol->business)) }}</span>
+                                    <span class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $pol->company->name }} - {{ ucwords(str_replace('_', ' ', $pol->business)) }}</span>
                                 @endforeach
 
                             </div>

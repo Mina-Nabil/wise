@@ -55,7 +55,8 @@ class OfferReport extends Component
         }
     }
 
-    public function clearstatuses(){
+    public function clearstatuses()
+    {
         $this->statuses = [];
     }
 
@@ -189,6 +190,22 @@ class OfferReport extends Component
     public function redirectToShowPage($id)
     {
         return redirect(route('offers.show', $id));
+    }
+
+    public function exportReport()
+    {
+        Offer::exportReport(
+            $this->from,
+            $this->to,
+            $this->statuses,
+            $this->creator_id,
+            $this->assignee_id,
+            $this->closed_by_id,
+            $this->line_of_business,
+            $this->value_from,
+            $this->value_to,
+            $this->search
+        );
     }
 
     public function render()

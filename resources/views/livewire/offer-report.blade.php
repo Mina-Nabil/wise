@@ -3,10 +3,14 @@
         <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
             <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
                 <b>Reports:</b> Offers
-                
+
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+            <button wire:click="exportReport" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
+                <span wire:loading.remove wire:target="exportReport">Export</span>
+                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
+            </button>
             <div class="dropdown relative ">
                 <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14" type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                     Add filter
@@ -55,6 +59,7 @@
                     </li>
                 </ul>
             </div>
+
         </div>
     </div>
 
@@ -445,7 +450,7 @@
             </div>
         </div>
     @endif
-    
+
     @if ($creatorSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
@@ -627,7 +632,6 @@
                             <button wire:click="setValues" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setValues">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setValues" icon="line-md:loading-twotone-loop"></iconify-icon>
-
                             </button>
                         </div>
                     </div>
