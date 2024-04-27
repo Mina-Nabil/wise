@@ -20,10 +20,11 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use App\Models\Payments\SalesComm;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CommProfileShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads, AuthorizesRequests;
     public $profile;
 
     public $updatedCommSec = false;
@@ -135,6 +136,7 @@ class CommProfileShow extends Component
 
     public function removeCommDoc()
     {
+        $this->authorize('update', SalesComm::find($this->RemoveCommDocId));
         $res = SalesComm::find($this->RemoveCommDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->profile->id);
@@ -163,6 +165,7 @@ class CommProfileShow extends Component
 
     public function refreshCommAmmount($id)
     {
+        $this->authorize('update', SalesComm::find($id));
         $res =  SalesComm::find($id)->refreshPaymentInfo();
         if ($res) {
             $this->mount($this->profile->id);
@@ -174,6 +177,7 @@ class CommProfileShow extends Component
 
     public function setCommCancelled($id)
     {
+        $this->authorize('update', SalesComm::find($id));
         $res =  SalesComm::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->profile->id);
@@ -185,6 +189,7 @@ class CommProfileShow extends Component
 
     public function setCommPaid($id)
     {
+        $this->authorize('update', SalesComm::find($id));
         $res =  SalesComm::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->profile->id);
@@ -221,6 +226,7 @@ class CommProfileShow extends Component
 
     public function updatedCommDoc()
     {
+        $this->authorize('update', SalesComm::find($this->commDocId));
         $this->validate([
             'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
@@ -236,14 +242,16 @@ class CommProfileShow extends Component
         }
     }
 
-    public function closeEditPymtSection(){
+    public function closeEditPymtSection()
+    {
         $this->pymtId = null;
         $this->pymtAmount = null;
         $this->pymtType = null;
         $this->pymtNote = null;
     }
 
-    public function editThisPayment($id){
+    public function editThisPayment($id)
+    {
         $this->pymtId = $id;
         $p = CommProfilePayment::find($id);
         $this->pymtAmount = $p->amount;
@@ -251,8 +259,9 @@ class CommProfileShow extends Component
         $this->pymtNote = $p->note;
     }
 
-    public function editPayment(){
-        
+    public function editPayment()
+    {
+
         if (($this->pymtAmount) > ($this->profile->balance)) {
             throw ValidationException::withMessages([
                 'pymtAmount' => 'Payment amount cannot exceed your balance.'
@@ -265,7 +274,7 @@ class CommProfileShow extends Component
             'pymtNote' => 'nullable|string'
         ]);
 
-        $res = CommProfilePayment::find($this->pymtId)->setInfo($this->pymtAmount,$this->pymtType,$this->pymtNote);
+        $res = CommProfilePayment::find($this->pymtId)->setInfo($this->pymtAmount, $this->pymtType, $this->pymtNote);
         if ($res) {
             $this->closeEditPymtSection();
             $this->mount($this->profile->id);
@@ -273,7 +282,6 @@ class CommProfileShow extends Component
         } else {
             $this->alert('failed', 'server error!');
         }
-
     }
 
     public function setUploadPymtDocId($id)
