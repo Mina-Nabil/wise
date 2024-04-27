@@ -5,10 +5,10 @@
             <h4 class=" font-medium text-white mb-2">
                 <div>
                     <span class="block"><b><iconify-icon icon="iconoir:privacy-policy"></iconify-icon>
-                        {{ $soldPolicy->policy->company->name }} - {{ $soldPolicy->policy->name }}
-                    </b></span>
+                            {{ $soldPolicy->policy->company->name }} - {{ $soldPolicy->policy->name }}
+                        </b></span>
 
-                
+
                 </div>
                 <span class="block mb-3">
                     <p class="text-sm text-slate-400  font-light">
@@ -32,8 +32,8 @@
                         {{ ucwords($soldPolicy->in_favor_to) }}
                     </span>
                 @endif
-                
-                
+
+
 
             </h4>
             @if ($soldPolicy->policy_doc)
@@ -43,7 +43,7 @@
             @endif
         </div>
         <h4 class=" font-medium text-white mb-2">
-            
+
 
             <p class="text-sm text-white font-normal">
                 Start: {{ \Carbon\Carbon::parse($soldPolicy->start)->format('l d/m/Y') }}
@@ -52,8 +52,8 @@
             <p class="text-sm text-white font-normal mb-3">
                 Expired: {{ \Carbon\Carbon::parse($soldPolicy->expiry)->format('l d/m/Y') }}
             </p>
-            </h4>
-        
+        </h4>
+
     </div>
 
     <div class="flex justify-between">
@@ -64,37 +64,32 @@
                 <div>
                     <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab" role="tablist">
                         <li class="nav-item" role="presentation" wire:click="changeSection('profile')">
-                            <a href="#tabs-profile-withIcon"
-                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'profile') active @endif dark:text-slate-300"
-                                id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon" aria-selected="false">
+                            <a href="#tabs-profile-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'profile') active @endif dark:text-slate-300" id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon"
+                                aria-selected="false">
                                 <iconify-icon class="mr-1" icon="heroicons-outline:user"></iconify-icon>
                                 Profile</a>
                         </li>
                         <li class="nav-item" role="presentation" wire:click="changeSection('payments')">
-                            <a href="#tabs-messages-withIcon"
-                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300"
-                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                aria-selected="false">
                                 <iconify-icon class="mr-1" icon="material-symbols:payments"></iconify-icon>
                                 Payments</a>
                         </li>
                         <li class="nav-item" role="presentation" wire:click="changeSection('cars')">
-                            <a href="#tabs-messages-withIcon"
-                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300"
-                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                aria-selected="false">
                                 <iconify-icon class="mr-1" icon="mingcute:car-line"></iconify-icon>
                                 Car Specs</a>
                         </li>
                         <li class="nav-item" role="presentation" wire:click="changeSection('operations')">
-                            <a href="#tabs-messages-withIcon"
-                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300"
-                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                aria-selected="false">
                                 <iconify-icon class="mr-1" icon="cib:when-i-work"></iconify-icon>
                                 Operations</a>
                         </li>
                         <li class="nav-item" role="presentation" wire:click="changeSection('policydetails')">
-                            <a href="#tabs-messages-withIcon"
-                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300"
-                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                                aria-selected="false">
                                 <iconify-icon class="mr-1" icon="ic:outline-info"></iconify-icon>
                                 Details</a>
                         </li>
@@ -189,11 +184,7 @@
 
     {{-- Profile --}}
     @if ($section === 'profile')
-
-        
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
             <div>
                 <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
                     <div class="card-body flex flex-col p-6 active justify-center">
@@ -808,10 +799,7 @@
         {{-- Totals Numbers --}}
         <div>
             <div class="grid md:grid-cols-4 grid-cols-1 gap-4">
-
                 <!-- BEGIN: Group Chart -->
-
-
                 <div class="card">
                     <div class="card-body pt-4 pb-3 px-4">
                         <div class="flex space-x-3 rtl:space-x-reverse">
@@ -891,8 +879,159 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- END: Group Chart -->
+            </div>
+        </div>
+
+        {{-- Company Payments --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+            <div class="card-body flex flex-col p-6 active justify-center">
+                <header class="card-header noborder flex justify-between">
+                    <h4 class="card-title">
+                        Company Payments
+                    </h4>
+                    <button wire:click="toggleAddClientPayment" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add payment</button>
+                </header>
+                <div class="card-body px-6 pb-6">
+                    <div class="overflow-x-auto -mx-6 ">
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden ">
+                                @if ($soldPolicy->company_comm_payments->isEmpty())
+                                    <p class="text-sm text-center">
+                                        No company payments found.
+                                    </p>
+                                @else
+                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                            <tr>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Due
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Amount
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Type
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Status
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Payment date
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Action
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                            @foreach ($soldPolicy->company_comm_payments as $payment)
+                                                <tr>
+
+                                                    <td class="table-td ">{{ $payment->due ? \Carbon\Carbon::parse($payment->due)->format('D d/m/Y') : 'Not set.' }}</td>
+
+                                                    <td class="table-td ">
+                                                        <div class="text-lg text-success-500">
+                                                            {{ number_format($payment->amount, 0, '.', ',') }} EGP
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="table-td">
+                                                        <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }}</span>
+                                                    </td>
+
+
+                                                    <td class="table-td">
+                                                        @if (str_contains($payment->status, 'new'))
+                                                            <span class="badge bg-warning-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            </span>
+                                                        @elseif(str_contains($payment->status, 'cancelled'))
+                                                            <span class="badge bg-danger-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            </span>
+                                                        @elseif($payment->status === 'confirmed' || str_contains($payment->status, 'paid'))
+                                                            <span class="badge bg-success-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                            </span>
+                                                        @endif
+                                                    </td>
+
+                                                    <td class="table-td ">{{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('D d/m/Y') : 'Not set.' }}</td>
+
+
+                                                    <td class="table-td px-0">
+
+                                                        @if ($payment->doc_url)
+                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadCompPaymentDoc({{ $payment->id }})" wire:click="downloadCompPaymentDoc({{ $payment->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
+                                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadCompPaymentDoc({{ $payment->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                        @endif
+                                                        @if ($payment->note)
+                                                            <iconify-icon class=" cursor-pointer" wire:click="showCompPaymentNote({{ $payment->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
+                                                        @endif
+                                                    </td>
+
+                                                    @can('update', $payment)
+                                                        <td class="table-td ">
+                                                            <div class="dropstart relative">
+                                                                <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                </button>
+                                                                <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                    @if ($payment->is_new)
+                                                                        <li>
+                                                                            <a wire:click="setCompanyPaymentPaid({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="material-symbols:paid"></iconify-icon>
+                                                                                <span>Set as paid</span></a>
+                                                                        </li>
+                                                                        <li>
+                                                                            <a wire:click="setCompanyPaymentCancelled({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="line-md:cancel"></iconify-icon>
+                                                                                <span>Set as Cancelled</span></a>
+                                                                        </li>
+                                                                    @endif
+
+                                                                    @if ($payment->doc_url)
+                                                                        <li>
+                                                                            <a wire:click="ConfirmRemoveCompPaymentDoc({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="lucide:file-x"></iconify-icon>
+                                                                                <span>Remove document</span>
+                                                                            </a>
+                                                                        </li>
+                                                                    @else
+                                                                        <li>
+                                                                            <label for="compPaymentDoc" wire:click="setCompPaymentDoc({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="pepicons-pop:file"></iconify-icon>
+                                                                                <span>Add document</span></label>
+                                                                            <input type="file" id="compPaymentDoc" name="compPaymentDoc" style="display: none;" wire:model="compPaymentDoc">
+                                                                        </li>
+                                                                    @endif
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                    @endcan
+                                                </tr>
+                                            @endforeach
+
+                                        </tbody>
+                                    </table>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -903,7 +1042,9 @@
                     <h4 class="card-title">
                         Client Payments
                     </h4>
-                    <button wire:click="toggleAddClientPayment" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add payment</button>
+                    @can('create', \App\Models\Payments\ClientPayment::class)
+                        <button wire:click="toggleAddClientPayment" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add payment</button>
+                    @endcan
                 </header>
                 <div class="card-body px-6 pb-6">
                     <div class="overflow-x-auto -mx-6 ">
@@ -988,8 +1129,7 @@
                                                     <td class="table-td px-0">
 
                                                         @if ($payment->doc_url)
-                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadPaymentDoc({{ $payment->id }})" wire:click="downloadPaymentDoc({{ $payment->id }})" icon="pepicons-pop:file" width="1.2em"
-                                                                height="1.2em"></iconify-icon>
+                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadPaymentDoc({{ $payment->id }})" wire:click="downloadPaymentDoc({{ $payment->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
                                                             <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadPaymentDoc({{ $payment->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
                                                         @endif
                                                         @if ($payment->note)
@@ -997,47 +1137,45 @@
                                                         @endif
                                                     </td>
 
-                                                    <td class="table-td ">
-                                                        <div class="dropstart relative">
-                                                            <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
-                                                            </button>
-                                                            <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                                @if ($payment->is_new)
-                                                                    <li>
-                                                                        <a wire:click="setPaymentPaid({{ $payment->id }})"
-                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                            <iconify-icon icon="material-symbols:paid"></iconify-icon>
-                                                                            <span>Set as paid</span></a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a wire:click="setPaymentCancelled({{ $payment->id }})"
-                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                            <iconify-icon icon="line-md:cancel"></iconify-icon>
-                                                                            <span>Set as Cancelled</span></a>
-                                                                    </li>
-                                                                @endif
+                                                    @can('update', $payment)
+                                                        <td class="table-td">
+                                                            <div class="dropstart relative">
+                                                                <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                </button>
+                                                                <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                    @if ($payment->is_new)
+                                                                        <li>
+                                                                            <a wire:click="setPaymentPaid({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="material-symbols:paid"></iconify-icon>
+                                                                                <span>Set as paid</span></a>
+                                                                        </li>
+                                                                        <li>
+                                                                            <a wire:click="setPaymentCancelled({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="line-md:cancel"></iconify-icon>
+                                                                                <span>Set as Cancelled</span></a>
+                                                                        </li>
+                                                                    @endif
 
-                                                                @if ($payment->doc_url)
-                                                                    <li>
-                                                                        <a wire:click="ConfirmRemovePaymentDoc({{ $payment->id }})"
-                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                            <iconify-icon icon="lucide:file-x"></iconify-icon>
-                                                                            <span>Remove document</span>
-                                                                        </a>
-                                                                    </li>
-                                                                @else
-                                                                    <li>
-                                                                        <label for="paymentDoc" wire:click="setPaymentDoc({{ $payment->id }})"
-                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                            <iconify-icon icon="pepicons-pop:file"></iconify-icon>
-                                                                            <span>Add document</span></label>
-                                                                        <input type="file" id="paymentDoc" name="paymentDoc" style="display: none;" wire:model="paymentDoc">
-                                                                    </li>
-                                                                @endif
-                                                            </ul>
-                                                        </div>
-                                                    </td>
+                                                                    @if ($payment->doc_url)
+                                                                        <li>
+                                                                            <a wire:click="ConfirmRemovePaymentDoc({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="lucide:file-x"></iconify-icon>
+                                                                                <span>Remove document</span>
+                                                                            </a>
+                                                                        </li>
+                                                                    @else
+                                                                        <li>
+                                                                            <label for="paymentDoc" wire:click="setPaymentDoc({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="pepicons-pop:file"></iconify-icon>
+                                                                                <span>Add document</span></label>
+                                                                            <input type="file" id="paymentDoc" name="paymentDoc" style="display: none;" wire:model="paymentDoc">
+                                                                        </li>
+                                                                    @endif
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                    @endcan
                                                 </tr>
                                             @endforeach
 
@@ -1070,145 +1208,140 @@
                                         No sales commissions found.
                                     </p>
                                 @else
-                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                    <thead class=" border-t border-slate-100 dark:border-slate-800">
-                                        <tr>
-
-                                            <th scope="col" class=" table-th ">
-                                                Title
-                                            </th>
-
-                                            <th scope="col" class=" table-th ">
-                                                Amount
-                                            </th>
-
-                                            <th scope="col" class=" table-th ">
-                                                From
-                                            </th>
-
-                                            <th scope="col" class=" table-th ">
-                                                Payment Date
-                                            </th>
-
-                                            <th scope="col" class=" table-th ">
-                                                Status
-                                            </th>
-
-                                            <th scope="col" class=" table-th ">
-
-                                            </th>
-
-                                            <th scope="col" class=" table-th ">
-                                                Action
-                                            </th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
-                                        @foreach ($soldPolicy->sales_comms as $comm)
+                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <thead class=" border-t border-slate-100 dark:border-slate-800">
                                             <tr>
 
+                                                <th scope="col" class=" table-th ">
+                                                    Title
+                                                </th>
 
-                                                <td class="table-td ">
-                                                    <div class="">
-                                                        <span class="text-slate-500 dark:text-slate-400">
-                                                            <span class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
-                                                            <span class="block text-slate-500 text-xs">
-                                                                {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
+                                                <th scope="col" class=" table-th ">
+                                                    Amount
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    From
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Payment Date
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Status
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Action
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                            @foreach ($soldPolicy->sales_comms as $comm)
+                                                <tr>
+
+
+                                                    <td class="table-td ">
+                                                        <div class="">
+                                                            <span class="text-slate-500 dark:text-slate-400">
+                                                                <span class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
+                                                                <span class="block text-slate-500 text-xs">
+                                                                    {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
+                                                                </span>
                                                             </span>
-                                                        </span>
-                                                    </div>
-                                                </td>
+                                                        </div>
+                                                    </td>
 
-                                                <td class="table-td ">
-                                                    <div class="text-lg text-success-500">
-                                                        {{ number_format($comm->amount, 0, '.', ',') }} EGP
-                                                    </div>
-                                                </td>
+                                                    <td class="table-td ">
+                                                        <div class="text-lg text-success-500">
+                                                            {{ number_format($comm->amount, 0, '.', ',') }} EGP
+                                                        </div>
+                                                    </td>
 
-                                                <td class="table-td ">
-                                                    {{ ucwords(str_replace('_', ' ', $comm->from)) }}
-                                                </td>
+                                                    <td class="table-td ">
+                                                        {{ ucwords(str_replace('_', ' ', $comm->from)) }}
+                                                    </td>
 
-                                                <td class="table-td ">{{ $comm->payment_date ? \Carbon\Carbon::parse($comm->payment_date)->format('D d/m/Y') : 'Not set.' }}</td>
+                                                    <td class="table-td ">{{ $comm->payment_date ? \Carbon\Carbon::parse($comm->payment_date)->format('D d/m/Y') : 'Not set.' }}</td>
 
-                                                <td class="table-td">
-                                                    @if (str_contains($comm->status, 'not_confirmed'))
-                                                        <span class="badge bg-warning-500 text-white h-auto">
-                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                        </span>
-                                                    @elseif(str_contains($comm->status, 'cancelled'))
-                                                        <span class="badge bg-danger-500 text-white h-auto">
-                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                        </span>
-                                                    @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
-                                                        <span class="badge bg-success-500 text-white h-auto">
-                                                            <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                        </span>
-                                                    @endif
+                                                    <td class="table-td">
+                                                        @if (str_contains($comm->status, 'not_confirmed'))
+                                                            <span class="badge bg-warning-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                            </span>
+                                                        @elseif(str_contains($comm->status, 'cancelled'))
+                                                            <span class="badge bg-danger-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                            </span>
+                                                        @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
+                                                            <span class="badge bg-success-500 text-white h-auto">
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                            </span>
+                                                        @endif
 
 
-                                                </td>
+                                                    </td>
 
-                                                <td class="table-td px-0">
+                                                    <td class="table-td px-0">
 
-                                                    @if ($comm->doc_url)
-                                                        <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadCommDoc({{ $comm->id }})" wire:click="downloadCommDoc({{ $comm->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
-                                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadCommDoc({{ $comm->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                                    @endif
-                                                    @if ($comm->note)
-                                                        <iconify-icon class=" cursor-pointer" wire:click="showCommNote({{ $comm->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
-                                                    @endif
-                                                </td>
+                                                        @if ($comm->doc_url)
+                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadCommDoc({{ $comm->id }})" wire:click="downloadCommDoc({{ $comm->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
+                                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadCommDoc({{ $comm->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                        @endif
+                                                        @if ($comm->note)
+                                                            <iconify-icon class=" cursor-pointer" wire:click="showCommNote({{ $comm->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
+                                                        @endif
+                                                    </td>
 
-                                                <td class="table-td ">
-                                                    <div class="dropstart relative">
-                                                        <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
-                                                        </button>
-                                                        <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                            @if ($comm->is_new)
+                                                    <td class="table-td ">
+                                                        <div class="dropstart relative">
+                                                            <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                            </button>
+                                                            <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                @if ($comm->is_new)
+                                                                    <li>
+                                                                        <a wire:click="setCommPaid({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="material-symbols:paid"></iconify-icon>
+                                                                            <span>Set as paid</span></a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a wire:click="setCommCancelled({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="line-md:cancel"></iconify-icon>
+                                                                            <span>Set as Cancelled</span></a>
+                                                                    </li>
+                                                                @endif
+
                                                                 <li>
-                                                                    <a wire:click="setCommPaid({{ $comm->id }})"
-                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                        <iconify-icon icon="material-symbols:paid"></iconify-icon>
-                                                                        <span>Set as paid</span></a>
+                                                                    <a wire:click="refreshCommAmmount({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                        <iconify-icon icon="material-symbols:refresh"></iconify-icon>
+                                                                        <span>Refresh amount</span></a>
                                                                 </li>
-                                                                <li>
-                                                                    <a wire:click="setCommCancelled({{ $comm->id }})"
-                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                        <iconify-icon icon="line-md:cancel"></iconify-icon>
-                                                                        <span>Set as Cancelled</span></a>
-                                                                </li>
-                                                            @endif
-
-                                                            <li>
-                                                                <a wire:click="refreshCommAmmount({{ $comm->id }})"
-                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                    <iconify-icon icon="material-symbols:refresh"></iconify-icon>
-                                                                    <span>Refresh amount</span></a>
-                                                            </li>
 
 
-                                                            @if ($comm->doc_url)
-                                                                <li>
-                                                                    <a wire:click="ConfirmRemoveCommDoc({{ $comm->id }})"
-                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                        <iconify-icon icon="lucide:file-x"></iconify-icon>
-                                                                        <span>Remove document</span>
-                                                                    </a>
-                                                                </li>
-                                                            @else
-                                                                <li>
-                                                                    <label for="commDoc" wire:click="setCommDoc({{ $comm->id }})"
-                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                        <iconify-icon icon="pepicons-pop:file"></iconify-icon>
-                                                                        <span>Add document</span></label>
-                                                                    <input type="file" id="commDoc" name="filename" style="display: none;" wire:model="commDoc">
-                                                                </li>
-                                                            @endif
-                                                            {{-- <li>
+                                                                @if ($comm->doc_url)
+                                                                    <li>
+                                                                        <a wire:click="ConfirmRemoveCommDoc({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="lucide:file-x"></iconify-icon>
+                                                                            <span>Remove document</span>
+                                                                        </a>
+                                                                    </li>
+                                                                @else
+                                                                    <li>
+                                                                        <label for="commDoc" wire:click="setCommDoc({{ $comm->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon icon="pepicons-pop:file"></iconify-icon>
+                                                                            <span>Add document</span></label>
+                                                                        <input type="file" id="commDoc" name="filename" style="display: none;" wire:model="commDoc">
+                                                                    </li>
+                                                                @endif
+                                                                {{-- <li>
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#editModal"
                                                             class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
                                                             <iconify-icon icon="clarity:note-edit-line"></iconify-icon>
@@ -1220,14 +1353,14 @@
                                                             <iconify-icon icon="fluent:delete-28-regular"></iconify-icon>
                                                             <span>Delete</span></a>
                                                     </li> --}}
-                                                        </ul>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
 
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
                                 @endif
                             </div>
                         </div>
@@ -1707,6 +1840,36 @@
         </div>
     @endif
 
+    @if ($CompPaymentNoteSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Payment Note
+                            </h3>
+                            <button wire:click="hideCompPaymentComment" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            {{ $CompPaymentNoteSec }}
+                        </div>
+                        <!-- Modal footer -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if ($updatePolComSec)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
@@ -2118,8 +2281,7 @@
                                 Delete Benefit
                             </h3>
                             <button wire:click="dismissDeleteBenefit" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2156,8 +2318,7 @@
                                 Delete Exclusions
                             </h3>
                             <button wire:click="dismissDeleteExc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2194,8 +2355,7 @@
                                 Delete Document File
                             </h3>
                             <button wire:click="toggleDeleteDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2232,8 +2392,7 @@
                                 Delete policy commission
                             </h3>
                             <button wire:click="dismissDeletePolCom" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2270,8 +2429,7 @@
                                 Remove Commission Document
                             </h3>
                             <button wire:click="DissRemoveCommDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2308,8 +2466,7 @@
                                 Remove Payment Document
                             </h3>
                             <button wire:click="DissRemovePaymentDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -2326,6 +2483,43 @@
                         <!-- Modal footer -->
                         <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="removePaymentDoc" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes,
+                                Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($RemoveCompPaymentDocId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                Remove Payment Document
+                            </h3>
+                            <button wire:click="DissRemoveCompPaymentDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                Are you sure ! you Want to remove payment Document ?
+                            </h6>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="removeCompPaymentDoc" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes,
                                 Remove</button>
                         </div>
                     </div>
@@ -2417,6 +2611,7 @@
             </div>
         </div>
     @endif
+
 
     @if ($addClientPaymentSec)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">

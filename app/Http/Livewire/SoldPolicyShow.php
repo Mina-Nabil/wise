@@ -14,6 +14,7 @@ use App\Models\Tasks\TaskField;
 use App\Models\Users\User;
 use App\Models\Payments\SalesComm;
 use App\Models\Payments\ClientPayment;
+use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\CommProfileConf;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
@@ -22,10 +23,11 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use PhpParser\Node\Expr\FuncCall;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SoldPolicyShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads, AuthorizesRequests;
 
     public $soldPolicy;
     public $start;
@@ -114,6 +116,11 @@ class SoldPolicyShow extends Component
     public $client_payment_date;
     public $setPaidSec;
 
+    public $RemoveCompPaymentDocId;
+    public $compPaymentDocId;
+    public $compPaymentDoc;
+    public $CompPaymentNoteSec;
+
     public $section = 'profile';
 
     protected $queryString = ['section'];
@@ -181,6 +188,7 @@ class SoldPolicyShow extends Component
 
     public function removePaymentDoc()
     {
+        $this->authorize('update', ClientPayment::find($this->RemovePaymentDocId));
         $res = ClientPayment::find($this->RemovePaymentDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -193,6 +201,7 @@ class SoldPolicyShow extends Component
 
     public function updatedPaymentDoc()
     {
+        $this->authorize('update', ClientPayment::find($this->paymentDocId));
         $this->validate([
             'paymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
@@ -223,8 +232,111 @@ class SoldPolicyShow extends Component
         $this->paymentDocId = $id;
     }
 
+    public function downloadCompPaymentDoc($id)
+    {
+        $payment = CompanyCommPayment::find($id);
+        $fileContents = Storage::disk('s3')->get($payment->doc_url);
+        $extension = pathinfo($payment->doc_url, PATHINFO_EXTENSION);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number . '_company_payment_document.' . $extension . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function showCompPaymentNote($id)
+    {
+        $n = CompanyCommPayment::find($id);
+        $this->CompPaymentNoteSec = $n->note;
+    }
+
+    public function hideCompPaymentComment()
+    {
+        $this->CompPaymentNoteSec = null;
+    }
+
+    public function updatedCompPaymentDoc()
+    {
+        $this->authorize('update', CompanyCommPayment::find($this->compPaymentDocId));
+        $this->validate([
+            'compPaymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+        ]);
+
+        $url = $this->compPaymentDoc->store(CompanyCommPayment::FILES_DIRECTORY, 's3');
+
+        $res = CompanyCommPayment::find($this->compPaymentDocId)->setDocument($url);
+        if ($res) {
+            $this->compPaymentDocId = null;
+            $this->compPaymentDoc = null;
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'document added');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setCompanyPaymentPaid($id)
+    {
+        $this->authorize('update', CompanyCommPayment::find($id));
+        $res = CompanyCommPayment::find($id)->setAsPaid();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Payment updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setCompanyPaymentCancelled($id)
+    {
+        $this->authorize('update', CompanyCommPayment::find($id));
+        $res = CompanyCommPayment::find($id)->setAsCancelled();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Payment updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function ConfirmRemoveCompPaymentDoc($id)
+    {
+        $this->RemoveCompPaymentDocId = $id;
+    }
+
+    public function DissRemoveCompPaymentDoc()
+    {
+        $this->RemoveCompPaymentDocId = null;
+    }
+
+    public function removeCompPaymentDoc()
+    {
+        $this->authorize('update', CompanyCommPayment::find($this->RemoveCompPaymentDocId));
+        $res = CompanyCommPayment::find($this->RemoveCompPaymentDocId)->deleteDocument();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->RemoveCompPaymentDocId = null;
+            $this->alert('success', 'payment removed');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setCompPaymentDoc($id)
+    {
+        $this->compPaymentDocId = $id;
+    }
+
     public function setPaymentPaid($id)
     {
+        $this->authorize('update', ClientPayment::find($id));
         $res = ClientPayment::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -236,6 +348,7 @@ class SoldPolicyShow extends Component
 
     public function setPaymentCancelled($id)
     {
+        $this->authorize('update', ClientPayment::find($id));
         $res = ClientPayment::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->soldPolicy->id);
