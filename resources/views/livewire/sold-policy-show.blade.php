@@ -1196,7 +1196,9 @@
                     <h4 class="card-title">
                         Sales Commission
                     </h4>
+                    @can('create', \App\Models\Payments\SalesComm::class)
                     <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
+                    @endcan
                     <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
                 </header>
                 <div class="card-body px-6 pb-6">
@@ -1300,6 +1302,7 @@
                                                         @endif
                                                     </td>
 
+                                                    @can('update' , $comm)
                                                     <td class="table-td ">
                                                         <div class="dropstart relative">
                                                             <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -1341,21 +1344,10 @@
                                                                         <input type="file" id="commDoc" name="filename" style="display: none;" wire:model="commDoc">
                                                                     </li>
                                                                 @endif
-                                                                {{-- <li>
-                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editModal"
-                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
-                                                            <iconify-icon icon="clarity:note-edit-line"></iconify-icon>
-                                                            <span>Edit</span></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#"
-                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
-                                                            <iconify-icon icon="fluent:delete-28-regular"></iconify-icon>
-                                                            <span>Delete</span></a>
-                                                    </li> --}}
                                                             </ul>
                                                         </div>
                                                     </td>
+                                                    @endcan
                                                 </tr>
                                             @endforeach
 
@@ -2529,6 +2521,7 @@
     @endif
 
     {{-- addCommSec --}}
+    @can('create', \App\Models\Payments\SalesComm::class)
     @if ($addCommSec)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
@@ -2611,6 +2604,7 @@
             </div>
         </div>
     @endif
+    @endcan
 
 
     @if ($addClientPaymentSec)

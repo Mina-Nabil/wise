@@ -29,10 +29,12 @@
                 </div>
                 <div class="card-text mt-4 menu-open">
                     <p>{{ $profile->desc }}</p>
+                    @can('create', \App\Models\Payments\CommProfile::class)
                     <div class="mt-4 space-x-4 rtl:space-x-reverse">
                         <button wire:click="openUpdateSec" class="btn inline-flex justify-center btn-light btn-sm">Edit
                             info</button>
                     </div>
+                    @endcan
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 float-right">Created
                     {{ \Carbon\Carbon::parse($profile->created_at)->format('l d/m/Y') }}</p>
@@ -344,7 +346,9 @@
                     <h4 class="card-title">
                         Sales Commission
                     </h4>
+                    @can('create', \App\Models\Payments\SalesComm::class)
                     <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
+                    @endcan
                     <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
                 </header>
                 <div class="card-body px-6 pb-6">

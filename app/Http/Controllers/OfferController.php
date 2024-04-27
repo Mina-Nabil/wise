@@ -7,6 +7,7 @@ use App\Models\Offers\Offer;
 use App\Models\Payments\CommProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class OfferController extends Controller
 {
@@ -17,12 +18,14 @@ class OfferController extends Controller
 
     public function commissionsIndex()
     {
+        Gate::authorize('viewAny',  CommProfile::class);
         return view('offers.comm-prof-index');
     }
 
     public function commissionsShow($id)
     {
-        CommProfile::findorFail($id);
+        $c  = CommProfile::findorFail($id);
+        Gate::authorize('view', $c);
         return view('offers.comm-prof-show', compact('id'));
     }
 
