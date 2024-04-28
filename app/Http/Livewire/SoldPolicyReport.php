@@ -278,7 +278,7 @@ class SoldPolicyReport extends Component
 
     public function exportReport()
     {
-        SoldPolicy::exportReport(
+        return SoldPolicy::exportReport(
             $this->start_from,
             $this->start_to,
             $this->expiry_from,

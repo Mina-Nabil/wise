@@ -24,6 +24,7 @@ use Livewire\WithFileUploads;
 use PhpParser\Node\Expr\FuncCall;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Validation\ValidationException;
 
 class SoldPolicyShow extends Component
 {
@@ -121,6 +122,11 @@ class SoldPolicyShow extends Component
     public $compPaymentDoc;
     public $CompPaymentNoteSec;
 
+    public $addCompanyPaymentSec;
+    public $compPaymentType;
+    public $compPaymentAmount;
+    public $compPaymentNote;
+
     public $section = 'profile';
 
     protected $queryString = ['section'];
@@ -129,6 +135,40 @@ class SoldPolicyShow extends Component
     {
         $this->section = $section;
         $this->mount($this->soldPolicy->id);
+    }
+
+    public function toggleAddCompanyPayment(){
+        $this->toggle($this->addCompanyPaymentSec);
+    }
+
+    public function addCompanyPayment(){
+        $this->authorize('create',CompanyCommPayment::class);
+
+        
+
+        $this->validate([
+            'compPaymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
+            'compPaymentAmount' => 'required|numeric',
+            'compPaymentNote' => 'nullable|string',
+        ]);
+        
+        if ($this->compPaymentAmount <= ($this->soldPolicy->total_policy_comm - $this->soldPolicy->total_company_paid)) {
+            throw ValidationException::withMessages([
+                'compPaymentAmount' => 'Amount is more that what the company should pay. Please make sure the amount is less than the total commission plus the company payments total.'
+            ]);
+        }
+
+        $res = $this->soldPolicy->addCompanyPayment($this->compPaymentType, $this->compPaymentAmount , $this->compPaymentNote);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->addCompanyPaymentSec = false;
+            $this->compPaymentType = null;
+            $this->compPaymentAmount = null;
+            $this->compPaymentNote = null;
+            $this->alert('success', 'Payment added!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function openPaymentDateSec()
@@ -1170,7 +1210,7 @@ class SoldPolicyShow extends Component
             'FIELDSTITLES'  => $FIELDSTITLES,
             "users"         =>  $users,
             'PYMT_TYPES'    => $PYMT_TYPES,
-            'FROMS'         => $FROMS
+            'FROMS'         => $FROMS,
         ]);
     }
 }
