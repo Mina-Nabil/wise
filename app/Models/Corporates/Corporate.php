@@ -456,6 +456,12 @@ class Corporate extends Model
         }
     }
 
+    ///attributes
+    public function getFullNameAttribute()
+    {
+        return $this->name;
+    }
+
     ///scopes
     public function scopeUserData($query, $searchText = null)
     {

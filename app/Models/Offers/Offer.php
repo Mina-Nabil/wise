@@ -128,10 +128,10 @@ class Offer extends Model
 
         $i = 2;
         foreach ($offers as $of) {
-            $activeSheet->getCell('A' . $i)->setValue($of->client->name);
+            $activeSheet->getCell('A' . $i)->setValue($of->client->full_name);
             $activeSheet->getCell('B' . $i)->setValue($of->client_type);
             $activeSheet->getCell('C' . $i)->setValue(ucwords(str_replace('_', ' ', $of->type)));
-            $activeSheet->getCell('D' . $i)->setValue(ucwords(str_replace('_', ' ', $of->status)) . $of->is_renewal ? ' - Renewal' : '');
+            $activeSheet->getCell('D' . $i)->setValue(ucwords(str_replace('_', ' ', $of->status)));
             $activeSheet->getCell('E' . $i)->setValue($of->renewal_policy);
             $activeSheet->getCell('F' . $i)->setValue(number_format($of->item_value, 0, '.', ','));
             $activeSheet->getCell('G' . $i)->setValue(

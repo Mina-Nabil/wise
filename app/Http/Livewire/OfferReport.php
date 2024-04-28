@@ -194,7 +194,7 @@ class OfferReport extends Component
 
     public function exportReport()
     {
-        Offer::exportReport(
+        return Offer::exportReport(
             $this->from,
             $this->to,
             $this->statuses,
