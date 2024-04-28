@@ -24,7 +24,6 @@ use Livewire\WithFileUploads;
 use PhpParser\Node\Expr\FuncCall;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Validation\ValidationException;
 
 class SoldPolicyShow extends Component
 {
@@ -137,28 +136,26 @@ class SoldPolicyShow extends Component
         $this->mount($this->soldPolicy->id);
     }
 
-    public function toggleAddCompanyPayment(){
+    public function toggleAddCompanyPayment()
+    {
         $this->toggle($this->addCompanyPaymentSec);
     }
 
-    public function addCompanyPayment(){
-        $this->authorize('create',CompanyCommPayment::class);
-
-        
+    public function addCompanyPayment()
+    {
+        $this->authorize('create', CompanyCommPayment::class);
 
         $this->validate([
             'compPaymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
             'compPaymentAmount' => 'required|numeric',
             'compPaymentNote' => 'nullable|string',
         ]);
-        
-        if ($this->compPaymentAmount <= ($this->soldPolicy->total_policy_comm - $this->soldPolicy->total_company_paid)) {
-            throw ValidationException::withMessages([
-                'compPaymentAmount' => 'Amount is more that what the company should pay. Please make sure the amount is less than the total commission plus the company payments total.'
-            ]);
+
+        if (!($this->compPaymentAmount <= ($this->soldPolicy->total_policy_comm - $this->soldPolicy->total_company_paid))) {
+            $this->throwError('compPaymentAmount', 'Amount is more that what the company should pay. Please make sure the amount is less than the total commission plus the company payments total.');
         }
 
-        $res = $this->soldPolicy->addCompanyPayment($this->compPaymentType, $this->compPaymentAmount , $this->compPaymentNote);
+        $res = $this->soldPolicy->addCompanyPayment($this->compPaymentType, $this->compPaymentAmount, $this->compPaymentNote);
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->addCompanyPaymentSec = false;
@@ -534,7 +531,7 @@ class SoldPolicyShow extends Component
 
     public function updatedCommDoc()
     {
-        $this->authorize('update',SalesComm::find($this->commDocId));
+        $this->authorize('update', SalesComm::find($this->commDocId));
         $this->validate([
             'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
         ]);
@@ -581,7 +578,7 @@ class SoldPolicyShow extends Component
 
     public function removeCommDoc()
     {
-        $this->authorize('update',SalesComm::find($this->RemoveCommDocId));
+        $this->authorize('update', SalesComm::find($this->RemoveCommDocId));
         $res = SalesComm::find($this->RemoveCommDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -594,7 +591,7 @@ class SoldPolicyShow extends Component
 
     public function setCommPaid($id)
     {
-        $this->authorize('update',SalesComm::find($id));
+        $this->authorize('update', SalesComm::find($id));
         $res =  SalesComm::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -606,7 +603,7 @@ class SoldPolicyShow extends Component
 
     public function setCommCancelled($id)
     {
-        $this->authorize('update',SalesComm::find($id));
+        $this->authorize('update', SalesComm::find($id));
         $res =  SalesComm::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -618,7 +615,7 @@ class SoldPolicyShow extends Component
 
     public function refreshCommAmmount($id)
     {
-        $this->authorize('update',SalesComm::find($id));
+        $this->authorize('update', SalesComm::find($id));
         $res =  SalesComm::find($id)->refreshPaymentInfo();
         if ($res) {
             $this->mount($this->soldPolicy->id);
