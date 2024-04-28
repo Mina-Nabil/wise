@@ -187,6 +187,32 @@ class SoldPolicy extends Model
         }
     }
 
+    public function addCompanyPayment($type, $amount, $note = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updatePayments', $this)) return false;
+
+        assert($amount <= ($this->total_policy_comm - $this->total_company_paid), "Amount is more that what the company should pay. Please make sure the amount is less than the total commission plus the company payments total");
+
+        try {
+            if ($this->company_comm_payments()->create([
+                "type"      => $type,
+                "amount"    => $amount,
+                "note"      => $note
+            ])) {
+                AppLog::info("Company payment added", loggable: $this);
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add company payment", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+
     public function calculateTotalPolicyComm()
     {
         $tmp = 0;
