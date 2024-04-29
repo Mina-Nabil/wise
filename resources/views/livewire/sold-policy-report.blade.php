@@ -71,6 +71,11 @@
                                         dark:hover:text-white cursor-pointer">
                                 is Valid</span>
                         </li>
+                        <li wire:click="togglePaid">
+                            <span href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Paid</span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -244,6 +249,22 @@
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearvalid">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_paid))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="togglePaid">
+                                        @if ($is_paid)
+                                            Paid:&nbsp;Yes
+                                        @else
+                                        Paid:&nbsp;No
+                                        @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearpaid">
                                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                                     </span>
                                 </button>

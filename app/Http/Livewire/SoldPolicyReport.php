@@ -51,6 +51,7 @@ class SoldPolicyReport extends Component
     public $company_ids = [];
     public $policy_ids = [];
     public $is_valid;
+    public $is_paid;
 
     public $Estart_from;
     public $Estart_to;
@@ -67,9 +68,19 @@ class SoldPolicyReport extends Component
     public $Epolicy_ids = [];
     public $Eis_valid;
 
+    public function clearpaid()
+    {
+        $this->is_paid = null;
+    }
+
     public function clearvalid()
     {
         $this->is_valid = null;
+    }
+
+    public function togglePaid()
+    {
+        $this->toggle($this->is_paid);
     }
 
     public function toggleValidated()
@@ -293,6 +304,7 @@ class SoldPolicyReport extends Component
             $this->company_ids,
             $this->policy_ids,
             $this->is_valid,
+            $this->is_paid,
             $this->search
         );
     }
@@ -341,6 +353,7 @@ class SoldPolicyReport extends Component
             $this->company_ids,
             $this->policy_ids,
             $this->is_valid,
+            $this->is_paid,
             $this->search
         )->paginate(30);
         return view('livewire.sold-policy-report', [

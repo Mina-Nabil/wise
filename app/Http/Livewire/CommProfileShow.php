@@ -262,7 +262,7 @@ class CommProfileShow extends Component
     public function editPayment()
     {
 
-        if (($this->pymtAmount) > ($this->profile->balance)) {
+        if (($this->pymtAmount) > ($this->profile->balance + $this->profile->unapproved_balance)) {
             throw ValidationException::withMessages([
                 'pymtAmount' => 'Payment amount cannot exceed your balance.'
             ]);
@@ -424,7 +424,7 @@ class CommProfileShow extends Component
 
     public function addPayment()
     {
-        if (($this->pymtAmount) > ($this->profile->balance)) {
+        if (($this->pymtAmount) > ($this->profile->balance + $this->profile->unapproved_balance)) {
             throw ValidationException::withMessages([
                 'pymtAmount' => 'Payment amount cannot exceed your balance.'
             ]);

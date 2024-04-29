@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CommProfilePayment extends Model
@@ -130,19 +131,19 @@ class CommProfilePayment extends Model
 
     public function setAsPaid(Carbon $date = null)
     {
-        if ($this->needs_approve && !$this->is_approved) throw new Exception("Payment not approved");
+        if ($this->needs_approval && !$this->is_approved) throw new Exception("Payment not approved");
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
-
-        if (!$this->is_new || !$this->is_approved) return false;
+        
+        if (!($this->is_new || $this->is_approved)) return false;
 
         try {
             DB::transaction(function () use ($date) {
                 $this->load('comm_profile');
-                if ($this->needs_approve) {
+                if ($this->needs_approval) {
                     $this->comm_profile->unapproved_balance = $this->comm_profile->unapproved_balance - ($this->amount - $this->comm_profile->balance);
-                    $this->balance = 0;
+                    $this->comm_profile->balance = 0;
                 } else {
                     $this->comm_profile->balance = $this->comm_profile->balance - $this->amount;
                 }
@@ -150,7 +151,7 @@ class CommProfilePayment extends Model
                 $this->comm_profile->save();
 
                 $date = $date ?? new Carbon();
-                AppLog::error("Setting Profile Payment as paid", loggable: $this);
+                AppLog::info("Setting Profile Payment as paid", loggable: $this);
                 $this->update([
                     "payment_date"  => $date->format('Y-m-d H:i'),
                     "status"  =>  self::PYMT_STATE_PAID,

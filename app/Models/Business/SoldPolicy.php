@@ -17,7 +17,6 @@ use App\Models\Offers\OfferOption;
 use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\PolicyComm;
-use App\Models\Payments\PolicyCost;
 use App\Models\Payments\SalesComm;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskField;
@@ -53,7 +52,7 @@ class SoldPolicy extends Model
         'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
         'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
         'car_chassis', 'car_plate_no', 'car_engine', 'policy_number',
-        'in_favor_to', 'policy_doc', 'note', 'is_renewed', 'is_paid', 'client_payment_date'
+        'in_favor_to', 'policy_doc', 'note', 'is_renewed', 'is_paid', 'client_payment_date', 'total_policy_comm', 'total_client_paid', 'total_sales_comm', 'total_comp_paid', 'policy_comm_note', 'assigned_to_id'
     ];
 
     ///model functions
@@ -161,7 +160,7 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addClientPayment($type, $amount, Carbon $due, $note = null)
+    public function addClientPayment($type, $amount, Carbon $due, $note = null, $assigned_to_id = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -173,6 +172,7 @@ class SoldPolicy extends Model
             if ($this->client_payments()->create([
                 "type"      => $type,
                 "amount"    => $amount,
+                "assigned_to_id"    => $assigned_to_id ?? Auth::id(),
                 "due"       => $due->format('Y-m-d H:i:s'),
                 "note"              => $note
             ])) {
@@ -211,7 +211,6 @@ class SoldPolicy extends Model
             return false;
         }
     }
-
 
     public function calculateTotalPolicyComm()
     {
@@ -284,24 +283,43 @@ class SoldPolicy extends Model
         }
     }
 
+    public function setPolicyCommission($amount, $note = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updatePayments', $this)) return false;
+        try {
+
+            $this->update([
+                'total_policy_comm' => $amount,
+                'policy_comm_note' => $note
+            ]);
+            AppLog::info("Sold Policy commission edited", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit Sold Policy Commission", desc: $e->getMessage());
+            return false;
+        }
+    }
+
     public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null): self|bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
 
-        $this->update([
-            'policy_number' => $policy_number,
-            'start' => $start->format('Y-m-d H:i:s'),
-            'expiry' => $expiry->format('Y-m-d H:i:s'),
-            'car_chassis' => $car_chassis,
-            'car_plate_no' => $car_plate_no,
-            'in_favor_to' => $in_favor_to,
-            'car_engine' => $car_engine
-        ]);
-
         try {
-            $this->save();
+            $this->update([
+                'policy_number' => $policy_number,
+                'start' => $start->format('Y-m-d H:i:s'),
+                'expiry' => $expiry->format('Y-m-d H:i:s'),
+                'car_chassis' => $car_chassis,
+                'car_plate_no' => $car_plate_no,
+                'in_favor_to' => $in_favor_to,
+                'car_engine' => $car_engine
+            ]);
+
             AppLog::info("Sold Policy edited", loggable: $this);
             return true;
         } catch (Exception $e) {
@@ -751,9 +769,9 @@ class SoldPolicy extends Model
         }
     }
 
-    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premuim_to = null, $net_premuim_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, $searchText = null)
+    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premuim_to = null, $net_premuim_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premuim_to, $net_premuim_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $searchText)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premuim_to, $net_premuim_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText)->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
         if (!$template) {
@@ -770,7 +788,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
             $activeSheet->getCell('E' . $i)->setValue($policy->policy_number);
             $activeSheet->getCell('F' . $i)->setValue($policy->client->name);
-            $activeSheet->getCell('G' . $i)->setValue($policy->is_valid ? "Valid" : '' );
+            $activeSheet->getCell('G' . $i)->setValue($policy->is_valid ? "Valid" : '');
             $activeSheet->getCell('H' . $i)->setValue($policy->is_paid ? 'Paid' : '');
             $i++;
         }
@@ -1065,7 +1083,7 @@ class SoldPolicy extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, $searchText = null, $is_expiring = false)
+    public function scopeUserData($query, $searchText = null, $is_expiring = false, $is_outstanding = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -1145,11 +1163,14 @@ class SoldPolicy extends Model
                 $now->format('Y-m-t'),
             ]);
         });
+        $query->when($is_outstanding, function ($q) {
+            $q->whereRaw("total_comp_paid < total_policy_comm");
+        });
         return $query->orderBy("sold_policies.start");
     }
 
 
-    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premuim_to = null, $net_premuim_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, $searchText = null)
+    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premuim_to = null, $net_premuim_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null)
     {
         $query->userData($searchText);
         $query->select('sold_policies.*')
@@ -1170,6 +1191,8 @@ class SoldPolicy extends Model
                 $q->where('creator_id', "=", $v);
             })->when($is_valid !== null, function ($q, $v) use ($is_valid) {
                 $q->where('is_valid', "=", $is_valid);
+            })->when($is_paid !== null, function ($q, $v) use ($is_paid) {
+                $q->where('is_paid', "=", $is_paid);
             })->when($value_from, function ($q, $v) {
                 $q->where('insured_value', ">=", $v);
             })->when($value_to, function ($q, $v) {

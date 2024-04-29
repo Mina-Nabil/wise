@@ -236,6 +236,10 @@ class User extends Authenticatable
     {
         return $query->where('type', self::TYPE_OPERATIONS);
     }
+    public function scopeFinance($query)
+    {
+        return $query->where('type', self::TYPE_FINANCE);
+    }
 
     /////attributes
     public function getIsAdminAttribute()

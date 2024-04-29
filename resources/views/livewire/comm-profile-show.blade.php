@@ -62,7 +62,7 @@
                             Balance
                         </div>
                         <div class="text-slate-900 dark:text-white text-lg font-medium">
-                            <h5>{{ number_format($profile->balance, 0, '.', ',') }} EGP</h5>
+                            <h5>{{ number_format($profile->balance, 2, '.', ',') }} EGP</h5>
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                             Unapproved Balance
                         </div>
                         <div class="text-slate-900 dark:text-white text-lg font-medium">
-                            {{ number_format($profile->unapproved_balance, 0, '.', ',') }} EGP
+                            {{ number_format($profile->unapproved_balance, 2, '.', ',') }} EGP
                         </div>
                     </div>
                 </div>
@@ -264,7 +264,7 @@
                                                                         </li>
                                                                     @endif
 
-                                                                    @if ($payment->is_new && $payment->is_approved)
+                                                                    @if (($payment->is_new && !$payment->needs_approval) || $payment->is_approved)
                                                                         <li>
                                                                             <a wire:click="setPaidSec({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                                 <iconify-icon icon="material-symbols:paid"></iconify-icon>

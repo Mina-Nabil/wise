@@ -207,7 +207,7 @@ class CommProfile extends Model
     ) {
         if ($amount < $this->balance)
             $needs_approval = false;
-        else if ($amount < $this->balance + $this->unapproved_balance)
+        else if ($amount < ($this->balance + $this->unapproved_balance))
             $needs_approval = true;
         else throw new Exception("Amount is more than the available balance");
         try {
@@ -221,8 +221,12 @@ class CommProfile extends Model
                 "note"      =>  $note
             ]);
             $payment->save();
+            if ($payment->needs_approval) {
+                /** @var User */
+                $remon = User::find(1);
+                $remon->pushNotification("Payment pending approval", $this->title . " has a new 'pending approval' payment", "commissions/" . $this->id);
+            }
             return $payment;
-            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't create comm profile payment", desc: $e->getMessage());
