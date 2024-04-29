@@ -20,7 +20,7 @@ class MarkNotificationsAsSeenByRoute
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if ($loggedInUser == null) return $next($request);
+        if ($loggedInUser == null || $request->path() == null) return $next($request);
         $loggedInUser->markNotificationsAsSeenByRoute($request->path());
         return $next($request);
     }

@@ -989,8 +989,9 @@ class OfferShow extends Component
         $this->watchersList = $this->offer->watcher_ids;
     }
 
-    public function setStatus($s)
+    public function setStatus($s = null)
     {
+        if ($s == null) return;
         $res = $this->offer->setStatus($s);
         if ($res) {
             $this->alert('info', $res);
