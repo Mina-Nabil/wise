@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Validation\ValidationException;
 
 trait AlertFrontEnd
 {
@@ -11,6 +12,13 @@ trait AlertFrontEnd
         $this->dispatchBrowserEvent('toastalert', [
             'message' => $message,
             'type' => $type, // or 'failed' or 'info'
+        ]);
+    }
+
+    public function throwError($property, $message)
+    {
+        throw ValidationException::withMessages([
+            $property => $message
         ]);
     }
 }

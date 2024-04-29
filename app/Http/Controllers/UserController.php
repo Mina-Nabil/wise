@@ -16,10 +16,7 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $data['users'] = User::all();
-        $data['types'] = User::TYPES;
-
-        return view('users.show', $data);
+        return view('users.user-management-index');
     }
 
     public function contactIndex(){
