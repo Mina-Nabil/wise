@@ -240,6 +240,14 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ url('/users') }}" class="navItem @yield('commissions')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
+                                    <span>Users</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
                                 <span class="flex items-center">
                                     <iconify-icon class="nav-icon"
