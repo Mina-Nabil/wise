@@ -61,7 +61,7 @@ class User extends Authenticatable
 
 
     /////////////functions
-    public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null): bool
+    public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null, $image = null): bool
     {
         try {
             $this->first_name   = $first_name;
@@ -70,6 +70,7 @@ class User extends Authenticatable
             $this->phone        = $phone;
             $this->username     = $username;
             $this->type         = $type;
+            $this->image         = $image;
 
             if ($this->save()) {
                 AppLog::info('User updated', "User $username updated");
@@ -176,7 +177,7 @@ class User extends Authenticatable
 
 
     /////////static functions
-    public static function newUser($username, $first_name, $last_name, $type, $password, $email = null, $phone = null, $manager_id = null): self|false
+    public static function newUser($username, $first_name, $last_name, $type, $password, $email = null, $phone = null, $manager_id = null, $image = null): self|false
     {
         try {
             $exists = self::userExists($username);
@@ -188,6 +189,7 @@ class User extends Authenticatable
                 "email"         =>  $email,
                 "phone"         =>  $phone,
                 "manager_id"    =>  $manager_id,
+                "image"         =>  $image,
                 "type"          =>  $type,
                 "password"      =>  bcrypt($password)
             ]);
