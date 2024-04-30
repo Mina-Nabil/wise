@@ -189,7 +189,7 @@ class OfferReport extends Component
 
     public function redirectToShowPage($id)
     {
-        return redirect(route('offers.show', $id));
+        $this->dispatchBrowserEvent('openNewTab', ['url' => route('offers.show', $id)]);
     }
 
     public function exportReport()

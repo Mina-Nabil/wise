@@ -52,7 +52,7 @@ class SoldPolicy extends Model
         'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
         'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
         'car_chassis', 'car_plate_no', 'car_engine', 'policy_number',
-        'in_favor_to', 'policy_doc', 'note', 'is_renewed', 'is_paid', 'client_payment_date', 'total_policy_comm', 'total_client_paid', 'total_sales_comm', 'total_comp_paid', 'policy_comm_note', 'assigned_to_id'
+        'in_favor_to', 'policy_doc', 'note', 'is_renewed', 'is_paid', 'client_payment_date', 'total_policy_comm', 'total_client_paid', 'total_sales_comm', 'total_comp_paid', 'policy_comm_note', 'assigned_to_id', 'main_sales_id'
     ];
 
     ///model functions
@@ -364,6 +364,23 @@ class SoldPolicy extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't set Sold Policy doc", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function setMainSales($main_sales_id)
+    {
+        $this->update([
+            'main_sales_id' => $main_sales_id,
+        ]);
+
+        try {
+            $this->save();
+            // AppLog::info("Sold Policy main sales updated", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't set Sold Policy main sales", desc: $e->getMessage());
             return false;
         }
     }
@@ -1163,9 +1180,11 @@ class SoldPolicy extends Model
                 $now->format('Y-m-t'),
             ]);
         });
+
         $query->when($is_outstanding, function ($q) {
             $q->whereRaw("total_comp_paid < total_policy_comm");
         });
+
         return $query->orderBy("sold_policies.start");
     }
 
