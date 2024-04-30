@@ -6,10 +6,12 @@ use Livewire\Component;
 use App\Models\Users\User;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 class UserManagementIndex extends Component
 {
-    use WithPagination,AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, WithFileUploads;
 
     public $newUserSection;
 
@@ -25,14 +27,40 @@ class UserManagementIndex extends Component
 
     public $updateUserSec;
     public $username;
+    public $userImage;
     public $first_name;
     public $last_name;
     public $type;
     public $email;
     public $phone;
 
+    public function clearImage()
+    {
+        $this->userImage = null;
+    }
 
-    public function updateThisUser($id){
+    function generateUrl()
+    {
+        $url = null;
+        $user = User::find($this->updateUserSec);
+        if (is_null($user->image) && is_null($this->userImage)) {
+            $url = null;
+        } elseif (!is_null($user->image) && is_null($this->userImage)) {
+            $url = null;
+        } elseif (!is_null($user->image) && !is_null($this->userImage)) {
+            if (is_string($this->userImage)) {
+                $this->userImage = null;
+                $url = $user->image;
+            }
+        } elseif (is_null($user->image) && !is_null($this->userImage)) {
+            $url = $this->userImage->store(User::FILES_DIRECTORY, 's3');
+        }
+
+        return $url;
+    }
+
+    public function updateThisUser($id)
+    {
         $this->updateUserSec = $id;
         $user = User::find($id);
         $this->username = $user->username;
@@ -41,26 +69,39 @@ class UserManagementIndex extends Component
         $this->type = $user->type;
         $this->email = $user->email;
         $this->phone = $user->phone;
+        if ($user->image) {
+            $this->userImage = Storage::disk('s3')->url(str_replace('//', '/', $user->image));
+        }
     }
 
-    public function closeUpdateThisUser(){
-        $this->reset(['updateUserSec','username','first_name','last_name','type','email','phone']);
+    public function toggleUserStatus($id)
+    {
+        $res = User::find($id)->toggle();
+        if ($res) {
+            $this->alert('success', 'User updated successfuly!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
     }
 
-    public function EditUser(){
-        $currentUserId  =  $this->updateUserSec;
+    public function closeUpdateThisUser()
+    {
+        $this->reset(['updateUserSec', 'username', 'first_name', 'last_name', 'type', 'email', 'phone', 'userImage']);
+    }
+
+    public function EditUser()
+    {
+        $currentUserId = $this->updateUserSec;
         $this->validate([
             'username' => [
                 'required',
                 'string',
                 'max:255',
                 function ($attribute, $value, $fail) use ($currentUserId) {
-                    $exists = User::where('username', $value)
-                        ->where('id', '!=', $currentUserId)
-                        ->exists();
-        
+                    $exists = User::where('username', $value)->where('id', '!=', $currentUserId)->exists();
+
                     if ($exists) {
-                        $fail('The '.$attribute.' has already been taken.');
+                        $fail('The ' . $attribute . ' has already been taken.');
                     }
                 },
             ],
@@ -71,31 +112,31 @@ class UserManagementIndex extends Component
                 'nullable',
                 'email',
                 function ($attribute, $value, $fail) use ($currentUserId) {
-                    $exists = User::where('email', $value)
-                        ->where('id', '!=', $currentUserId)
-                        ->exists();
-        
+                    $exists = User::where('email', $value)->where('id', '!=', $currentUserId)->exists();
+
                     if ($exists) {
-                        $fail('The '.$attribute.' has already been taken.');
+                        $fail('The ' . $attribute . ' has already been taken.');
                     }
                 },
             ],
             'phone' => 'nullable|numeric',
         ]);
 
-        $res = User::find($currentUserId)->editInfo($this->username,$this->first_name,$this->last_name,$this->type,$this->email,$this->phone);
-        if($res){
+        $imageUrl = $this->generateUrl();
+
+        $res = User::find($currentUserId)->editInfo($this->username, $this->first_name, $this->last_name, $this->type, $this->email, $this->phone, $imageUrl);
+        if ($res) {
             $this->closeUpdateThisUser();
-            $this->alert('success','User updated successfuly!');
-        }else{
+            $this->alert('success', 'User updated successfuly!');
+        } else {
             $this->alert('failed', 'Server error');
         }
     }
 
-
-    public function closeNewUserSec(){
+    public function closeNewUserSec()
+    {
         $this->newUserSection = false;
-        $this->reset(['newUsername','newFirstName','newLastName','newType','newPassword','newPassword_confirmation','newEmail','newPhone','newManagerId']);
+        $this->reset(['newUsername', 'newFirstName', 'newLastName', 'newType', 'newPassword', 'newPassword_confirmation', 'newEmail', 'newPhone', 'newManagerId']);
     }
 
     protected $rules = [
@@ -107,7 +148,8 @@ class UserManagementIndex extends Component
         $this->validateOnly('newUsername');
     }
 
-    public function addNewUser(){
+    public function addNewUser()
+    {
         $validatedData = $this->validate([
             'newUsername' => 'required|string|max:255|unique:users,username',
             'newFirstName' => 'required|string|max:255',
@@ -116,21 +158,21 @@ class UserManagementIndex extends Component
             'newPassword' => 'required|string|min:8|confirmed',
             'newEmail' => 'nullable|email|unique:users,email',
             'newPhone' => 'nullable|numeric',
-            'newManagerId' => 'nullable|exists:users,id'
+            'newManagerId' => 'nullable|exists:users,id',
         ]);
 
-        $res = User::newUser($this->newUsername,$this->newFirstName,$this->newLastName,$this->newType,$this->newPassword,$this->newEmail,$this->newPhone,$this->newManagerId);
+        $res = User::newUser($this->newUsername, $this->newFirstName, $this->newLastName, $this->newType, $this->newPassword, $this->newEmail, $this->newPhone, $this->newManagerId);
 
-        if($res){
+        if ($res) {
             $this->closeNewUserSec();
-            $this->alert('success','User added successfuly!');
-        }else{
+            $this->alert('success', 'User added successfuly!');
+        } else {
             $this->alert('failed', 'Server error');
         }
-        
     }
 
-    public function openNewUserSec(){
+    public function openNewUserSec()
+    {
         $this->newUserSection = true;
     }
 
@@ -138,7 +180,7 @@ class UserManagementIndex extends Component
     {
         $TYPES = User::TYPES;
         $users = User::paginate(50);
-        return view('livewire.user-management-index',[
+        return view('livewire.user-management-index', [
             'users' => $users,
             'TYPES' => $TYPES,
         ]);
