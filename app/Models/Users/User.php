@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Session;
 class User extends Authenticatable
 {
     use  HasFactory, Notifiable, CanBeDisabled;
-
+    const FILES_DIRECTORY = 'users/';
     const MORPH_TYPE = 'user';
 
     //All User types
