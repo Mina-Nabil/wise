@@ -7,8 +7,7 @@
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
             @can('create', App\Models\Users\User::class)
-                <button wire:click="openNewUserSec"
-                    class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                <button wire:click="openNewUserSec" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                     <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
                     Create user
                 </button>
@@ -27,8 +26,7 @@
                 <div class="inline-block min-w-full align-middle">
                     <div class="overflow-hidden ">
                         <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                            <thead
-                                class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
+                            <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                 <tr>
 
                                     <th scope="col" class=" table-th ">
@@ -61,7 +59,7 @@
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                 @foreach ($users as $user)
-                                    <tr  class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" wire:click="updateThisUser({{ $user->id }})">
+                                    <tr class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" wire:click="updateThisUser({{ $user->id }})">
 
                                         <td class="table-td">
                                             {{ $user->first_name }} {{ $user->last_name }}
@@ -72,7 +70,7 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            {{ ucwords(str_replace('_',' ',$user->type)) }}
+                                            {{ ucwords(str_replace('_', ' ', $user->type)) }}
                                         </td>
 
                                         <td class="table-td">
@@ -85,9 +83,11 @@
 
                                         <td class="table-td">
                                             @if ($user->is_active)
-                                            <span class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl">Active</span>
+                                                <span class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl">Active</span>
+                                            @else
+                                                <span class="badge bg-danger-500 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Deactivated</span>
                                             @endif
-                                            
+
                                         </td>
 
 
@@ -108,8 +108,7 @@
                                             filters</h2>
                                         <p class="card-text">Try changing the filters or search terms for this view.
                                         </p>
-                                        <a href="{{ url('/users') }}"
-                                            class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
+                                        <a href="{{ url('/users') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
                                             all users</a>
                                     </div>
                                 </div>
@@ -124,234 +123,239 @@
     </div>
 
     @can('create', App\Models\Users\User::class)
-    @if ($newUserSection)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Create new user
-                            </h3>
-                            <button wire:click="closeNewUserSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <!-- Modal body -->
-                        <div class="p-6 space-y-4">
-                            <div class="from-group">
-                                <div class="input-area">
-                                    <label for="newUsername" class="form-label">Username</label>
-                                    <input id="newUsername" type="text" class="form-control @error('newUsername') !border-danger-500 @enderror" wire:model.lazy="newUsername" autocomplete="off">
+        @if ($newUserSection)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Create new user
+                                </h3>
+                                <button wire:click="closeNewUserSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+                                <div class="from-group">
+                                    <div class="input-area">
+                                        <label for="newUsername" class="form-label">Username</label>
+                                        <input id="newUsername" type="text" class="form-control @error('newUsername') !border-danger-500 @enderror" wire:model.lazy="newUsername" autocomplete="off">
+                                    </div>
+                                    @error('newUsername')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('newUsername')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="from-group">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    <div class="input-area">
-                                        <label for="newFirstName" class="form-label">First Name</label>
-                                        <input id="newFirstName" type="text" class="form-control @error('newFirstName') !border-danger-500 @enderror" wire:model.defer="newFirstName" autocomplete="off">
+                                <div class="from-group">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                        <div class="input-area">
+                                            <label for="newFirstName" class="form-label">First Name</label>
+                                            <input id="newFirstName" type="text" class="form-control @error('newFirstName') !border-danger-500 @enderror" wire:model.defer="newFirstName" autocomplete="off">
+                                        </div>
+                                        <div class="input-area">
+                                            <label for="newLastName" class="form-label">Last Name</label>
+                                            <input id="newLastName" type="text" class="form-control @error('newLastName') !border-danger-500 @enderror" wire:model.defer="newLastName" autocomplete="off">
+                                        </div>
                                     </div>
-                                    <div class="input-area">
-                                        <label for="newLastName" class="form-label">Last Name</label>
-                                        <input id="newLastName" type="text" class="form-control @error('newLastName') !border-danger-500 @enderror" wire:model.defer="newLastName" autocomplete="off">
-                                    </div>
+                                    @error('newFirstName')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+
+                                    @error('newLastName')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('newFirstName')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-
-                                @error('newLastName')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
 
 
-                            <div class="from-group">
-                                <label for="newType" class="form-label">Type</label>
-                                <select name="newType" id="newType" class="form-control w-full mt-2 @error('newType') !border-danger-500 @enderror" wire:model.defer="newType" autocomplete="off">
-                                    <option>None</option>
-                                    @foreach ($TYPES as $type)
-                                        <option value="{{ $type }}">{{ ucwords(str_replace('_',' ',$type)) }}</option>
-                                    @endforeach
-                                </select>
-                                @error('newType')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
-                            </div>
-
-                            <div class="from-group">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    <div class="input-area">
-                                        <label for="newPassword" class="form-label">Password</label>
-                                        <input id="newPassword" type="password" class="form-control @error('newPassword') !border-danger-500 @enderror" wire:model.defer="newPassword" autocomplete="off">
-                                    </div>
-                                    <div class="input-area">
-                                        <label for="newPassword_confirmation" class="form-label">Confirm Password</label>
-                                        <input id="newPassword_confirmation" type="password" class="form-control @error('newPassword_confirmation') !border-danger-500 @enderror" autocomplete="off" wire:model.defer="newPassword_confirmation">
-                                    </div>
+                                <div class="from-group">
+                                    <label for="newType" class="form-label">Type</label>
+                                    <select name="newType" id="newType" class="form-control w-full mt-2 @error('newType') !border-danger-500 @enderror" wire:model.defer="newType" autocomplete="off">
+                                        <option>None</option>
+                                        @foreach ($TYPES as $type)
+                                            <option value="{{ $type }}">{{ ucwords(str_replace('_', ' ', $type)) }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('newType')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('newPassword')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
 
-                                @error('newPassword_confirmation')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
+                                <div class="from-group">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                        <div class="input-area">
+                                            <label for="newPassword" class="form-label">Password</label>
+                                            <input id="newPassword" type="password" class="form-control @error('newPassword') !border-danger-500 @enderror" wire:model.defer="newPassword" autocomplete="off">
+                                        </div>
+                                        <div class="input-area">
+                                            <label for="newPassword_confirmation" class="form-label">Confirm Password</label>
+                                            <input id="newPassword_confirmation" type="password" class="form-control @error('newPassword_confirmation') !border-danger-500 @enderror" autocomplete="off" wire:model.defer="newPassword_confirmation">
+                                        </div>
+                                    </div>
+                                    @error('newPassword')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
 
-                            <div class="from-group">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    <div class="input-area">
-                                        <label for="newPhone" class="form-label">Phone</label>
-                                        <input id="newPhone" type="text" class="form-control @error('newPhone') !border-danger-500 @enderror" wire:model.defer="newPhone" autocomplete="off">
-                                    </div>
-                                    <div class="input-area">
-                                        <label for="newEmail" class="form-label">Email</label>
-                                        <input id="newEmail" type="email" class="form-control @error('newEmail') !border-danger-500 @enderror" wire:model.defer="newEmail" autocomplete="off">
-                                    </div>
+                                    @error('newPassword_confirmation')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('newPhone')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
 
-                                @error('newEmail')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                                <div class="from-group">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                        <div class="input-area">
+                                            <label for="newPhone" class="form-label">Phone</label>
+                                            <input id="newPhone" type="text" class="form-control @error('newPhone') !border-danger-500 @enderror" wire:model.defer="newPhone" autocomplete="off">
+                                        </div>
+                                        <div class="input-area">
+                                            <label for="newEmail" class="form-label">Email</label>
+                                            <input id="newEmail" type="email" class="form-control @error('newEmail') !border-danger-500 @enderror" wire:model.defer="newEmail" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    @error('newPhone')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+
+                                    @error('newEmail')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="from-group">
+                                    <label for="newManagerId" class="form-label">Manager</label>
+                                    <select name="newManagerId" id="newManagerId" class="form-control w-full mt-2 @error('newManagerId') !border-danger-500 @enderror" wire:model.defer="newManagerId" autocomplete="off">
+                                        <option>None</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('newManagerId')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
                             </div>
-
-                            <div class="from-group">
-                                <label for="newManagerId" class="form-label">Manager</label>
-                                <select name="newManagerId" id="newManagerId" class="form-control w-full mt-2 @error('newManagerId') !border-danger-500 @enderror" wire:model.defer="newManagerId" autocomplete="off">
-                                    <option>None</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('newManagerId')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
+                            <!-- Modal footer -->
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="addNewUser" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="addNewUser">Submit</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="addNewUser" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </button>
                             </div>
-
-
-                        </div>
-                        <!-- Modal footer -->
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addNewUser" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="addNewUser">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="addNewUser" icon="line-md:loading-twotone-loop"></iconify-icon>
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
     @endcan
 
     @can('create', App\Models\Users\User::class)
-    @if ($updateUserSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Update user
-                            </h3>
-                            <button wire:click="closeUpdateThisUser" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <!-- Modal body -->
-                        <div class="p-6 space-y-4">
-                            <div class="from-group">
-                                <div class="input-area">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input id="username" type="text" class="form-control @error('username') !border-danger-500 @enderror" wire:model.lazy="username" autocomplete="off">
+        @if ($updateUserSec)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Update user
+                                </h3>
+                                <button wire:click="closeUpdateThisUser" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+                                @if ($userStatus)
+                                    <span wire:click="switchStatus" class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl cursor-pointer">Active</span>
+                                @else
+                                    <span wire:click="switchStatus" class="badge bg-danger-500 text-white capitalize rounded-3xl cursor-pointer">Deactivated</span>
+                                @endif
+                                <div class="from-group">
+                                    <div class="input-area">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input id="username" type="text" class="form-control @error('username') !border-danger-500 @enderror" wire:model.lazy="username" autocomplete="off">
+                                    </div>
+                                    @error('username')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('username')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="from-group">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    <div class="input-area">
-                                        <label for="first_name" class="form-label">First Name</label>
-                                        <input id="first_name" type="text" class="form-control @error('first_name') !border-danger-500 @enderror" wire:model.defer="first_name" autocomplete="off">
+                                <div class="from-group">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                        <div class="input-area">
+                                            <label for="first_name" class="form-label">First Name</label>
+                                            <input id="first_name" type="text" class="form-control @error('first_name') !border-danger-500 @enderror" wire:model.defer="first_name" autocomplete="off">
+                                        </div>
+                                        <div class="input-area">
+                                            <label for="last_name" class="form-label">Last Name</label>
+                                            <input id="last_name" type="text" class="form-control @error('last_name') !border-danger-500 @enderror" wire:model.defer="last_name" autocomplete="off">
+                                        </div>
                                     </div>
-                                    <div class="input-area">
-                                        <label for="last_name" class="form-label">Last Name</label>
-                                        <input id="last_name" type="text" class="form-control @error('last_name') !border-danger-500 @enderror" wire:model.defer="last_name" autocomplete="off">
-                                    </div>
+                                    @error('first_name')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+
+                                    @error('last_name')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('first_name')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-
-                                @error('last_name')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
 
 
-                            <div class="from-group">
-                                <label for="type" class="form-label">Type</label>
-                                <select name="type" id="type" class="form-control w-full mt-2 @error('type') !border-danger-500 @enderror" wire:model.defer="type" autocomplete="off">
-                                    <option>None</option>
-                                    @foreach ($TYPES as $type)
-                                        <option value="{{ $type }}">{{ ucwords(str_replace('_',' ',$type)) }}</option>
-                                    @endforeach
-                                </select>
-                                @error('type')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
-                            </div>
-
-                            <div class="from-group">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    <div class="input-area">
-                                        <label for="phone" class="form-label">Phone</label>
-                                        <input id="phone" type="text" class="form-control @error('phone') !border-danger-500 @enderror" wire:model.defer="phone" autocomplete="off">
-                                    </div>
-                                    <div class="input-area">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input id="email" type="email" class="form-control @error('email') !border-danger-500 @enderror" wire:model.defer="email" autocomplete="off">
-                                    </div>
+                                <div class="from-group">
+                                    <label for="type" class="form-label">Type</label>
+                                    <select name="type" id="type" class="form-control w-full mt-2 @error('type') !border-danger-500 @enderror" wire:model.defer="type" autocomplete="off">
+                                        <option>None</option>
+                                        @foreach ($TYPES as $type)
+                                            <option value="{{ $type }}">{{ ucwords(str_replace('_', ' ', $type)) }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('type')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('phone')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
 
-                                @error('email')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                                <div class="from-group">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                        <div class="input-area">
+                                            <label for="phone" class="form-label">Phone</label>
+                                            <input id="phone" type="text" class="form-control @error('phone') !border-danger-500 @enderror" wire:model.defer="phone" autocomplete="off">
+                                        </div>
+                                        <div class="input-area">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input id="email" type="email" class="form-control @error('email') !border-danger-500 @enderror" wire:model.defer="email" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    @error('phone')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+
+                                    @error('email')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
                             </div>
-
-                        </div>
-                        <!-- Modal footer -->
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="EditUser" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="EditUser">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="EditUser" icon="line-md:loading-twotone-loop"></iconify-icon>
-                            </button>
+                            <!-- Modal footer -->
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="EditUser" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="EditUser">Submit</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="EditUser" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
     @endcan
 </div>

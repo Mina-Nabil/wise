@@ -6,10 +6,11 @@ use Livewire\Component;
 use App\Models\Users\User;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
+use App\Traits\ToggleSectionLivewire;
 
 class UserManagementIndex extends Component
 {
-    use WithPagination,AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
 
     public $newUserSection;
 
@@ -25,14 +26,21 @@ class UserManagementIndex extends Component
 
     public $updateUserSec;
     public $username;
+    public $userStatus;
     public $first_name;
     public $last_name;
     public $type;
     public $email;
     public $phone;
 
+    public function switchStatus()
+    {
+        $this->toggle($this->userStatus);
+    }
 
-    public function updateThisUser($id){
+
+    public function updateThisUser($id)
+    {
         $this->updateUserSec = $id;
         $user = User::find($id);
         $this->username = $user->username;
@@ -41,13 +49,16 @@ class UserManagementIndex extends Component
         $this->type = $user->type;
         $this->email = $user->email;
         $this->phone = $user->phone;
+        $this->userStatus = $user->is_active;
     }
 
-    public function closeUpdateThisUser(){
-        $this->reset(['updateUserSec','username','first_name','last_name','type','email','phone']);
+    public function closeUpdateThisUser()
+    {
+        $this->reset(['updateUserSec', 'username', 'first_name', 'last_name', 'type', 'email', 'phone']);
     }
 
-    public function EditUser(){
+    public function EditUser()
+    {
         $currentUserId  =  $this->updateUserSec;
         $this->validate([
             'username' => [
@@ -58,9 +69,9 @@ class UserManagementIndex extends Component
                     $exists = User::where('username', $value)
                         ->where('id', '!=', $currentUserId)
                         ->exists();
-        
+
                     if ($exists) {
-                        $fail('The '.$attribute.' has already been taken.');
+                        $fail('The ' . $attribute . ' has already been taken.');
                     }
                 },
             ],
@@ -74,28 +85,30 @@ class UserManagementIndex extends Component
                     $exists = User::where('email', $value)
                         ->where('id', '!=', $currentUserId)
                         ->exists();
-        
+
                     if ($exists) {
-                        $fail('The '.$attribute.' has already been taken.');
+                        $fail('The ' . $attribute . ' has already been taken.');
                     }
                 },
             ],
             'phone' => 'nullable|numeric',
         ]);
 
-        $res = User::find($currentUserId)->editInfo($this->username,$this->first_name,$this->last_name,$this->type,$this->email,$this->phone);
-        if($res){
+        $res = User::find($currentUserId)->editInfo($this->username, $this->first_name, $this->last_name, $this->type, $this->email, $this->phone);
+        $res2 = User::find($currentUserId)->setState($this->userStatus);
+        if ($res && $res2) {
             $this->closeUpdateThisUser();
-            $this->alert('success','User updated successfuly!');
-        }else{
+            $this->alert('success', 'User updated successfuly!');
+        } else {
             $this->alert('failed', 'Server error');
         }
     }
 
 
-    public function closeNewUserSec(){
+    public function closeNewUserSec()
+    {
         $this->newUserSection = false;
-        $this->reset(['newUsername','newFirstName','newLastName','newType','newPassword','newPassword_confirmation','newEmail','newPhone','newManagerId']);
+        $this->reset(['newUsername', 'newFirstName', 'newLastName', 'newType', 'newPassword', 'newPassword_confirmation', 'newEmail', 'newPhone', 'newManagerId']);
     }
 
     protected $rules = [
@@ -107,7 +120,8 @@ class UserManagementIndex extends Component
         $this->validateOnly('newUsername');
     }
 
-    public function addNewUser(){
+    public function addNewUser()
+    {
         $validatedData = $this->validate([
             'newUsername' => 'required|string|max:255|unique:users,username',
             'newFirstName' => 'required|string|max:255',
@@ -119,18 +133,18 @@ class UserManagementIndex extends Component
             'newManagerId' => 'nullable|exists:users,id'
         ]);
 
-        $res = User::newUser($this->newUsername,$this->newFirstName,$this->newLastName,$this->newType,$this->newPassword,$this->newEmail,$this->newPhone,$this->newManagerId);
+        $res = User::newUser($this->newUsername, $this->newFirstName, $this->newLastName, $this->newType, $this->newPassword, $this->newEmail, $this->newPhone, $this->newManagerId);
 
-        if($res){
+        if ($res) {
             $this->closeNewUserSec();
-            $this->alert('success','User added successfuly!');
-        }else{
+            $this->alert('success', 'User added successfuly!');
+        } else {
             $this->alert('failed', 'Server error');
         }
-        
     }
 
-    public function openNewUserSec(){
+    public function openNewUserSec()
+    {
         $this->newUserSection = true;
     }
 
@@ -138,7 +152,7 @@ class UserManagementIndex extends Component
     {
         $TYPES = User::TYPES;
         $users = User::paginate(50);
-        return view('livewire.user-management-index',[
+        return view('livewire.user-management-index', [
             'users' => $users,
             'TYPES' => $TYPES,
         ]);
