@@ -49,6 +49,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/sold-policies/{id}', [PoliciesController::class, 'soldPolicyShow'])->name('sold.policy.show');
     Route::get('/sold-policies', [PoliciesController::class, 'soldPolicyIndex'])->name('sold.policy.index');
     Route::get('/exp-sold-policies', [PoliciesController::class, 'expSoldPolicyIndex'])->name('exp-sold.policy.index');
+    Route::get('/outstanding-sold-policies', [PoliciesController::class, 'outstandingSoldPolicyIndex'])->name('outstanding-sold.policy.index');
 
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/claims', [TaskController::class, 'claimsIndex'])->name('claims.index');

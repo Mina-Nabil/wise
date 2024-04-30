@@ -42,4 +42,8 @@ class PoliciesController extends Controller
     public function expSoldPolicyIndex() {
         return view('policies.exp-sold-policy-index');
     }
+
+    public function outstandingSoldPolicyIndex() {
+        return view('policies.outstanding-sold-policy-index');
+    }
 }
