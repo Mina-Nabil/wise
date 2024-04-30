@@ -44,11 +44,11 @@ class ClientPayment extends Model
 
     protected $table = 'client_payments';
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'due', 'closed_by_id'
+        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'due', 'closed_by_id', 'assigned_to'
     ];
 
     ///model functions
-    public function setInfo(Carbon $due, $type, $note = null)
+    public function setInfo(Carbon $due, $type,  $assigned_to_id, $note = null)
     {
         /** @var User */
         $user = Auth::user();
@@ -60,6 +60,7 @@ class ClientPayment extends Model
                 "due"   =>  $due->format('Y-m-d'),
                 "type"  =>  $type,
                 "note"  =>  $note,
+                "assigned_to"  =>  $assigned_to_id,
             ]);
         } catch (Exception $e) {
             report($e);
