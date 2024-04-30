@@ -126,9 +126,47 @@ class SoldPolicyShow extends Component
     public $compPaymentAmount;
     public $compPaymentNote;
 
+    public $editTotalPolCommSection;
+    public $updateTotalPolComm;
+    public $updateTotalPolCommNote;
+
     public $section = 'profile';
 
     protected $queryString = ['section'];
+
+    public function closeEditTotalPolCommSection()
+    {
+        $this->editTotalPolCommSection = false;
+        $this->updateTotalPolComm = null;
+        $this->updateTotalPolCommNote = null; 
+    }
+
+    public function openEditTotalPolCommSection()
+    {
+        $this->editTotalPolCommSection = true;
+        $this->updateTotalPolComm = $this->soldPolicy->total_policy_comm;
+        $this->updateTotalPolCommNote = $this->soldPolicy->policy_comm_note;
+    }
+
+    public function updateTotalPolComm(){
+        $this->validate([
+            'updateTotalPolComm' => 'required|numeric',
+            'updateTotalPolCommNote' => 'nullable|string',
+        ],attributes:[
+            'updateTotalPolComm' => 'total policy commission',
+            'updateTotalPolCommNote' => 'total commission note'
+        ]);
+
+        // dd($this->updateTotalPolCommNote);
+        $res = $this->soldPolicy->setPolicyCommission($this->updateTotalPolComm,$this->updateTotalPolCommNote);
+        if ($res) {
+            $this->closeEditTotalPolCommSection();
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success','Policy Commission updated!');
+        }else{
+            $this->alert('failed', 'server error');
+        }
+    }
 
     public function changeSection($section)
     {
