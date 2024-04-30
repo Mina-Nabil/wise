@@ -44,11 +44,11 @@ class ClientPayment extends Model
 
     protected $table = 'client_payments';
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'due', 'closed_by_id'
+        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'due', 'closed_by_id', 'assigned_to'
     ];
 
     ///model functions
-    public function setInfo(Carbon $due, $type, $note = null)
+    public function setInfo(Carbon $due, $type,  $assigned_to_id, $note = null)
     {
         /** @var User */
         $user = Auth::user();
@@ -60,6 +60,7 @@ class ClientPayment extends Model
                 "due"   =>  $due->format('Y-m-d'),
                 "type"  =>  $type,
                 "note"  =>  $note,
+                "assigned_to"  =>  $assigned_to_id,
             ]);
         } catch (Exception $e) {
             report($e);
@@ -95,7 +96,7 @@ class ClientPayment extends Model
         if (!$user->can('update', $this)) return false;
 
         try {
-            if ($this->doc_url){
+            if ($this->doc_url) {
                 Storage::delete($this->doc_url);
                 $this->doc_url = null;
                 $this->save();
@@ -169,6 +170,30 @@ class ClientPayment extends Model
     }
 
     ///scopes
+    public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false)
+    {
+        /** @var User */
+        $user = Auth::user();
+        $canSeeAll = $user->can('viewAny', self::class);
+
+        $query->select('client_payments.*')
+            ->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
+            ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id')
+            ->groupBy('client_payments.id');
+
+        if (!$canSeeAll) $query->where(
+            function ($q) use ($user) {
+                $q->where('sold_policies.main_sales_id', $user->id)
+                    ->orwhere('sold_policies.creator_id', $user->id)
+                    ->orwhere('policy_watchers.user_id', $user->id);
+            }
+        );
+
+        if ($assigned_only) $query->where('client_payments.assigned_to', $user->id);
+        $query->whereIn('status', $states);
+        return $query;
+    }
+
     public function scopePaid(Builder $query)
     {
         $query->where('status', self::PYMT_STATE_PAID);
@@ -182,5 +207,9 @@ class ClientPayment extends Model
     public function closed_by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'closed_by_id');
+    }
+    public function assigned_to(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 }

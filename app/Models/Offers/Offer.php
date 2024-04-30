@@ -204,10 +204,14 @@ class Offer extends Model
                 $commaya->refreshPaymentInfo();
             }
             if ($main_sales) {
-                $soldPolicy->setMainSales($main_sales);
+                $soldPolicy->setMainSales($main_sales->id);
             }
         }
         return $soldPolicy;
+    }
+
+    public function getMainSales(){
+        return $this->comm_profiles()->salesIn()->first();
     }
 
     public function exportComparison($ids = [], $saveAndGetFileUrl = false)

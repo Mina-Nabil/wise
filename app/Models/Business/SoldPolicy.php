@@ -160,7 +160,7 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addClientPayment($type, $amount, Carbon $due, $note = null, $assigned_to_id = null)
+    public function addClientPayment($type, $amount, Carbon $due, $assigned_to_id = null, $note = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -172,7 +172,7 @@ class SoldPolicy extends Model
             if ($this->client_payments()->create([
                 "type"      => $type,
                 "amount"    => $amount,
-                "assigned_to_id"    => $assigned_to_id ?? Auth::id(),
+                "assigned_to"    => $assigned_to_id ?? Auth::id(),
                 "due"       => $due->format('Y-m-d H:i:s'),
                 "note"              => $note
             ])) {
@@ -1113,6 +1113,7 @@ class SoldPolicy extends Model
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id)
+                    ->orwhere('sold_policies.main_sales_id', $loggedInUser->id)
                     ->orwhere('policy_watchers.user_id', $loggedInUser->id);
             });
         }
