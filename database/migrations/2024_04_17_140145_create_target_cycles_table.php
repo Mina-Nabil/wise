@@ -37,8 +37,11 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained('users');
             $table->text('note')->nullable();
             $table->text('doc_url')->nullable();
-
             $table->timestamps();
+        });
+        Schema::table('sold_policies', function (Blueprint $table) {
+            $table->foreignIdFor(User::class, 'main_sales_id')->nullable()
+                ->constrained('users')->nullOnDelete();
         });
     }
 

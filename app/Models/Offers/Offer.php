@@ -169,6 +169,8 @@ class Offer extends Model
         // assert($installements_count || $this->selected_option->installements_count, "No installement count found"); 
 
         $customer_car = ($this->item_type == Car::MORPH_TYPE) ? $this->item_id : null;
+        $main_sales = $this->getMainSales();
+
         $soldPolicy = SoldPolicy::newSoldPolicy(
             client: $this->client,
             policy_id: $this->selected_option->policy_id,
@@ -200,6 +202,9 @@ class Offer extends Model
                     "sold_policy_id"    =>  $soldPolicy->id
                 ]);
                 $commaya->refreshPaymentInfo();
+            }
+            if ($main_sales) {
+                $soldPolicy->setMainSales($main_sales);
             }
         }
         return $soldPolicy;
