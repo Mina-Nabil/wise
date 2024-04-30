@@ -30,7 +30,7 @@ class ClientPaymentPolicy
      */
     public function view(User $user, ClientPayment $clientPayment)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin || $user->is_finance || $clientPayment->assigned_to == $user->id;
     }
 
     /**

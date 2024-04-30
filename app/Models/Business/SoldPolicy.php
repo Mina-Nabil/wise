@@ -1113,6 +1113,7 @@ class SoldPolicy extends Model
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id)
+                    ->orwhere('sold_policies.main_sales_id', $loggedInUser->id)
                     ->orwhere('policy_watchers.user_id', $loggedInUser->id);
             });
         }

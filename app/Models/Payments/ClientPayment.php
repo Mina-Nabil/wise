@@ -61,7 +61,6 @@ class ClientPayment extends Model
                 "type"  =>  $type,
                 "note"  =>  $note,
             ]);
-          
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
@@ -96,7 +95,7 @@ class ClientPayment extends Model
         if (!$user->can('update', $this)) return false;
 
         try {
-            if ($this->doc_url){
+            if ($this->doc_url) {
                 Storage::delete($this->doc_url);
                 $this->doc_url = null;
                 $this->save();
@@ -170,11 +169,28 @@ class ClientPayment extends Model
     }
 
     ///scopes
-    public function scopeUserData()
+    public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false)
     {
         /** @var User */
         $user = Auth::user();
         $canSeeAll = $user->can('viewAny', self::class);
+
+        $query->select('client_payments.*')
+            ->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
+            ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id')
+            ->groupBy('client_payments.id');
+
+        if (!$canSeeAll) $query->where(
+            function ($q) use ($user) {
+                $q->where('sold_policies.main_sales_id', $user->id)
+                    ->orwhere('sold_policies.creator_id', $user->id)
+                    ->orwhere('policy_watchers.user_id', $user->id);
+            }
+        );
+
+        if ($assigned_only) $query->where('client_payments.assigned_to', $user->id);
+        $query->whereIn('status', $states);
+        return $query;
     }
 
     public function scopePaid(Builder $query)
@@ -190,5 +206,9 @@ class ClientPayment extends Model
     public function closed_by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'closed_by_id');
+    }
+    public function assigned_to(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 }
