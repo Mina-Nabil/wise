@@ -63,7 +63,7 @@
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                 @foreach ($users as $user)
-                                    <tr class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                    <tr>
 
                                         <td class="table-td flex items-center">
                                             <div class="rounded-full flex-shrink-0 ltr:mr-[10px] rtl:ml-[10px]">
@@ -325,7 +325,7 @@
                             <!-- Modal body -->
                             <div class="p-6 space-y-4">
                                 <div class="flex-none flex items-center justify-center">
-                                    <div class="md:h-[186px] md:w-[186px] h-[140px] w-[140px] md:ml-0 md:mr-0 ml-auto mr-auto md:mb-0 mb-4 rounded-full ring-4 ring-slate-100 relative">
+                                    <div class="md:h-[186px] md:w-[186px] h-[140px] w-[140px] md:ml-0 md:mr-0 ml-auto mr-auto md:mb-0 mb-4 rounded-full ring-4 ring-slate-100 @error('userImage') ring-danger-500 @enderror relative">
                                     <img @if ($userImage) src="@if (!is_string($this->userImage)) {{ $userImage->temporaryUrl() }} @else {{ $this->userImage }} @endif" @else src="{{ asset('assets/images/users/user-1.png') }}" @endif alt="" class="w-full h-full object-cover rounded-full">
 
 
@@ -334,7 +334,9 @@
                                                 <iconify-icon wire:loading.remove wire:target="userImage,clearImage" icon="heroicons:pencil-square"></iconify-icon>
                                                 <iconify-icon wire:loading wire:target="userImage,clearImage" icon="svg-spinners:ring-resize"></iconify-icon>
                                             </label>
-                                            <input wire:model="userImage" type="file" name="userImage" id="userImage" style="display:none">
+                                            <input wire:model="userImage" type="file" name="userImage" id="userImage" style="display:none"  accept=".jpg, .jpeg, .png">
+
+                                            
                                         @else
                                             <span wire:click="clearImage" class="absolute right-2 h-8 w-8 bg-slate-50 text-slate-600 rounded-full shadow-sm flex flex-col items-center justify-center md:top-[140px] top-[100px] cursor-pointer">
                                                 <iconify-icon wire:loading.remove wire:target="userImage,clearImage" icon="mdi:remove"></iconify-icon>
@@ -344,7 +346,12 @@
 
 
                                     </div>
+                                    
                                 </div>
+                                @error('userImage')
+                                    <small class="mt-3 text-danger-500"> *Please upload an image file with JPEG, JPG, or PNG format and ensure it is under 1 MB in size.</small>
+                                    @enderror
+
 
                                 <div class="from-group">
                                     <div class="input-area">

@@ -53,6 +53,9 @@ class UserManagementIndex extends Component
                 $url = $user->image;
             }
         } elseif (is_null($user->image) && !is_null($this->userImage)) {
+            $this->validate([
+                'userImage' => 'image|mimes:jpeg,jpg,png|max:1024', // Adjust max size as needed
+            ]);
             $url = $this->userImage->store(User::FILES_DIRECTORY, 's3');
         }
 

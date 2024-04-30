@@ -888,7 +888,7 @@
             <div class="card-body flex flex-col p-6 active justify-center">
                 <header class="card-header noborder flex justify-between">
                     <h4 class="card-title">
-                        Commission
+                        Company Payments
                     </h4>
                     <button wire:click="toggleAddCompanyPayment" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add payment</button>
                 </header>
@@ -1348,6 +1348,69 @@
                                                         </div>
                                                     </td>
                                                     @endcan
+                                                </tr>
+                                            @endforeach
+
+                                        </tbody>
+                                    </table>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Policy Commission --}}
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+            <div class="card-body flex flex-col p-6 active justify-center">
+                <header class="card-header noborder flex justify-between">
+                    <h4 class="card-title">
+                        Policy Commissions
+                    </h4>
+                </header>
+                <div class="card-body px-6 pb-6">
+                    <div class="overflow-x-auto -mx-6 ">
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden ">
+                                @if ($soldPolicy->comms_details->isEmpty())
+                                    <p class="text-sm text-center">
+                                        No Policy commissions found.
+                                    </p>
+                                @else
+                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                            <tr>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Title
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Amount
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                            @foreach ($soldPolicy->comms_details as $comm)
+                                                <tr>
+
+                                                    <td class="table-td ">
+                                                        <div class="">
+                                                            <span class="text-slate-500 dark:text-slate-400">
+                                                                <span class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
+                                                            </span>
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="table-td ">
+                                                        <div class="text-lg text-success-500">
+                                                            {{ number_format($comm->amount, 0, '.', ',') }} EGP
+                                                        </div>
+                                                    </td>
+
                                                 </tr>
                                             @endforeach
 
