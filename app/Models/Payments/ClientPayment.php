@@ -61,6 +61,7 @@ class ClientPayment extends Model
                 "type"  =>  $type,
                 "note"  =>  $note,
             ]);
+          
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
@@ -169,6 +170,13 @@ class ClientPayment extends Model
     }
 
     ///scopes
+    public function scopeUserData()
+    {
+        /** @var User */
+        $user = Auth::user();
+        $canSeeAll = $user->can('viewAny', self::class);
+    }
+
     public function scopePaid(Builder $query)
     {
         $query->where('status', self::PYMT_STATE_PAID);
