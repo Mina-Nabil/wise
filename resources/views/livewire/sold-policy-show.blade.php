@@ -2620,7 +2620,7 @@
                                 @enderror
                             </div>
                             <div class="from-group mt-2">
-                                <label for="updateTotalPolCommNote" class="form-label">Amount</label>
+                                <label for="updateTotalPolCommNote" class="form-label">Note</label>
                                 <textarea name="updateTotalPolCommNote" class="form-control mt-2 w-full @error('updateTotalPolCommNote') !border-danger-500 @enderror" wire:model.defer="updateTotalPolCommNote"></textarea>
                                 @error('updateTotalPolCommNote')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

@@ -149,6 +149,7 @@ class SoldPolicy extends Model
                 "note"              => $note
             ]);
             $tmp->refreshPaymentInfo();
+            $this->calculateTotalSalesComm();
             AppLog::info("Sales commission added", loggable: $this);
             return true;
 
@@ -257,10 +258,10 @@ class SoldPolicy extends Model
         }
     }
 
-    public function calculateTotalSalesCommPaid()
+    public function calculateTotalSalesComm()
     {
         $tmp = 0;
-        foreach ($this->sales_comms()->paid()->get() as $comm) {
+        foreach ($this->sales_comms()->get() as $comm) {
             $tmp += $comm->amount;
         }
         $this->total_sales_comm = $tmp;
@@ -276,7 +277,7 @@ class SoldPolicy extends Model
     {
         try {
             $this->client_payment_date = $date->format('Y-m-d H:i');
-            $this->save();
+            return $this->save();
         } catch (Exception $e) {
             report($e);
             return false;

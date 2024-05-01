@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SalesComm extends Model
@@ -40,7 +41,8 @@ class SalesComm extends Model
     ///model functions
     public function setPaidInfo(float $client_paid_percent, float $company_paid_percent)
     {
-        //TODO : shof ezay hat update el comm profile balance
+        Log::info("client percentage: " . $client_paid_percent);
+        Log::info("company percentage: " . $company_paid_percent);
         $updates['client_paid_percent'] = $client_paid_percent;
         $updates['company_paid_percent'] = $company_paid_percent;
 
@@ -52,7 +54,9 @@ class SalesComm extends Model
 
             //unapproved balance calculation 
             $client_diff_amount = round(($client_paid_percent - $this->client_paid_percent) * $this->amount / 100,2);
-
+            Log::info("client diff: " . $client_diff_amount);
+            Log::info("company diff: " . $company_diff_amount);
+            
             $old_unapproved_offset = round($this->client_paid_percent * $this->amount,2) - round($this->company_paid_percent * $this->amount,2);
             $add_to_unapproved_balance = 0;
             if ($company_diff_amount > 1 && $old_unapproved_offset > 0) {
@@ -119,9 +123,11 @@ class SalesComm extends Model
 
         $amount = ($this->comm_percentage / 100) * $from_amount;
         try {
-            return $this->update([
+            $this->update([
                 "amount"            =>  $amount,
             ]);
+            $this->sold_policy->calculateTotalSalesComm();
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Calculating Sales Comm amount failed", desc: $e->getMessage(), loggable: $this);
@@ -145,7 +151,6 @@ class SalesComm extends Model
                 "status"  =>  self::PYMT_STATE_PAID,
             ])) {
                 $this->loadMissing('sold_policy');
-                $this->sold_policy->calculateTotalSalesCommPaid();
                 return true;
             }
         } catch (Exception $e) {
@@ -164,11 +169,14 @@ class SalesComm extends Model
         try {
             $date = $date ?? new Carbon();
             AppLog::error("Setting Sales Comm as cancelled", loggable: $this);
-            return $this->update([
+            $this->update([
                 "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_CANCELLED,
             ]);
+            $this->loadMissing('sold_policy');
+            $this->sold_policy->calculateTotalSalesComm();
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);

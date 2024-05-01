@@ -180,7 +180,7 @@
                         <a href="{{ url('/outstanding-sold-policies') }}" class="navItem @yield('outstanding-sold-policies')">
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="ic:round-security"></iconify-icon>
-                                <span>Outstanding S. Policies</span>
+                                <span>Outstanding Policies</span>
                             </span>
                         </a>
                     </li>

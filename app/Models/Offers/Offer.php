@@ -211,7 +211,7 @@ class Offer extends Model
     }
 
     public function getMainSales(){
-        return $this->comm_profiles()->salesIn()->first();
+        return $this->comm_profiles()->salesIn()->first()?->user_id;
     }
 
     public function exportComparison($ids = [], $saveAndGetFileUrl = false)
@@ -348,7 +348,6 @@ class Offer extends Model
 
     public function generateSalesCommissions()
     {
-        if ($this->is_approved) throw new Exception("Offer already approved");
         if (!$this->selected_option_id) throw new Exception("No option selected");
         $this->sales_comms()->delete();
         $this->load('comm_profiles', 'selected_option');
@@ -749,9 +748,6 @@ class Offer extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateOptions', $this)) return false;
-
-        if ($this->status == self::STATUS_APPROVED)
-            throw new Exception('Offer already approved');
 
         $option = OfferOption::findOrFail($option_id);
         $option->status = $state;
