@@ -210,7 +210,8 @@ class Offer extends Model
         return $soldPolicy;
     }
 
-    public function getMainSales(){
+    public function getMainSales()
+    {
         return $this->comm_profiles()->salesIn()->first()?->user_id;
     }
 
@@ -833,7 +834,13 @@ class Offer extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('offers.*')
-            ->leftjoin('users', "offers.assignee_id", '=', 'users.id')
+            ->leftjoin(
+                'users',
+                function ($j) {
+                    $j->on("offers.assignee_id", '=', 'users.id')
+                        ->orOn("offers.assignee_type", '=', 'users.type');
+                }
+            )
             ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
 
         if (!($loggedInUser->type == User::TYPE_ADMIN || ($loggedInUser->type == User::TYPE_OPERATIONS && $searchText))) {
