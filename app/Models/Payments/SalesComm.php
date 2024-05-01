@@ -35,7 +35,7 @@ class SalesComm extends Model
     const FILES_DIRECTORY = 'sold_policies/sales_comm_docs/';
     protected $table = 'sales_comms';
     protected $fillable = [
-        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from', 'client_paid_percent', 'company_paid_percent', 'comm_profile_id'
+        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from', 'client_paid_percent', 'company_paid_percent', 'comm_profile_id', 'unapproved_balance_offset'
     ];
 
     ///model functions
@@ -56,22 +56,22 @@ class SalesComm extends Model
             $client_diff_amount = round(($client_paid_percent - $this->client_paid_percent) * $this->amount / 100,2);
             Log::info("client diff: " . $client_diff_amount);
             Log::info("company diff: " . $company_diff_amount);
-            
-            $old_unapproved_offset = round($this->client_paid_percent * $this->amount,2) - round($this->company_paid_percent * $this->amount,2);
-            $add_to_unapproved_balance = 0;
-            if ($company_diff_amount > 1 && $old_unapproved_offset > 0) {
-                $add_to_unapproved_balance += max($client_diff_amount - $company_diff_amount, $old_unapproved_offset);
-            } else if($client_diff_amount) {
-                $add_to_unapproved_balance += max($client_diff_amount - $old_unapproved_offset, 0);
+            $new_offset = $client_diff_amount - $company_diff_amount;
+            if($new_offset > 0){
+                $add_to_unapproved_balance = $new_offset;
+            } else {
+                $add_to_unapproved_balance = max($new_offset, -1 * $this->unapproved_balance_offset);
+                
             }
+
 
             $this->comm_profile->balance = $this->comm_profile->balance + $add_to_balance;
             $this->comm_profile->unapproved_balance = $this->comm_profile->unapproved_balance + $add_to_unapproved_balance;
-
-
             $this->comm_profile->save();
-            $this->update($updates);
+
+            $updates['unapproved_balance_offset'] = $this->unapproved_balance_offset + $new_offset;
             AppLog::info("Setting comm profile paid info",  loggable: $this);
+            $this->update($updates);
             return $this->save();
         } catch (Exception $e) {
             report($e);
