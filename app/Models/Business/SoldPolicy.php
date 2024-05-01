@@ -58,7 +58,7 @@ class SoldPolicy extends Model
     ///model functions
     public function generateRenewalOffer(Carbon $due, string $in_favor_to = null)
     {
-        if (Offer::newOffer(
+        $newOffer = Offer::newOffer(
             client: $this->client,
             type: $this->policy->business,
             item_value: $this->insured_value,
@@ -69,9 +69,13 @@ class SoldPolicy extends Model
             item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null,
             is_renewal: true,
             in_favor_to: $in_favor_to ?? $this->in_favor_to
-        ))  return $this->update([
-            'is_renewed' => true,
-        ]);
+        );
+        if ($newOffer) {
+            $this->update([
+                'is_renewed' => true,
+            ]);
+            return $newOffer;
+        }
     }
 
     public function generatePolicyCommissions()
