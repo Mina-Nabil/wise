@@ -9,6 +9,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AppLogController;
 use App\Models\Customers\Customer;
@@ -50,6 +51,8 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/sold-policies', [PoliciesController::class, 'soldPolicyIndex'])->name('sold.policy.index');
     Route::get('/exp-sold-policies', [PoliciesController::class, 'expSoldPolicyIndex'])->name('exp-sold.policy.index');
     Route::get('/outstanding-sold-policies', [PoliciesController::class, 'outstandingSoldPolicyIndex'])->name('outstanding-sold.policy.index');
+
+    Route::get('/payments', [PaymentController::class, 'clientPaymentsIndex'])->name('client.payments.index');
 
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/claims', [TaskController::class, 'claimsIndex'])->name('claims.index');
