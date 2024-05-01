@@ -69,7 +69,7 @@ class SoldPolicy extends Model
             item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null,
             is_renewal: true,
             in_favor_to: $in_favor_to ?? $this->in_favor_to
-        ))   $this->update([
+        ))  return $this->update([
             'is_renewed' => true,
         ]);
     }
