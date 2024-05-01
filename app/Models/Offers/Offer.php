@@ -882,7 +882,7 @@ class Offer extends Model
                 });
             }
         });
-        return $query->orderBy('due');
+        return $query->groupBy('offers.id')->orderBy('due');
     }
 
     public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
