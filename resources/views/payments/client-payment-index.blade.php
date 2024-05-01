@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@section('title')
+• Client Payments
+@endsection
+
+
 @section('client-payment-index')
     active
 @endsection

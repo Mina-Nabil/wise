@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title')
+• Tasks
+@endsection
+
 @section('tasks')
     active
 @endsection

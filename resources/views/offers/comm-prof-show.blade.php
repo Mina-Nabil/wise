@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title')
+• Commission Profile
+@endsection
+
 @section('commissions')
     active
 @endsection
