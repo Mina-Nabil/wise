@@ -169,8 +169,8 @@ class Policy extends Model
     ///model functions
     public function getConditionByCarOrValue(CustomersCar $customer_car, $value = null)
     {
-        if (!in_array($this->business, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]))
-            throw new Exception("Invalid business type. Can't get policy rate by car");
+        // if (!in_array($this->business, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]))
+        //     throw new Exception("Invalid business type. Can't get policy rate by car");
 
         $this->loadMissing('conditions');
         $customer_car->loadMissing('car');
