@@ -204,7 +204,7 @@ class Offer extends Model
                 $commaya->refreshPaymentInfo();
             }
             if ($main_sales) {
-                $soldPolicy->setMainSales($main_sales->id);
+                $soldPolicy->setMainSales($main_sales);
             }
         }
         return $soldPolicy;
