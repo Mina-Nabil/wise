@@ -897,7 +897,7 @@
             <div class="card-body flex flex-col p-6 active justify-center">
                 <header class="card-header noborder flex justify-between">
                     <h4 class="card-title">
-                        Company Payments
+                        WISE Payments
                     </h4>
                     <button wire:click="toggleAddCompanyPayment" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add payment</button>
                 </header>
