@@ -509,6 +509,7 @@ class SoldPolicy extends Model
         try {
             /** @var SalesComm */
             foreach ($this->sales_comms()->get() as $commaya) {
+                $commaya->refreshPaymentInfo();
                 $commaya->setPaidInfo(client_paid_percent: $client_paid_percentage, company_paid_percent: $company_paid_percentage);
             }
         } catch (Exception $e) {

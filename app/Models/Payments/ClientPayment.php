@@ -127,6 +127,7 @@ class ClientPayment extends Model
             ])) {
                 $this->loadMissing('sold_policy');
                 $this->sold_policy->setClientPaymentDate($date);
+                $this->sold_policy->generatePolicyCommissions();
                 $this->sold_policy->calculateTotalClientPayments();
                 $this->sold_policy->updateSalesCommsPaymentInfo();
             }
