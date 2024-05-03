@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title')
+• SLA Records
+@endsection
+
 @section('sla-record')
     active
 @endsection

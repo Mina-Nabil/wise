@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title')
+• Customers
+@endsection
+
 @section('customers')
     active
 @endsection

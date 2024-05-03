@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
+
 @section('title')
-    Wise · Contacts
+• Contacts
 @endsection
 
 @section('contacts')

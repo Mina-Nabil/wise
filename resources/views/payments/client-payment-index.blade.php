@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
 @section('title')
-• Reports • Offers 
+• Client Payments
 @endsection
 
-@section('reports.offers')
+
+@section('client-payment-index')
     active
 @endsection
 
 @section('content')
-    <livewire:offer-report />
+    <livewire:client-payment-index />
 @endsection

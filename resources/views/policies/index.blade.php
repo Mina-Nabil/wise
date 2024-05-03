@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
 @section('title')
-    Wise · Policies
+• Policies
 @endsection
+
 
 @section('policies')
     active
