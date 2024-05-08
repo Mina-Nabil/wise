@@ -877,7 +877,7 @@ class OfferShow extends Component
         $this->validate(
             [
                 'policyId' => 'required|integer|exists:policies,id',
-                'conditionId' => 'required|integer|exists:policy_conditions,id',
+                'conditionId' => 'nullable|integer|exists:policy_conditions,id',
                 'insured_value' => 'nullable|numeric',
                 'payment_frequency' => 'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
                 'grossPremium' => 'nullable|numeric',
