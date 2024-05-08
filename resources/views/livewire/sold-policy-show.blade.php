@@ -324,7 +324,7 @@
 
                         <div class="grid md:grid-cols-4 gap-3 mb-4 text-base text-center">
                             <div class="border-r">
-                                <h5>{{ number_format($soldPolicy->net_premium, 0, '.', ',') }}</h5>
+                                <h5>{{ number_format($soldPolicy->net_premium, 2, '.', ',') }}</h5>
                                 <p class="text-xs">Net Premium</p>
 
                             </div>
@@ -333,7 +333,7 @@
                                 <p class="mr-2 text-xs">Net Rate</p>
                             </div>
                             <div class="border-l">
-                                <h5>{{ number_format($soldPolicy->gross_premium, 0, '.', ',') }}</h5>
+                                <h5>{{ number_format($soldPolicy->gross_premium, 2, '.', ',') }}</h5>
                                 <p class="text-xs">Gross Premium</p>
                             </div>
                             <div class="border-l">

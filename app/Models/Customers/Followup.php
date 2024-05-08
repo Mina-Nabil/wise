@@ -136,7 +136,8 @@ class Followup extends Model
             foreach ($splittedText as $tmp) {
                 $q->where(function ($qq) use ($tmp) {
                     $qq->where('followups.title', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.email', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.email', 'LIKE', "%$tmp%");

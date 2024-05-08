@@ -879,7 +879,7 @@
                                                         {{ ucwords(str_replace('_', ' ', $profile->type)) }}
                                                     </th>
 
-                                                    @can('delete', $profile)
+                                                    @can('updateCommission', $offer)
                                                         <td class="table-td flex justify-between">
                                                             <div class="">
                                                                 <div class="relative">
