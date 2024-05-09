@@ -953,7 +953,7 @@
 
                                                     <td class="table-td ">
                                                         <div class="text-lg text-success-500">
-                                                            {{ number_format($payment->amount, 0, '.', ',') }} EGP
+                                                            {{ number_format($payment->amount, 2, '.', ',') }} EGP
                                                         </div>
                                                     </td>
 
@@ -1107,7 +1107,7 @@
 
                                                     <td class="table-td ">
                                                         <div class="text-lg text-success-500">
-                                                            {{ number_format($payment->amount, 0, '.', ',') }} EGP
+                                                            {{ number_format($payment->amount, 2, '.', ',') }} EGP
                                                         </div>
                                                     </td>
 
@@ -1272,7 +1272,7 @@
 
                                                     <td class="table-td ">
                                                         <div class="text-lg text-success-500">
-                                                            {{ number_format($comm->amount, 0, '.', ',') }} EGP
+                                                            {{ number_format($comm->amount, 2, '.', ',') }} EGP
                                                         </div>
                                                     </td>
 
@@ -1416,7 +1416,7 @@
 
                                                     <td class="table-td ">
                                                         <div class="text-lg text-success-500">
-                                                            {{ number_format($comm->amount, 0, '.', ',') }} EGP
+                                                            {{ number_format($comm->amount, 2, '.', ',') }} EGP
                                                         </div>
                                                     </td>
 

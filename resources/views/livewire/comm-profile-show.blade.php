@@ -181,7 +181,7 @@
                                                     <tr>
 
                                                         <td class="table-td ">
-                                                            <p class=" text-lg"><b>{{ number_format($payment->amount, 0, '.', ',') }} EGP
+                                                            <p class=" text-lg"><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
                                                         </td>
 
                                                         <td class="table-td">
@@ -413,7 +413,7 @@
 
                                                     <td class="table-td ">
                                                         <div class="text-lg text-success-500">
-                                                            {{ number_format($comm->amount, 0, '.', ',') }} EGP
+                                                            {{ number_format($comm->amount, 2, '.', ',') }} EGP
                                                         </div>
                                                     </td>
 
@@ -684,7 +684,7 @@
 
                                                         <td class="table-td ">
                                                             <p class="text-primary-600 text-lg">
-                                                                <b>{{ number_format($target->amount, 0, '.', ',') }}</b>
+                                                                <b>{{ number_format($target->amount, 2, '.', ',') }}</b>
                                                             </p>
                                                         </td>
 

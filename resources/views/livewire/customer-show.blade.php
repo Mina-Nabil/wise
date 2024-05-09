@@ -128,7 +128,7 @@
                                                 </div>
                                                 <div class="ml-5">
                                                     <p><b>Insurance payment</b></p>
-                                                    <p>{{ number_format($car->insurance_payment, 0, '.', ',') }}</p>
+                                                    <p>{{ number_format($car->insurance_payment, 2, '.', ',') }}</p>
                                                 </div>
                                             </div>
                                             @if ($car->renewal_date)

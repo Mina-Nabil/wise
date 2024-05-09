@@ -69,6 +69,23 @@ class ClientPayment extends Model
         }
     }
 
+    public function setAssignedTo($assigned_to_id)
+    {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
+        try {
+            AppLog::info("Setting Client Payment assignee", loggable: $this);
+            return $this->update([
+                "assigned_to"  =>  $assigned_to_id,
+            ]);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Setting Client Payment assignee failed", desc: $e->getMessage(), loggable: $this);
+        }
+    }
+
     public function setDocument($doc_url)
     {
         /** @var User */

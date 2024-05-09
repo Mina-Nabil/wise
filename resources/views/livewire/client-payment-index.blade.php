@@ -133,7 +133,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        <p class=" text-lg"><b>{{ number_format($payment->amount, 0, '.', ',') }} EGP
+                                        <p class=" text-lg"><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
                                     </td>
 
                                     <td class="table-td">

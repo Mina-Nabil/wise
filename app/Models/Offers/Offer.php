@@ -7,6 +7,7 @@ use App\Models\Corporates\Corporate;
 use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
 use App\Models\Insurance\PolicyBenefit;
+use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
 use App\Models\Payments\SalesComm;
 use App\Models\Users\AppLog;
@@ -133,7 +134,7 @@ class Offer extends Model
             $activeSheet->getCell('C' . $i)->setValue(ucwords(str_replace('_', ' ', $of->type)));
             $activeSheet->getCell('D' . $i)->setValue(ucwords(str_replace('_', ' ', $of->status)));
             $activeSheet->getCell('E' . $i)->setValue($of->renewal_policy);
-            $activeSheet->getCell('F' . $i)->setValue(number_format($of->item_value, 0, '.', ','));
+            $activeSheet->getCell('F' . $i)->setValue(number_format($of->item_value, 2, '.', ','));
             $activeSheet->getCell('G' . $i)->setValue(
                 $of->assignee ? ucwords($of->assignee->first_name) . ' ' . ucwords($of->assignee->last_name) : ($of->assignee_type ? ucwords($of->assignee_type) : 'No one/team assigned')
             );
@@ -154,7 +155,7 @@ class Offer extends Model
      * Policy number, start and expiry shall be presented as new empty fields
      * Other fields can be populated from the selected option, expect the car details(chassis, engine & plate)
      */
-    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry, $insured_value = null, $net_rate = null, $net_premium = null, $gross_premium = null, $installements_count = null, $payment_frequency = null, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null)
+    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry,  $installements_count, $payment_frequency, $insured_value, $net_rate, $net_premium, $gross_premium, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null)
     {
         if (!$this->selected_option_id) return false;
         $this->loadMissing('client');
@@ -169,7 +170,7 @@ class Offer extends Model
         // assert($installements_count || $this->selected_option->installements_count, "No installement count found"); 
 
         $customer_car = ($this->item_type == Car::MORPH_TYPE) ? $this->item_id : null;
-        $main_sales = $this->getMainSales();
+        $main_sales_id = $this->getMainSales();
 
         $soldPolicy = SoldPolicy::newSoldPolicy(
             client: $this->client,
@@ -203,8 +204,39 @@ class Offer extends Model
                 ]);
                 $commaya->refreshPaymentInfo();
             }
-            if ($main_sales) {
-                $soldPolicy->setMainSales($main_sales);
+            if ($main_sales_id) {
+                $soldPolicy->setMainSales($main_sales_id);
+            }
+
+            switch ($payment_frequency) {
+                case OfferOption::PAYMENT_FREQ_YEARLY:
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium, $start, $main_sales_id ? $main_sales_id : $this->creator_id);
+                    break;
+
+                case OfferOption::PAYMENT_FREQ_HALF_YEARLY:
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 2, $start, $main_sales_id ? $main_sales_id : $this->creator_id);
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 2, $start->addMonths(6), $main_sales_id ? $main_sales_id : $this->creator_id);
+                    break;
+
+                case OfferOption::PAYMENT_FREQ_QUARTER:
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $start, $main_sales_id ? $main_sales_id : $this->creator_id);
+
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $start->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
+
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $start->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
+
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $start->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
+                    break;
+
+                case OfferOption::PAYMENT_FREQ_MONTHLY:
+                    for ($i = 0; $i < 12; $i++)
+                        $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 12, $i == 0 ? $start : $start->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
+                    break;
+
+                    case OfferOption::PAYMENT_INSTALLEMENTS:
+                        for ($i = 0; $i < $installements_count; $i++)
+                            $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / $installements_count, $i == 0 ? $start : $start->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
+                        break;
             }
         }
         return $soldPolicy;
