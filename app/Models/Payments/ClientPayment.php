@@ -128,7 +128,7 @@ class ClientPayment extends Model
         }
     }
 
-    public function setAsPaid(Carbon $date = null)
+    public function setAsPaid($payment_type = null, Carbon $date = null)
     {
         /** @var User */
         $user = Auth::user();
@@ -138,11 +138,14 @@ class ClientPayment extends Model
         try {
             $date = $date ?? new Carbon();
             AppLog::info("Setting Client Payment as paid", loggable: $this);
-            if ($this->update([
-                "closed_by_id"   =>  Auth::id(),
-                "payment_date"  => $date->format('Y-m-d H:i'),
-                "status"  =>  self::PYMT_STATE_PAID,
-            ])) {
+            $updates['closed_by_id'] = Auth::id();
+            $updates['payment_date'] = $date->format('Y-m-d H:i');
+            $updates['status'] = self::PYMT_STATE_PAID;
+            if($payment_type){
+                $updates['type'] = $payment_type;
+            }
+
+            if ($this->update($updates)) {
                 $this->loadMissing('sold_policy');
                 $this->sold_policy->setClientPaymentDate($date);
                 $this->sold_policy->generatePolicyCommissions();
