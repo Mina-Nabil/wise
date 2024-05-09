@@ -239,7 +239,7 @@ class OfferShow extends Component
         $this->genarteSoldPolicySection  = true;
         $option = OfferOption::find($this->offer->selected_option_id);
         $this->sold_insured_value = $option->insured_value;
-        $this->net_rate = $option->policy_condition->rate;
+        $this->net_rate = $option->policy_condition?->rate;
         $this->net_premium = $option->net_premium;
         $this->gross_premium = $option->gross_premium;
         $this->installments_count = $option->installements_count;
