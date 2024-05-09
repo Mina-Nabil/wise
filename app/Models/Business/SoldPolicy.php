@@ -1106,7 +1106,7 @@ class SoldPolicy extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, $searchText = null, $is_expiring = false, $is_outstanding = false)
+    public function scopeUserData($query, $searchText = null, $is_expiring = false, $is_commission_outstanding = false, $is_client_outstanding = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -1188,8 +1188,11 @@ class SoldPolicy extends Model
             ]);
         });
 
-        $query->when($is_outstanding, function ($q) {
+        $query->when($is_commission_outstanding, function ($q) {
             $q->whereRaw("total_comp_paid < total_policy_comm");
+        });
+        $query->when($is_client_outstanding, function ($q) {
+            $q->whereRaw("total_client_paid < gross_premium");
         });
 
         return $query->orderBy("sold_policies.start");
