@@ -124,8 +124,8 @@
                                     <td class="table-td">
                                         @if ($payment->assigned_to)
                                             <b>
-                                                {{ $payment->assigned_to->first_name }}
-                                                {{ $payment->assigned_to->last_name }}
+                                                {{ $payment->assigned?->first_name }}
+                                                {{ $payment->assigned?->last_name }}
                                             </b>
                                         @else
                                             <b> - </b>

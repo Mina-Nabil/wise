@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ClientPayment extends Model
@@ -178,7 +179,7 @@ class ClientPayment extends Model
         $canSeeAll = $user->can('viewAny', self::class);
 
         $query->select('client_payments.*')
-            ->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
+            ->leftjoin('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
             ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id')
             ->groupBy('client_payments.id');
 
@@ -191,7 +192,8 @@ class ClientPayment extends Model
         );
 
         if ($assigned_only) $query->where('client_payments.assigned_to', $user->id);
-        $query->whereIn('status', $states);
+        if (count($states)) $query->whereIn('status', $states);
+        Log::info($states);
         return $query;
     }
 
@@ -209,7 +211,7 @@ class ClientPayment extends Model
     {
         return $this->belongsTo(User::class, 'closed_by_id');
     }
-    public function assigned_to(): BelongsTo
+    public function assigned(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
