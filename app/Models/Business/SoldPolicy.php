@@ -280,6 +280,7 @@ class SoldPolicy extends Model
     public function setClientPaymentDate(Carbon $date)
     {
         try {
+            $this->is_paid = 1;
             $this->client_payment_date = $date->format('Y-m-d H:i');
             return $this->save();
         } catch (Exception $e) {

@@ -16,7 +16,7 @@ class OutstandingSoldPolicyIndex extends Component
 
     public function render()
     {
-        $soldPolicies = SoldPolicy::userData(searchText:$this->search,is_outstanding:true)->paginate(20);
+        $soldPolicies = SoldPolicy::userData(searchText:$this->search,is_client_outstanding:true)->paginate(20);
         return view('livewire.outstanding-sold-policy-index',[
             'soldPolicies' => $soldPolicies,
             ]);

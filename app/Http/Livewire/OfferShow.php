@@ -244,9 +244,8 @@ class OfferShow extends Component
         $this->gross_premium = $option->gross_premium;
         $this->installments_count = $option->installements_count;
         $this->sold_payment_frequency = $option->payment_frequency;
-        $this->start = date('Y-m-d');
-        $this->start = (string) $this->start;
-        $this->expiry =  (new Carbon("+1 year"))->subDay()->format("Y-m-d");
+        $this->policy_number = $this->offer->renewal_policy;
+
     }
 
     public function closeGenerateSoldPolicy()
