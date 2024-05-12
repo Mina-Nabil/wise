@@ -7,6 +7,37 @@
                 </h4>
             </div>
         </div>
+
+        <div class="flex items-center space-x-7 flex-wrap h-[30px]">
+        <div class="secondary-radio">
+            <label class="flex items-center cursor-pointer">
+                <input type="radio" class="hidden" value="all" wire:model="outstandingType">
+                <span
+                    class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
+                <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
+            </label>
+        </div>
+
+        <div class="secondary-radio">
+            <label class="flex items-center cursor-pointer">
+                <input type="radio" class="hidden" value="policy" wire:model="outstandingType">
+                <span
+                    class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
+                <span class="text-secondary-500 text-sm leading-6 capitalize">Policy Outstanding</span>
+            </label>
+        </div>
+
+        <div class="secondary-radio">
+            <label class="flex items-center cursor-pointer">
+                <input type="radio" class="hidden" value="commission" wire:model="outstandingType">
+                <span
+                    class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
+                <span class="text-secondary-500 text-sm leading-6 capitalize">Commission Outstanding</span>
+            </label>
+        </div>
+        </div>
+
+
         <div class="card-body px-6 pb-6">
             <div class=" -mx-6">
                 <div class="inline-block min-w-full align-middle">
