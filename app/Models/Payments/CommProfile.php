@@ -35,7 +35,8 @@ class CommProfile extends Model
 
     protected $fillable = [
         'title', 'type', 'per_policy', 'desc', 'comm_profile_id',
-        'user_id', 'balance', 'unapproved_balance'
+        'user_id', 'balance', 'unapproved_balance',
+        'select_available' //Available for Selection
     ];
 
     ///static functions
@@ -44,7 +45,8 @@ class CommProfile extends Model
         bool $per_policy, //switch
         $user_id = null, //can be linked to user
         string $title = null, //can be null if a user is selected 
-        string $desc = null
+        string $desc = null,
+        bool $select_available = false, //switch
     ): self|bool {
         assert($user_id !== null || $title != null, "Must include a title or select a user");
         try {
@@ -56,6 +58,7 @@ class CommProfile extends Model
             $newComm = new self([
                 "type"          =>  $type,
                 "per_policy"    =>  $per_policy,
+                "select_available"    =>  $select_available,
                 "user_id"       =>  $user_id,
                 "title"         =>  $formattedTitle,
                 "desc"          =>  $desc,
@@ -91,12 +94,14 @@ class CommProfile extends Model
         $type,
         bool $per_policy,
         string $title = null,
-        string $desc = null
+        string $desc = null,
+        bool $select_available = false, //switch
     ) {
         try {
             $this->update([
                 "type"          =>  $type,
                 "per_policy"    =>  $per_policy,
+                "select_available"    =>  $select_available,
                 "title"         =>  $title,
                 "desc"          =>  $desc,
             ]);

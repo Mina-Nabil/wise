@@ -1107,8 +1107,13 @@ class SoldPolicy extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, $searchText = null, $is_expiring = false, $is_commission_outstanding = false, $is_client_outstanding = false)
-    {
+    public function scopeUserData(
+        $query,
+        $searchText = null,
+        $is_expiring = false,
+        $is_commission_outstanding = false, //Commission Outstanding
+        $is_client_outstanding = false //Policy Outstanding
+    ) {
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('sold_policies.*')

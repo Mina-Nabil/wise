@@ -570,6 +570,7 @@ class OfferShow extends Component
     public function editOption()
     {
         $option = OfferOption::find($this->editOptionId);
+        if(!$option) $this->alert('failed', 'Option not found. Please refresh');
         $res = $option->editInfo($this->insured_value, $this->netPremium, $this->grossPremium, $this->payment_frequency, $this->optionIsRenewal, $this->installmentsCount);
         if ($res) {
             $this->alert('success', 'Option updated');
@@ -819,7 +820,7 @@ class OfferShow extends Component
             'item_title' => 'nullable|string|max:255',
             'item_desc' => 'nullable|string',
         ]);
-
+        $item = null;
         if ($this->carId) {
             $item = CustomerCar::find($this->carId);
         } elseif ($this->selectedCarPriceArray && $this->CarCategory) {
