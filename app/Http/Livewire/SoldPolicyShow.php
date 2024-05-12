@@ -109,9 +109,11 @@ class SoldPolicyShow extends Component
     public $RemovePaymentDocId;
     public $paymentDocId;
     public $paymentDoc;
+    public $paymentAssignee;
     public $paymentNoteSec;
     public $clientPaymentDateSec = false;
     public $clientPaymentDate;
+    public $editPaymentSec;
 
     public $client_payment_date;
     public $setPaidSec;
@@ -130,9 +132,60 @@ class SoldPolicyShow extends Component
     public $updateTotalPolComm;
     public $updateTotalPolCommNote;
 
+    //for set payment as paid
+    public $setPaymentPaidSec;
+    public $payment_type;
+    public $payment_date;
+
     public $section = 'profile';
 
     protected $queryString = ['section'];
+
+    public function openEditPaymentSec($id){
+        $this->editPaymentSec = $id;
+        $p = ClientPayment::find($id);
+        $this->paymentType = $p->type;
+        $this->paymentDue = $p->due;
+        $this->paymentNote = $p->note;
+        $this->paymentAssignee = $p->assigned_to;
+    }
+
+    public function closeEditPaymentSec(){
+        $this->editPaymentSec = null;
+        $this->paymentType = null;
+        $this->paymentDue = null;
+        $this->paymentNote = null;
+        $this->paymentAssignee = null;
+    }
+
+    public function editClientPayment(){
+        $this->authorize('update', ClientPayment::find($this->editPaymentSec));
+        $this->validate([
+            'paymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
+            'paymentDue' => 'required|date',
+            'paymentNote' => 'nullable|string',
+            'paymentAssignee'   => 'nullable|integer|exists:users,id',
+        ]);
+
+        $res = ClientPayment::find($this->editPaymentSec)->setInfo(Carbon::parse($this->paymentDue), $this->paymentType, $this->paymentAssignee ,$this->paymentNote);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closeEditPaymentSec();
+            $this->alert('success', 'Payment updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function closeSetPaymentPaidSec(){
+        $this->setPaymentPaidSec = null;
+        $this->payment_type  = null;
+        $this->payment_date = null;
+    }
+
+    public function openSetPaymentPaidSec($id){
+        $this->setPaymentPaidSec = $id;
+    }
 
     public function closeEditTotalPolCommSection()
     {
@@ -409,12 +462,17 @@ class SoldPolicyShow extends Component
         $this->compPaymentDocId = $id;
     }
 
-    public function setPaymentPaid($id)
+    public function setPaymentPaid()
     {
-        $this->authorize('update', ClientPayment::find($id));
-        $res = ClientPayment::find($id)->setAsPaid();
+        $this->validate([
+            'payment_type' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
+            'payment_date' => 'required|date',
+        ]);
+        $this->authorize('update', ClientPayment::find($this->setPaymentPaidSec));
+        $res = ClientPayment::find($this->setPaymentPaidSec)->setAsPaid($this->payment_type,Carbon::parse($this->payment_date));
         if ($res) {
             $this->mount($this->soldPolicy->id);
+            $this->closeSetPaymentPaidSec();
             $this->alert('success', 'Payment updated!');
         } else {
             $this->alert('failed', 'server error');
@@ -440,9 +498,10 @@ class SoldPolicyShow extends Component
             'paymentAmount' => 'required|numeric',
             'paymentDue' => 'required|date',
             'paymentNote' => 'nullable|string',
+            'paymentAssignee'   => 'nullable|integer|exists:users,id',
         ]);
 
-        $res = $this->soldPolicy->addClientPayment($this->paymentType, $this->paymentAmount, Carbon::parse($this->paymentDue), $this->paymentNote);
+        $res = $this->soldPolicy->addClientPayment($this->paymentType, $this->paymentAmount, Carbon::parse($this->paymentDue), $this->paymentAssignee ,$this->paymentNote);
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->addClientPaymentSec = false;
@@ -450,6 +509,7 @@ class SoldPolicyShow extends Component
             $this->paymentAmount = null;
             $this->paymentDue = null;
             $this->paymentNote = null;
+            $this->paymentAssignee = null;
             $this->alert('success', 'Payment added!');
         } else {
             $this->alert('failed', 'server error');
