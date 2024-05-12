@@ -83,6 +83,9 @@
                                 <th scope="col" class=" table-th ">
                                     Policy# 
                                 </th>
+                                <th scope="col" class=" table-th ">
+                                    Name
+                                </th>
 
                                 <th scope="col" class=" table-th ">
                                     Due
@@ -123,6 +126,9 @@
 
                                     <td class="table-td">
                                         {{ $payment->sold_policy->policy_number }}
+                                    </td>
+                                    <td class="table-td">
+                                        {{ $payment->sold_policy->client->full_name }}
                                     </td>
 
                                     <td class="table-td">
