@@ -81,6 +81,10 @@
                             <tr>
 
                                 <th scope="col" class=" table-th ">
+                                    Policy# 
+                                </th>
+
+                                <th scope="col" class=" table-th ">
                                     Due
                                 </th>
 
@@ -115,7 +119,11 @@
 
                             @foreach ($payments as $payment)
                                 <tr class="hover:bg-slate-200 dark:hover:bg-slate-700"
-                                    wire:click="redirectToShowPage({{ $payment->id }})">
+                                    wire:click="redirectToShowPage({{ $payment->sold_policy_id }})">
+
+                                    <td class="table-td">
+                                        {{ $payment->sold_policy->policy_number }}
+                                    </td>
 
                                     <td class="table-td">
                                         {{ $payment->due ? \Carbon\Carbon::parse($payment->due)->format('D d/m/Y') : 'Not set.' }}
