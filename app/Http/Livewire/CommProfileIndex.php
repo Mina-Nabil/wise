@@ -8,10 +8,11 @@ use App\Models\Users\User;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CommProfileIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
+    use WithPagination, AlertFrontEnd, ToggleSectionLivewire, AuthorizesRequests;
 
     public $newCommSec = false;
 
@@ -29,6 +30,7 @@ class CommProfileIndex extends Component
 
     public function addComm()
     {
+        $this->authorize('create', CommProfile::class);
         if ($this->newUserId) {
             $this->validate([
                 'newUserId' => 'required|integer|exists:users,id',
