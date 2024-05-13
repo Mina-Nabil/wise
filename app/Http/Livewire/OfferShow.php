@@ -175,7 +175,7 @@ class OfferShow extends Component
     }
 
     public function removeCommProfile($id) {
-        $this->authorize('delete', \App\Models\Payments\CommProfile::class);
+
         $res = $this->offer->removeCommProfile($id);
         if ($res) {
             $this->mount($this->offer->id);
