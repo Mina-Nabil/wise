@@ -31,6 +31,7 @@ class CommProfileShow extends Component
 
     public $updatedType;
     public $updatedPerPolicy;
+    public $updatedSelectAvailable;
     public $updatedUserId;
     public $updatedTitle;
     public $updatedDesc;
@@ -810,6 +811,7 @@ class CommProfileShow extends Component
         // $this->updatedUserId = $this->profile->user_id;
         $this->updatedTitle = $this->profile->title;
         $this->updatedDesc = $this->profile->desc;
+        $this->updatedSelectAvailable = $this->profile->select_available;
     }
 
     public function updateComm()
@@ -826,10 +828,11 @@ class CommProfileShow extends Component
         $this->validate([
             'updatedType'  => 'required|in:' . implode(',', CommProfile::TYPES),
             'updatedPerPolicy' => 'boolean',
+            'updatedSelectAvailable' => 'boolean',
             'updatedDesc' => 'nullable|string'
         ]);
 
-        $res = $this->profile->editProfile($this->updatedType, $this->updatedPerPolicy, $this->updatedTitle, $this->updatedDesc);
+        $res = $this->profile->editProfile($this->updatedType, $this->updatedPerPolicy, $this->updatedTitle, $this->updatedDesc, $this->updatedSelectAvailable);
 
         if ($res) {
             $this->updatedCommSec = false;

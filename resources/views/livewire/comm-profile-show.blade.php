@@ -8,8 +8,11 @@
                         <div class="text-xl text-slate-900 dark:text-white text-wrap">
                             <b>{{ str_replace('_', ' ', $profile->title) }}</b>
                             @if ($profile->per_policy)
-                                <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">Per
-                                    Policy</span>
+                                <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">Per Policy</span>
+                            @endif
+
+                            @if ($profile->select_available)
+                                <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">Available for Selection</span>
                             @endif
                         </div>
                         <div class="text-base">
@@ -30,10 +33,10 @@
                 <div class="card-text mt-4 menu-open">
                     <p>{{ $profile->desc }}</p>
                     @can('create', \App\Models\Payments\CommProfile::class)
-                    <div class="mt-4 space-x-4 rtl:space-x-reverse">
-                        <button wire:click="openUpdateSec" class="btn inline-flex justify-center btn-light btn-sm">Edit
-                            info</button>
-                    </div>
+                        <div class="mt-4 space-x-4 rtl:space-x-reverse">
+                            <button wire:click="openUpdateSec" class="btn inline-flex justify-center btn-light btn-sm">Edit
+                                info</button>
+                        </div>
                     @endcan
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 float-right">Created
@@ -347,7 +350,7 @@
                         Sales Commission
                     </h4>
                     @can('create', \App\Models\Payments\SalesComm::class)
-                    <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
+                        <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
                     @endcan
                     <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
                 </header>
@@ -1511,6 +1514,15 @@
                                             </div>
                                         </label>
                                         <span class="text-sm text-slate-600 font-Inter font-normal">Per Policy</span>
+
+                                    </div>
+
+                                    <div class="flex items-center space-x-2 mt-3">
+                                        <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                            <input wire:model="updatedSelectAvailable" type="checkbox" value="" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500"></div>
+                                        </label>
+                                        <span class="text-sm text-slate-600 font-Inter font-normal">Available for Selection</span>
 
                                     </div>
                                 </div>

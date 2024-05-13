@@ -17,12 +17,14 @@ class CommProfileIndex extends Component
 
     public $newType;
     public $newPerPolicy = false;
+    public $newSelectAvailable = false;
     public $newUserId;
     public $newTitle;
     public $newDesc;
 
-    public function redirectToShowPage($id){
-        redirect(route('comm.profile.show',$id));
+    public function redirectToShowPage($id)
+    {
+        redirect(route('comm.profile.show', $id));
     }
 
     public function addComm()
@@ -39,10 +41,11 @@ class CommProfileIndex extends Component
         $this->validate([
             'newType'  => 'required|in:' . implode(',', CommProfile::TYPES),
             'newPerPolicy' => 'boolean',
+            'newSelectAvailable' => 'boolean',
             'newDesc' => 'nullable|string'
         ]);
 
-        $res = CommProfile::newCommProfile($this->newType, $this->newPerPolicy, $this->newUserId, $this->newTitle, $this->newDesc);
+        $res = CommProfile::newCommProfile($this->newType, $this->newPerPolicy, $this->newUserId, $this->newTitle, $this->newDesc, $this->newSelectAvailable);
 
         if ($res) {
             // $this->alert('success', 'Commission added');
