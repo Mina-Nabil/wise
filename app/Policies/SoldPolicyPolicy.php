@@ -30,7 +30,7 @@ class SoldPolicyPolicy
      */
     public function view(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin || $user->is_operation || $user->id == $soldPolicy->creator_id;
+        return $user->is_admin || $user->is_operations || $user->id == $soldPolicy->creator_id;
     }
 
     /**
@@ -53,7 +53,7 @@ class SoldPolicyPolicy
      */
     public function update(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin || $user->is_operation || $user->id == $soldPolicy->creator_id;
+        return $user->is_admin || $user->is_operations || $user->id == $soldPolicy->creator_id;
     }
 
     /**
