@@ -65,7 +65,7 @@ class SoldPolicyPolicy
      */
     public function updatePayments(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin ||  $user->is_finance || $user->id == 12;
+        return $user->is_admin ||  $user->is_finance || $user->id == 12 || $user->id == $soldPolicy->main_sales_id;
     }
 
     /**
@@ -77,7 +77,7 @@ class SoldPolicyPolicy
      */
     public function updateClientPayments(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin ||  $user->is_finance || $user->id == $soldPolicy->creator_id || $user->id == 12;
+        return $user->is_admin ||  $user->is_finance || $user->id == $soldPolicy->creator_id || $user->id == 12 || $user->id == $soldPolicy->main_sales_id;
     }
 
     /**
