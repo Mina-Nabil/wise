@@ -1925,7 +1925,7 @@
                         <div class="p-6 space-y-4">
                             <div class="input-area mb-3">
                                 <label for="time-date-picker" class="form-label">Note</label>
-                                <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('offerNote') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="offerNote" autocomplete="off">
+                                <textarea rows=3 class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('offerNote') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="offerNote" autocomplete="off"></textarea>
                                 @error('offerNote')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
