@@ -117,7 +117,7 @@ class ContactInfoIndex extends Component
             'address_governate' => 'nullable|string|max:255',
             'address_country' => 'nullable|string|max:255',
             'url' => 'nullable|string|max:255',
-            // 'image' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            // 'image' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
 
@@ -133,7 +133,7 @@ class ContactInfoIndex extends Component
         } else {
 
             $this->validate([
-                'image' => ['file', 'nullable', 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp', 'max:5120'],
+                'image' => ['file', 'nullable', 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp', 'max:20480'],
             ]);
 
             $imageurl =  $this->image->store(ContactInfo::FILES_DIRECTORY, 's3');
@@ -167,7 +167,7 @@ class ContactInfoIndex extends Component
             'address_governate' => 'nullable|string|max:255',
             'address_country' => 'nullable|string|max:255',
             'url' => 'nullable|string|max:255',
-            'image' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'image' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         if ($this->image) {
@@ -200,7 +200,7 @@ class ContactInfoIndex extends Component
         } else {
 
             $this->validate([
-                $property => ['file', 'nullable', 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp', 'max:5120'],
+                $property => ['file', 'nullable', 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp', 'max:20480'],
             ]);
 
             $url =  $this->$property->store(ContactInfo::FILES_DIRECTORY, 's3');

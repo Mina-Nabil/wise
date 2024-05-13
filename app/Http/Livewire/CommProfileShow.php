@@ -229,7 +229,7 @@ class CommProfileShow extends Component
     {
         $this->authorize('update', SalesComm::find($this->commDocId));
         $this->validate([
-            'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         $url = $this->commDoc->store(SalesComm::FILES_DIRECTORY, 's3');
@@ -294,7 +294,7 @@ class CommProfileShow extends Component
     {
         $this->validate(
             [
-                'pymtDocFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+                'pymtDocFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
             ],
             [
                 'pymtDocFile.max' => 'The file must not be greater than 5MB.',
@@ -434,7 +434,7 @@ class CommProfileShow extends Component
         $this->validate([
             'pymtAmount' => 'required|numeric|gt:0',
             'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
-            'pymtDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'pymtDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
             'pymtNote' => 'nullable|string'
         ]);
 

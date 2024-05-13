@@ -319,7 +319,7 @@ class CustomerShow extends Component
             'bankName' => 'required|string|max:255',
             'accountNumber' =>  'required|string|max:255',
             'ownerName' =>  'required|string|max:255',
-            'evidenceDoc' =>  'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'evidenceDoc' =>  'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
             'iban' => 'nullable|string|max:255',
             'bankBranch' => 'nullable|string|max:255',
         ]);
@@ -378,7 +378,7 @@ class CustomerShow extends Component
             'bankName' => 'required|string|max:255',
             'accountNumber' =>  'required|string|max:255',
             'ownerName' =>  'required|string|max:255',
-            'evidenceDoc' =>   'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'evidenceDoc' =>   'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
             'iban' => 'nullable|string|max:255',
             'bankBranch' => 'nullable|string|max:255',
         ]);
@@ -1154,8 +1154,8 @@ class CustomerShow extends Component
             'profession_id' => 'nullable|exists:professions,id',
             'salaryRange' => 'nullable|in:' . implode(',', Customer::SALARY_RANGES),
             'incomeSource' =>  'nullable|in:' . implode(',', Customer::INCOME_SOURCES),
-            'idDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
-            'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'idDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         $customer = Customer::find($this->customer->id);

@@ -270,7 +270,7 @@ class OfferShow extends Component
             'car_plate_no' => 'nullable|string|max:255',
             'car_engine' => 'nullable|string|max:255',
             'soldInFavorTo' =>  'nullable|string|max:255',
-            'policyDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'policyDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         if ($this->policyDoc) {
@@ -687,7 +687,7 @@ class OfferShow extends Component
     {
         $this->validate(
             [
-                'uploadedOptionFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+                'uploadedOptionFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
             ],
             [
                 'uploadedOptionFile.max' => 'The file must not be greater than 5MB.',
@@ -712,7 +712,7 @@ class OfferShow extends Component
     {
         $this->validate(
             [
-                'uploadedFile.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+                'uploadedFile.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
             ],
             [
                 'uploadedFile.*.max' => 'The file must not be greater than 5MB.',
@@ -885,7 +885,7 @@ class OfferShow extends Component
                 'installmentsCount' => 'nullable|numeric',
                 'optionIsRenewal' => 'boolean',
                 'files' => 'nullable|array',
-                'files.*' => 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+                'files.*' => 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
                 'fields' => 'nullable|array',
             ],
             messages: [

@@ -261,7 +261,7 @@ class TaskShow extends Component
     {
         $this->validate(
             [
-                'uploadedFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+                'uploadedFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
             ],
             [
                 'uploadedFile.max' => 'The file must not be greater than 5MB.',

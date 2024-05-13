@@ -331,7 +331,7 @@ class SoldPolicyShow extends Component
     {
         $this->authorize('update', ClientPayment::find($this->paymentDocId));
         $this->validate([
-            'paymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'paymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         $url = $this->paymentDoc->store(ClientPayment::FILES_DIRECTORY, 's3');
@@ -394,7 +394,7 @@ class SoldPolicyShow extends Component
     {
         $this->authorize('update', CompanyCommPayment::find($this->compPaymentDocId));
         $this->validate([
-            'compPaymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'compPaymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         $url = $this->compPaymentDoc->store(CompanyCommPayment::FILES_DIRECTORY, 's3');
@@ -631,7 +631,7 @@ class SoldPolicyShow extends Component
     {
         $this->authorize('update', SalesComm::find($this->commDocId));
         $this->validate([
-            'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         $url = $this->commDoc->store(SalesComm::FILES_DIRECTORY, 's3');
@@ -786,7 +786,7 @@ class SoldPolicyShow extends Component
     public function updatedDocFile()
     {
         $this->validate([
-            'docFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:5120',
+            'docFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         $url = $this->docFile->store(SoldPolicy::FILES_DIRECTORY, 's3');
