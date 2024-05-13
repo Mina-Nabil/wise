@@ -8,25 +8,29 @@ use App\Models\Users\User;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CommProfileIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
+    use WithPagination, AlertFrontEnd, ToggleSectionLivewire, AuthorizesRequests;
 
     public $newCommSec = false;
 
     public $newType;
     public $newPerPolicy = false;
+    public $newSelectAvailable = false;
     public $newUserId;
     public $newTitle;
     public $newDesc;
 
-    public function redirectToShowPage($id){
-        redirect(route('comm.profile.show',$id));
+    public function redirectToShowPage($id)
+    {
+        redirect(route('comm.profile.show', $id));
     }
 
     public function addComm()
     {
+        $this->authorize('create', CommProfile::class);
         if ($this->newUserId) {
             $this->validate([
                 'newUserId' => 'required|integer|exists:users,id',
@@ -39,10 +43,11 @@ class CommProfileIndex extends Component
         $this->validate([
             'newType'  => 'required|in:' . implode(',', CommProfile::TYPES),
             'newPerPolicy' => 'boolean',
+            'newSelectAvailable' => 'boolean',
             'newDesc' => 'nullable|string'
         ]);
 
-        $res = CommProfile::newCommProfile($this->newType, $this->newPerPolicy, $this->newUserId, $this->newTitle, $this->newDesc);
+        $res = CommProfile::newCommProfile($this->newType, $this->newPerPolicy, $this->newUserId, $this->newTitle, $this->newDesc, $this->newSelectAvailable);
 
         if ($res) {
             // $this->alert('success', 'Commission added');

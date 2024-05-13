@@ -28,13 +28,12 @@ class DatabaseSeeder extends Seeder
         $this->call(ProfessionsSeeder::class);
         $this->call(ProdInsuranceSeeder::class);
         $this->call(SoldPolicyFileSeeder::class);
-        // if (App::environment('local')) {
-        //     // $this->call(TaskSeeder::class);
-        //     // $this->call(CustomersSeeder::class);
-        //     // $this->call(CorporatesSeeder::class);
-
-        // } else {
-        //     $this->call(ProdInsuranceSeeder::class);
-        // }
+        if (App::environment('local')) {
+            $this->call(TaskSeeder::class);
+            $this->call(CustomersSeeder::class);
+            $this->call(CorporatesSeeder::class);
+        } else {
+            $this->call(ProdInsuranceSeeder::class);
+        }
     }
 }
