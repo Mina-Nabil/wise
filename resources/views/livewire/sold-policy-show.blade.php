@@ -1753,7 +1753,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="note" class="form-label">Note</label>
-                                <textarea class="form-control mt-2 w-full @error('note') !border-danger-500 @enderror" wire:model.defer="note"></textarea>
+                                <textarea class="form-control mt-2 w-full @error('note') !border-danger-500 @enderror" wire:model.defer="note" rows=7></textarea>
                                 @error('note')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
