@@ -141,7 +141,7 @@ class ClientPayment extends Model
             $updates['closed_by_id'] = Auth::id();
             $updates['payment_date'] = $date->format('Y-m-d H:i');
             $updates['status'] = self::PYMT_STATE_PAID;
-            if($payment_type){
+            if ($payment_type) {
                 $updates['type'] = $payment_type;
             }
 
@@ -192,7 +192,7 @@ class ClientPayment extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false)
+    public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false, string $searchText = null)
     {
         /** @var User */
         $user = Auth::user();
@@ -213,7 +213,9 @@ class ClientPayment extends Model
 
         if ($assigned_only) $query->where('client_payments.assigned_to', $user->id);
         if (count($states)) $query->whereIn('status', $states);
-        Log::info($states);
+        $query->when($searchText, function ($q, $s) {
+            $q->where('sold_policies.policy_number' . $s);
+        });
         return $query;
     }
 
