@@ -214,7 +214,7 @@ class ClientPayment extends Model
         if ($assigned_only) $query->where('client_payments.assigned_to', $user->id);
         if (count($states)) $query->whereIn('status', $states);
         $query->when($searchText, function ($q, $s) {
-            $q->where('sold_policies.policy_number' , $s);
+            $q->where('sold_policies.policy_number', "LIKE", "%$s%");
         });
         return $query;
     }
