@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <title>Wise  @yield('title')</title>
+    <title>Wise @yield('title')</title>
     <link rel="icon" type="image/png" href="{{ asset('assets/images/logo/wise-favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
@@ -224,33 +224,35 @@
                             </span>
                         </a>
                     </li>
-                    
+                    @if (Auth::user()->is_admin || Auth::user()->id == 12)
+                        <li class="">
+                            <a href="javascript:void(0)" class="navItem">
+                                <span class="flex items-center">
+                                    <iconify-icon class=" nav-icon" icon="ic:round-add-task"></iconify-icon>
+                                    <span>Reports</span>
+                                </span>
+                                <iconify-icon class="icon-arrow"
+                                    icon="heroicons-outline:chevron-right"></iconify-icon>
+                            </a>
+                            <ul class="sidebar-submenu">
+                                <li>
+                                    <a href="{{ url('/reports/offers') }}" class="@yield('reports.offers')">Offers</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold
+                                        Policies</a>
+                                </li>
+
+                            </ul>
+                        </li>
+                    @endif
                     @if (Auth::user()->is_admin)
-
-                    <li class="">
-                        <a href="javascript:void(0)" class="navItem">
-                            <span class="flex items-center">
-                                <iconify-icon class=" nav-icon" icon="ic:round-add-task"></iconify-icon>
-                                <span>Reports</span>
-                            </span>
-                            <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
-                        </a>
-                        <ul class="sidebar-submenu">
-                            <li>
-                                <a href="{{ url('/reports/offers') }}" class="@yield('reports.offers')">Offers</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold Policies</a>
-                            </li>
-
-                        </ul>
-                    </li>
-
                         <li class="sidebar-menu-title">Settings</li>
                         <li>
                             <a href="{{ url('/commissions') }}" class="navItem @yield('commissions')">
                                 <span class="flex items-center">
-                                    <iconify-icon class="nav-icon" icon="flowbite:sale-percent-outline"></iconify-icon>
+                                    <iconify-icon class="nav-icon"
+                                        icon="flowbite:sale-percent-outline"></iconify-icon>
                                     <span>Commissions</span>
                                 </span>
                             </a>
