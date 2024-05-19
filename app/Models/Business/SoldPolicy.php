@@ -738,6 +738,31 @@ class SoldPolicy extends Model
         }
     }
 
+    public function deleteSoldPolicy()
+    {
+        try {
+            /** @var User */
+            $loggedInUser = Auth::user();
+            if (!$loggedInUser->can('delete', $this)) return false;
+            DB::transaction(function () {
+                $this->client_payments()->delete();
+                $this->claims()->delete();
+                $this->endorsements()->delete();
+                $this->benefits()->delete();
+                $this->exclusions()->delete();
+                $this->watcher_ids()->delete();
+                $this->comms_details()->delete();
+                $this->company_comm_payments()->delete();
+                $this->sales_comms()->delete();
+                $this->delete();
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     private function sendPolicyNotifications($title, $message)
     {
         $notifier_id = Auth::id();
@@ -1104,6 +1129,21 @@ class SoldPolicy extends Model
                 }
             }
         }
+    }
+
+    public static function checkOverlap($policy_number, Carbon $from, Carbon $to)
+    {
+        return DB::table('sold_policies')->selectRaw('count(*) as found')
+            ->where(function ($q) use ($from, $to) {
+                $q->whereBetween('start', [
+                    $from->format('Y-m-d H:i:s'),
+                    $to->format('Y-m-d H:i:s'),
+                ])->orWhereBetween('expiry', [
+                    $from->format('Y-m-d H:i:s'),
+                    $to->format('Y-m-d H:i:s'),
+                ]);
+            })->where('policy_number', $policy_number)
+            ->first()?->found;
     }
 
     ///scopes

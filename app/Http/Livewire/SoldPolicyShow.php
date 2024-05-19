@@ -123,6 +123,8 @@ class SoldPolicyShow extends Component
     public $compPaymentDoc;
     public $CompPaymentNoteSec;
 
+    public $deleteSoldPolicySec;
+
     public $addCompanyPaymentSec;
     public $compPaymentType;
     public $compPaymentAmount;
@@ -1010,6 +1012,21 @@ class SoldPolicyShow extends Component
         if (count($this->actions) > 1) {
             unset($this->actions[$index]);
             $this->actions = array_values($this->actions);
+        }
+    }
+
+    public function toggleDeleteSoldPolicy(){
+        $this->deleteSoldPolicySec = !$this->deleteSoldPolicySec;
+    }
+
+    public function deleteSoldPolicy()
+    {
+        $res = $this->soldPolicy->deleteSoldPolicy();
+        if($res){
+            $this->alert('success', 'Sold Policy deleted');
+            return redirect(route('sold.policy.index'));
+        } else {
+            $this->alert('danger', 'Unable to delete');
         }
     }
 

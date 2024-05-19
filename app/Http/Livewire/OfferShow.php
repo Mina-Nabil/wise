@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Exceptions\InvalidSoldPolicyException;
 use Livewire\Component;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferDiscount;
@@ -27,11 +28,12 @@ use Illuminate\Support\Facades\Storage;
 use App\models\Business\SoldPolicy;
 use App\Models\Payments\CommProfile;
 use App\Models\Payments\SalesComm;
+use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class OfferShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads,AuthorizesRequests;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads, AuthorizesRequests;
 
     public $available_pols;
     public $offer;
@@ -151,7 +153,8 @@ class OfferShow extends Component
     public $commSearch;
     public $profilesRes;
 
-    public function updatedCommSearch() {
+    public function updatedCommSearch()
+    {
         if (!empty($this->commSearch)) {
             // Perform the query using a scope or direct query
             $this->profilesRes = CommProfile::searchBy($this->commSearch)->take(5)->get();
@@ -161,7 +164,8 @@ class OfferShow extends Component
         }
     }
 
-    public function addCommProfile($id) {
+    public function addCommProfile($id)
+    {
         $this->authorize('create', \App\Models\Payments\CommProfile::class);
         $res = $this->offer->addCommProfile($id);
         if ($res) {
@@ -174,7 +178,8 @@ class OfferShow extends Component
         }
     }
 
-    public function removeCommProfile($id) {
+    public function removeCommProfile($id)
+    {
 
         $res = $this->offer->removeCommProfile($id);
         if ($res) {
@@ -245,7 +250,6 @@ class OfferShow extends Component
         $this->installments_count = $option->installements_count;
         $this->sold_payment_frequency = $option->payment_frequency;
         $this->policy_number = $this->offer->renewal_policy;
-
     }
 
     public function closeGenerateSoldPolicy()
@@ -279,29 +283,37 @@ class OfferShow extends Component
             $url = null;
         }
 
+        try {
 
-        $res = $this->offer->generateSoldPolicy(
-            $this->policy_number,
-            $url,
-            Carbon::parse($this->start),
-            Carbon::parse($this->expiry),
-            $this->installments_count,
-            $this->sold_payment_frequency,
-            $this->sold_insured_value,
-            $this->net_rate,
-            $this->net_premium,
-            $this->gross_premium,
-            $this->car_chassis,
-            $this->car_engine,
-            $this->car_plate_no,
-            $this->soldInFavorTo
+            $res = $this->offer->generateSoldPolicy(
+                $this->policy_number,
+                $url,
+                Carbon::parse($this->start),
+                Carbon::parse($this->expiry),
+                $this->installments_count,
+                $this->sold_payment_frequency,
+                $this->sold_insured_value,
+                $this->net_rate,
+                $this->net_premium,
+                $this->gross_premium,
+                $this->car_chassis,
+                $this->car_engine,
+                $this->car_plate_no,
+                $this->soldInFavorTo
 
-        );
-        if ($res) {
-            $this->reset();
-            return redirect(route('sold.policy.show', $res->id));
-            // $this->alert('success', 'Sold Policy added');
-        } else {
+            );
+            if ($res) {
+                $this->reset();
+                return redirect(route('sold.policy.show', $res->id));
+                // $this->alert('success', 'Sold Policy added');
+            } else {
+                $this->alert('failed', 'server error');
+            }
+        } catch (InvalidSoldPolicyException $e) {
+            $this->alert('failed', $e->getMessage());
+
+        } catch (Exception $e) {
+            report($e);
             $this->alert('failed', 'server error');
         }
     }
@@ -570,7 +582,7 @@ class OfferShow extends Component
     public function editOption()
     {
         $option = OfferOption::find($this->editOptionId);
-        if(!$option) $this->alert('failed', 'Option not found. Please refresh');
+        if (!$option) $this->alert('failed', 'Option not found. Please refresh');
         $res = $option->editInfo($this->insured_value, $this->netPremium, $this->grossPremium, $this->payment_frequency, $this->optionIsRenewal, $this->installmentsCount);
         if ($res) {
             $this->alert('success', 'Option updated');

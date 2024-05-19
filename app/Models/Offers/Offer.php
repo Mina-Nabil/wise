@@ -2,6 +2,7 @@
 
 namespace App\Models\Offers;
 
+use App\Exceptions\InvalidSoldPolicyException;
 use App\Models\Business\SoldPolicy;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Car;
@@ -163,10 +164,11 @@ class Offer extends Model
         $this->loadMissing('selected_option.policy');
         $this->loadMissing('selected_option.policy_condition');
 
-        assert($insured_value || $this->selected_option->insured_value, "No insured value found");
-        assert($net_rate || $this->selected_option->policy_condition->rate, "No net rate found");
-        assert($net_premium || $this->selected_option->net_premium, "No net premium found");
-        assert($gross_premium || $this->selected_option->gross_premium, "No gross premium found");
+        assert($insured_value || $this->selected_option->insured_value, new InvalidSoldPolicyException("No insured value found"));
+        assert($net_rate || $this->selected_option->policy_condition->rate, new InvalidSoldPolicyException("No net rate found"));
+        assert($net_premium || $this->selected_option->net_premium, new InvalidSoldPolicyException("No net premium found"));
+        assert($gross_premium || $this->selected_option->gross_premium, new InvalidSoldPolicyException("No gross premium found"));
+        assert(!SoldPolicy::checkOverlap($policy_number, $start, $expiry), new InvalidSoldPolicyException("Overlapping sold policy found with the same policy number"));
         // assert($installements_count || $this->selected_option->installements_count, "No installement count found"); 
 
         $customer_car = ($this->item_type == Car::MORPH_TYPE) ? $this->item_id : null;
@@ -233,10 +235,10 @@ class Offer extends Model
                         $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 12, $i == 0 ? $start : $start->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
                     break;
 
-                    case OfferOption::PAYMENT_INSTALLEMENTS:
-                        for ($i = 0; $i < $installements_count; $i++)
-                            $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / $installements_count, $i == 0 ? $start : $start->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
-                        break;
+                case OfferOption::PAYMENT_INSTALLEMENTS:
+                    for ($i = 0; $i < $installements_count; $i++)
+                        $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / $installements_count, $i == 0 ? $start : $start->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
+                    break;
             }
         }
         return $soldPolicy;
