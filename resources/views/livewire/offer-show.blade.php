@@ -940,7 +940,7 @@
                                     <h6>Commissions</h6>
                                 </div>
                             </div>
-                            @can('create', \App\Models\Payments\CommProfile::class)
+                            @can('updateCommission', $offer)
                                 <button wire:click="toggleAddComm"
                                     class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add
                                     commission</button>
@@ -1577,7 +1577,7 @@
     @endif
 
     {{-- addCommSec --}}
-    @can('create', \App\Models\Payments\CommProfile::class)
+    @can('updateCommission', $offer)
         @if ($addCommSec)
             <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
                 tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"

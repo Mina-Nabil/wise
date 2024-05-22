@@ -165,7 +165,7 @@ class OfferPolicy
      */
     public function updateCommission(User $user, Offer $offer)
     {
-        return $user->is_finance || $user->is_admin || $user->is_manager;
+        return true;
     }
 
     /**
