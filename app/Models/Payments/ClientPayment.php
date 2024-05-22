@@ -35,10 +35,12 @@ class ClientPayment extends Model
     ];
 
     const PYMT_STATE_NEW = 'new';
+    const PYMT_STATE_PREM_COLLECTED = 'prem_collected';
     const PYMT_STATE_PAID = 'paid';
     const PYMT_STATE_CANCELLED = 'cancelled';
     const PYMT_STATES = [
         self::PYMT_STATE_NEW,
+        self::PYMT_STATE_PREM_COLLECTED,
         self::PYMT_STATE_PAID,
         self::PYMT_STATE_CANCELLED,
     ];
@@ -128,6 +130,31 @@ class ClientPayment extends Model
         }
     }
 
+    public function setAsPremiumCollected($doc_url = null, string $note = null)
+    {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
+        if (!$this->is_new) return false;
+        try {
+
+            AppLog::info("Setting Client Payment as prem collected", loggable: $this);
+            if($doc_url){
+                $updates['doc_url'] = $doc_url;
+            }
+
+            if($note){
+                $updates['note'] = $note;
+            }
+            $updates['status'] = self::PYMT_STATE_PREM_COLLECTED;
+            return $this->update($updates);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+        }
+    }
+
     public function setAsPaid($payment_type = null, Carbon $date = null)
     {
         /** @var User */
@@ -189,6 +216,10 @@ class ClientPayment extends Model
     public function getIsNewAttribute()
     {
         return $this->status == self::PYMT_STATE_NEW;
+    }
+    public function getIsCollectedAttribute()
+    {
+        return $this->status == self::PYMT_STATE_PREM_COLLECTED;
     }
 
     ///scopes

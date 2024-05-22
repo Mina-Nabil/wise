@@ -134,6 +134,11 @@ class SoldPolicyShow extends Component
     public $updateTotalPolComm;
     public $updateTotalPolCommNote;
 
+    //for set payment as collected
+    public $setPaymentCollectedSec;
+    public $payment_collected_note;
+    public $paymentCollectedDoc;
+
     //for set payment as paid
     public $setPaymentPaidSec;
     public $payment_type;
@@ -179,10 +184,20 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function closeSetPaymentCollectedSec(){
+        $this->setPaymentCollectedSec = null;
+        $this->payment_collected_note  = null;
+        $this->paymentCollectedDoc = null;
+    }
+
     public function closeSetPaymentPaidSec(){
         $this->setPaymentPaidSec = null;
         $this->payment_type  = null;
         $this->payment_date = null;
+    }
+
+    public function openSetPaymentCollectedSec($id){
+        $this->setPaymentCollectedSec = $id;
     }
 
     public function openSetPaymentPaidSec($id){
@@ -470,11 +485,32 @@ class SoldPolicyShow extends Component
             'payment_type' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
             'payment_date' => 'required|date',
         ]);
-        $this->authorize('update', ClientPayment::find($this->setPaymentPaidSec));
+
         $res = ClientPayment::find($this->setPaymentPaidSec)->setAsPaid($this->payment_type,Carbon::parse($this->payment_date));
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->closeSetPaymentPaidSec();
+            $this->alert('success', 'Payment updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function setPaymentCollected()
+    {
+        $this->validate([
+            'paymentCollectedDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+        ]);
+        if($this->paymentCollectedDoc){
+            $url = $this->paymentCollectedDoc->store(SalesComm::FILES_DIRECTORY, 's3');
+        } else {
+            $url = null;
+        }
+
+        $res = ClientPayment::find($this->setPaymentCollectedSec)->setAsPremiumCollected($url, $this->payment_collected_note);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closeSetPaymentCollectedSec();
             $this->alert('success', 'Payment updated!');
         } else {
             $this->alert('failed', 'server error');
