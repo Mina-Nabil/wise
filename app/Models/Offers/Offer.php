@@ -877,7 +877,8 @@ class Offer extends Model
             )
             ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
 
-        if (!($loggedInUser->type == User::TYPE_ADMIN || ($loggedInUser->type == User::TYPE_OPERATIONS && $searchText))) {
+        if (!($loggedInUser->type == User::TYPE_ADMIN ||
+            (($loggedInUser->is_operations  || $loggedInUser->is_finance) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('offers.creator_id', $loggedInUser->id)

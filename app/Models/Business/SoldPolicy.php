@@ -1161,7 +1161,7 @@ class SoldPolicy extends Model
             ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id');
 
         if (!($loggedInUser->is_admin
-            || ($loggedInUser->is_operations && ($searchText || $is_expiring)))) {
+            || (($loggedInUser->is_operations || $loggedInUser->is_finance) && ($searchText || $is_expiring)))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id)
