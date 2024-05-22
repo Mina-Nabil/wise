@@ -256,7 +256,7 @@ class User extends Authenticatable
 
     public function getIsOperationsAttribute()
     {
-        return $this->type == self::TYPE_OPERATIONS || $this->type == self::TYPE_FINANCE;
+        return $this->type == self::TYPE_OPERATIONS;
     }
 
     public function getIsSalesAttribute()
