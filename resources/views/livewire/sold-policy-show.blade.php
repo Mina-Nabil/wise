@@ -1180,11 +1180,13 @@
                                                                                 <iconify-icon icon="material-symbols:check"></iconify-icon>
                                                                                 <span>Set as collected</span></a>
                                                                         </li>
+                                                                        @can('pay', $payment)
                                                                         <li>
                                                                             <a wire:click="openSetPaymentPaidSec({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                                 <iconify-icon icon="material-symbols:paid"></iconify-icon>
                                                                                 <span>Set as paid</span></a>
                                                                         </li>
+                                                                        @endcan
                                                                         <li>
                                                                             <a wire:click="setPaymentCancelled({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                                 <iconify-icon icon="line-md:cancel"></iconify-icon>

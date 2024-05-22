@@ -137,7 +137,7 @@ class CommProfileShow extends Component
 
     public function removeCommDoc()
     {
-        $this->authorize('update', SalesComm::find($this->RemoveCommDocId));
+
         $res = SalesComm::find($this->RemoveCommDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->profile->id);
@@ -166,7 +166,7 @@ class CommProfileShow extends Component
 
     public function refreshCommAmmount($id)
     {
-        $this->authorize('update', SalesComm::find($id));
+
         $res =  SalesComm::find($id)->refreshPaymentInfo();
         if ($res) {
             $this->mount($this->profile->id);
@@ -178,7 +178,7 @@ class CommProfileShow extends Component
 
     public function setCommCancelled($id)
     {
-        $this->authorize('update', SalesComm::find($id));
+
         $res =  SalesComm::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->profile->id);
@@ -190,7 +190,7 @@ class CommProfileShow extends Component
 
     public function setCommPaid($id)
     {
-        $this->authorize('update', SalesComm::find($id));
+
         $res =  SalesComm::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->profile->id);
@@ -227,7 +227,7 @@ class CommProfileShow extends Component
 
     public function updatedCommDoc()
     {
-        $this->authorize('update', SalesComm::find($this->commDocId));
+
         $this->validate([
             'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);

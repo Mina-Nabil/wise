@@ -166,7 +166,7 @@ class SoldPolicyShow extends Component
     }
 
     public function editClientPayment(){
-        $this->authorize('update', ClientPayment::find($this->editPaymentSec));
+
         $this->validate([
             'paymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
             'paymentDue' => 'required|date',
@@ -251,7 +251,6 @@ class SoldPolicyShow extends Component
 
     public function addCompanyPayment()
     {
-        $this->authorize('create', CompanyCommPayment::class);
 
         $this->validate([
             'compPaymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
@@ -333,7 +332,7 @@ class SoldPolicyShow extends Component
 
     public function removePaymentDoc()
     {
-        $this->authorize('update', ClientPayment::find($this->RemovePaymentDocId));
+
         $res = ClientPayment::find($this->RemovePaymentDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -346,7 +345,7 @@ class SoldPolicyShow extends Component
 
     public function updatedPaymentDoc()
     {
-        $this->authorize('update', ClientPayment::find($this->paymentDocId));
+
         $this->validate([
             'paymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
@@ -409,7 +408,7 @@ class SoldPolicyShow extends Component
 
     public function updatedCompPaymentDoc()
     {
-        $this->authorize('update', CompanyCommPayment::find($this->compPaymentDocId));
+
         $this->validate([
             'compPaymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
@@ -429,7 +428,7 @@ class SoldPolicyShow extends Component
 
     public function setCompanyPaymentPaid($id)
     {
-        $this->authorize('update', CompanyCommPayment::find($id));
+
         $res = CompanyCommPayment::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -441,7 +440,7 @@ class SoldPolicyShow extends Component
 
     public function setCompanyPaymentCancelled($id)
     {
-        $this->authorize('update', CompanyCommPayment::find($id));
+
         $res = CompanyCommPayment::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -463,7 +462,7 @@ class SoldPolicyShow extends Component
 
     public function removeCompPaymentDoc()
     {
-        $this->authorize('update', CompanyCommPayment::find($this->RemoveCompPaymentDocId));
+
         $res = CompanyCommPayment::find($this->RemoveCompPaymentDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -519,7 +518,7 @@ class SoldPolicyShow extends Component
 
     public function setPaymentCancelled($id)
     {
-        $this->authorize('update', ClientPayment::find($id));
+
         $res = ClientPayment::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -667,7 +666,7 @@ class SoldPolicyShow extends Component
 
     public function updatedCommDoc()
     {
-        $this->authorize('update', SalesComm::find($this->commDocId));
+
         $this->validate([
             'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
@@ -714,7 +713,7 @@ class SoldPolicyShow extends Component
 
     public function removeCommDoc()
     {
-        $this->authorize('update', SalesComm::find($this->RemoveCommDocId));
+
         $res = SalesComm::find($this->RemoveCommDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -727,7 +726,7 @@ class SoldPolicyShow extends Component
 
     public function setCommPaid($id)
     {
-        $this->authorize('update', SalesComm::find($id));
+
         $res =  SalesComm::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -739,7 +738,7 @@ class SoldPolicyShow extends Component
 
     public function setCommCancelled($id)
     {
-        $this->authorize('update', SalesComm::find($id));
+
         $res =  SalesComm::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -751,7 +750,7 @@ class SoldPolicyShow extends Component
 
     public function refreshCommAmmount($id)
     {
-        $this->authorize('update', SalesComm::find($id));
+
         $res =  SalesComm::find($id)->refreshPaymentInfo();
         if ($res) {
             $this->mount($this->soldPolicy->id);

@@ -166,7 +166,7 @@ class OfferShow extends Component
 
     public function addCommProfile($id)
     {
-        $this->authorize('create', \App\Models\Payments\CommProfile::class);
+
         $res = $this->offer->addCommProfile($id);
         if ($res) {
             $this->addCommSec = false;
