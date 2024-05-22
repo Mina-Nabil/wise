@@ -247,6 +247,7 @@ class ClientPayment extends Model
         $query->when($searchText, function ($q, $s) {
             $q->where('sold_policies.policy_number', "LIKE", "%$s%");
         });
+        $query->orderByDesc('client_payments.due');
         return $query;
     }
 
