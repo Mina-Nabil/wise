@@ -161,7 +161,7 @@ class ClientPayment extends Model
         $user = Auth::user();
         if (!$user->can('pay', $this)) return false;
 
-        if (!$this->is_new) return false;
+        if (!$this->is_collected) return false;
         try {
             $date = $date ?? new Carbon();
             AppLog::info("Setting Client Payment as paid", loggable: $this);
