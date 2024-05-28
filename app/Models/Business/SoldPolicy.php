@@ -842,12 +842,16 @@ class SoldPolicy extends Model
             $i++;
         }
 
-        $writer = new Xlsx($newFile);
-        $file_path = self::FILES_DIRECTORY . "policies_export.xlsx";
-        $public_file_path = storage_path($file_path);
-        $writer->save($public_file_path);
+    $filePath = storage_path('sold_policies/policies_export.xlsx');
+    $directory = dirname($filePath);
+    if (!is_dir($directory)) {
+        mkdir($directory, 0755, true);
+    }
 
-        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    $writer = new Xlsx($newFile);
+    $writer->save($filePath);
+
+    return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
 
