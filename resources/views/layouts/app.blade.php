@@ -224,7 +224,7 @@
                             </span>
                         </a>
                     </li>
-                    @if (Auth::user()->is_admin || Auth::user()->id == 12)
+                    @if (Auth::user()->is_admin)
                         <li class="">
                             <a href="javascript:void(0)" class="navItem">
                                 <span class="flex items-center">
