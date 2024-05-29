@@ -9,6 +9,7 @@ use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use App\Models\Insurance\Policy;
 use App\Models\Users\User;
+use Illuminate\Support\Facades\Auth;
 
 
 class OfferReport extends Component
@@ -194,6 +195,7 @@ class OfferReport extends Component
 
     public function exportReport()
     {
+        if(Auth::user()->is_admin){
         return Offer::exportReport(
             $this->from,
             $this->to,
@@ -206,6 +208,7 @@ class OfferReport extends Component
             $this->value_to,
             $this->search
         );
+    }
     }
 
     public function render()

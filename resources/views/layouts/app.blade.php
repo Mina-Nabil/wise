@@ -224,7 +224,7 @@
                             </span>
                         </a>
                     </li>
-                    @if (Auth::user()->is_admin)
+                    
                         <li class="">
                             <a href="javascript:void(0)" class="navItem">
                                 <span class="flex items-center">
@@ -245,7 +245,6 @@
 
                             </ul>
                         </li>
-                    @endif
                     @if (Auth::user()->is_admin)
                         <li class="sidebar-menu-title">Settings</li>
                         <li>
