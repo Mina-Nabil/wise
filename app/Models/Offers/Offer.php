@@ -941,7 +941,7 @@ class Offer extends Model
             })->when($value_to, function ($q, $v) {
                 $q->where('item_value', "<=", $v);
             })->when($line_of_business, function ($q, $v) {
-                $q->where('type', "<=", $v);
+                $q->where('offers.type', "=", $v);
             })->when($searchText, function ($q, $v) {
                 $q->leftJoin('customers', function ($j) {
                     $j->on('customers.id', '=', 'offers.client_id')
