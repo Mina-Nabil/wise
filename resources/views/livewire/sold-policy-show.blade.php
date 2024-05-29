@@ -1165,11 +1165,11 @@
                                                     @can('update', $payment)
                                                         <td class="table-td">
                                                             <div class="dropstart relative">
-                                                                <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                                     <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                 </button>
                                                                 <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                                    @if ($payment->is_new)
+                                                                    @if ($payment->is_new || is_Null($payment->status))
                                                                         <li>
                                                                             <a wire:click="openEditPaymentSec({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                                 <iconify-icon icon="material-symbols:paid"></iconify-icon>
@@ -1180,6 +1180,19 @@
                                                                                 <iconify-icon icon="material-symbols:check"></iconify-icon>
                                                                                 <span>Set as collected</span></a>
                                                                         </li>
+                                                                        {{-- @can('pay', $payment)
+                                                                        <li>
+                                                                            <a wire:click="openSetPaymentPaidSec({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="material-symbols:paid"></iconify-icon>
+                                                                                <span>Set as paid</span></a>
+                                                                        </li>
+                                                                        @endcan --}}
+                                                                        <li>
+                                                                            <a wire:click="setPaymentCancelled({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon icon="line-md:cancel"></iconify-icon>
+                                                                                <span>Set as Cancelled</span></a>
+                                                                        </li>
+                                                                        @elseif($payment->is_collected)
                                                                         @can('pay', $payment)
                                                                         <li>
                                                                             <a wire:click="openSetPaymentPaidSec({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
@@ -1187,17 +1200,6 @@
                                                                                 <span>Set as paid</span></a>
                                                                         </li>
                                                                         @endcan
-                                                                        <li>
-                                                                            <a wire:click="setPaymentCancelled({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon icon="line-md:cancel"></iconify-icon>
-                                                                                <span>Set as Cancelled</span></a>
-                                                                        </li>
-                                                                        @elseif($payment->is_collected)
-                                                                        <li>
-                                                                            <a wire:click="openSetPaymentPaidSec({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon icon="material-symbols:paid"></iconify-icon>
-                                                                                <span>Set as paid</span></a>
-                                                                        </li>
                                                                     @endif
 
                                                                     @if ($payment->doc_url)

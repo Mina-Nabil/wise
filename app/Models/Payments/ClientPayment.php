@@ -135,24 +135,26 @@ class ClientPayment extends Model
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
+       
+        if ($this->is_new || is_null($this->status)){
+            try {
 
-        if (!$this->is_new) return false;
-        try {
-
-            AppLog::info("Setting Client Payment as prem collected", loggable: $this);
-            if($doc_url){
-                $updates['doc_url'] = $doc_url;
+                AppLog::info("Setting Client Payment as prem collected", loggable: $this);
+                if($doc_url){
+                    $updates['doc_url'] = $doc_url;
+                }
+    
+                if($note){
+                    $updates['note'] = $note;
+                }
+                $updates['status'] = self::PYMT_STATE_PREM_COLLECTED;
+                return $this->update($updates);
+            } catch (Exception $e) {
+                report($e);
+                AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
             }
-
-            if($note){
-                $updates['note'] = $note;
-            }
-            $updates['status'] = self::PYMT_STATE_PREM_COLLECTED;
-            return $this->update($updates);
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
+        
     }
 
     public function setAsPaid($payment_type = null, Carbon $date = null)
@@ -192,7 +194,7 @@ class ClientPayment extends Model
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
 
-        if (!$this->is_new) return false;
+        if ($this->is_new || is_null($this->status)){
         try {
             $date = $date ?? new Carbon();
             AppLog::info("Setting Client Payment as cancelled", loggable: $this);
@@ -205,6 +207,7 @@ class ClientPayment extends Model
             report($e);
             AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
+    }
     }
 
     public function delete()
