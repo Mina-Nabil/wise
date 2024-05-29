@@ -925,9 +925,9 @@ class Offer extends Model
         $query->userData($searchText);
         $query->select('offers.*')
             ->when($from, function ($q, $v) {
-                $q->where('offers.created_at', ">=", $v->format('Y-m-d 00:00:00'));
+                $q->where('offers.due', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($to, function ($q, $v) {
-                $q->where('offers.created_at', "<=", $v->format('Y-m-d 23:59:59'));
+                $q->where('offers.due', "<=", $v->format('Y-m-d 23:59:59'));
             })->when(count($statuses) > 0, function ($q, $v) use ($statuses) {
                 $q->byStates($statuses);
             })->when($creator_id, function ($q, $v) {
