@@ -349,9 +349,9 @@
                     <h4 class="card-title">
                         Sales Commission
                     </h4>
-                    @can('create', \App\Models\Payments\SalesComm::class)
+                    {{-- @can('create', \App\Models\Payments\SalesComm::class)
                         <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
-                    @endcan
+                    @endcan --}}
                     <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
                 </header>
                 <div class="card-body px-6 pb-6">

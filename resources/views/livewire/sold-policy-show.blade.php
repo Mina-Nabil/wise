@@ -2870,13 +2870,13 @@
                             </div>
 
                             <div class="from-group">
-                                <label for="lastName" class="form-label">Sales Person</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="commUser">
+                                <label for="lastName" class="form-label">Commission Profile</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="commProfile">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                        Select user</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ $user->first_name . ' ' . $user->last_name }}
+                                        Select Profile</option>
+                                    @foreach ($CommProfiles as $CommProfile)
+                                        <option value="{{ $CommProfile->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $CommProfile->title }} -  {{ ucwords(str_replace('_', ' ', $CommProfile->type)) }}
                                         </option>
                                     @endforeach
                                 </select>
