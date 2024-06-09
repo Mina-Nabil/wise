@@ -794,9 +794,9 @@ class Offer extends Model
                 $this->save();
                 $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
                 $this->addComment("Offer option accepted", false);
-                if (!$this->with_operations) {
-                    $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
-                }
+                // if (!$this->with_operations) { // assigned to operations even if it was accepted by on of the operations
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+                // }
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
             }
             return true;
