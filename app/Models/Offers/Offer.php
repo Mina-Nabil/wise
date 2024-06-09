@@ -891,7 +891,9 @@ class Offer extends Model
         // important
         if ($loggedInUser->type == User::TYPE_OPERATIONS) {
             $query->orWhere(function ($q) {
-                $q->where('offers.assignee_type', 'Sales.Renewal');
+                $q->whereHas('assignee', function ($query) {
+                    $query->where('username', 'Sales.Renewal');
+                });
             });
         }
 
