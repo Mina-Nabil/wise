@@ -888,10 +888,10 @@ class Offer extends Model
             });
         }
 
+        // important
         if ($loggedInUser->type == User::TYPE_OPERATIONS) {
             $query->orWhere(function ($q) {
-                $q->where('offers.is_renewal', true)
-                    ->where('offers.assignee_type', User::TYPE_SALES);
+                $q->where('offers.assignee_type', 'Sales.Renewal');
             });
         }
 
