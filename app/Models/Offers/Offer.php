@@ -799,6 +799,9 @@ class Offer extends Model
                 // }
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
             }
+            if($state == OfferOption::STATUS_RQST_QTTN){
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+            }
             return true;
         } catch (Exception $e) {
             report($e);
