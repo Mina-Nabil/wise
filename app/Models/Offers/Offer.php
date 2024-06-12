@@ -650,6 +650,9 @@ class Offer extends Model
 
                 $this->sendOfferNotifications("New Offer option", "A new option is attached on Offer#$this->id");
                 AppLog::info("Offer option added", loggable: $this);
+
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+
                 return $tmpOption;
             } else {
                 AppLog::error("Can't add offer option", desc: "No stack found", loggable: $this);
@@ -799,7 +802,7 @@ class Offer extends Model
                 // }
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
             }
-            if($state == OfferOption::STATUS_RQST_QTTN){
+            if ($state == OfferOption::STATUS_RQST_QTTN) {
                 $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
             }
             return true;
