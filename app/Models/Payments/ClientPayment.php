@@ -135,16 +135,16 @@ class ClientPayment extends Model
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
-       
-        if ($this->is_new || is_null($this->status)){
+
+        if ($this->is_new || is_null($this->status)) {
             try {
 
                 AppLog::info("Setting Client Payment as prem collected", loggable: $this);
-                if($doc_url){
+                if ($doc_url) {
                     $updates['doc_url'] = $doc_url;
                 }
-    
-                if($note){
+
+                if ($note) {
                     $updates['note'] = $note;
                 }
                 $updates['status'] = self::PYMT_STATE_PREM_COLLECTED;
@@ -154,7 +154,6 @@ class ClientPayment extends Model
                 AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
             }
         }
-        
     }
 
     public function setAsPaid($payment_type = null, Carbon $date = null)
@@ -194,20 +193,20 @@ class ClientPayment extends Model
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
 
-        if ($this->is_new || is_null($this->status)){
-        try {
-            $date = $date ?? new Carbon();
-            AppLog::info("Setting Client Payment as cancelled", loggable: $this);
-            return $this->update([
-                "closed_by_id"   =>  Auth::id(),
-                "payment_date"  => $date->format('Y-m-d H:i'),
-                "status"  =>  self::PYMT_STATE_CANCELLED,
-            ]);
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+        if ($this->is_new || is_null($this->status)) {
+            try {
+                $date = $date ?? new Carbon();
+                AppLog::info("Setting Client Payment as cancelled", loggable: $this);
+                return $this->update([
+                    "closed_by_id"   =>  Auth::id(),
+                    "payment_date"  => $date->format('Y-m-d H:i'),
+                    "status"  =>  self::PYMT_STATE_CANCELLED,
+                ]);
+            } catch (Exception $e) {
+                report($e);
+                AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+            }
         }
-    }
     }
 
     public function delete()
@@ -246,7 +245,19 @@ class ClientPayment extends Model
         );
 
         if ($assigned_only) $query->where('client_payments.assigned_to', $user->id);
-        if (count($states)) $query->whereIn('status', $states);
+
+        // When Filter is NEW show NEW & NULL payments
+        if (count($states)) {
+            if (in_array(self::PYMT_STATE_NEW, $states)) {
+                $query->where(function ($q) use ($states) {
+                    $q->whereIn('status', $states)
+                        ->orWhereNull('status');
+                });
+            } else {
+                $query->whereIn('status', $states);
+            }
+        }
+
         $query->when($searchText, function ($q, $s) {
             $q->where('sold_policies.policy_number', "LIKE", "%$s%");
         });

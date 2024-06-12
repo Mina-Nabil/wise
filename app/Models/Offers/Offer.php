@@ -651,6 +651,7 @@ class Offer extends Model
                 $this->sendOfferNotifications("New Offer option", "A new option is attached on Offer#$this->id");
                 AppLog::info("Offer option added", loggable: $this);
 
+                //assign offer to operations team when create a new option 
                 $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
 
                 return $tmpOption;
