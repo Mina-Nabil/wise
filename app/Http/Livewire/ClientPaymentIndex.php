@@ -26,6 +26,12 @@ class ClientPaymentIndex extends Component
         return redirect(route('sold.policy.show', ['id' => $id]));
     }
 
+    //reseting page while searching
+    public function updatingSearchText()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $statuses = ClientPayment::PYMT_STATES;
