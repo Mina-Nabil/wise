@@ -190,13 +190,19 @@ class SoldPolicyIndex extends Component
         }
     }
 
+    //reseting page while searching
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $soldPolicies = SoldPolicy::userData(searchText: $this->search)
-        ->when($this->isPaidCB, function($q, $v){
-            if ($v === 'isPaid') return $q->byPaid(1);
-            elseif ($v === 'notPaid') return $q->byPaid(0);
-        })->paginate(20);
+            ->when($this->isPaidCB, function ($q, $v) {
+                if ($v === 'isPaid') return $q->byPaid(1);
+                elseif ($v === 'notPaid') return $q->byPaid(0);
+            })->paginate(20);
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
 
         return view(
