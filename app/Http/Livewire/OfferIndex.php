@@ -127,11 +127,11 @@ class OfferIndex extends Component
     public function updatedSearchClient()
     {
         if ($this->clientType == 'Customer' && !$this->searchClient == '') {
-            $this->clientNames = Customer::userData(searchText: $this->searchClient)
+            $this->clientNames = Customer::userData($this->searchClient, false)
                 ->get()
                 ->take(5);
         } elseif ($this->clientType == 'Corporate' && !$this->searchClient == '') {
-            $this->clientNames = Corporate::where('name', 'like', '%' . $this->searchClient . '%')
+            $this->clientNames = Corporate::userData($this->searchClient, false)
                 ->get()
                 ->take(5);
         }

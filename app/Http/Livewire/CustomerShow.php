@@ -258,7 +258,7 @@ class CustomerShow extends Component
 
     public function updatedSearchCustomer()
     {
-        $this->customerResult = Customer::userData($this->searchCustomer)->get()->take(5);
+        $this->customerResult = Customer::userData($this->searchCustomer, false)->get()->take(5);
     }
 
     public function toggleAddCustomerRelative()
