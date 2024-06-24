@@ -11,13 +11,12 @@ use App\Models\Offers\OfferOption;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 use App\Traits\AlertFrontEnd;
-use App\Traits\ToggleSectionLivewire;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 
 class SoldPolicyIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, WithFileUploads, ToggleSectionLivewire;
+    use WithPagination, AlertFrontEnd, WithFileUploads;
 
     public $search;
 
@@ -61,6 +60,7 @@ class SoldPolicyIndex extends Component
 
     public function openNewPolicySection()
     {
+        Log::info("GEET HNAAAAA");
         $this->newPolicySection = true;
     }
 
