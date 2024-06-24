@@ -656,7 +656,7 @@ class Customer extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, $searchText = null)
+    public function scopeUserData($query, $searchText = null, $mustMatchSearch = true)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -671,15 +671,15 @@ class Customer extends Model
             });
         }
 
-        $query->when($searchText, function ($q, $v) use ($loggedInUser) {
+        $query->when($searchText, function ($q, $v) use ($loggedInUser, $mustMatchSearch) {
             $q->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')
                 ->groupBy('customers.id');
 
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp, $loggedInUser) {
-                    if ($loggedInUser->is_operations) {
+                $q->where(function ($qq) use ($tmp, $loggedInUser, $mustMatchSearch) {
+                    if ($loggedInUser->is_operations && $mustMatchSearch) {
                         $qq->where('customers.email', '=', "$tmp")
                             ->orwhere('customers.first_name', '=', "$tmp")
                             ->orwhere('customers.last_name', '=', "$tmp")
