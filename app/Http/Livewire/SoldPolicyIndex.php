@@ -60,9 +60,7 @@ class SoldPolicyIndex extends Component
 
     public function openNewPolicySection()
     {
-        Log::info("GEET HNAAAAA");
         $this->newPolicySection = true;
-        Log::info($this->newPolicySection);
     }
 
     public function closeNewPolicySection()
@@ -206,7 +204,7 @@ class SoldPolicyIndex extends Component
                 elseif ($v === 'notPaid') return $q->byPaid(0);
             })->paginate(20);
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
-        Log::info($this->newPolicySection);
+
         return view(
             'livewire.sold-policy-index',
             [
