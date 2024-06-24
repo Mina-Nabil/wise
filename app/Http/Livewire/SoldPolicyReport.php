@@ -290,26 +290,26 @@ class SoldPolicyReport extends Component
 
     public function exportReport()
     {
-        if(Auth::user()->is_admin){
-        return SoldPolicy::exportReport(
-            $this->start_from,
-            $this->start_to,
-            $this->expiry_from,
-            $this->expiry_to,
-            $this->creator_id,
-            $this->line_of_business,
-            $this->value_from,
-            $this->value_to,
-            $this->net_premuim_to,
-            $this->net_premuim_from,
-            $this->brand_ids,
-            $this->company_ids,
-            $this->policy_ids,
-            $this->is_valid,
-            $this->is_paid,
-            $this->search
-        );
-    }
+        if (Auth::user()->is_admin) {
+            return SoldPolicy::exportReport(
+                $this->start_from,
+                $this->start_to,
+                $this->expiry_from,
+                $this->expiry_to,
+                $this->creator_id,
+                $this->line_of_business,
+                $this->value_from,
+                $this->value_to,
+                $this->net_premuim_to,
+                $this->net_premuim_from,
+                $this->brand_ids,
+                $this->company_ids,
+                $this->policy_ids,
+                $this->is_valid,
+                $this->is_paid,
+                $this->search
+            );
+        }
     }
 
     public function setStartDates()
@@ -331,6 +331,13 @@ class SoldPolicyReport extends Component
         $this->companies = Company::all()->take(5);
         $this->InsurancePolicies = Policy::all()->take(5);
     }
+
+    //reseting page while searching
+    public function updatingSearchText()
+    {
+        $this->resetPage();
+    }
+
 
     public function render()
     {

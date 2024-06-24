@@ -195,21 +195,28 @@ class OfferReport extends Component
 
     public function exportReport()
     {
-        if(Auth::user()->is_admin){
-        return Offer::exportReport(
-            $this->from,
-            $this->to,
-            $this->statuses,
-            $this->creator_id,
-            $this->assignee_id,
-            $this->closed_by_id,
-            $this->line_of_business,
-            $this->value_from,
-            $this->value_to,
-            $this->search
-        );
+        if (Auth::user()->is_admin) {
+            return Offer::exportReport(
+                $this->from,
+                $this->to,
+                $this->statuses,
+                $this->creator_id,
+                $this->assignee_id,
+                $this->closed_by_id,
+                $this->line_of_business,
+                $this->value_from,
+                $this->value_to,
+                $this->search
+            );
+        }
     }
+
+    //reseting page while searching
+    public function updatingSearchText()
+    {
+        $this->resetPage();
     }
+
 
     public function render()
     {

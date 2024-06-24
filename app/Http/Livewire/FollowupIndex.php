@@ -29,33 +29,34 @@ class FollowupIndex extends Component
     public $callerNoteId;
     public $note;
 
-    public function toggleCallerNote($type = null ,$id = null){
+    public function toggleCallerNote($type = null, $id = null)
+    {
 
         $this->callerNotetype = $type;
         $this->callerNoteId = $id;
         $this->toggle($this->callerNoteSec);
-
     }
 
-    public function submitCallerNote(){
-        
+    public function submitCallerNote()
+    {
+
         if ($this->callerNotetype === 'called') {
-            $this->setFollowupAsCalled($this->callerNoteId,$this->note);
-        }elseif($this->callerNotetype =='cancelled'){
-            $this->setFollowupAsCancelled($this->callerNoteId,$this->note);
+            $this->setFollowupAsCalled($this->callerNoteId, $this->note);
+        } elseif ($this->callerNotetype == 'cancelled') {
+            $this->setFollowupAsCancelled($this->callerNoteId, $this->note);
         }
     }
 
     public function redirectToShowPage($id)
     {
         $followup = Followup::findOrFail($id);
-        return redirect(route($followup->called_type.'s.show',  $followup->called_id));
+        return redirect(route($followup->called_type . 's.show',  $followup->called_id));
     }
 
     public function redirectToCalledPage($id)
     {
         $followup = Followup::findOrFail($id);
-        return redirect(route($followup->called_type.'s.show',  $followup->called_id));
+        return redirect(route($followup->called_type . 's.show',  $followup->called_id));
     }
 
     public function setFollowupAsCalled($id)
@@ -89,7 +90,8 @@ class FollowupIndex extends Component
         $this->followupDesc = null;
     }
 
-    public function editThisFollowup($id){
+    public function editThisFollowup($id)
+    {
         $this->followupId = $id;
         $f = Followup::find($id);
         $this->followupTitle = $f->title;
@@ -127,10 +129,17 @@ class FollowupIndex extends Component
         }
     }
 
+    //reseting page while searching
+    public function updatingSearchText()
+    {
+        $this->resetPage();
+    }
+
+
     public function render()
     {
         $followups = Followup::userData($this->search)->paginate(10);
-        return view('livewire.followup-index',[
+        return view('livewire.followup-index', [
             'followups' => $followups,
         ]);
     }
