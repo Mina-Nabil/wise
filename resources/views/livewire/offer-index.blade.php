@@ -136,7 +136,7 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                                {{ $offers->current_page }}
+                                {{ $offers->current_page ?? "" }}
                                 @foreach ($offers as $offer)
                                     <tr wire:click="redirectToShowPage({{ $offer->id }})"
                                         class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
