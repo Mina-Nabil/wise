@@ -2,7 +2,7 @@
     <div class="flex justify-between flex-wrap items-center">
         <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
             <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-                Offers
+                Offers Page: {{ $offers->current_page ?? 'N/A' }}
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
@@ -86,7 +86,6 @@
 
 
     <div class="card mt-5 pt-5">
-        {{ $offers->current_page ?? "N/A" }}
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4"
@@ -137,7 +136,7 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                  
+
                                 @foreach ($offers as $offer)
                                     <tr wire:click="redirectToShowPage({{ $offer->id }})"
                                         class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
