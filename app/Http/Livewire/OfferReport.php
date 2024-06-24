@@ -212,7 +212,7 @@ class OfferReport extends Component
     }
 
     //reseting page while searching
-    public function updatingSearchText()
+    public function updatingSearch()
     {
         $this->resetPage();
     }
