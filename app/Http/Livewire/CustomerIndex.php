@@ -83,8 +83,10 @@ class CustomerIndex extends Component
 
     public function addLead()
     {
-        if($this->followupCallDateTime === ''){$this->followupCallDateTime = null ;}
-        
+        if ($this->followupCallDateTime === '') {
+            $this->followupCallDateTime = null;
+        }
+
         $this->validate([
             'leadFirstName' => 'required|string|max:255',
             'leadMiddleName' => 'nullable|string|max:255',
@@ -99,12 +101,12 @@ class CustomerIndex extends Component
         ]);
 
         $customer = new Customer();
-        $res = $customer->newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note:$this->LeadNote);
+        $res = $customer->newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note: $this->LeadNote);
 
-        
+
         if ($this->followupCallDateTime) {
-            $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->LeadNote);
-        }else{
+            $fres = $res->addFollowup('Initial Contact', new \DateTime($this->followupCallDateTime), $this->LeadNote);
+        } else {
             $fres = true;
         }
 
@@ -118,7 +120,9 @@ class CustomerIndex extends Component
 
     public function addCustomer()
     {
-        if($this->followupCallDateTime === ''){$this->followupCallDateTime = null ;}
+        if ($this->followupCallDateTime === '') {
+            $this->followupCallDateTime = null;
+        }
 
         $this->validate([
             'firstName' => 'required|string|max:255',
@@ -144,15 +148,15 @@ class CustomerIndex extends Component
         ]);
 
         $customer = new Customer();
-        $res = $customer->newCustomer($this->ownerId, $this->firstName, $this->lastName, $this->gender, $this->email, $this->middleName, $this->ArabicFirstName, $this->ArabicMiddleName, $this->ArabicLastName, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource ,note: $this->note);
-        
+        $res = $customer->newCustomer($this->ownerId, $this->firstName, $this->lastName, $this->gender, $this->email, $this->middleName, $this->ArabicFirstName, $this->ArabicMiddleName, $this->ArabicLastName, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource, note: $this->note);
+
         if ($this->followupCallDateTime) {
-            $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->note);
-        }else{
+            $fres = $res->addFollowup('Initial Contact', new \DateTime($this->followupCallDateTime), $this->note);
+        } else {
             $fres = true;
         }
-        
-        
+
+
         if ($res && $fres) {
             redirect()->route('customers.show', $res->id);
         } else {
@@ -174,6 +178,13 @@ class CustomerIndex extends Component
     {
         return redirect(route('customers.show', $id));
     }
+
+    //reseting page while searching
+    public function updatingSearchText()
+    {
+        $this->resetPage();
+    }
+
 
     public function render()
     {
