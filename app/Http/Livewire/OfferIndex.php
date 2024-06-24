@@ -248,6 +248,7 @@ class OfferIndex extends Component
 
     public function filterByStatus($status)
     {
+        $this->resetPage();
         $this->filteredStatus = [$status];
     }
 

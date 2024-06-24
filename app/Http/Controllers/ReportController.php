@@ -10,20 +10,14 @@ class ReportController extends Controller
 {
     public function soldPolicyIndex()
     {
-        if (Auth::user()->is_admin || Auth::user()->id == 12) {
             return view('reports.sold-policy-index');
-        }else{
-            return (redirect('/'));
-        }
     }
 
     public function offersIndex()
     {
-        if (Auth::user()->is_admin || Auth::user()->id == 12) {
+        // if (Auth::user()->is_admin) {
             return view('reports.reports-index');
-        }else{
-            return (redirect('/'));
-        }
+        
         
     }
 }

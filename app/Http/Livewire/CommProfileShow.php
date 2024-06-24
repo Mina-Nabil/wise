@@ -100,30 +100,30 @@ class CommProfileShow extends Component
         $this->mount($this->profile->id);
     }
 
-    public function addComm()
-    {
-        $this->validate([
-            'commTitle'  => 'required|string|max:255',
-            'commPer'    => 'required|numeric',
-            'commUser'   => 'nullable|integer|exists:users,id',
-            'commNote'   => 'nullable|string',
-            'commFrom'   => 'required|in:' . implode(',', CommProfileConf::FROMS),
-        ]);
+    // public function addComm()
+    // {
+    //     $this->validate([
+    //         'commTitle'  => 'required|string|max:255',
+    //         'commPer'    => 'required|numeric',
+    //         'commUser'   => 'nullable|integer|exists:users,id',
+    //         'commNote'   => 'nullable|string',
+    //         'commFrom'   => 'required|in:' . implode(',', CommProfileConf::FROMS),
+    //     ]);
 
-        $res = $this->profile->addSalesCommission($this->commTitle, $this->commFrom, $this->commPer, $this->commUser, $this->newcommNote);
-        if ($res) {
-            $this->toggleAddComm();
-            $this->commTitle = null;
-            $this->commPer = null;
-            $this->commUser = null;
-            $this->newcommNote = null;
-            $this->commFrom = null;
-            $this->mount($this->profile->id);
-            $this->alert('success', 'Commission added!');
-        } else {
-            $this->alert('failed', 'Server error');
-        }
-    }
+    //     $res = $this->profile->addSalesCommission($this->commTitle, $this->commFrom, $this->commPer, $this->commUser, $this->newcommNote);
+    //     if ($res) {
+    //         $this->toggleAddComm();
+    //         $this->commTitle = null;
+    //         $this->commPer = null;
+    //         $this->commUser = null;
+    //         $this->newcommNote = null;
+    //         $this->commFrom = null;
+    //         $this->mount($this->profile->id);
+    //         $this->alert('success', 'Commission added!');
+    //     } else {
+    //         $this->alert('failed', 'Server error');
+    //     }
+    // }
 
     public function hideCommComment()
     {

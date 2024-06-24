@@ -11,6 +11,7 @@ use App\Models\Insurance\Company;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class SoldPolicyReport extends Component
 {
@@ -289,6 +290,7 @@ class SoldPolicyReport extends Component
 
     public function exportReport()
     {
+        if(Auth::user()->is_admin){
         return SoldPolicy::exportReport(
             $this->start_from,
             $this->start_to,
@@ -307,6 +309,7 @@ class SoldPolicyReport extends Component
             $this->is_paid,
             $this->search
         );
+    }
     }
 
     public function setStartDates()

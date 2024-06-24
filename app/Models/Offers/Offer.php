@@ -650,6 +650,10 @@ class Offer extends Model
 
                 $this->sendOfferNotifications("New Offer option", "A new option is attached on Offer#$this->id");
                 AppLog::info("Offer option added", loggable: $this);
+
+                //assign offer to operations team when create a new option 
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+
                 return $tmpOption;
             } else {
                 AppLog::error("Can't add offer option", desc: "No stack found", loggable: $this);
@@ -794,10 +798,13 @@ class Offer extends Model
                 $this->save();
                 $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
                 $this->addComment("Offer option accepted", false);
-                if (!$this->with_operations) {
-                    $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
-                }
+                // if (!$this->with_operations) { // assigned to operations even if it was accepted by on of the operations
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+                // }
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
+            }
+            if ($state == OfferOption::STATUS_RQST_QTTN) {
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
             }
             return true;
         } catch (Exception $e) {
@@ -888,6 +895,15 @@ class Offer extends Model
             });
         }
 
+        // important
+        if ($loggedInUser->type == User::TYPE_OPERATIONS) {
+            $query->orWhere(function ($q) {
+                $q->whereHas('assignee', function ($query) {
+                    $query->where('username', 'Sales.Renewal');
+                });
+            });
+        }
+
         $query->when($searchText, function ($q, $v) {
             $q->leftjoin('corporates', function ($j) {
                 $j->on('offers.client_id', '=', 'corporates.id')
@@ -927,9 +943,9 @@ class Offer extends Model
         $query->userData($searchText);
         $query->select('offers.*')
             ->when($from, function ($q, $v) {
-                $q->where('offers.created_at', ">=", $v->format('Y-m-d 00:00:00'));
+                $q->where('offers.due', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($to, function ($q, $v) {
-                $q->where('offers.created_at', "<=", $v->format('Y-m-d 23:59:59'));
+                $q->where('offers.due', "<=", $v->format('Y-m-d 23:59:59'));
             })->when(count($statuses) > 0, function ($q, $v) use ($statuses) {
                 $q->byStates($statuses);
             })->when($creator_id, function ($q, $v) {
@@ -943,7 +959,7 @@ class Offer extends Model
             })->when($value_to, function ($q, $v) {
                 $q->where('item_value', "<=", $v);
             })->when($line_of_business, function ($q, $v) {
-                $q->where('type', "<=", $v);
+                $q->where('offers.type', "=", $v);
             })->when($searchText, function ($q, $v) {
                 $q->leftJoin('customers', function ($j) {
                     $j->on('customers.id', '=', 'offers.client_id')
