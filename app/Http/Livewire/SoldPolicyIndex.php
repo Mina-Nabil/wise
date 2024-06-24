@@ -55,7 +55,7 @@ class SoldPolicyIndex extends Component
     public $inFavorTo = null;
     public $policyDoc = null;
 
-    public $newPolicySection = false;
+    public $newPolicySection;
     public $isPaidCB = 'all';
 
     public function openNewPolicySection()
