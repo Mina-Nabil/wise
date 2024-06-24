@@ -932,8 +932,6 @@ class Offer extends Model
                 });
             }
         });
-        Log::info($query->toSql());
-        Log::info($query->getBindings());
         return $query->groupBy('offers.id')->orderBy('due');
     }
 

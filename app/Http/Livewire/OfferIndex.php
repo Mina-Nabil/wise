@@ -252,6 +252,12 @@ class OfferIndex extends Component
         $this->filteredStatus = [$status];
     }
 
+    //reseting page while searching
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
@@ -271,7 +277,7 @@ class OfferIndex extends Component
             })->when($this->filteredStatus == null, function ($query) {
                 return $query->byStates(['active']);
             })->paginate(10);
-        Log::info($offers);
+    
         return view('livewire.offer-index', [
             'offers' => $offers,
             'clientNames' => $this->clientNames,
