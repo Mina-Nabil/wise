@@ -957,14 +957,6 @@ class Offer extends Model
                 $q->where('item_value', "<=", $v);
             })->when($line_of_business, function ($q, $v) {
                 $q->where('offers.type', "=", $v);
-            })->when($searchText, function ($q, $v) {
-                $q->leftJoin('customers', function ($j) {
-                    $j->on('customers.id', '=', 'offers.client_id')
-                        ->where('offers.client_type', '=', Customer::MORPH_TYPE);
-                })->leftJoin('corporates', function ($j) {
-                    $j->on('corporates.id', '=', 'offers.client_id')
-                        ->where('offers.client_type', '=', Corporate::MORPH_TYPE);
-                })->where('type', "LIKE", "%$v%");
             });
         $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
         return $query;
