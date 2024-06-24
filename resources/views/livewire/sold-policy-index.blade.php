@@ -164,9 +164,9 @@
                                                                                     class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Validated</span>
                                                                             @endif
                                                                             @if ($policy->is_paid)
-                                                                            <span
-                                                                                class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Paid</span>
-                                                                        @endif
+                                                                                <span
+                                                                                    class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Paid</span>
+                                                                            @endif
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <div class="dropstart relative">
@@ -258,7 +258,7 @@
         </div>
     </div>
 </div>
-@if ($newPolicySection)
+
     <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
         tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
         style="display: block;">
@@ -643,5 +643,5 @@
             </div>
         </div>
     </div>
-@endif
+
 </div>
