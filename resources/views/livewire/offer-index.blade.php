@@ -95,7 +95,7 @@
         <div class="card-body px-6 pb-6">
             <div class=" -mx-6">
                 <div class="inline-block min-w-full align-middle">
-                    {{ $offers->current_page ?? "" }}
+                    {{ $offers->current_page ?? "N/A" }}
                     <div class="overflow-hidden ">
                         <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                             <thead
