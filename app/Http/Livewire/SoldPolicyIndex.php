@@ -11,12 +11,13 @@ use App\Models\Offers\OfferOption;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 use App\Traits\AlertFrontEnd;
+use App\Traits\ToggleSectionLivewire;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 
 class SoldPolicyIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, WithFileUploads;
+    use WithPagination, AlertFrontEnd, WithFileUploads, ToggleSectionLivewire;
 
     public $search;
 
@@ -55,7 +56,7 @@ class SoldPolicyIndex extends Component
     public $inFavorTo = null;
     public $policyDoc = null;
 
-    public $newPolicySection;
+    public $newPolicySection = false;
     public $isPaidCB = 'all';
 
     public function openNewPolicySection()
