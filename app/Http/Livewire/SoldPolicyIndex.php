@@ -184,7 +184,7 @@ class SoldPolicyIndex extends Component
                 ->get()
                 ->take(5);
         } elseif ($this->clientType == 'Corporate' && !$this->searchClient == '') {
-            $this->clientNames = Corporate::where('name', 'like', '%' . $this->searchClient . '%')
+            $this->clientNames = Corporate::userData($this->searchClient)
                 ->get()
                 ->take(5);
         }
