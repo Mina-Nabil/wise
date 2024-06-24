@@ -896,7 +896,7 @@ class Offer extends Model
         }
 
         // important
-        if ($loggedInUser->type == User::TYPE_OPERATIONS) {
+        else if ($loggedInUser->is_operations) {
             $query->orWhere(function ($q) {
                 $q->whereHas('assignee', function ($query) {
                     $query->where('username', 'Sales.Renewal');
