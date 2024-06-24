@@ -75,7 +75,7 @@
 
         <div class="secondary-radio">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="notRenewal"  wire:model="isRenewalCB">
+                <input type="radio" class="hidden" value="notRenewal" wire:model="isRenewalCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                           duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -136,7 +136,7 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
+                                {{ $offers->current_page }}
                                 @foreach ($offers as $offer)
                                     <tr wire:click="redirectToShowPage({{ $offer->id }})"
                                         class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
