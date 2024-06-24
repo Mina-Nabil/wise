@@ -180,7 +180,7 @@ class SoldPolicyIndex extends Component
     public function updatedSearchClient()
     {
         if ($this->clientType == 'Customer' && !$this->searchClient == '') {
-            $this->clientNames = Customer::userData(searchText: $this->searchClient)
+            $this->clientNames = Customer::userData($this->searchClient)
                 ->get()
                 ->take(5);
         } elseif ($this->clientType == 'Corporate' && !$this->searchClient == '') {
