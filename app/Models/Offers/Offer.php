@@ -913,7 +913,7 @@ class Offer extends Model
                         ->where('offers.client_type', Customer::MORPH_TYPE);
                 })
                 ->leftjoin('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id')
-                ->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')->groupBy('offers.id');
+                ->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id');
 
             $splittedText = explode(' ', $v);
 
