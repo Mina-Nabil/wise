@@ -877,10 +877,10 @@ class Offer extends Model
             )
             ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
 
-        if (!($loggedInUser->type == User::TYPE_ADMIN ||
-            (($loggedInUser->is_operations  || $loggedInUser->is_finance) && $searchText))) {
+        if (!($loggedInUser->is_admin ||
+            (($loggedInUser->is_operations || $loggedInUser->is_finance) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
-                $q->where('users.manager_id', $loggedInUser->id)
+                $q->orwhere('users.manager_id', $loggedInUser->id)
                     ->orwhere('offers.creator_id', $loggedInUser->id)
                     ->orwhere('offers.assignee_type', $loggedInUser->type)
                     ->orwhere('offers.assignee_id', $loggedInUser->id)
@@ -917,6 +917,8 @@ class Offer extends Model
                 });
             }
         });
+        Log::info($query->toSql());
+        Log::info($query->getBindings());
         return $query->groupBy('offers.id')->orderBy('due');
     }
 
