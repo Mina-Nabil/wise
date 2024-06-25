@@ -209,7 +209,7 @@ class ClientPayment extends Model
         }
     }
 
-    public function delete()
+    public function deletePayment()
     {
            /** @var User */
            $user = Auth::user();

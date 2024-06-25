@@ -536,7 +536,7 @@ class SoldPolicyShow extends Component
     public function deleteClientPayment($id)
     {
 
-        $res = ClientPayment::find($id)->delete();
+        $res = ClientPayment::find($id)?->deletePayment();
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'Payment deleted!');
