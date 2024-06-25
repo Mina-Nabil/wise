@@ -199,6 +199,7 @@ class SoldPolicyIndex extends Component
     public function render()
     {
         $soldPolicies = SoldPolicy::userData(searchText: $this->search)
+            ->with('offer')
             ->when($this->isPaidCB, function ($q, $v) {
                 if ($v === 'isPaid') return $q->byPaid(1);
                 elseif ($v === 'notPaid') return $q->byPaid(0);
