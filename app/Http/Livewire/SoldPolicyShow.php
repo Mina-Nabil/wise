@@ -1419,7 +1419,7 @@ class SoldPolicyShow extends Component
 
     public function mount($id)
     {
-        $this->soldPolicy = SoldPolicy::with('offer', 'offer.files')->find($id);
+        $this->soldPolicy = SoldPolicy::find($id);
         $this->offer = $this->soldPolicy->offer;
         $this->insured_value = $this->soldPolicy->insured_value;
         $this->net_rate = $this->soldPolicy->net_rate;
