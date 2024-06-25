@@ -608,7 +608,7 @@
                     {{-- End Files --}}
                 @endif
 
-                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5 mt-5">
                     <div class="card-body flex flex-col p-6 active justify-center">
                         <div>
                             <p>
