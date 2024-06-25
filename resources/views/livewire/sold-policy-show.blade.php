@@ -461,151 +461,153 @@
                     </div>
                 </div>
 
-                @if($offer)
-                {{-- Offer Files --}}
-                <div class="card mt-5">
-                    <div class="card-body flex flex-col p-6">
-                        <header
-                            class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
-                            <div class="flex-1">
-                                <div class="card-title text-slate-900 dark:text-white">
-                                    <h6>Offer Files <iconify-icon wire:loading wire:target="downloadOfferFile"
-                                            icon="svg-spinners:3-dots-move"></iconify-icon></h6>
+                @if ($offer)
+                    {{-- Offer Files --}}
+                    <div class="card mt-5">
+                        <div class="card-body flex flex-col p-6">
+                            <header
+                                class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                                <div class="flex-1">
+                                    <div class="card-title text-slate-900 dark:text-white">
+                                        <h6>Offer Files <iconify-icon wire:loading wire:target="downloadOfferFile"
+                                                icon="svg-spinners:3-dots-move"></iconify-icon></h6>
+                                    </div>
                                 </div>
-                            </div>
-                            {{-- <label for="myFile" class="custom-file-label cursor-pointer">
+                                {{-- <label for="myFile" class="custom-file-label cursor-pointer">
                                             <span class="btn inline-flex justify-center btn-sm btn-outline-dark float-right">
                                                 <span style="display: flex; align-items: center;"><iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFile" icon="line-md:loading-twotone-loop"></iconify-icon></span>
                                                 <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove wire:target="uploadedFile" icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
                                             </span>
             
                                         </label> --}}
-                            <input type="file" id="myFile" name="filename" style="display: none;"
-                                wire:model="uploadedFile"><br>
+                                <input type="file" id="myFile" name="filename" style="display: none;"
+                                    wire:model="uploadedFile"><br>
 
-                        </header>
-                        <div class="loader" wire:loading wire:target="downloadFile">
-                            <div class="loaderBar"></div>
-                        </div>
-                        @error('uploadedFile')
-                            <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">*
-                                {{ $message }}</span>
-                        @enderror
-                        <div class="card-body">
-                            <!-- BEGIN: Files Card -->
-                            <ul class="divide-y divide-slate-100 dark:divide-slate-700">
+                            </header>
+                            <div class="loader" wire:loading wire:target="downloadFile">
+                                <div class="loaderBar"></div>
+                            </div>
+                            @error('uploadedFile')
+                                <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">*
+                                    {{ $message }}</span>
+                            @enderror
+                            <div class="card-body">
+                                <!-- BEGIN: Files Card -->
+                                <ul class="divide-y divide-slate-100 dark:divide-slate-700">
 
-                                @if ($offer->files->isEmpty())
-                                    <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                        No files added to this offer.
-                                    </div>
-                                @endif
+                                    @if ($offer->files->isEmpty())
+                                        <div class="text-center text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                            No files added to this offer.
+                                        </div>
+                                    @endif
 
-                                @foreach ($offer->files as $file)
-                                    <li class="block py-[8px]">
+                                    @foreach ($offer->files as $file)
+                                        <li class="block py-[8px]">
 
-                                        <div class="flex space-x-2 rtl:space-x-reverse">
-                                            <div class="flex-1 flex space-x-2 rtl:space-x-reverse">
-                                                <div class="flex-none">
-                                                    <div class="h-8 w-8">
-                                                        @php
-                                                            $extension = pathinfo($file->name, PATHINFO_EXTENSION);
-                                                            $icon = '';
-                                                            $view = false;
+                                            <div class="flex space-x-2 rtl:space-x-reverse">
+                                                <div class="flex-1 flex space-x-2 rtl:space-x-reverse">
+                                                    <div class="flex-none">
+                                                        <div class="h-8 w-8">
+                                                            @php
+                                                                $extension = pathinfo($file->name, PATHINFO_EXTENSION);
+                                                                $icon = '';
+                                                                $view = false;
 
-                                                            switch ($extension) {
-                                                                case 'doc':
-                                                                case 'docx':
-                                                                case 'xls':
-                                                                case 'xlsx':
-                                                                    $icon = 'pdf-2';
+                                                                switch ($extension) {
+                                                                    case 'doc':
+                                                                    case 'docx':
+                                                                    case 'xls':
+                                                                    case 'xlsx':
+                                                                        $icon = 'pdf-2';
 
-                                                                    break;
+                                                                        break;
 
-                                                                case 'jpg':
-                                                                case 'jpeg':
-                                                                case 'png':
-                                                                    $icon = 'scr-1';
-                                                                    $view = true;
-                                                                    break;
+                                                                    case 'jpg':
+                                                                    case 'jpeg':
+                                                                    case 'png':
+                                                                        $icon = 'scr-1';
+                                                                        $view = true;
+                                                                        break;
 
-                                                                case 'bmp':
-                                                                case 'gif':
-                                                                case 'svg':
-                                                                case 'webp':
-                                                                    $icon = 'zip-1';
-                                                                    break;
+                                                                    case 'bmp':
+                                                                    case 'gif':
+                                                                    case 'svg':
+                                                                    case 'webp':
+                                                                        $icon = 'zip-1';
+                                                                        break;
 
-                                                                case 'pdf':
-                                                                    $icon = 'pdf-1';
-                                                                    $view = true;
-                                                                    break;
-                                                            }
-                                                        @endphp
+                                                                    case 'pdf':
+                                                                        $icon = 'pdf-1';
+                                                                        $view = true;
+                                                                        break;
+                                                                }
+                                                            @endphp
 
-                                                        <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}"
-                                                            alt=""
-                                                            class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
+                                                            <img src="{{ asset('assets/images/icon/' . $icon . '.svg') }}"
+                                                                alt=""
+                                                                class="block w-full h-full object-cover rounded-full border hover:border-white border-transparent">
+                                                        </div>
+
                                                     </div>
-
+                                                    <div class="flex-1">
+                                                        <span class="block text-slate-600 text-sm dark:text-slate-300"
+                                                            style="overflow-wrap: anywhere">
+                                                            {{ mb_strimwidth($file->name, 0, 30, '...') }}
+                                                        </span>
+                                                        <span class="block font-normal text-xs text-slate-500 mt-1">
+                                                            uploaded by
+                                                            {{ $file->user->first_name . ' ' . $file->user->last_name }}
+                                                            /
+                                                            <span class="cursor-pointer"
+                                                                onclick="confirm('Are you sure ?')"
+                                                                wire:click="removeOfferFile({{ $file->id }})">remove</span>
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div class="flex-1">
-                                                    <span class="block text-slate-600 text-sm dark:text-slate-300"
-                                                        style="overflow-wrap: anywhere">
-                                                        {{ mb_strimwidth($file->name, 0, 30, '...') }}
-                                                    </span>
-                                                    <span class="block font-normal text-xs text-slate-500 mt-1">
-                                                        uploaded by
-                                                        {{ $file->user->first_name . ' ' . $file->user->last_name }} /
-                                                        <span class="cursor-pointer"
-                                                            onclick="confirm('Are you sure ?')"
-                                                            wire:click="removeOfferFile({{ $file->id }})">remove</span>
-                                                    </span>
-                                                </div>
-                                            </div>
 
-                                            <div class="flex-none">
-                                                <span class="font-normal text-xs text-slate-500 mt-1"></span>
-                                                <button wire:click="downloadOfferFile({{ $file->id }})"
-                                                    class="action-btn float-right mr-1 text-xs" type="button">
-                                                    <iconify-icon icon="ic:baseline-download"></iconify-icon>
-                                                </button>
-                                                {{-- <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
+                                                <div class="flex-none">
+                                                    <span class="font-normal text-xs text-slate-500 mt-1"></span>
+                                                    <button wire:click="downloadOfferFile({{ $file->id }})"
+                                                        class="action-btn float-right mr-1 text-xs" type="button">
+                                                        <iconify-icon icon="ic:baseline-download"></iconify-icon>
+                                                    </button>
+                                                    {{-- <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
                                                                 Download
                                                             </button> --}}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </li>
-                                @endforeach
+                                        </li>
+                                    @endforeach
 
 
-                                <div class="border-dashed border dropzone-container cursor-pointer"
-                                    style="border-color: #aeaeae">
-                                    <p class="dropzone-para" wire:loading wire:target="uploadedFile"
-                                        style="font-size:20px"><iconify-icon
-                                            icon="svg-spinners:tadpole"></iconify-icon></p>
-                                    <p class="dropzone-para" wire:loading.remove wire:target="uploadedFile">Choose a
-                                        file or drop it here...</p>
-                                    <input name="file" id="fileInput" type="file"
-                                        class="dropzone dropzone-input" multiple wire:model="uploadedFile" />
-                                </div>
-                            </ul>
+                                    <div class="border-dashed border dropzone-container cursor-pointer"
+                                        style="border-color: #aeaeae">
+                                        <p class="dropzone-para" wire:loading wire:target="uploadedFile"
+                                            style="font-size:20px"><iconify-icon
+                                                icon="svg-spinners:tadpole"></iconify-icon></p>
+                                        <p class="dropzone-para" wire:loading.remove wire:target="uploadedFile">Choose
+                                            a
+                                            file or drop it here...</p>
+                                        <input name="file" id="fileInput" type="file"
+                                            class="dropzone dropzone-input" multiple wire:model="uploadedFile" />
+                                    </div>
+                                </ul>
 
 
-                            <!-- END: FIles Card -->
+                                <!-- END: FIles Card -->
+                            </div>
+                            <div class="loader" wire:loading wire:target="previewFile">
+                                <div class="loaderBar"></div>
+                            </div>
+                            @if ($preview)
+                                <iframe src='{{ $preview }}' height='400px' frameborder='0'></iframe>
+                            @endif
+                            {{-- <iframe src='https://wiseins.s3.eu-north-1.amazonaws.com/tasks/GGxyo5OihDGEJnn6dW51XyQ2x9544vNDGBqCMMVj.pdf' height='400px' frameborder='0'></iframe> --}}
                         </div>
-                        <div class="loader" wire:loading wire:target="previewFile">
-                            <div class="loaderBar"></div>
-                        </div>
-                        @if ($preview)
-                            <iframe src='{{ $preview }}' height='400px' frameborder='0'></iframe>
-                        @endif
-                        {{-- <iframe src='https://wiseins.s3.eu-north-1.amazonaws.com/tasks/GGxyo5OihDGEJnn6dW51XyQ2x9544vNDGBqCMMVj.pdf' height='400px' frameborder='0'></iframe> --}}
                     </div>
-                </div>
-                {{-- End Files --}}
+                    {{-- End Files --}}
                 @endif
-                
+
                 <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
                     <div class="card-body flex flex-col p-6 active justify-center">
                         <div>
@@ -3624,7 +3626,7 @@
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -3835,7 +3837,7 @@
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -3947,7 +3949,7 @@
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
