@@ -1321,6 +1321,11 @@ class SoldPolicy extends Model
         return $query->where('policy_number', $number);
     }
 
+    public function scopeByOfferID($query, $id)
+    {
+        return $query->where('offer_id', $id);
+    }
+
     ///relations
     public function client(): MorphTo
     {
