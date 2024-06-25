@@ -1268,7 +1268,7 @@ class SoldPolicy extends Model
             })->when($is_valid !== null, function ($q, $v) use ($is_valid) {
                 $q->where('is_valid', "=", $is_valid);
             })->when($is_renewal !== null, function ($q, $v) use ($is_renewal) {
-                $q->where('is_renewal', "=", $is_renewal);
+                $q->where('offers.is_renewal', "=", $is_renewal);
             })->when($is_paid !== null, function ($q, $v) use ($is_paid) {
                 $q->where('is_paid', "=", $is_paid);
             })->when($value_from, function ($q, $v) {
