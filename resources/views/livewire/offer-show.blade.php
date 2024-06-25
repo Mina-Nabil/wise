@@ -795,7 +795,7 @@
                             class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                             <div class="flex-1">
                                 <div class="card-title text-slate-900 dark:text-white">
-                                    <h6>files <iconify-icon wire:loading wire:target="downloadOfferFile"
+                                    <h6>Files <iconify-icon wire:loading wire:target="downloadOfferFile"
                                             icon="svg-spinners:3-dots-move"></iconify-icon></h6>
                                 </div>
                             </div>
