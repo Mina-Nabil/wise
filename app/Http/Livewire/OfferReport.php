@@ -255,7 +255,8 @@ class OfferReport extends Component
             'offers' => $offers,
             'STATUSES' => $STATUSES,
             'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
-            'users' => $users
+            'users' => $users,
+            'types' => User::TYPES
         ]);
     }
 }

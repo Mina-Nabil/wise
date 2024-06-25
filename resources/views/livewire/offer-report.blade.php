@@ -483,6 +483,13 @@
                                             {{ $user->first_name . ' ' . $user->last_name }}
                                         </option>
                                     @endforeach
+                                    <optgroup label="Types">
+                                        @foreach ($types as $type)
+                                        <option value="{{ $type }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $type }}
+                                        </option>
+                                    @endforeach  
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>

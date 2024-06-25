@@ -118,9 +118,9 @@ class Offer extends Model
         $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
-    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
+    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
     {
-        $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText)->get();
+        $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText)->get();
         $template = IOFactory::load(resource_path('import/offers_report.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
@@ -937,7 +937,7 @@ class Offer extends Model
         return $query->groupBy('offers.id')->orderBy('due');
     }
 
-    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
+    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
     {
         $query->userData($searchText);
         $query->select('offers.*')
@@ -949,8 +949,10 @@ class Offer extends Model
                 $q->byStates($statuses);
             })->when($creator_id, function ($q, $v) {
                 $q->where('creator_id', "=", $v);
-            })->when($assignee_id, function ($q, $v) {
-                $q->where('assignee_id', "=", $v);
+            })->when($assignee_id_or_type, function ($q, $v) {
+                $q->where(function($qq) use ($v){
+                    $qq->where('assignee_id', "=", $v)->orwhere('assignee_type', "=", $v);
+                });
             })->when($closed_by_id, function ($q, $v) {
                 $q->where('closed_by_id', "=", $v);
             })->when($value_from, function ($q, $v) {
