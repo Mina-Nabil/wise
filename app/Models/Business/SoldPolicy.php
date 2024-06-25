@@ -772,7 +772,7 @@ class SoldPolicy extends Model
     }
 
 
-    public function addFile($name, $url)
+    public function addFile($name, $url, $user_id = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -782,7 +782,7 @@ class SoldPolicy extends Model
         try {
             if ($this->files()->create([
                 "name"  =>  $name,
-                "user_id"   =>  Auth::id(),
+                "user_id"   => $user_id ?? Auth::id(),
                 "url"  =>  $url,
             ])) {
                 $this->sendPolicyNotifications("New Sold Policy File attached", "A new file is attached on Sold Policy#$this->id");

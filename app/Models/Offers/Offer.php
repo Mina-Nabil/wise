@@ -211,6 +211,13 @@ class Offer extends Model
             if ($main_sales_id) {
                 $soldPolicy->setMainSales($main_sales_id);
             }
+            $this->loadMissing('files', 'selected_option.docs');
+            foreach ($this->files as $f) {
+                $soldPolicy->addFile($f->name, $f->url, $f->user_id);
+            }
+            foreach ($this->selected_option->docs as $f) {
+                $soldPolicy->addFile($f->name, $f->url, $f->user_id);
+            }
 
             switch ($payment_frequency) {
                 case OfferOption::PAYMENT_FREQ_YEARLY:
