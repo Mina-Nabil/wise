@@ -231,7 +231,7 @@ class OfferReport extends Component
 
         if ($this->assignee_id) {
             $c = User::find($this->assignee_id);
-            $this->assigneeName = $c ? ucwords($c->first_name) . ' ' . ucwords($c->last_name) : $c;
+            $this->assigneeName = $c ? ucwords($c->first_name) . ' ' . ucwords($c->last_name) : $this->assignee_id;
         }
 
         if ($this->closed_by_id) {
