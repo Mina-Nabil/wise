@@ -643,7 +643,7 @@ class SoldPolicyShow extends Component
         if ($o) {
             $this->alert('success', 'File Uploaded!');
             $this->uploadedFile = null;
-            $this->mount($this->offer->id);
+            $this->mount($this->soldPolicy->id);
         } else {
             $this->alert('failed', 'Server Error!');
         }
