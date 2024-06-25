@@ -649,6 +649,18 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function removeSoldPolicyFile($id)
+    {
+        $res = SoldPolicyDoc::find($id)->delete();
+        if ($res) {
+            $this->alert('success', 'File Deleted');
+            $this->mount($this->soldPolicy->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+
 
     public function addComm()
     {
