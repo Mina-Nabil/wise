@@ -204,6 +204,9 @@
                                         <span class="badge bg-warning-500 text-white capitalize">Invalid</span>
                                     @endif
 
+                                    @if ($soldPolicy->offer?->is_renewal)
+                                    <span class="badge bg-success-500 text-white capitalize">Renwal</span>
+                                    @endif
                                 </span>
                             </span>
                             <span class="text-lg font-medium text-slate-900 dark:text-white block">
