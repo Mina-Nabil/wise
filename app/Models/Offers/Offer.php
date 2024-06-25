@@ -939,8 +939,7 @@ class Offer extends Model
 
     public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
     {
-        $query->userData($searchText);
-        $query->select('offers.*')
+        $query->userData($searchText)
             ->when($from, function ($q, $v) {
                 $q->where('offers.due', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($to, function ($q, $v) {
@@ -950,7 +949,7 @@ class Offer extends Model
             })->when($creator_id, function ($q, $v) {
                 $q->where('creator_id', "=", $v);
             })->when($assignee_id_or_type, function ($q, $v) {
-                $q->where(function($qq) use ($v){
+                $q->where(function ($qq) use ($v) {
                     $qq->where('assignee_id', "=", $v)->orwhere('assignee_type', "=", $v);
                 });
             })->when($closed_by_id, function ($q, $v) {

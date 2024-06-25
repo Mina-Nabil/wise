@@ -1248,8 +1248,7 @@ class SoldPolicy extends Model
 
     public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premuim_to = null, $net_premuim_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null)
     {
-        $query->userData($searchText);
-        $query->select('sold_policies.*')
+        $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
                 $q->where('start', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($start_to, function ($q, $v) {
