@@ -480,17 +480,10 @@
                                             </span>
             
                                         </label> --}}
-                                <input type="file" id="myFile" name="filename" style="display: none;"
-                                    wire:model="uploadedFile"><br>
+        
 
                             </header>
-                            <div class="loader" wire:loading wire:target="downloadFile">
-                                <div class="loaderBar"></div>
-                            </div>
-                            @error('uploadedFile')
-                                <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">*
-                                    {{ $message }}</span>
-                            @enderror
+            
                             <div class="card-body">
                                 <!-- BEGIN: Files Card -->
                                 <ul class="divide-y divide-slate-100 dark:divide-slate-700">
