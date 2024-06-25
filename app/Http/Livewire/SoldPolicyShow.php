@@ -32,6 +32,7 @@ class SoldPolicyShow extends Component
 
     public $soldPolicy;
     public $offer;
+    public $preview;
     public $start;
     public $expiry;
     public $policy_number;
