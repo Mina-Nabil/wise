@@ -533,6 +533,18 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function deleteClientPayment($id)
+    {
+
+        $res = ClientPayment::find($id)->delete();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Payment deleted!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
     public function addClientPayment()
     {
         $this->validate([

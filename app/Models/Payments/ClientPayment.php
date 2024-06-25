@@ -211,7 +211,19 @@ class ClientPayment extends Model
 
     public function delete()
     {
-        return $this->setAsCancelled();
+           /** @var User */
+           $user = Auth::user();
+           if (!$user->can('update', $this)) return false;
+   
+           if ($this->is_new || is_null($this->status)) {
+               try {
+                   AppLog::info("Deleting Client Payment", loggable: $this);
+                   return $this->delete();
+               } catch (Exception $e) {
+                   report($e);
+                   AppLog::error("Deleting Client Payment failed", desc: $e->getMessage(), loggable: $this);
+               }
+           }
     }
 
     ///attributes
