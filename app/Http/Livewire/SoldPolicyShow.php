@@ -637,7 +637,7 @@ class SoldPolicyShow extends Component
         foreach ($this->uploadedFile as $file) {
             $filename = $file->getClientOriginalName();
             $url = $file->store(SoldPolicyDoc::FILES_DIRECTORY, 's3');
-            $o = $this->offer->addFile($filename, $url);
+            $o = $this->soldPolicy->addFile($filename, $url);
         }
 
         if ($o) {
