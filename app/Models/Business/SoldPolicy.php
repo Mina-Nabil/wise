@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -763,6 +764,43 @@ class SoldPolicy extends Model
         }
     }
 
+    //files functions
+    public static function cleanSoldPolicyDirectory()
+    {
+        $file = new Filesystem;
+        $file->cleanDirectory(storage_path(SoldPolicyDoc::FILES_DIRECTORY));
+    }
+
+
+    public function addFile($name, $url)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('update', $this)) return false;
+
+
+        try {
+            if ($this->files()->create([
+                "name"  =>  $name,
+                "user_id"   =>  Auth::id(),
+                "url"  =>  $url,
+            ])) {
+                $this->sendPolicyNotifications("New Sold Policy File attached", "A new file is attached on Sold Policy#$this->id");
+
+                AppLog::info("File added", loggable: $this);
+                return true;
+            } else {
+                AppLog::error("File addition failed", desc: "Failed to add file", loggable: $this);
+                return false;
+            }
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("File addition failed", desc: $e->getMessage(), loggable: $this);
+            return true;
+        }
+    }
+
+
     private function sendPolicyNotifications($title, $message)
     {
         $notifier_id = Auth::id();
@@ -1403,4 +1441,10 @@ class SoldPolicy extends Model
     {
         return $this->hasMany(SalesComm::class);
     }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(SoldPolicyDoc::class);
+    }
+
 }

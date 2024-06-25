@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Business\SoldPolicy;
 use App\Models\Business\SoldPolicyBenefit;
+use App\Models\Business\SoldPolicyDoc;
 use App\Models\Business\SoldPolicyExclusion;
 use App\Models\Insurance\PolicyBenefit;
 use App\Models\Offers\OfferOption;
@@ -150,6 +151,7 @@ class SoldPolicyShow extends Component
     public $section = 'profile';
 
     protected $queryString = ['section'];
+    public $uploadedFile;
 
     public function openEditPaymentSec($id){
         $this->editPaymentSec = $id;
@@ -620,6 +622,33 @@ class SoldPolicyShow extends Component
             $this->alert('failed', 'server error');
         }
     }
+
+    public function UpdatedUploadedFile()
+    {
+        $this->validate(
+            [
+                'uploadedFile.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            ],
+            [
+                'uploadedFile.*.max' => 'The file must not be greater than 5MB.',
+            ],
+        );
+
+        foreach ($this->uploadedFile as $file) {
+            $filename = $file->getClientOriginalName();
+            $url = $file->store(SoldPolicyDoc::FILES_DIRECTORY, 's3');
+            $o = $this->offer->addFile($filename, $url);
+        }
+
+        if ($o) {
+            $this->alert('success', 'File Uploaded!');
+            $this->uploadedFile = null;
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server Error!');
+        }
+    }
+
 
     public function addComm()
     {
