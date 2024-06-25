@@ -1117,6 +1117,24 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function createTask()
+    {
+        $this->validate([
+            'newTaskDesc' => 'nullable|string',
+            'newTaskDue' => 'nullable|date',
+        ]);
+
+        $res = $this->soldPolicy->addTaskToOperations(Carbon::parse($this->newTaskDue), $this->newTaskDesc);
+
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closeNewTaskSection();
+            $this->alert('success', 'Task added!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
 
     public function removeAcion($index)
     {

@@ -597,7 +597,20 @@ class SoldPolicy extends Model
         return $newTask;
     }
 
-    private function addTask($type, $title, $desc, Carbon $due = null): Task|false
+    public function addTaskToOperations($due = null, $desc = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
+        $newTask = $this->addTask(Task::TYPE_TASK, "Policy# $this->policy_number task", $desc, $due);
+        if (!$newTask) return false;
+        $this->sendPolicyNotifications("Policy#$this->id task added", Auth::user()->username . " added a claim");
+
+        return $newTask;
+    }
+
+    public function addTask($type, $title, $desc, Carbon $due = null): Task|false
     {
         return Task::newTask($title, taskable: $this, desc: $desc, due: $due, assign_to_id_or_type: User::TYPE_OPERATIONS, type: $type);
     }
@@ -747,6 +760,8 @@ class SoldPolicy extends Model
             if (!$loggedInUser->can('delete', $this)) return false;
             DB::transaction(function () {
                 $this->client_payments()->delete();
+                $this->tasks()->delete();
+                $this->files()->delete();
                 $this->claims()->delete();
                 $this->endorsements()->delete();
                 $this->benefits()->delete();
@@ -1390,6 +1405,11 @@ class SoldPolicy extends Model
     public function customer_car(): BelongsTo
     {
         return $this->belongsTo(Car::class, 'customer_car_id');
+    }
+
+    public function tasks(): MorphMany
+    {
+        return $this->morphMany(Task::class, 'taskable')->where('type', Task::TYPE_TASK);
     }
 
     public function claims(): MorphMany
