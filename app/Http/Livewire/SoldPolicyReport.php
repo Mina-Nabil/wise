@@ -53,6 +53,7 @@ class SoldPolicyReport extends Component
     public $policy_ids = [];
     public $is_valid;
     public $is_paid;
+    public $is_renewal;
 
     public $Estart_from;
     public $Estart_to;
@@ -68,6 +69,7 @@ class SoldPolicyReport extends Component
     public $Ecompany_ids = [];
     public $Epolicy_ids = [];
     public $Eis_valid;
+    public $Eis_renewal;
 
     public function clearpaid()
     {
@@ -79,9 +81,19 @@ class SoldPolicyReport extends Component
         $this->is_valid = null;
     }
 
+    public function clearrenwal()
+    {
+        $this->is_renewal = null;
+    }
+
     public function togglePaid()
     {
         $this->toggle($this->is_paid);
+    }
+
+    public function toggleRenewal()
+    {
+        $this->toggle($this->is_renewal);
     }
 
     public function toggleValidated()
@@ -307,7 +319,8 @@ class SoldPolicyReport extends Component
                 $this->policy_ids,
                 $this->is_valid,
                 $this->is_paid,
-                $this->search
+                $this->search,
+                $this->is_renewal
             );
         }
     }
@@ -364,7 +377,8 @@ class SoldPolicyReport extends Component
             $this->policy_ids,
             $this->is_valid,
             $this->is_paid,
-            $this->search
+            $this->search,
+            $this->is_renewal
         )->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
