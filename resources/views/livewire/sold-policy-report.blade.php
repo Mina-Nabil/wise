@@ -381,7 +381,7 @@
                                                                                 <span class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Paid</span>
                                                                             @endif
                                                                             @if ($policy->is_renewal)
-                                                                                <span class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Paid</span>
+                                                                                <span class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
                                                                             @endif
                                                                         </td>
                                                                         <td class="table-td">
