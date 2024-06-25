@@ -649,6 +649,26 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function downloadSoldPolicyFile($id)
+    {
+        $doc = SoldPolicyDoc::findOrFail($id);
+
+        // $extension = pathinfo($task->name, PATHINFO_EXTENSION);
+        $fileContents = Storage::disk('s3')->get($doc->url);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $doc->name . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
     public function removeSoldPolicyFile($id)
     {
         $res = SoldPolicyDoc::find($id)->delete();
