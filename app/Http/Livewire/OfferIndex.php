@@ -45,6 +45,7 @@ class OfferIndex extends Component
     public $dueDate;
     public $dueTime;
     public $isRenewal = false;
+    public $myOffers = false;
     public $inFavorTo;
 
     public $isRenewalCB = 'all';
@@ -268,7 +269,7 @@ class OfferIndex extends Component
         $brands = Brand::all();
         $statuses = Offer::STATUSES;
 
-        $offers = Offer::userData($this->search)
+        $offers = Offer::userData($this->search, $this->myOffers)
             ->when($this->isRenewalCB, function ($q, $v) {
                 if ($v === 'isRenewal') return $q->byRenewal(1);
                 elseif ($v === 'notRenewal') return $q->byRenewal(0);

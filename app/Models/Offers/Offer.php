@@ -879,7 +879,7 @@ class Offer extends Model
 
 
     ////scopes
-    public function scopeUserData($query, $searchText = null)
+    public function scopeUserData($query, $searchText = null, $assignedToMe = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -940,6 +940,9 @@ class Offer extends Model
                         ->orwhere('renewal_policy', 'LIKE', "%$tmp%");
                 });
             }
+        });
+        $query->when($assignedToMe, function ($q) {
+            $q->where('assignee_id', Auth::id());
         });
         return $query->groupBy('offers.id')->orderBy('due');
     }
