@@ -418,15 +418,17 @@ class Policy extends Model
     public function scopeSearchBy($query, $text)
     {
         return $query->select('policies.*')
-            ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
-            ->where(function ($q) use ($text) {
+            ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id');
+        $splittedText = explode(' ', $text);
+        foreach ($splittedText as $tmp) {
+            $query->where(
+                function ($q) use ($tmp) {
 
-                $splittedText = explode(' ', $text);
-                foreach ($splittedText as $tmp) {
                     $q->orwhere('policies.name', 'LIKE', "%$tmp%")
                         ->orWhere('insurance_companies.name', 'LIKE', "%$tmp%");
                 }
-            });
+            );
+        }
     }
 
     public function scopeWithConditions($query)
