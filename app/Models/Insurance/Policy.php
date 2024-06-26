@@ -417,7 +417,7 @@ class Policy extends Model
      **/
     public function scopeSearchBy($query, $text)
     {
-        return $query->select('policies.*')
+        $query->select('policies.*')
             ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id');
         $splittedText = explode(' ', $text);
         foreach ($splittedText as $tmp) {
@@ -428,6 +428,7 @@ class Policy extends Model
                 }
             );
         }
+        return $query;
     }
 
     public function scopeWithConditions($query)
