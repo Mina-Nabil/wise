@@ -420,8 +420,12 @@ class Policy extends Model
         return $query->select('policies.*')
             ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
             ->where(function ($q) use ($text) {
-                $q->where('policies.name', 'LIKE', "%$text%")
-                    ->orWhere('insurance_companies.name', 'LIKE', "%$text%");
+
+                $splittedText = explode(' ', $text);
+                foreach ($splittedText as $tmp) {
+                    $q->orwhere('policies.name', 'LIKE', "%$tmp%")
+                        ->orWhere('insurance_companies.name', 'LIKE', "%$tmp%");
+                }
             });
     }
 

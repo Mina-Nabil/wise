@@ -253,6 +253,11 @@ class CommProfile extends Model
         }
     }
 
+    ///attributes
+    public function getIsSalesOutAttribute(){
+        return $this->type == self::TYPE_SALES_OUT;
+    }
+
     ///scopes
     public function scopeSearchBy($query, $text)
     {
@@ -261,6 +266,10 @@ class CommProfile extends Model
     public function scopeSalesIn($query)
     {
         return $query->where('type', self::TYPE_SALES_IN);
+    }
+    public function scopeSalesOut($query)
+    {
+        return $query->where('type', self::TYPE_SALES_OUT);
     }
 
     ///relations

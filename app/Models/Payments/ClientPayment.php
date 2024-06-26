@@ -49,11 +49,11 @@ class ClientPayment extends Model
 
     protected $table = 'client_payments';
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'due', 'closed_by_id', 'assigned_to'
+        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'due', 'closed_by_id', 'assigned_to', 'sales_out_id'
     ];
 
     ///model functions
-    public function setInfo(Carbon $due, $type,  $assigned_to_id, $note = null)
+    public function setInfo(Carbon $due, $type,  $assigned_to_id, $note = null, $sales_out_id = null)
     {
         /** @var User */
         $user = Auth::user();
@@ -62,10 +62,11 @@ class ClientPayment extends Model
         try {
             AppLog::info("Setting Client Payment info", loggable: $this);
             return $this->update([
-                "due"   =>  $due->format('Y-m-d'),
-                "type"  =>  $type,
-                "note"  =>  $note,
-                "assigned_to"  =>  $assigned_to_id,
+                "due"           =>  $due->format('Y-m-d'),
+                "type"          =>  $type,
+                "sales_out_id"  =>  $sales_out_id,
+                "note"          =>  $note,
+                "assigned_to"   =>  $assigned_to_id,
             ]);
         } catch (Exception $e) {
             report($e);

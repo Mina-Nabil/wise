@@ -4042,18 +4042,22 @@
                                 @if ($salesOutSelected)
                                     <div class="from-group">
                                         <label for="salesOut" class="form-label">Sales Out Profile</label>
-                                        <select name="salesOut" id="basicSelect" class="form-control w-full mt-2"
-                                            wire:model="salesOut">
+                                        <select name="salesOut" id="basicSelect2" class="form-control w-full mt-2"
+                                            wire:model="salesOutID">
                                             <option
-                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" disabled>
                                                 Select type</option>
-                                            @foreach ($salesOut as $s)
+                                            @foreach ($salesOuts as $s)
                                                 <option value="{{ $s->id }}"
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     {{ $s->title }}
                                                 </option>
                                             @endforeach
                                         </select>
+                                        @error('salesOutID')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
                                     </div>
                                 @endif
 

@@ -114,11 +114,13 @@ class SoldPolicyShow extends Component
     public $paymentDocId;
     public $paymentDoc;
     public $paymentAssignee;
+    public $salesOutID;
     public $paymentNoteSec;
     public $clientPaymentDateSec = false;
     public $clientPaymentDate;
     public $editPaymentSec;
-
+    
+    public $salesOutSelected;
     public $client_payment_date;
     public $setPaidSec;
 
@@ -160,6 +162,7 @@ class SoldPolicyShow extends Component
         $this->paymentDue = $p->due;
         $this->paymentNote = $p->note;
         $this->paymentAssignee = $p->assigned_to;
+        $this->salesOutID = $p->sales_out_id;
     }
 
     public function closeEditPaymentSec(){
@@ -168,6 +171,7 @@ class SoldPolicyShow extends Component
         $this->paymentDue = null;
         $this->paymentNote = null;
         $this->paymentAssignee = null;
+        $this->salesOutID = null;
     }
 
     public function editClientPayment(){
@@ -177,9 +181,10 @@ class SoldPolicyShow extends Component
             'paymentDue' => 'required|date',
             'paymentNote' => 'nullable|string',
             'paymentAssignee'   => 'nullable|integer|exists:users,id',
+            'salesOutID'   => 'nullable|integer|exists:users,id',
         ]);
 
-        $res = ClientPayment::find($this->editPaymentSec)->setInfo(Carbon::parse($this->paymentDue), $this->paymentType, $this->paymentAssignee ,$this->paymentNote);
+        $res = ClientPayment::find($this->editPaymentSec)->setInfo(Carbon::parse($this->paymentDue), $this->paymentType, $this->paymentAssignee ,$this->paymentNote, $this->salesOutID);
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->closeEditPaymentSec();
@@ -545,6 +550,15 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function updatedPaymentType(){
+        $this->salesOutID = null;
+        if($this->paymentType == ClientPayment::PYMT_TYPE_SALES_OUT){
+            $this->salesOutSelected = true;
+        } else {
+            $this->salesOutSelected = false;
+        }
+    }
+
     public function addClientPayment()
     {
         $this->validate([
@@ -553,9 +567,12 @@ class SoldPolicyShow extends Component
             'paymentDue' => 'required|date',
             'paymentNote' => 'nullable|string',
             'paymentAssignee'   => 'nullable|integer|exists:users,id',
+            'salesOutID'   => 'required_if:paymentType, ' . ClientPayment::PYMT_TYPE_SALES_OUT . '|integer|exists:sales_comms,id',
+        ], [
+            'salesOutID'    =>  "Must select a profile if the payment type is Sales Out"
         ]);
 
-        $res = $this->soldPolicy->addClientPayment($this->paymentType, $this->paymentAmount, Carbon::parse($this->paymentDue), $this->paymentAssignee ,$this->paymentNote);
+        $res = $this->soldPolicy->addClientPayment($this->paymentType, $this->paymentAmount, Carbon::parse($this->paymentDue), $this->paymentAssignee ,$this->paymentNote, $this->salesOutID);
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->addClientPaymentSec = false;
@@ -564,6 +581,7 @@ class SoldPolicyShow extends Component
             $this->paymentDue = null;
             $this->paymentNote = null;
             $this->paymentAssignee = null;
+            $this->salesOutID = null;
             $this->alert('success', 'Payment added!');
         } else {
             $this->alert('failed', 'server error');
@@ -1445,6 +1463,7 @@ class SoldPolicyShow extends Component
         $PYMT_TYPES = ClientPayment::PYMT_TYPES;
         $FROMS = CommProfileConf::FROMS;
         $CommProfiles = CommProfile::all();
+        $salesOuts = CommProfile::salesOut()->get();
 
         return view('livewire.sold-policy-show', [
             'BENEFITS'      => $BENEFITS,
@@ -1454,7 +1473,8 @@ class SoldPolicyShow extends Component
             "users"         =>  $users,
             'PYMT_TYPES'    => $PYMT_TYPES,
             'FROMS'         => $FROMS,
-            'CommProfiles'  => $CommProfiles
+            'CommProfiles'  => $CommProfiles,
+            'salesOuts'     => $salesOuts,
         ]);
     }
 }

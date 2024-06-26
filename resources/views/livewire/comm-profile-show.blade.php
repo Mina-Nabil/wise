@@ -109,6 +109,14 @@
                             <iconify-icon class="mr-1" icon="mynaui:percentage-waves"></iconify-icon>
                             Sales Commission</a>
                     </li>
+                    @if($profile->is_sales_out)
+                    <li class="nav-item" role="presentation" wire:click="changeSection('clientpayments')">
+                        <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'clientpayments') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
+                            aria-selected="false">
+                            <iconify-icon class="mr-1" icon="mynaui:percentage-waves"></iconify-icon>
+                            Collected Client Payments</a>
+                    </li>
+                    @endif
                     <li class="nav-item" role="presentation" wire:click="changeSection('configurations')">
                         <a href="#tabs-messages-withIcon" class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'configurations') active @endif dark:text-slate-300" id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon"
                             aria-selected="false">
@@ -526,6 +534,153 @@
         </div>
     @endif
 
+    @if ($section === 'clientpayments')
+        <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+            <div class="card-body flex flex-col p-6 active justify-center">
+                <header class="card-header noborder flex justify-between">
+                    <h4 class="card-title">
+                        Client Payments
+                    </h4>
+                    {{-- @can('create', \App\Models\Payments\SalesComm::class)
+                        <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
+                    @endcan --}}
+                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                </header>
+                <div class="card-body px-6 pb-6">
+                    <div class="overflow-x-auto -mx-6 ">
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden ">
+                                @if ($profile->client_payments->isEmpty())
+                                    <p class="text-sm text-center">
+                                        No collected payments found.
+                                    </p>
+                                @else
+                                <table
+                                class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class=" border-t border-slate-100 dark:border-slate-800">
+                                    <tr>
+
+                                        <th scope="col" class=" table-th ">
+                                            Due
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Amount
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Type
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Status
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Payment date
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+                                            Assigned to
+                                        </th>
+
+                                        <th scope="col" class=" table-th ">
+
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                    @foreach ($profile->client_payments as $payment)
+                                        <tr>
+
+                                            <td class="table-td ">
+                                                {{ $payment->due ? \Carbon\Carbon::parse($payment->due)->format('D d/m/Y') : 'Not set.' }}
+                                            </td>
+
+                                            <td class="table-td ">
+                                                <div class="text-lg text-success-500">
+                                                    {{ number_format($payment->amount, 2, '.', ',') }} EGP
+                                                </div>
+                                            </td>
+
+                                            <td class="table-td">
+                                                <span
+                                                    class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }}</span>
+                                            </td>
+
+
+                                            <td class="table-td">
+                                                @if (str_contains($payment->status, 'new'))
+                                                    <span class="badge bg-warning-500 text-white h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                    </span>
+                                                @elseif(str_contains($payment->status, 'cancelled'))
+                                                    <span class="badge bg-danger-500 text-white h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                    </span>
+                                                @elseif(str_contains($payment->status, 'prem_collected'))
+                                                    <span class="badge bg-info-500 text-white h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                    </span>
+                                                @elseif($payment->status === 'confirmed' || str_contains($payment->status, 'paid'))
+                                                    <span class="badge bg-success-500 text-white h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                    </span>
+                                                @endif
+                                            </td>
+
+                                            <td class="table-td ">
+                                                {{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('D d/m/Y') : 'Not set.' }}
+                                            </td>
+
+                                            <td class="table-td ">{{ $payment->assigned->first_name }}
+                                                {{ $payment->assigned->last_name }}</td>
+
+
+                                            <td class="table-td px-0">
+
+                                                @if ($payment->doc_url)
+                                                    <iconify-icon class=" cursor-pointer" wire:loading.remove
+                                                        wire:target="downloadPaymentDoc({{ $payment->id }})"
+                                                        wire:click="downloadPaymentDoc({{ $payment->id }})"
+                                                        icon="pepicons-pop:file" width="1.2em"
+                                                        height="1.2em"></iconify-icon>
+                                                    <iconify-icon
+                                                        class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                                        wire:loading
+                                                        wire:target="downloadPaymentDoc({{ $payment->id }})"
+                                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                @endif
+                                                @if ($payment->note)
+                                                    <iconify-icon class=" cursor-pointer"
+                                                        wire:click="showPaymentNote({{ $payment->id }})"
+                                                        icon="gravity-ui:comment" width="1.2em"
+                                                        height="1.2em"></iconify-icon>
+                                                @endif
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+
     {{-- Configurations --}}
     @if ($section === 'configurations')
         <div class="card mt-5">
@@ -845,7 +1000,6 @@
     @endif
 
 
-
     @if ($pymtNotePreview)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
@@ -874,6 +1028,44 @@
             </div>
         </div>
     @endif
+
+    @if ($paymentNoteSec)
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+        tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+        style="display: block;">
+        <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+            <div
+                class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                    <!-- Modal header -->
+                    <div
+                        class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                            Payment Note
+                        </h3>
+                        <button wire:click="hidePaymentComment" type="button"
+                            class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                            data-bs-dismiss="modal">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-4">
+                        {{ $paymentNoteSec }}
+                    </div>
+                    <!-- Modal footer -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
     @if ($newPymtSec)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">

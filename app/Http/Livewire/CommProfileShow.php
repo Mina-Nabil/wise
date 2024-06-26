@@ -11,6 +11,7 @@ use App\Models\Payments\TargetCycle;
 use App\Models\Payments\CommProfilePayment;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
+use App\Models\Payments\ClientPayment;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
@@ -28,7 +29,8 @@ class CommProfileShow extends Component
     public $profile;
 
     public $updatedCommSec = false;
-
+    public $paymentNoteSec = false;
+    
     public $updatedType;
     public $updatedPerPolicy;
     public $updatedSelectAvailable;
@@ -845,6 +847,36 @@ class CommProfileShow extends Component
     public function closeUpdateSec()
     {
         $this->updatedCommSec = false;
+    }
+
+    public function showPaymentNote($id)
+    {
+        $n = ClientPayment::find($id);
+        $this->paymentNoteSec = $n->note;
+    }
+
+    public function downloadPaymentDoc($id)
+    {
+        $payment = ClientPayment::find($id);
+        $fileContents = Storage::disk('s3')->get($payment->doc_url);
+        $extension = pathinfo($payment->doc_url, PATHINFO_EXTENSION);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number . '_client_payment_document.' . $extension . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function hidePaymentComment()
+    {
+        $this->paymentNoteSec = null;
     }
 
     public function mount($id)

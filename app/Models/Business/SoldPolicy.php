@@ -166,7 +166,7 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addClientPayment($type, $amount, Carbon $due, $assigned_to_id = null, $note = null)
+    public function addClientPayment($type, $amount, Carbon $due, $assigned_to_id = null, $note = null, $sales_out_id = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -176,11 +176,12 @@ class SoldPolicy extends Model
 
         try {
             if ($this->client_payments()->create([
-                "type"      => $type,
-                "amount"    => $amount,
-                "assigned_to"    => $assigned_to_id ?? Auth::id(),
-                "due"       => $due->format('Y-m-d H:i:s'),
-                "note"              => $note
+                "type"          => $type,
+                "amount"        => $amount,
+                "assigned_to"   => $assigned_to_id ?? Auth::id(),
+                "due"           => $due->format('Y-m-d H:i:s'),
+                "note"          => $note,
+                "sales_out_id"  => $sales_out_id,
             ])) {
                 AppLog::info("Client payment added", loggable: $this);
                 return true;
