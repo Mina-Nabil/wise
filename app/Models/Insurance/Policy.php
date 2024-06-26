@@ -423,8 +423,7 @@ class Policy extends Model
         foreach ($splittedText as $tmp) {
             $query->where(
                 function ($q) use ($tmp) {
-
-                    $q->orwhere('policies.name', 'LIKE', "%$tmp%")
+                    $q->where('policies.name', 'LIKE', "%$tmp%")
                         ->orWhere('insurance_companies.name', 'LIKE', "%$tmp%");
                 }
             );
