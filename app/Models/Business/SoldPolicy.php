@@ -394,9 +394,9 @@ class SoldPolicy extends Model
 
     public function deletePolicyDoc()
     {
-        $this->policy_doc = null;
-        if ($this->save()) {
-            Storage::disk('s3')->delete($this->policy_doc);
+        if ( Storage::disk('s3')->delete($this->policy_doc) ) {
+            $this->policy_doc = null;
+            $this->save();
         }
 
         try {

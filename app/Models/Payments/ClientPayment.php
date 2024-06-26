@@ -26,12 +26,14 @@ class ClientPayment extends Model
     const PYMT_TYPE_CHEQUE = 'cheque';
     const PYMT_TYPE_BANK_TRNSFR = 'bank_transfer';
     const PYMT_TYPE_VISA = 'visa';
+    const PYMT_TYPE_SALES_OUT = 'sales_out';
 
     const PYMT_TYPES = [
         self::PYMT_TYPE_CASH,
         self::PYMT_TYPE_CHEQUE,
         self::PYMT_TYPE_BANK_TRNSFR,
         self::PYMT_TYPE_VISA,
+        self::PYMT_TYPE_SALES_OUT,
     ];
 
     const PYMT_STATE_NEW = 'new';

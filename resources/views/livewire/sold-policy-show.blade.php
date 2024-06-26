@@ -3805,7 +3805,7 @@
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4016,7 +4016,7 @@
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4024,9 +4024,6 @@
                             </div>
                             <!-- Modal body -->
                             <div class="p-6 space-y-4">
-
-
-
                                 <div class="from-group">
                                     <label for="paymentType" class="form-label">Payment type</label>
                                     <select name="paymentType" id="basicSelect" class="form-control w-full mt-2"
@@ -4041,6 +4038,24 @@
                                         @endforeach
                                     </select>
                                 </div>
+
+                                @if ($salesOutSelected)
+                                    <div class="from-group">
+                                        <label for="salesOut" class="form-label">Sales Out Profile</label>
+                                        <select name="salesOut" id="basicSelect" class="form-control w-full mt-2"
+                                            wire:model="salesOut">
+                                            <option
+                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                Select type</option>
+                                            @foreach ($salesOut as $s)
+                                                <option value="{{ $s->id }}"
+                                                    class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                    {{ $s->title }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
 
                                 <div class="from-group">
                                     <label for="paymentAmount" class="form-label">Amount</label>
@@ -4128,7 +4143,7 @@
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
