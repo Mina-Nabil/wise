@@ -945,8 +945,6 @@ class Offer extends Model
             $q->where('assignee_id', Auth::id());
         });
 
-        Log::info($query->toSql());
-        Log::info($query->getBindings());
         return $query->groupBy('offers.id')->orderBy('due');
     }
 
