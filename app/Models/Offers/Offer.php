@@ -902,7 +902,7 @@ class Offer extends Model
                     ->orwhere('offers.assignee_id', $loggedInUser->id)
                     ->orwhere('offer_watchers.user_id', $loggedInUser->id);
             });
-            if ($loggedInUser->is_operations) {
+            if ($loggedInUser->is_operations && !$assignedToMe) {
                 $query->orWhere(function ($q) {
                     $q->whereHas('assignee', function ($query) {
                         $query->where('username', 'Sales.Renewal');
