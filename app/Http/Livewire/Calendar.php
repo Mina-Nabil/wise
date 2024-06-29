@@ -48,7 +48,7 @@ class Calendar extends Component
         }
 
 
-        foreach (Offer::userData(upcoming_only: true)->get() as $t) {
+        foreach (Offer::userData(upcomingOnly: true, assignedToMe: true)->get() as $t) {
             $events[] =  [
                 'id' => $t->id,
                 'title' => "Follow up: " . $t->title,

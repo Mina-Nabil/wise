@@ -879,7 +879,7 @@ class Offer extends Model
 
 
     ////scopes
-    public function scopeUserData($query, $searchText = null, $assignedToMe = null, $upcoming_only = false)
+    public function scopeUserData($query, $searchText = null, $assignedToMe = null, $upcomingOnly = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -945,7 +945,7 @@ class Offer extends Model
             $q->where('assignee_id', Auth::id());
         });
 
-        $query->when($upcoming_only, function ($q) {
+        $query->when($upcomingOnly, function ($q) {
             $now = new Carbon();
             $q->whereBetween('offers.due', [
                 $now->format('Y-m-01'),
