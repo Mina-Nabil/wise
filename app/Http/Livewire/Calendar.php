@@ -21,6 +21,7 @@ class Calendar extends Component
             $events[] =  [
                 'id' => $t->id,
                 'title' => "Task: " . $t->title,
+                'allDay' => true,
                 'start' => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
                 'end' => (new Carbon($t->due))->toIso8601String(),
             ];
@@ -30,6 +31,7 @@ class Calendar extends Component
             $events[] =  [
                 'id' => $t->id,
                 'title' => "Follow up: " . $t->title,
+                'allDay' => true,
                 'start' => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
                 'end' => (new Carbon($t->call_time))->toIso8601String(),
             ];
@@ -39,6 +41,7 @@ class Calendar extends Component
             $events[] =  [
                 'id' => $t->id,
                 'title' => "Client Payment: " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
+                'allDay' => true,
                 'start' => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
                 'end' => (new Carbon($t->due))->toIso8601String(),
             ];
