@@ -27,9 +27,12 @@
                 selectable: true,
                 eventBorderColor: 'white',
                 events: @json($events),
-                select: function(data) {
-                    console.log(data)
-                },
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault(); // don't let the browser navigate
+                    if (info.event.url) {
+                        window.open(info.event.url);
+                    }
+                }
             });
             calendar.render();
         });
