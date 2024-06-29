@@ -91,9 +91,6 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/cars/brands/delete/{id}', [CarsController::class, 'deleteBrand']);
     // Route::get('/fix/pw', [UserController::class, 'fixPasswords']);
 
-    //Calendar
-    Route::get('/calendar', [UserController::class, 'calendar'])->name('calendar');
-
 });
 
 Route::post('/login', [HomeController::class, 'authenticate']);
