@@ -128,6 +128,11 @@ class UserController extends Controller
         ]);
     }
 
+    public function calendar()
+    {
+        return view('users.calendar');
+    }
+
     public function notfIndex()
     {
         return view('users.notifications');
