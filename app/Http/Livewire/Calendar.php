@@ -26,7 +26,7 @@ class Calendar extends Component
                 'allDay'    => true,
                 'start'     => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
                 'end'       => (new Carbon($t->due))->toIso8601String(),
-                'url'       => url('tasks/', $t->id)
+                'url'       => url('tasks', $t->id)
             ];
         }
 
@@ -38,7 +38,7 @@ class Calendar extends Component
                 'textColor' => 'white',
                 'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
                 'end'       => (new Carbon($t->call_time))->toIso8601String(),
-                'url'       => url($t->client_type . 's/' . $t->client_id)
+                'url'       => url($t->client_type . 's' , $t->client_id)
             ];
         }
 
@@ -50,7 +50,7 @@ class Calendar extends Component
                 'allDay'    => true,
                 'start'     => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
                 'end'       => (new Carbon($t->due))->toIso8601String(),
-                'url'       => url('sold-policies/', $t->sold_policy->id)
+                'url'       => url('sold-policies', $t->sold_policy->id)
             ];
         }
 
@@ -63,7 +63,7 @@ class Calendar extends Component
                 'allDay'    => true,
                 'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
                 'end'       => (new Carbon($t->call_time))->toIso8601String(),
-                'url'       => url('offers/', $t->id)
+                'url'       => url('offers', $t->id)
             ];
         }
 
