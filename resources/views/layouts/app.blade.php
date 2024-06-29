@@ -127,6 +127,14 @@
                             </span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ url('/calendar') }}" class="navItem @yield('calendar')">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="heroicons-outline:calendar"></iconify-icon>
+                                <span>Calendar</span>
+                            </span>
+                        </a>
+                    </li>
                     {{-- <li>
                         <a href="{{ url('/tasks') }}" class="navItem @yield('tasks')">
                             <span class="flex items-center">
@@ -562,6 +570,18 @@
                                                 </iconify-icon>
                                                 <span class="leading-[1]">
                                                     Home
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="{{ url('/calendar') }}" class="navItem @yield('calendar')">
+                                            <div class="flex space-x-2 items-start rtl:space-x-reverse ">
+                                                <iconify-icon icon=ic:calendar class="leading-[1] text-base">
+                                                </iconify-icon>
+                                                <span class="leading-[1]">
+                                                    Calendar
                                                 </span>
                                             </div>
                                         </a>

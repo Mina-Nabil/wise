@@ -108,7 +108,7 @@ class Followup extends Model
         }
     }
     ///scopes
-    public function scopeUserData($query, $searchText = null)
+    public function scopeUserData($query, $searchText = null, $upcoming_only = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -143,7 +143,14 @@ class Followup extends Model
                         ->orwhere('corporates.email', 'LIKE', "%$tmp%");
                 });
             }
+        })->when($upcoming_only, function ($q) {
+            $now = new Carbon();
+            $q->whereBetween('call_time', [
+                $now->format('Y-m-01'),
+                $now->addMonth()->format('Y-m-t')
+            ]);
         });
+
         return $query->latest();
     }
 

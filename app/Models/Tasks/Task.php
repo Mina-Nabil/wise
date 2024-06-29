@@ -8,7 +8,6 @@ use App\Models\Users\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class Task extends Model
 {
@@ -459,7 +457,7 @@ class Task extends Model
     }
 
     ////scopes
-    public static function scopeMyTasksQuery($query, $assignedToMeOnly = true, $includeWatchers = true): Builder
+    public static function scopeMyTasksQuery($query, $assignedToMeOnly = true, $includeWatchers = true, $upcoming_only = false): Builder
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -484,6 +482,14 @@ class Task extends Model
                 $q->when($includeWatchers, fn ($qq) => $qq->orwhere('task_watchers.user_id', $loggedInUser->id));
             })->when($assignedToMeOnly, fn ($qq) => $qq->where('assigned_to_id', $loggedInUser->id));
         }
+
+        $query->when($upcoming_only, function ($q) {
+            $now = new Carbon();
+            $q->whereBetween('due', [
+                $now->format('Y-m-01'),
+                $now->addMonth()->format('Y-m-t')
+            ]);
+        });
 
         return $query;
     }

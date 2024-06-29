@@ -6,14 +6,17 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Models\Users\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
     public function index()
     {
         return view('home.index');
+    }
+
+    public function calendar()
+    {
+        return view('home.calendar');
     }
 
     public function login(Request $request)

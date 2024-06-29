@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Route;
 //login routes
 Route::middleware('auth', 'active')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
+    Route::get('/calendar', [HomeController::class, 'calendar']);
 
     //Users routes
     Route::get('/users', [UserController::class, 'index']);

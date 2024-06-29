@@ -240,7 +240,7 @@ class ClientPayment extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false, string $searchText = null)
+    public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false, string $searchText = null, $upcoming_only = false)
     {
         /** @var User */
         $user = Auth::user();
@@ -276,6 +276,15 @@ class ClientPayment extends Model
         $query->when($searchText, function ($q, $s) {
             $q->where('sold_policies.policy_number', "LIKE", "%$s%");
         });
+
+        $query->when($upcoming_only, function ($q) {
+            $now = new Carbon();
+            $q->whereBetween('client_payments.due', [
+                $now->format('Y-m-01'),
+                $now->addMonth()->format('Y-m-t')
+            ]);
+        });
+
         $query->orderByDesc('client_payments.due');
         return $query;
     }
