@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Customers\Followup;
 use App\Models\Event;
+use App\Models\Offers\Offer;
 use App\Models\Payments\ClientPayment;
 use App\Models\Tasks\Task;
 use Carbon\Carbon;
@@ -21,6 +22,7 @@ class Calendar extends Component
             $events[] =  [
                 'id' => $t->id,
                 'title' => "Task: " . $t->title,
+                'allDay' => true,
                 'start' => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
                 'end' => (new Carbon($t->due))->toIso8601String(),
             ];
@@ -42,6 +44,17 @@ class Calendar extends Component
                 'allDay' => true,
                 'start' => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
                 'end' => (new Carbon($t->due))->toIso8601String(),
+            ];
+        }
+
+
+        foreach (Offer::userData(upcoming_only: true)->get() as $t) {
+            $events[] =  [
+                'id' => $t->id,
+                'title' => "Follow up: " . $t->title,
+                'allDay' => true,
+                'start' => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
+                'end' => (new Carbon($t->call_time))->toIso8601String(),
             ];
         }
 
