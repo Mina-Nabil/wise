@@ -21,7 +21,7 @@ class Calendar extends Component
         foreach (Task::myTasksQuery(upcoming_only: true)->get() as $t) {
             $events[] =  [
                 'id'        => $t->id,
-                'title'     => "Task: " . $t->title,
+                'title'     => "T. " . $t->title,
                 'backgroundColor' => 'blue',
                 'allDay'    => true,
                 'start'     => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
@@ -33,7 +33,7 @@ class Calendar extends Component
         foreach (Followup::userData(upcoming_only: true)->get() as $t) {
             $events[] =  [
                 'id'        => $t->id,
-                'title'     => "Follow up: " . $t->title,
+                'title'     => "F. " . $t->title,
                 'backgroundColor' => 'dark',
                 'textColor' => 'white',
                 'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
@@ -45,7 +45,7 @@ class Calendar extends Component
         foreach (ClientPayment::userData(upcoming_only: true)->with('sold_policy', 'sold_policy.client')->get() as $t) {
             $events[] =  [
                 'id'        => $t->id,
-                'title'     => "Client Payment: " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
+                'title'     => "CP. " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
                 'backgroundColor' => '#75d193', //green
                 'allDay'    => true,
                 'start'     => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
@@ -58,7 +58,7 @@ class Calendar extends Component
         foreach (Offer::userData(upcomingOnly: true, assignedToMe: true)->with('client')->get() as $t) {
             $events[] =  [
                 'id'        => $t->id,
-                'title'     => "Offer: " . $t->client->name,
+                'title'     => "OF: " . $t->client->name,
                 'backgroundColor' => '#73c2fb', //blue
                 'allDay'    => true,
                 'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
