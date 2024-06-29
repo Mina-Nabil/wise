@@ -25,7 +25,7 @@
                 },
                 // timeZone: 'UTC',
                 selectable: true,
-                eventBorderColor: 'dark',
+                eventBorderColor: 'black',
                 events: @json($events),
                 select: function(data) {
                     console.log(data)
