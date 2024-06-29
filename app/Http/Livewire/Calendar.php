@@ -44,7 +44,7 @@ class Calendar extends Component
             $events[] =  [
                 'id' => $t->id,
                 'title' => "Client Payment: " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
-                'backgroundColor' => '#70c247',
+                'backgroundColor' => '#75d193', //green
                 'allDay' => true,
                 'start' => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
                 'end' => (new Carbon($t->due))->toIso8601String(),
