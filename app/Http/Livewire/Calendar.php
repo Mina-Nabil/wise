@@ -63,7 +63,7 @@ class Calendar extends Component
                 'allDay'    => true,
                 'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
                 'end'       => (new Carbon($t->call_time))->toIso8601String(),
-                'url'       => url('offers/', $t->sold_policy->id)
+                'url'       => url('offers/', $t->id)
             ];
         }
 
