@@ -11,13 +11,19 @@
 
         </div>
     </div>
-  
+
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             console.log(@json($events))
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'dayGridMonth',
+                    'timeGridWeek'
+                },
                 // timeZone: 'UTC',
                 selectable: true,
                 events: @json($events),
