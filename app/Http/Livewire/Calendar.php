@@ -48,10 +48,10 @@ class Calendar extends Component
         }
 
 
-        foreach (Offer::userData(upcomingOnly: true, assignedToMe: true)->get() as $t) {
+        foreach (Offer::userData(upcomingOnly: true, assignedToMe: true)->with('client')->get() as $t) {
             $events[] =  [
                 'id' => $t->id,
-                'title' => "Follow up: " . $t->title,
+                'title' => "Offer: " . $t->client->name,
                 'allDay' => true,
                 'start' => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
                 'end' => (new Carbon($t->call_time))->toIso8601String(),
