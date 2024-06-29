@@ -567,7 +567,7 @@ class SoldPolicyShow extends Component
             'paymentDue' => 'required|date',
             'paymentNote' => 'nullable|string',
             'paymentAssignee'   => 'nullable|integer|exists:users,id',
-            'salesOutID'   => 'required_if:paymentType,' . ClientPayment::PYMT_TYPE_SALES_OUT . '|exists:sales_comms,id',
+            'salesOutID'   => 'required_if:paymentType,' . ClientPayment::PYMT_TYPE_SALES_OUT . '|nullable|exists:sales_comms,id',
         ], [
             'salesOutID'    =>  "Must select a profile if the payment type is Sales Out"
         ]);
