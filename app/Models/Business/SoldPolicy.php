@@ -1240,21 +1240,21 @@ class SoldPolicy extends Model
 
             foreach ($splittedText as $tmp) {
                 $q->where(function ($qq) use ($tmp, $loggedInUser, $is_expiring) {
-                    if ($loggedInUser->is_operations && !$is_expiring) {
-                        $qq->where('customers.email', '=', "$tmp")
-                            // ->orwhere('customer_phones.number', '=', "%$tmp%")
-                            //search using customer info
-                            ->orwhere('corporates.name', 'LIKE', "%$tmp%")
-                            ->orwhere('corporates.email', '=', "$tmp")
-                            //search using policy info
-                            ->orwhere('policy_number', '=', "$tmp")
-                            ->orwhere('customer_phones.number', '=', "$tmp")
-                            ->orwhere('corporate_phones.number', '=', "$tmp")
-                            //search using car info
-                            ->orwhere('car_chassis', '=', "$tmp")
-                            ->orwhere('car_engine', '=', "$tmp")
-                            ->orwhere('car_plate_no', '=', "$tmp");
-                    } else {
+                    // if ($loggedInUser->is_operations && !$is_expiring) {
+                    //     $qq->where('customers.email', '=', "$tmp")
+                    //     //search using customer info
+                    //         ->orwhere('customer_phones.number', '=', "$tmp")
+                    //         ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                    //         ->orwhere('corporates.email', '=', "$tmp")
+                    //         //search using policy info
+                    //         ->orwhere('policy_number', '=', "$tmp")
+                    //         ->orwhere('customer_phones.number', '=', "$tmp")
+                    //         ->orwhere('corporate_phones.number', '=', "$tmp")
+                    //         //search using car info
+                    //         ->orwhere('car_chassis', '=', "$tmp")
+                    //         ->orwhere('car_engine', '=', "$tmp")
+                    //         ->orwhere('car_plate_no', '=', "$tmp");
+                    // } else {
                         $qq->where('customers.first_name', 'LIKE', "%$tmp%")
                             //search using customer info
                             ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
@@ -1275,7 +1275,7 @@ class SoldPolicy extends Model
                             ->orwhere('car_chassis', 'LIKE', "%$tmp%")
                             ->orwhere('car_engine', 'LIKE', "%$tmp%")
                             ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
-                    }
+                    // }
                 });
             }
         });
