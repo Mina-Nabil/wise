@@ -18,7 +18,7 @@ class Calendar extends Component
     {
         $events = [];
 
-        foreach (Task::myTasksQuery(upcoming_only: true)->get() as $t) {
+        foreach (Task::myTasksQuery(upcoming_only: true, assignedToMeOnly: true)->get() as $t) {
             $events[] =  [
                 'id'        => $t->id,
                 'title'     => "T. " . $t->title,
@@ -42,7 +42,7 @@ class Calendar extends Component
             ];
         }
 
-        foreach (ClientPayment::userData(upcoming_only: true)->with('sold_policy', 'sold_policy.client')->get() as $t) {
+        foreach (ClientPayment::userData(upcoming_only: true, assigned_only: true)->with('sold_policy', 'sold_policy.client')->get() as $t) {
             $events[] =  [
                 'id'        => $t->id,
                 'title'     => "CP. " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
