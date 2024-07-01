@@ -21,7 +21,7 @@
                 headerToolbar: {
                     left: 'prev,next',
                     center: 'title',
-                    right: 'dayGridMonth,today,timeGridWeek'
+                    right: 'today dayGridMonth,timeGridWeek,DayGrid'
                 },
                 // timeZone: 'UTC',
                 selectable: true,
