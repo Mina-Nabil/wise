@@ -679,12 +679,12 @@ class Customer extends Model
 
             foreach ($splittedText as $tmp) {
                 $q->where(function ($qq) use ($tmp, $loggedInUser, $mustMatchSearch) {
-                    if ($loggedInUser->is_operations && $mustMatchSearch) {
-                        $qq->where('customers.email', '=', "$tmp")
-                            ->orwhere('customers.first_name', '=', "$tmp")
-                            ->orwhere('customers.last_name', '=', "$tmp")
-                            ->orwhere('customer_phones.number', '=', "$tmp");
-                    } else {
+                    // if ($loggedInUser->is_operations && $mustMatchSearch) {
+                    //     $qq->where('customers.email', '=', "$tmp")
+                    //         ->orwhere('customers.first_name', '=', "$tmp")
+                    //         ->orwhere('customers.last_name', '=', "$tmp")
+                    //         ->orwhere('customer_phones.number', '=', "$tmp");
+                    // } else {
                         $qq->where('customers.first_name', 'LIKE', "%$tmp%")
                             ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
                             ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
@@ -693,7 +693,7 @@ class Customer extends Model
                             ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
                             ->orwhere('customers.email', 'LIKE', "%$tmp%")
                             ->orwhere('customer_phones.number', 'LIKE', "%$tmp%");
-                    }
+                    // }
                 });
             }
         });

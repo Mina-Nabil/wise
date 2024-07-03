@@ -486,19 +486,19 @@ class Corporate extends Model
 
             foreach ($splittedText as $tmp) {
                 $q->where(function ($qq) use ($tmp, $loggedInUser) {
-                    if ($loggedInUser->is_operations) {
-                        $qq->where('corporates.name', '=', "$tmp")
-                            ->orwhere('corporates.arabic_name', '=', "$tmp")
-                            ->orwhere('corporates.email', '=', "$tmp")
-                            ->orwhere('corporate_phones.number', '=', "$tmp")
-                            ->orwhere('corporates.arabic_name', '=', "$tmp");
-                    } else {
+                    // if ($loggedInUser->is_operations) {
+                    //     $qq->where('corporates.name', '=', "$tmp")
+                    //         ->orwhere('corporates.arabic_name', '=', "$tmp")
+                    //         ->orwhere('corporates.email', '=', "$tmp")
+                    //         ->orwhere('corporate_phones.number', '=', "$tmp")
+                    //         ->orwhere('corporates.arabic_name', '=', "$tmp");
+                    // } else {
                         $qq->where('corporates.name', 'LIKE', "%$tmp%")
                             ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%")
                             ->orwhere('corporates.email', 'LIKE', "%$tmp%")
                             ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
                             ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%");
-                    }
+                    // }
                 });
             }
         });
