@@ -30,10 +30,10 @@ class Calendar extends Component
             ];
         }
 
-        foreach (Followup::userData(upcoming_only: true)->get() as $t) {
+        foreach (Followup::userData(upcoming_only: true)->with('called')->get() as $t) {
             $events[] =  [
                 'id'        => $t->id,
-                'title'     => "F. " . $t->title,
+                'title'     => "F. " . $t->title . ' - ' . $t->called?->name,
                 'backgroundColor' => 'dark',
                 'textColor' => 'white',
                 'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
