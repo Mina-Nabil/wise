@@ -655,8 +655,8 @@ class Customer extends Model
     public function getFullNameAttribute()
     {
         return ($this->arabic_first_name && $this->arabic_last_name)
-            ? $this->arabic_first_name . ' ' . ($this->arabic_middle_name ?  $this->arabic_middle_name . ' ' : '') . $this->arabic_last_name
-            : $this->first_name . ' ' . ($this->middle_name ?  $this->middle_name . ' ' : '')  .  $this->last_name;
+            ? $this->arabic_first_name . ' ' . ($this->arabic_middle_name ?  $this->arabic_middle_name . ' ' : '' ) . $this->arabic_last_name
+            : $this->first_name . ' ' . ($this->middle_name ?  $this->middle_name . ' ' : '' )  .  $this->last_name;
     }
 
     ///scopes
