@@ -38,7 +38,7 @@ class Calendar extends Component
                 'textColor' => 'white',
                 'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
                 'end'       => (new Carbon($t->call_time))->toIso8601String(),
-                'url'       => url($t->client_type . 's' , $t->client_id)
+                'url'       => url($t->called_type . 's' , $t->called_id)
             ];
         }
 
