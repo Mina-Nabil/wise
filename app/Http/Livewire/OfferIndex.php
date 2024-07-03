@@ -197,6 +197,10 @@ class OfferIndex extends Component
 
     public function newOffer()
     {
+        if(!$this->owner) {
+            $this->alert('warning', 'Please select the client');
+            return;
+        }
         // dd($this->CarCategory);
         $this->validate([
             'type' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),

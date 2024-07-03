@@ -164,26 +164,26 @@ class Customer extends Model
         $id_doc = null,
         $driver_license_doc = null,
     ): bool {
-        $this->update([
-            "first_name"  =>  $first_name,
-            "last_name"  =>  $last_name,
-            "middle_name"  =>  $middle_name,
-            "arabic_first_name"  =>  $arabic_first_name,
-            "arabic_middle_name"   =>  $arabic_middle_name,
-            "arabic_last_name"   =>  $arabic_last_name,
-            "birth_date"    =>  $birth_date,
-            "email" =>  $email,
-            "gender"    =>  $gender,
-            "marital_status"    =>  $marital_status,
-            "id_type"   =>  $id_type,
-            "id_number" =>  $id_number,
-            "nationality_id"    =>  $nationality_id,
-            "profession_id" =>  $profession_id,
-            "salary_range"  =>  $salary_range,
-            "income_source" =>  $income_source,
-            "id_doc" =>  $id_doc,
-            "driver_license_doc" =>  $driver_license_doc,
-        ]);
+        $updates['first_name'] = $first_name;
+        $updates['last_name'] = $last_name;
+        if($middle_name) $updates['middle_name'] = $middle_name;
+        if($arabic_first_name) $updates['arabic_first_name'] = $arabic_first_name;
+        if($arabic_middle_name) $updates['arabic_middle_name'] = $arabic_middle_name;
+        if($arabic_last_name) $updates['arabic_last_name'] = $arabic_last_name;
+        if($birth_date) $updates['birth_date'] = $birth_date;
+        if($email) $updates['email'] = $email;
+        if($gender) $updates['gender'] = $gender;
+        if($marital_status) $updates['marital_status'] = $marital_status;
+        if($id_type) $updates['id_type'] = $id_type;
+        if($id_number) $updates['id_number'] = $id_number;
+        if($nationality_id) $updates['nationality_id'] = $nationality_id;
+        if($profession_id) $updates['profession_id'] = $profession_id;
+        if($salary_range) $updates['salary_range'] = $salary_range;
+        if($income_source) $updates['income_source'] = $income_source;
+        if($id_doc) $updates['id_doc'] = $id_doc;
+        if($driver_license_doc) $updates['driver_license_doc'] = $driver_license_doc;
+
+        $this->update($updates);
 
         try {
             $res = $this->save();
@@ -647,9 +647,11 @@ class Customer extends Model
     ///attributes
     public function getNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return ($this->arabic_first_name && $this->arabic_last_name)
+            ? $this->arabic_first_name . ' ' . $this->arabic_last_name
+            : $this->first_name . ' ' . $this->last_name;
     }
-    
+
     public function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
@@ -685,14 +687,14 @@ class Customer extends Model
                     //         ->orwhere('customers.last_name', '=', "$tmp")
                     //         ->orwhere('customer_phones.number', '=', "$tmp");
                     // } else {
-                        $qq->where('customers.first_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.email', 'LIKE', "%$tmp%")
-                            ->orwhere('customer_phones.number', 'LIKE', "%$tmp%");
+                    $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%");
                     // }
                 });
             }
