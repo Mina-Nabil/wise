@@ -61,7 +61,7 @@ class User extends Authenticatable
 
 
     /////////////functions
-    public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null, $image = null): bool
+    public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null, $image = null, $password = null): bool
     {
         try {
             $this->first_name   = $first_name;
@@ -71,6 +71,8 @@ class User extends Authenticatable
             $this->username     = $username;
             $this->type         = $type;
             $this->image         = $image;
+            if ($password)
+                $this->password     =   bcrypt($password);
 
             if ($this->save()) {
                 AppLog::info('User updated', "User $username updated");

@@ -303,7 +303,7 @@
         @endif
     @endcan
 
-    @can('create', App\Models\Users\User::class)
+    @can('update', $user)
         @if ($updateUserSec)
             <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
                 <div class="modal-dialog relative w-auto pointer-events-none">
@@ -415,7 +415,20 @@
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
+                                @can('updatePassword', $user)
+                                <div class="from-group">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                        <div class="input-area">
+                                            <label for="password" class="form-label">Password</label>
+                                            <input id="password" type="password" class="form-control @error('password') !border-danger-500 @enderror" wire:model.defer="password" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    @error('password')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
 
+                                </div>
+                                @endcan
                             </div>
                             <!-- Modal footer -->
                             <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">

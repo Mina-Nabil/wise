@@ -61,6 +61,19 @@ class UserPolicy
     }
 
     /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\User  $model
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updatePassword(User $user, User $model)
+    {
+        if($user->is_admin || $user->id == $model->id) return true;
+        return Response::deny("Unauthorized action");
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\Users\User  $user

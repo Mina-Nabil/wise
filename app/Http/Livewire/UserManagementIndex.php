@@ -33,6 +33,8 @@ class UserManagementIndex extends Component
     public $type;
     public $email;
     public $phone;
+    public $password;
+    public $user;
 
     public function clearImage()
     {
@@ -66,6 +68,7 @@ class UserManagementIndex extends Component
     {
         $this->updateUserSec = $id;
         $user = User::find($id);
+        $this->user = $user;
         $this->username = $user->username;
         $this->first_name = $user->first_name;
         $this->last_name = $user->last_name;
@@ -127,7 +130,7 @@ class UserManagementIndex extends Component
 
         $imageUrl = $this->generateUrl();
 
-        $res = User::find($currentUserId)->editInfo($this->username, $this->first_name, $this->last_name, $this->type, $this->email, $this->phone, $imageUrl);
+        $res = User::find($currentUserId)->editInfo($this->username, $this->first_name, $this->last_name, $this->type, $this->email, $this->phone, $imageUrl, $this->password);
         if ($res) {
             $this->closeUpdateThisUser();
             $this->alert('success', 'User updated successfuly!');
