@@ -2286,6 +2286,18 @@
                         <div class="p-6 space-y-4">
                             <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
                                 <div class="from-group">
+                                    <label for="issuing_date" class="form-label">Issuing Date</label>
+                                    <input name="issuing_date" type="date"
+                                    class="form-control mt-2 w-full @error('issuing_date') !border-danger-500 @enderror"
+                                    wire:model.defer="issuing_date">
+                                    @error('issuing_date')
+                                    <span
+                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
+                                <div class="from-group">
                                     <label for="start" class="form-label">Start Date</label>
                                     <input name="start" type="date"
                                         class="form-control mt-2 w-full @error('start') !border-danger-500 @enderror"

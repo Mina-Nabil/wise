@@ -156,7 +156,7 @@ class Offer extends Model
      * Policy number, start and expiry shall be presented as new empty fields
      * Other fields can be populated from the selected option, expect the car details(chassis, engine & plate)
      */
-    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry,  $installements_count, $payment_frequency, $insured_value, $net_rate, $net_premium, $gross_premium, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null)
+    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry,  $installements_count, $payment_frequency, $insured_value, $net_rate, $net_premium, $gross_premium, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null, Carbon $issuing_date = null)
     {
         $foundSoldPolicy = SoldPolicy::byOfferID($this->id)->first();
         if ($foundSoldPolicy && $foundSoldPolicy->id) return $foundSoldPolicy;
@@ -174,6 +174,7 @@ class Offer extends Model
         // assert($installements_count || $this->selected_option->installements_count, "No installement count found"); 
 
         $customer_car = ($this->item_type == Car::MORPH_TYPE) ? $this->item_id : null;
+
         $main_sales_id = $this->getMainSales();
 
         $soldPolicy = SoldPolicy::newSoldPolicy(
@@ -194,7 +195,8 @@ class Offer extends Model
             car_chassis: $car_chassis,
             car_plate_no: $car_plate_no,
             car_engine: $car_engine,
-            policy_doc: $policy_doc
+            policy_doc: $policy_doc, 
+            issuing_date: $issuing_date
         );
         if ($soldPolicy) {
             $this->setStatus(self::STATUS_APPROVED);

@@ -53,7 +53,7 @@ class SoldPolicy extends Model
         'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
         'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
         'car_chassis', 'car_plate_no', 'car_engine', 'policy_number',
-        'in_favor_to', 'policy_doc', 'note', 'is_renewed', 'is_paid', 'client_payment_date', 'total_policy_comm', 'total_client_paid', 'total_sales_comm', 'total_comp_paid', 'policy_comm_note', 'assigned_to_id', 'main_sales_id'
+        'in_favor_to', 'policy_doc', 'note', 'is_renewed', 'is_paid', 'client_payment_date', 'total_policy_comm', 'total_client_paid', 'total_sales_comm', 'total_comp_paid', 'policy_comm_note', 'assigned_to_id', 'main_sales_id', 'created_at'
     ];
 
     ///model functions
@@ -311,22 +311,25 @@ class SoldPolicy extends Model
         }
     }
 
-    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null): self|bool
+    public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null, Carbon $issuing_date = null): self|bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
-
+        $updates = [
+            'policy_number' => $policy_number,
+            'start' => $start->format('Y-m-d H:i:s'),
+            'expiry' => $expiry->format('Y-m-d H:i:s'),
+            'car_chassis' => $car_chassis,
+            'car_plate_no' => $car_plate_no,
+            'in_favor_to' => $in_favor_to,
+            'car_engine' => $car_engine
+        ];
+        if ($issuing_date) {
+            $updates['created_at'] = $issuing_date->format('Y-m-d');
+        }
         try {
-            $this->update([
-                'policy_number' => $policy_number,
-                'start' => $start->format('Y-m-d H:i:s'),
-                'expiry' => $expiry->format('Y-m-d H:i:s'),
-                'car_chassis' => $car_chassis,
-                'car_plate_no' => $car_plate_no,
-                'in_favor_to' => $in_favor_to,
-                'car_engine' => $car_engine
-            ]);
+            $this->update($updates);
 
             AppLog::info("Sold Policy edited", loggable: $this);
             return true;
@@ -835,8 +838,9 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null): self|bool
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null): self|bool
     {
+        $created_at = $issuing_date ? $issuing_date->format('Y-m-d') : (Carbon::now()->format('Y-m-d'));
         $newSoldPolicy = new self([
             'creator_id' => Auth::id() ?? 1,
             'policy_number' => $policy_number,
@@ -859,10 +863,11 @@ class SoldPolicy extends Model
             'note'          => $note,
             'in_favor_to'   => $in_favor_to,
             'policy_doc'    => $policy_doc,
+            'created_at'    => $created_at,
         ]);
         $newSoldPolicy->client()->associate($client);
         try {
-            $newSoldPolicy->save();
+            $newSoldPolicy->save(['timestamps' => false]);
             AppLog::info("New Sold Policy", loggable: $newSoldPolicy);
             return $newSoldPolicy;
         } catch (Exception $e) {

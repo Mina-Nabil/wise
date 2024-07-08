@@ -181,6 +181,31 @@ class CommProfile extends Model
         }
     }
 
+    /** Must be called from daily job */
+    public function getFulfilledTarget()
+    {
+        foreach($this->targets()->get() as $target){
+            switch ($target->period) {
+                case Target::PERIOD_MONTH:
+                    # code...
+                    break;
+                case Target::PERIOD_QUARTER:
+                    # code...
+                    break;
+                case Target::PERIOD_YEAR:
+                    # code...
+                    break;
+                case Target::PERIOD_YEAR_TO_DATE:
+                    # code...
+                    break;
+
+                default:
+                    return false;
+            }
+        }
+    }
+
+
     public function addTarget(
         $period, //from const PERIODS
         $prem_target, //target net prem amount the sales should surpass

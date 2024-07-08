@@ -132,6 +132,7 @@ class OfferShow extends Component
     public $gross_premium;
     public $installments_count;
     public $sold_payment_frequency;
+    public $issuing_date;
     public $start;
     public $expiry;
     public $car_chassis = null;
@@ -268,6 +269,7 @@ class OfferShow extends Component
             'gross_premium' => 'required|numeric',
             'sold_payment_frequency' => 'required|in:' . implode(',', OfferOption::PAYMENT_FREQS),
             'installments_count' => 'required_if:sold_payment_frequency,' . OfferOption::PAYMENT_INSTALLEMENTS . '|nullable|numeric',
+            'issuing_date' => 'required|date',
             'start' => 'required|date',
             'expiry' => 'required|date|after:start',
             'car_chassis' => 'nullable|string|max:255',
@@ -299,7 +301,8 @@ class OfferShow extends Component
                 $this->car_chassis,
                 $this->car_engine,
                 $this->car_plate_no,
-                $this->soldInFavorTo
+                $this->soldInFavorTo,
+                Carbon::parse($this->issuing_date),
 
             );
             if ($res) {

@@ -34,6 +34,7 @@ class SoldPolicyShow extends Component
     public $soldPolicy;
     public $offer;
     public $preview;
+    public $issuing_date;
     public $start;
     public $expiry;
     public $policy_number;
@@ -1014,6 +1015,7 @@ class SoldPolicyShow extends Component
         $this->editInfoSec = true;
         $this->start = Carbon::parse($this->soldPolicy->start)->toDateString();
         $this->expiry = Carbon::parse($this->soldPolicy->expiry)->toDateString();
+        $this->issuing_date = Carbon::parse($this->soldPolicy->created_at)->toDateString();
         $this->policy_number = $this->soldPolicy->policy_number;
         $this->car_chassis = $this->soldPolicy->car_chassis;
         $this->car_plate_no = $this->soldPolicy->car_plate_no;
@@ -1026,6 +1028,7 @@ class SoldPolicyShow extends Component
         $this->validate([
             'start' => 'required|date',
             'expiry' => 'required|date',
+            'issuing_date' => 'required|date',
             'policy_number' => 'required|string|max:255',
             'car_chassis' => 'nullable|string|max:255',
             'car_plate_no' => 'nullable|string|max:255',
@@ -1040,7 +1043,8 @@ class SoldPolicyShow extends Component
             $this->car_chassis,
             $this->car_plate_no,
             $this->car_engine,
-            $this->in_favor_to
+            $this->in_favor_to,
+            Carbon::parse($this->issuing_date),
         );
 
         if ($res) {

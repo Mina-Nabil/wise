@@ -3,6 +3,7 @@
 namespace App\Models\Users;
 
 use App\Events\AppNotification;
+use App\Models\Business\SoldPolicy;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
 use App\Models\Customers\Followup;
@@ -85,6 +86,14 @@ class User extends Authenticatable
             report($e);
             return false;
         }
+    }
+
+    public function getTotalSoldPolicies(Carbon $from, Carbon $to)
+    {
+        return $this->sold_policies()->whereBetween('created_at', [
+            $from->format('Y-m-d 00:00:00'),
+            $to->format('Y-m-d 23:59:00')
+        ])->get();
     }
 
     public function switchSession($user_id)
@@ -400,6 +409,11 @@ class User extends Authenticatable
     public function tmp_access(): HasMany
     {
         return $this->hasMany(TmpAccess::class, 'from_id');
+    }
+
+    public function sold_policies(): HasMany
+    {
+        return $this->hasMany(SoldPolicy::class, 'main_sales_id');
     }
 
     public function tmp_access_to(): HasMany

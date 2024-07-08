@@ -42,6 +42,7 @@ class SoldPolicyIndex extends Component
     public $gross_premium;
     public $installments_count;
     public $payment_frequency;
+    public $issuing_date;
     public $start;
     public $expiry;
     public $discount = 0;
@@ -92,6 +93,7 @@ class SoldPolicyIndex extends Component
             'note' => 'nullable|string|max:255',
             'inFavorTo' => 'nullable|string|max:255',
             'policyDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'issuing_date' => 'required|date',
         ]);
 
         if ($this->policyDoc) {
@@ -122,7 +124,8 @@ class SoldPolicyIndex extends Component
             $this->is_valid,
             $this->note,
             $this->inFavorTo,
-            $url
+            $url,
+            Carbon::parse($this->issuing_date)
         );
 
         if ($res) {
