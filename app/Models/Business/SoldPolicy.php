@@ -395,7 +395,7 @@ class SoldPolicy extends Model
 
     public function deletePolicyDoc()
     {
-        if ( Storage::disk('s3')->delete($this->policy_doc) ) {
+        if (Storage::disk('s3')->delete($this->policy_doc)) {
             $this->policy_doc = null;
             $this->save();
         }
@@ -1215,8 +1215,9 @@ class SoldPolicy extends Model
             ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id')
             ->leftjoin('offers', 'sold_policies.offer_id', '=', 'offers.id');
 
-        if (!($loggedInUser->is_admin
-            || (($loggedInUser->is_operations || $loggedInUser->is_finance) && ($searchText || $is_expiring)))) {
+        // if (!($loggedInUser->is_admin
+        //     || (($loggedInUser->is_operations || $loggedInUser->is_finance) && ($searchText || $is_expiring)))) {
+        if (!($loggedInUser->is_admin || $loggedInUser->is_operations || $loggedInUser->is_finance)) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id)
@@ -1255,26 +1256,26 @@ class SoldPolicy extends Model
                     //         ->orwhere('car_engine', '=', "$tmp")
                     //         ->orwhere('car_plate_no', '=', "$tmp");
                     // } else {
-                        $qq->where('customers.first_name', 'LIKE', "%$tmp%")
-                            //search using customer info
-                            ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
-                            ->orwhere('customers.email', 'LIKE', "%$tmp%")
-                            ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
-                            // ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
-                            //search using customer info
-                            ->orwhere('corporates.name', 'LIKE', "%$tmp%")
-                            ->orwhere('corporates.email', 'LIKE', "%$tmp%")
-                            ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
-                            //search using policy info
-                            ->orwhere('policy_number', 'LIKE', "%$tmp%")
-                            //search using car info
-                            ->orwhere('car_chassis', 'LIKE', "%$tmp%")
-                            ->orwhere('car_engine', 'LIKE', "%$tmp%")
-                            ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
+                    $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                        //search using customer info
+                        ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                        // ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                        //search using customer info
+                        ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                        ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
+                        //search using policy info
+                        ->orwhere('policy_number', 'LIKE', "%$tmp%")
+                        //search using car info
+                        ->orwhere('car_chassis', 'LIKE', "%$tmp%")
+                        ->orwhere('car_engine', 'LIKE', "%$tmp%")
+                        ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
                     // }
                 });
             }
@@ -1467,5 +1468,4 @@ class SoldPolicy extends Model
     {
         return $this->hasMany(SoldPolicyDoc::class);
     }
-
 }
