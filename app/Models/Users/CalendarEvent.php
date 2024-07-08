@@ -103,7 +103,7 @@ class CalendarEvent extends Model
         $to = $to ?? Carbon::now()->addMonths(2);
 
         return $query->select('events_users.id')
-            ->join('events_users', 'events_users.user_id', '=', 'users.id')
+            ->join('events_users', 'events_users.user_id', '=', 'calendar_events.id')
             ->where('events_users.user_id', Auth::id())
             ->whereBetween('start_time', [
                 $from->format('Y-m-d'),
