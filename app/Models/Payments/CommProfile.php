@@ -183,16 +183,18 @@ class CommProfile extends Model
 
     public function addTarget(
         $period, //from const PERIODS
-        $amount, //target amount
-        $extra_percentage = null
+        $prem_target, //target net prem amount the sales should surpass
+        $income_target, //target net commission amount the sales should surpass
+        $comm_percentage
     ) {
         try {
             AppLog::info("Creating comm profile target", loggable: $this);
             $order = $this->targets()->count() + 1;
             $target = $this->targets()->create([
                 "period"            =>  $period,
-                "amount"            =>  $amount,
-                "extra_percentage"  =>  $extra_percentage,
+                "prem_target"       =>  $prem_target,
+                "comm_percentage"   =>  $comm_percentage,
+                "income_target"     =>  $income_target,
                 "order"             =>  $order
             ]);
             $target->save();

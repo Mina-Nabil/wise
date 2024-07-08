@@ -55,8 +55,9 @@ class CommProfileShow extends Component
 
     public $newTargetSec;
     public $period;
-    public $amount;
-    public $extra_percentage;
+    public $prem_target;
+    public $income_target;
+    public $comm_percentage;
     public $deleteTargetId;
     public $editTargetId;
 
@@ -567,16 +568,18 @@ class CommProfileShow extends Component
         $this->editTargetId = $id;
         $t = Target::find($id);
         $this->period = $t->period;
-        $this->amount = $t->amount;
-        $this->extra_percentage = $t->extra_percentage;
+        $this->prem_target = $t->prem_target;
+        $this->income_target = $t->income_target;
+        $this->comm_percentage = $t->comm_percentage;
     }
 
     public function closeEditTargetSection()
     {
         $this->editTargetId = null;
         $this->period = null;
-        $this->amount = null;
-        $this->extra_percentage = null;
+        $this->prem_target = null;
+        $this->income_target = null;
+        $this->comm_percentage = null;
     }
 
     public function editarget()
@@ -584,11 +587,12 @@ class CommProfileShow extends Component
 
         $this->validate([
             'period' => 'required|in:' . implode(',', Target::PERIODS),
-            'amount' => 'required|numeric',
-            'extra_percentage' => 'required|numeric',
+            'income_target' => 'required|numeric',
+            'prem_target' => 'required|numeric',
+            'comm_percentage' => 'required|numeric',
         ]);
 
-        $res = Target::find($this->editTargetId)->editInfo($this->period, $this->amount, $this->extra_percentage);
+        $res = Target::find($this->editTargetId)->editInfo($this->period, $this->prem_target, $this->income_target, $this->comm_percentage);
         if ($res) {
             $this->closeEditTargetSection();
             $this->mount($this->profile->id);
@@ -625,17 +629,19 @@ class CommProfileShow extends Component
     {
         $this->validate([
             'period' => 'required|in:' . implode(',', Target::PERIODS),
-            'amount' => 'required|numeric',
-            'extra_percentage' => 'required|numeric',
+            'income_target' => 'required|numeric',
+            'prem_target' => 'required|numeric',
+            'comm_percentage' => 'required|numeric',
         ]);
 
-        $res = $this->profile->addTarget($this->period, $this->amount, $this->extra_percentage);
+        $res = $this->profile->addTarget($this->period, $this->prem_target, $this->income_target, $this->comm_percentage);
 
         if ($res) {
             $this->closeNewTargetSection();
             $this->period = null;
-            $this->amount = null;
-            $this->extra_percentage = null;
+            $this->prem_target = null;
+            $this->income_target = null;
+            $this->comm_percentage = null;
             $this->mount($this->profile->id);
             $this->alert('success', 'target added!');
         } else {

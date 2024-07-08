@@ -3,6 +3,7 @@
 namespace App\Models\Payments;
 
 use App\Models\Users\AppLog;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,7 +30,7 @@ class Target extends Model
     ];
 
     public $fillable = [
-        "period", "amount", "extra_percentage", "order"
+        "period", "prem_target", "comm_percentage", "order", "income_target"
     ];
     public $timestamps = false;
 
@@ -45,15 +46,17 @@ class Target extends Model
     ///model functions
     public function editInfo(
         $period,
-        $amount,
-        $extra_percentage
+        $prem_target,
+        $income_target,
+        $comm_percentage
     ) {
         try {
             AppLog::info("Updating comm profile target", loggable: $this);
             $this->update([
                 "period"    =>  $period,
-                "amount"    =>  $amount,
-                "extra_percentage"    =>  $extra_percentage,
+                "comm_percentage"    =>  $comm_percentage,
+                "income_target"    =>  $income_target,
+                "prem_target"    =>  $prem_target,
             ]);
             return true;
         } catch (Exception $e) {
@@ -134,6 +137,13 @@ class Target extends Model
             AppLog::error("Can't delete Comm Profile target", loggable: $this);
             return false;
         }
+    }
+
+    ///scopes 
+    public function scopeTodaysTarget()
+    {
+        $now = Carbon::now();
+        // return $this->
     }
 
     ///relations
