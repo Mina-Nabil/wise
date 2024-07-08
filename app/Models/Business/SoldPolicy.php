@@ -1213,7 +1213,9 @@ class SoldPolicy extends Model
         $query->select('sold_policies.*', 'offers.is_renewal')
             ->join('users', "sold_policies.creator_id", '=', 'users.id')
             ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id')
-            ->leftjoin('offers', 'sold_policies.offer_id', '=', 'offers.id');
+            ->leftjoin('offers', 'sold_policies.offer_id', '=', 'offers.id')
+            ->leftjoin('client_payments', 'client_payments.sold_policy_id', '=', 'sold_policies.id')
+            ->groupBy('sold_policies.id');
 
         // if (!($loggedInUser->is_admin
         //     || (($loggedInUser->is_operations || $loggedInUser->is_finance) && ($searchText || $is_expiring)))) {
@@ -1222,6 +1224,7 @@ class SoldPolicy extends Model
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id)
                     ->orwhere('sold_policies.main_sales_id', $loggedInUser->id)
+                    ->orwhere('client_payments.assigned_to', $loggedInUser->id)
                     ->orwhere('policy_watchers.user_id', $loggedInUser->id);
             });
         }
@@ -1235,7 +1238,7 @@ class SoldPolicy extends Model
                 $j->on('sold_policies.client_id', '=', 'customers.id')
                     ->where('sold_policies.client_type', Customer::MORPH_TYPE)
                     ->join('customer_phones', 'customer_phones.customer_id', '=', 'customers.id');
-            })->groupBy('sold_policies.id');
+            });
 
             $splittedText = explode(' ', $v);
 
