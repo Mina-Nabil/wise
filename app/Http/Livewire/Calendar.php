@@ -31,7 +31,7 @@ class Calendar extends Component
             ];
         }
 
-        foreach (Followup::userData(upcoming_only: true)->with('called')->get() as $t) {
+        foreach (Followup::userData(upcoming_only: true, mineOnly: true)->with('called')->get() as $t) {
             $events[] =  [
                 'id'        =>  "followup" . $t->id,
                 'title'     => "F. " . $t->title . ' - ' . $t->called?->name,

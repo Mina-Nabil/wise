@@ -108,14 +108,14 @@ class Followup extends Model
         }
     }
     ///scopes
-    public function scopeUserData($query, $searchText = null, $upcoming_only = false)
+    public function scopeUserData($query, $searchText = null, $upcoming_only = false, $mineOnly = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('followups.*')
             ->join('users', "followups.creator_id", '=', 'users.id');
 
-        if ($loggedInUser->type !== User::TYPE_ADMIN) {
+        if ($loggedInUser->type !== User::TYPE_ADMIN || $mineOnly) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);
