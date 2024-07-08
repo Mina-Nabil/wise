@@ -2,6 +2,7 @@
 
 namespace App\Models\Payments;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,17 @@ class TargetCycle extends Model
             report($e);
             return false;
         }
+    }
+
+    ///scopes
+    public function getIsDueTodayAttribute()
+    {
+        // 3 => 4 , 7 , 10 , 1 
+        // 6 => 7 , 1 
+        // 4 => 5 , 9 , 1 
+
+        $now = Carbon::now();
+        return !(($now->subMonth()->month()) % $this->each_month) && $now->day == $this->day_of_month;
     }
 
     public function delete()

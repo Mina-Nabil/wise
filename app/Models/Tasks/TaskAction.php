@@ -41,6 +41,7 @@ class TaskAction extends Model
             'car_plate_no',
             'insured_value',
             'expiry',
+            'in_favor_to',
         ]
     ];
 

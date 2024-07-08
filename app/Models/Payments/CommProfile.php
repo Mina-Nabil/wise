@@ -243,6 +243,7 @@ class CommProfile extends Model
 
     public function addTargetCycle($day_of_month, $each_month)
     {
+        assert($each_month == 3 || $each_month == 4 || $each_month == 6 ||  $each_month == 12, "Please set target cycle to 3, 4, 6 or 12");
         try {
             $this->target_cycles()->create([
                 "day_of_month"  =>  $day_of_month,
@@ -256,7 +257,8 @@ class CommProfile extends Model
     }
 
     ///attributes
-    public function getIsSalesOutAttribute(){
+    public function getIsSalesOutAttribute()
+    {
         return $this->type == self::TYPE_SALES_OUT;
     }
 
