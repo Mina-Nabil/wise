@@ -1383,6 +1383,13 @@ class SoldPolicy extends Model
         return $query->where('offer_id', $id);
     }
 
+    ///attributes
+    public function getIsExpiredAttribute()
+    {
+        $now = Carbon::now();
+        return $now->isAfter(new Carbon($this->expiry));
+    }
+
     ///relations
     public function client(): MorphTo
     {

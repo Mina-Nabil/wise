@@ -171,6 +171,10 @@
                                                                                 <span
                                                                                     class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
                                                                             @endif
+                                                                            @if ($policy->is_expired)
+                                                                                <span
+                                                                                    class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Expired</span>
+                                                                            @endif
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <div class="dropstart relative">
