@@ -8,26 +8,101 @@ use App\Models\Offers\Offer;
 use App\Models\Payments\ClientPayment;
 use App\Models\Tasks\Task;
 use App\Models\Users\CalendarEvent;
+use App\Models\Users\User;
 use App\Models\Users\CalendarEventUser;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
+use App\Traits\AlertFrontEnd;
 
 class Calendar extends Component
 {
+    use AlertFrontEnd;
 
+    public $newEventSection = false;
 
     public $title;
     public $start_time;
     public $end_time;
-    public $all_day;
-    public $all_user;
+    public $all_day = false;
+    public $all_user = false;
     public $location;
     public $note;
-    public $users;
+    public $users_array = [];
+
+    public function addEvent()
+    {
+        // Validate the input data
+        $this->validate([
+            'title' => 'required|string|max:255',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after_or_equal:start_time',
+            'all_day' => 'nullable|boolean',
+            'all_user' => 'nullable|boolean',
+            'location' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:500',
+        ]);
+        // Convert start_time and end_time to Carbon instances
+        $startTime = Carbon::parse($this->start_time);
+        $endTime = Carbon::parse($this->end_time);
+
+        // dd($this->users_array);
+
+        // Call the static newEvent function on CalendarEvent
+        $res = CalendarEvent::newEvent(
+            $this->title,
+            $startTime,
+            $endTime,
+            $this->all_day,
+            $this->all_user,
+            $this->location,
+            $this->note,
+            $this->users_array
+        );
+
+        if($res){
+            $this->reset(['title', 'start_time', 'end_time', 'all_day', 'all_user', 'location', 'note' ,'newEventSection']);
+            $this->alert('success' , 'Event Added!');
+        }else{
+            $this->alert('failed' , 'server error');
+        }
+    }
+
+    public function mount()
+    {
+        // Initialize with one user
+        $this->users_array[] = [
+            'tag' => '',
+            'user_id' => '',
+            'guest_name' => '',
+        ];
+    }
 
 
+    public function addUser()
+    {
+        $this->users_array[] = [
+            'tag' => '',
+            'user_id' => '',
+            'guest_name' => '',
+        ];
+    }
 
+    public function removeUser($index)
+    {
+        if (count($this->users_array) > 1) {
+            unset($this->users_array[$index]);
+            $this->users_array = array_values($this->users_array); // Reindex array
+        }
+    }
+
+    public function closeNewEventSec() {
+        $this->newEventSection = false;
+    }
+
+    public function openNewEventSec() {
+        $this->newEventSection = true;
+    }
     public function render()
     {
         $events = [];
@@ -93,10 +168,12 @@ class Calendar extends Component
         }
 
         $USER_TAGS = CalendarEventUser::TAGS;
+        $USERS = User::all();
 
         return view('livewire.calendar', [
             'events' => $events,
-            'USER_TAGS' => $USER_TAGS
+            'USER_TAGS' => $USER_TAGS,
+            'USERS' => $USERS
         ]);
     }
 }
