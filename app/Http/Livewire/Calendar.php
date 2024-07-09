@@ -8,12 +8,25 @@ use App\Models\Offers\Offer;
 use App\Models\Payments\ClientPayment;
 use App\Models\Tasks\Task;
 use App\Models\Users\CalendarEvent;
+use App\Models\Users\CalendarEventUser;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 
 class Calendar extends Component
 {
+
+
+    public $title;
+    public $start_time;
+    public $end_time;
+    public $all_day;
+    public $all_user;
+    public $location;
+    public $note;
+    public $users;
+
+
 
     public function render()
     {
@@ -39,7 +52,7 @@ class Calendar extends Component
                 'textColor' => 'white',
                 'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
                 'end'       => (new Carbon($t->call_time))->toIso8601String(),
-                'url'       => url($t->called_type . 's' , $t->called_id)
+                'url'       => url($t->called_type . 's', $t->called_id)
             ];
         }
 
@@ -79,8 +92,11 @@ class Calendar extends Component
             ];
         }
 
+        $USER_TAGS = CalendarEventUser::TAGS;
+
         return view('livewire.calendar', [
-            'events' => $events
+            'events' => $events,
+            'USER_TAGS' => $USER_TAGS
         ]);
     }
 }
