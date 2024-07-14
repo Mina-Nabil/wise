@@ -20,6 +20,8 @@ class Calendar extends Component
 {
     use AlertFrontEnd;
 
+    protected $listeners = ['showEvent'];
+
     public $newEventSection = false;
 
     public $title;
@@ -30,6 +32,62 @@ class Calendar extends Component
     public $location;
     public $note;
     public $users_array = [];
+
+    public $eventID;
+
+    public function showEvent($id)
+    {
+        $this->eventID = $id;
+        $e = CalendarEvent::find($id);
+        $this->title = $e->title;
+        $this->start_time = $e->start_time;
+        $this->end_time = $e->end_time;
+        $this->all_day = $e->all_day;
+        $this->all_user = $e->all_user;
+        $this->location = $e->location;
+        $this->note = $e->note;
+    }
+
+    public function updateEvent()
+    {
+
+        // Validate the input data
+        $this->validate([
+            'title' => 'required|string|max:255',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after_or_equal:start_time',
+            'all_day' => 'nullable|boolean',
+            'all_user' => 'nullable|boolean',
+            'location' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:500',
+        ]);
+        // Convert start_time and end_time to Carbon instances
+        $startTime = Carbon::parse($this->start_time);
+        $endTime = Carbon::parse($this->end_time);
+
+        $res = CalendarEvent::find($this->eventID)->editInfo(
+            $this->title,
+            $startTime,
+            $endTime,
+            $this->all_day,
+            $this->all_user,
+            $this->location,
+            $this->note,
+        );
+
+        if ($res) {
+            $this->reset(['title', 'start_time', 'end_time', 'all_day', 'all_user', 'location', 'note', 'eventID']);
+            $this->alert('success', 'Event updated!');
+            redirect(url('calendar'));
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function closeUpdateEvent()
+    {
+        $this->reset(['eventID']);
+    }
 
     public function addEvent()
     {
@@ -61,11 +119,12 @@ class Calendar extends Component
             $this->users_array
         );
 
-        if($res){
-            $this->reset(['title', 'start_time', 'end_time', 'all_day', 'all_user', 'location', 'note' ,'newEventSection']);
-            $this->alert('success' , 'Event Added!');
-        }else{
-            $this->alert('failed' , 'server error');
+        if ($res) {
+            $this->reset(['title', 'start_time', 'end_time', 'all_day', 'all_user', 'location', 'note', 'newEventSection']);
+            $this->alert('success', 'Event Added!');
+            redirect(url('calendar'));
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
@@ -97,11 +156,13 @@ class Calendar extends Component
         }
     }
 
-    public function closeNewEventSec() {
+    public function closeNewEventSec()
+    {
         $this->newEventSection = false;
     }
 
-    public function openNewEventSec() {
+    public function openNewEventSec()
+    {
         $this->newEventSection = true;
     }
     public function render()
@@ -166,6 +227,7 @@ class Calendar extends Component
                 'allDay'    => true,
                 'start'     => (new Carbon($t->start_time))->toIso8601String(),
                 'end'       => (new Carbon($t->end_time))->toIso8601String(),
+                'url'       => "#"
             ];
         }
 
