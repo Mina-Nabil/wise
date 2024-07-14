@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CalendarEvent extends Model
 {
@@ -28,8 +29,12 @@ class CalendarEvent extends Model
     /** @param array $users_array each array item shall be an array of 'tag' , 'user_id' & 'guest_name'  */
     public function setUsers($users_array)
     {
+        foreach ($users_array as $i => $ua) {
+            if ($ua['tag'] == CalendarEventUser::TAG_GUEST) unset($users_array[$i]['user_id']);
+        }
+
         try {
-            $this->event_users()->delete();
+            $this->event_users()->withoutOwner()->delete();
             $this->event_users()->createMany($users_array);
         } catch (Exception $e) {
             report($e);
@@ -88,6 +93,10 @@ class CalendarEvent extends Model
 
         try {
             $newEvent->save();
+            array_push($users, [
+                "user_id"   =>  Auth::id(),
+                "tag"   =>  CalendarEventUser::TAG_OWNER,
+            ]);
             $newEvent->setUsers($users);
             return $newEvent;
         } catch (Exception $e) {
@@ -102,14 +111,16 @@ class CalendarEvent extends Model
         $from = $from ?? Carbon::now();
         $to = $to ?? Carbon::now()->addMonths(2);
 
-        return $query->select('events_users.id')
-            ->join('events_users', 'events_users.user_id', '=', 'calendar_events.id')
-            ->where('events_users.user_id', Auth::id())
+        return $query->select('calendar_events.*')
+            ->join('events_users', 'events_users.calendar_event_id', '=', 'calendar_events.id')
+            ->where(function ($q) {
+                $q->where('events_users.user_id', Auth::id())->orWhere('all_users', 1);
+            })
             ->whereBetween('start_time', [
                 $from->format('Y-m-d'),
                 $to->format('Y-m-d')
             ])
-            ->groupBy('events_users.id');
+            ->groupBy('calendar_events.id');
     }
 
     //attributes
@@ -118,7 +129,7 @@ class CalendarEvent extends Model
         $this->loadMissing('event_users');
         $names = '';
 
-        foreach($this->event_users as $u){
+        foreach ($this->event_users as $u) {
             $names .= ($u->title . ', ');
         }
 

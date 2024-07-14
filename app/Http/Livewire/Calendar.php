@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Support\Facades\Log;
 
 class Calendar extends Component
 {
@@ -157,6 +158,7 @@ class Calendar extends Component
         }
 
         foreach (CalendarEvent::userData()->with('event_users')->get() as $t) {
+
             $events[] =  [
                 'id'        => "event" . $t->id,
                 'title'     => "$t->title with " . $t->event_users_names,

@@ -59,6 +59,12 @@ class CalendarEventUser extends Model
         return $this->delete();
     }
 
+    ///scopes
+    public function scopeWithoutOwner($query)
+    {
+        return $query->whereNot('tag', CalendarEventUser::TAG_OWNER);
+    }
+
     //relations
     public function event(): BelongsTo
     {
