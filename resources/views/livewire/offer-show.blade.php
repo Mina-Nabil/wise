@@ -1479,10 +1479,10 @@
                                 </div>
                             </div>
                             <div class="from-group">
-                                <label for="inFavorTo" class="form-label">in Favor To</label>
-                                <input type="text" name="inFavorTo" class="form-control mt-2 w-full"
-                                    wire:model.defer="inFavorTo">
-                                @error('inFavorTo')
+                                <label for="soldInFavorTo" class="form-label">in Favor To</label>
+                                <input type="text" name="soldInFavorTo" class="form-control mt-2 w-full"
+                                    wire:model.defer="soldInFavorTo">
+                                @error('soldInFavorTo')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
