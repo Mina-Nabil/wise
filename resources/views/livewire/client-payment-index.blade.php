@@ -146,10 +146,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        <b>
                                             {{ $payment->assigned?->username }}
-
-                                        </b>
                                     </td>
 
                                     <td class="table-td">
