@@ -576,7 +576,7 @@ class SoldPolicy extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
 
-        $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement", $desc, $due);
+        $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement - " . $this->client->name, $desc, $due);
         if (!$newEndors) return false;
         $this->sendPolicyNotifications("Policy#$this->id endorsement added", Auth::user()->username . " added a endorsement");
         foreach ($actions as $a) {
@@ -591,7 +591,7 @@ class SoldPolicy extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
 
-        $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim", $desc, $due);
+        $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim - " . $this->client->name, $desc, $due);
         if (!$newTask) return false;
         $this->sendPolicyNotifications("Policy#$this->id claim added", Auth::user()->username . " added a claim");
 
