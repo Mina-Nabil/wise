@@ -35,7 +35,7 @@ class ClientPaymentIndex extends Component
     public function render()
     {
         $statuses = ClientPayment::PYMT_STATES;
-        $payments = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText)->with('sold_policy', 'sold_policy.client', 'sold_policy.main_sales')->paginate(50);
+        $payments = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText)->with('sold_policy', 'sold_policy.client', 'sold_policy.creator')->paginate(50);
         return view('livewire.client-payment-index', [
             'statuses' => $statuses,
             'payments' => $payments

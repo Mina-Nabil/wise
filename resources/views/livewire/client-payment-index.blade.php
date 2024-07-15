@@ -85,7 +85,7 @@
                                 </th>
 
                                 <th scope="col" class="table-th">
-                                    Owner
+                                    Creator
                                 </th>
 
                                 <th scope="col" class=" table-th ">
@@ -134,7 +134,7 @@
                                         {{ $payment->sold_policy->policy_number }}
                                     </td>
                                     <td class="table-td">
-                                        {{ $payment->sold_policy->main_sales->username }}
+                                        {{ $payment->sold_policy->creator->username }}
                                     </td>
                                     <td class="table-td">
                                         {{ $payment->sold_policy->client->full_name }}
