@@ -55,7 +55,7 @@
                             <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5 mb-5" style="width:300px"
                             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
                             wire:model="dateRange">
-                            
+
                         </div>
 
 
@@ -85,16 +85,19 @@
                                                                         POLICY
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        START DATE
+                                                                        CREATOR
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        END DATE
+                                                                        START
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        POLICY NUMBER
+                                                                        END
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        CLIENT NAME
+                                                                        POLICY#
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        CLIENT
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
                                                                         STATUS
@@ -119,6 +122,10 @@
                                                                                     {{ $policy->policy->name }}
                                                                                 </div>
                                                                             </div>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ $policy->creator->username }}</span>
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <span
