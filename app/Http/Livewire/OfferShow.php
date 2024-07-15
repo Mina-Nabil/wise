@@ -251,6 +251,7 @@ class OfferShow extends Component
         $this->installments_count = $option->installements_count;
         $this->sold_payment_frequency = $option->payment_frequency;
         $this->policy_number = $this->offer->renewal_policy;
+        $this->soldInFavorTo = $this->offer->in_favor_to;
     }
 
     public function closeGenerateSoldPolicy()
