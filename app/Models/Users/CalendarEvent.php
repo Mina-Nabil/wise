@@ -69,6 +69,20 @@ class CalendarEvent extends Model
         }
     }
 
+
+    public function deleteEvent()
+    {
+
+        try {
+            $this->event_users()->delete();
+            $this->delete();
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     ///static functions
     /** @param array $users each array item shall be an array of 'tag', 'user_id' & 'guest_name'  */
     public static function newEvent(
@@ -93,10 +107,6 @@ class CalendarEvent extends Model
 
         try {
             $newEvent->save();
-            array_push($users, [
-                "user_id"   =>  Auth::id(),
-                "tag"   =>  CalendarEventUser::TAG_OWNER,
-            ]);
             $newEvent->setUsers($users);
             return $newEvent;
         } catch (Exception $e) {

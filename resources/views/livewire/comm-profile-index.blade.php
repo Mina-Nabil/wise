@@ -40,9 +40,9 @@
                                         Type
                                     </th>
 
-                                    <th scope="col" class=" table-th ">
+                                    {{-- <th scope="col" class=" table-th ">
                                         Per Policy
-                                    </th>
+                                    </th> --}}
 
                                     <th scope="col" class=" table-th ">
                                         Available for Selection
@@ -71,9 +71,9 @@
                                             {{ ucwords(str_replace('_', ' ', $profile->type)) }}
                                         </td>
 
-                                        <td class="table-td">
+                                        {{-- <td class="table-td">
                                             {{ $profile->per_policy ? 'Yes' : 'No' }}
-                                        </td>
+                                        </td> --}}
 
                                         <td class="table-td">
                                             {{ $profile->select_available ? 'Yes' : 'No' }}
@@ -161,14 +161,14 @@
                                     @enderror
 
                                     <div class="input-area mt-3">
-                                        <div class="flex items-center space-x-2">
+                                        {{-- <div class="flex items-center space-x-2">
                                             <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                                                 <input wire:model.defer="newPerPolicy" type="checkbox" value="" class="sr-only peer">
                                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500"></div>
                                             </label>
                                             <span class="text-sm text-slate-600 font-Inter font-normal">Per Policy</span>
 
-                                        </div>
+                                        </div> --}}
 
                                         <div class="flex items-center space-x-2 mt-3">
                                             <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">

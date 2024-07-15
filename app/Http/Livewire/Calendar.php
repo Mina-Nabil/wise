@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class Calendar extends Component
@@ -100,6 +101,7 @@ class Calendar extends Component
             'all_user' => 'nullable|boolean',
             'location' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:500',
+            'users_array.*.tag' => 'required',
         ]);
         // Convert start_time and end_time to Carbon instances
         $startTime = Carbon::parse($this->start_time);
@@ -132,9 +134,8 @@ class Calendar extends Component
     {
         // Initialize with one user
         $this->users_array[] = [
-            'tag' => '',
-            'user_id' => '',
-            'guest_name' => '',
+            'tag' => CalendarEventUser::TAG_OWNER,
+            'user_id' => Auth::id(),
         ];
     }
 

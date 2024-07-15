@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+    public function welcome()
+    {
+        return view('welcome');
+    }
+
     public function index()
     {
         return view('home.index');

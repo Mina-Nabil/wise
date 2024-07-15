@@ -93,6 +93,7 @@ Route::middleware('auth', 'active')->group(function () {
 
 });
 
+Route::get('/welcome', [HomeController::class, 'welcome']);
 Route::post('/login', [HomeController::class, 'authenticate']);
 Route::get('/login', [HomeController::class, 'login'])->name('login');
 Route::get('/logout', [HomeController::class, 'logout'])->name('logout');

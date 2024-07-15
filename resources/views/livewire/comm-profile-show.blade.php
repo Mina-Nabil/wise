@@ -133,15 +133,6 @@
                                 Collected Client Payments</a>
                         </li>
                     @endif
-                    <li class="nav-item" role="presentation" wire:click="changeSection('configurations')">
-                        <a href="#tabs-messages-withIcon"
-                            class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'configurations') active @endif dark:text-slate-300"
-                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
-                            data-bs-target="#tabs-messages-withIcon" role="tab"
-                            aria-controls="tabs-messages-withIcon" aria-selected="false">
-                            <iconify-icon class="mr-1" icon="grommet-icons:configure"></iconify-icon>
-                            Configurations</a>
-                    </li>
                     <li class="nav-item" role="presentation" wire:click="changeSection('targets')">
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'targets') active @endif dark:text-slate-300"
@@ -150,6 +141,15 @@
                             aria-controls="tabs-messages-withIcon" aria-selected="false">
                             <iconify-icon class="mr-1" icon="lets-icons:target-fill"></iconify-icon>
                             Targets</a>
+                    </li>
+                    <li class="nav-item" role="presentation" wire:click="changeSection('configurations')">
+                        <a href="#tabs-messages-withIcon"
+                            class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'configurations') active @endif dark:text-slate-300"
+                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
+                            data-bs-target="#tabs-messages-withIcon" role="tab"
+                            aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            <iconify-icon class="mr-1" icon="grommet-icons:configure"></iconify-icon>
+                            Direct Configurations</a>
                     </li>
                 </ul>
             </div>
@@ -789,136 +789,6 @@
         </div>
     @endif
 
-
-    {{-- Configurations --}}
-    @if ($section === 'configurations')
-        <div class="card mt-5">
-            <div class="card-body">
-                <div class="card-text h-full">
-                    <div class="px-4 pt-4 pb-3">
-                        <div class="flex justify-between">
-                            <label class="form-label">
-                                Configurations
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="moveup,movedown"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
-                            </label>
-
-                        </div>
-
-                        <div class="card-body px-6 pb-6">
-                            <div class="overflow-x-auto ">
-                                <div class="inline-block min-w-full align-middle">
-                                    <div class="overflow-hidden ">
-                                        <table
-                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                            <thead class="">
-                                                <tr>
-
-                                                    <th scope="col" class=" table-th ">
-                                                        Percentage
-                                                    </th>
-
-                                                    <th scope="col" class=" table-th ">
-                                                        From
-                                                    </th>
-
-                                                    <th scope="col" class=" table-th ">
-                                                        Condition
-                                                    </th>
-
-                                                    <th scope="col" class=" table-th ">
-                                                        Action
-                                                    </th>
-
-                                                </tr>
-                                            </thead>
-                                            <tbody
-                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
-                                                @foreach ($profile->configurations as $conf)
-                                                    <tr>
-
-                                                        <td class="table-td ">
-                                                            <p class="text-success-500 text-lg">
-                                                                <b>{{ $conf->percentage }}%
-                                                                </b></p>
-                                                        </td>
-
-                                                        <td class="table-td">
-                                                            {{ ucwords(str_replace('_', ' ', $conf->from)) }}
-
-                                                        </td>
-
-                                                        <td class="table-td">
-                                                            {{ $conf->condition_title }}
-                                                        </td>
-
-                                                        <td class="p-1">
-                                                            <div class=" flex justify-center">
-                                                                <button class="toolTip onTop action-btn m-1 "
-                                                                    data-tippy-content="Edit"
-                                                                    wire:click="editThisConf({{ $conf->id }})"
-                                                                    type="button">
-                                                                    <iconify-icon
-                                                                        icon="iconamoon:edit-bold"></iconify-icon>
-                                                                </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Move Up" type="button"
-                                                                    wire:click="moveup({{ $conf->id }})">
-                                                                    <iconify-icon icon="ion:arrow-up"></iconify-icon>
-                                                                </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Move Down" type="button"
-                                                                    wire:click="movedown({{ $conf->id }})">
-                                                                    <iconify-icon icon="ion:arrow-down"></iconify-icon>
-                                                                </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Delete" type="button"
-                                                                    wire:click="confirmDeleteConf({{ $conf->id }})">
-                                                                    <iconify-icon
-                                                                        icon="heroicons:trash"></iconify-icon>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                                @if ($profile->configurations->isEmpty())
-                                                    <tr>
-                                                        <td colspan="6" class="text-center p-5">
-                                                            <div
-                                                                class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
-                                                                <div
-                                                                    class="flex items-start space-x-3 rtl:space-x-reverse">
-                                                                    <div class="flex-1">
-                                                                        No configrations added to this profile!
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                                <tr>
-                                                    <td colspan="6" class="pt-3">
-                                                        <button wire:click="openNewConfSection"
-                                                            class="btn inline-flex justify-center btn-light btn-sm">
-                                                            Add new configuration
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-
     {{-- Targets --}}
     @if ($section === 'targets')
         <div class="card mt-5">
@@ -1154,6 +1024,135 @@
                                                         <button wire:click="openNewCycleSection"
                                                             class="btn inline-flex justify-center btn-light btn-sm">
                                                             Add new target cycle
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Configurations --}}
+    @if ($section === 'configurations')
+        <div class="card mt-5">
+            <div class="card-body">
+                <div class="card-text h-full">
+                    <div class="px-4 pt-4 pb-3">
+                        <div class="flex justify-between">
+                            <label class="form-label">
+                                Direct Configurations
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="moveup,movedown"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </label>
+
+                        </div>
+
+                        <div class="card-body px-6 pb-6">
+                            <div class="overflow-x-auto ">
+                                <div class="inline-block min-w-full align-middle">
+                                    <div class="overflow-hidden ">
+                                        <table
+                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                            <thead class="">
+                                                <tr>
+
+                                                    <th scope="col" class=" table-th ">
+                                                        Percentage
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
+                                                        From
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
+                                                        Condition
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
+                                                        Action
+                                                    </th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                                @foreach ($profile->configurations as $conf)
+                                                    <tr>
+
+                                                        <td class="table-td ">
+                                                            <p class="text-success-500 text-lg">
+                                                                <b>{{ $conf->percentage }}%
+                                                                </b></p>
+                                                        </td>
+
+                                                        <td class="table-td">
+                                                            {{ ucwords(str_replace('_', ' ', $conf->from)) }}
+
+                                                        </td>
+
+                                                        <td class="table-td">
+                                                            {{ $conf->condition_title }}
+                                                        </td>
+
+                                                        <td class="p-1">
+                                                            <div class=" flex justify-center">
+                                                                <button class="toolTip onTop action-btn m-1 "
+                                                                    data-tippy-content="Edit"
+                                                                    wire:click="editThisConf({{ $conf->id }})"
+                                                                    type="button">
+                                                                    <iconify-icon
+                                                                        icon="iconamoon:edit-bold"></iconify-icon>
+                                                                </button>
+                                                                <button class="toolTip onTop action-btn m-1"
+                                                                    data-tippy-content="Move Up" type="button"
+                                                                    wire:click="moveup({{ $conf->id }})">
+                                                                    <iconify-icon icon="ion:arrow-up"></iconify-icon>
+                                                                </button>
+                                                                <button class="toolTip onTop action-btn m-1"
+                                                                    data-tippy-content="Move Down" type="button"
+                                                                    wire:click="movedown({{ $conf->id }})">
+                                                                    <iconify-icon icon="ion:arrow-down"></iconify-icon>
+                                                                </button>
+                                                                <button class="toolTip onTop action-btn m-1"
+                                                                    data-tippy-content="Delete" type="button"
+                                                                    wire:click="confirmDeleteConf({{ $conf->id }})">
+                                                                    <iconify-icon
+                                                                        icon="heroicons:trash"></iconify-icon>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                                @if ($profile->configurations->isEmpty())
+                                                    <tr>
+                                                        <td colspan="6" class="text-center p-5">
+                                                            <div
+                                                                class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
+                                                                <div
+                                                                    class="flex items-start space-x-3 rtl:space-x-reverse">
+                                                                    <div class="flex-1">
+                                                                        No configrations added to this profile!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                                <tr>
+                                                    <td colspan="6" class="pt-3">
+                                                        <button wire:click="openNewConfSection"
+                                                            class="btn inline-flex justify-center btn-light btn-sm">
+                                                            Add new configuration
                                                         </button>
                                                     </td>
                                                 </tr>

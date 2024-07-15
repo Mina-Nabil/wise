@@ -2,18 +2,21 @@
 
 namespace App\Models\Payments;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -181,13 +184,30 @@ class CommProfile extends Model
         }
     }
 
-    /** Must be called from daily job */
-    public function getFulfilledTarget()
+    public function getSoldPolicies(Carbon $from, Carbon $to)
     {
-        foreach($this->targets()->get() as $target){
+        return $this->sold_policies()->whereBetween('created_at', [
+            $from->format('Y-m-d 00:00:00'),
+            $to->format('Y-m-d 23:59:00')
+        ])->get();
+    }
+
+    /** Must be called from daily job */
+    public function checkFulfilledTargets()
+    {
+
+        foreach ($this->targets()->get() as $target) {
             switch ($target->period) {
                 case Target::PERIOD_MONTH:
-                    # code...
+                    $month_ini = new Carbon("first day of last month");
+                    $month_end = new Carbon("last day of last month");
+
+                    $soldPolicies = $this->getSoldPolicies($month_ini, $month_end);
+                    $totalNet = $soldPolicies->sum('net_premium');
+                    $totalIncome = $soldPolicies->sum('total_policy_comm');
+                    if($this->prem_target <= $totalNet && $this->income_target <= $totalIncome){
+                        $target->addTargetPayments($soldPolicies);
+                    }
                     break;
                 case Target::PERIOD_QUARTER:
                     # code...
@@ -335,6 +355,11 @@ class CommProfile extends Model
     public function client_payments(): HasMany
     {
         return $this->hasMany(ClientPayment::class, 'sales_out_id');
+    }
+
+    public function sold_policies(): BelongsToMany
+    {
+        return $this->belongsToMany(SoldPolicy::class, 'sales_comms');
     }
 
     public function offers(): BelongsToMany

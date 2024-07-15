@@ -418,7 +418,7 @@ class Offer extends Model
         try {
             if ($this->sales_comms()->create([
                 "title"             => $title,
-                "comm_profile_id"           => $comm_profile_id,
+                "comm_profile_id"   => $comm_profile_id,
                 "from"              => $from,
                 "comm_percentage"   => $comm_percentage,
                 "note"              => $note

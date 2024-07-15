@@ -88,13 +88,6 @@ class User extends Authenticatable
         }
     }
 
-    public function getTotalSoldPolicies(Carbon $from, Carbon $to)
-    {
-        return $this->sold_policies()->whereBetween('created_at', [
-            $from->format('Y-m-d 00:00:00'),
-            $to->format('Y-m-d 23:59:00')
-        ])->get();
-    }
 
     public function switchSession($user_id)
     {

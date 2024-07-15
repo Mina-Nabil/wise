@@ -44,7 +44,6 @@ class Target extends Model
     }
 
     ///model functions
-    /** Must be called from daily job */
     public function addTargetPayments()
     {
 
