@@ -25,7 +25,7 @@
                             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
                             wire:model="dateRange">
 
-                            <div class="secondary-radio">
+                            <div class="secondary-radio pb-2">
                                 <label class="flex items-center cursor-pointer">
                                     <input type="radio" class="hidden" value="all" wire:model="isPaidCB">
                                     <span
@@ -35,7 +35,7 @@
                                 </label>
                             </div>
 
-                            <div class="secondary-radio">
+                            <div class="secondary-radio pb-2">
                                 <label class="flex items-center cursor-pointer">
                                     <input type="radio" class="hidden" value="isPaid" wire:model="isPaidCB">
                                     <span
@@ -45,7 +45,7 @@
                                 </label>
                             </div>
 
-                            <div class="secondary-radio">
+                            <div class="secondary-radio pb-2">
                                 <label class="flex items-center cursor-pointer">
                                     <input type="radio" class="hidden" value="notPaid" wire:model="isPaidCB">
                                     <span
