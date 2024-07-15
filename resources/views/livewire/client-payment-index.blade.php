@@ -18,8 +18,8 @@
 
     <div class="flex mb-2">
         <div class="dropdown relative">
-            <button class="btn inline-flex justify-center btn-dark items-center" type="button"
-                id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn inline-flex justify-center btn-dark items-center" type="button" id="darkDropdownMenuButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
                 @if ($filteredStatus)
                     Status: {{ str_replace('_', ' ', $filteredStatus[0]) }}
                 @else
@@ -50,7 +50,8 @@
 
         </div>
 
-        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model="searchText" placeholder="Search by policy number">
+        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text"
+            wire:model="searchText" placeholder="Search by policy number">
 
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px"
             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
@@ -81,7 +82,7 @@
                             <tr>
 
                                 <th scope="col" class=" table-th ">
-                                    Policy# 
+                                    Policy#
                                 </th>
 
                                 <th scope="col" class="table-th">
@@ -145,22 +146,18 @@
                                     </td>
 
                                     <td class="table-td">
-                                        @if ($payment->assigned_to)
-                                            <b>
-                                                {{ $payment->assigned?->first_name }}
-                                                {{ $payment->assigned?->last_name }}
-                                            </b>
-                                        @else
-                                            <b> - </b>
-                                        @endif
+                                        <b>
+                                            {{ $payment->assigned?->username }}
+
+                                        </b>
                                     </td>
 
                                     <td class="table-td">
-                                        <p ><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
+                                        <p><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
                                     </td>
 
                                     <td class="table-td">
-                                        {{ ucwords(str_replace('_',' ',$payment->type)) }}
+                                        {{ ucwords(str_replace('_', ' ', $payment->type)) }}
                                     </td>
 
                                     <td class="table-td">
