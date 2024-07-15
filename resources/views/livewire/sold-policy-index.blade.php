@@ -19,11 +19,11 @@
         <div class="card-body px-6 pb-6">
             <div class=" -mx-6">
                 <div class="inline-block min-w-full align-middle">
-                    <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5 mb-5" style="width:300px"
-                    id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
-                    wire:model="dateRange">
                     <div class="overflow-hidden ">
-                        <div class="flex items-center space-x-7 flex-wrap h-[30px]">
+                        <div class="flex items-center space-x-7 flex-wrap h-[60px]">
+                            <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5 mb-5" style="width:300px"
+                            id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
+                            wire:model="dateRange">
 
                             <div class="secondary-radio">
                                 <label class="flex items-center cursor-pointer">
