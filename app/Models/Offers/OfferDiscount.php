@@ -43,9 +43,10 @@ class OfferDiscount extends Model
     ////model functions
     public function editInfo($type, $value, $note = null)
     {
+        $this->loadMissing('offer');
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
+        if (!$loggedInUser->can('updateDiscount', $this->offer)) return false;
 
         try {
             if ($this->update([
@@ -66,9 +67,11 @@ class OfferDiscount extends Model
 
     public function delete()
     {
+        $this->loadMissing('offer');
+
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('delete', $this)) throw new UnauthorizedException();
+        if (!$loggedInUser->can('updateDiscount', $this->offer)) throw new UnauthorizedException();
         try {
             $this->loadMissing('offer');
             $tmpOffer = $this->offer;

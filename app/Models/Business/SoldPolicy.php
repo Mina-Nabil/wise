@@ -75,6 +75,9 @@ class SoldPolicy extends Model
             $this->update([
                 'is_renewed' => true,
             ]);
+            foreach ($this->files()->get() as $f) {
+                $newOffer->addFile($f->name, $f->url);
+            }
             return $newOffer;
         }
     }
