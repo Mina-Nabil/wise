@@ -22,10 +22,10 @@
                     <div class="overflow-hidden ">
 
                         <div class="flex items-center space-x-7 flex-wrap h-[30px]">
-                            <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px"
+                            <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5 mb-5" style="width:300px"
                             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
                             wire:model="dateRange">
-                            
+
                             <div class="secondary-radio">
                                 <label class="flex items-center cursor-pointer">
                                     <input type="radio" class="hidden" value="all" wire:model="isPaidCB">
