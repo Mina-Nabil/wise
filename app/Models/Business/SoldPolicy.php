@@ -1308,6 +1308,13 @@ class SoldPolicy extends Model
         return $query->orderBy("sold_policies.start");
     }
 
+    public function scopeFromTo($query, Carbon $from, Carbon $to)
+    {
+        return $query->where(function ($query) use ($from, $to) {
+            $query->whereBetween("sold_policies.start", [$from->format('Y-m-d'), $to->format('Y-m-d')])
+                ->orWhereNull("sold_policies.start");
+        });
+    }
 
     public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premuim_to = null, $net_premuim_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null)
     {
@@ -1354,7 +1361,6 @@ class SoldPolicy extends Model
         $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
         return $query;
     }
-
 
     public function scopeByPaid($query, $is_paid)
     {

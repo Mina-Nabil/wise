@@ -32,6 +32,9 @@ class SoldPolicyIndex extends Component
     public $policyData;
     public $selectedPolicyId;
     public $selectedPolicyName;
+    public $dateRange;
+    public $startDate;
+    public $endDate;
 
     public $client;
     public $policy_id;
@@ -58,6 +61,11 @@ class SoldPolicyIndex extends Component
 
     public $newPolicySection = false;
     public $isPaidCB = 'all';
+
+    protected $queryString = [
+        'startDate' => ['except' => ''],
+        'endDate' => ['except' => ''],
+    ];
 
     public function openNewPolicySection()
     {
@@ -199,6 +207,22 @@ class SoldPolicyIndex extends Component
         $this->resetPage();
     }
 
+    public function updatedDateRange()
+    {
+        if (strpos($this->dateRange, 'to') !== false) {
+            // The string contains 'to'
+            [$this->startDate, $this->endDate] = explode(' to ', $this->dateRange);
+            // dd($this->startDate, $this->endDate);
+        }
+    }
+
+    public function mount()
+    {
+        $this->startDate = null;
+        $this->endDate = null;
+        $this->dateRange = ($this->startDate && $this->endDate) ? $this->startDate . ' to ' . $this->endDate : "N/A";
+    }
+
     public function render()
     {
         $soldPolicies = SoldPolicy::userData(searchText: $this->search)
@@ -206,7 +230,12 @@ class SoldPolicyIndex extends Component
             ->when($this->isPaidCB, function ($q, $v) {
                 if ($v === 'isPaid') return $q->byPaid(1);
                 elseif ($v === 'notPaid') return $q->byPaid(0);
+            })->when($this->startDate && $this->endDate, function ($query) {
+                $startDate = Carbon::parse($this->startDate);
+                $endDate = Carbon::parse($this->endDate);
+                return $query->fromTo($startDate, $endDate);
             })->paginate(20);
+            
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
 
         return view(
