@@ -83,13 +83,19 @@
                                 <th scope="col" class=" table-th ">
                                     Policy# 
                                 </th>
+
+                                <th scope="col" class="table-th">
+                                    Owner
+                                </th>
+
                                 <th scope="col" class=" table-th ">
-                                    Name
+                                    Client
                                 </th>
 
                                 <th scope="col" class=" table-th ">
                                     Due
                                 </th>
+
 
                                 <th scope="col" class="table-th">
                                     Assignee
@@ -108,7 +114,7 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
-                                    Payment date
+                                    Date
                                 </th>
 
                                 <th scope="col" class=" table-th ">
@@ -126,6 +132,9 @@
 
                                     <td class="table-td">
                                         {{ $payment->sold_policy->policy_number }}
+                                    </td>
+                                    <td class="table-td">
+                                        {{ $payment->sold_policy->main_sales->username }}
                                     </td>
                                     <td class="table-td">
                                         {{ $payment->sold_policy->client->full_name }}
