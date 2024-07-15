@@ -63,10 +63,19 @@ class OfferIndex extends Component
     public $selectedCarPriceArray;
     public $filteredStatus = ['active'];
 
+    ///date filters
+    public $dateRange;
+    public $startDate;
+    public $endDate;
+
     public $relatives = [];
 
     protected $listeners = ['dataReceived'];
-
+    protected $queryString = [
+        'startDate' => ['except' => ''],
+        'endDate' => ['except' => ''],
+    ];
+    
     public function dataReceived($data)
     {
         $this->clientType = ucwords($data['clientTypeRecieved']);
@@ -195,6 +204,16 @@ class OfferIndex extends Component
         }
     }
 
+    public function updatedDateRange()
+    {
+        if (strpos($this->dateRange, 'to') !== false) {
+            // The string contains 'to'
+            [$this->startDate, $this->endDate] = explode(' to ', $this->dateRange);
+            // dd($this->startDate, $this->endDate);
+        }
+    }
+
+
     public function newOffer()
     {
         if(!$this->owner) {
@@ -263,6 +282,14 @@ class OfferIndex extends Component
         $this->resetPage();
     }
 
+
+    public function mount()
+    {
+        $this->startDate = null;
+        $this->endDate = null;
+        $this->dateRange = ($this->startDate && $this->endDate) ? $this->startDate . ' to ' . $this->endDate : "N/A";
+    }
+
     public function render()
     {
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
@@ -281,7 +308,12 @@ class OfferIndex extends Component
                 return $query->byStates($this->filteredStatus);
             })->when($this->filteredStatus == null, function ($query) {
                 return $query->byStates(['active']);
-            })->paginate(10);
+            })->when($this->startDate && $this->endDate, function ($query) {
+                $startDate = Carbon::parse($this->startDate);
+                $endDate = Carbon::parse($this->endDate);
+                return $query->fromTo($startDate, $endDate);
+            })
+            ->paginate(10);
     
         return view('livewire.offer-index', [
             'offers' => $offers,

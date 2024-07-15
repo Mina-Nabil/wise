@@ -1015,6 +1015,13 @@ class Offer extends Model
         return $query->whereIn("offers.status", $states);
     }
 
+    public function scopeFromTo($query, Carbon $from, Carbon $to)
+    {
+        return $query->where(function ($query) use ($from, $to) {
+            $query->whereBetween("offers.due", [$from->format('Y-m-d'), $to->format('Y-m-d')]);
+        });
+    }
+
     ////relations
     public function client(): MorphTo
     {
