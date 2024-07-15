@@ -1414,6 +1414,11 @@ class SoldPolicy extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
+    public function main_sales(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'main_sales_id');
+    }
+
     public function offer(): BelongsTo
     {
         return $this->belongsTo(Offer::class);
