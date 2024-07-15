@@ -125,7 +125,7 @@
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <span
-                                                                                class="block date-text">{{ $policy->creator->username }}</span>
+                                                                                class="block date-text">{{ $policy->creator_id == 10 ? "Uploaded" : $policy->creator->username }}</span>
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <span
