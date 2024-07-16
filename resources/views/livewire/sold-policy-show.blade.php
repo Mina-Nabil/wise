@@ -1137,6 +1137,7 @@
         <div>
             <div class="grid md:grid-cols-4 grid-cols-1 gap-4">
                 <!-- BEGIN: Group Chart -->
+                @can('viewCommission', $soldPolicy)
                 <div class="card">
                     <div class="card-body pt-4 pb-3 px-4">
                         <div class="flex space-x-3 rtl:space-x-reverse">
@@ -1168,7 +1169,8 @@
                         </div>
                     </div>
                 </div>
-
+                @endcan
+                
                 <div class="card">
                     <div class="card-body pt-4 pb-3 px-4">
                         <div class="flex space-x-3 rtl:space-x-reverse">
@@ -1191,6 +1193,7 @@
                     </div>
                 </div>
 
+                @can('viewCommission', $soldPolicy)
                 <div class="card">
                     <div class="card-body pt-4 pb-3 px-4">
                         <div class="flex space-x-3 rtl:space-x-reverse">
@@ -1212,7 +1215,9 @@
                         </div>
                     </div>
                 </div>
+                @endcan
 
+                @can('viewCommission', $soldPolicy)
                 <div class="card">
                     <div class="card-body pt-4 pb-3 px-4">
                         <div class="flex space-x-3 rtl:space-x-reverse">
@@ -1234,10 +1239,12 @@
                         </div>
                     </div>
                 </div>
+                @endcan
                 <!-- END: Group Chart -->
             </div>
         </div>
 
+        @can('viewCommission', $soldPolicy)
         {{-- Company Payments --}}
         <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
             <div class="card-body flex flex-col p-6 active justify-center">
@@ -1428,6 +1435,7 @@
                 </div>
             </div>
         </div>
+        @endcan
 
         {{-- Client Payments --}}
         <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
@@ -1663,7 +1671,7 @@
                 </div>
             </div>
         </div>
-
+        @can('viewCommission', $soldPolicy)
         {{-- Sales Commission --}}
         <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
             <div class="card-body flex flex-col p-6 active justify-center">
@@ -1874,7 +1882,9 @@
                 </div>
             </div>
         </div>
+        @endcan 
 
+        @can('viewCommission', $soldPolicy)
         {{-- Policy Commission --}}
         <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
             <div class="card-body flex flex-col p-6 active justify-center">
@@ -1940,6 +1950,8 @@
                 </div>
             </div>
         </div>
+        @endcan 
+
     @endif
 
     @if ($newClaimSection)
