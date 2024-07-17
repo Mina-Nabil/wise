@@ -51,7 +51,9 @@ class CustomerShow extends Component
     public $salaryRange;
     public $incomeSource;
     public $idDoc;
+    public $idDoc2;
     public $driverLicenseDoc;
+    public $driverLicenseDoc2;
     public $customerNote;
     public $customerNoteSec = false;
 
@@ -273,6 +275,7 @@ class CustomerShow extends Component
 
     public function toggleAddBankAccount()
     {
+        $this->accountType = BankAccount::TYPES[0];
         $this->toggle($this->addBankAccountSection);
     }
 
@@ -467,9 +470,19 @@ class CustomerShow extends Component
         $this->idDoc = null;
     }
 
+    public function clearIdDoc2()
+    {
+        $this->idDoc2 = null;
+    }
+
     public function cleardriverLicenseDoc()
     {
         $this->driverLicenseDoc = null;
+    }
+
+    public function cleardriverLicenseDoc2()
+    {
+        $this->driverLicenseDoc2 = null;
     }
 
 
@@ -1126,6 +1139,17 @@ class CustomerShow extends Component
             }
         }
 
+        if (is_null($this->customer->id_doc_2) && (is_null($this->idDoc2))) {
+            $idDoc2_url = null;
+        } elseif (!is_null($this->customer->id_doc_2) && (is_null($this->idDoc2))) {
+            $idDoc2_url = null;
+        } elseif (!is_null($this->customer->id_doc_2) && (!is_null($this->idDoc2))) {
+            if (is_string($this->idDoc)) {
+                $this->idDoc2 = null;
+                $idDoc2_url = $this->customer->id_doc_2;
+            }
+        }
+
         if (is_null($this->customer->driver_license_doc) && (is_null($this->driverLicenseDoc))) {
             $driverLicenseDoc_url = null;
         } elseif (!is_null($this->customer->driver_license_doc) && (is_null($this->driverLicenseDoc))) {
@@ -1134,6 +1158,17 @@ class CustomerShow extends Component
             if (is_string($this->driverLicenseDoc)) {
                 $this->driverLicenseDoc = null;
                 $driverLicenseDoc_url = $this->customer->driver_license_doc;
+            }
+        }
+
+        if (is_null($this->customer->driver_license_doc_2) && (is_null($this->driverLicenseDoc2))) {
+            $driverLicenseDoc2_url = null;
+        } elseif (!is_null($this->customer->driver_license_doc_2) && (is_null($this->driverLicenseDoc2))) {
+            $driverLicenseDoc2_url = null;
+        } elseif (!is_null($this->customer->driver_license_doc_2) && (!is_null($this->driverLicenseDoc2))) {
+            if (is_string($this->driverLicenseDoc2)) {
+                $this->driverLicenseDoc2 = null;
+                $driverLicenseDoc2_url = $this->customer->driver_license_doc_2;
             }
         }
 
@@ -1156,6 +1191,8 @@ class CustomerShow extends Component
             'incomeSource' =>  'nullable|in:' . implode(',', Customer::INCOME_SOURCES),
             'idDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
             'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'idDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'driverLicenseDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
         ]);
 
         $customer = Customer::find($this->customer->id);
@@ -1164,8 +1201,16 @@ class CustomerShow extends Component
             $idDoc_url = $this->idDoc->store(Customer::FILES_DIRECTORY, 's3');
         }
 
+        if (!is_string($this->idDoc2) && !is_null($this->idDoc2)) {
+            $idDoc2_url = $this->idDoc2->store(Customer::FILES_DIRECTORY, 's3');
+        }
+
         if (!is_string($this->driverLicenseDoc) && !is_null($this->driverLicenseDoc)) {
             $driverLicenseDoc_url = $this->driverLicenseDoc->store(Customer::FILES_DIRECTORY, 's3');
+        }
+
+        if (!is_string($this->driverLicenseDoc2) && !is_null($this->driverLicenseDoc2)) {
+            $driverLicenseDoc2_url = $this->driverLicenseDoc2->store(Customer::FILES_DIRECTORY, 's3');
         }
 
         $c = $customer->editCustomer(
@@ -1186,7 +1231,10 @@ class CustomerShow extends Component
             $this->salaryRange,
             $this->incomeSource,
             $idDoc_url,
-            $driverLicenseDoc_url
+            $driverLicenseDoc_url, 
+            $idDoc2_url,
+            $driverLicenseDoc2_url, 
+
         );
         if ($c) {
             $this->alert('success', 'Updated Successfuly!');
@@ -1219,6 +1267,8 @@ class CustomerShow extends Component
         $this->incomeSource = $this->customer->income_source;
         $this->idDoc = $this->customer->id_doc;
         $this->driverLicenseDoc = $this->customer->driver_license_doc;
+        $this->idDoc2 = $this->customer->id_doc_2;
+        $this->driverLicenseDoc2 = $this->customer->driver_license_doc_2;
     }
 
     public function updatedCarBrand($value)
@@ -1245,6 +1295,7 @@ class CustomerShow extends Component
 
     public function toggleAddAddress()
     {
+        $this->addressType = Address::TYPES[0];
         $this->toggle($this->addAddressSection);
     }
 
@@ -1255,6 +1306,7 @@ class CustomerShow extends Component
 
     public function toggleAddPhone()
     {
+        $this->phoneType = Phone::TYPES[0];
         $this->toggle($this->addPhoneSection);
     }
 

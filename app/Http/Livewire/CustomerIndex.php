@@ -12,10 +12,12 @@ use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
+use Illuminate\Support\Facades\Log;
+use Livewire\WithFileUploads;
 
 class CustomerIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
+    use WithPagination, AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
 
     public $search;
 
@@ -38,6 +40,10 @@ class CustomerIndex extends Component
     public $salaryRange;
     public $incomeSource;
     public $note;
+    public $idDoc;
+    public $idDoc2;
+    public $driverLicenseDoc;
+    public $driverLicenseDoc2;
     public $followupCallDateTime;
 
     public $addLeadSection;
@@ -100,8 +106,7 @@ class CustomerIndex extends Component
             'ownerId' => 'nullable|integer|exists:users,id',
         ]);
 
-        $customer = new Customer();
-        $res = $customer->newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note: $this->LeadNote);
+        $res = Customer::newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note: $this->LeadNote);
 
 
         if ($this->followupCallDateTime) {
@@ -117,6 +122,27 @@ class CustomerIndex extends Component
             $this->alert('failed', 'server error');
         }
     }
+
+    public function clearIdDoc()
+    {
+        $this->idDoc = null;
+    }
+
+    public function clearIdDoc2()
+    {
+        $this->idDoc2 = null;
+    }
+
+    public function cleardriverLicenseDoc()
+    {
+        $this->driverLicenseDoc = null;
+    }
+
+    public function cleardriverLicenseDoc2()
+    {
+        $this->driverLicenseDoc2 = null;
+    }
+
 
     public function addCustomer()
     {
@@ -144,11 +170,57 @@ class CustomerIndex extends Component
             'note' => 'nullable|string|max:255',
             'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
             'ownerId' => 'nullable|integer|exists:users,id',
+            'idDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'idDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'driverLicenseDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
 
         ]);
+        Log::info("BAGY HNA ?");
+        $idDoc_url = null;
+        if (!is_string($this->idDoc) && !is_null($this->idDoc)) {
+            $idDoc_url = $this->idDoc->store(Customer::FILES_DIRECTORY, 's3');
+        }
+        
+        $idDoc2_url = null;
+        if (!is_string($this->idDoc2) && !is_null($this->idDoc2)) {
+            $idDoc2_url = $this->idDoc2->store(Customer::FILES_DIRECTORY, 's3');
+        }
+        
+        $driverLicenseDoc_url = null;
+        if (!is_string($this->driverLicenseDoc) && !is_null($this->driverLicenseDoc)) {
+            $driverLicenseDoc_url = $this->driverLicenseDoc->store(Customer::FILES_DIRECTORY, 's3');
+        }
+        
+        $driverLicenseDoc2_url = null;
+        if (!is_string($this->driverLicenseDoc2) && !is_null($this->driverLicenseDoc2)) {
+            $driverLicenseDoc2_url = $this->driverLicenseDoc2->store(Customer::FILES_DIRECTORY, 's3');
+        }
 
-        $customer = new Customer();
-        $res = $customer->newCustomer($this->ownerId, $this->firstName, $this->lastName, $this->gender, $this->email, $this->middleName, $this->ArabicFirstName, $this->ArabicMiddleName, $this->ArabicLastName, $this->bdate, $this->maritalStatus, $this->idType, $this->idNumber, $this->nationalId, $this->profession_id, $this->salaryRange, $this->incomeSource, note: $this->note);
+        $res = Customer::newCustomer(
+            $this->ownerId,
+            $this->firstName,
+            $this->lastName,
+            $this->gender,
+            $this->email,
+            $this->middleName,
+            $this->ArabicFirstName,
+            $this->ArabicMiddleName,
+            $this->ArabicLastName,
+            $this->bdate,
+            $this->maritalStatus,
+            $this->idType,
+            $this->idNumber,
+            $this->nationalId,
+            $this->profession_id,
+            $this->salaryRange,
+            $this->incomeSource,
+            id_doc: $idDoc_url,
+            driver_license_doc: $driverLicenseDoc_url,
+            id_doc_2: $idDoc2_url,
+            driver_license_doc_2: $driverLicenseDoc2_url,
+            note: $this->note
+        );
 
         if ($this->followupCallDateTime) {
             $fres = $res->addFollowup('Initial Contact', new \DateTime($this->followupCallDateTime), $this->note);

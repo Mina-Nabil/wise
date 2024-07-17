@@ -70,8 +70,8 @@ class Offer extends Model
     protected $fillable = [
         'creator_id', 'type', 'status', 'item_id', 'item_type', 'is_renewal',
         'item_title', 'item_value', 'item_desc', 'selected_option_id',
-        'note', 'due', 'closed_by_id', 'assignee_id', 'in_favor_to', 'renewal_policy'
-
+        'note', 'due', 'closed_by_id', 'assignee_id', 'in_favor_to', 'renewal_policy',
+        'sub_status'
     ];
 
 
@@ -195,7 +195,7 @@ class Offer extends Model
             car_chassis: $car_chassis,
             car_plate_no: $car_plate_no,
             car_engine: $car_engine,
-            policy_doc: $policy_doc, 
+            policy_doc: $policy_doc,
             issuing_date: $issuing_date
         );
         if ($soldPolicy) {
@@ -492,7 +492,7 @@ class Offer extends Model
      * @return string if failed, an error message will return
      * @return true if done
      */
-    public function setStatus($status): string|bool
+    public function setStatus($status, $sub_status = null): string|bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -542,6 +542,8 @@ class Offer extends Model
 
         try {
             $updates['status']  = $status;
+            if ($sub_status && $status == self::STATUS_PENDING_INSUR) $updates['sub_status'] = $sub_status;
+            else $updates['sub_status'] = null;
             if ($this->update($updates)) {
                 AppLog::info("Changed status to " . $status, loggable: $this);
                 $this->sendOfferNotifications("Offer status changed", "Offer#$this->id's status changed");

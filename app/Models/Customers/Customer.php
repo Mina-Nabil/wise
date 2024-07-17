@@ -103,7 +103,7 @@ class Customer extends Model
         'email', 'gender', 'owner_id', 'marital_status',
         'nationality_id', 'id_type', 'id_number',
         'profession_id', 'salary_range', 'income_source', 'birth_date',
-        'id_doc', 'driver_license_doc', 'note'
+        'id_doc', 'driver_license_doc', 'note', 'id_doc_2', 'driver_license_doc_2'
     ];
 
     ///model functions
@@ -163,6 +163,8 @@ class Customer extends Model
         $income_source = null,
         $id_doc = null,
         $driver_license_doc = null,
+        $id_doc_2 = null,
+        $driver_license_doc_2 = null,
     ): bool {
         $updates['first_name'] = $first_name;
         $updates['last_name'] = $last_name;
@@ -182,6 +184,8 @@ class Customer extends Model
         if ($income_source) $updates['income_source'] = $income_source;
         if ($id_doc) $updates['id_doc'] = $id_doc;
         if ($driver_license_doc) $updates['driver_license_doc'] = $driver_license_doc;
+        if ($id_doc_2) $updates['id_doc_2'] = $id_doc_2;
+        if ($driver_license_doc_2) $updates['driver_license_doc_2'] = $driver_license_doc_2;
 
         $this->update($updates);
 
@@ -605,6 +609,8 @@ class Customer extends Model
         $income_source = null,
         $id_doc = null,
         $driver_license_doc = null,
+        $id_doc_2 = null,
+        $driver_license_doc_2 = null,
         $note = null
     ): self|false {
         $newCustomer = new self([
@@ -627,8 +633,10 @@ class Customer extends Model
             "income_source" =>  $income_source,
             "owner_id"      =>  $owner_id ?? Auth::id(),
             "id_doc"        =>  $id_doc,
-            "note"          =>  $note,
+            "id_doc_2"        =>  $id_doc_2,
             "driver_license_doc"    =>  $driver_license_doc,
+            "driver_license_doc_2"    =>  $driver_license_doc_2,
+            "note"          =>  $note,
             "creator_id"    => Auth::id()
         ]);
 

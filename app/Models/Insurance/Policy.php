@@ -40,9 +40,11 @@ class Policy extends Model
     const PERSONAL_TYPES = [
         self::BUSINESS_PERSONAL_MOTOR,
         self::BUSINESS_PERSONAL_MEDICAL,
+        self::BUSINESS_PERSONAL_LIFE,
         self::BUSINESS_ACCIDENT,
         self::BUSINESS_HOME,
         self::BUSINESS_BUSINESS,
+        self::BUSINESS_PROPERTY,
     ];
 
     const CORPORATE_TYPES = [
@@ -54,6 +56,7 @@ class Policy extends Model
         self::BUSINESS_LIABILITY,
         self::BUSINESS_EXTENDED_WARRANTY,
         self::BUSINESS_CORPORATE_LIFE,
+        self::BUSINESS_PROPERTY,
     ];
 
     const LINES_OF_BUSINESS = [
