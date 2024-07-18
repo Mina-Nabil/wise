@@ -244,17 +244,46 @@
                                 </div>
 
                                 <!-- Modal footer -->
-                                <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                    <button wire:click="updateEvent" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                        <span wire:loading.remove wire:target="updateEvent">Submit</span>
-                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updateEvent" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                    </button>
-                                </div>
-                            </div>
+                                @if (!$deleteEventConfirmation)
+                                    <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
 
+                                        <button wire:click="deleteThisEvent" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">
+                                            <span wire:loading.remove wire:target="deleteThisEvent">Delete event</span>
+                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="deleteThisEvent" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        </button>
+
+                                        <button wire:click="updateEvent" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                            <span wire:loading.remove wire:target="updateEvent">Submit</span>
+                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updateEvent" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        </button>
+                                    </div>
+                                @else
+                                    <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                        <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
+                                            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                                <div class="flex-1">
+                                                    Are you sure you want to delete ?
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button wire:click="ConfirmdDeleteThisEvent" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">
+                                            <span wire:loading.remove wire:target="ConfirmdDeleteThisEvent">Yes, Delete</span>
+                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="ConfirmdDeleteThisEvent" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        </button>
+
+                                        <button wire:click="IgnoreDeleteThisEvent" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                            <span wire:loading.remove wire:target="IgnoreDeleteThisEvent">No</span>
+                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="IgnoreDeleteThisEvent" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        </button>
+                                    </div>
+                                @endif
+
+
+
+                            </div>
                         </div>
                     </div>
-                </div>
         @endif
 
 
