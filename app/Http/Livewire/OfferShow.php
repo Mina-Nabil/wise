@@ -154,6 +154,9 @@ class OfferShow extends Component
     public $commSearch;
     public $profilesRes;
 
+    public $subStatusSection;
+    public $subStatus;
+
     public function updatedCommSearch()
     {
         if (!empty($this->commSearch)) {
@@ -315,7 +318,6 @@ class OfferShow extends Component
             }
         } catch (InvalidSoldPolicyException $e) {
             $this->alert('failed', $e->getMessage());
-
         } catch (Exception $e) {
             report($e);
             $this->alert('failed', 'server error');
@@ -1007,6 +1009,11 @@ class OfferShow extends Component
 
     public function setStatus($s = null)
     {
+        if ($s == Offer::STATUS_PENDING_INSUR) {
+            $this->subStatusSection = true;
+            return;
+        }
+
         if ($s == null) return;
         $res = $this->offer->setStatus($s);
         if ($res) {
@@ -1014,6 +1021,25 @@ class OfferShow extends Component
         } else {
             $this->alert('failed', 'server error');
         }
+    }
+
+    public function setSubStatus()
+    {
+        $this->validate([
+            'subStatus' => 'required|in:' . implode(',', Offer::STATUSES),
+        ]);
+        $res = $this->offer->setStatus(Offer::STATUS_PENDING_INSUR, $this->subStatus);
+        if ($res) {
+            $this->alert('info', $res);
+            $this->closeSubStatusSection();
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function closeSubStatusSection()
+    {
+        $this->reset(['subStatusSection', 'subStatus']);
     }
 
     public function changeOptionState($optionId, $status)
