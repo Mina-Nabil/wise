@@ -35,6 +35,30 @@ class Calendar extends Component
     public $users_array = [];
 
     public $eventID;
+    public $deleteEventConfirmation = false;
+
+    public function deleteThisEvent()
+    {
+        $this->deleteEventConfirmation = true;
+    }
+
+    public function ConfirmdDeleteThisEvent()
+    {
+        //delete Event
+        $res = CalendarEvent::find($this->eventID)->deleteEvent();
+        if ($res) {
+            $this->reset(['eventID', 'deleteEventConfirmation']);
+            $this->alert('success', 'Event deleted!');
+            redirect(url('calendar'));
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function IgnoreDeleteThisEvent()
+    {
+        $this->deleteEventConfirmation = false;
+    }
 
     public function showEvent($id)
     {
