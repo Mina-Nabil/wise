@@ -27,6 +27,7 @@
                                 <span class="badge bg-warning-500 h-auto">
                                     <iconify-icon
                                         icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                        {{ $offer->sub_status ? " - $offer->sub_status" : "" }}
                                 </span>
                             @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
                                 <span class="badge bg-danger-500 h-auto">
