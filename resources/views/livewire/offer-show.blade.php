@@ -2223,20 +2223,9 @@
                         <div class="p-6 space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                 <div class="from-group">
-                                    <label for="lastName" class="form-label">Sub Status</label>
-                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                        wire:model="subStatus">
-                                        <option
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            Select an option...</option>
-                                        @foreach ($STATUSES as $STATUS)
-                                            <option value="{{ $STATUS }}"
-                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                {{ ucwords(str_replace('_', ' ', $STATUS)) }}
-                                            </option>
-                                        @endforeach
-
-                                    </select>
+                                    <label for="subStatus" class="form-label">Sub Status</label>
+                                    <input type="text" name="subStatus" class="form-control mt-2 w-full"
+                                        wire:model.defer="subStatus">
                                     @error('subStatus')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

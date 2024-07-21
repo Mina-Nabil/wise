@@ -1026,7 +1026,7 @@ class OfferShow extends Component
     public function setSubStatus()
     {
         $this->validate([
-            'subStatus' => 'required|in:' . implode(',', Offer::STATUSES),
+            'subStatus' => 'nullable',
         ]);
         $res = $this->offer->setStatus(Offer::STATUS_PENDING_INSUR, $this->subStatus);
         if ($res) {
