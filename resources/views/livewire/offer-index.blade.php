@@ -98,8 +98,8 @@
             {{-- <span class="text-sm text-primary-600 font-Inter font-normal capitalize ml-5 pb-2">My Tasks</span> --}}
         </div>
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px"
-        id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
-        wire:model="dateRange">
+            id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
+            wire:model="dateRange">
     </div>
 
 
@@ -208,6 +208,7 @@
                                                     class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl"
                                                     style="vertical-align: top;">Renewal</span>
                                             @endif
+                                            <small>{{ $offer->sub_status }}</small>
                                         </td>
 
                                         <td class="table-td ">
