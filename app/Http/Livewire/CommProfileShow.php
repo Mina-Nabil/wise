@@ -30,7 +30,7 @@ class CommProfileShow extends Component
 
     public $updatedCommSec = false;
     public $paymentNoteSec = false;
-    
+
     public $updatedType;
     public $updatedPerPolicy;
     public $updatedSelectAvailable;
@@ -54,16 +54,19 @@ class CommProfileShow extends Component
     public $editConfId;
 
     public $newTargetSec;
-    public $period;
-    public $prem_target;
-    public $income_target;
-    public $comm_percentage;
+    public $dayOfMonth; //
+    public $eachMonth; //
+    public $premTarget; //
+    public $minIncomeTarget; //
+    public $maxIncomeTarget; //
+    public $commPercentage; //
+    public $addToBalance;
+    public $addAsPayment;
+    public $basePayment;
+
     public $deleteTargetId;
     public $editTargetId;
 
-    public $newCycleSec;
-    public $dayOfMonth;
-    public $eachMonth;
     public $deleteCycleId;
     public $editCycleId;
 
@@ -472,90 +475,18 @@ class CommProfileShow extends Component
         $this->pymtNote = null;
     }
 
-    public function closeEditCycle()
-    {
-        $this->editCycleId = null;
-        $this->dayOfMonth = null;
-        $this->eachMonth = null;
-    }
-
-    public function editCycle()
-    {
-        $this->validate([
-            'dayOfMonth' => 'required|numeric|between:1,31',
-            'eachMonth' => 'required|numeric'
-        ]);
-        $res = TargetCycle::find($this->editCycleId)->editInfo($this->dayOfMonth, $this->eachMonth);
-        if ($res) {
-            $this->closeEditCycle();
-            $this->mount($this->profile->id);
-            $this->alert('success', 'cycle updated!');
-        } else {
-            $this->alert('failed', 'server error!');
-        }
-    }
-
-    public function addCycle()
-    {
-        $this->validate([
-            'dayOfMonth' => 'required|numeric|between:1,31',
-            'eachMonth' => 'required|numeric'
-        ]);
-        $res = $this->profile->addTargetCycle($this->dayOfMonth, $this->eachMonth);
-        if ($res) {
-            $this->closeNewCycleSection();
-            $this->mount($this->profile->id);
-            $this->alert('success', 'cycle added!');
-        } else {
-            $this->alert('failed', 'server error!');
-        }
-    }
-
-    public function openNewCycleSection()
-    {
-        $this->newCycleSec = true;
-    }
-
-    public function closeNewCycleSection()
-    {
-        $this->newCycleSec = false;
-        $this->dayOfMonth = null;
-        $this->eachMonth = null;
-    }
-
-    public function editThisCycle($id)
-    {
-        $this->editCycleId = $id;
-        $c = TargetCycle::find($this->editCycleId);
-        $this->dayOfMonth = $c->day_of_month;
-        $this->eachMonth = $c->each_month;
-    }
-
-    public function confirmDeleteCycle($id)
-    {
-        $this->deleteCycleId = $id;
-    }
-
-    public function deleteCycle()
-    {
-        $res = TargetCycle::find($this->deleteCycleId)->delete();
-        if ($res) {
-            $this->dismissDeleteCycle();
-            $this->mount($this->profile->id);
-            $this->alert('success', 'cycle deleted!');
-        } else {
-            $this->alert('failed', 'server error!');
-        }
-    }
-
-    public function dismissDeleteCycle()
-    {
-        $this->deleteCycleId = null;
-    }
-
     public function closeNewTargetSection()
     {
         $this->newTargetSec = false;
+        $this->dayOfMonth = null;
+        $this->eachMonth = null;
+        $this->premTarget = null;
+        $this->minIncomeTarget = null;
+        $this->maxIncomeTarget = null;
+        $this->commPercentage = null;
+        $this->addToBalance = 0;
+        $this->addAsPayment = 100;
+        $this->basePayment = null;
     }
 
     public function openNewTargetSection()
@@ -567,32 +498,58 @@ class CommProfileShow extends Component
     {
         $this->editTargetId = $id;
         $t = Target::find($id);
-        $this->period = $t->period;
-        $this->prem_target = $t->prem_target;
-        $this->income_target = $t->income_target;
-        $this->comm_percentage = $t->comm_percentage;
+        $this->premTarget = $t->prem_target;
+        $this->dayOfMonth = $t->day_of_month;
+        $this->eachMonth = $t->each_month;
+        $this->premTarget = $t->prem_target;
+        $this->minIncomeTarget = $t->min_income_target;
+        $this->maxIncomeTarget = $t->max_income_target;
+        $this->commPercentage = $t->comm_percentage;
+        $this->addToBalance = $t->add_to_balance;
+        $this->addAsPayment = $t->add_as_payment;
+        $this->basePayment = $t->base_payment;
     }
 
     public function closeEditTargetSection()
     {
         $this->editTargetId = null;
-        $this->period = null;
-        $this->prem_target = null;
-        $this->income_target = null;
-        $this->comm_percentage = null;
+        $this->dayOfMonth = null;
+        $this->eachMonth = null;
+        $this->premTarget = null;
+        $this->minIncomeTarget = null;
+        $this->maxIncomeTarget = null;
+        $this->commPercentage = null;
+        $this->addToBalance = 0;
+        $this->addAsPayment = 100;
+        $this->basePayment = null;
     }
 
     public function editarget()
     {
 
         $this->validate([
-            'period' => 'required|in:' . implode(',', Target::PERIODS),
-            'income_target' => 'required|numeric',
-            'prem_target' => 'required|numeric',
-            'comm_percentage' => 'required|numeric',
+            'minIncomeTarget' => 'required|numeric',
+            'dayOfMonth' => 'required|numeric',
+            'eachMonth' => 'required|numeric',
+            'premTarget' => 'required|numeric',
+            'commPercentage' => 'required|numeric',
+            'maxIncomeTarget' => 'nullable|numeric',
+            'addToBalance' => 'required|numeric',
+            'addAsPayment' => 'required|numeric',
+            'basePayment' => 'nullable|numeric',
         ]);
 
-        $res = Target::find($this->editTargetId)->editInfo($this->period, $this->prem_target, $this->income_target, $this->comm_percentage);
+        $res = Target::find($this->editTargetId)->editInfo(
+            $this->dayOfMonth,
+            $this->eachMonth,
+            $this->premTarget,
+            $this->minIncomeTarget,
+            $this->commPercentage,
+            $this->addToBalance,
+            $this->addAsPayment,
+            $this->basePayment,
+            $this->maxIncomeTarget
+        );
         if ($res) {
             $this->closeEditTargetSection();
             $this->mount($this->profile->id);
@@ -628,20 +585,31 @@ class CommProfileShow extends Component
     public function addTarget()
     {
         $this->validate([
-            'period' => 'required|in:' . implode(',', Target::PERIODS),
-            'income_target' => 'required|numeric',
-            'prem_target' => 'required|numeric',
-            'comm_percentage' => 'required|numeric',
+            'minIncomeTarget' => 'required|numeric',
+            'dayOfMonth' => 'required|numeric|between:1,31',
+            'eachMonth' => 'required|numeric|between:1,12',
+            'premTarget' => 'required|numeric',
+            'commPercentage' => 'required|numeric|between:1,100',
+            'maxIncomeTarget' => 'nullable|numeric|gt:minIncomeTarget',
+            'addToBalance' => 'required|numeric|between:0,100',
+            'addAsPayment' => 'required|numeric|between:0,100',
+            'basePayment' => 'nullable|numeric',
         ]);
 
-        $res = $this->profile->addTarget($this->period, $this->prem_target, $this->income_target, $this->comm_percentage);
+        $res = $this->profile->addTarget(
+            $this->dayOfMonth,
+            $this->eachMonth,
+            $this->premTarget,
+            $this->minIncomeTarget,
+            $this->commPercentage,
+            $this->addToBalance,
+            $this->addAsPayment,
+            $this->basePayment,
+            $this->maxIncomeTarget
+        );
 
         if ($res) {
             $this->closeNewTargetSection();
-            $this->period = null;
-            $this->prem_target = null;
-            $this->income_target = null;
-            $this->comm_percentage = null;
             $this->mount($this->profile->id);
             $this->alert('success', 'target added!');
         } else {
@@ -896,14 +864,12 @@ class CommProfileShow extends Component
         $FROMS = CommProfileConf::FROMS;
         $users = User::all();
         $LOBs = Policy::LINES_OF_BUSINESS;
-        $PERIODS = Target::PERIODS;
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
             'FROMS' => $FROMS,
             'LOBs' => $LOBs,
-            'PERIODS' => $PERIODS,
             'PYMT_TYPES' => $PYMT_TYPES,
         ]);
     }

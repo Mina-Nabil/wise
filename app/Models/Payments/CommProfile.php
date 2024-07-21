@@ -77,11 +77,7 @@ class CommProfile extends Model
     }
 
     ///model functions
-    public function generateCommissionFromTargets()
-    {
-    }
-
-    public function getValidCommissionConf(OfferOption $option): CommProfileConf|false
+    public function getValidDirectCommissionConf(OfferOption $option): CommProfileConf|false
     {
         $option->loadMissing('policy');
         $this->loadMissing('configurations');
@@ -197,49 +193,44 @@ class CommProfile extends Model
     {
 
         foreach ($this->targets()->get() as $target) {
-            switch ($target->period) {
-                case Target::PERIOD_MONTH:
-                    $month_ini = new Carbon("first day of last month");
-                    $month_end = new Carbon("last day of last month");
 
-                    $soldPolicies = $this->getSoldPolicies($month_ini, $month_end);
-                    $totalNet = $soldPolicies->sum('net_premium');
-                    $totalIncome = $soldPolicies->sum('total_policy_comm');
-                    if($this->prem_target <= $totalNet && $this->income_target <= $totalIncome){
-                        $target->addTargetPayments($soldPolicies);
-                    }
-                    break;
-                case Target::PERIOD_QUARTER:
-                    # code...
-                    break;
-                case Target::PERIOD_YEAR:
-                    # code...
-                    break;
-                case Target::PERIOD_YEAR_TO_DATE:
-                    # code...
-                    break;
+            $month_ini = new Carbon("first day of last month");
+            $month_end = new Carbon("last day of last month");
 
-                default:
-                    return false;
+            $soldPolicies = $this->getSoldPolicies($month_ini, $month_end);
+            $totalNet = $soldPolicies->sum('net_premium');
+            $totalIncome = $soldPolicies->sum('total_policy_comm');
+            if ($this->prem_target <= $totalNet && $this->income_target <= $totalIncome) {
+                $target->addTargetPayments($soldPolicies);
             }
         }
     }
 
 
     public function addTarget(
-        $period, //from const PERIODS
-        $prem_target, //target net prem amount the sales should surpass
-        $income_target, //target net commission amount the sales should surpass
-        $comm_percentage
+        $day_of_month,
+        $each_month,
+        $prem_target,
+        $min_income_target,
+        $comm_percentage,
+        $add_to_balance = null,
+        $add_as_payment = null,
+        $base_payment = null,
+        $max_income_target = null,
     ) {
         try {
             AppLog::info("Creating comm profile target", loggable: $this);
             $order = $this->targets()->count() + 1;
             $target = $this->targets()->create([
-                "period"            =>  $period,
+                "day_of_month"      =>  $day_of_month,
+                "each_month"        =>  $each_month,
                 "prem_target"       =>  $prem_target,
                 "comm_percentage"   =>  $comm_percentage,
-                "income_target"     =>  $income_target,
+                "min_income_target" =>  $min_income_target,
+                "add_to_balance"    =>  $add_to_balance,
+                "add_as_payment"    =>  $add_as_payment,
+                "base_payment"      =>  $base_payment,
+                "max_income_target" =>  $max_income_target,
                 "order"             =>  $order
             ]);
             $target->save();
@@ -286,21 +277,6 @@ class CommProfile extends Model
         }
     }
 
-    public function addTargetCycle($day_of_month, $each_month)
-    {
-        assert($each_month == 3 || $each_month == 4 || $each_month == 6 ||  $each_month == 12, "Please set target cycle to 3, 4, 6 or 12");
-        try {
-            $this->target_cycles()->create([
-                "day_of_month"  =>  $day_of_month,
-                "each_month"    =>  $each_month,
-            ]);
-            return true;
-        } catch (Exception $e) {
-            report($e);
-            return false;
-        }
-    }
-
     ///attributes
     public function getIsSalesOutAttribute()
     {
@@ -335,11 +311,6 @@ class CommProfile extends Model
     public function configurations(): HasMany
     {
         return $this->hasMany(CommProfileConf::class);
-    }
-
-    public function target_cycles(): HasMany
-    {
-        return $this->hasMany(TargetCycle::class);
     }
 
     public function targets(): HasMany

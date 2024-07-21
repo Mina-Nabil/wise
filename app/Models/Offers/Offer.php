@@ -399,7 +399,7 @@ class Offer extends Model
         $this->load('comm_profiles', 'selected_option');
         foreach ($this->comm_profiles as $prof) {
             Log::info("Checking " . $prof->title);
-            $valid_conf = $prof->getValidCommissionConf($this->selected_option);
+            $valid_conf = $prof->getValidDirectCommissionConf($this->selected_option);
             Log::info("Conf found: " . $valid_conf);
             if (!$valid_conf) continue;
             $prof->loadMissing('user');

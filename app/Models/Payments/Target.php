@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 class Target extends Model
@@ -17,20 +18,9 @@ class Target extends Model
 
     use HasFactory;
 
-    const PERIOD_MONTH = 'month';
-    const PERIOD_QUARTER = 'quarter';
-    const PERIOD_YEAR = 'year';
-    const PERIOD_YEAR_TO_DATE = 'year-to-date';
-
-    const PERIODS = [
-        self::PERIOD_MONTH,
-        self::PERIOD_QUARTER,
-        self::PERIOD_YEAR,
-        self::PERIOD_YEAR_TO_DATE
-    ];
-
     public $fillable = [
-        "period", "prem_target", "comm_percentage", "order", "income_target"
+        "base_payment", "prem_target", "comm_percentage", "order", "min_income_target", "max_income_target",
+        "day_of_month", "each_month", "add_to_balance", "add_as_payment"
     ];
     public $timestamps = false;
 
@@ -44,24 +34,33 @@ class Target extends Model
     }
 
     ///model functions
-    public function addTargetPayments()
+    public function addTargetPayment()
     {
-
     }
 
     public function editInfo(
-        $period,
+        $day_of_month,
+        $each_month,
         $prem_target,
-        $income_target,
-        $comm_percentage
+        $min_income_target,
+        $comm_percentage,
+        $add_to_balance = null,
+        $add_as_payment = null,
+        $base_payment = null,
+        $max_income_target = null,
     ) {
         try {
             AppLog::info("Updating comm profile target", loggable: $this);
             $this->update([
-                "period"    =>  $period,
-                "comm_percentage"    =>  $comm_percentage,
-                "income_target"    =>  $income_target,
-                "prem_target"    =>  $prem_target,
+                "day_of_month"  =>  $day_of_month,
+                "each_month"    =>  $each_month,
+                "base_payment"  =>  $base_payment,
+                "comm_percentage"   =>  $comm_percentage,
+                "min_income_target" =>  $min_income_target,
+                "prem_target"   =>  $prem_target,
+                "add_to_balance"   =>  $add_to_balance,
+                "add_as_payment"   =>  $add_as_payment,
+                "max_income_target"   =>  $max_income_target,
             ]);
             return true;
         } catch (Exception $e) {
@@ -144,16 +143,47 @@ class Target extends Model
         }
     }
 
+    ///attributes
+    public function getNextRunDateAttribute()
+    {
+        $this->loadMissing('runs');
+        $last_run = $this->runs->first();
+        $now = Carbon::now();
+        return
+            $last_run ?
+            (new Carbon($last_run->created_at))->addMonths($this->each_month)->setDay($this->day_of_month) : ($now->day < $this->day_of_month ?
+                $now->setDay($this->day_of_month) :
+                $now->addMonth()->setDay($this->day_of_month));
+    }
+
+    public function getLastRunDateAttribute()
+    {
+        $this->loadMissing('runs');
+        $last_run = $this->runs->first();
+        return $last_run ? new Carbon($last_run->created_at) : null;
+    }
+
+    public function getIsDueAttribute()
+    {
+        return $this->next_run_date->isToday();
+    }
+
+
     ///scopes 
-    public function scopeTodaysTarget()
+    public function scopeOnlyToday($query)
     {
         $now = Carbon::now();
-        // return $this->
+        return $query->where('day_of_month', $now->day_of_month);
     }
 
     ///relations
     public function comm_profile(): BelongsTo
     {
         return $this->belongsTo(CommProfile::class);
+    }
+
+    public function runs(): HasMany
+    {
+        return $this->hasMany(TargetRun::class)->latest();
     }
 }
