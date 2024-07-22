@@ -5,6 +5,7 @@ namespace App\Models\Users;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use JeroenDesloovere\VCard\VCard;
 
 
@@ -62,7 +63,8 @@ class ContactInfo extends Model
         if ($this->url)
             $vcard->addURL($this->url);
 
-        // $vcard->addPhoto(__DIR__ . '/landscape.jpeg');
+        if ($this->image)
+            $vcard->addPhoto(Storage::get($this->image));
 
         // return vcard as a string
         //return $vcard->getOutput();
