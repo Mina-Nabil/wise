@@ -379,33 +379,31 @@
 
             <div class="card">
                 <div class="card-body flex flex-col p-6">
-                    <header
-                        class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                    <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                         <div class="flex-1">
                             <div class="card-title text-slate-900 dark:text-white">
-                                <h6>files</h6>
+                                <h6>Files</h6>
                             </div>
                         </div>
                         <label for="myFile" class="custom-file-label cursor-pointer">
                             <span class="btn inline-flex justify-center btn-sm btn-outline-dark float-right">
-                                <span style="display: flex; align-items: center;"><iconify-icon
-                                        class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                        wire:target="uploadedFile"
-                                        icon="line-md:loading-twotone-loop"></iconify-icon></span>
-                                <span style="display: flex; align-items: center;"><iconify-icon wire:loading.remove
-                                        wire:target="uploadedFile"
-                                        icon="ic:baseline-upload"></iconify-icon>&nbsp;upload File</span>
+                                <span style="display: flex; align-items: center;">
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFiles" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </span>
+                                <span style="display: flex; align-items: center;">
+                                    <iconify-icon wire:loading.remove wire:target="uploadedFiles" icon="ic:baseline-upload"></iconify-icon>&nbsp;Upload Files
+                                </span>
                             </span>
                         </label>
-                        <input type="file" id="myFile" name="filename" style="display: none;"
-                            wire:model="uploadedFile"><br>
+                        <input type="file" id="myFile" name="filename[]" multiple style="display: none;" wire:model="uploadedFiles"><br>
                     </header>
                     <div class="loader" wire:loading wire:target="downloadFile">
                         <div class="loaderBar"></div>
                     </div>
-                    @error('uploadedFile')
+                    @error('uploadedFiles.*')
                         <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">* {{ $message }}</span>
                     @enderror
+                    
                     <div class="card-body">
 
 
