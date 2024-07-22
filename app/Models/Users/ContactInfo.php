@@ -49,7 +49,7 @@ class ContactInfo extends Model
             $vcard->addPhoneNumber($this->home_number1, 'home');
 
         if ($this->home_number2)
-            $vcard->addPhoneNumber("Hotline:  $this->home_number2");
+            $vcard->addPhoneNumber($this->home_number2, 'hotline');
 
         if ($this->work_number1)
             $vcard->addPhoneNumber($this->work_number1, 'work');
