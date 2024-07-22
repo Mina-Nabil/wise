@@ -68,7 +68,7 @@ class ContactInfo extends Model
         //return $vcard->getOutput();
 
         // return vcard as a download
-        return $vcard->getOutput();
+        return $vcard->download();
 
         // save vcard on disk
         //$vcard->setSavePath('/path/to/directory');
