@@ -64,7 +64,7 @@ class ContactInfo extends Model
             $vcard->addURL($this->url);
 
         if ($this->image)
-            $vcard->addPhoto(Storage::get($this->image));
+            $vcard->addPhoto(Storage::disk('s3')->get($this->image));
 
         // return vcard as a string
         //return $vcard->getOutput();
