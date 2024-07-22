@@ -44,7 +44,6 @@ return new class extends Migration
         Schema::create('targets', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(CommProfile::class)->constrained()->cascadeOnDelete();
-            $table->enum('period', Target::PERIODS);
             $table->double('amount');
             $table->double('extra_percentage');
             $table->integer('order');

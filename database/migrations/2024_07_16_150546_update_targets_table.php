@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::dropIfExists('target_cycles');
 
         Schema::table('targets', function (Blueprint $table) {
-            $table->dropColumn('period');
+            // $table->dropColumn('period');
             $table->integer('day_of_month');
             $table->integer('each_month');
             $table->double('base_payment')->nullable();
