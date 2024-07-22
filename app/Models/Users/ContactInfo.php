@@ -46,16 +46,16 @@ class ContactInfo extends Model
             $vcard->addPhoneNumber($this->mob_number2);
 
         if ($this->home_number1)
-            $vcard->addPhoneNumber($this->home_number1, 'HOME');
+            $vcard->addPhoneNumber($this->home_number1, 'home');
 
         if ($this->home_number2)
-            $vcard->addNote("Hotline:  $this->home_number2");
+            $vcard->addPhoneNumber("Hotline:  $this->home_number2");
 
         if ($this->work_number1)
-            $vcard->addPhoneNumber($this->work_number1, 'WORK');
+            $vcard->addPhoneNumber($this->work_number1, 'work');
 
         if ($this->work_number2)
-            $vcard->addPhoneNumber($this->work_number2, 'WORK');
+            $vcard->addPhoneNumber($this->work_number2, 'work');
 
         if ($this->address_street)
             $vcard->addAddress(null, null, $this->address_street, $this->address_district, $this->address_governate, null, $this->address_country);
@@ -64,7 +64,7 @@ class ContactInfo extends Model
             $vcard->addURL($this->url);
 
         if ($this->image)
-            $vcard->addPhoto(Storage::disk('s3')->url(str_replace('//', '/',$this->image)));
+            $vcard->addPhoto(Storage::disk('s3')->url(str_replace('//', '/', $this->image)));
 
         // return vcard as a string
         //return $vcard->getOutput();
