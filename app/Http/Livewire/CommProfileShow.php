@@ -7,6 +7,7 @@ use App\Models\Payments\CommProfile;
 use App\Models\Users\User;
 use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\Target;
+use App\Models\Payments\TargetRun;
 use App\Models\Payments\TargetCycle;
 use App\Models\Payments\CommProfilePayment;
 use App\Models\Insurance\Policy;
@@ -96,6 +97,8 @@ class CommProfileShow extends Component
     public $commUser;
     public $newcommNote;
 
+    public $runs;
+
     public $section = 'payments';
 
     protected $queryString = ['section'];
@@ -130,6 +133,14 @@ class CommProfileShow extends Component
     //         $this->alert('failed', 'Server error');
     //     }
     // }
+
+    public function showTagetRuns($id){
+        $this->runs = Target::find($id)->runs()->get();
+    }
+
+    public function closeTargetRuns(){
+        $this->reset(['runs']);
+    }
 
     public function hideCommComment()
     {
