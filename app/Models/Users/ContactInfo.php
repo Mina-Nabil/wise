@@ -46,16 +46,16 @@ class ContactInfo extends Model
             $vcard->addPhoneNumber($this->mob_number2);
 
         if ($this->home_number1)
-            $vcard->addPhoneNumber($this->home_number1, 'home');
+            $vcard->addPhoneNumber($this->home_number1, 'HOME');
 
         if ($this->home_number2)
-            $vcard->addPhoneNumber($this->home_number2, 'hotline');
+            $vcard->addPhoneNumber("Hotline:  $this->home_number2");
 
         if ($this->work_number1)
-            $vcard->addPhoneNumber($this->work_number1, 'work');
+            $vcard->addPhoneNumber($this->work_number1, 'WORK');
 
         if ($this->work_number2)
-            $vcard->addPhoneNumber($this->work_number2, 'work');
+            $vcard->addPhoneNumber($this->work_number2, 'WORK');
 
         if ($this->address_street)
             $vcard->addAddress(null, null, $this->address_street, $this->address_district, $this->address_governate, null, $this->address_country);
