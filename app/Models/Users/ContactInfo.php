@@ -23,7 +23,7 @@ class ContactInfo extends Model
     ///model functions
     public function generateQRCode()
     {
-        return "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" . urlencode(url("contact/" . $this->id)) . "&choe=UTF-8";
+        return "https://quickchart.io/qr?text=" . urlencode(url("contact/" . $this->id)) . "&choe=UTF-8";
     }
 
     public function downloadvCard()
