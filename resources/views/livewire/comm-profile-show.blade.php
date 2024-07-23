@@ -23,10 +23,8 @@
                     </div>
                     <div>
                         @if ($profile->user)
-                            <a href="card.html"
-                                class="inline-flex leading-5 text-slate-500 dark:text-slate-400 text-sm font-normal active">
-                                <iconify-icon class="text-secondary-500 ltr:mr-2 rtl:ml-2 text-lg"
-                                    icon="lucide:user"></iconify-icon>
+                            <a href="card.html" class="inline-flex leading-5 text-slate-500 dark:text-slate-400 text-sm font-normal active">
+                                <iconify-icon class="text-secondary-500 ltr:mr-2 rtl:ml-2 text-lg" icon="lucide:user"></iconify-icon>
                                 {{ $profile->user->first_name }} {{ $profile->user->last_name }}
                             </a>
                         @endif
@@ -60,8 +58,7 @@
             <div class="card-body pt-4 pb-3 px-4">
                 <div class="flex space-x-3 rtl:space-x-reverse">
                     <div class="flex-none">
-                        <div
-                            class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#E5F9FF] dark:bg-slate-900	 text-info-500">
+                        <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#E5F9FF] dark:bg-slate-900	 text-info-500">
                             <iconify-icon icon="tdesign:money"></iconify-icon>
                         </div>
                     </div>
@@ -81,8 +78,7 @@
             <div class="card-body pt-4 pb-3 px-4">
                 <div class="flex space-x-3 rtl:space-x-reverse">
                     <div class="flex-none">
-                        <div
-                            class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFEDE6] dark:bg-slate-900	 text-warning-500">
+                        <div class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFEDE6] dark:bg-slate-900	 text-warning-500">
                             <iconify-icon icon="mdi:money-off"></iconify-icon>
                         </div>
                     </div>
@@ -102,23 +98,18 @@
     <div class="card-body flex flex-col col-span-2 mb-5 mt-5" wire:ignore>
         <div class="card-text h-full">
             <div>
-                <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab"
-                    role="tablist">
+                <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab" role="tablist">
                     <li class="nav-item" role="presentation" wire:click="changeSection('payments')">
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'payments') active @endif dark:text-slate-300"
-                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
-                            data-bs-target="#tabs-messages-withIcon" role="tab"
-                            aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                             <iconify-icon class="mr-1" icon="material-symbols:payments"></iconify-icon>
                             Payments</a>
                     </li>
                     <li class="nav-item" role="presentation" wire:click="changeSection('salescomm')">
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'salescomm') active @endif dark:text-slate-300"
-                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
-                            data-bs-target="#tabs-messages-withIcon" role="tab"
-                            aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                             <iconify-icon class="mr-1" icon="mynaui:percentage-waves"></iconify-icon>
                             Sales Commission</a>
                     </li>
@@ -126,9 +117,7 @@
                         <li class="nav-item" role="presentation" wire:click="changeSection('clientpayments')">
                             <a href="#tabs-messages-withIcon"
                                 class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'clientpayments') active @endif dark:text-slate-300"
-                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
-                                data-bs-target="#tabs-messages-withIcon" role="tab"
-                                aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                                 <iconify-icon class="mr-1" icon="mynaui:percentage-waves"></iconify-icon>
                                 Collected Client Payments</a>
                         </li>
@@ -136,18 +125,14 @@
                     <li class="nav-item" role="presentation" wire:click="changeSection('targets')">
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'targets') active @endif dark:text-slate-300"
-                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
-                            data-bs-target="#tabs-messages-withIcon" role="tab"
-                            aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                             <iconify-icon class="mr-1" icon="lets-icons:target-fill"></iconify-icon>
                             Targets</a>
                     </li>
                     <li class="nav-item" role="presentation" wire:click="changeSection('configurations')">
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'configurations') active @endif dark:text-slate-300"
-                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
-                            data-bs-target="#tabs-messages-withIcon" role="tab"
-                            aria-controls="tabs-messages-withIcon" aria-selected="false">
+                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-messages-withIcon" role="tab" aria-controls="tabs-messages-withIcon" aria-selected="false">
                             <iconify-icon class="mr-1" icon="grommet-icons:configure"></iconify-icon>
                             Direct Configurations</a>
                     </li>
@@ -165,9 +150,7 @@
                         <div class="flex justify-between">
                             <label class="form-label">
                                 Payments
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="downloadPymtDoc,showPymtNote"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadPymtDoc,showPymtNote" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </label>
 
                         </div>
@@ -176,8 +159,7 @@
                             <div class="overflow-x-auto ">
                                 <div class="inline-block min-w-full align-middle">
                                     <div class="overflow-hidden ">
-                                        <table
-                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                             <thead class="">
                                                 <tr>
 
@@ -211,8 +193,7 @@
 
                                                 </tr>
                                             </thead>
-                                            <tbody
-                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                                 @foreach ($profile->payments as $payment)
                                                     <tr>
@@ -252,53 +233,34 @@
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <div class=" flex justify-center" wire:loading.remove
-                                                                wire:target="downloadPymtDoc({{ $payment->id }})">
+                                                            <div class=" flex justify-center" wire:loading.remove wire:target="downloadPymtDoc({{ $payment->id }})">
                                                                 @if ($payment->doc_url)
-                                                                    <button class="toolTip onTop action-btn m-1 "
-                                                                        data-tippy-content="Edit"
-                                                                        wire:click="downloadPymtDoc({{ $payment->id }})"
-                                                                        type="button">
-                                                                        <iconify-icon
-                                                                            icon="basil:document-outline"></iconify-icon>
+                                                                    <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="downloadPymtDoc({{ $payment->id }})" type="button">
+                                                                        <iconify-icon icon="basil:document-outline"></iconify-icon>
                                                                     </button>
                                                                 @endif
                                                                 @if ($payment->note)
-                                                                    <button class="toolTip onTop action-btn m-1 "
-                                                                        data-tippy-content="note"
-                                                                        wire:click="showPymtNote({{ $payment->id }})"
-                                                                        type="button">
-                                                                        <iconify-icon
-                                                                            icon="iconamoon:comment-bold"></iconify-icon>
+                                                                    <button class="toolTip onTop action-btn m-1 " data-tippy-content="note" wire:click="showPymtNote({{ $payment->id }})" type="button">
+                                                                        <iconify-icon icon="iconamoon:comment-bold"></iconify-icon>
                                                                     </button>
                                                                 @endif
                                                             </div>
-                                                            <iconify-icon
-                                                                class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                                                wire:loading
-                                                                wire:target="downloadPymtDoc({{ $payment->id }})"
-                                                                icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadPymtDoc({{ $payment->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
                                                         </td>
 
                                                         <td class="table-td">
                                                             <div class="min-w-[170px]">
                                                                 <span class="text-slate-500 dark:text-slate-400">
-                                                                    <span
-                                                                        class="block text-slate-600 dark:text-slate-300"
-                                                                        style="display: flex; align-items: center;">
-                                                                        <iconify-icon icon="mdi:user" width="1.2em"
-                                                                            height="1.2em"></iconify-icon>&nbsp;
+                                                                    <span class="block text-slate-600 dark:text-slate-300" style="display: flex; align-items: center;">
+                                                                        <iconify-icon icon="mdi:user" width="1.2em" height="1.2em"></iconify-icon>&nbsp;
                                                                         <span style="vertical-align: middle;">
                                                                             Created by:
                                                                             <b>{{ $payment->creator->first_name . ' ' . $payment->creator->last_name }}</b>
                                                                         </span>
                                                                     </span>
-                                                                    <span class="block text-slate-500 text-xs"
-                                                                        style="display: flex; align-items: center;">
+                                                                    <span class="block text-slate-500 text-xs" style="display: flex; align-items: center;">
                                                                         @if ($payment->approver)
-                                                                            <iconify-icon icon="mdi:approve"
-                                                                                width="1.2em"
-                                                                                height="1.2em"></iconify-icon>&nbsp;
+                                                                            <iconify-icon icon="mdi:approve" width="1.2em" height="1.2em"></iconify-icon>&nbsp;
                                                                             <span style="vertical-align: middle;">
                                                                                 Approved by:
                                                                                 <b>{{ $payment->approver->first_name . ' ' . $payment->approver->last_name }}</b>
@@ -312,20 +274,15 @@
 
                                                         <td class="table-td ">
                                                             <div class="dropstart relative">
-                                                                <button class="inline-flex justify-center items-center"
-                                                                    type="button" data-bs-toggle="dropdown"
-                                                                    aria-expanded="false">
-                                                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
-                                                                        icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                 </button>
-                                                                <ul
-                                                                    class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                     @if ($payment->is_new)
                                                                         <li>
                                                                             <a wire:click="editThisPayment({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="fa-regular:edit"></iconify-icon>
+                                                                                <iconify-icon icon="fa-regular:edit"></iconify-icon>
                                                                                 <span>Edit</span></a>
                                                                         </li>
                                                                     @endif
@@ -334,8 +291,7 @@
                                                                         <li>
                                                                             <a wire:click="setPaidSec({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="material-symbols:paid"></iconify-icon>
+                                                                                <iconify-icon icon="material-symbols:paid"></iconify-icon>
                                                                                 <span>Set as paid</span></a>
                                                                         </li>
                                                                     @endif
@@ -343,8 +299,7 @@
                                                                         <li>
                                                                             <a wire:click="setCancelledSec({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="line-md:cancel"></iconify-icon>
+                                                                                <iconify-icon icon="line-md:cancel"></iconify-icon>
                                                                                 <span>Set as Cancelled</span></a>
                                                                         </li>
                                                                     @endif
@@ -353,21 +308,16 @@
                                                                         <li>
                                                                             <a wire:click="deleteThisPymtDoc({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="ep:document-delete"></iconify-icon>
+                                                                                <iconify-icon icon="ep:document-delete"></iconify-icon>
                                                                                 <span>Remove Document</span></a>
                                                                         </li>
                                                                     @else
                                                                         <li>
-                                                                            <label for="pymtDocFile"
-                                                                                wire:click="setUploadPymtDocId({{ $payment->id }})"
+                                                                            <label for="pymtDocFile" wire:click="setUploadPymtDocId({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="fluent:document-add-24-regular"></iconify-icon>
+                                                                                <iconify-icon icon="fluent:document-add-24-regular"></iconify-icon>
                                                                                 <span>Add Document</span></label>
-                                                                            <input type="file" id="pymtDocFile"
-                                                                                name="filename" style="display: none;"
-                                                                                wire:model="pymtDocFile">
+                                                                            <input type="file" id="pymtDocFile" name="filename" style="display: none;" wire:model="pymtDocFile">
 
                                                                         </li>
                                                                     @endif
@@ -375,8 +325,7 @@
                                                                     <li>
                                                                         <a wire:click="setPymtApprove({{ $payment->id }})"
                                                                             class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                            <iconify-icon
-                                                                                icon="mdi:approve"></iconify-icon>
+                                                                            <iconify-icon icon="mdi:approve"></iconify-icon>
                                                                             <span>Approve</span></a>
                                                                     </li>
 
@@ -388,10 +337,8 @@
                                                 @if ($profile->payments->isEmpty())
                                                     <tr>
                                                         <td colspan="6" class="text-center p-5">
-                                                            <div
-                                                                class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
-                                                                <div
-                                                                    class="flex items-start space-x-3 rtl:space-x-reverse">
+                                                            <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
+                                                                <div class="flex items-start space-x-3 rtl:space-x-reverse">
                                                                     <div class="flex-1">
                                                                         No payments added to this profile!
                                                                     </div>
@@ -403,8 +350,7 @@
                                                 @endif
                                                 <tr>
                                                     <td colspan="6" class="pt-3">
-                                                        <button wire:click="openNewPymtSection"
-                                                            class="btn inline-flex justify-center btn-light btn-sm">
+                                                        <button wire:click="openNewPymtSection" class="btn inline-flex justify-center btn-light btn-sm">
                                                             Add new payment
                                                         </button>
                                                     </td>
@@ -431,8 +377,7 @@
                     {{-- @can('create', \App\Models\Payments\SalesComm::class)
                         <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
                     @endcan --}}
-                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                        wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
                 </header>
                 <div class="card-body px-6 pb-6">
                     <div class="overflow-x-auto -mx-6 ">
@@ -443,8 +388,7 @@
                                         No sales commissions found.
                                     </p>
                                 @else
-                                    <table
-                                        class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                         <thead class=" border-t border-slate-100 dark:border-slate-800">
                                             <tr>
 
@@ -478,8 +422,7 @@
 
                                             </tr>
                                         </thead>
-                                        <tbody
-                                            class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                             @foreach ($profile->sales_comm as $comm)
                                                 <tr>
@@ -488,8 +431,7 @@
                                                     <td class="table-td ">
                                                         <div class="">
                                                             <span class="text-slate-500 dark:text-slate-400">
-                                                                <span
-                                                                    class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
+                                                                <span class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
                                                                 <span class="block text-slate-500 text-xs">
                                                                     {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
                                                                 </span>
@@ -515,18 +457,15 @@
                                                     <td class="table-td">
                                                         @if (str_contains($comm->status, 'not_confirmed'))
                                                             <span class="badge bg-warning-500 text-white h-auto">
-                                                                <iconify-icon
-                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
                                                             </span>
                                                         @elseif(str_contains($comm->status, 'cancelled'))
                                                             <span class="badge bg-danger-500 text-white h-auto">
-                                                                <iconify-icon
-                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
                                                             </span>
                                                         @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
                                                             <span class="badge bg-success-500 text-white h-auto">
-                                                                <iconify-icon
-                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
                                                             </span>
                                                         @endif
                                                     </td>
@@ -534,49 +473,32 @@
                                                     <td class="table-td px-0">
 
                                                         @if ($comm->doc_url)
-                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove
-                                                                wire:target="downloadCommDoc({{ $comm->id }})"
-                                                                wire:click="downloadCommDoc({{ $comm->id }})"
-                                                                icon="pepicons-pop:file" width="1.2em"
-                                                                height="1.2em"></iconify-icon>
-                                                            <iconify-icon
-                                                                class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                                                wire:loading
-                                                                wire:target="downloadCommDoc({{ $comm->id }})"
-                                                                icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadCommDoc({{ $comm->id }})" wire:click="downloadCommDoc({{ $comm->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
+                                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadCommDoc({{ $comm->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
                                                         @endif
                                                         @if ($comm->note)
-                                                            <iconify-icon class=" cursor-pointer"
-                                                                wire:click="showCommNote({{ $comm->id }})"
-                                                                icon="gravity-ui:comment" width="1.2em"
-                                                                height="1.2em"></iconify-icon>
+                                                            <iconify-icon class=" cursor-pointer" wire:click="showCommNote({{ $comm->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
                                                         @endif
                                                     </td>
 
                                                     @can('update', $comm)
                                                         <td class="table-td ">
                                                             <div class="dropstart relative">
-                                                                <button class="inline-flex justify-center items-center"
-                                                                    type="button" data-bs-toggle="dropdown"
-                                                                    aria-expanded="false">
-                                                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
-                                                                        icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                <button class="inline-flex justify-center items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                 </button>
-                                                                <ul
-                                                                    class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                     @if ($comm->is_new)
                                                                         <li>
                                                                             <a wire:click="setCommPaid({{ $comm->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="material-symbols:paid"></iconify-icon>
+                                                                                <iconify-icon icon="material-symbols:paid"></iconify-icon>
                                                                                 <span>Set as paid</span></a>
                                                                         </li>
                                                                         <li>
                                                                             <a wire:click="setCommCancelled({{ $comm->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="line-md:cancel"></iconify-icon>
+                                                                                <iconify-icon icon="line-md:cancel"></iconify-icon>
                                                                                 <span>Set as Cancelled</span></a>
                                                                         </li>
                                                                     @endif
@@ -584,8 +506,7 @@
                                                                     <li>
                                                                         <a wire:click="refreshCommAmmount({{ $comm->id }})"
                                                                             class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                            <iconify-icon
-                                                                                icon="material-symbols:refresh"></iconify-icon>
+                                                                            <iconify-icon icon="material-symbols:refresh"></iconify-icon>
                                                                             <span>Refresh amount</span></a>
                                                                     </li>
 
@@ -594,22 +515,17 @@
                                                                         <li>
                                                                             <a wire:click="ConfirmRemoveCommDoc({{ $comm->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="lucide:file-x"></iconify-icon>
+                                                                                <iconify-icon icon="lucide:file-x"></iconify-icon>
                                                                                 <span>Remove document</span>
                                                                             </a>
                                                                         </li>
                                                                     @else
                                                                         <li>
-                                                                            <label for="commDoc"
-                                                                                wire:click="setCommDoc({{ $comm->id }})"
+                                                                            <label for="commDoc" wire:click="setCommDoc({{ $comm->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <iconify-icon
-                                                                                    icon="pepicons-pop:file"></iconify-icon>
+                                                                                <iconify-icon icon="pepicons-pop:file"></iconify-icon>
                                                                                 <span>Add document</span></label>
-                                                                            <input type="file" id="commDoc"
-                                                                                name="filename" style="display: none;"
-                                                                                wire:model="commDoc">
+                                                                            <input type="file" id="commDoc" name="filename" style="display: none;" wire:model="commDoc">
                                                                         </li>
                                                                     @endif
                                                                     {{-- <li>
@@ -652,8 +568,7 @@
                     {{-- @can('create', \App\Models\Payments\SalesComm::class)
                         <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
                     @endcan --}}
-                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                        wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
                 </header>
                 <div class="card-body px-6 pb-6">
                     <div class="overflow-x-auto -mx-6 ">
@@ -664,8 +579,7 @@
                                         No collected payments found.
                                     </p>
                                 @else
-                                    <table
-                                        class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                         <thead class=" border-t border-slate-100 dark:border-slate-800">
                                             <tr>
 
@@ -699,8 +613,7 @@
 
                                             </tr>
                                         </thead>
-                                        <tbody
-                                            class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                             @foreach ($profile->client_payments as $payment)
                                                 <tr>
@@ -716,31 +629,26 @@
                                                     </td>
 
                                                     <td class="table-td">
-                                                        <span
-                                                            class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }}</span>
+                                                        <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }}</span>
                                                     </td>
 
 
                                                     <td class="table-td">
                                                         @if (str_contains($payment->status, 'new'))
                                                             <span class="badge bg-warning-500 text-white h-auto">
-                                                                <iconify-icon
-                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
                                                             </span>
                                                         @elseif(str_contains($payment->status, 'cancelled'))
                                                             <span class="badge bg-danger-500 text-white h-auto">
-                                                                <iconify-icon
-                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
                                                             </span>
                                                         @elseif(str_contains($payment->status, 'prem_collected'))
                                                             <span class="badge bg-info-500 text-white h-auto">
-                                                                <iconify-icon
-                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
                                                             </span>
                                                         @elseif($payment->status === 'confirmed' || str_contains($payment->status, 'paid'))
                                                             <span class="badge bg-success-500 text-white h-auto">
-                                                                <iconify-icon
-                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
+                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $payment->status)) }}
                                                             </span>
                                                         @endif
                                                     </td>
@@ -756,22 +664,12 @@
                                                     <td class="table-td px-0">
 
                                                         @if ($payment->doc_url)
-                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove
-                                                                wire:target="downloadPaymentDoc({{ $payment->id }})"
-                                                                wire:click="downloadPaymentDoc({{ $payment->id }})"
-                                                                icon="pepicons-pop:file" width="1.2em"
+                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadPaymentDoc({{ $payment->id }})" wire:click="downloadPaymentDoc({{ $payment->id }})" icon="pepicons-pop:file" width="1.2em"
                                                                 height="1.2em"></iconify-icon>
-                                                            <iconify-icon
-                                                                class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                                                wire:loading
-                                                                wire:target="downloadPaymentDoc({{ $payment->id }})"
-                                                                icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadPaymentDoc({{ $payment->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
                                                         @endif
                                                         @if ($payment->note)
-                                                            <iconify-icon class=" cursor-pointer"
-                                                                wire:click="showPaymentNote({{ $payment->id }})"
-                                                                icon="gravity-ui:comment" width="1.2em"
-                                                                height="1.2em"></iconify-icon>
+                                                            <iconify-icon class=" cursor-pointer" wire:click="showPaymentNote({{ $payment->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
                                                         @endif
                                                     </td>
 
@@ -798,9 +696,7 @@
                         <div class="flex justify-between">
                             <label class="form-label">
                                 Targets
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="targetMoveup,targetMovedown"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="targetMoveup,targetMovedown" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </label>
 
                         </div>
@@ -809,8 +705,7 @@
                             <div class="overflow-x-auto ">
                                 <div class="inline-block min-w-full align-middle">
                                     <div class="overflow-hidden ">
-                                        <table
-                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                             <thead class="">
                                                 <tr>
                                                     <th scope="col" class=" table-th ">
@@ -841,8 +736,7 @@
 
                                                 </tr>
                                             </thead>
-                                            <tbody
-                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                                 @foreach ($profile->targets as $target)
                                                     <tr>
@@ -879,28 +773,20 @@
 
                                                         <td class="p-1">
                                                             <div class=" flex justify-center">
-                                                                <button class="toolTip onTop action-btn m-1 "
-                                                                    data-tippy-content="Edit"
-                                                                    wire:click="editThisTarget({{ $target->id }})"
-                                                                    type="button">
-                                                                    <iconify-icon
-                                                                        icon="iconamoon:edit-bold"></iconify-icon>
+                                                                <button class="toolTip onTop action-btn m-1 " data-tippy-content="Show Runs" wire:click="showTagetRuns({{ $target->id }})" type="button">
+                                                                    <iconify-icon icon="hugeicons:view"></iconify-icon>
                                                                 </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Move Up" type="button"
-                                                                    wire:click="targetMoveup({{ $target->id }})">
+                                                                <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="editThisTarget({{ $target->id }})" type="button">
+                                                                    <iconify-icon icon="iconamoon:edit-bold"></iconify-icon>
+                                                                </button>
+                                                                <button class="toolTip onTop action-btn m-1" data-tippy-content="Move Up" type="button" wire:click="targetMoveup({{ $target->id }})">
                                                                     <iconify-icon icon="ion:arrow-up"></iconify-icon>
                                                                 </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Move Down" type="button"
-                                                                    wire:click="targetMovedown({{ $target->id }})">
+                                                                <button class="toolTip onTop action-btn m-1" data-tippy-content="Move Down" type="button" wire:click="targetMovedown({{ $target->id }})">
                                                                     <iconify-icon icon="ion:arrow-down"></iconify-icon>
                                                                 </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Delete" type="button"
-                                                                    wire:click="confirmDeleteTarget({{ $target->id }})">
-                                                                    <iconify-icon
-                                                                        icon="heroicons:trash"></iconify-icon>
+                                                                <button class="toolTip onTop action-btn m-1" data-tippy-content="Delete" type="button" wire:click="confirmDeleteTarget({{ $target->id }})">
+                                                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
                                                                 </button>
                                                             </div>
                                                         </td>
@@ -909,10 +795,8 @@
                                                 @if ($profile->targets->isEmpty())
                                                     <tr>
                                                         <td colspan="6" class="text-center p-5">
-                                                            <div
-                                                                class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
-                                                                <div
-                                                                    class="flex items-start space-x-3 rtl:space-x-reverse">
+                                                            <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
+                                                                <div class="flex items-start space-x-3 rtl:space-x-reverse">
                                                                     <div class="flex-1">
                                                                         No targets added to this profile!
                                                                     </div>
@@ -924,8 +808,7 @@
                                                 @endif
                                                 <tr>
                                                     <td colspan="6" class="pt-3">
-                                                        <button wire:click="openNewTargetSection"
-                                                            class="btn inline-flex justify-center btn-light btn-sm">
+                                                        <button wire:click="openNewTargetSection" class="btn inline-flex justify-center btn-light btn-sm">
                                                             Add new target
                                                         </button>
                                                     </td>
@@ -952,9 +835,7 @@
                         <div class="flex justify-between">
                             <label class="form-label">
                                 Direct Configurations
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="moveup,movedown"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="moveup,movedown" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </label>
 
                         </div>
@@ -963,8 +844,7 @@
                             <div class="overflow-x-auto ">
                                 <div class="inline-block min-w-full align-middle">
                                     <div class="overflow-hidden ">
-                                        <table
-                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                             <thead class="">
                                                 <tr>
 
@@ -986,8 +866,7 @@
 
                                                 </tr>
                                             </thead>
-                                            <tbody
-                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                                 @foreach ($profile->configurations as $conf)
                                                     <tr>
@@ -1010,28 +889,17 @@
 
                                                         <td class="p-1">
                                                             <div class=" flex justify-center">
-                                                                <button class="toolTip onTop action-btn m-1 "
-                                                                    data-tippy-content="Edit"
-                                                                    wire:click="editThisConf({{ $conf->id }})"
-                                                                    type="button">
-                                                                    <iconify-icon
-                                                                        icon="iconamoon:edit-bold"></iconify-icon>
+                                                                <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="editThisConf({{ $conf->id }})" type="button">
+                                                                    <iconify-icon icon="iconamoon:edit-bold"></iconify-icon>
                                                                 </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Move Up" type="button"
-                                                                    wire:click="moveup({{ $conf->id }})">
+                                                                <button class="toolTip onTop action-btn m-1" data-tippy-content="Move Up" type="button" wire:click="moveup({{ $conf->id }})">
                                                                     <iconify-icon icon="ion:arrow-up"></iconify-icon>
                                                                 </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Move Down" type="button"
-                                                                    wire:click="movedown({{ $conf->id }})">
+                                                                <button class="toolTip onTop action-btn m-1" data-tippy-content="Move Down" type="button" wire:click="movedown({{ $conf->id }})">
                                                                     <iconify-icon icon="ion:arrow-down"></iconify-icon>
                                                                 </button>
-                                                                <button class="toolTip onTop action-btn m-1"
-                                                                    data-tippy-content="Delete" type="button"
-                                                                    wire:click="confirmDeleteConf({{ $conf->id }})">
-                                                                    <iconify-icon
-                                                                        icon="heroicons:trash"></iconify-icon>
+                                                                <button class="toolTip onTop action-btn m-1" data-tippy-content="Delete" type="button" wire:click="confirmDeleteConf({{ $conf->id }})">
+                                                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
                                                                 </button>
                                                             </div>
                                                         </td>
@@ -1040,10 +908,8 @@
                                                 @if ($profile->configurations->isEmpty())
                                                     <tr>
                                                         <td colspan="6" class="text-center p-5">
-                                                            <div
-                                                                class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
-                                                                <div
-                                                                    class="flex items-start space-x-3 rtl:space-x-reverse">
+                                                            <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] text-warning-500">
+                                                                <div class="flex items-start space-x-3 rtl:space-x-reverse">
                                                                     <div class="flex-1">
                                                                         No configrations added to this profile!
                                                                     </div>
@@ -1055,8 +921,7 @@
                                                 @endif
                                                 <tr>
                                                     <td colspan="6" class="pt-3">
-                                                        <button wire:click="openNewConfSection"
-                                                            class="btn inline-flex justify-center btn-light btn-sm">
+                                                        <button wire:click="openNewConfSection" class="btn inline-flex justify-center btn-light btn-sm">
                                                             Add new configuration
                                                         </button>
                                                     </td>
@@ -1073,30 +938,93 @@
         </div>
     @endif
 
+    @if ($runs)
+
+        <div class="card">
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Target Runs
+                                </h3>
+
+                                <button wire:click="closeTargetRuns" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+                                <div class="card-body px-6 pb-6">
+                                    <div class="overflow-x-auto -mx-6">
+                                        <div class="inline-block min-w-full align-middle">
+                                            <div class="overflow-hidden ">
+                                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                                    <thead class="bg-slate-200 dark:bg-slate-700">
+                                                        <tr>
+                                                            <th scope="col" class="table-th">
+                                                                Added to Balance
+                                                            </th>
+                                                            <th scope="col" class="table-th">
+                                                                Added to Payment
+                                                            </th>
+                                                            <th scope="col" class="table-th">
+                                                                Execution time
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                        @forelse ($runs as $run)
+                                                            <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                <td class="table-td">{{ $run->added_to_balance }}</td>
+                                                                <td class="table-td">{{ $run->added_to_payments }}</td>
+                                                                <td class="table-td">{{ \Carbon\Carbon::parse($run->created_at)->format('D d/m/Y H:i:s') }}</td>
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="3" class="text-center py-4">
+                                                                    No records found.
+                                                                </td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Modal footer -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    @endif
+
 
     @if ($pymtNotePreview)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Payment Note
                             </h3>
 
-                            <button wire:click="closePymtNote" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closePymtNote" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1113,24 +1041,17 @@
     @endif
 
     @if ($paymentNoteSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Payment Note
                             </h3>
-                            <button wire:click="hidePaymentComment" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                            <button wire:click="hidePaymentComment" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                     </path>
@@ -1151,28 +1072,19 @@
     @endif
 
     @if ($newPymtSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Add Payment
                             </h3>
 
-                            <button wire:click="closeNewPymtSection" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeNewPymtSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1184,25 +1096,19 @@
                                 <div class="input-area mt-3">
                                     <label for="pymtAmount" class="form-label">Amount</label>
                                     <div class="relative">
-                                        <input type="number" name="pymtAmount"
-                                            class="form-control @error('pymtAmount') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtAmount">
-                                        <span
-                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                        <input type="number" name="pymtAmount" class="form-control @error('pymtAmount') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtAmount">
+                                        <span class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             EGP
                                         </span>
                                     </div>
                                 </div>
                                 @error('pymtAmount')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="pymtType" class="form-label">Payment type</label>
-                                    <select name="pymtType"
-                                        class="form-control w-full mt-2 @error('pymtType') !border-danger-500 @enderror"
-                                        wire:model.defer="pymtType">
+                                    <select name="pymtType" class="form-control w-full mt-2 @error('pymtType') !border-danger-500 @enderror" wire:model.defer="pymtType">
                                         <option value="">None</option>
                                         @foreach ($PYMT_TYPES as $PYMT_TYPE)
                                             <option value="{{ $PYMT_TYPE }}">
@@ -1211,46 +1117,35 @@
                                     </select>
                                 </div>
                                 @error('pymtType')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="pymtDoc" class="form-label">Document</label>
-                                    <input id="pymtDoc" name="pymtDoc" type="file"
-                                        class="form-control @error('pymtDoc') !border-danger-500 @enderror"
-                                        wire:model="pymtDoc">
+                                    <input id="pymtDoc" name="pymtDoc" type="file" class="form-control @error('pymtDoc') !border-danger-500 @enderror" wire:model="pymtDoc">
                                 </div>
                                 @error('pymtDoc')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="pymtNote" class="form-label">Note</label>
                                     <div class="relative">
-                                        <input type="text" name="pymtNote"
-                                            class="form-control @error('pymtNote') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtNote">
+                                        <input type="text" name="pymtNote" class="form-control @error('pymtNote') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtNote">
                                     </div>
                                 </div>
                                 @error('pymtNote')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                             </div>
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addPayment" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addPayment" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="addPayment">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="addPayment"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="addPayment" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1260,28 +1155,19 @@
     @endif
 
     @if ($pymtId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Payment
                             </h3>
 
-                            <button wire:click="closeEditPymtSection" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeEditPymtSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1293,25 +1179,19 @@
                                 <div class="input-area mt-3">
                                     <label for="pymtAmount" class="form-label">Amount</label>
                                     <div class="relative">
-                                        <input type="number" name="pymtAmount"
-                                            class="form-control @error('pymtAmount') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtAmount">
-                                        <span
-                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                        <input type="number" name="pymtAmount" class="form-control @error('pymtAmount') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtAmount">
+                                        <span class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             EGP
                                         </span>
                                     </div>
                                 </div>
                                 @error('pymtAmount')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="pymtType" class="form-label">Payment type</label>
-                                    <select name="pymtType"
-                                        class="form-control w-full mt-2 @error('pymtType') !border-danger-500 @enderror"
-                                        wire:model.defer="pymtType">
+                                    <select name="pymtType" class="form-control w-full mt-2 @error('pymtType') !border-danger-500 @enderror" wire:model.defer="pymtType">
                                         <option value="">None</option>
                                         @foreach ($PYMT_TYPES as $PYMT_TYPE)
                                             <option value="{{ $PYMT_TYPE }}">
@@ -1320,35 +1200,27 @@
                                     </select>
                                 </div>
                                 @error('pymtType')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="pymtNote" class="form-label">Note</label>
                                     <div class="relative">
-                                        <input type="text" name="pymtNote"
-                                            class="form-control @error('pymtNote') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtNote">
+                                        <input type="text" name="pymtNote" class="form-control @error('pymtNote') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtNote">
                                     </div>
                                 </div>
                                 @error('pymtNote')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                             </div>
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="editPayment" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editPayment" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="editPayment">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="editPayment"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="editPayment" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1358,28 +1230,19 @@
     @endif
 
     @if ($pymtPaidId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Set Paid
                             </h3>
 
-                            <button wire:click="closeSetPaidSec" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeSetPaidSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1391,28 +1254,21 @@
                                 <div class="input-area mt-3">
                                     <label for="pymtPaidDate" class="form-label">Payment date</label>
                                     <div class="relative">
-                                        <input type="date" name="pymtPaidDate"
-                                            class="form-control @error('pymtPaidDate') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtPaidDate">
+                                        <input type="date" name="pymtPaidDate" class="form-control @error('pymtPaidDate') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtPaidDate">
                                     </div>
                                 </div>
                                 @error('pymtPaidDate')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                             </div>
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setPymtPaid" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setPymtPaid" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setPymtPaid">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="setPymtPaid"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setPymtPaid" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1422,28 +1278,19 @@
     @endif
 
     @if ($pymtCancelledId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Set Cancelled
                             </h3>
 
-                            <button wire:click="closeSetCancelledSec" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeSetCancelledSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1455,28 +1302,21 @@
                                 <div class="input-area mt-3">
                                     <label for="pymtCancelledDate" class="form-label">Cancellation date</label>
                                     <div class="relative">
-                                        <input type="date" name="pymtCancelledDate"
-                                            class="form-control @error('pymtCancelledDate') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtCancelledDate">
+                                        <input type="date" name="pymtCancelledDate" class="form-control @error('pymtCancelledDate') !border-danger-500 @enderror !pr-32" wire:model.defer="pymtCancelledDate">
                                     </div>
                                 </div>
                                 @error('pymtCancelledDate')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                             </div>
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setPymtCancelled" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setPymtCancelled" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setPymtCancelled">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="setPymtCancelled"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setPymtCancelled" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1486,28 +1326,19 @@
     @endif
 
     @if ($newTargetSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
-            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Add Target
                             </h3>
 
-                            <button wire:click="closeNewTargetSection" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeNewTargetSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1518,119 +1349,95 @@
 
                                 <div class="input-area mt-3">
                                     <label for="dayOfMonth" class="form-label">Day of month</label>
-                                    <input id="dayOfMonth" type="number" class="form-control"
-                                        wire:model="dayOfMonth">
+                                    <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth">
                                 </div>
                                 @error('dayOfMonth')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="eachMonth" class="form-label">Each month</label>
-                                    <input id="eachMonth" type="number" class="form-control"
-                                        wire:model="eachMonth">
+                                    <input id="eachMonth" type="number" class="form-control" wire:model="eachMonth">
                                 </div>
                                 @error('eachMonth')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="commPercentage" class="form-label">Comm. Percentage</label>
                                     <div class="relative">
-                                        <input type="number" name="commPercentage"
-                                            class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="commPercentage">
-                                        <span
-                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                        <input type="number" name="commPercentage" class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32" wire:model.defer="commPercentage">
+                                        <span class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
                                         </span>
                                     </div>
 
                                 </div>
                                 @error('commPercentage')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="prem_target" class="form-label">Yearly Premium Target</label>
-                                    <input id="premTarget" type="number" class="form-control"
-                                        wire:model="premTarget">
+                                    <input id="premTarget" type="number" class="form-control" wire:model="premTarget">
                                     <small class=caption>For info only. Not used for calculations</small>
                                 </div>
                                 @error('premTarget')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="minIncomeTarget" class="form-label">Min Income Target</label>
-                                    <input id="minIncomeTarget" type="number" class="form-control"
-                                        wire:model="minIncomeTarget">
+                                    <input id="minIncomeTarget" type="number" class="form-control" wire:model="minIncomeTarget">
                                     <small class=caption>Used for calculations. Min. Target per 'Each Month'
                                         period</small>
                                 </div>
                                 @error('minIncomeTarget')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="maxIncomeTarget" class="form-label">Max Income Target</label>
-                                    <input id="maxIncomeTarget" type="number" class="form-control"
-                                        wire:model="maxIncomeTarget">
+                                    <input id="maxIncomeTarget" type="number" class="form-control" wire:model="maxIncomeTarget">
                                     <small class=caption>Used for calculations. Max. Target per 'Each Month' period.
                                         Leave empty if there is no max limit</small>
                                 </div>
                                 @error('maxIncomeTarget')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="addToBalance" class="form-label">Add To Balance %</label>
-                                    <input id="addToBalance" type="number" class="form-control"
-                                        wire:model="addToBalance">
+                                    <input id="addToBalance" type="number" class="form-control" wire:model="addToBalance">
                                 </div>
                                 @error('addToBalance')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="addAsPayment" class="form-label">Add as Payment %</label>
-                                    <input id="addAsPayment" type="number" class="form-control"
-                                        wire:model="addAsPayment">
+                                    <input id="addAsPayment" type="number" class="form-control" wire:model="addAsPayment">
                                 </div>
                                 @error('addAsPayment')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="basePayment" class="form-label">Base Payment</label>
-                                    <input id="basePayment" type="number" class="form-control"
-                                        wire:model="basePayment">
+                                    <input id="basePayment" type="number" class="form-control" wire:model="basePayment">
                                 </div>
                                 @error('basePayment')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                             </div>
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addTarget" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addTarget" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="addTarget">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="addTarget"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="addTarget" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1640,28 +1447,19 @@
     @endif
 
     @if ($editTargetId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Target
                             </h3>
 
-                            <button wire:click="closeEditTargetSection" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeEditTargetSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1672,123 +1470,98 @@
 
                                 <div class="input-area mt-3">
                                     <label for="dayOfMonth" class="form-label">Day of month</label>
-                                    <input id="dayOfMonth" type="number" class="form-control"
-                                        wire:model="dayOfMonth">
+                                    <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth">
                                 </div>
                                 @error('dayOfMonth')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="eachMonth" class="form-label">Each month</label>
-                                    <input id="eachMonth" type="number" class="form-control"
-                                        wire:model="eachMonth">
+                                    <input id="eachMonth" type="number" class="form-control" wire:model="eachMonth">
                                 </div>
                                 @error('eachMonth')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="commPercentage" class="form-label">Comm. Percentage</label>
                                     <div class="relative">
-                                        <input type="number" name="commPercentage"
-                                            class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="commPercentage">
-                                        <span
-                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                        <input type="number" name="commPercentage" class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32" wire:model.defer="commPercentage">
+                                        <span class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
                                         </span>
                                     </div>
 
                                 </div>
                                 @error('commPercentage')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="prem_target" class="form-label">Yearly Premium Target</label>
-                                    <input id="premTarget" type="number" class="form-control"
-                                        wire:model="premTarget">
+                                    <input id="premTarget" type="number" class="form-control" wire:model="premTarget">
                                     <small class=caption>For info only. Not used for calculations</small>
                                 </div>
                                 @error('premTarget')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="minIncomeTarget" class="form-label">Min Income Target</label>
-                                    <input id="minIncomeTarget" type="number" class="form-control"
-                                        wire:model="minIncomeTarget">
+                                    <input id="minIncomeTarget" type="number" class="form-control" wire:model="minIncomeTarget">
                                     <small class=caption>Used for calculations. Min. Target per 'Each Month'
                                         period</small>
                                 </div>
                                 @error('minIncomeTarget')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="maxIncomeTarget" class="form-label">Max Income Target</label>
-                                    <input id="maxIncomeTarget" type="number" class="form-control"
-                                        wire:model="maxIncomeTarget">
+                                    <input id="maxIncomeTarget" type="number" class="form-control" wire:model="maxIncomeTarget">
                                     <small class=caption>Used for calculations. Max. Target per 'Each Month' period.
                                         Leave empty if there is no max limit</small>
                                 </div>
                                 @error('maxIncomeTarget')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="addToBalance" class="form-label">Add To Balance %</label>
-                                    <input id="addToBalance" type="number" class="form-control"
-                                        wire:model="addToBalance">
+                                    <input id="addToBalance" type="number" class="form-control" wire:model="addToBalance">
                                 </div>
                                 @error('addToBalance')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="addAsPayment" class="form-label">Add as Payment %</label>
-                                    <input id="addAsPayment" type="number" class="form-control"
-                                        wire:model="addAsPayment">
+                                    <input id="addAsPayment" type="number" class="form-control" wire:model="addAsPayment">
                                 </div>
                                 @error('addAsPayment')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="basePayment" class="form-label">Base Payment</label>
-                                    <input id="basePayment" type="number" class="form-control"
-                                        wire:model="basePayment">
+                                    <input id="basePayment" type="number" class="form-control" wire:model="basePayment">
                                 </div>
                                 @error('basePayment')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                             </div>
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="editarget" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-black bg-white-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editarget" data-bs-dismiss="modal" class="btn inline-flex justify-center text-black bg-white-500">
                                 <span wire:target="closeEditTargetSection">Close</span>
                             </button>
-                            <button wire:click="editarget" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                            <button wire:click="editarget" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="editarget">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="editarget"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="editarget" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1798,28 +1571,19 @@
     @endif
 
     @if ($newConfSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Add Commission Configuration
                             </h3>
 
-                            <button wire:click="closeNewConfSection" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeNewConfSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1831,26 +1595,20 @@
                                 <div class="input-area mt-3">
                                     <label for="percentage" class="form-label">Percentage</label>
                                     <div class="relative">
-                                        <input type="number"
-                                            class="form-control @error('percentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="percentage">
-                                        <span
-                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                        <input type="number" class="form-control @error('percentage') !border-danger-500 @enderror !pr-32" wire:model.defer="percentage">
+                                        <span class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
                                         </span>
                                     </div>
                                     {{-- <input id="percentage" type="number" class="form-control @error('percentage') !border-danger-500 @enderror" wire:model.defer="percentage"> --}}
                                 </div>
                                 @error('percentage')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="from" class="form-label">From</label>
-                                    <select name="from"
-                                        class="form-control w-full mt-2 @error('from') !border-danger-500 @enderror"
-                                        wire:model.defer="from">
+                                    <select name="from" class="form-control w-full mt-2 @error('from') !border-danger-500 @enderror" wire:model.defer="from">
                                         <option value="">None</option>
                                         @foreach ($FROMS as $FROM)
                                             <option value="{{ $FROM }}">
@@ -1859,15 +1617,12 @@
                                     </select>
                                 </div>
                                 @error('from')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="line_of_business" class="form-label">Line of business</label>
-                                    <select name="line_of_business"
-                                        class="form-control w-full mt-2 @error('line_of_business') !border-danger-500 @enderror"
-                                        wire:model="line_of_business">
+                                    <select name="line_of_business" class="form-control w-full mt-2 @error('line_of_business') !border-danger-500 @enderror" wire:model="line_of_business">
                                         <option value="">None</option>
                                         @foreach ($LOBs as $LOB)
                                             <option value="{{ $LOB }}">
@@ -1876,8 +1631,7 @@
                                     </select>
                                 </div>
                                 @error('line_of_business')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 @if (!$line_of_business)
@@ -1890,8 +1644,7 @@
                                     @else
                                         <div class="input-area mt-3">
                                             <label for="conditionType" class="form-label">Condition Type</label>
-                                            <select name="conditionType" class="form-control w-full mt-2"
-                                                wire:model="conditionType">
+                                            <select name="conditionType" class="form-control w-full mt-2" wire:model="conditionType">
                                                 <option value="policy">Policy</option>
                                                 <option value="company">Company</option>
                                             </select>
@@ -1900,29 +1653,22 @@
                                         <div class="input-area mt-3">
                                             <label for="searchCon" class="form-label">Search
                                                 {{ $conditionType }}</label>
-                                            <input id="searchCon" type="text" class="form-control"
-                                                wire:model="searchCon">
+                                            <input id="searchCon" type="text" class="form-control" wire:model="searchCon">
                                         </div>
 
                                         <div class="text-sm">
                                             @if ($searchlist)
                                                 @if ($conditionType == 'company')
                                                     @foreach ($searchlist as $result)
-                                                        <p class="mt-3"><iconify-icon
-                                                                icon="heroicons:building-storefront"></iconify-icon>
-                                                            {{ $result->name }} <Span
-                                                                wire:click="selectResult({{ $result->id }})"
-                                                                class="cursor-pointer text-primary-500">Select
+                                                        <p class="mt-3"><iconify-icon icon="heroicons:building-storefront"></iconify-icon>
+                                                            {{ $result->name }} <Span wire:click="selectResult({{ $result->id }})" class="cursor-pointer text-primary-500">Select
                                                                 Company</Span>
                                                         </p>
                                                     @endforeach
                                                 @elseif ($conditionType == 'policy')
                                                     @foreach ($searchlist as $result)
-                                                        <p class="mt-3"><iconify-icon
-                                                                icon="material-symbols:policy-outline-rounded"></iconify-icon>
-                                                            {{ $result->company->name }} | {{ $result->name }} <Span
-                                                                wire:click="selectResult({{ $result->id }})"
-                                                                class="cursor-pointer text-primary-500">Select
+                                                        <p class="mt-3"><iconify-icon icon="material-symbols:policy-outline-rounded"></iconify-icon>
+                                                            {{ $result->company->name }} | {{ $result->name }} <Span wire:click="selectResult({{ $result->id }})" class="cursor-pointer text-primary-500">Select
                                                                 Policy</Span>
                                                         </p>
                                                     @endforeach
@@ -1937,14 +1683,10 @@
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addConf" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addConf" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="addConf">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="addConf"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="addConf" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1954,28 +1696,19 @@
     @endif
 
     @if ($editConfId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Edit Commission Configuration
                             </h3>
 
-                            <button wire:click="closeEditConf" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeEditConf" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -1987,26 +1720,20 @@
                                 <div class="input-area mt-3">
                                     <label for="percentage" class="form-label">Percentage</label>
                                     <div class="relative">
-                                        <input type="number"
-                                            class="form-control @error('percentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="percentage">
-                                        <span
-                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                        <input type="number" class="form-control @error('percentage') !border-danger-500 @enderror !pr-32" wire:model.defer="percentage">
+                                        <span class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
                                         </span>
                                     </div>
                                     {{-- <input id="percentage" type="number" class="form-control @error('percentage') !border-danger-500 @enderror" wire:model.defer="percentage"> --}}
                                 </div>
                                 @error('percentage')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="from" class="form-label">From</label>
-                                    <select name="from"
-                                        class="form-control w-full mt-2 @error('from') !border-danger-500 @enderror"
-                                        wire:model.defer="from">
+                                    <select name="from" class="form-control w-full mt-2 @error('from') !border-danger-500 @enderror" wire:model.defer="from">
                                         <option value="">None</option>
                                         @foreach ($FROMS as $FROM)
                                             <option value="{{ $FROM }}">
@@ -2015,8 +1742,7 @@
                                     </select>
                                 </div>
                                 @error('from')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
 
@@ -2025,14 +1751,10 @@
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="editConf" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editConf" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="editConf">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="editConf"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="editConf" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -2042,28 +1764,19 @@
     @endif
 
     @if ($updatedCommSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Add Commission Profile
                             </h3>
 
-                            <button wire:click="closeUpdateSec" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                            <button wire:click="closeUpdateSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2074,9 +1787,7 @@
 
                                 <div class="input-area mt-3">
                                     <label for="updatedType" class="form-label">Type</label>
-                                    <select name="updatedType"
-                                        class="form-control w-full mt-2 @error('updatedType') !border-danger-500 @enderror"
-                                        wire:model.defer="updatedType">
+                                    <select name="updatedType" class="form-control w-full mt-2 @error('updatedType') !border-danger-500 @enderror" wire:model.defer="updatedType">
                                         <option>None</option>
                                         @foreach ($profileTypes as $type)
                                             <option value="{{ $type }}">
@@ -2085,16 +1796,13 @@
                                     </select>
                                 </div>
                                 @error('updatedType')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <div class="input-area mt-3">
                                     <div class="flex items-center space-x-2">
-                                        <label
-                                            class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                            <input wire:model="updatedPerPolicy" type="checkbox" value=""
-                                                class="sr-only peer">
+                                        <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                            <input wire:model="updatedPerPolicy" type="checkbox" value="" class="sr-only peer">
                                             <div
                                                 class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500">
                                             </div>
@@ -2104,10 +1812,8 @@
                                     </div>
 
                                     <div class="flex items-center space-x-2 mt-3">
-                                        <label
-                                            class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                            <input wire:model="updatedSelectAvailable" type="checkbox"
-                                                value="" class="sr-only peer">
+                                        <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                            <input wire:model="updatedSelectAvailable" type="checkbox" value="" class="sr-only peer">
                                             <div
                                                 class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500">
                                             </div>
@@ -2133,17 +1839,14 @@
 
                                 <div class="input-area mt-3">
                                     <label for="updatedTitle" class="form-label">Title</label>
-                                    <input id="updatedTitle" type="text"
-                                        class="form-control @error('updatedTitle') !border-danger-500 @enderror"
-                                        wire:model.defer="updatedTitle">
+                                    <input id="updatedTitle" type="text" class="form-control @error('updatedTitle') !border-danger-500 @enderror" wire:model.defer="updatedTitle">
                                 </div>
 
                                 <div class="from-group mt-3">
                                     <label for="updatedDesc" class="form-label">Description</label>
                                     <textarea class="form-control mt-2 w-full" wire:model.defer="updatedDesc"></textarea>
                                     @error('updatedDesc')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
 
@@ -2151,14 +1854,10 @@
 
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="updateComm" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="updateComm" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="updateComm">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="updateComm"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="updateComm" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -2168,29 +1867,22 @@
     @endif
 
     @if ($deleteConfId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                 Delete Configuration
                             </h3>
-                            <button wire:click="dismissDeleteConf" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                            <button wire:click="dismissDeleteConf" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                             dark:hover:bg-slate-600 dark:hover:text-white"
                                 data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2202,14 +1894,10 @@
                             </h6>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="deleteConf" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-danger-500">
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteConf" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">
                                 <span wire:loading.remove wire:target="deleteConf">Yes, Delete</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="deleteConf"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="deleteConf" icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
@@ -2220,29 +1908,22 @@
     @endif
 
     @if ($deleteTargetId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                 Delete Target
                             </h3>
-                            <button wire:click="dismissDeleteTarget" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                            <button wire:click="dismissDeleteTarget" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                             dark:hover:bg-slate-600 dark:hover:text-white"
                                 data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2254,14 +1935,10 @@
                             </h6>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="deleteTarget" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-danger-500">
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteTarget" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">
                                 <span wire:loading.remove wire:target="deleteTarget">Yes, Delete</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="deleteTarget"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="deleteTarget" icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
@@ -2273,29 +1950,22 @@
 
 
     @if ($pymtDeleteId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                 Delete Payment Document
                             </h3>
-                            <button wire:click="dismissDeletePymtDoc" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                            <button wire:click="dismissDeletePymtDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                             dark:hover:bg-slate-600 dark:hover:text-white"
                                 data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2307,14 +1977,10 @@
                             </h6>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="deletePymtDoc" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-danger-500">
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deletePymtDoc" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">
                                 <span wire:loading.remove wire:target="deletePymtDoc">Yes, Delete</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="deletePymtDoc"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="deletePymtDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
@@ -2325,27 +1991,19 @@
     @endif
 
     @if ($commNote)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Commission Note
                             </h3>
-                            <button wire:click="hideCommComment" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                            <button wire:click="hideCommComment" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2363,30 +2021,22 @@
     @endif
 
     @if ($RemoveCommDocId)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
                             <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                 Remove Commission Document
                             </h3>
-                            <button wire:click="DissRemoveCommDoc" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                            <button wire:click="DissRemoveCommDoc" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                             dark:hover:bg-slate-600 dark:hover:text-white"
                                 data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2398,10 +2048,8 @@
                             </h6>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="removeCommDoc" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-danger-500">Yes,
+                        <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="removeCommDoc" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-danger-500">Yes,
                                 Remove</button>
                         </div>
                     </div>
@@ -2411,27 +2059,19 @@
     @endif
     {{-- addCommSec --}}
     @if ($addCommSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Add Sales Commission
                             </h3>
-                            <button wire:click="toggleAddComm" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
+                            <button wire:click="toggleAddComm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2441,25 +2081,19 @@
 
                             <div class="from-group">
                                 <label for="commTitle" class="form-label">Title</label>
-                                <input type="text" name="commTitle"
-                                    class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror"
-                                    wire:model.defer="commTitle">
+                                <input type="text" name="commTitle" class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror" wire:model.defer="commTitle">
                                 @error('commTitle')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             <div class="from-group">
                                 <label for="commFrom" class="form-label">From</label>
-                                <select name="commFrom" id="commFrom" class="form-control w-full mt-2"
-                                    wire:model="commFrom">
-                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
-                                        value="">
+                                <select name="commFrom" id="commFrom" class="form-control w-full mt-2" wire:model="commFrom">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" value="">
                                         Select option</option>
                                     @foreach ($FROMS as $FROM)
-                                        <option value="{{ $FROM }}"
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $FROM }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ ucwords(str_replace('_', ' ', $FROM)) }}
                                         </option>
                                     @endforeach
@@ -2468,24 +2102,19 @@
 
                             <div class="from-group">
                                 <label for="commPer" class="form-label">Percentage</label>
-                                <input type="number" min="0" max="100" name="commPer"
-                                    class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror"
-                                    wire:model.defer="commPer">
+                                <input type="number" min="0" max="100" name="commPer" class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror" wire:model.defer="commPer">
                                 @error('commPer')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Sales Person</label>
-                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                    wire:model="commUser">
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="commUser">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select user</option>
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->id }}"
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ $user->first_name . ' ' . $user->last_name }}
                                         </option>
                                     @endforeach
@@ -2494,19 +2123,15 @@
 
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Note</label>
-                                <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror"
-                                    wire:model.defer="newcommNote"></textarea>
+                                <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror" wire:model.defer="newcommNote"></textarea>
                                 @error('newcommNote')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                         <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addComm" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addComm" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>

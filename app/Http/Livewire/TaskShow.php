@@ -44,6 +44,7 @@ class TaskShow extends Component
     public $changes = false;
     public $changeWatchers = false;
     public $uploadedFile;
+    public $uploadedFiles = [];
     public $sendTempAssignSection = false;
     public $TempAssignUser;
     public $TempAssignDate;
@@ -257,27 +258,33 @@ class TaskShow extends Component
         }
     }
 
-    public function UpdatedUploadedFile()
+
+    public function updatedUploadedFiles()
     {
         $this->validate(
             [
-                'uploadedFile' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+                'uploadedFiles.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480'
             ],
             [
-                'uploadedFile.max' => 'The file must not be greater than 5MB.',
-            ],
+                'uploadedFiles.*.max' => 'The file must not be greater than 20MB.',
+            ]
         );
 
-        $filename = $this->uploadedFile->getClientOriginalName();
-        $url = $this->uploadedFile->store(Task::FILES_DIRECTORY, 's3');
-        $task = Task::find($this->taskId);
-        $t = $task->addFile($filename, $url);
-        if ($t) {
-            $this->alert('success', 'File Uploaded!');
-            $this->mount($this->taskId);
-        } else {
-            $this->alert('failed', 'Server Error!');
+        foreach ($this->uploadedFiles as $file) {
+            $filename = $file->getClientOriginalName();
+            $url = $file->store('files', 's3');
+
+            $task = Task::find($this->taskId);
+            $t = $task->addFile($filename, $url);
+
+            if (!$t) {
+                $this->alert('failed', 'Server Error!');
+                return;
+            }
         }
+
+        $this->alert('success', 'Files Uploaded!');
+        $this->mount($this->taskId);
     }
 
     public function removeFile($id)
