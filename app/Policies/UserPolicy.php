@@ -30,7 +30,7 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        if($user->is_admin || $user->id == $model->id) return true;
+        if($user->is_admin || $user->is_hr || $user->id == $model->id) return true;
         return Response::deny("Unauthorized action");
         return true;
     }
@@ -43,8 +43,8 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        if($user->is_admin) return true;
-        return Response::deny("Only admins can create users");
+        if($user->is_admin || $user->is_hr) return true;
+        return Response::deny("Only admins/hr can create users");
     }
 
     /**
@@ -56,7 +56,7 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        if($user->is_admin || $user->id == $model->id) return true;
+        if($user->is_admin || $user->is_hr || $user->id == $model->id) return true;
         return Response::deny("Unauthorized action");
     }
 
@@ -69,7 +69,7 @@ class UserPolicy
      */
     public function updatePassword(User $user, User $model)
     {
-        if($user->is_admin || $user->id == $model->id) return true;
+        if($user->is_admin || $user->is_hr || $user->id == $model->id) return true;
         return Response::deny("Unauthorized action");
     }
 

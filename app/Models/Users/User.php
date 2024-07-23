@@ -37,6 +37,7 @@ class User extends Authenticatable
     const TYPE_FINANCE = 'finance';
     const TYPE_COURIER = 'courier';
     const TYPE_MANAGER = 'manager';
+    const TYPE_HR = 'hr';
     const TYPE_ADMIN = 'admin';
 
     const TYPES = [
@@ -45,6 +46,7 @@ class User extends Authenticatable
         self::TYPE_COURIER,
         self::TYPE_FINANCE,
         self::TYPE_OPERATIONS,
+        self::TYPE_HR,
         self::TYPE_MANAGER
     ];
 
@@ -271,6 +273,11 @@ class User extends Authenticatable
     public function getIsFinanceAttribute()
     {
         return $this->type == self::TYPE_FINANCE;
+    }
+
+    public function getIsHRAttribute()
+    {
+        return $this->type == self::TYPE_HR;
     }
 
     public function getNotfChannelAttribute()

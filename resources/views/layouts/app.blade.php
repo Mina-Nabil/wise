@@ -232,69 +232,44 @@
                             </span>
                         </a>
                     </li>
-                    
-                        <li class="">
-                            <a href="javascript:void(0)" class="navItem">
-                                <span class="flex items-center">
-                                    <iconify-icon class=" nav-icon" icon="ic:round-add-task"></iconify-icon>
-                                    <span>Reports</span>
-                                </span>
-                                <iconify-icon class="icon-arrow"
-                                    icon="heroicons-outline:chevron-right"></iconify-icon>
-                            </a>
-                            <ul class="sidebar-submenu">
-                                <li>
-                                    <a href="{{ url('/reports/offers') }}" class="@yield('reports.offers')">Offers</a>
-                                </li>
-                                <li>
-                                    <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold
-                                        Policies</a>
-                                </li>
 
-                            </ul>
-                        </li>
-                    @if (Auth::user()->is_admin)
+                    <li class="">
+                        <a href="javascript:void(0)" class="navItem">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="ic:round-add-task"></iconify-icon>
+                                <span>Reports</span>
+                            </span>
+                            <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
+                        </a>
+                        <ul class="sidebar-submenu">
+                            <li>
+                                <a href="{{ url('/reports/offers') }}" class="@yield('reports.offers')">Offers</a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold
+                                    Policies</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    @if (Auth::user()->is_admin || Auth::user()->is_hr)
                         <li class="sidebar-menu-title">Settings</li>
-                        <li>
-                            <a href="{{ url('/commissions') }}" class="navItem @yield('commissions')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon"
-                                        icon="flowbite:sale-percent-outline"></iconify-icon>
-                                    <span>Commissions</span>
-                                </span>
-                            </a>
-                        </li>
+                        @if (Auth::user()->is_admin)
+                            <li>
+                                <a href="{{ url('/commissions') }}" class="navItem @yield('commissions')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon"
+                                            icon="flowbite:sale-percent-outline"></iconify-icon>
+                                        <span>Commissions</span>
+                                    </span>
+                                </a>
+                            </li>
+                        @endif
                         <li>
                             <a href="{{ url('/users') }}" class="navItem @yield('users')">
                                 <span class="flex items-center">
                                     <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
                                     <span>Users</span>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon"
-                                        icon="material-symbols:policy-outline-rounded"></iconify-icon>
-                                    <span>Policies</span>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url('/cars') }}" class="navItem @yield('cars')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon" icon="mingcute:car-line"></iconify-icon>
-                                    <span>Cars</span>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url('/companies') }}" class="navItem @yield('companies')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon"
-                                        icon="heroicons:building-storefront"></iconify-icon>
-                                    <span>Companies</span>
                                 </span>
                             </a>
                         </li>
@@ -307,6 +282,35 @@
                                 </span>
                             </a>
                         </li>
+                        @if (Auth::user()->is_admin)
+                            <li>
+                                <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon"
+                                            icon="material-symbols:policy-outline-rounded"></iconify-icon>
+                                        <span>Policies</span>
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{ url('/cars') }}" class="navItem @yield('cars')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon" icon="mingcute:car-line"></iconify-icon>
+                                        <span>Cars</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/companies') }}" class="navItem @yield('companies')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon"
+                                            icon="heroicons:building-storefront"></iconify-icon>
+                                        <span>Companies</span>
+                                    </span>
+                                </a>
+                            </li>
+                        @endif
                     @endif
 
 
