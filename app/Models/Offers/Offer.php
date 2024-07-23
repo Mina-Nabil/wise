@@ -405,7 +405,9 @@ class Offer extends Model
             $valid_conf = $prof->getValidDirectCommissionConf($this->selected_option);
             if (!$valid_conf) {
                 $this->addSalesCommission($title, CommProfileConf::FROM_NET_COMM, 0, $prof->id, "Added automatically for target calculations");
-            };
+            } else {
+                $this->addSalesCommission($title, $valid_conf->from, $valid_conf->percentage, $prof->id, "Added automatically for direct commission", true);
+            }
         }
     }
 
@@ -421,6 +423,7 @@ class Offer extends Model
                 "comm_profile_id"   => $comm_profile_id,
                 "from"              => $from,
                 "comm_percentage"   => $comm_percentage,
+                "is_direct"         => $is_direct,
                 "note"              => $note
             ]);
             if ($sales_comm && $is_direct) {

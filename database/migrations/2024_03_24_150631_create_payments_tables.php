@@ -98,7 +98,7 @@ return new class extends Migration
             $table->double('total_client_paid')->nullable();
             $table->double('total_sales_comm')->nullable();
             $table->double('total_comp_paid')->nullable(); //gai mn sherket t2meen
-            $table->text('policy_comm_note')->nullable(); //gai mn sherket t2meen
+            $table->text('policy_comm_note')->nullable();
         });
     }
 

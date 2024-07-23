@@ -46,6 +46,11 @@ class ClientPayment extends Model
         self::PYMT_STATE_PAID,
         self::PYMT_STATE_CANCELLED,
     ];
+    
+    const PYMT_PAID_STATES = [
+        self::PYMT_STATE_PREM_COLLECTED,
+        self::PYMT_STATE_PAID
+    ];
 
     protected $table = 'client_payments';
     protected $fillable = [

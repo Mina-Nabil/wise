@@ -155,7 +155,8 @@ class SoldPolicy extends Model
                 "comm_percentage"   => $comm_percentage,
                 "comm_profile_id"   => $comm_profile_id,
                 "note"              => $note,
-                "created_at"        => $this->created_at 
+                "created_at"        => $this->created_at,
+                "is_direct"         => true
             ]);
             $tmp->refreshPaymentInfo();
             $this->calculateTotalSalesComm();

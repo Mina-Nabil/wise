@@ -41,8 +41,12 @@ class Target extends Model
         $this->loadMissing('comm_profile');
         $end_date = $end_date ?? Carbon::now();
         $start_date = $end_date->clone()->subMonths($this->each_month);
-        $soldPolicies = $this->comm_profile->getSoldPolicies($start_date, $end_date);
-        $totalIncome = $soldPolicies->sum('total_policy_comm');
+        $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
+        $totalIncome = 0;
+        foreach ($soldPolicies as $sp) {
+            $totalIncome += $sp->total_policy_comm *
+                ($sp->client_paid_by_dates / $sp->gross_premium);
+        }
 
         //return false if the target is not acheived
         if ($totalIncome <= $this->min_income_target) return false;
@@ -55,22 +59,20 @@ class Target extends Model
 
         $payment_to_add = $this->base_payment ?? (($this->add_as_payment / 100) * $balance_update);
 
-        DB::transaction(function() use ($soldPolicies, $balance_update, $payment_to_add){
-            $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->id, $soldPolicies);
-            foreach($salesCommissions as $s){
+        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add) {
+            $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->id, $soldPolicies->pluck('id')->toArray());
+            
+            foreach ($salesCommissions as $s)
                 $s->updatePaymentByTarget($this);
-            }
-            if ($balance_update) {
+
+            if ($balance_update)
                 $this->comm_profile->updateBalance($balance_update);
-            }
-            if ($payment_to_add) {
+
+            if ($payment_to_add)
                 $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id base payment", must_add: true);
-            }
-    
+
             $this->addRun($balance_update - $payment_to_add, $payment_to_add);
-
         });
-
     }
 
     public function addRun($added_to_balance, $added_to_payments)

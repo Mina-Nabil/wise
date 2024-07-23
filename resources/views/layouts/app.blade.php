@@ -282,16 +282,16 @@
                                 </span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon"
+                                        icon="material-symbols:policy-outline-rounded"></iconify-icon>
+                                    <span>Policies</span>
+                                </span>
+                            </a>
+                        </li>
                         @if (Auth::user()->is_admin)
-                            <li>
-                                <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
-                                    <span class="flex items-center">
-                                        <iconify-icon class="nav-icon"
-                                            icon="material-symbols:policy-outline-rounded"></iconify-icon>
-                                        <span>Policies</span>
-                                    </span>
-                                </a>
-                            </li>
 
                             <li>
                                 <a href="{{ url('/cars') }}" class="navItem @yield('cars')">

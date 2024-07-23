@@ -33,8 +33,8 @@ class CheckTargets implements ShouldQueue
     {
         /** @var Target */
         foreach(Target::onlyToday()->get() as $t){
-            if($t->is_due && $t->isTargetAchieved()){
-                $t->addTargetPayments();
+            if($t->is_due){
+                $t->processTargetPayments();
             }
         }
     }

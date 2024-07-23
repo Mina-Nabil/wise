@@ -180,12 +180,18 @@ class CommProfile extends Model
         }
     }
 
-    public function getSoldPolicies(Carbon $from, Carbon $to)
+    public function getPaidSoldPolicies(Carbon $from, Carbon $to)
     {
-        return $this->sold_policies()->whereBetween('created_at', [
-            $from->format('Y-m-d 00:00:00'),
-            $to->format('Y-m-d 23:59:00')
-        ])->get();
+        return $this->sold_policies()
+            ->select('sold_policies.*')
+            ->selectRaw('SUM(client_payments.amount) as client_paid_by_dates')
+            ->join('client_payments', 'client_payments.sold_policy_id', 'sold_policies.id')
+            ->whereIn('client_payments.status', ClientPayment::PYMT_PAID_STATES)
+            ->whereBetween('client_payments.payment_date', [
+                $from->format('Y-m-d 00:00:00'),
+                $to->format('Y-m-d 23:59:00')
+            ])->groupBy('sold_policies.id')
+            ->get();
     }
 
     public function addTarget(
