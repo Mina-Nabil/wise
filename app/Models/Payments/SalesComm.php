@@ -35,33 +35,33 @@ class SalesComm extends Model
     const FILES_DIRECTORY = 'sold_policies/sales_comm_docs/';
     protected $table = 'sales_comms';
     protected $fillable = [
-        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from', 'client_paid_percent', 'company_paid_percent', 'comm_profile_id', 'unapproved_balance_offset'
+        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from', 'client_paid_percent', 'company_paid_percent', 'comm_profile_id', 'unapproved_balance_offset', 'created_at'
     ];
 
     ///model functions
     public function setPaidInfo(float $client_paid_percent, float $company_paid_percent)
     {
-        Log::info("client percentage: " . $client_paid_percent);
-        Log::info("company percentage: " . $company_paid_percent);
+        if(!$this->is_confirmed) return false;
+        // Log::info("client percentage: " . $client_paid_percent);
+        // Log::info("company percentage: " . $company_paid_percent);
         $updates['client_paid_percent'] = $client_paid_percent;
         $updates['company_paid_percent'] = $company_paid_percent;
 
         try {
             $this->load('comm_profile');
             //balance calculation
-            $company_diff_amount = round(($company_paid_percent - $this->company_paid_percent) * $this->amount / 100,2);
+            $company_diff_amount = round(($company_paid_percent - $this->company_paid_percent) * $this->amount / 100, 2);
             $add_to_balance = $company_diff_amount;
 
             //unapproved balance calculation 
-            $client_diff_amount = round(($client_paid_percent - $this->client_paid_percent) * $this->amount / 100,2);
-            Log::info("client diff: " . $client_diff_amount);
-            Log::info("company diff: " . $company_diff_amount);
+            $client_diff_amount = round(($client_paid_percent - $this->client_paid_percent) * $this->amount / 100, 2);
+            // Log::info("client diff: " . $client_diff_amount);
+            // Log::info("company diff: " . $company_diff_amount);
             $new_offset = $client_diff_amount - $company_diff_amount;
-            if($new_offset > 0){
+            if ($new_offset > 0) {
                 $add_to_unapproved_balance = $new_offset;
             } else {
                 $add_to_unapproved_balance = max($new_offset, -1 * $this->unapproved_balance_offset);
-                
             }
 
 
@@ -101,6 +101,20 @@ class SalesComm extends Model
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
+    }
+
+    /** Should be used while target calculation only */
+    public function updatePaymentByTarget(Target $t){     
+             try {
+                 $this->update([
+                     "comm_percentage"   =>  $t->comm_percentage,
+                 ]);
+                 $this->refreshPaymentInfo();
+             } catch (Exception $e) {
+                 report($e);
+                 AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
+                 return false;
+             }
     }
 
     public function refreshPaymentInfo()
@@ -183,6 +197,22 @@ class SalesComm extends Model
         }
     }
 
+    public function confirmPayment()
+    {
+
+        if (!$this->is_new || $this->comm_percentage <= 0) return false;
+        try {
+            $this->update([
+                "status"  =>  self::PYMT_STATE_CONFIRMED,
+            ]);
+            $this->loadMissing('sold_policy');
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
+        }
+    }
+
     public function delete()
     {
         $this->loadMissing('offer');
@@ -242,7 +272,20 @@ class SalesComm extends Model
     ///scopes
     public function scopeNew(Builder $query)
     {
+        $query->where(function ($q) {
+            $q->where('status', self::PYMT_STATE_NOT_CONFIRMED)
+                ->orwhere('status', self::PYMT_STATE_CONFIRMED);
+        });
+    }
+
+    public function scopeNotConfirmed(Builder $query)
+    {
         $query->where('status', self::PYMT_STATE_NOT_CONFIRMED);
+    }
+
+    public function scopeConfirmed(Builder $query)
+    {
+        $query->where('status', self::PYMT_STATE_CONFIRMED);
     }
 
     public function scopePaid(Builder $query)

@@ -154,7 +154,8 @@ class SoldPolicy extends Model
                 "from"              => $from,
                 "comm_percentage"   => $comm_percentage,
                 "comm_profile_id"   => $comm_profile_id,
-                "note"              => $note
+                "note"              => $note,
+                "created_at"        => $this->created_at 
             ]);
             $tmp->refreshPaymentInfo();
             $this->calculateTotalSalesComm();
@@ -330,6 +331,9 @@ class SoldPolicy extends Model
         ];
         if ($issuing_date) {
             $updates['created_at'] = $issuing_date->format('Y-m-d');
+            $this->sales_comms()->update([
+                'created_at'    =>  $issuing_date->format('Y-m-d')
+            ]);
         }
         try {
             $this->update($updates);

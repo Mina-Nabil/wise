@@ -10,6 +10,7 @@ use App\Models\Customers\Customer;
 use App\Models\Insurance\PolicyBenefit;
 use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
+use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\SalesComm;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -203,10 +204,11 @@ class Offer extends Model
             foreach ($this->selected_option->policy->benefits as $b) {
                 $soldPolicy->addBenefit($b->benefit, $b->value);
             }
-            foreach ($this->sales_comms()->new()->get() as $commaya) {
+            foreach ($this->sales_comms()->notConfirmed()->get() as $commaya) {
                 $commaya->update([
-                    'status'     =>  SalesComm::PYMT_STATE_CONFIRMED,
-                    "sold_policy_id"    =>  $soldPolicy->id
+                    'status'            =>  SalesComm::PYMT_STATE_CONFIRMED,
+                    "sold_policy_id"    =>  $soldPolicy->id,
+                    "created_at"        =>  $issuing_date
                 ]);
                 $commaya->refreshPaymentInfo();
             }
@@ -398,31 +400,32 @@ class Offer extends Model
         $this->sales_comms()->delete();
         $this->load('comm_profiles', 'selected_option');
         foreach ($this->comm_profiles as $prof) {
-            Log::info("Checking " . $prof->title);
-            $valid_conf = $prof->getValidDirectCommissionConf($this->selected_option);
-            Log::info("Conf found: " . $valid_conf);
-            if (!$valid_conf) continue;
-            $prof->loadMissing('user');
             $title = $prof->user ? $prof->user->username . " - " . $prof->type : $prof->title;
-            $this->addSalesCommission($title, $valid_conf->from, $valid_conf->percentage, $prof->id, "Added automatically using commission profile");
+            $valid_conf = $prof->getValidDirectCommissionConf($this->selected_option);
+            if (!$valid_conf) {
+                $this->addSalesCommission($title, CommProfileConf::FROM_NET_COMM, 0, $prof->id, "Added automatically for target calculations");
+            };
+            $prof->loadMissing('user');
+            $this->addSalesCommission($title, $valid_conf->from, $valid_conf->percentage, $prof->id, "Added automatically for direct commission", true);
         }
     }
 
-    private function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null)
+    private function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null, $is_direct = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateCommission', $this)) return false;
-        Log::info("Gai 22ad " . $title);
-        Log::info("Gai id " . $comm_profile_id);
+
         try {
-            if ($this->sales_comms()->create([
+            $sales_comm = $this->sales_comms()->create([
                 "title"             => $title,
                 "comm_profile_id"   => $comm_profile_id,
                 "from"              => $from,
                 "comm_percentage"   => $comm_percentage,
                 "note"              => $note
-            ])) {
+            ]);
+            if ($sales_comm && $is_direct) {
+                $sales_comm->confirmPayment();
                 AppLog::info("Offer commission added", loggable: $this);
                 return true;
             }

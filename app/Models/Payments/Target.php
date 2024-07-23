@@ -34,8 +34,24 @@ class Target extends Model
     }
 
     ///model functions
-    public function addTargetPayment()
+    /** Should be called periodically to generate payments */
+    public function addTargetPayments(Carbon $end_date = null)
     {
+        $end_date = $end_date ?? Carbon::now();
+        $start_date = $end_date->clone()->subMonths($this->each_month);
+    }
+
+    /** Should be called periodically to check performance */
+    public function isTargetAchieved(Carbon $end_date = null)
+    {
+        $end_date = $end_date ?? Carbon::now();
+        $start_date = $end_date->clone()->subMonths($this->each_month);
+        $soldPolicies = $this->comm_profile->sold_policies()->whereBetween('created_at', [
+            $start_date->format('Y-m-d'),
+            $end_date->format('Y-m-d'),
+        ]);
+        $totalIncome = $soldPolicies->sum('total_policy_comm');
+        return $totalIncome >= $this->max_income_target;
     }
 
     public function editInfo(
