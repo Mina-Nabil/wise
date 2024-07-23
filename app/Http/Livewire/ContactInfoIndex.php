@@ -19,6 +19,7 @@ class ContactInfoIndex extends Component
     public $first_name;
     public $last_name;
     public $job_title;
+    public $company;
     public $email;
     public $mob_number1;
     public $mob_number2;
@@ -57,6 +58,7 @@ class ContactInfoIndex extends Component
         $this->first_name = $c->first_name;
         $this->last_name = $c->last_name;
         $this->job_title = $c->job_title;
+        $this->company = $c->company;
         $this->email = $c->email;
         $this->mob_number1 = $c->mob_number1;
         $this->mob_number2 = $c->mob_number2;
@@ -105,6 +107,7 @@ class ContactInfoIndex extends Component
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'job_title' => 'nullable|string|max:255',
+            'company' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'mob_number1' => 'nullable|string|max:255',
             'mob_number2' => 'nullable|string|max:255',
@@ -139,7 +142,7 @@ class ContactInfoIndex extends Component
             $imageurl =  $this->image->store(ContactInfo::FILES_DIRECTORY, 's3');
         }
 
-        $res = ContactInfo::find($this->contactId)->editInfo($this->first_name, $this->last_name, $this->job_title, $this->email, $this->mob_number1, $this->mob_number2, $this->home_number1, $this->home_number2, $this->work_number1, $this->work_number2, $this->address_street, $this->address_district, $this->address_governate, $this->address_country, $this->url, $imageurl);
+        $res = ContactInfo::find($this->contactId)->editInfo($this->first_name, $this->last_name, $this->job_title, $this->email, $this->mob_number1, $this->mob_number2, $this->home_number1, $this->home_number2, $this->work_number1, $this->work_number2, $this->address_street, $this->address_district, $this->address_governate, $this->address_country, $this->url, $imageurl, $this->company);
 
         if ($res) {
             $this->reset();
@@ -155,6 +158,7 @@ class ContactInfoIndex extends Component
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'job_title' => 'nullable|string|max:255',
+            'company' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'mob_number1' => 'nullable|string|max:255',
             'mob_number2' => 'nullable|string|max:255',
@@ -176,7 +180,7 @@ class ContactInfoIndex extends Component
             $imageurl = null;
         }
 
-        $res = ContactInfo::createNewContact($this->first_name, $this->last_name, $this->job_title, $this->email, $this->mob_number1, $this->mob_number2, $this->home_number1, $this->home_number2, $this->work_number1, $this->work_number2, $this->address_street, $this->address_district, $this->address_governate, $this->address_country, $this->url, $imageurl);
+        $res = ContactInfo::createNewContact($this->first_name, $this->last_name, $this->job_title, $this->email, $this->mob_number1, $this->mob_number2, $this->home_number1, $this->home_number2, $this->work_number1, $this->work_number2, $this->address_street, $this->address_district, $this->address_governate, $this->address_country, $this->url, $imageurl, $this->company);
 
         if ($res) {
             $this->reset();

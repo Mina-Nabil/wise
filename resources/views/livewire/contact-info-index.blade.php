@@ -229,7 +229,7 @@
                 <div class="text-center">
                     <h6 class="mt-2 mb-2">{{ ucwords($contact->first_name) }} {{ ucwords($contact->last_name) }}</h6>
 
-                    @if ($contact->job_title || $contact->email)
+                    @if ($contact->job_title || $contact->email || $contact->company)
                         <hr>
                         @if ($contact->job_title)
                             <p class="mt-2 text-slate-900 dark:text-slate-300"><iconify-icon
@@ -238,6 +238,10 @@
                         @if ($contact->email)
                             <p class="mb-2 text-slate-900 dark:text-slate-300"><iconify-icon
                                     icon="mdi:envelope"></iconify-icon> {{ $contact->email }}</p>
+                        @endif
+                        @if ($contact->company)
+                            <p class="mb-2 text-slate-900 dark:text-slate-300"><iconify-icon
+                                    icon="mdi:building"></iconify-icon> {{ $contact->company }}</p>
                         @endif
                     @endif
                     <hr>
@@ -363,16 +367,27 @@
                                         @enderror
                                     </div>
                                 </div>
-
-                                <div class="input-area  mt-3">
-                                    <label for="job_title" class="form-label">Job title</label>
-                                    <input id="job_title" type="text"
-                                        class="form-control @error('job_title') !border-danger-500 @enderror"
-                                        wire:model.defer="job_title">
-                                    @error('job_title')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area  mt-3">
+                                        <label for="job_title" class="form-label">Job title</label>
+                                        <input id="job_title" type="text"
+                                            class="form-control @error('job_title') !border-danger-500 @enderror"
+                                            wire:model.defer="job_title">
+                                        @error('job_title')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="input-area  mt-3">
+                                        <label for="company" class="form-label">Company</label>
+                                        <input id="company" type="text"
+                                            class="form-control @error('company') !border-danger-500 @enderror"
+                                            wire:model.defer="company">
+                                        @error('company')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
 
                                 <div class="input-area mt-3">
@@ -603,16 +618,28 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
 
-                                <div class="input-area  mt-3">
-                                    <label for="job_title" class="form-label">Job title</label>
-                                    <input id="job_title" type="text"
-                                        class="form-control @error('job_title') !border-danger-500 @enderror"
-                                        wire:model.defer="job_title">
-                                    @error('job_title')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
+                                    <div class="input-area  mt-3">
+                                        <label for="job_title" class="form-label">Job title</label>
+                                        <input id="job_title" type="text"
+                                            class="form-control @error('job_title') !border-danger-500 @enderror"
+                                            wire:model.defer="job_title">
+                                        @error('job_title')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="input-area  mt-3">
+                                        <label for="company" class="form-label">Job title</label>
+                                        <input id="company" type="text"
+                                            class="form-control @error('company') !border-danger-500 @enderror"
+                                            wire:model.defer="company">
+                                        @error('company')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
 
                                 <div class="input-area mt-3">

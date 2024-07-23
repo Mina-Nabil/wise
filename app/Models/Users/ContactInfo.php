@@ -18,7 +18,7 @@ class ContactInfo extends Model
         'first_name', 'last_name', 'job_title', 'email', 'mob_number1',
         'mob_number2', 'home_number1', 'home_number2', 'work_number1', 'work_number2',
         'address_street', 'address_district', 'address_governate',
-        'address_country', 'url', 'image'
+        'address_country', 'url', 'image', 'company'
     ];
 
     ///model functions
@@ -35,6 +35,9 @@ class ContactInfo extends Model
         $vcard->addName($this->last_name, $this->first_name);
         if ($this->job_title)
             $vcard->addJobtitle($this->job_title);
+
+        if ($this->company)
+            $vcard->addCompany($this->company);
 
         if ($this->email)
             $vcard->addEmail($this->email);
@@ -81,6 +84,7 @@ class ContactInfo extends Model
         $first_name,
         $last_name,
         $job_title,
+        $company,
         $email,
         $mob_number1,
         $mob_number2,
@@ -100,6 +104,7 @@ class ContactInfo extends Model
                 "first_name"    =>  $first_name,
                 "last_name" =>  $last_name,
                 "job_title" =>  $job_title,
+                "company" =>  $company,
                 "email" =>  $email,
                 "mob_number1"   =>  $mob_number1,
                 "mob_number2"   =>  $mob_number2,
@@ -144,12 +149,14 @@ class ContactInfo extends Model
         $address_country,
         $url,
         $image,
+        $company,
     ) {
         try {
             $tmpContact = new self([
                 "first_name"    =>  $first_name,
                 "last_name" =>  $last_name,
                 "job_title" =>  $job_title,
+                "company" =>  $company,
                 "email" =>  $email,
                 "mob_number1"   =>  $mob_number1,
                 "mob_number2"   =>  $mob_number2,
