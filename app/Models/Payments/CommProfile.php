@@ -188,33 +188,14 @@ class CommProfile extends Model
         ])->get();
     }
 
-    /** Must be called from daily job */
-    public function checkFulfilledTargets()
-    {
-
-        foreach ($this->targets()->get() as $target) {
-
-            $month_ini = new Carbon("first day of last month");
-            $month_end = new Carbon("last day of last month");
-
-            $soldPolicies = $this->getSoldPolicies($month_ini, $month_end);
-            $totalNet = $soldPolicies->sum('net_premium');
-            $totalIncome = $soldPolicies->sum('total_policy_comm');
-            if ($this->prem_target <= $totalNet && $this->income_target <= $totalIncome) {
-                $target->addTargetPayments($soldPolicies);
-            }
-        }
-    }
-
-
     public function addTarget(
         $day_of_month,
         $each_month,
         $prem_target,
         $min_income_target,
         $comm_percentage,
-        $add_to_balance = null,
-        $add_as_payment = null,
+        $add_to_balance = 100,
+        $add_as_payment = 100,
         $base_payment = null,
         $max_income_target = null,
     ) {
@@ -246,11 +227,12 @@ class CommProfile extends Model
         $amount,
         $type,
         $doc_url = null,
-        $note = null
+        $note = null,
+        $must_add = false
     ) {
         if ($amount < $this->balance)
             $needs_approval = false;
-        else if ($amount < ($this->balance + $this->unapproved_balance))
+        else if ($amount < ($this->balance + $this->unapproved_balance) || $must_add)
             $needs_approval = true;
         else throw new Exception("Amount is more than the available balance");
         try {

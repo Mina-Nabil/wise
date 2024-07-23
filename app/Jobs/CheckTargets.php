@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Payments\Target;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,6 +31,11 @@ class CheckTargets implements ShouldQueue
      */
     public function handle()
     {
-        //
+        /** @var Target */
+        foreach(Target::onlyToday()->get() as $t){
+            if($t->is_due && $t->isTargetAchieved()){
+                $t->addTargetPayments();
+            }
+        }
     }
 }

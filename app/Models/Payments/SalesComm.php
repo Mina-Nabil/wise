@@ -38,10 +38,21 @@ class SalesComm extends Model
         'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from', 'client_paid_percent', 'company_paid_percent', 'comm_profile_id', 'unapproved_balance_offset', 'created_at'
     ];
 
+    ///static functions
+    public static function getBySoldPoliciesIDs($comm_profile_id, $sold_policies_ids, $new_only = true)
+    {
+        return self::whereIn('sold_policy_id' . $sold_policies_ids)
+            ->where('comm_profile_id', $comm_profile_id)
+            ->when($new_only, function ($q) {
+                $q->where('comm_percentage', 0);
+            })
+            ->get();
+    }
+
     ///model functions
     public function setPaidInfo(float $client_paid_percent, float $company_paid_percent)
     {
-        if(!$this->is_confirmed) return false;
+        if (!$this->is_confirmed) return false;
         // Log::info("client percentage: " . $client_paid_percent);
         // Log::info("company percentage: " . $company_paid_percent);
         $updates['client_paid_percent'] = $client_paid_percent;
@@ -104,26 +115,29 @@ class SalesComm extends Model
     }
 
     /** Should be used while target calculation only */
-    public function updatePaymentByTarget(Target $t){     
-             try {
-                 $this->update([
-                     "comm_percentage"   =>  $t->comm_percentage,
-                 ]);
-                 $this->refreshPaymentInfo();
-             } catch (Exception $e) {
-                 report($e);
-                 AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
-                 return false;
-             }
+    public function updatePaymentByTarget(Target $t)
+    {
+        try {
+            $this->update([
+                "comm_percentage"   =>  $t->comm_percentage,
+            ]);
+            $this->refreshPaymentInfo(false);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
     }
 
-    public function refreshPaymentInfo()
+    public function refreshPaymentInfo($check_user = true)
     {
-        /** @var User */
-        $user = Auth::user();
-        if (!$user->can('update', $this)) return false;
+        if ($check_user) {
+            /** @var User */
+            $user = Auth::user();
+            if (!$user->can('update', $this)) return false;
+            AppLog::info("Calculating Sales Comm amount", loggable: $this);
+        }
 
-        AppLog::info("Calculating Sales Comm amount", loggable: $this);
         $this->load('sold_policy');
         switch ($this->from) {
             case CommProfileConf::FROM_NET_PREM:

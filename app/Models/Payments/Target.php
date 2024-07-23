@@ -34,24 +34,55 @@ class Target extends Model
     }
 
     ///model functions
-    /** Should be called periodically to generate payments */
-    public function addTargetPayments(Carbon $end_date = null)
+    /** Should be called periodically to check target. It will check if target if acheived. 
+     * If yes it will update the related sales commissions */
+    public function processTargetPayments(Carbon $end_date = null)
     {
+        $this->loadMissing('comm_profile');
         $end_date = $end_date ?? Carbon::now();
         $start_date = $end_date->clone()->subMonths($this->each_month);
+        $soldPolicies = $this->comm_profile->getSoldPolicies($start_date, $end_date);
+        $totalIncome = $soldPolicies->sum('total_policy_comm');
+
+        //return false if the target is not acheived
+        if ($totalIncome <= $this->min_income_target) return false;
+
+        $balance_update = ($this->comm_percentage / 100) *
+            min(
+                $totalIncome,
+                (($this->max_income_target ?? $totalIncome) - $this->min_income_target)
+            ) * ($this->add_to_balance / 100);
+
+        $payment_to_add = $this->base_payment ?? (($this->add_as_payment / 100) * $balance_update);
+
+        DB::transaction(function() use ($soldPolicies, $balance_update, $payment_to_add){
+            $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->id, $soldPolicies);
+            foreach($salesCommissions as $s){
+                $s->updatePaymentByTarget($this);
+            }
+            if ($balance_update) {
+                $this->comm_profile->updateBalance($balance_update);
+            }
+            if ($payment_to_add) {
+                $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id base payment", must_add: true);
+            }
+    
+            $this->addRun($balance_update - $payment_to_add, $payment_to_add);
+
+        });
+
     }
 
-    /** Should be called periodically to check performance */
-    public function isTargetAchieved(Carbon $end_date = null)
+    public function addRun($added_to_balance, $added_to_payments)
     {
-        $end_date = $end_date ?? Carbon::now();
-        $start_date = $end_date->clone()->subMonths($this->each_month);
-        $soldPolicies = $this->comm_profile->sold_policies()->whereBetween('created_at', [
-            $start_date->format('Y-m-d'),
-            $end_date->format('Y-m-d'),
-        ]);
-        $totalIncome = $soldPolicies->sum('total_policy_comm');
-        return $totalIncome >= $this->max_income_target;
+        try {
+            $this->runs()->create([
+                "added_to_balance"      => $added_to_balance,
+                "added_to_payments"     => $added_to_payments
+            ]);
+        } catch (Exception $e) {
+            report($e);
+        }
     }
 
     public function editInfo(

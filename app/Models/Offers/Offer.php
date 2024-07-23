@@ -400,13 +400,12 @@ class Offer extends Model
         $this->sales_comms()->delete();
         $this->load('comm_profiles', 'selected_option');
         foreach ($this->comm_profiles as $prof) {
+            $prof->loadMissing('user');
             $title = $prof->user ? $prof->user->username . " - " . $prof->type : $prof->title;
             $valid_conf = $prof->getValidDirectCommissionConf($this->selected_option);
             if (!$valid_conf) {
                 $this->addSalesCommission($title, CommProfileConf::FROM_NET_COMM, 0, $prof->id, "Added automatically for target calculations");
             };
-            $prof->loadMissing('user');
-            $this->addSalesCommission($title, $valid_conf->from, $valid_conf->percentage, $prof->id, "Added automatically for direct commission", true);
         }
     }
 
