@@ -38,6 +38,11 @@
                                         dark:hover:text-white cursor-pointer">
                                 Creator</span>
                         </li>
+                        <li wire:click="toggleMainSales">
+                            <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Main Sales</span>
+                        </li>
                         <li wire:click="toggleLob">
                             <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                         dark:hover:text-white cursor-pointer">
@@ -132,6 +137,18 @@
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearCreator">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($main_sales_id)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleMainSales">
+                                        {{ $main_sales_id ? 'Main Sales: ' . $mainSalesName : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearMainSales">
                                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                                     </span>
                                 </button>
@@ -574,6 +591,53 @@
                             <button wire:click="setCreator" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setCreator">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setCreator" icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($mainSalesSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Main Sales
+                            </h3>
+                            <button wire:click="toggleMainSales" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Emain_sales_id" class="form-label">Creator</label>
+                                <select name="Emain_sales_id" id="Emain_sales_id" class="form-control w-full mt-2" wire:model.defer="Emain_sales_id">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" value="">
+                                        Select user</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $user->first_name . ' ' . $user->last_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setMainSales" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setMainSales">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setMainSales" icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>

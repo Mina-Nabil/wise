@@ -975,7 +975,7 @@ class Offer extends Model
             })->when(count($statuses) > 0, function ($q, $v) use ($statuses) {
                 $q->byStates($statuses);
             })->when($creator_id, function ($q, $v) {
-                $q->where('creator_id', "=", $v);
+                $q->where('offers.creator_id', "=", $v);
             })->when($assignee_id_or_type, function ($q, $v) {
                 $q->where(function ($qq) use ($v) {
                     $qq->where('assignee_id', "=", $v)->orwhere('assignee_type', "=", $v);

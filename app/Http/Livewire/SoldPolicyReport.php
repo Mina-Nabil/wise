@@ -20,6 +20,7 @@ class SoldPolicyReport extends Component
     public $startSection = false;
     public $expirySection = false;
     public $creatorSection = false;
+    public $mainSalesSection = false;
     public $lobSection = false;
     public $valueSection = false;
     public $netPremSection = false;
@@ -27,6 +28,7 @@ class SoldPolicyReport extends Component
     public $companySection = false;
     public $PolicySection = false;
     public $creatorName;
+    public $mainSalesName;
 
     public $brands;
     public $searchBrand;
@@ -43,6 +45,7 @@ class SoldPolicyReport extends Component
     public $expiry_from;
     public $expiry_to;
     public $creator_id;
+    public $main_sales_id;
     public $line_of_business;
     public $value_from;
     public $value_to;
@@ -60,6 +63,7 @@ class SoldPolicyReport extends Component
     public $Eexpiry_from;
     public $Eexpiry_to;
     public $Ecreator_id;
+    public $Emain_sales_id;
     public $Eline_of_business;
     public $Evalue_from;
     public $Evalue_to;
@@ -269,6 +273,25 @@ class SoldPolicyReport extends Component
         $this->creator_id = null;
     }
 
+    public function toggleMainSales()
+    {
+        $this->toggle($this->creatorSection);
+        if ($this->creatorSection) {
+            $this->Emain_sales_id = $this->main_sales_id;
+        }
+    }
+
+    public function setMainSales()
+    {
+        $this->main_sales_id = $this->Emain_sales_id;
+        $this->toggle($this->mainSalesSection);
+    }
+
+    public function clearMainSales()
+    {
+        $this->main_sales_id = null;
+    }
+
     public function toggleExpiryDate()
     {
         $this->toggle($this->expirySection);
@@ -320,7 +343,8 @@ class SoldPolicyReport extends Component
                 $this->is_valid,
                 $this->is_paid,
                 $this->search,
-                $this->is_renewal
+                $this->is_renewal,
+                $this->main_sales_id,
             );
         }
     }
@@ -358,6 +382,10 @@ class SoldPolicyReport extends Component
             $c = User::find($this->creator_id);
             $this->creatorName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
         }
+        if ($this->main_sales_id) {
+            $c = User::find($this->main_sales_id);
+            $this->mainSalesName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
+        }
 
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $users = User::all();
@@ -378,7 +406,8 @@ class SoldPolicyReport extends Component
             $this->is_valid,
             $this->is_paid,
             $this->search,
-            $this->is_renewal
+            $this->is_renewal,
+            $this->main_sales_id,
         )->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
