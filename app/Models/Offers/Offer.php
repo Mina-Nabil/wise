@@ -902,7 +902,7 @@ class Offer extends Model
             )
             ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
 
-        if (!(($loggedInUser->is_admin || $loggedInUser->id == 12) ||  //if admin or fady show kol el offers
+        if (!(($loggedInUser->is_admin || $loggedInUser->id == 12) || 
             (($loggedInUser->is_operations || $loggedInUser->is_finance) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->orwhere('users.manager_id', $loggedInUser->id)
