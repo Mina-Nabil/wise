@@ -275,8 +275,8 @@ class SoldPolicyReport extends Component
 
     public function toggleMainSales()
     {
-        $this->toggle($this->creatorSection);
-        if ($this->creatorSection) {
+        $this->toggle($this->mainSalesSection);
+        if ($this->mainSalesSection) {
             $this->Emain_sales_id = $this->main_sales_id;
         }
     }

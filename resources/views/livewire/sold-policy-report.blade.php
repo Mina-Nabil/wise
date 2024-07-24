@@ -621,7 +621,7 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-                                <label for="Emain_sales_id" class="form-label">Creator</label>
+                                <label for="Emain_sales_id" class="form-label">Main Sales</label>
                                 <select name="Emain_sales_id" id="Emain_sales_id" class="form-control w-full mt-2" wire:model.defer="Emain_sales_id">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" value="">
                                         Select user</option>
