@@ -264,15 +264,15 @@
                                     </span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ url('/users') }}" class="navItem @yield('users')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
+                                        <span>Users</span>
+                                    </span>
+                                </a>
+                            </li>
                         @endif
-                        <li>
-                            <a href="{{ url('/users') }}" class="navItem @yield('users')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
-                                    <span>Users</span>
-                                </span>
-                            </a>
-                        </li>
                         <li>
                             <a href="{{ url('/contacts') }}" class="navItem @yield('contacts')">
                                 <span class="flex items-center">
