@@ -182,6 +182,7 @@ class SoldPolicy extends Model
         try {
             if ($this->client_payments()->create([
                 "type"          => $type,
+                "status"        => ClientPayment::PYMT_STATE_NEW,
                 "amount"        => $amount,
                 "assigned_to"   => $assigned_to_id ?? Auth::id(),
                 "due"           => $due->format('Y-m-d H:i:s'),

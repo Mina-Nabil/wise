@@ -292,7 +292,6 @@
                             </a>
                         </li>
                         @if (Auth::user()->is_admin)
-
                             <li>
                                 <a href="{{ url('/cars') }}" class="navItem @yield('cars')">
                                     <span class="flex items-center">
