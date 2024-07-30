@@ -260,7 +260,8 @@ class ClientPayment extends Model
             function ($q) use ($user) {
                 $q->where('sold_policies.main_sales_id', $user->id)
                     ->orwhere('sold_policies.creator_id', $user->id)
-                    ->orwhere('policy_watchers.user_id', $user->id);
+                    ->orwhere('policy_watchers.user_id', $user->id)
+                    ->orwhere('client_payments.assigned_to', $user->id);
             }
         );
 
