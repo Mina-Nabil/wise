@@ -100,7 +100,7 @@ class SoldPolicyIndex extends Component
             'is_valid' => 'required|boolean',
             'note' => 'nullable|string|max:255',
             'inFavorTo' => 'nullable|string|max:255',
-            'policyDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'policyDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             'issuing_date' => 'required|date',
         ]);
 

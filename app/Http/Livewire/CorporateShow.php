@@ -483,7 +483,7 @@ class CorporateShow extends Component
         } else{
 
             $this->validate([
-                $property => ['file', 'nullable' , 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp' , 'max:20480'],
+                $property => ['file', 'nullable' , 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp' , 'max:33000'],
             ]);
 
             $url =  $this->$property->store(Customer::FILES_DIRECTORY, 's3');

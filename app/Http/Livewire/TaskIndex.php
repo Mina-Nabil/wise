@@ -74,7 +74,7 @@ class TaskIndex extends Component
                 'desc' => 'nullable|string',
                 'dueDate' => 'required|date',
                 'dueTime' => 'nullable|date_format:H:i',
-                'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+                'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
                 'setWatchersList' => 'nullable|array',
                 'setWatchersList.*' => 'integer|exists:users,id',
             ],

@@ -358,7 +358,7 @@ class SoldPolicyShow extends Component
     {
 
         $this->validate([
-            'paymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'paymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
 
         $url = $this->paymentDoc->store(ClientPayment::FILES_DIRECTORY, 's3');
@@ -421,7 +421,7 @@ class SoldPolicyShow extends Component
     {
 
         $this->validate([
-            'compPaymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'compPaymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
 
         $url = $this->compPaymentDoc->store(CompanyCommPayment::FILES_DIRECTORY, 's3');
@@ -509,7 +509,7 @@ class SoldPolicyShow extends Component
     public function setPaymentCollected()
     {
         $this->validate([
-            'paymentCollectedDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'paymentCollectedDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
         if($this->paymentCollectedDoc){
             $url = $this->paymentCollectedDoc->store(SalesComm::FILES_DIRECTORY, 's3');
@@ -658,7 +658,7 @@ class SoldPolicyShow extends Component
     {
         $this->validate(
             [
-                'uploadedFile.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+                'uploadedFile.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             ],
             [
                 'uploadedFile.*.max' => 'The file must not be greater than 5MB.',
@@ -763,7 +763,7 @@ class SoldPolicyShow extends Component
     {
 
         $this->validate([
-            'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
 
         $url = $this->commDoc->store(SalesComm::FILES_DIRECTORY, 's3');
@@ -918,7 +918,7 @@ class SoldPolicyShow extends Component
     public function updatedDocFile()
     {
         $this->validate([
-            'docFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:20480',
+            'docFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
 
         $url = $this->docFile->store(SoldPolicy::FILES_DIRECTORY, 's3');
