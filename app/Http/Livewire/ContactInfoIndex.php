@@ -142,7 +142,7 @@ class ContactInfoIndex extends Component
             $imageurl =  $this->image->store(ContactInfo::FILES_DIRECTORY, 's3');
         }
 
-        $res = ContactInfo::find($this->contactId)->editInfo($this->first_name, $this->last_name, $this->company, $this->job_title, $this->email, $this->mob_number1, $this->mob_number2, $this->home_number1, $this->home_number2, $this->work_number1, $this->work_number2, $this->address_street, $this->address_district, $this->address_governate, $this->address_country, $this->url, $imageurl, $this->company);
+        $res = ContactInfo::find($this->contactId)->editInfo($this->first_name, $this->last_name, $this->job_title, $this->company, $this->email, $this->mob_number1, $this->mob_number2, $this->home_number1, $this->home_number2, $this->work_number1, $this->work_number2, $this->address_street, $this->address_district, $this->address_governate, $this->address_country, $this->url, $imageurl, $this->company);
 
         if ($res) {
             $this->reset();
