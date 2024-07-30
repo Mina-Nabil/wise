@@ -631,7 +631,7 @@
                                         @enderror
                                     </div>
                                     <div class="input-area  mt-3">
-                                        <label for="company" class="form-label">Job title</label>
+                                        <label for="company" class="form-label">Company</label>
                                         <input id="company" type="text"
                                             class="form-control @error('company') !border-danger-500 @enderror"
                                             wire:model.defer="company">
