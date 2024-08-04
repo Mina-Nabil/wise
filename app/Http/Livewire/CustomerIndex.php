@@ -278,6 +278,11 @@ class CustomerIndex extends Component
         return Customer::exportLeads($this->downloadUserLeadsID);
     }
 
+    public function downloadTemplate()
+    {
+        return Customer::downloadTemplate();
+    }
+
     //reseting page while searching
     public function updatingSearch()
     {

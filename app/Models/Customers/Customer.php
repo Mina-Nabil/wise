@@ -708,7 +708,7 @@ class Customer extends Model
         $activeSheet = $spreadsheet->getActiveSheet();
         $highestRow = $activeSheet->getHighestDataRow();
         Log::info($highestRow);
-        
+
         for ($i = 2; $i <= $highestRow; $i++) {
             $id     =  $activeSheet->getCell('A' . $i)->getValue();
             $first_name     =  $activeSheet->getCell('B' . $i)->getValue();
@@ -718,8 +718,8 @@ class Customer extends Model
             $telephone1     =  $activeSheet->getCell('F' . $i)->getValue();
             $telephone2     =  $activeSheet->getCell('G' . $i)->getValue();
             $username       =  $activeSheet->getCell('H' . $i)->getValue();
-            
-            if(!$first_name || !$last_name || !$telephone1) continue;
+
+            if (!$first_name || !$last_name || !$telephone1) continue;
             $user = User::userExists($username);
 
 
@@ -738,6 +738,21 @@ class Customer extends Model
         }
 
         return true;
+    }
+
+    public static function downloadTemplate()
+    {
+        $template = IOFactory::load(resource_path('import/leads_data.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $writer = new Xlsx($newFile);
+        $file_path = "exports/leads_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
 
