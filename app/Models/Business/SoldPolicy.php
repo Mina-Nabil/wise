@@ -97,6 +97,8 @@ class SoldPolicy extends Model
                 $dueDays = $clientPaymentDate->diffInDays($policyStart);
                 $total_comm = 0;
                 foreach ($this->policy->comm_confs as $conf) {
+                    if ($conf->sales_out_only && !$this->has_sales_out) continue;
+
                     $tmp_base_value = $conf->calculation_type == GrossCalculation::TYPE_VALUE ?
                         $conf->value : (($conf->value / 100) * $this->net_premium);
                     if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
@@ -1413,6 +1415,16 @@ class SoldPolicy extends Model
     {
         $now = Carbon::now();
         return $now->isAfter(new Carbon($this->expiry));
+    }
+
+    public function getHasSalesOutAttribute()
+    {
+        $this->loadMissing('sales_comms', 'sales_comms.comm_profile');
+        foreach($this->sales_comms as $sc) {
+            if($sc->comm_profile->is_sales_out) return true;
+        }
+
+        return false;
     }
 
     ///relations

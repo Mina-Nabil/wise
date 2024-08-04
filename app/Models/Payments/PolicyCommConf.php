@@ -19,11 +19,12 @@ class PolicyCommConf extends Model
     protected $table = 'policy_comm_conf';
     public $timestamps = false;
     protected $fillable = [
-        'title', 'calculation_type', 'value', 'due_penalty', 'penalty_percent'
+        'title', 'calculation_type', 'value', 'due_penalty', 'penalty_percent',
+        'sales_out_only'
     ];
 
     ///model functions
-    public function editInfo($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null)
+    public function editInfo($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null, $sales_out_only = false)
     {
         $this->loadMissing('policy');
         /** @var User */
@@ -38,6 +39,7 @@ class PolicyCommConf extends Model
                 "value"             =>  $value,
                 "due_penalty"       =>  $due_penalty,
                 "penalty_percent"   =>  $penalty_percent,
+                "sales_out_only"    =>  $sales_out_only
             ]);
         } catch (Exception $e) {
             report($e);

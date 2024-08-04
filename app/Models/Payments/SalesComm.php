@@ -143,6 +143,9 @@ class SalesComm extends Model
             case CommProfileConf::FROM_NET_PREM:
                 $from_amount = $this->sold_policy->net_premium;
                 break;
+            case CommProfileConf::FROM_SUM_INSURED:
+                $from_amount = $this->sold_policy->insured_value;
+                break;
             case CommProfileConf::FROM_NET_COMM:
                 $this->sold_policy->calculateTotalPolicyComm();
                 $from_amount =  $this->sold_policy->total_policy_comm;

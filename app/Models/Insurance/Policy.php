@@ -175,10 +175,10 @@ class Policy extends Model
     public static function matchOrCreate($company_id, $name, $business)
     {
         $oldPolicy = self::where('company_id', $company_id)
-        ->where('business', $business)
-        ->first();
+            ->where('business', $business)
+            ->first();
 
-        if($oldPolicy){
+        if ($oldPolicy) {
             $oldPolicy->name = $name;
             $oldPolicy->save();
         } else {
@@ -205,11 +205,19 @@ class Policy extends Model
         $i = 2;
         foreach ($companies as $company) {
             foreach (self::LINES_OF_BUSINESS as $line) {
-                $policy = $allPolicies->where('company_id', $company->id)->where('business', $line)->first();
-                $activeSheet->getCell('A' . $i)->setValue($company->name);
-                $activeSheet->getCell('B' . $i)->setValue($line);
-                $activeSheet->getCell('C' . $i)->setValue($policy?->name);
-                $i++;
+                $policies = $allPolicies->where('company_id', $company->id)->where('business', $line)->get();
+                if ($policies->count()) {
+                    foreach ($policies as $policy) {
+                        $activeSheet->getCell('A' . $i)->setValue($company->name);
+                        $activeSheet->getCell('B' . $i)->setValue($line);
+                        $activeSheet->getCell('C' . $i)->setValue($policy->name);
+                        $i++;
+                    }
+                } else {
+                    $activeSheet->getCell('A' . $i)->setValue($company->name);
+                    $activeSheet->getCell('B' . $i)->setValue($line);
+                    $i++;
+                }
             }
         }
 
@@ -221,7 +229,8 @@ class Policy extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function importPolicies($file){
+    public static function importPolicies($file)
+    {
         $spreadsheet = IOFactory::load($file);
         if (!$spreadsheet) {
             throw new Exception('Failed to read files content');
@@ -234,11 +243,11 @@ class Policy extends Model
             $line     =  $activeSheet->getCell('B' . $i)->getValue();
             $policy     =  $activeSheet->getCell('C' . $i)->getValue();
 
-            if(!$policy) continue;
-            if(!$line || !in_array($line, self::LINES_OF_BUSINESS)) continue;
+            if (!$policy) continue;
+            if (!$line || !in_array($line, self::LINES_OF_BUSINESS)) continue;
 
             $companyObj = Company::byName($company)->first();
-            if(!$companyObj) Company::newCompany($company);
+            if (!$companyObj) Company::newCompany($company);
 
             self::matchOrCreate($companyObj->id, $policy, $line);
         }
@@ -462,7 +471,7 @@ class Policy extends Model
         }
     }
 
-    public function addCommConf($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null)
+    public function addCommConf($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null, $sales_out_only = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -477,6 +486,7 @@ class Policy extends Model
                 "value"             =>  $value,
                 "due_penalty"       =>  $due_penalty,
                 "penalty_percent"   =>  $penalty_percent,
+                "sales_out_only"    =>  $sales_out_only,
             ]);
         } catch (Exception $e) {
             report($e);

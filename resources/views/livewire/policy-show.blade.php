@@ -384,7 +384,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Calculation Type
+                                        Calc. Type
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -392,7 +392,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Actions
+                                        
                                     </th>
 
                                 </tr>
@@ -522,7 +522,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Calculation Type
+                                        Calculation
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -530,15 +530,19 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Due penalty
+                                        Due
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Penalty percent
+                                        Penalty %
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Actions
+                                        SalesOut?
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        
                                     </th>
 
                                 </tr>
@@ -568,7 +572,11 @@
                                             </td>
 
                                             <td class="table-td">
-                                                <input type="number" class="form-control text-center @error('eConfPen') !border-danger-500 @else !border-success-500 @enderror" wire:model="eConfPen"> %
+                                                <input type="number" class="form-control text-center @error('eConfPen') !border-danger-500 @else !border-success-500 @enderror" wire:model="eConfPen"> 
+                                            </td>
+                                            
+                                            <td class="table-td">
+                                                <input type="checkbox"  name="checkbox" checked="checked" wire:model="eSalesOut">
                                             </td>
 
                                             <td class="table-td  p-1">
@@ -602,6 +610,10 @@
 
                                             <td class="table-td">
                                                 {{ $conf->penalty_percent }}
+                                            </td>
+                                            
+                                            <td class="table-td">
+                                                {{ $conf->sales_out_only ? "Yes" : "No" }}
                                             </td>
 
 
@@ -644,6 +656,10 @@
 
                                     <td class="table-td">
                                         <input type="text" wire:model="newConfPen" class=" @error('newConfPen') !border-danger-500  @enderror form-control w-full text-center">
+                                    </td>
+
+                                    <td class="table-td">
+                                        <input type="checkbox"  name="checkbox" checked="checked" wire:model="newSalesOut">
                                     </td>
 
                                     <td class="table-td  p-1">

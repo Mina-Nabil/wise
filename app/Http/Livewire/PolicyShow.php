@@ -69,12 +69,14 @@ class PolicyShow extends Component
     public $eConfValue;
     public $eConfDue;
     public $eConfPen;
+    public $eSalesOut;
     public $deleteConfId;
     public $newConfTitle;
     public $newConfType = '%';
     public $newConfValue;
     public $newConfDue;
     public $newConfPen;
+    public $newSalesOut;
 
     public function addConf()
     {
@@ -86,7 +88,7 @@ class PolicyShow extends Component
             'newConfPen' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        $res = Policy::find($this->policyId)->addCommConf($this->newConfTitle, $this->newConfType, $this->newConfValue, $this->newConfDue, $this->newConfPen);
+        $res = Policy::find($this->policyId)->addCommConf($this->newConfTitle, $this->newConfType, $this->newConfValue, $this->newConfDue, $this->newConfPen, $this->newSalesOut);
         if ($res) {
             $this->mount();
             $this->newConfTitle = null;
@@ -94,6 +96,7 @@ class PolicyShow extends Component
             $this->newConfValue = null;
             $this->newConfDue = null;
             $this->newConfPen = null;
+            $this->newSalesOut = false;
             $this->alert('success', 'Configuration added!');
         } else {
             $this->alert('failed', 'server error');
@@ -110,7 +113,7 @@ class PolicyShow extends Component
             'eConfPen' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        $res = PolicyCommConf::find($this->editConfId)->editInfo($this->eConfTitle, $this->eConfType, $this->eConfValue, $this->eConfDue, $this->eConfPen);
+        $res = PolicyCommConf::find($this->editConfId)->editInfo($this->eConfTitle, $this->eConfType, $this->eConfValue, $this->eConfDue, $this->eConfPen, $this->eSalesOut);
         if ($res) {
             $this->mount();
             $this->editConfId = null;
@@ -119,6 +122,7 @@ class PolicyShow extends Component
             $this->eConfValue = null;
             $this->eConfDue = null;
             $this->eConfPen = null;
+            $this->eSalesOut = false;
             $this->alert('success', 'Configurations updated!');
         } else {
             $this->alert('failed', 'server error');
@@ -156,6 +160,7 @@ class PolicyShow extends Component
         $this->eConfValue = $g->value;
         $this->eConfDue = $g->due_penalty;
         $this->eConfPen = $g->penalty_percent;
+        $this->eSalesOut = $g->sales_out_only ? true : false;
     }
 
     public function closeEditConf()

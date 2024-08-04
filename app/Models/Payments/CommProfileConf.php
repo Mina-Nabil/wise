@@ -22,8 +22,9 @@ class CommProfileConf extends Model
 
     const FROM_NET_PREM = 'net_premium';
     const FROM_NET_COMM = 'net_commission';
+    const FROM_SUM_INSURED = 'sum_insured';
 
-    const FROMS = [self::FROM_NET_PREM, self::FROM_NET_COMM];
+    const FROMS = [self::FROM_NET_PREM, self::FROM_NET_COMM, self::FROM_SUM_INSURED];
 
     public $fillable = [
         "percentage", "from", "line_of_business", "order"

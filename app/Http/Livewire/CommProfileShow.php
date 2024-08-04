@@ -495,7 +495,7 @@ class CommProfileShow extends Component
         $this->minIncomeTarget = null;
         $this->maxIncomeTarget = null;
         $this->commPercentage = null;
-        $this->addToBalance = 0;
+        $this->addToBalance = 100;
         $this->addAsPayment = 100;
         $this->basePayment = null;
     }
@@ -530,7 +530,7 @@ class CommProfileShow extends Component
         $this->minIncomeTarget = null;
         $this->maxIncomeTarget = null;
         $this->commPercentage = null;
-        $this->addToBalance = 0;
+        $this->addToBalance = 100;
         $this->addAsPayment = 100;
         $this->basePayment = null;
     }
