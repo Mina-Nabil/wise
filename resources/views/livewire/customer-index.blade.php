@@ -566,7 +566,7 @@
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
-                                <hr class="mt-5">
+                                <hr class="mt-5" />
                                 <div class="from-group">
                                     <p class="text-lg mt-3"><b>Followup</b></p>
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
@@ -731,7 +731,54 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
+                            @can('exportAndImport', App\Models\Customers\Customer::class)
+                                <hr />
+                                <p class="text-lg mt-3"><b>Import/Export</b></p>
+                                <div class="input-area mt-3">
+                                    <input wire:model="leadsImportFile" type="file" class="form-control w-full "
+                                        name="basic" />
+                                    @error('leadsImportFile')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div
+                                    class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                    <button wire:click="importLeads" data-bs-dismiss="modal"
+                                        class="btn inline-flex justify-center text-white bg-black-500">
+                                        <span wire:loading.remove wire:target="importLeads">Import Leads</span>
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                            wire:loading wire:target="importLeads"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    </button>
+                                </div>
+                                <div class="input-area mt-3">
+                                    <label for="ownerId" class="form-label">Download User Leads</label>
+                                    <select name="ownerId" id="ownerId"
+                                        class="form-control w-full mt-2 @error('ownerId') !border-danger-500 @enderror"
+                                        wire:model.defer="downloadUserLeadsID">
+                                        <option value=null>All</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->first_name }}
+                                                {{ $user->last_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div
+                                    class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                    <button wire:click="downloadLeadsFile" data-bs-dismiss="modal"
+                                        class="btn inline-flex justify-center text-white bg-black-500">
+                                        <span wire:loading.remove wire:target="downloadLeadsFile">Download Leads
+                                            File</span>
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                            wire:loading wire:target="downloadLeadsFile"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                                    </button>
+
+                                </div>
+                            </div>
+                        @endcan
                         <!-- Modal footer -->
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">

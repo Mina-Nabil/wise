@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 
 class CustomerIndex extends Component
@@ -62,6 +63,9 @@ class CustomerIndex extends Component
     public $statusNote;
 
     public $usersList;
+
+    public $leadsImportFile;
+    public $downloadUserLeadsID;
 
     public function changeThisStatus($id, $status)
     {
@@ -176,22 +180,22 @@ class CustomerIndex extends Component
             'driverLicenseDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
 
         ]);
-        Log::info("BAGY HNA ?");
+
         $idDoc_url = null;
         if (!is_string($this->idDoc) && !is_null($this->idDoc)) {
             $idDoc_url = $this->idDoc->store(Customer::FILES_DIRECTORY, 's3');
         }
-        
+
         $idDoc2_url = null;
         if (!is_string($this->idDoc2) && !is_null($this->idDoc2)) {
             $idDoc2_url = $this->idDoc2->store(Customer::FILES_DIRECTORY, 's3');
         }
-        
+
         $driverLicenseDoc_url = null;
         if (!is_string($this->driverLicenseDoc) && !is_null($this->driverLicenseDoc)) {
             $driverLicenseDoc_url = $this->driverLicenseDoc->store(Customer::FILES_DIRECTORY, 's3');
         }
-        
+
         $driverLicenseDoc2_url = null;
         if (!is_string($this->driverLicenseDoc2) && !is_null($this->driverLicenseDoc2)) {
             $driverLicenseDoc2_url = $this->driverLicenseDoc2->store(Customer::FILES_DIRECTORY, 's3');
@@ -249,6 +253,29 @@ class CustomerIndex extends Component
     public function redirectToShowPage($id)
     {
         return redirect(route('customers.show', $id));
+    }
+
+    ///import/export functions
+    public function importLeads()
+    {
+        $this->validate([
+            'leadsImportFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+        ]);
+        $importedFile_url = $this->leadsImportFile->store('tmp', 'local');
+        Customer::importLeads(storage_path('app/' . $importedFile_url));
+        unlink(storage_path('app/' . $importedFile_url));
+        $this->leadsImportFile = null;
+        $this->toggleAddLead();
+        $this->resetPage();
+    }
+
+    public function downloadLeadsFile()
+    {
+        $this->validate([
+            'downloadUserLeadsID' => 'nullable|integer|exists:users,id',
+        ]);
+
+        return Customer::exportLeads($this->downloadUserLeadsID);
     }
 
     //reseting page while searching

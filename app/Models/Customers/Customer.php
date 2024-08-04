@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Customer extends Model
 {
@@ -345,9 +347,15 @@ class Customer extends Model
         }
     }
 
-    public function addPhone($type, $number, $is_default = null): Phone|false
+    public function addPhone($type, $number, $is_default = null, $checkIfNumberExist = false): Phone|false
     {
         try {
+
+            if ($checkIfNumberExist) {
+                $tmpPhone = $this->phones()->where('number', $number)->first();
+                return $tmpPhone ?? false;
+            }
+
             /** @var Phone */
             $tmp = $this->phones()->create([
                 "type"      =>  $type,
@@ -582,7 +590,6 @@ class Customer extends Model
             AppLog::info('New customer lead created', loggable: $newLead);
             return $newLead;
         } catch (Exception $e) {
-            AppLog::error("Can't add customer", $e->getMessage());
             report($e);
             AppLog::error('Unable to create customer lead', desc: $e->getMessage());
             return false;
@@ -652,6 +659,88 @@ class Customer extends Model
         }
     }
 
+    public static function exportLeads($user_id = null)
+    {
+
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('exportAndImport', self::class)) return false;
+
+        $leads = self::leads()->with('phones', 'owner')->when($user_id, function ($q, $v) {
+            $q->where('owner_id', $v);
+        })->get();
+
+        $template = IOFactory::load(resource_path('import/leads_data.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 2;
+        foreach ($leads as $lead) {
+            $activeSheet->getCell('A' . $i)->setValue($lead->id);
+            $activeSheet->getCell('B' . $i)->setValue($lead->first_name);
+            $activeSheet->getCell('C' . $i)->setValue($lead->last_name);
+            $activeSheet->getCell('D' . $i)->setValue($lead->arabic_first_name);
+            $activeSheet->getCell('E' . $i)->setValue($lead->arabic_last_name);
+            $activeSheet->getCell('F' . $i)->setValue($lead->telephone1);
+            $activeSheet->getCell('G' . $i)->setValue($lead->telephone2);
+            $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
+            $i++;
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = "exports/leads_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    public static function importLeads($file)
+    {
+        Log::info($file);
+        $spreadsheet = IOFactory::load($file);
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+        Log::info($highestRow);
+        
+        for ($i = 2; $i <= $highestRow; $i++) {
+            $id     =  $activeSheet->getCell('A' . $i)->getValue();
+            $first_name     =  $activeSheet->getCell('B' . $i)->getValue();
+            $last_name      =  $activeSheet->getCell('C' . $i)->getValue();
+            $first_arabic_name  =  $activeSheet->getCell('D' . $i)->getValue();
+            $last_arabic_name   =  $activeSheet->getCell('E' . $i)->getValue();
+            $telephone1     =  $activeSheet->getCell('F' . $i)->getValue();
+            $telephone2     =  $activeSheet->getCell('G' . $i)->getValue();
+            $username       =  $activeSheet->getCell('H' . $i)->getValue();
+            
+            if(!$first_name || !$last_name || !$telephone1) continue;
+            $user = User::userExists($username);
+
+
+            if (!$user) $user = Auth::user();
+
+            if ($id) {
+                $lead = self::find($id);
+                if (!$lead) continue;
+            } else
+                $lead = self::newLead($first_name, $last_name, $telephone1, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, owner_id: $user->id);
+
+            if ($telephone2)
+                $lead->addPhone($telephone2, Phone::TYPE_MOBILE, false, true);
+
+            $i++;
+        }
+
+        return true;
+    }
+
+
     ///attributes
     public function getNameAttribute()
     {
@@ -663,8 +752,20 @@ class Customer extends Model
     public function getFullNameAttribute()
     {
         return ($this->arabic_first_name && $this->arabic_last_name)
-            ? $this->arabic_first_name . ' ' . ($this->arabic_middle_name ?  $this->arabic_middle_name . ' ' : '' ) . $this->arabic_last_name
-            : $this->first_name . ' ' . ($this->middle_name ?  $this->middle_name . ' ' : '' )  .  $this->last_name;
+            ? $this->arabic_first_name . ' ' . ($this->arabic_middle_name ?  $this->arabic_middle_name . ' ' : '') . $this->arabic_last_name
+            : $this->first_name . ' ' . ($this->middle_name ?  $this->middle_name . ' ' : '')  .  $this->last_name;
+    }
+
+    public function getTelephone1Attribute()
+    {
+        $this->loadMissing('phones');
+        return $this->phones->where('is_default', 1)->first()?->number;
+    }
+
+    public function getTelephone2Attribute()
+    {
+        $this->loadMissing('phones');
+        return $this->phones->where('is_default', 0)->first()?->number;
     }
 
     ///scopes
@@ -710,6 +811,16 @@ class Customer extends Model
             }
         });
         return $query->latest();
+    }
+
+    public function scopeLeads($query)
+    {
+        return $query->where('type', self::TYPE_LEAD);
+    }
+
+    public function scopeClients($query)
+    {
+        return $query->where('type', self::TYPE_CLIENT);
     }
 
     ///relations
