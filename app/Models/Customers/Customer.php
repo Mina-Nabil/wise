@@ -747,6 +747,15 @@ class Customer extends Model
             throw new Exception('Failed to read template file');
         }
         $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $sales = User::sales()->active()->get();
+        $i=5;
+        foreach ($sales as $s) {
+            $activeSheet->getCell('N' . $i)->setValue($s->username);
+            $i++;
+        }
+
         $writer = new Xlsx($newFile);
         $file_path = "exports/leads_export.xlsx";
         $public_file_path = storage_path($file_path);
