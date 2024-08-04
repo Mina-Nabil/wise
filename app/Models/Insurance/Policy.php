@@ -205,7 +205,7 @@ class Policy extends Model
         $i = 2;
         foreach ($companies as $company) {
             foreach (self::LINES_OF_BUSINESS as $line) {
-                $policies = $allPolicies->where('company_id', $company->id)->where('business', $line)->get();
+                $policies = $allPolicies->where('company_id', $company->id)->where('business', $line);
                 if ($policies->count()) {
                     foreach ($policies as $policy) {
                         $activeSheet->getCell('A' . $i)->setValue($company->name);
