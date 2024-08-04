@@ -757,7 +757,7 @@ class Customer extends Model
         }
 
         $writer = new Xlsx($newFile);
-        $file_path = self::FILES_DIRECTORY . "exports/leads_export.xlsx";
+        $file_path = self::FILES_DIRECTORY . "leads_export.xlsx";
         $public_file_path = resource_path($file_path);
         $writer->save($public_file_path);
 
