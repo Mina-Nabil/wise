@@ -5,6 +5,7 @@ namespace App\Models\Insurance;
 use App\Models\Customers\Car as CustomersCar;
 use App\Models\Payments\PolicyCommConf;
 use App\Models\Users\AppLog;
+use App\Models\Users\User;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Policy extends Model
 {
@@ -168,6 +171,80 @@ class Policy extends Model
             ->where('policies.name', $policy_name)
             ->first();
     }
+
+    public static function matchOrCreate($company_id, $name, $business)
+    {
+        $oldPolicy = self::where('company_id', $company_id)
+        ->where('business', $business)
+        ->first();
+
+        if($oldPolicy){
+            $oldPolicy->name = $name;
+            $oldPolicy->save();
+        } else {
+            self::newPolicy($company_id, $name, $business);
+        }
+    }
+
+    public static function downloadPoliciesFile()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return;
+
+        $template = IOFactory::load(resource_path('import/policies_export.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $allPolicies = self::orderBy('company_id')->get();
+        $companies = Company::all();
+        $i = 2;
+        foreach ($companies as $company) {
+            foreach (self::LINES_OF_BUSINESS as $line) {
+                $policy = $allPolicies->where('company_id', $company->id)->where('business', $line)->first();
+                $activeSheet->getCell('A' . $i)->setValue($company->name);
+                $activeSheet->getCell('B' . $i)->setValue($line);
+                $activeSheet->getCell('C' . $i)->setValue($policy?->name);
+                $i++;
+            }
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path =  "policies_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    public static function importPolicies($file){
+        $spreadsheet = IOFactory::load($file);
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+
+        for ($i = 2; $i <= $highestRow; $i++) {
+            $company     =  $activeSheet->getCell('A' . $i)->getValue();
+            $line     =  $activeSheet->getCell('B' . $i)->getValue();
+            $policy     =  $activeSheet->getCell('C' . $i)->getValue();
+
+            if(!$policy) continue;
+            if(!$line || !in_array($line, self::LINES_OF_BUSINESS)) continue;
+
+            $companyObj = Company::byName($company)->first();
+            if(!$companyObj) Company::newCompany($company);
+
+            self::matchOrCreate($companyObj->id, $policy, $line);
+        }
+    }
+
+
 
     ///model functions
     public function getConditionByCarOrValue(CustomersCar $customer_car, $value = null)

@@ -6,11 +6,12 @@ use Livewire\Component;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
 use App\Traits\AlertFrontEnd;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class PolicyIndex extends Component
 {
-    use WithPagination, AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, WithFileUploads;
 
     public $search;
     public $deleteThisPolicy;
@@ -20,11 +21,13 @@ class PolicyIndex extends Component
     public $company;
     public $newPolicySec = false;
 
-    public function openPolicySec(){
+    public function openPolicySec()
+    {
         $this->newPolicySec = true;
     }
 
-    public function closePolicySec(){
+    public function closePolicySec()
+    {
         $this->newPolicySec = false;
     }
 
@@ -53,10 +56,36 @@ class PolicyIndex extends Component
             $this->policyName = null;
             $this->policyBusiness = null;
             $this->note = null;
-            redirect()->route('policies.show',$p->id);
+            redirect()->route('policies.show', $p->id);
         } else {
             $this->alert('failed', 'Server error');
         }
+    }
+
+    //Import/Export functions
+    public $importFileSection = false;
+    public $policiesFile;
+
+    public function toggleImportSection()
+    {
+        $this->importFileSection = !$this->importFileSection;
+    }
+
+    public function uploadPolicies()
+    {
+        $this->validate([
+            'policiesFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+        ]);
+        $importedFile_url = $this->policiesFile->store('tmp', 'local');
+        Policy::importPolicies(storage_path('app/' . $importedFile_url));
+        unlink(storage_path('app/' . $importedFile_url));
+        $this->policiesFile = null;
+        $this->toggleImportSection();
+    }
+
+    public function downloadPoliciesExport()
+    {
+        return  Policy::downloadPoliciesFile();
     }
 
     public function render()

@@ -7,29 +7,48 @@
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
             @can('create', \App\Models\Insurance\Policy::class)
-            <button wire:click="openPolicySec" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
-                <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
-                Add Policy
-            </button>
+                <button wire:click="downloadPoliciesExport"
+                    class="btn inline-flex justify-center btn-white white:bg-slate-700 white:text-slate-300 m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:arrow-down"></iconify-icon>
+                    Export Policies
+                </button>
+                <button wire:click="toggleImportSection"
+                    class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
+                    Import Policies
+                </button>
+                <button wire:click="openPolicySec"
+                    class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
+                    Add Policy
+                </button>
             @endcan
 
 
             @if ($newPolicySec)
-                <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" style="display: block">
+                <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+                    style="display: block">
                     <div class="modal-dialog relative w-auto pointer-events-none">
-                        <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                        <div
+                            class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
                             <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                                 <!-- Modal header -->
-                                <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-success-500">
+                                <div
+                                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-success-500">
                                     <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                         Add New Policy
                                     </h3>
-                                    <button type="button" wire:click="closePolicySec" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
-                                            dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    <button type="button" wire:click="closePolicySec"
+                                        class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                        data-bs-dismiss="modal">
+                                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewbox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         <span class="sr-only">Close modal</span>
                                     </button>
@@ -39,64 +58,134 @@
                                     <div class="px-4 pt-4 pb-3">
                                         <div class="input-area mb-3">
                                             <label for="name" class="form-label">Policy Name</label>
-                                            <input type="text" class="form-control @error('policyName') !border-danger-500 @enderror" wire:model.defer="policyName">
+                                            <input type="text"
+                                                class="form-control @error('policyName') !border-danger-500 @enderror"
+                                                wire:model.defer="policyName">
                                             @error('policyName')
-                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                <span
+                                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                             @enderror
                                         </div>
                                         <div class="input-area mb-3">
                                             <label for="name" class="form-label">Business</label>
-                                            <select name="business" class="form-control w-full mt-2  @error('policyBusiness') !border-danger-500 @enderror" wire:model.defer="policyBusiness">
-                                                <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" selected>
+                                            <select name="business"
+                                                class="form-control w-full mt-2  @error('policyBusiness') !border-danger-500 @enderror"
+                                                wire:model.defer="policyBusiness">
+                                                <option
+                                                    class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
+                                                    selected>
                                                     Please select business type
                                                 </option>
                                                 @foreach ($linesOfBusiness as $line)
-                                                    <option value="{{ $line }}" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                    <option value="{{ $line }}"
+                                                        class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                         {{ $line }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                             @error('policyBusiness')
-                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                <span
+                                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                             @enderror
                                         </div>
                                         <div class="input-area mb-3">
                                             <label for="name" class="form-label">Company</label>
-                                            <select name="business" class="form-control w-full mt-2  @error('company') !border-danger-500 @enderror" wire:model.defer="company">
-                                                <option  class="py-1 inline-block font-Inter font-normal text-sm text-slate-600" selected>
+                                            <select name="business"
+                                                class="form-control w-full mt-2  @error('company') !border-danger-500 @enderror"
+                                                wire:model.defer="company">
+                                                <option
+                                                    class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
+                                                    selected>
                                                     Please select company
                                                 </option>
                                                 @foreach ($companies as $company)
-                                                    <option value="{{ $company->id }}" class="py-1 inline-block font-Inter font-normal text-sm">
+                                                    <option value="{{ $company->id }}"
+                                                        class="py-1 inline-block font-Inter font-normal text-sm">
                                                         {{ $company->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                             @error('company')
-                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                <span
+                                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                             @enderror
                                         </div>
-                                        
+
                                         <div class="input-area mb-3">
                                             <label for="name" class="form-label">Note</label>
-                                            <textarea class="form-control @error('note') !border-danger-500 @enderror" wire:model.defer="note" placeholder="Leave a note" name="note"></textarea>
+                                            <textarea class="form-control @error('note') !border-danger-500 @enderror" wire:model.defer="note"
+                                                placeholder="Leave a note" name="note"></textarea>
                                             @error('note')
-                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                <span
+                                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
-                                <!-- Modal footer -->
-                                <div class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                    <button wire:click="add" class="btn inline-flex justify-center text-white bg-success-500">Submit</button>
-                                </div>
+                                    <!-- Modal footer -->
+                                    <div
+                                        class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                        <button wire:click="add"
+                                            class="btn inline-flex justify-center text-white bg-success-500">Submit</button>
+                                    </div>
 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            @endif
+
+            @if ($importFileSection)
+                <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+                    tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
+                    style="display: block;">
+                    <div class="modal-dialog relative w-auto pointer-events-none">
+                        <div
+                            class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                            <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                                <!-- Modal header -->
+                                <div
+                                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                    <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                        Upload Policies File
+                                    </h3>
+                                    <button type="button"
+                                        class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                        wire:click=toggleImportSection>
+                                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                              11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="sr-only">Close modal</span>
+                                    </button>
+                                </div>
+                                <!-- Modal body -->
+                                <div class="p-6 space-y-4">
+                                    <div class="from-group">
+                                        <label for="lastName" class="form-label">Policies File</label>
+                                        <input wire:model="policiesFile" type="file" class="form-control w-full "
+                                            name="basic" />
+                                        @error('policiesFile')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <!-- Modal footer -->
+                                <div wire:click="uploadPolicies"
+                                    class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b white:border-slate-600">
+                                    <button 
+                                        class="btn inline-flex justify-center text-white bg-black-500">
+                                        Upload
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             @endif
-
-
         </div>
     </div>
     <div>
@@ -136,7 +225,7 @@
                                     <h5 class="mb-0 text-primary-500" style="display: flex; align-items: center;">
                                         <iconify-icon class="text-xl inline-block ltr:mr-2 rtl:ml-2 text-primary-500"
                                             icon="iconoir:privacy-policy"></iconify-icon>
-                                            {{ $policy->name }} &nbsp; <span
+                                        {{ $policy->name }} &nbsp; <span
                                             class="badge bg-primary-500 text-white capitalize">{{ $policy->company->name }}</span>
                                     </h5>
 

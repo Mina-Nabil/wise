@@ -700,14 +700,12 @@ class Customer extends Model
 
     public static function importLeads($file)
     {
-        Log::info($file);
         $spreadsheet = IOFactory::load($file);
         if (!$spreadsheet) {
             throw new Exception('Failed to read files content');
         }
         $activeSheet = $spreadsheet->getActiveSheet();
         $highestRow = $activeSheet->getHighestDataRow();
-        Log::info($highestRow);
 
         for ($i = 2; $i <= $highestRow; $i++) {
             $id     =  $activeSheet->getCell('A' . $i)->getValue();

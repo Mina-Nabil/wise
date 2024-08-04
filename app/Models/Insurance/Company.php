@@ -120,6 +120,10 @@ class Company extends Model
     {
         return $query->where('insurance_companies.name', 'LIKE', "%$text%");
     }
+    public function scopeByName($query, $text)
+    {
+        return $query->where('insurance_companies.name', '=', "$text");
+    }
 
     ///relations
     public function emails(): HasMany
