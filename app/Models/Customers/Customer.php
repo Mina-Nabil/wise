@@ -692,7 +692,7 @@ class Customer extends Model
 
         $writer = new Xlsx($newFile);
         $file_path = "exports/leads_export.xlsx";
-        $public_file_path = storage_path($file_path);
+        $public_file_path = public_path($file_path);
         $writer->save($public_file_path);
 
         return response()->download($public_file_path)->deleteFileAfterSend(true);
@@ -758,7 +758,7 @@ class Customer extends Model
 
         $writer = new Xlsx($newFile);
         $file_path = "exports/leads_export.xlsx";
-        $public_file_path = storage_path($file_path);
+        $public_file_path = public_path($file_path);
         $writer->save($public_file_path);
 
         return response()->download($public_file_path)->deleteFileAfterSend(true);
