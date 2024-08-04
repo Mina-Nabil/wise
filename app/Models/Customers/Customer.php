@@ -749,7 +749,7 @@ class Customer extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
 
-        $sales = User::sales()->active()->get();
+        $sales = User::active()->get();
         $i=5;
         foreach ($sales as $s) {
             $activeSheet->getCell('N' . $i)->setValue($s->username);
