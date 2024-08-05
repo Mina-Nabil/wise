@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Policy extends Model
@@ -140,10 +141,9 @@ class Policy extends Model
 
     public static function newPolicy($company_id, $name, $business, $note = null)
     {
-        //TODO remove comment
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('create', self::class)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return false;
 
         $newPolicy = new self([
             "company_id" =>  $company_id,
@@ -231,6 +231,10 @@ class Policy extends Model
 
     public static function importPolicies($file)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return;
+
         $spreadsheet = IOFactory::load($file);
         if (!$spreadsheet) {
             throw new Exception('Failed to read files content');
@@ -250,6 +254,108 @@ class Policy extends Model
             if (!$companyObj) Company::newCompany($company);
 
             self::matchOrCreate($companyObj->id, $policy, $line);
+        }
+    }
+
+    public static function downloadPoliciesConfFile()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return;
+
+        $template = IOFactory::load(resource_path('import/policies_conf_export.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $allPolicies = self::orderBy('company_id')->with('comm_confs')->get();
+        $companies = Company::all();
+        $i = 4;
+        foreach ($companies as $company) {
+            foreach (self::LINES_OF_BUSINESS as $line) {
+                $policies = $allPolicies->where('company_id', $company->id)->where('business', $line);
+                if ($policies->count()) {
+                    foreach ($policies as $policy) {
+                        $activeSheet->getCell('A' . $i)->setValue("Policy");
+                        $activeSheet->getCell('A' . $i + 1)->setValue("Configurations");
+                        $activeSheet->getCell('B' . $i)->setValue($company->name . ' - ' . $policy->name);
+                        $activeSheet->getCell('C' . $i)->setValue($policy->id);
+                        $i++;
+
+                        foreach ($policy->comm_confs as $confaya) {
+
+                            $activeSheet->getCell('D' . $i)->setValue($confaya->title);
+                            $activeSheet->getCell('E' . $i)->setValue($confaya->calculation_type == '%' ? 'PERCENT' : 'EQUAL');
+                            $activeSheet->getCell('F' . $i)->setValue($confaya->value);
+                            $activeSheet->getCell('G' . $i)->setValue($confaya->due_penalty);
+                            $activeSheet->getCell('H' . $i)->setValue($confaya->penalty_percent);
+                            $activeSheet->getCell('I' . $i)->setValue($confaya->sales_out_only ? 'Yes' : 'No');
+
+                            $i++;
+                        }
+                        $i++;
+                        $activeSheet->getStyle("A$i:I$i")
+                            ->getFill()->setFillType(Fill::FILL_SOLID);
+                        $activeSheet->getStyle("A$i:I$i")
+                            ->getFill()->getStartColor()->setARGB('00000000');
+                        $i++;
+                    }
+                }
+            }
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path =  "policies_conf_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    public static function importPoliciesConf($file)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return;
+
+        $spreadsheet = IOFactory::load($file);
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+
+        for ($i = 4; $i <= $highestRow; $i++) {
+            $policy_id     =  $activeSheet->getCell('C' . $i)->getValue();
+            if (!$policy_id) continue;
+            /** @var Self */
+            $policy = Policy::find($policy_id);
+            if (!$policy) continue;
+            $policy->clearCommissionConfigurations();
+            $i++;
+
+            for ($i = $i; $i <= $highestRow; $i++) { 
+                $conf_title         =  $activeSheet->getCell('D' . $i)->getValue();
+                if (!$conf_title) break;
+                
+                $conf_type      =  ($activeSheet->getCell('E' . $i)->getValue() == 'PERCENT') ? '%'
+                : ($activeSheet->getCell('E' . $i)->getValue() == 'EQUAL' ?
+                '=' : null);
+                if (!$conf_type) continue;
+                
+                $conf_value         =  $activeSheet->getCell('F' . $i)->getValue();
+                if (!$conf_value) continue;
+                
+                $conf_due           =  $activeSheet->getCell('G' . $i)->getValue();
+                $conf_due_percent   =  $activeSheet->getCell('H' . $i)->getValue();
+                $conf_sales_out     =  $activeSheet->getCell('I' . $i)->getValue() == 'Yes' ? true : false;
+                
+                $policy->addCommConf($conf_title, $conf_type, $conf_value, $conf_due, $conf_due_percent, $conf_sales_out);
+            }
+
         }
     }
 
@@ -493,6 +599,16 @@ class Policy extends Model
             AppLog::error("Adding cost configuration failed", loggable: $this, desc: $e->getMessage());
             return false;
         }
+    }
+
+    private function clearCommissionConfigurations()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+ 
+            return $this->comm_confs()->delete();
+    
     }
 
 

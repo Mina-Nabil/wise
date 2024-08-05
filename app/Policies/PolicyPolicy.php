@@ -42,7 +42,7 @@ class PolicyPolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin || $user->is_operations || $user->is_hr;
+        return $user->is_admin || $user->is_finance || $user->is_operations || $user->is_hr;
     }
 
     /**
