@@ -15,6 +15,7 @@ class CommProfileIndex extends Component
     use WithPagination, AlertFrontEnd, ToggleSectionLivewire, AuthorizesRequests;
 
     public $newCommSec = false;
+    public $search;
 
     public $newType;
     public $newPerPolicy = false;
@@ -64,7 +65,7 @@ class CommProfileIndex extends Component
 
     public function render()
     {
-        $profiles = CommProfile::paginate(50);
+        $profiles = CommProfile::when($this->search, fn($q) => $q->searchBy($this->search))->paginate(50);
         $profileTypes = CommProfile::TYPES;
         $users = User::all();
         return view('livewire.comm-profile-index', [
