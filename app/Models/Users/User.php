@@ -248,6 +248,18 @@ class User extends Authenticatable
     {
         return $query->where('type', self::TYPE_FINANCE);
     }
+    public function scopeSearch($query, $search)
+    {
+        $splittedText = explode(' ', $search);
+        foreach ($splittedText as $tmp) {
+            $query->where(function ($q) use ($tmp) {
+                $q->orwhere('username', 'LIKE', "%$tmp%");
+                $q->orwhere('first_name', 'LIKE', "%$tmp%");
+                $q->orwhere('last_name', 'LIKE', "%$tmp%");
+            });
+        }
+        return $query;
+    }
 
     /////attributes
     public function getIsAdminAttribute()

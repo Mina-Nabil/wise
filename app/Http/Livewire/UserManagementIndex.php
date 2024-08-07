@@ -14,6 +14,7 @@ class UserManagementIndex extends Component
     use WithPagination, AlertFrontEnd, WithFileUploads;
 
     public $newUserSection;
+    public $search;
 
     public $newUsername;
     public $newFirstName;
@@ -185,7 +186,7 @@ class UserManagementIndex extends Component
     public function render()
     {
         $TYPES = User::TYPES;
-        $users = User::paginate(50);
+        $users = User::when($this->search, fn ($q) => $q->search($this->search))->paginate(50);
         return view('livewire.user-management-index', [
             'users' => $users,
             'TYPES' => $TYPES,
