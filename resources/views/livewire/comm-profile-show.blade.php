@@ -1347,13 +1347,28 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
 
-                                <div class="input-area mt-3">
-                                    <label for="dayOfMonth" class="form-label">Day of month</label>
-                                    <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth">
+                                <div class="flex justify-between items-start space-x-6">
+                                    <div class="input-area mt-3 w-full">
+                                        <label for="dayOfMonth" class="form-label">Day of month</label>
+                                        <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth">
+                                        @error('dayOfMonth')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="input-area mt-3 flex flex-col">
+                                        <label for="checkBox" class="form-label">title here</label>
+                                        <div class="checkbox-area mt-2">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" class="hidden row-checkbox" value="">
+                                                <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                                @error('dayOfMonth')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+                                                                
 
                                 <div class="input-area mt-3">
                                     <label for="eachMonth" class="form-label">Each month</label>
