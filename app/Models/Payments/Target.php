@@ -19,8 +19,18 @@ class Target extends Model
     use HasFactory;
 
     public $fillable = [
-        "base_payment", "prem_target", "comm_percentage", "order", "min_income_target", "max_income_target",
-        "day_of_month", "each_month", "add_to_balance", "add_as_payment"
+        "base_payment",
+        "prem_target",
+        "comm_percentage",
+        "order",
+        "min_income_target",
+        "max_income_target",
+        "day_of_month",
+        "each_month",
+        "add_to_balance",
+        "add_as_payment",
+        "next_run_date",
+        "is_end_of_month"
     ];
     public $timestamps = false;
 
@@ -61,7 +71,7 @@ class Target extends Model
 
         DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add) {
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->id, $soldPolicies->pluck('id')->toArray());
-            
+
             foreach ($salesCommissions as $s)
                 $s->updatePaymentByTarget($this);
 
@@ -97,10 +107,12 @@ class Target extends Model
         $add_as_payment = null,
         $base_payment = null,
         $max_income_target = null,
+        $next_run_date = null,
+        $is_end_of_month = false,
     ) {
         try {
             AppLog::info("Updating comm profile target", loggable: $this);
-            $this->update([
+            $updates = [
                 "day_of_month"  =>  $day_of_month,
                 "each_month"    =>  $each_month,
                 "base_payment"  =>  $base_payment,
@@ -110,7 +122,11 @@ class Target extends Model
                 "add_to_balance"   =>  $add_to_balance,
                 "add_as_payment"   =>  $add_as_payment,
                 "max_income_target"   =>  $max_income_target,
-            ]);
+                "is_end_of_month"   =>  $is_end_of_month,
+            ];
+            if ($next_run_date)
+                $updates['next_run_date'] = $next_run_date->format('Y-m-d');
+            $this->update($updates);
             return true;
         } catch (Exception $e) {
             report($e);
@@ -193,16 +209,17 @@ class Target extends Model
     }
 
     ///attributes
-    public function getNextRunDateAttribute()
+    public function getCalculatedNextRunDateAttribute()
     {
+        if ($this->next_run_date && (new Carbon($this->next_run_date))->isFuture()) return new Carbon($this->next_run_date);
         $this->loadMissing('runs');
         $last_run = $this->runs->first();
         $now = Carbon::now();
-        return
-            $last_run ?
+        $run_date = $last_run ?
             (new Carbon($last_run->created_at))->addMonths($this->each_month)->setDay($this->day_of_month) : ($now->day < $this->day_of_month ?
                 $now->setDay($this->day_of_month) :
                 $now->addMonth()->setDay($this->day_of_month));
+        return $this->is_end_of_month ? $run_date->setDay($run_date->format('t')) : $run_date;
     }
 
     public function getLastRunDateAttribute()
@@ -214,7 +231,7 @@ class Target extends Model
 
     public function getIsDueAttribute()
     {
-        return $this->next_run_date->isToday();
+        return $this->calculated_next_run_date->isToday();
     }
 
 

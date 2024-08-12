@@ -13,10 +13,8 @@ use App\Models\Payments\CommProfilePayment;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
 use App\Models\Payments\ClientPayment;
-use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
-use Aws\IoTThingsGraph\IoTThingsGraphClient;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -60,10 +58,12 @@ class CommProfileShow extends Component
     public $premTarget; //
     public $minIncomeTarget; //
     public $maxIncomeTarget; //
+    public $nextRunDate; //
     public $commPercentage; //
     public $addToBalance;
     public $addAsPayment;
     public $basePayment;
+    public $isEndOfMonth;
 
     public $deleteTargetId;
     public $editTargetId;
@@ -134,11 +134,13 @@ class CommProfileShow extends Component
     //     }
     // }
 
-    public function showTagetRuns($id){
+    public function showTagetRuns($id)
+    {
         $this->runs = Target::find($id)->runs()->get();
     }
 
-    public function closeTargetRuns(){
+    public function closeTargetRuns()
+    {
         $this->reset(['runs']);
     }
 
@@ -494,10 +496,12 @@ class CommProfileShow extends Component
         $this->premTarget = null;
         $this->minIncomeTarget = null;
         $this->maxIncomeTarget = null;
+        $this->nextRunDate = null;
         $this->commPercentage = null;
         $this->addToBalance = 100;
         $this->addAsPayment = 100;
         $this->basePayment = null;
+        $this->isEndOfMonth = false;
     }
 
     public function openNewTargetSection()
@@ -511,10 +515,12 @@ class CommProfileShow extends Component
         $t = Target::find($id);
         $this->premTarget = $t->prem_target;
         $this->dayOfMonth = $t->day_of_month;
+        $this->isEndOfMonth = $t->is_end_of_month;
         $this->eachMonth = $t->each_month;
         $this->premTarget = $t->prem_target;
         $this->minIncomeTarget = $t->min_income_target;
         $this->maxIncomeTarget = $t->max_income_target;
+        // $this->nextRunDate = $t->next_run_date;
         $this->commPercentage = $t->comm_percentage;
         $this->addToBalance = $t->add_to_balance;
         $this->addAsPayment = $t->add_as_payment;
@@ -529,10 +535,12 @@ class CommProfileShow extends Component
         $this->premTarget = null;
         $this->minIncomeTarget = null;
         $this->maxIncomeTarget = null;
+        $this->nextRunDate = null;
         $this->commPercentage = null;
         $this->addToBalance = 100;
         $this->addAsPayment = 100;
         $this->basePayment = null;
+        $this->isEndOfMonth = false;
     }
 
     public function editarget()
@@ -540,7 +548,7 @@ class CommProfileShow extends Component
 
         $this->validate([
             'minIncomeTarget' => 'required|numeric',
-            'dayOfMonth' => 'required|numeric',
+            'dayOfMonth' => 'required_if:isEndOfMonth,false|nullable|numeric|between:1,31',
             'eachMonth' => 'required|numeric',
             'premTarget' => 'required|numeric',
             'commPercentage' => 'required|numeric',
@@ -548,10 +556,11 @@ class CommProfileShow extends Component
             'addToBalance' => 'required|numeric',
             'addAsPayment' => 'required|numeric',
             'basePayment' => 'nullable|numeric',
+            'nextRunDate' => 'nullable|date',
         ]);
 
         $res = Target::find($this->editTargetId)->editInfo(
-            $this->dayOfMonth,
+            $this->isEndOfMonth ? 28 : $this->dayOfMonth,
             $this->eachMonth,
             $this->premTarget,
             $this->minIncomeTarget,
@@ -559,7 +568,9 @@ class CommProfileShow extends Component
             $this->addToBalance,
             $this->addAsPayment,
             $this->basePayment,
-            $this->maxIncomeTarget
+            $this->maxIncomeTarget,
+            $this->nextRunDate ? new Carbon($this->nextRunDate) : null,
+            $this->isEndOfMonth
         );
         if ($res) {
             $this->closeEditTargetSection();
@@ -597,7 +608,7 @@ class CommProfileShow extends Component
     {
         $this->validate([
             'minIncomeTarget' => 'required|numeric',
-            'dayOfMonth' => 'required|numeric|between:1,31',
+            'dayOfMonth' => 'required_if:isEndOfMonth,false|nullable|numeric|between:1,31',
             'eachMonth' => 'required|numeric|between:1,12',
             'premTarget' => 'required|numeric',
             'commPercentage' => 'required|numeric|between:1,100',
@@ -608,7 +619,7 @@ class CommProfileShow extends Component
         ]);
 
         $res = $this->profile->addTarget(
-            $this->dayOfMonth,
+            $this->isEndOfMonth ? 28 : $this->dayOfMonth,
             $this->eachMonth,
             $this->premTarget,
             $this->minIncomeTarget,
@@ -616,7 +627,9 @@ class CommProfileShow extends Component
             $this->addToBalance,
             $this->addAsPayment,
             $this->basePayment,
-            $this->maxIncomeTarget
+            $this->maxIncomeTarget,
+            $this->nextRunDate ? new Carbon($this->nextRunDate) : null,
+            $this->isEndOfMonth
         );
 
         if ($res) {

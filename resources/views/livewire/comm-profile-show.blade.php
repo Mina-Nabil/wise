@@ -753,7 +753,7 @@
 
                                                         <td class="table-td ">
                                                             {{ $target->day_of_month }} / {{ $target->each_month }} -
-                                                            {{ $target->next_run_date->format('Y-m-d') }}
+                                                            {{ $target->calculated_next_run_date->format('Y-m-d') }}
                                                         </td>
 
                                                         <td class="table-td ">
@@ -1346,10 +1346,28 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-
-                                <div class="input-area mt-3">
-                                    <label for="dayOfMonth" class="form-label">Day of month</label>
-                                    <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                    <div class="input-area mt-3">
+                                        <label for="dayOfMonth" class="form-label">Day of month</label>
+                                        <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth" @disabled($isEndOfMonth)>
+                                    </div>
+                                    <div class="from-group mt-3">
+                                        <label for="lastName" class="form-label">Is End of Month?</label>
+                                        <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
+                                            <label
+                                                class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                                                <input type="checkbox" checked class="sr-only peer"
+                                                    wire:model="isEndOfMonth">
+                                                <div
+                                                    class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                                                </div>
+                                                <span
+                                                    class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">Yes</span>
+                                                <span
+                                                    class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 @error('dayOfMonth')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1362,6 +1380,13 @@
                                 @error('eachMonth')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="firstName" class="form-label">Next Run Date</label>
+                                    <input type="date"
+                                        class="form-control"
+                                        wire:model.defer="nextRunDate">
+                                </div>
 
                                 <div class="input-area mt-3">
                                     <label for="commPercentage" class="form-label">Comm. Percentage</label>
