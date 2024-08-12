@@ -31,11 +31,6 @@ class CheckTargets implements ShouldQueue
      */
     public function handle()
     {
-        /** @var Target */
-        foreach(Target::onlyToday()->get() as $t){
-            if($t->is_due){
-                $t->processTargetPayments();
-            }
-        }
+
     }
 }

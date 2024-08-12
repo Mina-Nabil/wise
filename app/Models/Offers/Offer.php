@@ -69,9 +69,22 @@ class Offer extends Model
 
     protected $table = 'offers';
     protected $fillable = [
-        'creator_id', 'type', 'status', 'item_id', 'item_type', 'is_renewal',
-        'item_title', 'item_value', 'item_desc', 'selected_option_id',
-        'note', 'due', 'closed_by_id', 'assignee_id', 'in_favor_to', 'renewal_policy',
+        'creator_id',
+        'type',
+        'status',
+        'item_id',
+        'item_type',
+        'is_renewal',
+        'item_title',
+        'item_value',
+        'item_desc',
+        'selected_option_id',
+        'note',
+        'due',
+        'closed_by_id',
+        'assignee_id',
+        'in_favor_to',
+        'renewal_policy',
         'sub_status'
     ];
 
@@ -334,24 +347,24 @@ class Offer extends Model
         return $whatsapp_url . "?text=" . urlencode("Please find the offer comparison url: " . $exportFileUrl);
     }
 
-    public function setCommProfiles(array $profiles_ids = [])
-    {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('updateCommission', $this)) return false;
+    // public function setCommProfiles(array $profiles_ids = [])
+    // {
+    //     /** @var User */
+    //     $loggedInUser = Auth::user();
+    //     if (!$loggedInUser->can('updateCommission', $this)) return false;
 
-        try {
-            $this->comm_profiles()->sync($profiles_ids);
-            if ($this->selected_option_id)
-                $this->generateSalesCommissions();
-            $this->addComment("Changed commission profiles", false);
-            return true;
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Can't Set commission profiles", $e->getMessage(), $this);
-            return false;
-        }
-    }
+    //     try {
+    //         $this->comm_profiles()->sync($profiles_ids);
+    //         if ($this->selected_option_id)
+    //             $this->generateSalesCommissions();
+    //         $this->addComment("Changed commission profiles", false);
+    //         return true;
+    //     } catch (Exception $e) {
+    //         report($e);
+    //         AppLog::error("Can't Set commission profiles", $e->getMessage(), $this);
+    //         return false;
+    //     }
+    // }
 
 
     public function addCommProfile(int $profile_id, bool $skipCheck = false)
@@ -363,7 +376,9 @@ class Offer extends Model
         }
 
         try {
+            $prof = CommProfile::findOrFail($profile_id);
             $this->comm_profiles()->attach($profile_id);
+            if ($prof->auto_override_id) $this->comm_profiles()->attach($prof->auto_override_id);
             if ($this->selected_option_id)
                 $this->generateSalesCommissions();
             $this->addComment("Added commission profiles", false);
@@ -902,7 +917,7 @@ class Offer extends Model
             )
             ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
 
-        if (!(($loggedInUser->is_admin || $loggedInUser->id == 12) || 
+        if (!(($loggedInUser->is_admin || $loggedInUser->id == 12) ||
             (($loggedInUser->is_operations || $loggedInUser->is_finance) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->orwhere('users.manager_id', $loggedInUser->id)

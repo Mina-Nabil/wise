@@ -1349,14 +1349,14 @@
                                 <div class="flex justify-between items-start space-x-6">
                                     <div class="input-area mt-3 w-full">
                                         <label for="dayOfMonth" class="form-label">Day of month</label>
-                                        <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth">
+                                        <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth" @disabled($isEndOfMonth)>
                                         @error('dayOfMonth')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
                                     </div>
                                     
                                     <div class="input-area mt-3 flex flex-col">
-                                        <label for="checkBox" class="form-label">End of Month?</label>
+                                        <label for="checkBox" class="form-label no-wrap">Last Day?</label>
                                         <div class="checkbox-area mt-2">
                                             <label class="inline-flex items-center cursor-pointer">
                                                 <input type="checkbox" class="hidden row-checkbox" wire:model="isEndOfMonth">
@@ -1488,14 +1488,28 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-
-                                <div class="input-area mt-3">
-                                    <label for="dayOfMonth" class="form-label">Day of month</label>
-                                    <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth">
+                                <div class="flex justify-between items-start space-x-6">
+                                    <div class="input-area mt-3 w-full">
+                                        <label for="dayOfMonth" class="form-label">Day of month</label>
+                                        <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth" @disabled($isEndOfMonth)>
+                                        @error('dayOfMonth')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="input-area mt-3 flex flex-col">
+                                        <label for="checkBox" class="form-label no-wrap">Last Day?</label>
+                                        <div class="checkbox-area mt-2">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" class="hidden row-checkbox" wire:model="isEndOfMonth">
+                                                <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                                @error('dayOfMonth')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+
 
                                 <div class="input-area mt-3">
                                     <label for="eachMonth" class="form-label">Each month</label>
@@ -1792,7 +1806,7 @@
                         <!-- Modal header -->
                         <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Add Commission Profile
+                                Edit Commission Profile
                             </h3>
 
                             <button wire:click="closeUpdateSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
@@ -1861,6 +1875,17 @@
                                 <div class="input-area mt-3">
                                     <label for="updatedTitle" class="form-label">Title</label>
                                     <input id="updatedTitle" type="text" class="form-control @error('updatedTitle') !border-danger-500 @enderror" wire:model.defer="updatedTitle">
+                                </div>
+
+                                <div class="input-area mt-3">
+                                    <label for="updatedAutomaticOverrideId" class="form-label">Automatic Override</label>
+                                    <select name="updatedAutomaticOverrideId" class="form-control w-full mt-2 " wire:model.defer="updatedAutomaticOverrideId">
+                                        <option>None</option>
+                                        @foreach ($overrides as $o)
+                                            <option value="{{ $o->id }}">
+                                                {{ $o->title }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <div class="from-group mt-3">

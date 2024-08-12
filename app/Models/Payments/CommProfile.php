@@ -39,7 +39,7 @@ class CommProfile extends Model
     protected $fillable = [
         'title', 'type', 'per_policy', 'desc', 'comm_profile_id',
         'user_id', 'balance', 'unapproved_balance',
-        'select_available' //Available for Selection
+        'select_available', 'auto_override_id' //Available for Selection
     ];
 
     ///static functions
@@ -49,7 +49,8 @@ class CommProfile extends Model
         $user_id = null, //can be linked to user
         string $title = null, //can be null if a user is selected 
         string $desc = null,
-        bool $select_available = false, //switch
+        bool $select_available = false, //switch,
+        $auto_override_id = null, //can be linked to user
     ): self|bool {
         assert($user_id !== null || $title != null, "Must include a title or select a user");
         try {
@@ -61,9 +62,10 @@ class CommProfile extends Model
             $newComm = new self([
                 "type"          =>  $type,
                 "per_policy"    =>  $per_policy,
-                "select_available"    =>  $select_available,
+                "select_available"  =>  $select_available,
                 "user_id"       =>  $user_id,
                 "title"         =>  $formattedTitle,
+                "auto_override_id"  =>  $auto_override_id,
                 "desc"          =>  $desc,
             ]);
             AppLog::error("creating new comm profile");
@@ -95,12 +97,14 @@ class CommProfile extends Model
         string $title = null,
         string $desc = null,
         bool $select_available = false, //switch
+        $auto_override_id = null,
     ) {
         try {
             $this->update([
                 "type"          =>  $type,
                 "per_policy"    =>  $per_policy,
                 "select_available"    =>  $select_available,
+                "auto_override_id"  =>  $auto_override_id,
                 "title"         =>  $title,
                 "desc"          =>  $desc,
             ]);
@@ -287,6 +291,10 @@ class CommProfile extends Model
     public function scopeSalesOut($query)
     {
         return $query->where('type', self::TYPE_SALES_OUT);
+    }
+    public function scopeOverride($query)
+    {
+        return $query->where('type', self::TYPE_OVERRIDE);
     }
 
     ///relations

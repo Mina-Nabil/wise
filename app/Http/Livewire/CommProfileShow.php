@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use App\Models\Payments\SalesComm;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Log;
 
 class CommProfileShow extends Component
 {
@@ -32,6 +33,7 @@ class CommProfileShow extends Component
 
     public $updatedType;
     public $updatedPerPolicy;
+    public $updatedAutomaticOverrideId;
     public $updatedSelectAvailable;
     public $updatedUserId;
     public $updatedTitle;
@@ -108,31 +110,6 @@ class CommProfileShow extends Component
         $this->section = $section;
         $this->mount($this->profile->id);
     }
-
-    // public function addComm()
-    // {
-    //     $this->validate([
-    //         'commTitle'  => 'required|string|max:255',
-    //         'commPer'    => 'required|numeric',
-    //         'commUser'   => 'nullable|integer|exists:users,id',
-    //         'commNote'   => 'nullable|string',
-    //         'commFrom'   => 'required|in:' . implode(',', CommProfileConf::FROMS),
-    //     ]);
-
-    //     $res = $this->profile->addSalesCommission($this->commTitle, $this->commFrom, $this->commPer, $this->commUser, $this->newcommNote);
-    //     if ($res) {
-    //         $this->toggleAddComm();
-    //         $this->commTitle = null;
-    //         $this->commPer = null;
-    //         $this->commUser = null;
-    //         $this->newcommNote = null;
-    //         $this->commFrom = null;
-    //         $this->mount($this->profile->id);
-    //         $this->alert('success', 'Commission added!');
-    //     } else {
-    //         $this->alert('failed', 'Server error');
-    //     }
-    // }
 
     public function showTagetRuns($id)
     {
@@ -545,10 +522,9 @@ class CommProfileShow extends Component
 
     public function editarget()
     {
-
         $this->validate([
             'minIncomeTarget' => 'required|numeric',
-            'dayOfMonth' => 'required_if:isEndOfMonth,false|nullable|numeric|between:1,31',
+            'dayOfMonth' => 'required_unless:isEndOfMonth,true|between:0,31',
             'eachMonth' => 'required|numeric',
             'premTarget' => 'required|numeric',
             'commPercentage' => 'required|numeric',
@@ -606,9 +582,10 @@ class CommProfileShow extends Component
 
     public function addTarget()
     {
+
         $this->validate([
             'minIncomeTarget' => 'required|numeric',
-            'dayOfMonth' => 'required_if:isEndOfMonth,false|nullable|numeric|between:1,31',
+            'dayOfMonth' => 'required_unless:isEndOfMonth,true|between:0,31',
             'eachMonth' => 'required|numeric|between:1,12',
             'premTarget' => 'required|numeric',
             'commPercentage' => 'required|numeric|between:1,100',
@@ -809,6 +786,7 @@ class CommProfileShow extends Component
         $this->updatedType = $this->profile->type;
         $this->updatedPerPolicy = $this->profile->per_policy;
         // $this->updatedUserId = $this->profile->user_id;
+        $this->updatedAutomaticOverrideId = $this->profile->auto_override_id;
         $this->updatedTitle = $this->profile->title;
         $this->updatedDesc = $this->profile->desc;
         $this->updatedSelectAvailable = $this->profile->select_available;
@@ -827,12 +805,13 @@ class CommProfileShow extends Component
         }
         $this->validate([
             'updatedType'  => 'required|in:' . implode(',', CommProfile::TYPES),
+            'updatedAutomaticOverrideId'  => 'nullable|exists:comm_profiles,id',
             'updatedPerPolicy' => 'boolean',
             'updatedSelectAvailable' => 'boolean',
             'updatedDesc' => 'nullable|string'
         ]);
 
-        $res = $this->profile->editProfile($this->updatedType, $this->updatedPerPolicy, $this->updatedTitle, $this->updatedDesc, $this->updatedSelectAvailable);
+        $res = $this->profile->editProfile($this->updatedType, $this->updatedPerPolicy, $this->updatedTitle, $this->updatedDesc, $this->updatedSelectAvailable, $this->updatedAutomaticOverrideId);
 
         if ($res) {
             $this->updatedCommSec = false;
@@ -889,12 +868,14 @@ class CommProfileShow extends Component
         $users = User::all();
         $LOBs = Policy::LINES_OF_BUSINESS;
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
+        $overrides = CommProfile::override()->get();
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
             'FROMS' => $FROMS,
             'LOBs' => $LOBs,
             'PYMT_TYPES' => $PYMT_TYPES,
+            'overrides' => $overrides,
         ]);
     }
 }

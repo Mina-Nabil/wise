@@ -21,6 +21,7 @@ class CommProfileIndex extends Component
     public $newPerPolicy = false;
     public $newSelectAvailable = false;
     public $newUserId;
+    public $automaticOverrideId;
     public $newTitle;
     public $newDesc;
 
@@ -45,10 +46,11 @@ class CommProfileIndex extends Component
             'newType'  => 'required|in:' . implode(',', CommProfile::TYPES),
             'newPerPolicy' => 'boolean',
             'newSelectAvailable' => 'boolean',
+            'automaticOverrideId'  => 'nullable|exists:comm_profiles,id',
             'newDesc' => 'nullable|string'
         ]);
 
-        $res = CommProfile::newCommProfile($this->newType, $this->newPerPolicy, $this->newUserId, $this->newTitle, $this->newDesc, $this->newSelectAvailable);
+        $res = CommProfile::newCommProfile($this->newType, $this->newPerPolicy, $this->newUserId, $this->newTitle, $this->newDesc, $this->newSelectAvailable, $this->automaticOverrideId);
 
         if ($res) {
             // $this->alert('success', 'Commission added');
@@ -68,10 +70,13 @@ class CommProfileIndex extends Component
         $profiles = CommProfile::when($this->search, fn($q) => $q->searchBy($this->search))->paginate(50);
         $profileTypes = CommProfile::TYPES;
         $users = User::all();
+        $overrides = CommProfile::override()->get();
+
         return view('livewire.comm-profile-index', [
             'profileTypes' => $profileTypes,
             'profiles' => $profiles,
             'users' => $users,
+            'overrides' => $overrides,
         ]);
     }
 }

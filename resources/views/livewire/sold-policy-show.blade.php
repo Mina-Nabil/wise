@@ -1149,12 +1149,11 @@
                             </div>
                             <div class="flex-1">
                                 <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                                    Total Policy Commission
+                                    Policy Commission
                                 </div>
-                                <div class="text-slate-900 dark:text-white text-lg font-medium flex justify-between">
+                                <div class="text-slate-800 dark:text-white text-md font-medium flex justify-between">
                                     <span>
-                                        {{ $soldPolicy->total_policy_comm ? number_format($soldPolicy->total_policy_comm, 0, '.', ',') : '-' }}
-                                        EGP
+                                        {{ $soldPolicy->total_policy_comm ? number_format($soldPolicy->total_policy_comm, 0, '.', ',') . ' / ' . number_format($soldPolicy->after_tax_comm, 0, '.', ',')  : '-' }}
                                     </span>
                                     <button class="action-btn btn-sm" type="button"
                                         wire:click="openEditTotalPolCommSection">
@@ -1182,11 +1181,10 @@
                             </div>
                             <div class="flex-1">
                                 <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                                    Total Client Paid
+                                    Client Paid
                                 </div>
                                 <div class="text-slate-900 dark:text-white text-lg font-medium">
                                     {{ $soldPolicy->total_client_paid ? number_format($soldPolicy->total_client_paid, 0, '.', ',') : '-' }}
-                                    EGP
                                 </div>
                             </div>
                         </div>
@@ -1205,11 +1203,10 @@
                             </div>
                             <div class="flex-1">
                                 <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                                    Total Sales Commission
+                                    Sales Commission
                                 </div>
                                 <div class="text-slate-900 dark:text-white text-lg font-medium">
                                     {{ $soldPolicy->total_sales_comm ? number_format($soldPolicy->total_sales_comm, 0, '.', ',') : '-' }}
-                                    EGP
                                 </div>
                             </div>
                         </div>
@@ -1229,11 +1226,10 @@
                             </div>
                             <div class="flex-1">
                                 <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                                    Total Company Paid
+                                    Company Paid
                                 </div>
                                 <div class="text-slate-900 dark:text-white text-lg font-medium">
                                     {{ $soldPolicy->total_comp_paid ? number_format($soldPolicy->total_comp_paid, 0, '.', ',') : '-' }}
-                                    EGP
                                 </div>
                             </div>
                         </div>

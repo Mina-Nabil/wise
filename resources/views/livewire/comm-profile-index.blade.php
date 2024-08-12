@@ -193,6 +193,17 @@
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
 
+                                    <div class="input-area mt-3">
+                                        <label for="automaticOverrideId" class="form-label">Automatic Override</label>
+                                        <select name="automaticOverrideId" class="form-control w-full mt-2 " wire:model.defer="automaticOverrideId">
+                                            <option>None</option>
+                                            @foreach ($overrides as $o)
+                                                <option value="{{ $o->id }}">
+                                                    {{ $o->title }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
                                     @if (!$newUserId)
                                         <div class="input-area mt-3">
                                             <label for="newTitle" class="form-label">Title</label>

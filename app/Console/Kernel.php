@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Models\Offers\Offer;
+use App\Models\Payments\Target;
 use App\Models\Users\AppLog;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -17,9 +18,18 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(fn () => AppLog::expired()->delete())
+        $schedule->call(fn() => AppLog::expired()->delete())
             ->environments(['production'])->dailyAt('3:00');
-        $schedule->call(fn () => Offer::cleanOffersDirectory())
+        $schedule->call(fn() => Offer::cleanOffersDirectory())
+            ->environments(['production'])->dailyAt('4:00');
+        $schedule->call(function () {
+            /** @var Target */
+            foreach (Target::onlyToday()->get() as $t) {
+                if ($t->is_due) {
+                    $t->processTargetPayments();
+                }
+            }
+        })
             ->environments(['production'])->dailyAt('4:00');
     }
 

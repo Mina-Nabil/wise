@@ -49,11 +49,39 @@ class SoldPolicy extends Model
 
     protected $table = 'sold_policies';
     protected $fillable = [
-        'creator_id', 'offer_id', 'policy_id', 'net_rate', 'net_premium',
-        'gross_premium', 'installements_count', 'start', 'expiry', 'discount',
-        'payment_frequency', 'is_valid', 'customer_car_id', 'insured_value',
-        'car_chassis', 'car_plate_no', 'car_engine', 'policy_number',
-        'in_favor_to', 'policy_doc', 'note', 'is_renewed', 'is_paid', 'client_payment_date', 'total_policy_comm', 'total_client_paid', 'total_sales_comm', 'total_comp_paid', 'policy_comm_note', 'assigned_to_id', 'main_sales_id', 'created_at'
+        'creator_id',
+        'offer_id',
+        'policy_id',
+        'net_rate',
+        'net_premium',
+        'gross_premium',
+        'installements_count',
+        'start',
+        'expiry',
+        'discount',
+        'payment_frequency',
+        'is_valid',
+        'customer_car_id',
+        'insured_value',
+        'car_chassis',
+        'car_plate_no',
+        'car_engine',
+        'policy_number',
+        'in_favor_to',
+        'policy_doc',
+        'note',
+        'is_renewed',
+        'is_paid',
+        'client_payment_date',
+        'total_policy_comm',
+        'total_client_paid',
+        'total_sales_comm',
+        'total_comp_paid',
+        'policy_comm_note',
+        'assigned_to_id',
+        'main_sales_id',
+        'created_at',
+        'after_tax_comm'
     ];
 
     ///model functions
@@ -93,8 +121,10 @@ class SoldPolicy extends Model
             DB::transaction(function () {
                 $this->comms_details()->delete();
                 $clientPaymentDate = new Carbon($this->client_payment_date);
+                $issueDate = $this->issuing_date ? new Carbon($this->issuing_date) : null;
                 $policyStart = new Carbon($this->start);
-                $dueDays = $clientPaymentDate->diffInDays($policyStart);
+                $refDate = $issueDate ?  ($issueDate->isBefore($policyStart) ? $policyStart : $issueDate) : $policyStart;
+                $dueDays = $clientPaymentDate->diffInDays($refDate);
                 $total_comm = 0;
                 foreach ($this->policy->comm_confs as $conf) {
                     if ($conf->sales_out_only && !$this->has_sales_out) continue;
@@ -112,6 +142,7 @@ class SoldPolicy extends Model
                     $total_comm += $tmp_base_value;
                 }
                 $this->total_policy_comm = $total_comm;
+                $this->after_tax_comm = $this->total_policy_comm * .95;
                 $this->save();
             });
             return true;
@@ -234,6 +265,8 @@ class SoldPolicy extends Model
             $tmp += $comm->amount;
         }
         $this->total_policy_comm = $tmp;
+        $this->after_tax_comm = $this->total_policy_comm * .95;
+
         try {
             $this->save();
         } catch (Exception $e) {
@@ -289,6 +322,9 @@ class SoldPolicy extends Model
 
     public function setClientPaymentDate(Carbon $date)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateClientPayments', $this)) return false;
         try {
             $this->is_paid = 1;
             $this->client_payment_date = $date->format('Y-m-d H:i');
@@ -308,6 +344,7 @@ class SoldPolicy extends Model
 
             $this->update([
                 'total_policy_comm' => $amount,
+                'comm_after_tax' => $amount * .95,
                 'policy_comm_note' => $note
             ]);
             AppLog::info("Sold Policy commission edited", loggable: $this);
@@ -1420,8 +1457,8 @@ class SoldPolicy extends Model
     public function getHasSalesOutAttribute()
     {
         $this->loadMissing('sales_comms', 'sales_comms.comm_profile');
-        foreach($this->sales_comms as $sc) {
-            if($sc->comm_profile->is_sales_out) return true;
+        foreach ($this->sales_comms as $sc) {
+            if ($sc->comm_profile->is_sales_out) return true;
         }
 
         return false;
