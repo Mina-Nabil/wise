@@ -1346,33 +1346,29 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    <div class="input-area mt-3">
+                                <div class="flex justify-between items-start space-x-6">
+                                    <div class="input-area mt-3 w-full">
                                         <label for="dayOfMonth" class="form-label">Day of month</label>
-                                        <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth" @disabled($isEndOfMonth)>
+                                        <input id="dayOfMonth" type="number" class="form-control" wire:model="dayOfMonth">
+                                        @error('dayOfMonth')
+                                            <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    <div class="from-group mt-3">
-                                        <label for="lastName" class="form-label">Is End of Month?</label>
-                                        <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
-                                            <label
-                                                class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                                <input type="checkbox" checked class="sr-only peer"
-                                                    wire:model="isEndOfMonth">
-                                                <div
-                                                    class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
-                                                </div>
-                                                <span
-                                                    class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">Yes</span>
-                                                <span
-                                                    class="absolute right-1 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0">No</span>
+                                    
+                                    <div class="input-area mt-3 flex flex-col">
+                                        <label for="checkBox" class="form-label">End of Month?</label>
+                                        <div class="checkbox-area mt-2">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" class="hidden row-checkbox" wire:model="isEndOfMonth">
+                                                <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                </span>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
-                                @error('dayOfMonth')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
 
+                                                            
                                 <div class="input-area mt-3">
                                     <label for="eachMonth" class="form-label">Each month</label>
                                     <input id="eachMonth" type="number" class="form-control" wire:model="eachMonth">
