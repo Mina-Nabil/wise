@@ -212,6 +212,7 @@ class Offer extends Model
             policy_doc: $policy_doc,
             issuing_date: $issuing_date
         );
+        $clientDueDate = $issuing_date ?  ($issuing_date->isBefore($start) ? $start : $issuing_date) : $start;
         if ($soldPolicy) {
             $this->setStatus(self::STATUS_APPROVED);
             foreach ($this->selected_option->policy->benefits as $b) {
@@ -242,28 +243,28 @@ class Offer extends Model
                     break;
 
                 case OfferOption::PAYMENT_FREQ_HALF_YEARLY:
-                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 2, $start, $main_sales_id ? $main_sales_id : $this->creator_id);
-                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 2, $start->addMonths(6), $main_sales_id ? $main_sales_id : $this->creator_id);
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 2, $clientDueDate, $main_sales_id ? $main_sales_id : $this->creator_id);
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 2, $clientDueDate->addMonths(6), $main_sales_id ? $main_sales_id : $this->creator_id);
                     break;
 
                 case OfferOption::PAYMENT_FREQ_QUARTER:
-                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $start, $main_sales_id ? $main_sales_id : $this->creator_id);
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $clientDueDate, $main_sales_id ? $main_sales_id : $this->creator_id);
 
-                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $start->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $clientDueDate->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
 
-                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $start->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $clientDueDate->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
 
-                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $start->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
+                    $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 4, $clientDueDate->addMonths(3), $main_sales_id ? $main_sales_id : $this->creator_id);
                     break;
 
                 case OfferOption::PAYMENT_FREQ_MONTHLY:
                     for ($i = 0; $i < 12; $i++)
-                        $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 12, $i == 0 ? $start : $start->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
+                        $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / 12, $i == 0 ? $clientDueDate : $clientDueDate->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
                     break;
 
                 case OfferOption::PAYMENT_INSTALLEMENTS:
                     for ($i = 0; $i < $installements_count; $i++)
-                        $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / $installements_count, $i == 0 ? $start : $start->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
+                        $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / $installements_count, $i == 0 ? $clientDueDate : $clientDueDate->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
                     break;
             }
         }

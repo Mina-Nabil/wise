@@ -80,6 +80,7 @@ Route::middleware('auth', 'active')->group(function () {
 
     Route::get('/reports/sold-policy', [ReportController::class, 'soldPolicyIndex'])->name('reports.soldpolicy');
     Route::get('/reports/offers', [ReportController::class, 'offersIndex'])->name('reports.offers');
+    Route::get('/reports/client-payment-finance', [ReportController::class, 'clientPaymentsFinance'])->name('reports.offers');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);

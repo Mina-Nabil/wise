@@ -249,6 +249,9 @@
                                 <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold
                                     Policies</a>
                             </li>
+                            <li>
+                                <a href="{{ url('/reports/client-payment-finance') }}" class="@yield('client-payment-finance')">Client Payments</a>
+                            </li>
 
                         </ul>
                     </li>

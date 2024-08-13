@@ -2,6 +2,7 @@
 
 namespace App\Models\Payments;
 
+use App\Helpers\Helpers;
 use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -46,7 +47,7 @@ class ClientPayment extends Model
         self::PYMT_STATE_PAID,
         self::PYMT_STATE_CANCELLED,
     ];
-    
+
     const PYMT_PAID_STATES = [
         self::PYMT_STATE_PREM_COLLECTED,
         self::PYMT_STATE_PAID
@@ -54,7 +55,16 @@ class ClientPayment extends Model
 
     protected $table = 'client_payments';
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'due', 'closed_by_id', 'assigned_to', 'sales_out_id'
+        'status',
+        'type',
+        'amount',
+        'note',
+        'payment_date',
+        'doc_url',
+        'due',
+        'closed_by_id',
+        'assigned_to',
+        'sales_out_id'
     ];
 
     ///model functions
@@ -219,19 +229,19 @@ class ClientPayment extends Model
 
     public function deletePayment()
     {
-           /** @var User */
-           $user = Auth::user();
-           if (!$user->can('update', $this)) return false;
-   
-           if ($this->is_new || is_null($this->status)) {
-               try {
-                   AppLog::info("Deleting Client Payment", loggable: $this);
-                   return $this->delete();
-               } catch (Exception $e) {
-                   report($e);
-                   AppLog::error("Deleting Client Payment failed", desc: $e->getMessage(), loggable: $this);
-               }
-           }
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
+        if ($this->is_new || is_null($this->status)) {
+            try {
+                AppLog::info("Deleting Client Payment", loggable: $this);
+                return $this->delete();
+            } catch (Exception $e) {
+                report($e);
+                AppLog::error("Deleting Client Payment failed", desc: $e->getMessage(), loggable: $this);
+            }
+        }
     }
 
     ///attributes
@@ -267,20 +277,10 @@ class ClientPayment extends Model
 
         if ($assigned_only) $query->where('client_payments.assigned_to', $user->id);
 
-        // When Filter is NEW show NEW & NULL payments
-        if (count($states)) {
-            if (in_array(self::PYMT_STATE_NEW, $states)) {
-                $query->where(function ($q) use ($states) {
-                    $q->whereIn('status', $states)
-                        ->orWhereNull('status');
-                });
-            } else {
-                $query->whereIn('status', $states);
-            }
-        }
+        $query->when(count($states), fn($q) => $q->filterByStates($states));
 
         $query->when($searchText, function ($q, $s) {
-            $q->where('sold_policies.policy_number', "LIKE", "%$s%");
+            $q->searchBy($s);
         });
 
         $query->when($upcoming_only, function ($q) {
@@ -297,7 +297,49 @@ class ClientPayment extends Model
 
     public function scopePaid(Builder $query)
     {
-        $query->where('status', self::PYMT_STATE_PAID);
+        return $query->where('status', self::PYMT_STATE_PAID);
+    }
+
+    public function scopeNotPaidOnly(Builder $query)
+    {
+        return $query->whereNot('status', self::PYMT_STATE_PAID);
+    }
+
+    public function scopeFilterByStates(Builder $query, array $states)
+    {
+        // When Filter is NEW show NEW & NULL payments
+        if (count($states)) {
+            if (in_array(self::PYMT_STATE_NEW, $states)) {
+                $query->where(function ($q) use ($states) {
+                    $q->whereIn('status', $states)
+                        ->orWhereNull('status');
+                });
+            } else {
+                $query->whereIn('status', $states);
+            }
+        }
+        return $query;
+    }
+
+    public function scopeSearchBy(Builder $query, $searchText)
+    {
+        if (!Helpers::joined($query, "sold_policies")) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        return $query->where('sold_policies.policy_number', "LIKE", "%$searchText%");
+    }
+
+    public function scopeDueAfter(Builder $query, $days)
+    {
+        return $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
+            ->join('policy_comm_conf', 'sold_policies.policy_id', '=', 'policy_comm_conf.policy_id')
+            ->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent')
+            ->groupBy('client_payments.id')
+            ->whereRaw("(
+            (IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start) <= NOW())
+            AND 
+            (DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL (policy_comm_conf.due_penalty - $days) DAY) <= NOW() )
+            )");
     }
 
     ///relations
