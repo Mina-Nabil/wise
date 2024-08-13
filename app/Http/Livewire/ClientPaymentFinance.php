@@ -19,7 +19,8 @@ class ClientPaymentFinance extends Component
 
     public function redirectToShowPage($id)
     {
-        return redirect(route('sold.policy.show', ['id' => $id]));
+        $this->dispatchBrowserEvent('openNewTab', ['url' => route('sold.policy.show', ['id' => $id])]);
+
     }
 
     public function filterByStatus($status)
