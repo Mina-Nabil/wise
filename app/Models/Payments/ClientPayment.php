@@ -336,7 +336,7 @@ class ClientPayment extends Model
             ->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent')
             ->groupBy('client_payments.id')
             ->whereRaw("(
-            ( (DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY) > NOW())
+            ( (DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY)) > NOW())
             AND 
             (DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL (policy_comm_conf.due_penalty - $days) DAY) <= NOW() )
             )");
