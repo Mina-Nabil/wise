@@ -72,7 +72,7 @@
 
         <div class=" mx-3 my-3">
             <p class="font-small text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-                @if ($isDueAfter)
+                @if ($isDuePassed)
                     Days passed after due
                 @else
                     Days before due

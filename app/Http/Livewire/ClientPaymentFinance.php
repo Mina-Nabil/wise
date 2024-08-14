@@ -12,7 +12,7 @@ class ClientPaymentFinance extends Component
     use WithPagination;
 
     public $filteredStatus = ClientPayment::NOT_PAID_STATES;
-    public $isDueAfter = true;
+    public $isDuePassed = false;
     public $dueDays;
     public $myPayments = false;
     public $searchText;
@@ -38,7 +38,7 @@ class ClientPaymentFinance extends Component
     {
         $this->resetPage();
     }
-    public function updatingIsDueAfter()
+    public function updatingIsDuePassed()
     {
         $this->resetPage();
     }
@@ -49,8 +49,8 @@ class ClientPaymentFinance extends Component
     {
         $statuses = ClientPayment::PYMT_STATES;
         $payments = ClientPayment::includeDue()
-            ->when($this->dueDays && $this->isDueAfter, fn($q) => $q->dueAfter($this->dueDays))
-            ->when($this->dueDays && !$this->isDueAfter, fn($q) => $q->duePassed($this->dueDays))
+            ->when($this->dueDays && !$this->isDuePassed, fn($q) => $q->dueAfter($this->dueDays))
+            ->when($this->dueDays && $this->isDuePassed, fn($q) => $q->duePassed($this->dueDays))
             ->when($this->searchText, fn($q) => $q->searchBy($this->searchText))
             ->when(count($this->filteredStatus), fn($q) => $q->FilterByStates($this->filteredStatus))
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
