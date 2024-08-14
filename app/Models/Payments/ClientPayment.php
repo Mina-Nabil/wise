@@ -337,9 +337,9 @@ class ClientPayment extends Model
     {
         return $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
             ->join('policy_comm_conf', 'sold_policies.policy_id', '=', 'policy_comm_conf.policy_id')
-            ->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent', 'policy_comm_conf.calculation_type')
+            ->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent', 'policy_comm_conf.calculation_type', 'sold_policies.net_premuim')
             ->selectRaw('IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start) as policy_payment_due')
-            ->groupBoy('client_payments.id');
+            ->groupBy('client_payments.id');
     }
 
     //Must use with include due
