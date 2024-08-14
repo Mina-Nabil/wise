@@ -345,9 +345,7 @@ class ClientPayment extends Model
     //Must use with include due
     public function scopeDueAfter(Builder $query, $days)
     {
-
         return $query->whereRaw("
-        
             ( DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY) < NOW() 
             AND 
             DATEDIFF( 
@@ -359,14 +357,13 @@ class ClientPayment extends Model
     //Must use with include due
     public function scopeDuePassed(Builder $query, $days)
     {
-        return $query->whereRaw("(
-            ( (DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY)) > NOW())
+        return $query->whereRaw("
+            ( DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY) > NOW() 
             AND 
             DATEDIFF( 
-                (DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY) )  ,
-                NOW() 
-            )  <= $days
-            ");
+                NOW() ,
+                DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY)   
+            ) <= $days ) ");
     }
 
     ///relations
