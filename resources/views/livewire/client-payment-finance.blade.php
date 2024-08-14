@@ -199,7 +199,7 @@
                                     </td>
 
                                     <td>
-                                        {{($payment->penalty_percent / 100) *  $payment->calculation_type == '%' ? (($payment->value / 100) * $payment->net_premium) : $payment->value }}
+                                        {{($payment->penalty_percent / 100) *  ($payment->calculation_type == '%' ? (($payment->value / 100) * $payment->net_premium) : $payment->value )}}
                                     </td>
 
                                 </tr>
