@@ -198,7 +198,7 @@
                                         {{ \Carbon\Carbon::now()->diffInDays(
                                             \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0),
                                             false,
-                                        )  + 1}}
+                                        ) }}
                                         Days
                                     </td>
 
