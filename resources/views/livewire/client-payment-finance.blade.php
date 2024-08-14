@@ -194,10 +194,11 @@
                                         @endif
                                     </td>
 
-                                    <td>{{ $payment->due_penalty }} //
-                                        {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0) }}
-                                        //
-                                        {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0)->diffInDays(\Carbon\Carbon::now(), false) }}
+                                    <td>{{ $payment->due_penalty }} // {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0) }} // 
+                                        {{ \Carbon\Carbon::now()->diffInDays(
+                                            \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0),
+                                            false,
+                                        ) }}
                                         Days
                                     </td>
 
