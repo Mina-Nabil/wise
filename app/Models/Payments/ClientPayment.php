@@ -350,7 +350,7 @@ class ClientPayment extends Model
             AND 
             DATEDIFF( 
                 DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY) ,
-                NOW() ,
+                NOW() 
             ) <= $days ) ");
     }
 
