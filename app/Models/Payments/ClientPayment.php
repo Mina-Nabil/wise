@@ -47,6 +47,10 @@ class ClientPayment extends Model
         self::PYMT_STATE_PAID,
         self::PYMT_STATE_CANCELLED,
     ];
+    const NOT_PAID_STATES = [
+        self::PYMT_STATE_NEW,
+        self::PYMT_STATE_PREM_COLLECTED,
+    ];
 
     const PYMT_PAID_STATES = [
         self::PYMT_STATE_PREM_COLLECTED,
@@ -329,16 +333,33 @@ class ClientPayment extends Model
         return $query->where('sold_policies.policy_number', "LIKE", "%$searchText%");
     }
 
-    public function scopeDueAfter(Builder $query, $days)
+    public function scopeIncludeDue(Builder $query)
     {
         return $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
             ->join('policy_comm_conf', 'sold_policies.policy_id', '=', 'policy_comm_conf.policy_id')
             ->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent')
-            ->groupBy('client_payments.id')
-            ->whereRaw("(
+            ->selectRaw('IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start) as policy_payment_due')
+            ->groupBy('client_payments.id');
+    }
+
+    //Must use with include due
+    public function scopeDueAfter(Builder $query, $days)
+    {
+
+        return $query->whereRaw("(
             ( (DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY)) > NOW())
             AND 
             (DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL (policy_comm_conf.due_penalty - $days) DAY) <= NOW() )
+            )");
+    }
+
+    //Must use with include due
+    public function scopeDuePassed(Builder $query, $days)
+    {
+        return $query->whereRaw("(
+            ( (DATE_ADD( policy_payment_due, INTERVAL policy_comm_conf.due_penalty DAY)) < NOW())
+            AND 
+            (DATE_ADD( policy_payment_due, INTERVAL (policy_comm_conf.due_penalty - $days) DAY) >= NOW() )
             )");
     }
 

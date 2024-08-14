@@ -6,22 +6,16 @@
             </h4>
         </div>
 
-
-        {{-- <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
-            <button wire:click="" data-bs-toggle="modal" data-bs-target="#successModal"
-                class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
-                <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
-                Add Payment
-            </button>
-        </div> --}}
     </div>
 
     <div class="flex mb-2">
         <div class="dropdown relative">
             <button class="btn inline-flex justify-center btn-dark items-center" type="button" id="darkDropdownMenuButton"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                @if ($filteredStatus)
+                @if (count($filteredStatus) == 1 )
                     Status: {{ str_replace('_', ' ', $filteredStatus[0]) }}
+                @elseif(count($filteredStatus) > 1)
+                    Status: Not Paid
                 @else
                     Select Status
                 @endif
@@ -30,6 +24,12 @@
             </button>
             <ul
                 class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                <li wire:click="filterByStatus('not_paid')">
+                    <a href="#"
+                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        Not Paid
+                    </a>
+                </li>
                 <li wire:click="filterByStatus('all')">
                     <a href="#"
                         class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
@@ -50,10 +50,35 @@
 
         </div>
 
-        <input class="form-control py-2 w-auto ml-5" style="width:300px" type="text"
-            wire:model="searchText" placeholder="Search by policy number">
-        <input class="form-control py-2 w-auto ml-5" style="width:300px" type="number"
-            wire:model="dueAfter" placeholder="Set due after">
+        <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model="searchText"
+            placeholder="Search by policy number">
+        <input class="form-control py-2 w-auto ml-5" style="width:100px" type="number" wire:model="dueDays"
+            placeholder="Days">
+
+            <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
+                <label
+                    class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer" wire:model="isDueAfter">
+                    <div
+                        class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
+                    </div>
+                    <span
+                        class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100"></span>
+                    <span
+                        class="absolute right-2 z-20 text-xs text-white font-Inter font-normal opacity-100 peer-checked:opacity-0"></span>
+                </label>
+                {{-- <span class="text-sm text-primary-600 font-Inter font-normal capitalize ml-5 pb-2">My Tasks</span> --}}
+            </div>
+            
+        <div class=" mx-3 my-3">
+            <p class="font-small text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
+                @if ($isDueAfter)
+                    Days before due
+                @else
+                    Days passed after due
+                @endif
+            </p>
+        </div>
 
 
     </div>
@@ -100,12 +125,15 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
-                                    Date
+                                    Left
                                 </th>
 
                                 <th scope="col" class=" table-th ">
-                                    Closed by
+                                    Penalty
                                 </th>
+
+                           
+                              
 
                             </tr>
                         </thead>
@@ -131,7 +159,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                            {{ $payment->assigned?->username }}
+                                        {{ $payment->assigned?->username }}
                                     </td>
 
                                     <td class="table-td">
@@ -166,20 +194,14 @@
                                         @endif
                                     </td>
 
-                                    <td class="table-td">
-                                        {{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('D d/m/Y') : 'Not set.' }}
+                                    <td>
+                                        {{ \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty), false)    }} Days
                                     </td>
 
-                                    <td class="table-td">
-                                        @if ($payment->closed_by)
-                                            <b>
-                                                {{ $payment->closed_by->first_name }}
-                                                {{ $payment->closed_by->last_name }}
-                                            </b>
-                                        @else
-                                            <b> - </b>
-                                        @endif
+                                    <td>
+                                        {{($payment->penalty_percent / 100) * $payment->value}}
                                     </td>
+
                                 </tr>
                             @endforeach
 
