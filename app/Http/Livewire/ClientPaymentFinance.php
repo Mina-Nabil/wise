@@ -15,7 +15,6 @@ class ClientPaymentFinance extends Component
     public $dueDays;
     public $myPayments = false;
     public $searchText;
-    public $dateRange;
 
     public function redirectToShowPage($id)
     {
@@ -28,6 +27,21 @@ class ClientPaymentFinance extends Component
         else if ($status == 'not_paid') $this->filteredStatus = ClientPayment::NOT_PAID_STATES;
         else $this->filteredStatus = [$status];
     }
+
+    //reseting page while searching
+    public function updatingSearchText()
+    {
+        $this->resetPage();
+    }
+    public function updatingDueDays()
+    {
+        $this->resetPage();
+    }
+    public function updatingIsDueAfter()
+    {
+        $this->resetPage();
+    }
+
 
 
     public function render()
