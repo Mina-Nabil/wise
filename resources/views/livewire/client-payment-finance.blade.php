@@ -125,6 +125,9 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
+                                    Due
+                                </th>
+                                <th scope="col" class=" table-th ">
                                     Left
                                 </th>
 
@@ -194,6 +197,9 @@
                                         @endif
                                     </td>
 
+                                    <td>
+                                       {{\Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0)->format('D d/m/Y')}}
+                                    </td>
                                     <td>
                                         {{ \Carbon\Carbon::now()->diffInDays(
                                             \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0),
