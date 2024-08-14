@@ -51,7 +51,7 @@ class ClientPaymentFinance extends Component
         $payments = ClientPayment::includeDue()
             ->when($this->dueDays && $this->isDueAfter, fn($q) => $q->dueAfter($this->dueDays))
             ->when($this->dueDays && !$this->isDueAfter, fn($q) => $q->duePassed($this->dueDays))
-            ->searchBy($this->searchText)
+            ->when($this->searchText, fn($q) => $q->searchBy($this->searchText))
             ->FilterByStates($this->filteredStatus)
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
             Log::info($payments->toSql());
