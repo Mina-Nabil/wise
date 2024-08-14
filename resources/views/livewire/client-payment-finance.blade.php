@@ -194,7 +194,7 @@
                                         @endif
                                     </td>
 
-                                    <td> {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0) }} // 
+                                    <td>{{ $payment->due_penalty }} // {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0) }} // 
                                         {{ \Carbon\Carbon::now()->diffInDays(
                                             \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0),
                                             false,
