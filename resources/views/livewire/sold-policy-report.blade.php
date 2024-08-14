@@ -178,10 +178,10 @@
                                 </button>
                             @endif
 
-                            @if ($net_premuim_from || $net_premuim_to)
+                            @if ($net_premium_from || $net_premium_to)
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleNetPrem">
-                                        {{ $net_premuim_from ? 'Net Premium From: ' . number_format($net_premuim_from, 0, '.', ',') : '' }} {{ $net_premuim_from && $net_premuim_to ? '-' : '' }} {{ $net_premuim_to ? 'Net Premium To: ' . number_format($net_premuim_to, 0, '.', ',') : '' }}
+                                        {{ $net_premium_from ? 'Net Premium From: ' . number_format($net_premium_from, 0, '.', ',') : '' }} {{ $net_premium_from && $net_premium_to ? '-' : '' }} {{ $net_premium_to ? 'Net Premium To: ' . number_format($net_premium_to, 0, '.', ',') : '' }}
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearNetPrems">
@@ -764,16 +764,16 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-                                <label for="Enet_premuim_from" class="form-label">Net Premium from</label>
-                                <input name="Enet_premuim_from" type="number" class="form-control mt-2 w-full @error('Enet_premuim_from') !border-danger-500 @enderror" wire:model.defer="Enet_premuim_from">
-                                @error('Enet_premuim_from')
+                                <label for="Enet_premium_from" class="form-label">Net Premium from</label>
+                                <input name="Enet_premium_from" type="number" class="form-control mt-2 w-full @error('Enet_premium_from') !border-danger-500 @enderror" wire:model.defer="Enet_premium_from">
+                                @error('Enet_premium_from')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="from-group">
-                                <label for="Enet_premuim_to" class="form-label">Net Premium to</label>
-                                <input name="Enet_premuim_to" type="number" class="form-control mt-2 w-full @error('Enet_premuim_to') !border-danger-500 @enderror" wire:model.defer="Enet_premuim_to">
-                                @error('Enet_premuim_to')
+                                <label for="Enet_premium_to" class="form-label">Net Premium to</label>
+                                <input name="Enet_premium_to" type="number" class="form-control mt-2 w-full @error('Enet_premium_to') !border-danger-500 @enderror" wire:model.defer="Enet_premium_to">
+                                @error('Enet_premium_to')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>

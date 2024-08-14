@@ -49,8 +49,8 @@ class SoldPolicyReport extends Component
     public $line_of_business;
     public $value_from;
     public $value_to;
-    public $net_premuim_to;
-    public $net_premuim_from;
+    public $net_premium_to;
+    public $net_premium_from;
     public $brand_ids = [];
     public $company_ids = [];
     public $policy_ids = [];
@@ -67,8 +67,8 @@ class SoldPolicyReport extends Component
     public $Eline_of_business;
     public $Evalue_from;
     public $Evalue_to;
-    public $Enet_premuim_to;
-    public $Enet_premuim_from;
+    public $Enet_premium_to;
+    public $Enet_premium_from;
     public $Ebrand_ids = [];
     public $Ecompany_ids = [];
     public $Epolicy_ids = [];
@@ -195,22 +195,22 @@ class SoldPolicyReport extends Component
     {
         $this->toggle($this->netPremSection);
         if ($this->netPremSection) {
-            $this->Enet_premuim_from = $this->net_premuim_from;
-            $this->Enet_premuim_to = $this->net_premuim_to;
+            $this->Enet_premium_from = $this->net_premium_from;
+            $this->Enet_premium_to = $this->net_premium_to;
         }
     }
 
     public function setNetPrem()
     {
-        $this->net_premuim_from = $this->Enet_premuim_from;
-        $this->net_premuim_to = $this->Enet_premuim_to;
+        $this->net_premium_from = $this->Enet_premium_from;
+        $this->net_premium_to = $this->Enet_premium_to;
         $this->toggle($this->netPremSection);
     }
 
     public function clearNetPrems()
     {
-        $this->net_premuim_from = null;
-        $this->net_premuim_to = null;
+        $this->net_premium_from = null;
+        $this->net_premium_to = null;
     }
 
     public function toggleValues()
@@ -335,8 +335,8 @@ class SoldPolicyReport extends Component
                 $this->line_of_business,
                 $this->value_from,
                 $this->value_to,
-                $this->net_premuim_to,
-                $this->net_premuim_from,
+                $this->net_premium_to,
+                $this->net_premium_from,
                 $this->brand_ids,
                 $this->company_ids,
                 $this->policy_ids,
@@ -398,8 +398,8 @@ class SoldPolicyReport extends Component
             $this->line_of_business,
             $this->value_from,
             $this->value_to,
-            $this->net_premuim_to,
-            $this->net_premuim_from,
+            $this->net_premium_to,
+            $this->net_premium_from,
             $this->brand_ids,
             $this->company_ids,
             $this->policy_ids,
