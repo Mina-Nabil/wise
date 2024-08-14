@@ -274,7 +274,7 @@ class OfferShow extends Component
             'sold_payment_frequency' => 'required|in:' . implode(',', OfferOption::PAYMENT_FREQS),
             'installments_count' => 'required_if:sold_payment_frequency,' . OfferOption::PAYMENT_INSTALLEMENTS . '|nullable|numeric',
             'issuing_date' => 'required|date',
-            'start' => 'required|date',
+            'start' => 'required|date|after:2020-01-01',
             'expiry' => 'required|date|after:start',
             'car_chassis' => 'nullable|string|max:255',
             'car_plate_no' => 'nullable|string|max:255',

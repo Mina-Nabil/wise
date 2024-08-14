@@ -54,8 +54,6 @@ class ClientPaymentFinance extends Component
             ->when($this->searchText, fn($q) => $q->searchBy($this->searchText))
             ->when(count($this->filteredStatus), fn($q) => $q->FilterByStates($this->filteredStatus))
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
-            Log::info($payments->toSql());
-            Log::info($payments->getBindings());
             $payments =    $payments->paginate(50);
         return view('livewire.client-payment-finance', [
             'statuses' => $statuses,

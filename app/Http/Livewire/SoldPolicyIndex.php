@@ -89,7 +89,7 @@ class SoldPolicyIndex extends Component
             'gross_premium' => 'required|numeric',
             'installments_count' => 'required|numeric',
             'payment_frequency' => 'required|string|max:255',
-            'start' => 'required|date',
+            'start' => 'required|date|after:2020-01-01',
             'expiry' => 'required|date|after:start',
             'discount' => 'numeric',
             'offer_id' => 'nullable|numeric|exists:offers,id',
