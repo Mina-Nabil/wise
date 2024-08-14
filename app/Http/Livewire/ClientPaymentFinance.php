@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
+use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 
 class ClientPaymentFinance extends Component
@@ -52,7 +53,9 @@ class ClientPaymentFinance extends Component
             ->when($this->dueDays && !$this->isDueAfter, fn($q) => $q->duePassed($this->dueDays))
             ->searchBy($this->searchText)
             ->FilterByStates($this->filteredStatus)
-            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned')->paginate(50);
+            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
+            Log::info($payments->toSql());
+            $payments->paginate(50);
         return view('livewire.client-payment-finance', [
             'statuses' => $statuses,
             'payments' => $payments
