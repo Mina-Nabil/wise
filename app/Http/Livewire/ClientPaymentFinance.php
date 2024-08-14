@@ -10,7 +10,7 @@ class ClientPaymentFinance extends Component
 {
     use WithPagination;
 
-    public $filteredStatus = [];
+    public $filteredStatus = ClientPayment::NOT_PAID_STATES;
     public $isDueAfter = true;
     public $dueDays;
     public $myPayments = false;
