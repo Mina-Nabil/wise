@@ -195,7 +195,7 @@
                                     </td>
 
                                     <td>
-                                        {{ \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty), false)    }} Days
+                                        {{ \Carbon\Carbon::now()->diffForHumans(\Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty), false)    }} Days
                                     </td>
 
                                     <td>
