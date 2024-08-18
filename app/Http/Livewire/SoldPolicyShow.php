@@ -718,7 +718,7 @@ class SoldPolicyShow extends Component
         $this->validate([
             'commTitle'  => 'required|string|max:255',
             'commPer'    => 'required|numeric',
-            'commProfile'   => 'nullable|integer|exists:users,id',
+            'commProfile'   => 'nullable|integer|exists:comm_profiles,id',
             'commNote'   => 'nullable|string',
             'commFrom'   => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
