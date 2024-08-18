@@ -1449,6 +1449,13 @@ class SoldPolicy extends Model
         return $query->where('offer_id', $id);
     }
 
+    public function scopeByCompany($query, $company_id, $is_paid = null)
+    {
+        return $query->join('policies', 'policies.id', '=', 'sold_policies.policy_id')
+        ->where('policies.company_id', $company_id)
+        ->when($is_paid !== null, fn($q) => $is_paid ? $q->where('sold_policies.total_comp_paid', '>=', 'sold_policies.total_policy_comm') : $q->where('sold_policies.total_comp_paid', '<', 'sold_policies.total_policy_comm'));
+    }
+
     ///attributes
     public function getIsExpiredAttribute()
     {
