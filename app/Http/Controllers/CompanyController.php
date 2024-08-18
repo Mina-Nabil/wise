@@ -11,4 +11,10 @@ class CompanyController extends Controller
     {
         return view('companies.index');
     }
+
+    public function show($company_id)
+    {
+        $name = Company::find($company_id)->name;
+        return view('companies.show', compact('company_id' , 'name'));
+    }
 }

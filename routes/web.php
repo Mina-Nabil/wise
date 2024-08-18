@@ -75,6 +75,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/corporates/{id}', [CorporateController::class, 'show'])->name('corporates.show');
 
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+    Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
     Route::get('/logs', [AppLogController::class, 'index'])->name('logs.index');
     Route::get('/slarecords', [AppLogController::class, 'slaRecordsIndex'])->name('slarecords.index');
 

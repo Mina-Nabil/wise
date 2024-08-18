@@ -440,6 +440,10 @@ class User extends Authenticatable
             ->where('expiry', ">", Carbon::now()->format('Y-m-d'));
     }
 
+    public function getFullNameAttribute(){
+        return ucwords($this->first_name.' '.$this->last_name);
+    }
+
     //auth
     public function getAuthPassword()
     {
