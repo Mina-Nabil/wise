@@ -3860,6 +3860,10 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    @error('commFrom')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                                 </div>
 
                                 <div class="from-group">
@@ -3887,6 +3891,10 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    @error('commProfile')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                                 </div>
 
                                 <div class="from-group">
