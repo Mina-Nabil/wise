@@ -3,6 +3,7 @@
 namespace App\Models\Insurance;
 
 use App\Exceptions\UnauthorizedException;
+use App\Models\Payments\Invoice;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -133,5 +134,9 @@ class Company extends Model
     public function policies(): HasMany
     {
         return $this->hasMany(Policy::class);
+    }
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 }

@@ -233,18 +233,20 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addCompanyPayment($type, $amount, $note = null)
+    public function addCompanyPayment($type, $amount, $note = null, $invoice_id=null, $pymnt_perm=null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updatePayments', $this)) return false;
 
-        assert($amount <= ($this->total_policy_comm - $this->total_company_paid), "Amount is more that what the company should pay. Please make sure the amount is less than the total commission plus the company payments total");
+        assert($amount <= ($this->after_tax_comm - $this->total_company_paid), "Amount is more that what the company should pay. Please make sure the amount is less than the total commission after tax plus the company payments total");
 
         try {
             if ($this->company_comm_payments()->create([
                 "type"      => $type,
                 "amount"    => $amount,
+                "pymnt_perm"    => $pymnt_perm,
+                "invoice_id"    => $invoice_id,
                 "note"      => $note
             ])) {
                 AppLog::info("Company payment added", loggable: $this);
@@ -1347,7 +1349,7 @@ class SoldPolicy extends Model
         });
 
         $query->when($is_commission_outstanding, function ($q) {
-            $q->whereRaw("total_comp_paid < total_policy_comm");
+            $q->whereRaw("total_comp_paid < after_tax_comm");
         });
         $query->when($is_client_outstanding, function ($q) {
             $q->whereRaw("total_client_paid < gross_premium");
