@@ -16,9 +16,11 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('invoices');
+
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Company::class)->constrained();
+            $table->foreignIdFor(Company::class)->constrained('insurance_companies');
             $table->foreignIdFor(User::class, 'created_by')->constrained('users');
             $table->integer('serial')->unique();
             $table->double('gross_total');
