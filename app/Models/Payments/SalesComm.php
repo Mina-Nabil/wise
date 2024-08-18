@@ -309,6 +309,15 @@ class SalesComm extends Model
         $query->where('status', self::PYMT_STATE_PAID);
     }
 
+    public function scopeBySoldPoliciesStartEnd(Builder $query, Carbon $start, Carbon $end)
+    {
+        return $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
+        ->whereBetween('sold_policies.created_at', [
+            $start->format('Y-m-d'),
+            $end->format('Y-m-d')
+        ]);
+    }
+
     ///relations
     public function sold_policy(): BelongsTo
     {

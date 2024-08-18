@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CommProfile extends Model
 {
@@ -78,9 +80,41 @@ class CommProfile extends Model
     }
 
     ///model functions
-    // public function downloadAccountStatement(Carbon $start, Carbon $end){
-    //     $comms = $this->sales_comm()->bySoldPolicyDa
-    // }
+    public function downloadAccountStatement(Carbon $start, Carbon $end){
+        $comms = $this->sales_comm()->bySoldPoliciesStartEnd($start, $end)
+        ->with('sold_policy', 'sold_policy.client')
+        ->get();
+        $template = IOFactory::load(resource_path('import/account_statement.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 2;
+        foreach($comms as $comm){
+            $activeSheet->getCell('A' . $i)->setValue($comm->sold_policy->is_renewed ? 'تجديد' : 'اصدار');
+            $activeSheet->getCell('B' . $i)->setValue($comm->sold_policy->policy_number);
+            $activeSheet->getCell('C' . $i)->setValue($comm->sold_policy->client->name);
+            
+            $activeSheet->getCell('D' . $i)->setValue((new Carbon($comm->sold_policy->start))->format('d-M-y'));
+            $activeSheet->getCell('E' . $i)->setValue($comm->sold_policy->net_premium);
+            $activeSheet->getCell('F' . $i)->setValue($comm->sold_policy->gross_premium);
+            $activeSheet->getCell('G' . $i)->setValue($comm->amount);
+            $activeSheet->getCell('H' . $i)->setValue($comm->sold_policy->is_renewed ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN) );
+            $activeSheet->getCell('I' . $i)->setValue($comm->sold_policy->insured_value);
+
+            $activeSheet->insertNewRowBefore($i);
+        }
+
+
+        $writer = new Xlsx($newFile);
+        $file_path = SoldPolicy::FILES_DIRECTORY . "profile_balance{$this->id}.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
 
 
     public function getValidDirectCommissionConf(OfferOption $option): CommProfileConf|false
