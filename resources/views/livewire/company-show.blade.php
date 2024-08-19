@@ -154,7 +154,7 @@
 
 
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 1000px;">
                 <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                         <!-- Modal header -->
@@ -215,11 +215,14 @@
                             </div>
 
                             <h5>Available Sold Policies</h5>
-
+                            <small class="form-text text-muted">
+                                * Only up to 5 records are displayed at a time. Use the search bar to find specific sold policies.
+                            </small>
                             <div class="card-body pb-6">
                                 <div class="overflow-x-auto ">
                                     <div class="inline-block min-w-full align-middle">
                                         <div class="overflow-hidden ">
+                                            <input type="text" wire:model="search_sold_policy" placeholder="Search sold policy..." class="form-control">
                                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                                 <thead class="">
                                                     <tr>
@@ -272,14 +275,35 @@
                                                         </tr>
                                                     @endforeach
 
+                                                    @if (empty($available_policies))
+                                                        <tr>
+                                                            <td colspan="5" class="text-center p-4">
+                                                                <p>No policies available.</p>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+
                                                 </tbody>
                                             </table>
+
+
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <h5>Selected Policies</h5>
+                            @if (empty($sold_policies_entries))
+                                <div class="py-[18px] px-6 font-normal text-sm rounded-md bg-white text-warning-500 border border-warning-500
+                                    dark:bg-slate-800">
+                                    <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                        <div class="flex-1 font-Inter">
+                                            No sold policies have been selected yet.
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                             @foreach ($sold_policies_entries as $index => $entry)
                                 @php
                                     $policy = \App\Models\Business\SoldPolicy::find($entry['id']);

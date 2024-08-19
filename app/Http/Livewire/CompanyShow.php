@@ -21,6 +21,8 @@ class CompanyShow extends Component
     public $tax_total;
     public $net_total;
 
+    public $search_sold_policy;
+
     public $newInvoiceSection = false;
 
     public $sold_policies_entries = [];
@@ -28,6 +30,11 @@ class CompanyShow extends Component
     public $selected_policy_id = null;
     public $amount = '';
     public $pymnt_perm = '';
+
+    public function updatedSearchSoldPolicy(){
+        $this->available_policies = SoldPolicy::userData(searchText:$this->search_sold_policy)->ByCompany(company_id: $this->company->id)->get()->take(5);
+
+    }
 
     public function openNewInvoiceSec(){
         $this->newInvoiceSection = true;
@@ -128,7 +135,7 @@ class CompanyShow extends Component
     public function mount($company_id)
     {
         $this->company = Company::find($company_id);
-        $this->available_policies = SoldPolicy::userData()->ByCompany(company_id: $company_id)->get();
+        $this->available_policies = SoldPolicy::userData(searchText:$this->search_sold_policy)->ByCompany(company_id: $company_id)->get()->take(5);
         // dd($this->available_policies);
     }
 
