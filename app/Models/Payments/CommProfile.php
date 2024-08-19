@@ -38,9 +38,16 @@ class CommProfile extends Model
     ];
 
     protected $fillable = [
-        'title', 'type', 'per_policy', 'desc', 'comm_profile_id',
-        'user_id', 'balance', 'unapproved_balance',
-        'select_available', 'auto_override_id' //Available for Selection
+        'title',
+        'type',
+        'per_policy',
+        'desc',
+        'comm_profile_id',
+        'user_id',
+        'balance',
+        'unapproved_balance',
+        'select_available',
+        'auto_override_id' //Available for Selection
     ];
 
     ///static functions
@@ -80,10 +87,11 @@ class CommProfile extends Model
     }
 
     ///model functions
-    public function downloadAccountStatement(Carbon $start, Carbon $end){
+    public function downloadAccountStatement(Carbon $start, Carbon $end)
+    {
         $comms = $this->sales_comm()->bySoldPoliciesStartEnd($start, $end)
-        ->with('sold_policy', 'sold_policy.client')
-        ->get();
+            ->with('sold_policy', 'sold_policy.client')
+            ->get();
         $template = IOFactory::load(resource_path('import/account_statement.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
@@ -92,16 +100,16 @@ class CommProfile extends Model
         $activeSheet = $newFile->getActiveSheet();
 
         $i = 2;
-        foreach($comms as $comm){
+        foreach ($comms as $comm) {
             $activeSheet->getCell('A' . $i)->setValue($comm->sold_policy->is_renewed ? 'تجديد' : 'اصدار');
             $activeSheet->getCell('B' . $i)->setValue($comm->sold_policy->policy_number);
             $activeSheet->getCell('C' . $i)->setValue($comm->sold_policy->client->name);
-            
+
             $activeSheet->getCell('D' . $i)->setValue((new Carbon($comm->sold_policy->start))->format('d-M-y'));
             $activeSheet->getCell('E' . $i)->setValue($comm->sold_policy->net_premium);
             $activeSheet->getCell('F' . $i)->setValue($comm->sold_policy->gross_premium);
             $activeSheet->getCell('G' . $i)->setValue($comm->amount);
-            $activeSheet->getCell('H' . $i)->setValue($comm->sold_policy->is_renewed ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN) );
+            $activeSheet->getCell('H' . $i)->setValue($comm->sold_policy->is_renewed ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN));
             $activeSheet->getCell('I' . $i)->setValue($comm->sold_policy->insured_value);
 
             $activeSheet->insertNewRowBefore($i);
@@ -116,6 +124,14 @@ class CommProfile extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
+    public function startManualTargetsRun(Carbon $end_date)
+    {
+        $this->load('targets');
+        /** @var Target */
+        foreach ($this->targets as $t) {
+            $t->processTargetPayments($end_date);
+        }
+    }
 
     public function getValidDirectCommissionConf(OfferOption $option): CommProfileConf|false
     {
@@ -307,6 +323,25 @@ class CommProfile extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't create comm profile payment", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function deleteProfile()
+    {
+        try {
+            DB::transaction(function () {
+                $this->sales_comm()->delete();
+                $this->configurations()->delete();
+                $this->targets()->delete();
+                $this->payments()->delete();
+                $this->client_payments()->update([
+                    'sales_out_id'  =>  null
+                ]);
+                $this->delete();
+            });
+        } catch (Exception $e) {
+            report($e);
             return false;
         }
     }

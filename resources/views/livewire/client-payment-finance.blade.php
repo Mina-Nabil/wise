@@ -50,6 +50,34 @@
 
         </div>
 
+        <div class="dropdown relative ml-2">
+            <button class="btn inline-flex justify-center btn-dark items-center" type="button"
+                id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                @if ($selectedCompany)
+                    Company: {{ $selectedCompany->name }}
+                @else
+                    Select Company
+                @endif
+
+                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+            </button>
+            <ul
+                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+
+                @foreach ($companies as $company)
+                    <li wire:click="filterByCompany('{{ $company->id }}')">
+                        <a href="#"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                            {{ $company->name }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+
+
+
+        </div>
+
         <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model="searchText"
             placeholder="Search by policy number">
         <input class="form-control py-2 w-auto ml-5" style="width:100px" type="number" wire:model="dueDays"
@@ -145,7 +173,7 @@
 
                                     <td class="table-td">
                                         {{ $payment->sold_policy->policy_number }}
-                                     by
+                                        by
                                         {{ $payment->sold_policy->creator->username }}
                                     </td>
                                     <td class="table-td">
@@ -193,7 +221,7 @@
                                     </td>
 
                                     <td>
-                                       {{\Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0)->format('D d/m/Y')}}
+                                        {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0)->format('D d/m/Y') }}
                                     </td>
                                     <td>
                                         {{ \Carbon\Carbon::now()->diffInDays(
