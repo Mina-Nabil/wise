@@ -333,6 +333,17 @@ class ClientPayment extends Model
         return $query->where('sold_policies.policy_number', "LIKE", "%$searchText%");
     }
 
+    public function scopeByCompany(Builder $query, $company_id)
+    {
+        if (!Helpers::joined($query, "sold_policies")) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        if (!Helpers::joined($query, "policies")) {
+            $query->join('policies', 'sold_policies.policy_id', '=', 'policies.id');
+        }
+        return $query->where('policies.company_id', "=", $company_id);
+    }
+
     public function scopeIncludeDue(Builder $query)
     {
         return $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
