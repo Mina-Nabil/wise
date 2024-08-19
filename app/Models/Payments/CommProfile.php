@@ -327,6 +327,25 @@ class CommProfile extends Model
         }
     }
 
+    public function deleteProfile()
+    {
+        try {
+            DB::transaction(function () {
+                $this->sales_comm()->delete();
+                $this->configurations()->delete();
+                $this->targets()->delete();
+                $this->payments()->delete();
+                $this->client_payments()->update([
+                    'sales_out_id'  =>  null
+                ]);
+                $this->delete();
+            });
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     ///attributes
     public function getIsSalesOutAttribute()
     {
