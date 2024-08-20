@@ -9,16 +9,18 @@ class ConfirmationModal extends Component
     public $isOpen = false;
     public $message = '';
     public $callback;
+    public $color;
 
     protected $listeners = ['showConfirmation'];
     public $callbackParams = [];
 
-    public function showConfirmation($message, $callback, ...$params)
+    public function showConfirmation($message, $color ,$callback, ...$params)
     {
         $this->message = $message;
         $this->callback = $callback;
         $this->callbackParams = $params;
         $this->isOpen = true;
+        $this->color = $color;
         $this->dispatchBrowserEvent('modal-open');
     }
 

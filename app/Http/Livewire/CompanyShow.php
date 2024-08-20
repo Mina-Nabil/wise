@@ -39,7 +39,7 @@ class CompanyShow extends Component
     public $companyInfoNote;
     public $editInfoSec;
 
-    protected $listeners = ['deleteInvoice']; //functions need confirmation
+    protected $listeners = ['deleteInvoice','confirmInvoice']; //functions need confirmation
 
     public $newEmailSec = false;
     public $type = CompanyEmail::TYPES[0];
@@ -68,6 +68,17 @@ class CompanyShow extends Component
             $this->mount($this->company->id, false);
             $this->alert('success', 'email added');
             $this->reset(['newEmailSec']);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function confirmInvoice($id){
+        $res = Invoice::find($id)->confirmInvoice();
+
+        if ($res) {
+            $this->mount($this->company->id, false);
+            $this->alert('success', 'invoice confirmed');
         } else {
             $this->alert('failed', 'server error');
         }

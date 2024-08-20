@@ -33,7 +33,7 @@
                             <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                                 <!-- Modal header -->
                                 <div
-                                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-{{ $color }}-500">
                                     <h3 class="text-base font-medium text-white dark:text-white capitalize">
                                         Confirmation
                                     </h3>
@@ -61,10 +61,9 @@
                                 <div
                                     class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                                     <button  wire:click="confirm" data-bs-dismiss="modal"
-                                        class="btn inline-flex justify-center text-white bg-danger-500">Yes,
-                                        Delete</button>
+                                        class="btn inline-flex justify-center text-white bg-{{ $color }}-500">Yes, Confirm</button>
                                         <button  wire:click="closeModal" data-bs-dismiss="modal"
-                                        class="btn inline-flex justify-center text-white bg-outline-danger-500">cancel</button>
+                                        class="btn inline-flex justify-center text-white bg-outline-{{ $color }}-500">cancel</button>
                                 </div>
                             </div>
                         </div>
