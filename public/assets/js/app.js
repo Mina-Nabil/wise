@@ -1175,3 +1175,37 @@ document.querySelectorAll(".generate-button").forEach((button) => {
     });
 });
 // END radio btn new
+
+function ConfirmAction(message) {
+    return new Promise((resolve, reject) => {
+        const confirmBox = document.getElementById("custom-confirm");
+        const confirmMessage = document.getElementById("confirm-message");
+        const yesButton = document.getElementById("confirm-yes");
+        const noButton = document.getElementById("confirm-no");
+
+        confirmMessage.textContent = message;
+        confirmBox.classList.remove("hidden");
+
+        yesButton.onclick = () => {
+            confirmBox.classList.add("hidden");
+            resolve(true);
+        };
+
+        noButton.onclick = () => {
+            confirmBox.classList.add("hidden");
+            resolve(false);
+        };
+    });
+}
+
+function handleButtonClick(event) {
+    event.preventDefault(); // Prevent the default action (e.g., form submission)
+    event.stopPropagation(); // Stop event propagation to prevent wire:click from triggering
+
+    ConfirmAction("Are you sure you want to proceed?").then((confirmed) => {
+        if (confirmed) {
+            // Manually trigger the wire:click action if confirmed
+            event.target.click();
+        }
+    });
+}
