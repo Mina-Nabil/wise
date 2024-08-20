@@ -12,7 +12,11 @@ class Account extends Model
     use HasFactory;
     protected $table = 'account_types';
     protected $fillable = [
-        'name', 'desc', 'nature', 'type', 'balance'
+        'name',
+        'desc',
+        'nature',
+        'type',
+        'balance'
     ];
 
     const NATURE_CREDIT = 'credit';
@@ -55,6 +59,20 @@ class Account extends Model
     }
 
     ////model functions
+    /** returns new balance after update */
+    public function updateBalance($amount)
+    {
+        $this->balance = $this->balance + $amount;
+        try {
+            $this->save();
+            return $this->balance;
+        } catch (Exception $e) {
+            report($e);
+            return 0;
+        }
+    }
+
+
     public function editInfo($name, $nature, $type, $desc = null): bool
     {
         $this->update([

@@ -33,11 +33,15 @@ return new class extends Migration
 
         Schema::create('journal_entries', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Account::class)->constrained();
+            $table->foreignIdFor(Account::class, 'credit_id')->constrained();
+            $table->foreignIdFor(Account::class, 'debit_id')->constrained();
+            $table->foreignIdFor(JournalEntry::class, 'revert_entry_id')->nullable()->constrained('journal_entries')->nullOnDelete();
+            $table->double('amount')->default(0);
+            $table->text('credit_doc_url')->nullable();
+            $table->text('debit_doc_url')->nullable();
+            $table->double('credit_balance');
+            $table->double('debit_balance');
             $table->enum('currency', JournalEntry::CURRENCIES);
-            $table->double('credit')->default(0);
-            $table->double('debit')->default(0);
-            $table->text('doc_url')->nullable();
             $table->double('currency_amount')->default(0);
             $table->double('currency_rate')->default(0);
             $table->timestamps();

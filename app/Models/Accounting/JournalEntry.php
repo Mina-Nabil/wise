@@ -6,13 +6,20 @@ use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class JournalEntry extends Model
 {
     use HasFactory;
     protected $table = 'journal_entries';
     protected $fillable = [
-        'credit', 'debit', 'currency', 'doc_url', 'currency_amount', 'currency_rate'
+        'credit',
+        'debit',
+        'currency',
+        'doc_url',
+        'currency_amount',
+        'currency_rate'
     ];
 
     const CURRENCY_EGP  = 'EGP';
@@ -29,17 +36,44 @@ class JournalEntry extends Model
     ];
 
     ////static functions
-    public static function newAccount($name, $nature, $type, $desc = null): self|false
-    {
+    public static function newJournalEntry(
+        $amount,
+        $credit_id,
+        $debit_id,
+        $currency,
+        $currency_amount = null,
+        $currency_rate = null,
+        $credit_doc_url = null,
+        $debit_doc_url = null,
+        $revert_entry_id = null
+    ): self|false {
         $newAccount = new self([
-            "name"  =>  $name,
-            "nature"  =>  $nature,
-            "type"  =>  $type,
-            "desc"  =>  $desc,
-            "balance"  =>  0,
+            "credit_id"     =>  $credit_id,
+            "debit_id"      =>  $debit_id,
+            "amount"        =>  $amount,
+            "currency"      =>  $currency,
+            "currency_amount"   =>  $currency_amount,
+            "currency_rate"     =>  $currency_rate,
+            "credit_doc_url"    =>  $credit_doc_url,
+            "debit_doc_url"     =>  $debit_doc_url,
+            "revert_entry_id"   =>  $revert_entry_id,
         ]);
         try {
-            $newAccount->save();
+            DB::transaction(function() use ($newAccount, $credit_id, $debit_id){
+                
+                /** @var Account */
+                $credit_account = Account::findOrFail($credit_id);
+                $new_credit_balance = $credit_account->updateBalance($this->amount);
+                /** @var Account */
+                $debit_account = Account::findOrFail($debit_id);
+                $new_debit_balance = $debit_account->updateBalance(-1 * $this->amount);
+
+                $newAccount->credit_balance = $new_credit_balance;
+                $newAccount->debit_balance = $new_debit_balance;
+                
+                $newAccount->save();
+                
+            });
             AppLog::info("Created account", loggable: $newAccount);
             return $newAccount;
         } catch (Exception $e) {
@@ -50,31 +84,19 @@ class JournalEntry extends Model
     }
 
     ////model functions
-    public function editInfo($name, $nature, $type, $desc = null): bool
+    public function revertEntry()
     {
-        $this->update([
-            "name"  =>  $name,
-            "nature"  =>  $nature,
-            "type"  =>  $type,
-            "desc"  =>  $desc,
-        ]);
-        try {
-            AppLog::info("Updating account", loggable: $this);
-            return $this->save();
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Can't edit account", desc: $e->getMessage(), loggable: $this);
-            return false;
-        }
+        return self::newJournalEntry($this->amount, $this->debit_id, $this->credit_id, $this->currency, $this->currency_amount, $this->currency_rate, revert_entry_id: $this->id);
     }
 
     ////relations
-    public function entries()
+    public function credit_account(): BelongsTo
     {
-        return $this->hasMany(JournalEntry::class);
+        return $this->belongsTo(Account::class);
     }
-    public function account_type()
+
+    public function debit_account(): BelongsTo
     {
-        return $this->belongsTo(AccountType::class);
+        return $this->belongsTo(Account::class);
     }
 }
