@@ -460,7 +460,7 @@
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3">
                                 <div class="input-area">
-                                    <label for="firstName" class="form-label">Amount</label>
+                                    <label for="firstName" class="form-label">Gross Total</label>
                                     <input type="number" step="0.01" wire:model="gross_total" class="form-control @error('gross_total') !border-danger-500 @enderror" disabled>
                                     @error('gross_total')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -484,15 +484,11 @@
                                 </div>
                             </div>
 
-                            <h5>Available Sold Policies</h5>
-                            <small class="form-text text-muted">
-                                * Only up to 5 records are displayed at a time. Use the search bar to find specific sold policies.
-                            </small>
+                            <h5>Available Sold Policies <small>({{ $available_policies->total() }})</small></h5>
                             <div class="card-body pb-6">
                                 <div class="overflow-x-auto ">
                                     <div class="inline-block min-w-full align-middle">
                                         <div class="overflow-hidden ">
-                                            <input type="text" wire:model="search_sold_policy" placeholder="Search sold policy..." class="form-control">
                                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                                 <thead class="">
                                                     <tr>
@@ -519,7 +515,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                                                    @foreach ($available_policies as $policy)
+                                                    @forelse ($available_policies as $policy)
                                                         <tr>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->policy_number }}</td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->policy->name }}</td>
@@ -547,240 +543,240 @@
                                                                 @endif
                                                             </td>
                                                         </tr>
-                                                    @endforeach
-
-                                                    @if (empty($available_policies))
+                                                    @empty
                                                         <tr>
-                                                            <td colspan="5" class="text-center p-4">
+                                                            <td colspan="5" class=" table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700 text-center">
                                                                 <p>No policies available.</p>
                                                             </td>
                                                         </tr>
-                                                    @endif
-
-                                                </tbody>
-                                            </table>
-
-
-
-                                        </div>
+                                                    @endforelse
+                                            </tbody>
+                                        </table>
+                                        {{ $available_policies->links('vendor.livewire.bootstrap') }}
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <h5>Selected Policies</h5>
-                            @if (empty($sold_policies_entries))
-                                <div class="py-[18px] px-6 font-normal text-sm rounded-md bg-white text-warning-500 border border-warning-500
+                        <h5>Selected Policies 
+                        @if ($sold_policies_entries)
+                            <small>
+                                ({{ count($sold_policies_entries) }})
+                            </small>
+                        @endif</h5>
+                        @if (empty($sold_policies_entries))
+                            <div class="py-[18px] px-6 font-normal text-sm rounded-md bg-white text-warning-500 border border-warning-500
                                     dark:bg-slate-800">
-                                    <div class="flex items-start space-x-3 rtl:space-x-reverse">
-                                        <div class="flex-1 font-Inter">
-                                            No sold policies have been selected yet.
-                                        </div>
+                                <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                    <div class="flex-1 font-Inter">
+                                        No sold policies have been selected yet.
                                     </div>
                                 </div>
-                            @endif
-                            @foreach ($sold_policies_entries as $index => $entry)
-                                @php
-                                    $policy = \App\Models\Business\SoldPolicy::find($entry['id']);
-                                @endphp
+                            </div>
+                        @endif
+                        @foreach ($sold_policies_entries as $index => $entry)
+                            @php
+                                $policy = \App\Models\Business\SoldPolicy::find($entry['id']);
+                            @endphp
 
-                                <div class="card ring-1 ring-secondary-500">
-                                    <div class="card-body p-6">
-                                        <div class="flex-1 items-center">
-                                            <div class="card-title mb-5">#{{ $policy->policy_number }} • @if ($policy->client_type === 'customer')
-                                                    {{ $policy->client->first_name . ' ' . $policy->client->middle_name . ' ' . $policy->client->last_name }}
-                                                @elseif($policy->client_type === 'corporate')
-                                                    {{ $policy->client->name }}
-                                                @endif
+                            <div class="card ring-1 ring-secondary-500">
+                                <div class="card-body p-6">
+                                    <div class="flex-1 items-center">
+                                        <div class="card-title mb-5">#{{ $policy->policy_number }} • @if ($policy->client_type === 'customer')
+                                                {{ $policy->client->first_name . ' ' . $policy->client->middle_name . ' ' . $policy->client->last_name }}
+                                            @elseif($policy->client_type === 'corporate')
+                                                {{ $policy->client->name }}
+                                            @endif
 
-                                                <button wire:click="removeEntry({{ $index }})" class="btn btn-sm inline-flex float-right h-12 w-12 items-center justify-center btn-outline-danger  rounded-full">
-                                                    <span class="flex items-center">
-                                                        <iconify-icon class="text-xl" icon="uiw:delete"></iconify-icon>
-                                                    </span>
-                                                </button>
+                                            <button wire:click="removeEntry({{ $index }})" class="btn btn-sm inline-flex float-right h-12 w-12 items-center justify-center btn-outline-danger  rounded-full">
+                                                <span class="flex items-center">
+                                                    <iconify-icon class="text-xl" icon="uiw:delete"></iconify-icon>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <p class="card-text">
+                                        <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
+
+                                        </h4>
+                                        </p>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                            <div class="input-area">
+                                                <label for="firstName" class="form-label">Amount</label>
+                                                <input type="number" step="0.01" wire:change="updateTotal" wire:model.defer="sold_policies_entries.{{ $index }}.amount" class="form-control @error('sold_policies_entries.' . $index . '.amount') !border-danger-500 @enderror">
+
+                                                @error('sold_policies_entries.' . $index . '.amount')
+                                                    <span class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
+                                                @enderror
                                             </div>
-                                            <p class="card-text">
-                                            <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                            <div class="input-area">
+                                                <label for="firstName" class="form-label">Payment Perm</label>
+                                                <input type="number" step="0.01" wire:model.defer="sold_policies_entries.{{ $index }}.pymnt_perm" class="form-control @error('sold_policies_entries.' . $index . '.pymnt_perm') !border-danger-500 @enderror">
 
-                                            </h4>
-                                            </p>
-
-                                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
-                                                <div class="input-area">
-                                                    <label for="firstName" class="form-label">Amount</label>
-                                                    <input type="number" step="0.01" wire:change="updateTotal"  wire:model.defer="sold_policies_entries.{{ $index }}.amount" class="form-control @error('sold_policies_entries.' . $index . '.amount') !border-danger-500 @enderror">
-
-                                                    @error('sold_policies_entries.' . $index . '.amount')
-                                                        <span class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
-                                                    @enderror
-                                                </div>
-                                                <div class="input-area">
-                                                    <label for="firstName" class="form-label">Payment Perm</label>
-                                                    <input type="number" step="0.01" wire:model.defer="sold_policies_entries.{{ $index }}.pymnt_perm" class="form-control @error('sold_policies_entries.' . $index . '.pymnt_perm') !border-danger-500 @enderror">
-
-                                                    @error('sold_policies_entries.' . $index . '.pymnt_perm')
-                                                        <span class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
-                                                    @enderror
-                                                </div>
-
-
-
+                                                @error('sold_policies_entries.' . $index . '.pymnt_perm')
+                                                    <span class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
+                                                @enderror
                                             </div>
 
 
-                                            {{-- <button type="button" wire:click="removeEntry({{ $index }})">Remove</button> --}}
+
                                         </div>
+
+
+                                        {{-- <button type="button" wire:click="removeEntry({{ $index }})">Remove</button> --}}
                                     </div>
                                 </div>
-                            @endforeach
-
-
-
-
-                        </div>
-                        <!-- Modal footer -->
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addInvoice" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                Submit
-                            </button>
-                        </div>
+                            </div>
+                        @endforeach
 
 
 
 
                     </div>
+                    <!-- Modal footer -->
+                    <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                        <button wire:click="addInvoice" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                            Submit
+                        </button>
+                    </div>
+
+
+
+
                 </div>
             </div>
         </div>
+    </div>
 
 
-    @endif
+@endif
 
 
 
 
-    @if ($editInfoSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+@if ($editInfoSec)
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+        <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px">
+            <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                         rounded-md outline-none text-current">
-                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
-                                {{ $company->name }}
-                            </h3>
-                            <button wire:click="closeEditInfo" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                            {{ $company->name }}
+                        </h3>
+                        <button wire:click="closeEditInfo" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                     dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
+                            data-bs-dismiss="modal">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-4">
+                        <div class="input-area">
+                            <label for="name" class="form-label">Company Name*</label>
+                            <input id="name" type="text" class="form-control @error('companyInfoName') !border-danger-500 @enderror" placeholder="Company Name" wire:model.defer="companyInfoName">
+                            @error('companyInfoName')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
                         </div>
-                        <!-- Modal body -->
-                        <div class="p-6 space-y-4">
-                            <div class="input-area">
-                                <label for="name" class="form-label">Company Name*</label>
-                                <input id="name" type="text" class="form-control @error('companyInfoName') !border-danger-500 @enderror" placeholder="Company Name" wire:model.defer="companyInfoName">
-                                @error('companyInfoName')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
 
-                            <div class="input-area">
-                                <label for="name" class="form-label">Note</label>
-                                <textarea id="name" type="text" class="form-control @error('companyInfoNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model.defer="companyInfoNote"></textarea>
-                                @error('companyInfoNote')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <button wire:click="saveChanges" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500 btn-sm">Save
-                                Changes</button>
+                        <div class="input-area">
+                            <label for="name" class="form-label">Note</label>
+                            <textarea id="name" type="text" class="form-control @error('companyInfoNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model.defer="companyInfoNote"></textarea>
+                            @error('companyInfoNote')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
                         </div>
+                        <button wire:click="saveChanges" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500 btn-sm">Save
+                            Changes</button>
                     </div>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
+@endif
 
 
-    @if ($newEmailSec)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <!-- Modal header -->
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Add Email
-                            </h3>
-                            <button wire:click="closeNewEmail" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
+@if ($newEmailSec)
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+        <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
+            <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                            Add Email
+                        </h3>
+                        <button wire:click="closeNewEmail" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-4">
+                        <div class="input-area">
+                            <label for="type" class="form-label">Type</label>
+                            <select wire:model="type" class="form-control @error('type') !border-danger-500 @enderror">
+                                <option value="" disabled>Select type</option>
+                                @foreach ($Emailtypes as $typeOption)
+                                    <option value="{{ $typeOption }}">{{ $typeOption }}</option>
+                                @endforeach
+                            </select>
+                            @error('type')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
                         </div>
-                        <!-- Modal body -->
-                        <div class="p-6 space-y-4">
-                            <div class="input-area">
-                                <label for="type" class="form-label">Type</label>
-                                <select wire:model="type" class="form-control @error('type') !border-danger-500 @enderror">
-                                    <option value="" disabled>Select type</option>
-                                    @foreach ($Emailtypes as $typeOption)
-                                        <option value="{{ $typeOption }}">{{ $typeOption }}</option>
-                                    @endforeach
-                                </select>
-                                @error('type')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="input-area">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" wire:model="email" class="form-control @error('email') !border-danger-500 @enderror">
-                                @error('email')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="input-area">
-                                <label for="is_primary" class="form-label">Primary</label>
-                                <input type="checkbox" wire:model="is_primary" class="form-checkbox">
-                            </div>
-                            <div class="input-area">
-                                <label for="first_name" class="form-label">First Name</label>
-                                <input type="text" wire:model="first_name" class="form-control @error('first_name') !border-danger-500 @enderror">
-                                @error('first_name')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="input-area">
-                                <label for="last_name" class="form-label">Last Name</label>
-                                <input type="text" wire:model="last_name" class="form-control @error('last_name') !border-danger-500 @enderror">
-                                @error('last_name')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="input-area">
-                                <label for="note" class="form-label">Note</label>
-                                <textarea wire:model="note" class="form-control @error('note') !border-danger-500 @enderror"></textarea>
-                                @error('note')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
+                        <div class="input-area">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" wire:model="email" class="form-control @error('email') !border-danger-500 @enderror">
+                            @error('email')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
                         </div>
-                        <!-- Modal footer -->
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addEmail" class="btn inline-flex justify-center text-white bg-black-500">
-                                Submit
-                            </button>
+                        <div class="input-area">
+                            <label for="is_primary" class="form-label">Primary</label>
+                            <input type="checkbox" wire:model="is_primary" class="form-checkbox">
                         </div>
+                        <div class="input-area">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" wire:model="first_name" class="form-control @error('first_name') !border-danger-500 @enderror">
+                            @error('first_name')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="input-area">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" wire:model="last_name" class="form-control @error('last_name') !border-danger-500 @enderror">
+                            @error('last_name')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="input-area">
+                            <label for="note" class="form-label">Note</label>
+                            <textarea wire:model="note" class="form-control @error('note') !border-danger-500 @enderror"></textarea>
+                            @error('note')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                        <button wire:click="addEmail" class="btn inline-flex justify-center text-white bg-black-500">
+                            Submit
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
+@endif
 
 
 

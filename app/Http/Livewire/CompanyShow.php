@@ -24,13 +24,13 @@ class CompanyShow extends Component
     public $tax_total;
     public $net_total;
 
-    public $search_sold_policy; // for available sold policy @ new invoice form
+
     public $seachAllSoldPolicies; // for sold policy tab
 
     public $newInvoiceSection = false;
 
     public $sold_policies_entries = [];
-    public $available_policies;
+    protected $available_policies;
     public $selected_policy_id = null;
     public $amount = '';
     public $pymnt_perm = '';
@@ -121,11 +121,6 @@ class CompanyShow extends Component
         }
     }
 
-    public function updatedSearchSoldPolicy()
-    {
-        $this->available_policies = SoldPolicy::userData(searchText: $this->search_sold_policy)->ByCompany(company_id: $this->company->id)->get()->take(5);
-    }
-
     public function printInvoice($id)
     {
         return Invoice::find($id)->printInvoice();
@@ -205,7 +200,7 @@ class CompanyShow extends Component
 
     public function selectPolicy($policyId)
     {
-        $policy = $this->available_policies->firstWhere('id', $policyId);
+        $policy = SoldPolicy::firstWhere('id', $policyId);
 
         if ($policy && !in_array($policyId, array_column($this->sold_policies_entries, 'id'))) {
             $this->sold_policies_entries[] = [
@@ -260,18 +255,17 @@ class CompanyShow extends Component
         if ($updateSerial)
             $this->serial = Invoice::getNextSerial();
         $this->company = Company::find($company_id);
-        $this->available_policies = SoldPolicy::userData(searchText: $this->search_sold_policy)->ByCompany(company_id: $company_id)->get()->take(5);
-        // $this->soldPolicies = SoldPolicy::userData(searchText:$this->search_sold_policy)->ByCompany(company_id: $company_id)->get();
-        // dd($this->available_policies);
     }
 
     public function render()
     {
         $companyEmails = Company::find($this->company->id)->emails()->paginate(20);
-        $soldPolicies = SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(10);
+        $soldPolicies = SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(25);
+        $this->available_policies = SoldPolicy::userData()->ByCompany(company_id: $this->company->id)->paginate(5);
         return view('livewire.company-show', [
             'soldPolicies' => $soldPolicies,
             'companyEmails' => $companyEmails,
+            'available_policies' => $this->available_policies
         ]);
     }
 }
