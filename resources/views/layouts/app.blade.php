@@ -930,7 +930,7 @@
                                 </div>
 
                                 @yield('Breadcrumb')
-
+                                <livewire:confirmation-modal />
                                 <div class=" space-y-5">
                                     @yield('content')
                                 </div>

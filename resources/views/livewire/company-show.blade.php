@@ -4,10 +4,16 @@
     <div>
         <div class="max-w-screen-lg">
             <div class="grid grid-cols-1 md:grid-cols-1 gap-5 mb-5">
-                <h4>
+                <h4 class="flex justify-between">
                     <b> {{ $company->name }} </b><iconify-icon class="ml-3" style="position: absolute" wire:loading wire:target="changeSection" icon="svg-spinners:180-ring"></iconify-icon>
 
-
+                    <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+                        @can('create', \App\Models\Insurance\Company::class)
+                            <button wire:click="openEditInfo" class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                                Edit Info
+                            </button>
+                        @endcan
+                    </div>
                 </h4>
                 <div class="card-body flex flex-col col-span-2" wire:ignore>
                     <div class="card-text h-full">
@@ -40,6 +46,88 @@
                 </div>
 
                 @if ($section === 'info')
+                    <div class="card">
+                        <header class="card-header noborder">
+                            <h4 class="card-title">Company Emails
+                            </h4>
+                            <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+                                <button wire:click="openNewEmail" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
+                                    Add Email
+                                </button>
+                            </div>
+                        </header>
+                        <div class="card-body px-6 pb-6">
+                            <div class="overflow-x-auto -mx-6">
+                                <div class="inline-block min-w-full align-middle">
+                                    <div class="overflow-hidden ">
+                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                            <thead class="bg-slate-200 dark:bg-slate-700">
+                                                <tr>
+
+                                                    <th scope="col" class=" table-th ">
+                                                        Type
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
+                                                        Email
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
+                                                        Name
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
+                                                        Action
+                                                    </th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+
+
+                                                @foreach ($companyEmails as $email)
+                                                    <tr>
+                                                        <td class="table-td">
+                                                            @if ($email->is_primary)
+                                                                <span class="success-400">
+                                                                    <iconify-icon icon="material-symbols:star"></iconify-icon>
+                                                                </span>
+                                                            @endif
+
+                                                            {{ $email->type }}
+                                                        </td>
+
+                                                        <td class="table-td">{{ $email->email }}</td>
+
+                                                        <td class="table-td ">
+                                                            {{ $email->contact_first_name }}
+
+                                                            {{ $email->contact_last_name }}</td>
+
+                                                        <td class="table-td flex">
+                                                            @can('edit', $company)
+                                                                <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="editEmailRow({{ $email->id }})" type="button">
+                                                                    <iconify-icon icon="iconamoon:edit-bold"></iconify-icon>
+                                                                </button>
+
+                                                                <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="confirmDelEmail({{ $email->id }})" type="button">
+                                                                    <iconify-icon icon="heroicons-outline:trash"></iconify-icon>
+                                                                </button>
+                                                            @endcan
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+
+                                        {{ $companyEmails->links('vendor.livewire.bootstrap') }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @endif
 
                 @if ($section === 'invoices')
@@ -106,23 +194,22 @@
                                                         <td class="table-td ">
                                                             <div>
                                                                 <div class="relative">
-                                                                    <div class="dropdown relative">
-                                                                        <button class="text-xl text-center block w-full " type="button" id="transactionDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                            <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                    <div class="dropstart relative">
+                                                                        <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                            <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                         </button>
-                                                                        <ul
-                                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                                            <li>
-                                                                                <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
-                                                                                    View</a>
+                                                                        <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                            <li wire:click="printInvoice({{ $invoice->id }})">
+                                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#editModal"
+                                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                    <iconify-icon icon="lets-icons:print-light"></iconify-icon>
+                                                                                    <span>Print</span></a>
                                                                             </li>
-                                                                            <li>
-                                                                                <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
-                                                                                    Edit</a>
-                                                                            </li>
-                                                                            <li>
-                                                                                <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
-                                                                                    Delete</a>
+                                                                            <li wire:click="$emit('showConfirmation', 'Are you sure you want to delete this invoice?', 'deleteInvoice' , {{ $invoice->id }})">
+                                                                                <a href="#"
+                                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                    <iconify-icon icon="fluent:delete-28-regular"></iconify-icon>
+                                                                                    <span>Delete</span></a>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -145,14 +232,186 @@
                         </div>
                     </div>
                 @endif
+
+
+                @if ($section === 'policies')
+                    <div class="card">
+                        <header class="card-header cust-card-header noborder">
+                            <iconify-icon wire:loading wire:target='seachAllSoldPolicies' class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="seachAllSoldPolicies">
+                        </header>
+
+                        <div class="tab-content mt-6" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-list" role="tabpanel" aria-labelledby="pills-list-tab">
+                                <div class="tab-content">
+                                    <div class="card">
+                                        <div class="card-body px-6 rounded overflow-hidden pb-3">
+                                            <div class="overflow-x-auto -mx-6">
+                                                <div class="inline-block min-w-full align-middle">
+                                                    <div class="overflow-hidden ">
+                                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 ">
+                                                            <thead class="bg-slate-200 dark:bg-slate-700">
+                                                                <tr>
+                                                                    <th scope="col" class="table-th ">
+                                                                        POLICY
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        CREATOR
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        START
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        END
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        POLICY#
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        CLIENT
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        STATUS
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        ACTION
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                                @foreach ($soldPolicies as $policy)
+                                                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                        <td class="table-td">
+                                                                            <div class="flex-1 text-start">
+                                                                                <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                    {{ $policy->policy->name }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span class="block date-text">{{ $policy->creator_id == 10 ? 'Uploaded' : $policy->creator->username }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span class="block date-text">{{ \Carbon\Carbon::parse($policy->start)->format('d-m-Y') }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span class="block date-text">{{ \Carbon\Carbon::parse($policy->expiry)->format('d-m-Y') }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span class="block date-text">{{ $policy->policy_number }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+
+                                                                            <div class="flex space-x-3 items-center text-left rtl:space-x-reverse">
+                                                                                <div class="flex-none">
+                                                                                    <div class="h-10 w-10 rounded-full text-sm bg-[#E0EAFF] dark:bg-slate-700 flex flex-col items-center justify-center font-medium -tracking-[1px]">
+                                                                                        @if ($policy->client_type === 'customer')
+                                                                                            <iconify-icon icon="raphael:customer"></iconify-icon>
+                                                                                        @elseif($policy->client_type === 'corporate')
+                                                                                            <iconify-icon icon="mdi:company"></iconify-icon>
+                                                                                        @endif
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex-1 font-medium text-sm leading-4 whitespace-nowrap">
+                                                                                    <a class="hover:underline cursor-pointer" href="{{ route($policy->client_type . 's.show', $policy->client_id) }}">
+                                                                                        @if ($policy->client_type === 'customer')
+                                                                                            {{ $policy->client->first_name . ' ' . $policy->client->middle_name . ' ' . $policy->client->last_name }}
+                                                                                        @elseif($policy->client_type === 'corporate')
+                                                                                            {{ $policy->client->name }}
+                                                                                        @endif
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            @if ($policy->is_valid)
+                                                                                <span class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Validated</span>
+                                                                            @endif
+                                                                            @if ($policy->is_paid)
+                                                                                <span class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Paid</span>
+                                                                            @endif
+                                                                            @if ($policy->is_renewal)
+                                                                                <span class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
+                                                                            @endif
+                                                                            @if ($policy->is_expired)
+                                                                                <span class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Expired</span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <div class="dropstart relative">
+                                                                                <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                                                </button>
+                                                                                <ul
+                                                                                    class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                                    <li>
+                                                                                        <a href="{{ route('sold.policy.show', $policy->id) }}"
+                                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                            <iconify-icon icon="heroicons-outline:eye"></iconify-icon>
+                                                                                            <span>View</span></a>
+                                                                                    </li>
+                                                                                    {{-- <li>
+                                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editModal"
+                                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                            <iconify-icon icon="clarity:note-edit-line"></iconify-icon>
+                                                                                            <span>Edit</span></a>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <a href="#"
+                                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                            <iconify-icon icon="fluent:delete-28-regular"></iconify-icon>
+                                                                                            <span>Delete</span></a>
+                                                                                    </li> --}}
+                                                                                </ul>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                @if ($soldPolicies->isEmpty())
+                                                    {{-- START: empty filter result --}}
+                                                    <div class="card m-5 p-5">
+                                                        <div class="card-body rounded-md bg-white dark:bg-slate-800">
+                                                            <div class="items-center text-center p-5">
+                                                                <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon>
+                                                                </h2>
+                                                                <h2 class="card-title text-slate-900 dark:text-white mb-3">
+                                                                    No Pold Policies with the
+                                                                    applied
+                                                                    filters</h2>
+                                                                <p class="card-text">Try changing the filters or
+                                                                    search terms for this view.
+                                                                </p>
+                                                                <a href="{{ url('/sold-policies') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
+                                                                    all Sold Policies</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {{-- END: empty filter result --}}
+                                                @endif
+
+                                            </div>
+
+
+
+                                            {{ $soldPolicies->links('vendor.livewire.bootstrap') }}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
 
     @if ($newInvoiceSection)
-
-
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 1000px;">
                 <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
@@ -380,4 +639,134 @@
 
 
     @endif
+
+
+
+
+    @if ($editInfoSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                        rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                {{ $company->name }}
+                            </h3>
+                            <button wire:click="closeEditInfo" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                    dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="input-area">
+                                <label for="name" class="form-label">Company Name*</label>
+                                <input id="name" type="text" class="form-control @error('companyInfoName') !border-danger-500 @enderror" placeholder="Company Name" wire:model.defer="companyInfoName">
+                                @error('companyInfoName')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="input-area">
+                                <label for="name" class="form-label">Note</label>
+                                <textarea id="name" type="text" class="form-control @error('companyInfoNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model.defer="companyInfoNote"></textarea>
+                                @error('companyInfoNote')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <button wire:click="saveChanges" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500 btn-sm">Save
+                                Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+    @if ($newEmailSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Email
+                            </h3>
+                            <button wire:click="closeNewEmail" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="input-area">
+                                <label for="type" class="form-label">Type</label>
+                                <select wire:model="type" class="form-control @error('type') !border-danger-500 @enderror">
+                                    <option value="" disabled>Select type</option>
+                                    @foreach ($Emailtypes as $typeOption)
+                                        <option value="{{ $typeOption }}">{{ $typeOption }}</option>
+                                    @endforeach
+                                </select>
+                                @error('type')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" wire:model="email" class="form-control @error('email') !border-danger-500 @enderror">
+                                @error('email')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area">
+                                <label for="is_primary" class="form-label">Primary</label>
+                                <input type="checkbox" wire:model="is_primary" class="form-checkbox">
+                            </div>
+                            <div class="input-area">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" wire:model="first_name" class="form-control @error('first_name') !border-danger-500 @enderror">
+                                @error('first_name')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" wire:model="last_name" class="form-control @error('last_name') !border-danger-500 @enderror">
+                                @error('last_name')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area">
+                                <label for="note" class="form-label">Note</label>
+                                <textarea wire:model="note" class="form-control @error('note') !border-danger-500 @enderror"></textarea>
+                                @error('note')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addEmail" class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+
 </div>

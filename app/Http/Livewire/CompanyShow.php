@@ -4,24 +4,27 @@ namespace App\Http\Livewire;
 
 use App\Models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
+use App\Models\Insurance\CompanyEmail;
 use App\Models\Payments\Invoice;
 use App\Traits\AlertFrontEnd;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class CompanyShow extends Component
 {
-    use AlertFrontEnd;
+    use AlertFrontEnd, WithPagination;
     protected $queryString = ['section'];
 
     public $company;
-    public $section = 'info';
+    public $section = 'invoices';
 
     public $serial;
     public $gross_total;
     public $tax_total;
     public $net_total;
 
-    public $search_sold_policy;
+    public $search_sold_policy; // for available sold policy @ new invoice form
+    public $seachAllSoldPolicies; // for sold policy tab
 
     public $newInvoiceSection = false;
 
@@ -31,16 +34,119 @@ class CompanyShow extends Component
     public $amount = '';
     public $pymnt_perm = '';
 
-    public function updatedSearchSoldPolicy(){
-        $this->available_policies = SoldPolicy::userData(searchText:$this->search_sold_policy)->ByCompany(company_id: $this->company->id)->get()->take(5);
+    public $companyInfoName;
+    public $companyInfoNote;
+    public $editInfoSec;
 
+    protected $listeners = ['deleteInvoice']; //functions need confirmation
+
+    public $newEmailSec = false;
+    public $type = CompanyEmail::TYPES[0];
+    public $email;
+    public $is_primary = false;
+    public $first_name;
+    public $last_name;
+    public $note;
+
+    public $Emailtypes = CompanyEmail::TYPES;
+
+    public function addEmail()
+    {
+        $this->validate([
+            'type' => 'required|in:' . implode(',', CompanyEmail::TYPES),
+            'email' => 'required|email',
+            'is_primary' => 'boolean',
+            'first_name' => 'nullable|string',
+            'last_name' => 'nullable|string',
+            'note' => 'nullable|string',
+        ]);
+
+        $res = $this->company->addEmail($this->type, $this->email, $this->is_primary, $this->first_name, $this->last_name, $this->note);
+
+        if ($res) {
+            $this->mount($this->company->id);
+            $this->alert('success', 'email added');
+            $this->reset(['newEmailSec']);
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
-    public function openNewInvoiceSec(){
+    public function openNewEmail()
+    {
+        $this->newEmailSec = true;
+    }
+
+    public function closeNewEmail()
+    {
+        $this->newEmailSec = false;
+    }
+
+    public function openEditInfo()
+    {
+        $this->companyInfoName = $this->company->name;
+        $this->companyInfoNote = $this->company->note;
+        $this->editInfoSec = true;
+    }
+
+    public function closeEditInfo()
+    {
+        $this->reset(['companyInfoName', 'companyInfoNote', 'editInfoSec']);
+    }
+
+    public function saveChanges()
+    {
+        $this->validate(
+            [
+                'companyInfoName' => 'required|string|max:255',
+                'companyInfoNote' => 'string',
+            ],
+            [],
+            [
+                'companyInfoName' => 'Company Name',
+                'companyInfoNote' => 'Note',
+            ],
+        );
+
+        $company = Company::findOrFail($this->company->id);
+        $success = $company->editInfo($this->companyInfoName, $this->companyInfoNote);
+
+        if ($success) {
+            $this->closeEditInfo();
+            $this->alert('success', 'Company updated!');
+            $this->mount($this->company->id);
+        } else {
+            $this->alert('failed', 'Server error!');
+        }
+    }
+
+    public function updatedSearchSoldPolicy()
+    {
+        $this->available_policies = SoldPolicy::userData(searchText: $this->search_sold_policy)->ByCompany(company_id: $this->company->id)->get()->take(5);
+    }
+
+    public function printInvoice($id)
+    {
+        Invoice::find($id)->printInvoice();
+    }
+
+    public function deleteInvoice($id)
+    {
+        $res = Invoice::find($id)->deleteInvoice();
+        if ($res) {
+            $this->alert('success', 'invoice deleted');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function openNewInvoiceSec()
+    {
         $this->newInvoiceSection = true;
     }
 
-    public function closeNewInvoiceSec(){
+    public function closeNewInvoiceSec()
+    {
         $this->newInvoiceSection = false;
     }
 
@@ -57,8 +163,8 @@ class CompanyShow extends Component
     public function updatedGrossTotal()
     {
         if ($this->gross_total >= 0) {
-            $this->tax_total = $this->gross_total * .05;
-            $this->net_total = $this->gross_total * .95;
+            $this->tax_total = $this->gross_total * 0.05;
+            $this->net_total = $this->gross_total * 0.95;
         } else {
             $this->tax_total = null;
             $this->net_total = null;
@@ -67,36 +173,32 @@ class CompanyShow extends Component
 
     public function addInvoice()
     {
-        $this->validate([
-            'serial' => 'required|string',
-            'gross_total' => 'required|numeric',
-            'tax_total' => 'required|numeric',
-            'net_total' => 'required|numeric',
-            'sold_policies_entries.*.id' => 'required|integer',
-            'sold_policies_entries.*.amount' => 'required|numeric',
-            'sold_policies_entries.*.pymnt_perm' => 'required|string',
-            
-        ],attributes:[
-            'sold_policies_entries.*.amount' => 'amount',
-            'sold_policies_entries.*.pymnt_perm' => 'payment perm',
-        ]);
-
-        $res = Invoice::newInvoice(
-            $this->company->id,
-            $this->serial,
-            $this->gross_total,
-            $this->sold_policies_entries
+        $this->validate(
+            [
+                'serial' => 'required|string',
+                'gross_total' => 'required|numeric',
+                'tax_total' => 'required|numeric',
+                'net_total' => 'required|numeric',
+                'sold_policies_entries.*.id' => 'required|integer',
+                'sold_policies_entries.*.amount' => 'required|numeric',
+                'sold_policies_entries.*.pymnt_perm' => 'required|string',
+            ],
+            attributes: [
+                'sold_policies_entries.*.amount' => 'amount',
+                'sold_policies_entries.*.pymnt_perm' => 'payment perm',
+            ],
         );
 
+        $res = Invoice::newInvoice($this->company->id, $this->serial, $this->gross_total, $this->sold_policies_entries);
+
         if ($res) {
-            $this->reset(['serial','gross_total','tax_total','sold_policies_entries.*.id','sold_policies_entries.*.amount','sold_policies_entries.*.pymnt_perm']);
+            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries.*.id', 'sold_policies_entries.*.amount', 'sold_policies_entries.*.pymnt_perm']);
             $this->closeNewInvoiceSec();
-            $this->alert('success' , 'invoice added');
-        }else{
-            $this->alert('failed','server error');
+            $this->alert('success', 'invoice added');
+        } else {
+            $this->alert('failed', 'server error');
         }
-        
-     }
+    }
 
     public function selectPolicy($policyId)
     {
@@ -135,12 +237,18 @@ class CompanyShow extends Component
     public function mount($company_id)
     {
         $this->company = Company::find($company_id);
-        $this->available_policies = SoldPolicy::userData(searchText:$this->search_sold_policy)->ByCompany(company_id: $company_id)->get()->take(5);
+        $this->available_policies = SoldPolicy::userData(searchText: $this->search_sold_policy)->ByCompany(company_id: $company_id)->get()->take(5);
+        // $this->soldPolicies = SoldPolicy::userData(searchText:$this->search_sold_policy)->ByCompany(company_id: $company_id)->get();
         // dd($this->available_policies);
     }
 
     public function render()
     {
-        return view('livewire.company-show');
+        $companyEmails = Company::find($this->company->id)->emails()->paginate(20);
+        $soldPolicies = SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(2);
+        return view('livewire.company-show', [
+            'soldPolicies' => $soldPolicies,
+            'companyEmails' => $companyEmails,
+        ]);
     }
 }
