@@ -100,6 +100,10 @@ class CommProfileShow extends Component
     public $newcommNote;
 
     public $runs;
+    public $startTargetRunSection;
+    public $startTargetRunEndDate;
+
+    protected $listeners = ['deleteProfile']; //functions need confirmation
 
     public $section = 'payments';
 
@@ -109,6 +113,39 @@ class CommProfileShow extends Component
     {
         $this->section = $section;
         $this->mount($this->profile->id);
+    }
+
+    public function deleteProfile(){
+        $res = $this->profile->deleteProfile();
+        if ($res) {
+            return redirect(route('comm.profile.index'));
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function openStartTargetRunSec(){
+        $this->startTargetRunSection = true;
+    }
+
+    public function closeStartTargetRunSec(){
+        $this->reset(['startTargetRunSection' ,'startTargetRunEndDate']);
+    }
+
+    public function startManualTargetsRun(){
+        $this->validate([
+            'startTargetRunEndDate' => 'required|date'
+        ]);
+
+        $res = $this->profile->startManualTargetsRun(Carbon::parse($this->startTargetRunEndDate));
+
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->closeStartTargetRunSec();
+            $this->alert('success', 'Target Run Intiated');
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function showTagetRuns($id)
