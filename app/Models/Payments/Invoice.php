@@ -139,7 +139,7 @@ class Invoice extends Model
     ////relations
     public function commissions(): HasMany
     {
-        return $this->hasMany(PolicyComm::class);
+        return $this->hasMany(CompanyCommPayment::class);
     }
 
     public function creator(): BelongsTo
