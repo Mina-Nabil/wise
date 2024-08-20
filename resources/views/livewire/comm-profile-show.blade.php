@@ -35,13 +35,16 @@
                 <div class="card-text mt-4 menu-open">
                     <p>{{ $profile->desc }}</p>
                     @can('create', \App\Models\Payments\CommProfile::class)
-                        <div class="mt-4 space-x-4 rtl:space-x-reverse">
-                            <button wire:click="openUpdateSec" class="btn inline-flex justify-center btn-light btn-sm">Edit info</button>
-                            <button wire:click="openStartTargetRunSec" class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
-
-                            <button wire:click="$emit('showConfirmation', 'Are you sure you want to delete this profile?', 'deleteProfile')"  class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
-                        </div>
-                    @endcan
+                    <div class="mt-4 space-x-4 rtl:space-x-reverse">
+                        <button wire:click="openUpdateSec" class="btn inline-flex justify-center btn-light btn-sm">Edit info</button>
+                        
+                        <button wire:click="$emit('showConfirmation', 'Are you sure you want to delete this profile?', 'deleteProfile')"  class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
+                        @endcan
+                        @can('manage', $profile)
+                        <button wire:click="openStartTargetRunSec" class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
+                        <button wire:click="downloadAccountStatement" class="btn inline-flex justify-center btn-outline-light btn-sm">Download Account Statement</button>
+                        @endcan
+                    </div>
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 float-right">Created
                     {{ \Carbon\Carbon::parse($profile->created_at)->format('l d/m/Y') }}</p>

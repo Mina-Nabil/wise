@@ -57,6 +57,18 @@ class CommProfilePolicy
     }
 
     /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Payments\CommProfil  $commProfil
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function manage(User $user, CommProfile $commProfil)
+    {
+        return $user->is_admin || $user->is_finance;
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\Users\User  $user
