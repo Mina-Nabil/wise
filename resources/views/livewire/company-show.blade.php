@@ -4,8 +4,18 @@
     <div>
         <div class="max-w-screen-lg">
             <div class="grid grid-cols-1 md:grid-cols-1 gap-5 mb-5">
-                <h4 class="flex justify-between">
-                    <b> {{ $company->name }} </b><iconify-icon class="ml-3" style="position: absolute" wire:loading wire:target="changeSection" icon="svg-spinners:180-ring"></iconify-icon>
+                <div class="flex justify-between">
+                    <div>
+                        <div>
+                            <h4><b> {{ $company->name }} </b></h4>
+                            <span class="text-sm"><iconify-icon class="ml-3" style="position: absolute" wire:loading wire:target="changeSection" icon="svg-spinners:180-ring"></iconify-icon></span>
+                            @if ($company->note)
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1"><iconify-icon icon="hugeicons:note" width="1.2em" height="1.2em"></iconify-icon> {{ $company->note }}</p>
+                            @endif
+                        </div>
+
+                    </div>
+
 
                     <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
                         @can('create', \App\Models\Insurance\Company::class)
@@ -14,18 +24,12 @@
                             </button>
                         @endcan
                     </div>
-                </h4>
+                </div><br>
+
                 <div class="card-body flex flex-col col-span-2" wire:ignore>
                     <div class="card-text h-full">
                         <div>
                             <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab" role="tablist">
-                                <li class="nav-item" role="presentation" wire:click="changeSection('info')">
-                                    <a href="#tabs-profile-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'info') active @endif dark:text-slate-300"
-                                        id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon" aria-selected="false">
-                                        <iconify-icon class="mr-1" icon="material-symbols:info-outline"></iconify-icon>
-                                        Info</a>
-                                </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('invoices')">
                                     <a href="#tabs-messages-withIcon"
                                         class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'invoices') active @endif dark:text-slate-300"
@@ -40,12 +44,19 @@
                                         <iconify-icon class="mr-1" icon="iconoir:privacy-policy"></iconify-icon>
                                         Sold Policies</a>
                                 </li>
+                                <li class="nav-item" role="presentation" wire:click="changeSection('emails')">
+                                    <a href="#tabs-profile-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'emails') active @endif dark:text-slate-300"
+                                        id="tabs-profile-withIcon-tab" data-bs-toggle="pill" data-bs-target="#tabs-profile-withIcon" role="tab" aria-controls="tabs-profile-withIcon" aria-selected="false">
+                                        <iconify-icon class="mr-1" icon="material-symbols-light:stacked-email-outline"></iconify-icon>
+                                        Emails</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                @if ($section === 'info')
+                @if ($section === 'emails')
                     <div class="card">
                         <header class="card-header noborder">
                             <h4 class="card-title">Company Emails
