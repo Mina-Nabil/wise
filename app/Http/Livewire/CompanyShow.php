@@ -128,7 +128,7 @@ class CompanyShow extends Component
 
     public function printInvoice($id)
     {
-        Invoice::find($id)->printInvoice();
+        return Invoice::find($id)->printInvoice();
     }
 
     public function deleteInvoice($id)
