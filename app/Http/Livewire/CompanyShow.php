@@ -134,8 +134,9 @@ class CompanyShow extends Component
     public function deleteInvoice($id)
     {
         $res = Invoice::find($id)->deleteInvoice();
-        if ($res) {
+        if ($res) {            
             $this->alert('success', 'invoice deleted');
+            $this->mount($this->company->id, false);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -196,6 +197,7 @@ class CompanyShow extends Component
             $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries']);
             $this->closeNewInvoiceSec();
             $this->alert('success', 'invoice added');
+            $this->mount($this->company->id, false);
         } else {
             $this->alert('failed', 'server error');
         }

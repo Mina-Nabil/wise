@@ -95,7 +95,7 @@ class Invoice extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
 
-        $i = 2;
+        $i = 3;
         foreach ($this->commissions as $comm) {
             $activeSheet->getCell('A' . $i)->setValue($this->serial);
             $activeSheet->getCell('B' . $i)->setValue((new Carbon($this->created_at))->format('d-M-y'));
@@ -103,11 +103,15 @@ class Invoice extends Model
             $activeSheet->getCell('E' . $i)->setValue($comm->sold_policy->client->name);
             $activeSheet->getCell('F' . $i)->setValue((new Carbon($comm->sold_policy->issuing_date))->format('d-M-y'));
             $activeSheet->getCell('G' . $i)->setValue($comm->pymnt_perm);
+            $activeSheet->getCell('O' . $i)->setValue('اذن صرف عمولة ' . $comm->pymnt_perm);
             $activeSheet->getCell('I' . $i)->setValue($comm->amount);
             $activeSheet->getCell('J' . $i)->setValue($comm->amount * .05);
             $activeSheet->getCell('K' . $i)->setValue($comm->amount * .95);
             $activeSheet->insertNewRowBefore($i);
+            
         }
+        $activeSheet->removeRow(2);
+        $activeSheet->removeRow(2);
 
         $writer = new Xlsx($newFile);
         $file_path = SoldPolicy::FILES_DIRECTORY . "invoice{$this->serial}.xlsx";
@@ -123,7 +127,7 @@ class Invoice extends Model
             DB::transaction(function () {
                 /** @var PolicyComm */
                 foreach ($this->commissions()->get() as $comm) {
-                    $comm->deleteCommission();
+                    $comm->delete();
                 }
                 $this->delete();
             });
