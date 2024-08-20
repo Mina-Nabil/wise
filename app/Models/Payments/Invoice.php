@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -22,6 +23,7 @@ class Invoice extends Model
     use HasFactory;
 
     protected $fillable = [
+        'company_id',
         'created_by',
         'serial',
         'gross_total',
@@ -36,9 +38,10 @@ class Invoice extends Model
         $newInvoice = new self([
             "company_id"    =>  $company_id,
             "serial"        =>  $serial,
+            "created_by"    =>  Auth::id(),
             "gross_total"   =>  $gross_total,
-            "tax_total"     =>  ($gross_total * .05),
-            "net_total"     =>  ($gross_total * .95),
+            "tax_total"     => ($gross_total * .05),
+            "net_total"     => ($gross_total * .95),
         ]);
         try {
 
@@ -47,7 +50,7 @@ class Invoice extends Model
                 foreach ($sold_policies_entries as $sp) {
                     /** @var SoldPolicy */
                     $soldPolicy = SoldPolicy::find($sp['id']);
-                    $soldPolicy->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $sp['amount'], "added automatically from invoice#$serial", $newInvoice->id, $sp['pyment_perm']);
+                    $soldPolicy->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $sp['amount'], "added automatically from invoice#$serial", $newInvoice->id, $sp['pymnt_perm']);
                 }
             });
             AppLog::info("Invoice created", loggable: $newInvoice);
@@ -66,6 +69,22 @@ class Invoice extends Model
 
 
     ///model functions
+    public function confirmInvoice()
+    {
+        try{
+
+            DB::transaction(function () {
+                /** @var PolicyComm */
+                foreach ($this->commissions()->get() as $comm) {
+                    $comm->confirmInvoice();
+                }
+            });
+        } catch (Exception $e){
+            report($e);
+            return false;
+        }
+    }
+
     public function printInvoice()
     {
         $this->load('commissions', 'commissions.sold_policy', 'commissions.sold_policy.client');

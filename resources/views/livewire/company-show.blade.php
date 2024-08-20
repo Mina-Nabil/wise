@@ -150,7 +150,7 @@
                                 @can('create', \App\Models\Business\SoldPolicy::class)
                                     <button wire:click="openNewInvoiceSec" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                                         <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
-                                        Add Invoive
+                                        Add Invoice
                                     </button>
                                 @endcan
                             </div>
@@ -461,7 +461,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3">
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Amount</label>
-                                    <input type="number" step="0.01" wire:model="gross_total" class="form-control @error('gross_total') !border-danger-500 @enderror">
+                                    <input type="number" step="0.01" wire:model="gross_total" class="form-control @error('gross_total') !border-danger-500 @enderror" disabled>
                                     @error('gross_total')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -475,7 +475,7 @@
                                     </small>
                                 </div>
                                 <div class="input-area">
-                                    <label for="firstName" class="form-label">Payment Perm</label>
+                                    <label for="firstName" class="form-label">Net Total</label>
                                     <input wire:model="net_total" disabled type="number" class="form-control">
                                     <!-- Hint message -->
                                     <small class="form-text text-muted">
@@ -504,6 +504,9 @@
                                                         <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                             Policy Name
                                                         </th>
+                                                        <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                                            Commission
+                                                        </th>
 
                                                         <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                             Client
@@ -520,6 +523,7 @@
                                                         <tr>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->policy_number }}</td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->policy->name }}</td>
+                                                            <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->after_tax_comm }}</td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                                 <div class="flex-1 text-start">
 
@@ -537,7 +541,7 @@
                                                             </td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
                                                                 @if (in_array($policy->id, array_column($sold_policies_entries, 'id')))
-                                                                    <button type="button" disabled class="btn btn-sm inline-flex justify-center btn-outline-success rounded-[25px]">selected</button>
+                                                                    <button type="button" wire:click="unselectPolicy({{ $policy->id }})" class="btn btn-sm inline-flex justify-center btn-outline-success rounded-[25px]">selected</button>
                                                                 @else
                                                                     <button type="button" wire:click="selectPolicy({{ $policy->id }})" class="btn btn-sm inline-flex justify-center btn-success rounded-[25px]">Select</button>
                                                                 @endif
@@ -603,7 +607,7 @@
                                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                                 <div class="input-area">
                                                     <label for="firstName" class="form-label">Amount</label>
-                                                    <input type="number" step="0.01" wire:model.defer="sold_policies_entries.{{ $index }}.amount" class="form-control @error('sold_policies_entries.' . $index . '.amount') !border-danger-500 @enderror">
+                                                    <input type="number" step="0.01" wire:change="updateTotal"  wire:model.defer="sold_policies_entries.{{ $index }}.amount" class="form-control @error('sold_policies_entries.' . $index . '.amount') !border-danger-500 @enderror">
 
                                                     @error('sold_policies_entries.' . $index . '.amount')
                                                         <span class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>

@@ -34,7 +34,7 @@ class CompanyCommPayment extends Model
 
     protected $table = 'company_comm_payments';
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'receiver_id'
+        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'receiver_id', 'invoice_id', 'pymnt_perm'
     ];
 
     ///model functions

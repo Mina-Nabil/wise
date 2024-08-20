@@ -241,6 +241,9 @@ class SoldPolicy extends Model
 
         assert($amount <= ($this->after_tax_comm - $this->total_company_paid), "Amount is more that what the company should pay. Please make sure the amount is less than the total commission after tax plus the company payments total");
 
+        $total_new_payments = $this->company_comm_payments()->where('status', CompanyCommPayment::PYMT_STATE_NEW)->get()->sum('amount');
+        assert($amount <= ($this->after_tax_comm - $total_new_payments), "Amount is more that what the company should pay plus already added payment. Please check already added 'new' payments");
+
         try {
             if ($this->company_comm_payments()->create([
                 "type"      => $type,

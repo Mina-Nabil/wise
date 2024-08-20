@@ -122,6 +122,9 @@
                                 <th scope="col" class=" table-th ">
                                     Policy#
                                 </th>
+                                <th scope="col" class=" table-th ">
+                                    Creator
+                                </th>
 
                                 <th scope="col" class=" table-th ">
                                     Client
@@ -173,7 +176,8 @@
 
                                     <td class="table-td">
                                         {{ $payment->sold_policy->policy_number }}
-                                        by
+                                    </td>
+                                    <td class="table-td">
                                         {{ $payment->sold_policy->creator->username }}
                                     </td>
                                     <td class="table-td">

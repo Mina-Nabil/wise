@@ -7,6 +7,7 @@ use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Models\Payments\Invoice;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -64,7 +65,7 @@ class CompanyShow extends Component
         $res = $this->company->addEmail($this->type, $this->email, $this->is_primary, $this->first_name, $this->last_name, $this->note);
 
         if ($res) {
-            $this->mount($this->company->id);
+            $this->mount($this->company->id, false);
             $this->alert('success', 'email added');
             $this->reset(['newEmailSec']);
         } else {
@@ -114,7 +115,7 @@ class CompanyShow extends Component
         if ($success) {
             $this->closeEditInfo();
             $this->alert('success', 'Company updated!');
-            $this->mount($this->company->id);
+            $this->mount($this->company->id, false);
         } else {
             $this->alert('failed', 'Server error!');
         }
@@ -175,7 +176,7 @@ class CompanyShow extends Component
     {
         $this->validate(
             [
-                'serial' => 'required|string',
+                'serial' => 'required',
                 'gross_total' => 'required|numeric',
                 'tax_total' => 'required|numeric',
                 'net_total' => 'required|numeric',
@@ -188,11 +189,11 @@ class CompanyShow extends Component
                 'sold_policies_entries.*.pymnt_perm' => 'payment perm',
             ],
         );
-
+        Log::info($this->sold_policies_entries);
         $res = Invoice::newInvoice($this->company->id, $this->serial, $this->gross_total, $this->sold_policies_entries);
 
         if ($res) {
-            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries.*.id', 'sold_policies_entries.*.amount', 'sold_policies_entries.*.pymnt_perm']);
+            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries']);
             $this->closeNewInvoiceSec();
             $this->alert('success', 'invoice added');
         } else {
@@ -210,6 +211,14 @@ class CompanyShow extends Component
                 'amount' => '',
                 'pymnt_perm' => '',
             ];
+        }
+    }
+
+    public function unselectPolicy($policyId)
+    {
+
+        foreach ($this->sold_policies_entries as $i => $e) {
+            if ($e['id'] == $policyId) unset($this->sold_policies_entries[$i]);
         }
     }
 
@@ -231,11 +240,23 @@ class CompanyShow extends Component
     public function changeSection($section)
     {
         $this->section = $section;
-        $this->mount($this->company->id);
+        $this->mount($this->company->id, false);
     }
 
-    public function mount($company_id)
+    public function updateTotal()
     {
+        Log::info($this->sold_policies_entries);
+        $this->gross_total = 0;
+        foreach ($this->sold_policies_entries as $e) {
+            $this->gross_total += (is_numeric($e['amount']) ? $e['amount']  : 0);
+        }
+        $this->updatedGrossTotal();
+    }
+
+    public function mount($company_id, $updateSerial = true)
+    {
+        if ($updateSerial)
+            $this->serial = Invoice::getNextSerial();
         $this->company = Company::find($company_id);
         $this->available_policies = SoldPolicy::userData(searchText: $this->search_sold_policy)->ByCompany(company_id: $company_id)->get()->take(5);
         // $this->soldPolicies = SoldPolicy::userData(searchText:$this->search_sold_policy)->ByCompany(company_id: $company_id)->get();
@@ -245,7 +266,7 @@ class CompanyShow extends Component
     public function render()
     {
         $companyEmails = Company::find($this->company->id)->emails()->paginate(20);
-        $soldPolicies = SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(2);
+        $soldPolicies = SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(10);
         return view('livewire.company-show', [
             'soldPolicies' => $soldPolicies,
             'companyEmails' => $companyEmails,
