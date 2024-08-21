@@ -752,11 +752,13 @@ class Customer extends Model
 
                 if ($telephone2)
                     $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
-            } else
+            } else {
+
                 $lead = self::newLead($first_name, $last_name, $telephone1, note: $note, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, owner_id: $user->id);
 
-            if ($telephone2)
-                $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
+                if ($telephone2)
+                    $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
+            }
 
             $i++;
         }
