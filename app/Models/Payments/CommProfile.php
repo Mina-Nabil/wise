@@ -131,6 +131,7 @@ class CommProfile extends Model
         foreach ($this->targets as $t) {
             $t->processTargetPayments($end_date);
         }
+        return true;
     }
 
     public function getValidDirectCommissionConf(OfferOption $option): CommProfileConf|false
