@@ -744,11 +744,12 @@ class Customer extends Model
             if ($id) {
                 /** @var self */
                 $lead = self::find($id);
+                if (!$lead) continue;
+
                 $lead->editCustomer($first_name, $last_name, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name);
                 $lead->setOwner($user->id);
                 if ($note)
                     $lead->setCustomerNote($note);
-                if (!$lead) continue;
 
                 if ($telephone2)
                     $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
