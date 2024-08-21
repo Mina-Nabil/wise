@@ -676,7 +676,7 @@ class Customer extends Model
         }
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
-
+        $activeSheet->getCell('I1')->setValue("NOTE");
         $i = 2;
         foreach ($leads as $lead) {
             $activeSheet->getCell('A' . $i)->setValue($lead->id);
@@ -716,6 +716,7 @@ class Customer extends Model
             $telephone1     =  $activeSheet->getCell('F' . $i)->getValue();
             $telephone2     =  $activeSheet->getCell('G' . $i)->getValue();
             $username       =  $activeSheet->getCell('H' . $i)->getValue();
+            $note           =  $activeSheet->getCell('I' . $i)->getValue();
 
             if (!$first_name || !$last_name || !$telephone1) continue;
             $user = User::userExists($username);
@@ -727,7 +728,7 @@ class Customer extends Model
                 $lead = self::find($id);
                 if (!$lead) continue;
             } else
-                $lead = self::newLead($first_name, $last_name, $telephone1, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, owner_id: $user->id);
+                $lead = self::newLead($first_name, $last_name, $telephone1, note: $note , arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, owner_id: $user->id);
 
             if ($telephone2)
                 $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
