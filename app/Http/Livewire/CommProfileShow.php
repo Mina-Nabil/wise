@@ -929,7 +929,7 @@ class CommProfileShow extends Component
 
     public function mount($id)
     {
-        $this->profile = CommProfile::find($id);
+        $this->profile = CommProfile::with('sales_comm', 'sales_comm.sold_policy', 'sales_comm.sold_policy.policy', 'sales_comm.sold_policy.policy.company')->find($id);
     }
 
     public function render()
