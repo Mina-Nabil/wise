@@ -100,12 +100,29 @@ class Customer extends Model
     ];
 
     protected $fillable = [
-        'type', 'first_name', 'middle_name', 'last_name',
-        'arabic_first_name', 'arabic_middle_name', 'arabic_last_name',
-        'email', 'gender', 'owner_id', 'marital_status',
-        'nationality_id', 'id_type', 'id_number',
-        'profession_id', 'salary_range', 'income_source', 'birth_date',
-        'id_doc', 'driver_license_doc', 'note', 'id_doc_2', 'driver_license_doc_2'
+        'type',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'arabic_first_name',
+        'arabic_middle_name',
+        'arabic_last_name',
+        'email',
+        'gender',
+        'owner_id',
+        'marital_status',
+        'nationality_id',
+        'id_type',
+        'id_number',
+        'profession_id',
+        'salary_range',
+        'income_source',
+        'birth_date',
+        'id_doc',
+        'driver_license_doc',
+        'note',
+        'id_doc_2',
+        'driver_license_doc_2'
     ];
 
     ///model functions
@@ -725,10 +742,18 @@ class Customer extends Model
             if (!$user) $user = Auth::user();
 
             if ($id) {
+                /** @var self */
                 $lead = self::find($id);
+                $lead->editCustomer($first_name, $last_name, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name);
+                $lead->setOwner($user->id);
+                if ($note)
+                    $lead->setCustomerNote($note);
                 if (!$lead) continue;
+
+                if ($telephone2)
+                    $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
             } else
-                $lead = self::newLead($first_name, $last_name, $telephone1, note: $note , arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, owner_id: $user->id);
+                $lead = self::newLead($first_name, $last_name, $telephone1, note: $note, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, owner_id: $user->id);
 
             if ($telephone2)
                 $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
@@ -749,7 +774,7 @@ class Customer extends Model
         $activeSheet = $newFile->getActiveSheet();
 
         $sales = User::active()->get();
-        $i=5;
+        $i = 5;
         foreach ($sales as $s) {
             $activeSheet->getCell('N' . $i)->setValue($s->username);
             $i++;
