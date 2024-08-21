@@ -103,6 +103,11 @@ class CommProfileShow extends Component
     public $startTargetRunSection;
     public $startTargetRunEndDate;
 
+    public $downloadAccountStatementSec;
+    public $downloadAccountStartDate;
+    public $downloadAccountEndDate;
+
+
     protected $listeners = ['deleteProfile']; //functions need confirmation
 
     public $section = 'payments';
@@ -113,6 +118,35 @@ class CommProfileShow extends Component
     {
         $this->section = $section;
         $this->mount($this->profile->id);
+    }
+
+    public function openDownloadAccountStatement(){
+        $this->downloadAccountStatementSec = true;
+    }
+
+    public function closeDownloadAccountStatementSec(){
+        $this->downloadAccountStatementSec = false;
+    }
+
+    public function downloadAccountStatement(){
+        $this->validate([
+            'downloadAccountStartDate' => 'required|date',
+            'downloadAccountEndDate' => 'required|date'
+        ],attributes:[
+            'downloadAccountStartDate' => 'start date',
+            'downloadAccountEndDate' => 'end date'
+        ]);
+
+        $res = $this->profile->downloadAccountStatement(Carbon::parse($this->downloadAccountStartDate),Carbon::parse($this->downloadAccountEndDate));
+
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->reset(['downloadAccountStatementSec' ,'downloadAccountStartDate' ,'downloadAccountEndDate' ]);
+            $this->alert('success', 'Statement downloaded!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+
     }
 
     public function deleteProfile(){

@@ -35,14 +35,14 @@
                 <div class="card-text mt-4 menu-open">
                     <p>{{ $profile->desc }}</p>
                     @can('create', \App\Models\Payments\CommProfile::class)
-                    <div class="mt-4 space-x-4 rtl:space-x-reverse">
-                        <button wire:click="openUpdateSec" class="btn inline-flex justify-center btn-light btn-sm">Edit info</button>
-                        
-                        <button wire:click="$emit('showConfirmation', 'Are you sure you want to delete this profile?', 'deleteProfile')"  class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
+                        <div class="mt-4 space-x-4 rtl:space-x-reverse">
+                            <button wire:click="openUpdateSec" class="btn inline-flex justify-center btn-light btn-sm">Edit info</button>
+
+                            <button wire:click="$emit('showConfirmation', 'Are you sure you want to delete this profile?', 'deleteProfile')" class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
                         @endcan
                         @can('manage', $profile)
-                        <button wire:click="openStartTargetRunSec" class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
-                        <button wire:click="downloadAccountStatement" class="btn inline-flex justify-center btn-outline-light btn-sm">Download Account Statement</button>
+                            <button wire:click="openStartTargetRunSec" class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
+                            <button wire:click="openDownloadAccountStatement" class="btn inline-flex justify-center btn-outline-light btn-sm">Download Account Statement</button>
                         @endcan
                     </div>
                 </div>
@@ -1004,7 +1004,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Modal footer -->
                         </div>
                     </div>
@@ -1015,6 +1015,59 @@
 
     @endif
 
+    @if ($downloadAccountStatementSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Download Account Statement
+                            </h3>
+
+                            <button wire:click="closeDownloadAccountStatementSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+
+                                <div class="input-area mt-3">
+                                    <label for="downloadAccountStartDate" class="form-label">Start date</label>
+                                    <input type="date" name="downloadAccountStartDate" class="form-control @error('downloadAccountStartDate') !border-danger-500 @enderror !pr-32" wire:model.defer="downloadAccountStartDate">
+                                </div>
+                                @error('downloadAccountStartDate')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="downloadAccountEndDate" class="form-label">End date</label>
+                                    <input type="date" name="downloadAccountEndDate" class="form-control @error('downloadAccountEndDate') !border-danger-500 @enderror !pr-32" wire:model.defer="downloadAccountEndDate">
+                                </div>
+                                @error('downloadAccountEndDate')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                            </div>
+
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="downloadAccountStatement" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="downloadAccountStatement">Download</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadAccountStatement" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if ($pymtNotePreview)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
@@ -1359,7 +1412,7 @@
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                    
+
                                     <div class="input-area mt-3 flex flex-col">
                                         <label for="checkBox" class="form-label no-wrap">Last Day?</label>
                                         <div class="checkbox-area mt-2">
@@ -1373,7 +1426,7 @@
                                     </div>
                                 </div>
 
-                                                            
+
                                 <div class="input-area mt-3">
                                     <label for="eachMonth" class="form-label">Each month</label>
                                     <input id="eachMonth" type="number" class="form-control" wire:model="eachMonth">
@@ -1384,9 +1437,7 @@
 
                                 <div class="input-area mt-3">
                                     <label for="firstName" class="form-label">Next Run Date</label>
-                                    <input type="date"
-                                        class="form-control"
-                                        wire:model.defer="nextRunDate">
+                                    <input type="date" class="form-control" wire:model.defer="nextRunDate">
                                 </div>
 
                                 <div class="input-area mt-3">
@@ -1501,7 +1552,7 @@
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                    
+
                                     <div class="input-area mt-3 flex flex-col">
                                         <label for="checkBox" class="form-label no-wrap">Last Day?</label>
                                         <div class="checkbox-area mt-2">
@@ -2079,7 +2130,7 @@
                         <!-- Modal header -->
                         <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                <iconify-icon icon="radix-icons:rocket" width="1.2em" height="1.2em"></iconify-icon> Start Target Run 
+                                <iconify-icon icon="radix-icons:rocket" width="1.2em" height="1.2em"></iconify-icon> Start Target Run
                             </h3>
                             <button wire:click="closeStartTargetRunSec" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -2102,18 +2153,18 @@
                                 @error('startTargetRunEndDate')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
-                        </div>
-                        <!-- Modal footer -->
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="startManualTargetsRun " data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="startManualTargetsRun ">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="startManualTargetsRun " icon="line-md:loading-twotone-loop"></iconify-icon>
-                            </button>
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="startManualTargetsRun " data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="startManualTargetsRun ">Submit</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="startManualTargetsRun " icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     @endif
 
     @if ($RemoveCommDocId)
