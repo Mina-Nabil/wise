@@ -121,6 +121,8 @@ class SalesComm extends Model
             $this->update([
                 "comm_percentage"   =>  $t->comm_percentage,
             ]);
+            $this->loadMissing('sold_policy');
+            $this->sold_policy->generatePolicyCommissions();
             $this->refreshPaymentInfo(false);
         } catch (Exception $e) {
             report($e);
