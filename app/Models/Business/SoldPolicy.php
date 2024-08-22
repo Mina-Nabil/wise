@@ -1386,7 +1386,7 @@ class SoldPolicy extends Model
                     ->join('car_models', 'car_models.id', '=', 'cars.car_model_id')
                     ->whereIn('brand_id', $v);
             })->when($creator_id, function ($q, $v) {
-                $q->where('creator_id', "=", $v);
+                $q->where('sold_policies.creator_id', "=", $v);
             })->when($main_sales_id, function ($q, $v) {
                 $q->where('main_sales_id', "=", $v);
             })->when($is_valid !== null, function ($q, $v) use ($is_valid) {
