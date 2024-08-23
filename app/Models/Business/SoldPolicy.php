@@ -1462,7 +1462,8 @@ class SoldPolicy extends Model
             $query->join('policies', 'policies.id', '=', 'sold_policies.policy_id');
         }
 
-        return $query->where('policies.company_id', $company_id)
+        return $query->select('sold_policies.*')
+            ->where('policies.company_id', $company_id)
             ->when($is_paid !== null, fn($q) => $is_paid ? $q->where('sold_policies.total_comp_paid', '>=', 'sold_policies.total_policy_comm') : $q->where('sold_policies.total_comp_paid', '<', 'sold_policies.total_policy_comm'));
     }
 
