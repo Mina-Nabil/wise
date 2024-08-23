@@ -81,7 +81,8 @@ class SoldPolicy extends Model
         'assigned_to_id',
         'main_sales_id',
         'created_at',
-        'after_tax_comm'
+        'after_tax_comm',
+        'sales_out_comm'
     ];
 
     ///model functions
@@ -192,7 +193,6 @@ class SoldPolicy extends Model
                 "is_direct"         => true
             ]);
             $tmp->refreshPaymentInfo();
-            $this->calculateTotalSalesComm();
             AppLog::info("Sales commission added", loggable: $this);
             return true;
 
@@ -313,10 +313,13 @@ class SoldPolicy extends Model
     public function calculateTotalSalesComm()
     {
         $tmp = 0;
+        $total_sales_out = 0;
         foreach ($this->sales_comms()->get() as $comm) {
             $tmp += $comm->amount;
+            if($comm->is_sales_out) $total_sales_out += $comm->amount;
         }
         $this->total_sales_comm = $tmp;
+        $this->sales_out_comm = $total_sales_out;
         try {
             $this->save();
         } catch (Exception $e) {
@@ -1454,7 +1457,8 @@ class SoldPolicy extends Model
 
     public function scopeByCompany($query, $company_id, $is_paid = null)
     {
-        return $query->join('policies', 'policies.id', '=', 'sold_policies.policy_id')
+        return $query->select('sold_policies.*')
+        ->join('policies', 'policies.id', '=', 'sold_policies.policy_id')
         ->where('policies.company_id', $company_id)
         ->when($is_paid !== null, fn($q) => $is_paid ? $q->where('sold_policies.total_comp_paid', '>=', 'sold_policies.total_policy_comm') : $q->where('sold_policies.total_comp_paid', '<', 'sold_policies.total_policy_comm'));
     }
@@ -1474,6 +1478,13 @@ class SoldPolicy extends Model
         }
 
         return false;
+    }
+
+    public function getCommissionLeftAttribute()
+    {
+        $this->loadMissing('company_comm_payments');
+        return $this->total_policy_comm - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW))->sum('amount') - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_PAID))->sum('amount');
+
     }
 
     ///relations

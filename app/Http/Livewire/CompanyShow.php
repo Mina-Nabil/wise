@@ -216,7 +216,7 @@ class CompanyShow extends Component
         if ($policy && !in_array($policyId, array_column($this->sold_policies_entries, 'id'))) {
             $this->sold_policies_entries[] = [
                 'id' => $policyId,
-                'amount' => '',
+                'amount' => $policy->commission_left,
                 'pymnt_perm' => '',
             ];
         }

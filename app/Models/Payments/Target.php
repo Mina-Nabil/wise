@@ -54,8 +54,8 @@ class Target extends Model
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
         foreach ($soldPolicies as $sp) {
-            $totalIncome += $sp->total_policy_comm *
-                ($sp->client_paid_by_dates / $sp->gross_premium);
+            $totalIncome += ($sp->total_policy_comm *
+                ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->sales_out_comm;
         }
 
         //return false if the target is not acheived

@@ -132,9 +132,9 @@ class Offer extends Model
         $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
-    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
+    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal)
     {
-        $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText)->get();
+        $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText, $is_renewal)->get();
         $template = IOFactory::load(resource_path('import/offers_report.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
@@ -220,7 +220,6 @@ class Offer extends Model
             }
             foreach ($this->sales_comms()->notConfirmed()->get() as $commaya) {
                 $commaya->update([
-                    'status'            =>  SalesComm::PYMT_STATE_CONFIRMED,
                     "sold_policy_id"    =>  $soldPolicy->id,
                     "created_at"        =>  $issuing_date
                 ]);
@@ -981,7 +980,7 @@ class Offer extends Model
         return $query->groupBy('offers.id')->orderBy('due');
     }
 
-    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null)
+    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null)
     {
         $query->userData($searchText)
             ->when($from, function ($q, $v) {
@@ -1004,6 +1003,8 @@ class Offer extends Model
                 $q->where('item_value', "<=", $v);
             })->when($line_of_business, function ($q, $v) {
                 $q->where('offers.type', "=", $v);
+            })->when($is_renewal !== null, function ($q, $v) use ($is_renewal) {
+                $q->where('offers.is_renewal', "=", $is_renewal);
             });
         $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
         return $query;

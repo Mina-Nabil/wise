@@ -759,9 +759,9 @@ class Customer extends Model
 
                 if ($telephone2)
                     $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
+                if ($note)
+                    $lead->setCustomerNote($note);
             }
-
-            $i++;
         }
 
         return true;

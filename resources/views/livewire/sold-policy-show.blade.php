@@ -1205,8 +1205,8 @@
                                 <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
                                     Sales Commission
                                 </div>
-                                <div class="text-slate-900 dark:text-white text-lg font-medium">
-                                    {{ $soldPolicy->total_sales_comm ? number_format($soldPolicy->total_sales_comm, 0, '.', ',') : '-' }}
+                                <div class="text-slate-900 dark:text-white text-md font-medium">
+                                    {{ $soldPolicy->total_sales_comm ? number_format($soldPolicy->total_sales_comm, 0, '.', ',') : '-' }} / {{ $soldPolicy->sales_out_comm ? number_format($soldPolicy->sales_out_comm, 0, '.', ',') : '-' }}
                                 </div>
                             </div>
                         </div>

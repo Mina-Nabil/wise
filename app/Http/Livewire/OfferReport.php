@@ -37,6 +37,7 @@ class OfferReport extends Component
     public $value_from;
     public $value_to;
     public $search;
+    public $is_renewal;
 
     public $Efrom;
     public $Eto;
@@ -47,6 +48,9 @@ class OfferReport extends Component
     public $Eline_of_business;
     public $Evalue_from;
     public $Evalue_to;
+    public $Eis_renewal;
+
+
 
     public function togglestatuses()
     {
@@ -98,6 +102,15 @@ class OfferReport extends Component
     {
         $this->assignee_id = $this->Eassignee_id;
         $this->toggle($this->assigneeSection);
+    }
+
+    public function clearrenewal()
+    {
+        $this->is_renewal = null;
+    }
+    public function toggleRenewal()
+    {
+        $this->toggle($this->is_renewal);
     }
 
     public function clearAssignee()
@@ -206,7 +219,8 @@ class OfferReport extends Component
                 $this->line_of_business,
                 $this->value_from,
                 $this->value_to,
-                $this->search
+                $this->search,
+                $this->is_renewal,
             );
         }
     }
@@ -249,7 +263,8 @@ class OfferReport extends Component
             $this->line_of_business,
             $this->value_from,
             $this->value_to,
-            $this->search
+            $this->search,
+            $this->is_renewal
         )->paginate(30);
         return view('livewire.offer-report', [
             'offers' => $offers,

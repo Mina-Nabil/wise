@@ -286,6 +286,11 @@ class SalesComm extends Model
     {
         return $this->status == self::PYMT_STATE_NOT_CONFIRMED;
     }
+    public function getIsSalesOutAttribute()
+    {
+        $this->loadMissing('comm_profile');
+        return $this->comm_profile->type == CommProfile::TYPE_SALES_OUT;
+    }
 
     ///scopes
     public function scopeNew(Builder $query)

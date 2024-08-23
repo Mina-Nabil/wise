@@ -525,7 +525,7 @@
                                                         <tr>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->policy_number }}</td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->policy->name }}</td>
-                                                            <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->after_tax_comm }}</td>
+                                                            <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->commission_left }}</td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                                 <div class="flex-1 text-start">
 
