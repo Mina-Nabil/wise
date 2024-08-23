@@ -24,8 +24,9 @@ class CompanyShow extends Component
     public $tax_total;
     public $net_total;
 
-
     public $seachAllSoldPolicies; // for sold policy tab
+    public $seachAvailablePoliciesText;
+    public $availableSoldPolicies_isPaid = "0";
 
     public $newInvoiceSection = false;
 
@@ -39,7 +40,7 @@ class CompanyShow extends Component
     public $companyInfoNote;
     public $editInfoSec;
 
-    protected $listeners = ['deleteInvoice','confirmInvoice']; //functions need confirmation
+    protected $listeners = ['deleteInvoice', 'confirmInvoice']; //functions need confirmation
 
     public $newEmailSec = false;
     public $type = CompanyEmail::TYPES[0];
@@ -73,7 +74,8 @@ class CompanyShow extends Component
         }
     }
 
-    public function confirmInvoice($id){
+    public function confirmInvoice($id)
+    {
         $res = Invoice::find($id)->confirmInvoice();
 
         if ($res) {
@@ -140,7 +142,7 @@ class CompanyShow extends Component
     public function deleteInvoice($id)
     {
         $res = Invoice::find($id)->deleteInvoice();
-        if ($res) {            
+        if ($res) {
             $this->alert('success', 'invoice deleted');
             $this->mount($this->company->id, false);
         } else {
@@ -224,9 +226,10 @@ class CompanyShow extends Component
 
     public function unselectPolicy($policyId)
     {
-
         foreach ($this->sold_policies_entries as $i => $e) {
-            if ($e['id'] == $policyId) unset($this->sold_policies_entries[$i]);
+            if ($e['id'] == $policyId) {
+                unset($this->sold_policies_entries[$i]);
+            }
         }
     }
 
@@ -256,27 +259,47 @@ class CompanyShow extends Component
         Log::info($this->sold_policies_entries);
         $this->gross_total = 0;
         foreach ($this->sold_policies_entries as $e) {
-            $this->gross_total += (is_numeric($e['amount']) ? $e['amount']  : 0);
+            $this->gross_total += is_numeric($e['amount']) ? $e['amount'] : 0;
         }
         $this->updatedGrossTotal();
     }
 
     public function mount($company_id, $updateSerial = true)
     {
-        if ($updateSerial)
+        if ($updateSerial) {
             $this->serial = Invoice::getNextSerial();
+        }
         $this->company = Company::find($company_id);
+    }
+
+    public function updatedSeachAvailablePoliciesText()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedAvailableSoldPoliciesIsPaid()
+    {
+        // dd($this->availableSoldPolicies_isPaid);
     }
 
     public function render()
     {
-        $companyEmails = Company::find($this->company->id)->emails()->paginate(20);
-        $soldPolicies =  [] ; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
-        $this->available_policies = SoldPolicy::byCompany(company_id: $this->company->id)->paginate(5);
+        $companyEmails = Company::find($this->company->id)
+            ->emails()
+            ->paginate(20);
+        $soldPolicies = []; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
+
+        $this->available_policies = SoldPolicy::userData(searchText: $this->seachAvailablePoliciesText)
+        ->byCompany(
+            company_id: $this->company->id,
+            is_paid: $this->availableSoldPolicies_isPaid === "0" ? null : $this->availableSoldPolicies_isPaid
+        )
+        ->paginate(5);
+    
         return view('livewire.company-show', [
             'soldPolicies' => $soldPolicies,
             'companyEmails' => $companyEmails,
-            'available_policies' => $this->available_policies
+            'available_policies' => $this->available_policies,
         ]);
     }
 }
