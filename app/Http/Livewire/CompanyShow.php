@@ -272,7 +272,7 @@ class CompanyShow extends Component
     {
         $companyEmails = Company::find($this->company->id)->emails()->paginate(20);
         $soldPolicies =  [] ; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
-        $this->available_policies = SoldPolicy::userData()->ByCompany(company_id: $this->company->id)->paginate(3);
+        $this->available_policies = SoldPolicy::byCompany(company_id: $this->company->id)->paginate(5);
         return view('livewire.company-show', [
             'soldPolicies' => $soldPolicies,
             'companyEmails' => $companyEmails,
