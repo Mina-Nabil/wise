@@ -2,6 +2,7 @@
 
 namespace App\Models\Business;
 
+use App\Helpers\Helpers;
 use App\Models\Cars\Car as CarsCar;
 use App\Models\Corporates\Address as CorporatesAddress;
 use App\Models\Corporates\Corporate;
@@ -233,7 +234,7 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addCompanyPayment($type, $amount, $note = null, $invoice_id=null, $pymnt_perm=null)
+    public function addCompanyPayment($type, $amount, $note = null, $invoice_id = null, $pymnt_perm = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -316,7 +317,7 @@ class SoldPolicy extends Model
         $total_sales_out = 0;
         foreach ($this->sales_comms()->get() as $comm) {
             $tmp += $comm->amount;
-            if($comm->is_sales_out) $total_sales_out += $comm->amount;
+            if ($comm->is_sales_out) $total_sales_out += $comm->amount;
         }
         $this->total_sales_comm = $tmp;
         $this->sales_out_comm = $total_sales_out;
@@ -1457,10 +1458,12 @@ class SoldPolicy extends Model
 
     public function scopeByCompany($query, $company_id, $is_paid = null)
     {
-        return $query->select('sold_policies.*')
-        ->join('policies', 'policies.id', '=', 'sold_policies.policy_id')
-        ->where('policies.company_id', $company_id)
-        ->when($is_paid !== null, fn($q) => $is_paid ? $q->where('sold_policies.total_comp_paid', '>=', 'sold_policies.total_policy_comm') : $q->where('sold_policies.total_comp_paid', '<', 'sold_policies.total_policy_comm'));
+        if (!Helpers::joined($query, "policies")) {
+            $query->join('policies', 'policies.id', '=', 'sold_policies.policy_id');
+        }
+
+        return $query->where('policies.company_id', $company_id)
+            ->when($is_paid !== null, fn($q) => $is_paid ? $q->where('sold_policies.total_comp_paid', '>=', 'sold_policies.total_policy_comm') : $q->where('sold_policies.total_comp_paid', '<', 'sold_policies.total_policy_comm'));
     }
 
     ///attributes
@@ -1484,7 +1487,6 @@ class SoldPolicy extends Model
     {
         $this->loadMissing('company_comm_payments');
         return $this->total_policy_comm - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW))->sum('amount') - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_PAID))->sum('amount');
-
     }
 
     ///relations
