@@ -22,7 +22,7 @@ class PolicyComm extends Model
 
     public function editAmount($amount)
     {
-        $this->loadMissing('sold_policy');
+        $this->load('sold_policy');
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('updatePayments', $this->sold_policy)) return false;
@@ -44,7 +44,7 @@ class PolicyComm extends Model
 
     public function deleteCommission()
     {
-        $this->loadMissing('sold_policy');
+        $this->load('sold_policy');
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('updatePayments', $this->sold_policy)) return false;

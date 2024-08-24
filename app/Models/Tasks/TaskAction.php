@@ -60,7 +60,7 @@ class TaskAction extends Model
         if ($this->status !== self::STATUS_NEW) return false;
 
         try {
-            $this->loadMissing('task', 'task.taskable');
+            $this->load('task', 'task.taskable');
             $this->task->taskable->{$this->column_name} = $this->value;
             $this->task->taskable->save();
             $new_val = $this->value ?? 'NULL';

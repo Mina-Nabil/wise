@@ -175,10 +175,10 @@ class Offer extends Model
         $foundSoldPolicy = SoldPolicy::byOfferID($this->id)->first();
         if ($foundSoldPolicy && $foundSoldPolicy->id) return $foundSoldPolicy;
         if (!$this->selected_option_id) return false;
-        $this->loadMissing('client');
-        $this->loadMissing('selected_option');
-        $this->loadMissing('selected_option.policy');
-        $this->loadMissing('selected_option.policy_condition');
+        $this->load('client');
+        $this->load('selected_option');
+        $this->load('selected_option.policy');
+        $this->load('selected_option.policy_condition');
 
         assert($insured_value || $this->selected_option->insured_value, new InvalidSoldPolicyException("No insured value found"));
         assert($net_rate || $this->selected_option->policy_condition->rate, new InvalidSoldPolicyException("No net rate found"));
@@ -228,7 +228,7 @@ class Offer extends Model
             if ($main_sales_id) {
                 $soldPolicy->setMainSales($main_sales_id);
             }
-            $this->loadMissing('files', 'selected_option.docs');
+            $this->load('files', 'selected_option.docs');
             foreach ($this->files as $f) {
                 $soldPolicy->addFile($f->name, $f->url, $f->user_id);
             }
@@ -415,7 +415,7 @@ class Offer extends Model
         $this->sales_comms()->delete();
         $this->load('comm_profiles', 'selected_option');
         foreach ($this->comm_profiles as $prof) {
-            $prof->loadMissing('user');
+            $prof->load('user');
             $title = $prof->user ? $prof->user->username . " - " . $prof->type : $prof->title;
             $valid_conf = $prof->getValidDirectCommissionConf($this->selected_option);
             if (!$valid_conf) {
@@ -537,7 +537,7 @@ class Offer extends Model
 
             case self::STATUS_PENDING_INSUR:
                 $this->loadCount('options');
-                $this->loadMissing('assignee');
+                $this->load('assignee');
                 if (!$this->assignee?->is_operations) return "Offer not assigned to operations";
                 if (!$this->options_count) return "No offer options found";
                 break;
@@ -869,14 +869,14 @@ class Offer extends Model
         $notifier_id = Auth::id();
 
         if ($notifier_id != $this->assignee_id) {
-            $this->loadMissing('assignee');
+            $this->load('assignee');
             $this->assignee?->pushNotification($title, $message, "offers/" . $this->id);
         }
         if ($notifier_id != $this->creator_id) {
-            $this->loadMissing('creator');
+            $this->load('creator');
             $this->creator?->pushNotification($title, $message, "offers/" . $this->id);
         }
-        $this->loadMissing('watchers');
+        $this->load('watchers');
         foreach ($this->watchers as $watcher) {
             if ($notifier_id != $watcher->id) {
                 $watcher->pushNotification($title, $message, "offers/" . $this->id);
@@ -887,7 +887,7 @@ class Offer extends Model
     ////attributes
     public function getWithOperationsAttribute()
     {
-        $this->loadMissing('assignee');
+        $this->load('assignee');
         return $this->assignee_type === User::TYPE_OPERATIONS || $this->assignee?->type == User::TYPE_OPERATIONS;
     }
 

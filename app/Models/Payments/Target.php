@@ -48,7 +48,7 @@ class Target extends Model
      * If yes it will update the related sales commissions */
     public function processTargetPayments(Carbon $end_date = null)
     {
-        $this->loadMissing('comm_profile');
+        $this->load('comm_profile');
         $end_date = $end_date ?? Carbon::now();
         $start_date = $end_date->clone()->subMonths($this->each_month);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
@@ -137,7 +137,7 @@ class Target extends Model
 
     public function moveUp()
     {
-        $this->loadMissing('comm_profile', 'comm_profile.targets');
+        $this->load('comm_profile', 'comm_profile.targets');
         $targets = $this->comm_profile->targets->sortByDesc('order');
         $swap = false;
         foreach ($targets as $target) {
@@ -167,7 +167,7 @@ class Target extends Model
 
     public function moveDown()
     {
-        $this->loadMissing('comm_profile', 'comm_profile.targets');
+        $this->load('comm_profile', 'comm_profile.targets');
         $targets = $this->comm_profile->targets->sortBy('order');
         $swap = false;
         foreach ($targets as $target) {
@@ -212,7 +212,7 @@ class Target extends Model
     public function getCalculatedNextRunDateAttribute()
     {
         if ($this->next_run_date && (new Carbon($this->next_run_date))->isFuture()) return new Carbon($this->next_run_date);
-        $this->loadMissing('runs');
+        $this->load('runs');
         $last_run = $this->runs->first();
         $now = Carbon::now();
         $run_date = $last_run ?
@@ -224,7 +224,7 @@ class Target extends Model
 
     public function getLastRunDateAttribute()
     {
-        $this->loadMissing('runs');
+        $this->load('runs');
         $last_run = $this->runs->first();
         return $last_run ? new Carbon($last_run->created_at) : null;
     }

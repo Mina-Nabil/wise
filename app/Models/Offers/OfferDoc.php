@@ -34,7 +34,7 @@ class OfferDoc extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('delete', $this)) throw new UnauthorizedException();
         try {
-            $this->loadMissing('offer');
+            $this->load('offer');
             $tmpOffer = $this->offer;
             if (parent::delete()) {
                 Storage::disk('s3')->delete($this->url);

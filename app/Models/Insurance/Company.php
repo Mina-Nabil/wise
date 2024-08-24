@@ -111,7 +111,7 @@ class Company extends Model
     //attributes
     public function getPrimaryEmailAttribute()
     {
-        $this->loadMissing('emails');
+        $this->load('emails');
         $primary = $this->emails->where('is_primary', true)->first() ?? $this->emails->first();
         return $primary?->email ?? "N/A";
     }

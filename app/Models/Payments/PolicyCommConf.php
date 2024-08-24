@@ -26,7 +26,7 @@ class PolicyCommConf extends Model
     ///model functions
     public function editInfo($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null, $sales_out_only = false)
     {
-        $this->loadMissing('policy');
+        $this->load('policy');
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this->policy)) return false;
@@ -51,7 +51,7 @@ class PolicyCommConf extends Model
     public function delete()
     {
         try {
-            $this->loadMissing('policy');
+            $this->load('policy');
             
             /** @var User */
             $loggedInUser = Auth::user();

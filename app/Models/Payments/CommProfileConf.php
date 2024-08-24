@@ -42,8 +42,8 @@ class CommProfileConf extends Model
     ///model functions
     public function matches(OfferOption $option)
     {
-        $this->loadMissing('condition');
-        $option->loadMissing('policy');
+        $this->load('condition');
+        $option->load('policy');
         if ($this->condition_type) {
             if ($this->condition_type == Policy::MORPH_TYPE) {
                 return $this->condition_id == $option->policy->id;
@@ -75,7 +75,7 @@ class CommProfileConf extends Model
 
     public function moveUp()
     {
-        $this->loadMissing('comm_profile', 'comm_profile.configurations');
+        $this->load('comm_profile', 'comm_profile.configurations');
         $sorted_confs = $this->comm_profile->configurations->sortByDesc('order');
         $swap = false;
         foreach ($sorted_confs as $conf) {
@@ -105,7 +105,7 @@ class CommProfileConf extends Model
 
     public function moveDown()
     {
-        $this->loadMissing('comm_profile', 'comm_profile.configurations');
+        $this->load('comm_profile', 'comm_profile.configurations');
         $sorted_confs = $this->comm_profile->configurations->sortBy('order');
         $swap = false;
         foreach ($sorted_confs as $conf) {
@@ -152,10 +152,10 @@ class CommProfileConf extends Model
 
         if($this->line_of_business) return ucwords(str_replace('_', ' ', $this->line_of_business));
 
-        $this->loadMissing('condition');
+        $this->load('condition');
 
         if($this->condition_type == Policy::MORPH_TYPE){
-            $this->loadMissing('condition.company');
+            $this->load('condition.company');
             return $this->condition->company->name  . " - " . $this->condition->name;
         } else {
             return $this->condition->name ;

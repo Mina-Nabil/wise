@@ -184,7 +184,7 @@ class Car extends Model
                 "price"         =>  $price,
                 "desc"          =>  $desc
             ]);
-            $this->loadMissing('car_model');
+            $this->load('car_model');
             AppLog::info('New Price', "New price added for {$this->car_model->name} - $this->name", $this);
             return true;
         } catch (Exception $e) {

@@ -113,7 +113,7 @@ class CompanyCommPayment extends Model
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
             ])) {
-                $this->loadMissing('sold_policy');
+                $this->load('sold_policy');
                 $this->sold_policy->calculateTotalCompanyPayments();
                 $this->sold_policy->updateSalesCommsPaymentInfo();
             }

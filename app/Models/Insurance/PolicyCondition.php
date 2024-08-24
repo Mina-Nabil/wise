@@ -93,7 +93,7 @@ class PolicyCondition extends Model
 
     public function moveUp()
     {
-        $this->loadMissing('policy', 'policy.conditions');
+        $this->load('policy', 'policy.conditions');
         $sorted_conditions = $this->policy->conditions->sortByDesc('order');
         $swap = false;
         foreach ($sorted_conditions as $cond) {
@@ -123,7 +123,7 @@ class PolicyCondition extends Model
 
     public function moveDown()
     {
-        $this->loadMissing('policy', 'policy.conditions');
+        $this->load('policy', 'policy.conditions');
         $sorted_conditions = $this->policy->conditions->sortBy('order');
         $swap = false;
         foreach ($sorted_conditions as $cond) {

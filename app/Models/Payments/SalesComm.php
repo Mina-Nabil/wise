@@ -99,7 +99,7 @@ class SalesComm extends Model
 
         try {
             AppLog::error("Setting Sales Comm info", loggable: $this);
-            $this->loadMissing('sold_policy');
+            $this->load('sold_policy');
             $amount = ($comm_percentage / 100) * $this->sold_policy->gross_premium;
             return $this->update([
                 "title"             =>  $title,
@@ -121,7 +121,7 @@ class SalesComm extends Model
             $this->update([
                 "comm_percentage"   =>  $t->comm_percentage,
             ]);
-            $this->loadMissing('sold_policy');
+            $this->load('sold_policy');
             $this->sold_policy->generatePolicyCommissions();
             $this->refreshPaymentInfo(false);
         } catch (Exception $e) {
@@ -183,7 +183,7 @@ class SalesComm extends Model
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
             ])) {
-                $this->loadMissing('sold_policy');
+                $this->load('sold_policy');
                 return true;
             }
         } catch (Exception $e) {
@@ -207,7 +207,7 @@ class SalesComm extends Model
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_CANCELLED,
             ]);
-            $this->loadMissing('sold_policy');
+            $this->load('sold_policy');
             $this->sold_policy->calculateTotalSalesComm();
             return true;
         } catch (Exception $e) {
@@ -233,7 +233,7 @@ class SalesComm extends Model
 
     public function delete()
     {
-        $this->loadMissing('offer');
+        $this->load('offer');
         if ($this->offer->is_approved) $this->setAsCancelled();
         else {
             return parent::delete();
@@ -288,7 +288,7 @@ class SalesComm extends Model
     }
     public function getIsSalesOutAttribute()
     {
-        $this->loadMissing('comm_profile');
+        $this->load('comm_profile');
         return $this->comm_profile->type == CommProfile::TYPE_SALES_OUT;
     }
 

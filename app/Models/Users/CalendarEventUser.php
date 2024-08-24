@@ -32,7 +32,7 @@ class CalendarEventUser extends Model
     public function getTitleAttribute()
     {
         if ($this->user_id) {
-            $this->loadMissing('user');
+            $this->load('user');
             return $this->user->username;
         } else return $this->guest_name;
     }

@@ -367,8 +367,8 @@ class Policy extends Model
         // if (!in_array($this->business, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]))
         //     throw new Exception("Invalid business type. Can't get policy rate by car");
 
-        $this->loadMissing('conditions');
-        $customer_car->loadMissing('car');
+        $this->load('conditions');
+        $customer_car->load('car');
         foreach ($this->conditions as $cond) {
             switch ($cond->scope) {
                 case PolicyCondition::SCOPE_MODEL:
@@ -376,13 +376,13 @@ class Policy extends Model
                         return $cond;
                     break;
                 case PolicyCondition::SCOPE_BRAND:
-                    $customer_car->car->loadMissing('car_model');
+                    $customer_car->car->load('car_model');
                     if ($customer_car->car->car_model->brand_id == $cond->value)
                         return $cond;
                     break;
 
                 case PolicyCondition::SCOPE_COUNTRY:
-                    $customer_car->car->loadMissing('car_model', 'car_model.brand');
+                    $customer_car->car->load('car_model', 'car_model.brand');
                     if ($customer_car->car->car_model->brand->country_id == $cond->value)
                         return $cond;
                     break;

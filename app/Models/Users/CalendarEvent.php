@@ -136,7 +136,7 @@ class CalendarEvent extends Model
     //attributes
     public function getEventUsersNamesAttribute()
     {
-        $this->loadMissing('event_users');
+        $this->load('event_users');
         $names = '';
 
         foreach ($this->event_users as $u) {

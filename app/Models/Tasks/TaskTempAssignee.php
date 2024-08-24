@@ -28,7 +28,7 @@ class TaskTempAssignee extends Model
     ///functions
     public function approveRequest()
     {
-        $this->loadMissing('task', 'user');
+        $this->load('task', 'user');
         $this->status = self::STATUS_ACCEPTED;
 
         try {
@@ -45,7 +45,7 @@ class TaskTempAssignee extends Model
 
     public function declineRequest()
     {
-        $this->loadMissing('task');
+        $this->load('task');
         $this->status = self::STATUS_REJECTED;
 
         try {

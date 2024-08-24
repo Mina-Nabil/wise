@@ -31,7 +31,7 @@ class SoldPolicyDoc extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        $this->loadMissing('sold_policy');
+        $this->load('sold_policy');
         if (!$loggedInUser->can('update', $this->sold_policy)) throw new UnauthorizedException();
         try {
             $tmpSoldPolicy = $this->sold_policy;

@@ -43,7 +43,7 @@ class OfferDiscount extends Model
     ////model functions
     public function editInfo($type, $value, $note = null)
     {
-        $this->loadMissing('offer');
+        $this->load('offer');
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('updateDiscount', $this->offer)) return false;
@@ -67,13 +67,13 @@ class OfferDiscount extends Model
 
     public function delete()
     {
-        $this->loadMissing('offer');
+        $this->load('offer');
 
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('updateDiscount', $this->offer)) throw new UnauthorizedException();
         try {
-            $this->loadMissing('offer');
+            $this->load('offer');
             $tmpOffer = $this->offer;
             if (parent::delete()) {
                 AppLog::info("Discount deleted", loggable: $tmpOffer);

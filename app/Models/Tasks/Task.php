@@ -268,7 +268,7 @@ class Task extends Model
             $loggedInUser = Auth::user();
             /** @var User */
             $user = User::findOrFail($user_id);
-            $user->loadMissing('manager');
+            $user->load('manager');
             if (!$user->manager) throw new NoManagerException();
             $newTmpAssignee = $this->temp_assignee()->updateOrCreate([], [
                 "user_id"   =>  $user_id,
@@ -322,14 +322,14 @@ class Task extends Model
     {
         $notifier_id = Auth::id();
         if ($notifier_id != $this->open_by_id) {
-            $this->loadMissing('open_by');
+            $this->load('open_by');
             $this->open_by?->pushNotification($title, $message, "tasks/" . $this->id);
         }
         if ($notifier_id != $this->assigned_to_id) {
-            $this->loadMissing('assigned_to');
+            $this->load('assigned_to');
             $this->assigned_to?->pushNotification($title, $message, "tasks/" . $this->id);
         }
-        $this->loadMissing('watchers');
+        $this->load('watchers');
         foreach ($this->watchers as $watcher) {
             if ($notifier_id != $watcher->id) {
                 $watcher->pushNotification($title, $message, "tasks/" . $this->id);

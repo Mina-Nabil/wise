@@ -47,7 +47,7 @@ class OptionField extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('delete', $this)) throw new UnauthorizedException();
         try {
-            $this->loadMissing('option');
+            $this->load('option');
             $tmpOption = $this->option;
             if (parent::delete()) {
                 AppLog::info("Option Field deleted", loggable: $tmpOption);

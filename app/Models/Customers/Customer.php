@@ -809,13 +809,13 @@ class Customer extends Model
 
     public function getTelephone1Attribute()
     {
-        $this->loadMissing('phones');
+        $this->load('phones');
         return $this->phones->where('is_default', 1)->first()?->number;
     }
 
     public function getTelephone2Attribute()
     {
-        $this->loadMissing('phones');
+        $this->load('phones');
         return $this->phones->where('is_default', 0)->first()?->number;
     }
 

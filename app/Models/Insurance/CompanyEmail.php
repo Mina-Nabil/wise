@@ -52,7 +52,7 @@ class CompanyEmail extends Model
         try {
             /** @var User */
             $loggedInUser = Auth::user();
-            $this->loadMissing('company');
+            $this->load('company');
             if (!$loggedInUser->can('update', $this->company)) throw new UnauthorizedException();
             $this->update([
                 "type"  => $type,

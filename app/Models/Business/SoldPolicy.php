@@ -117,8 +117,8 @@ class SoldPolicy extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
-        $this->loadMissing('policy');
-        $this->loadMissing('policy.comm_confs');
+        $this->load('policy');
+        $this->load('policy.comm_confs');
         try {
             DB::transaction(function () {
                 $this->comms_details()->delete();
@@ -882,10 +882,10 @@ class SoldPolicy extends Model
         $notifier_id = Auth::id();
 
         if ($notifier_id != $this->creator_id) {
-            $this->loadMissing('creator');
+            $this->load('creator');
             $this->creator?->pushNotification($title, $message, "sold-policies/" . $this->id);
         }
-        $this->loadMissing('watchers');
+        $this->load('watchers');
         foreach ($this->watchers as $watcher) {
             if ($notifier_id != $watcher->id) {
                 $watcher->pushNotification($title, $message, "sold-policies/" . $this->id);
@@ -1466,7 +1466,7 @@ class SoldPolicy extends Model
 
     public function getHasSalesOutAttribute()
     {
-        $this->loadMissing('sales_comms', 'sales_comms.comm_profile');
+        $this->load('sales_comms', 'sales_comms.comm_profile');
         foreach ($this->sales_comms as $sc) {
             if ($sc->comm_profile->is_sales_out) return true;
         }
@@ -1476,7 +1476,7 @@ class SoldPolicy extends Model
 
     public function getCommissionLeftAttribute()
     {
-        $this->loadMissing('company_comm_payments');
+        $this->load('company_comm_payments');
         return $this->total_policy_comm - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW))->sum('amount') - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_PAID))->sum('amount');
     }
 
