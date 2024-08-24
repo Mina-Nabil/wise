@@ -289,13 +289,13 @@ class CompanyShow extends Component
             ->paginate(20);
         $soldPolicies = []; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
 
-        $this->available_policies = SoldPolicy::userData(searchText: $this->seachAvailablePoliciesText)
-        ->byCompany(
-            company_id: $this->company->id,
-            is_paid: $this->availableSoldPolicies_isNotPaid === "0" ? null : false
-        )
-        ->paginate(5);
-    
+        $this->available_policies = SoldPolicy::when($this->seachAvailablePoliciesText, fn($q) => $q->searchByPolicyNumber($this->seachAvailablePoliciesText))
+            ->byCompany(
+                company_id: $this->company->id,
+                is_paid: $this->availableSoldPolicies_isNotPaid === "0" ? null : false
+            )
+            ->paginate(5);
+
         return view('livewire.company-show', [
             'soldPolicies' => $soldPolicies,
             'companyEmails' => $companyEmails,

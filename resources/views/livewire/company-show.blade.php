@@ -340,7 +340,7 @@
 
 
 
-                                            <input type="text" wire:model="seachAvailablePoliciesText" placeholder="Search sold policies here..." class="form-control">
+                                            <input type="text" wire:model="seachAvailablePoliciesText" placeholder="Search sold policies by policy number" class="form-control">
                                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                                 <thead class="">
                                                     <tr>
