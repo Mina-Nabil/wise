@@ -322,16 +322,16 @@
                                                 <div class="flex items-center space-x-7 flex-wrap">
                                                     <div class="basicRadio">
                                                         <label class="flex items-center cursor-pointer">
-                                                            <input type="radio" class="hidden" name="basicradios" wire:model="availableSoldPolicies_isPaid" value="0" checked="checked">
+                                                            <input type="radio" class="hidden" name="basicradios" wire:model="availableSoldPolicies_isNotPaid" value="0" checked="checked">
                                                             <span class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                                                             <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
                                                         </label>
                                                     </div>
                                                     <div class="basicRadio">
                                                         <label class="flex items-center cursor-pointer">
-                                                            <input type="radio" class="hidden" name="basicradios" wire:model="availableSoldPolicies_isPaid" value="1">
+                                                            <input type="radio" class="hidden" name="basicradios" wire:model="availableSoldPolicies_isNotPaid" value="1">
                                                             <span class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Paid</span>
+                                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Not Paid</span>
                                                         </label>
                                                     </div>
                                                 </div>

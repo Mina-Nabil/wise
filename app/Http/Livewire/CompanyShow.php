@@ -26,7 +26,7 @@ class CompanyShow extends Component
 
     public $seachAllSoldPolicies; // for sold policy tab
     public $seachAvailablePoliciesText;
-    public $availableSoldPolicies_isPaid = "0";
+    public $availableSoldPolicies_isNotPaid = "0";
 
     public $newInvoiceSection = false;
 
@@ -292,7 +292,7 @@ class CompanyShow extends Component
         $this->available_policies = SoldPolicy::userData(searchText: $this->seachAvailablePoliciesText)
         ->byCompany(
             company_id: $this->company->id,
-            is_paid: $this->availableSoldPolicies_isPaid === "0" ? null : $this->availableSoldPolicies_isPaid
+            is_paid: $this->availableSoldPolicies_isNotPaid === "0" ? null : false
         )
         ->paginate(5);
     
