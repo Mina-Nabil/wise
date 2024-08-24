@@ -196,7 +196,7 @@ class ClientPayment extends Model
             }
 
             if ($this->update($updates)) {
-                $this->loadMissing('sold_policy');
+                $this->load('sold_policy');
                 $this->sold_policy->setClientPaymentDate($date);
                 $this->sold_policy->generatePolicyCommissions();
                 $this->sold_policy->calculateTotalClientPayments();
