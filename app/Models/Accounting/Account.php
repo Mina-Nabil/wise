@@ -3,6 +3,7 @@
 namespace App\Models\Accounting;
 
 use App\Models\Users\AppLog;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,7 @@ class Account extends Model
         'desc',
         'nature',
         'type',
+        'limit',
         'balance'
     ];
 
@@ -39,7 +41,7 @@ class Account extends Model
     ];
 
     ////static functions
-    public static function newAccount($name, $nature, $type, $desc = null): self|false
+    public static function newAccount($name, $nature, $type, $limit, $desc = null): self|false
     {
 
         /** @var User */
@@ -51,6 +53,7 @@ class Account extends Model
             "nature"  =>  $nature,
             "type"  =>  $type,
             "desc"  =>  $desc,
+            "limit"  =>  $limit,
             "balance"  =>  0,
         ]);
         try {
@@ -65,6 +68,9 @@ class Account extends Model
     }
 
     ////model functions
+    public function downloadAccountDetails(Carbon $from, Carbon $to) {}
+
+
     /** returns new balance after update */
     public function updateBalance($amount)
     {
@@ -82,8 +88,12 @@ class Account extends Model
         }
     }
 
+    public function aboveLimit($amount)
+    {
+        return $this->limit > $amount;
+    }
 
-    public function editInfo($name, $nature, $type, $desc = null): bool
+    public function editInfo($name, $nature, $type, $limit, $desc = null): bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -95,6 +105,7 @@ class Account extends Model
                 "nature"  =>  $nature,
                 "type"  =>  $type,
                 "desc"  =>  $desc,
+                "limit"  =>  $limit,
             ]);
             AppLog::info("Updating account", loggable: $this);
             return $this->save();

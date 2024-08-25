@@ -16,10 +16,12 @@ class JournalEntry extends Model
     use HasFactory;
     protected $table = 'journal_entries';
     protected $fillable = [
-        'credit',
-        'debit',
+        'user_id',
+        'credit_id',
+        'debit_id',
         'currency',
-        'doc_url',
+        'credit_doc_url',
+        'debit_doc_url',
         'currency_amount',
         'currency_rate',
         'entry_title_id',
@@ -64,10 +66,11 @@ class JournalEntry extends Model
         $comment = null,
         $cash_entry_type = null,
         $receiver_name = null,
-    ): self|false {
+    ): self|UnapprovedEntry|false {
         $entryTitle = EntryTitle::newOrCreateEntry($credit_id, $title);
         $day_serial = self::getTodaySerial();
         $newAccount = new self([
+            "user_id"           =>  Auth::id(),
             "entry_title_id"    =>  $entryTitle->id,
             "credit_id"     =>  $credit_id,
             "debit_id"      =>  $debit_id,
@@ -88,15 +91,33 @@ class JournalEntry extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('create', self::class)) return false;
 
+        /** @var Account */
+        $credit_account = Account::findOrFail($credit_id);
+        /** @var Account */
+        $debit_account = Account::findOrFail($debit_id);
+
+        if ($debit_account->aboveLimit($amount) || $credit_account->aboveLimit($amount)) {
+            return UnapprovedEntry::newEntry(
+                $entryTitle->id,
+                $credit_id,
+                $debit_id,
+                $credit_doc_url,
+                $debit_doc_url,
+                $currency,
+                $currency_amount,
+                $currency_rate,
+                $comment,
+                $receiver_name,
+                $cash_entry_type
+            );
+        }
+
         try {
             ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
-            DB::transaction(function () use ($newAccount, $credit_id, $debit_id) {
+            DB::transaction(function () use ($newAccount, $credit_account, $debit_account) {
 
-                /** @var Account */
-                $credit_account = Account::findOrFail($credit_id);
+
                 $new_credit_balance = $credit_account->updateBalance($this->amount);
-                /** @var Account */
-                $debit_account = Account::findOrFail($debit_id);
                 $new_debit_balance = $debit_account->updateBalance(-1 * $this->amount);
 
                 $newAccount->credit_balance = $new_credit_balance;
