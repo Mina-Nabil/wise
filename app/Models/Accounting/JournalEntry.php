@@ -3,10 +3,12 @@
 namespace App\Models\Accounting;
 
 use App\Models\Users\AppLog;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class JournalEntry extends Model
@@ -19,7 +21,13 @@ class JournalEntry extends Model
         'currency',
         'doc_url',
         'currency_amount',
-        'currency_rate'
+        'currency_rate',
+        'entry_title_id',
+        'comment',
+        'is_reviewed',
+        'day_serial',
+        'receiver_name',
+        'cash_type',
     ];
 
     const CURRENCY_EGP  = 'EGP';
@@ -34,9 +42,16 @@ class JournalEntry extends Model
         self::CURRENCY_TL,
         self::CURRENCY_SAU,
     ];
+    const CASH_ENTRY_RECEIVED   = 'received';
+    const CASH_ENTRY_DELIVERED   = 'delivered';
+    const CASH_ENTRY_TYPES  = [
+        self::CASH_ENTRY_RECEIVED,
+        self::CASH_ENTRY_DELIVERED,
+    ];
 
     ////static functions
     public static function newJournalEntry(
+        $title,
         $amount,
         $credit_id,
         $debit_id,
@@ -45,22 +60,38 @@ class JournalEntry extends Model
         $currency_rate = null,
         $credit_doc_url = null,
         $debit_doc_url = null,
-        $revert_entry_id = null
+        $revert_entry_id = null,
+        $comment = null,
+        $cash_entry_type = null,
+        $receiver_name = null,
     ): self|false {
+        $entryTitle = EntryTitle::newOrCreateEntry($credit_id, $title);
+        $day_serial = self::getTodaySerial();
         $newAccount = new self([
+            "entry_title_id"    =>  $entryTitle->id,
             "credit_id"     =>  $credit_id,
             "debit_id"      =>  $debit_id,
             "amount"        =>  $amount,
             "currency"      =>  $currency,
+            "day_serial"        =>  $day_serial,
             "currency_amount"   =>  $currency_amount,
             "currency_rate"     =>  $currency_rate,
             "credit_doc_url"    =>  $credit_doc_url,
             "debit_doc_url"     =>  $debit_doc_url,
             "revert_entry_id"   =>  $revert_entry_id,
+            "comment"           =>  $comment,
+            "cash_entry_type"   =>  $cash_entry_type,
+            "receiver_name"     =>  $receiver_name,
         ]);
+
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return false;
+
         try {
-            DB::transaction(function() use ($newAccount, $credit_id, $debit_id){
-                
+            ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
+            DB::transaction(function () use ($newAccount, $credit_id, $debit_id) {
+
                 /** @var Account */
                 $credit_account = Account::findOrFail($credit_id);
                 $new_credit_balance = $credit_account->updateBalance($this->amount);
@@ -70,23 +101,61 @@ class JournalEntry extends Model
 
                 $newAccount->credit_balance = $new_credit_balance;
                 $newAccount->debit_balance = $new_debit_balance;
-                
+
                 $newAccount->save();
-                
             });
-            AppLog::info("Created account", loggable: $newAccount);
+            AppLog::info("Created entry", loggable: $newAccount);
             return $newAccount;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't create account", desc: $e->getMessage());
+            AppLog::error("Can't create entry", desc: $e->getMessage());
             return false;
         }
     }
 
+    private static function getTodaySerial()
+    {
+        $latestToday = self::where('created_at', Carbon::now()->format('Y-m-d'))->limit(1)->first();
+        if ($latestToday) return $latestToday->day_serial;
+
+        $maxSerial = DB::table('journal_entries')->selectRaw('MAX(day_serial) as latest_serial')->first()->latest_serial;
+        return $maxSerial ? $maxSerial + 1 : 0;
+    }
+
     ////model functions
+    public function reviewEntry()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('review', $this)) return false;
+
+        $this->is_reviewed = 1;
+        $this->save();
+    }
+
     public function revertEntry()
     {
         return self::newJournalEntry($this->amount, $this->debit_id, $this->credit_id, $this->currency, $this->currency_amount, $this->currency_rate, revert_entry_id: $this->id);
+    }
+
+    public function downloadCashReceipt() {}
+
+    public function downloadDailyTransaction(Carbon $day) {}
+
+    ///scopes
+    public function scopeByAccount($query, $account_id)
+    {
+        return $query->where('account_id', $account_id);
+    }
+
+    public function scopeByDay($query, Carbon $day)
+    {
+        return $query->whereDate('created_at', $day->format('Y-m-d'));
+    }
+
+    public function scopeByDaySerial($query, int $day_serial)
+    {
+        return $query->where('day_serial', $day_serial);
     }
 
     ////relations

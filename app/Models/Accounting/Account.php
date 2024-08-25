@@ -6,6 +6,7 @@ use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Account extends Model
 {
@@ -40,6 +41,11 @@ class Account extends Model
     ////static functions
     public static function newAccount($name, $nature, $type, $desc = null): self|false
     {
+
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return false;
+
         $newAccount = new self([
             "name"  =>  $name,
             "nature"  =>  $nature,
@@ -62,6 +68,10 @@ class Account extends Model
     /** returns new balance after update */
     public function updateBalance($amount)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         $this->balance = $this->balance + $amount;
         try {
             $this->save();
@@ -75,13 +85,17 @@ class Account extends Model
 
     public function editInfo($name, $nature, $type, $desc = null): bool
     {
-        $this->update([
-            "name"  =>  $name,
-            "nature"  =>  $nature,
-            "type"  =>  $type,
-            "desc"  =>  $desc,
-        ]);
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
         try {
+            $this->update([
+                "name"  =>  $name,
+                "nature"  =>  $nature,
+                "type"  =>  $type,
+                "desc"  =>  $desc,
+            ]);
             AppLog::info("Updating account", loggable: $this);
             return $this->save();
         } catch (Exception $e) {
