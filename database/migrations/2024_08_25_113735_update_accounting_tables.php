@@ -31,6 +31,8 @@ return new class extends Migration
             $table->integer('day_serial'); //internal
             $table->string('receiver_name')->nullable();
             $table->enum('cash_entry_type', JournalEntry::CASH_ENTRY_TYPES)->nullable();
+            $table->foreignIdFor(User::class, 'approver_id')->constrained();
+            $table->dateTime('approved_at')->nullable();
         });
 
         Schema::table('accounts', function (Blueprint $table) {
@@ -52,9 +54,6 @@ return new class extends Migration
             $table->text('comment')->nullable();
             $table->string('receiver_name')->nullable();
             $table->enum('cash_entry_type', JournalEntry::CASH_ENTRY_TYPES)->nullable();
-
-            $table->foreignIdFor(User::class, 'approver_id')->constrained();
-            $table->dateTime('approved_at')->nullable();
             $table->timestamps();
         });
     }

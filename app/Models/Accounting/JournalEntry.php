@@ -30,6 +30,8 @@ class JournalEntry extends Model
         'day_serial',
         'receiver_name',
         'cash_type',
+        'approver_id',
+        'approved_at',
     ];
 
     const CURRENCY_EGP  = 'EGP';
@@ -66,6 +68,8 @@ class JournalEntry extends Model
         $comment = null,
         $cash_entry_type = null,
         $receiver_name = null,
+        $approver_id = null,
+        Carbon $approved_at = null,
     ): self|UnapprovedEntry|false {
         $entryTitle = EntryTitle::newOrCreateEntry($credit_id, $title);
         $day_serial = self::getTodaySerial();
@@ -85,6 +89,8 @@ class JournalEntry extends Model
             "comment"           =>  $comment,
             "cash_entry_type"   =>  $cash_entry_type,
             "receiver_name"     =>  $receiver_name,
+            "approver_id"       =>  $approver_id,
+            "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
         ]);
 
         /** @var User */
