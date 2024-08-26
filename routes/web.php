@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 
 
 
+use App\Http\Livewire\Accounting\AccountTypeIndex;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -92,6 +96,11 @@ Route::middleware('auth', 'active')->group(function () {
     Route::post('/cars/brand', [CarsController::class, 'setBrand']);
     Route::get('/cars/brands/delete/{id}', [CarsController::class, 'deleteBrand']);
     // Route::get('/fix/pw', [UserController::class, 'fixPasswords']);
+
+
+
+    //accounting
+    Route::get( '/accounts', AccountTypeIndex::class );
 
 });
 
