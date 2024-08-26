@@ -70,11 +70,12 @@ class JournalEntry extends Model
         $receiver_name = null,
         $approver_id = null,
         Carbon $approved_at = null,
+        $user_id = null,
     ): self|UnapprovedEntry|false {
         $entryTitle = EntryTitle::newOrCreateEntry($credit_id, $title);
         $day_serial = self::getTodaySerial();
         $newAccount = new self([
-            "user_id"           =>  Auth::id(),
+            "user_id"           => $user_id ?? Auth::id(),
             "entry_title_id"    =>  $entryTitle->id,
             "credit_id"     =>  $credit_id,
             "debit_id"      =>  $debit_id,
@@ -102,7 +103,7 @@ class JournalEntry extends Model
         /** @var Account */
         $debit_account = Account::findOrFail($debit_id);
 
-        if ($debit_account->aboveLimit($amount) || $credit_account->aboveLimit($amount)) {
+        if ($debit_account->needsApproval($amount) || $credit_account->needsApproval($amount)) {
             return UnapprovedEntry::newEntry(
                 $entryTitle->id,
                 $credit_id,

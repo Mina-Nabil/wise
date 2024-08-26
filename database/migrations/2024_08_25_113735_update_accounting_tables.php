@@ -45,7 +45,7 @@ return new class extends Migration
             $table->foreignIdFor(Account::class, 'credit_id')->constrained();
             $table->foreignIdFor(Account::class, 'debit_id')->constrained();
             $table->foreignIdFor(User::class)->constrained();
-            $table->double('amount')->default(0);
+            $table->double('amount');
             $table->text('credit_doc_url')->nullable();
             $table->text('debit_doc_url')->nullable();
             $table->enum('currency', JournalEntry::CURRENCIES);

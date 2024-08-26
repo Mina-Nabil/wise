@@ -56,6 +56,17 @@ class JournalEntryPolicy
     }
 
     /**
+     * Determine whether the user can create models.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function approve(User $user)
+    {
+        return true;
+    }
+
+    /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\Users\User  $user

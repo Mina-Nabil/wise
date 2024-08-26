@@ -88,9 +88,9 @@ class Account extends Model
         }
     }
 
-    public function aboveLimit($amount)
+    public function needsApproval($amount)
     {
-        return $this->limit > $amount;
+        return $this->limit <= $amount;
     }
 
     public function editInfo($name, $nature, $type, $limit, $desc = null): bool
