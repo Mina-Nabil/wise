@@ -31,7 +31,7 @@ return new class extends Migration
             $table->integer('day_serial'); //internal
             $table->string('receiver_name')->nullable();
             $table->enum('cash_entry_type', JournalEntry::CASH_ENTRY_TYPES)->nullable();
-            $table->foreignIdFor(User::class, 'approver_id')->constrained();
+            $table->foreignIdFor(User::class, 'approver_id')->constrained('users');
             $table->dateTime('approved_at')->nullable();
         });
 
@@ -42,8 +42,8 @@ return new class extends Migration
         Schema::create('unapproved_entries', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(EntryTitle::class)->constrained();
-            $table->foreignIdFor(Account::class, 'credit_id')->constrained();
-            $table->foreignIdFor(Account::class, 'debit_id')->constrained();
+            $table->foreignIdFor(Account::class, 'credit_id')->constrained('accounts');
+            $table->foreignIdFor(Account::class, 'debit_id')->constrained('accounts');
             $table->foreignIdFor(User::class)->constrained();
             $table->double('amount');
             $table->text('credit_doc_url')->nullable();

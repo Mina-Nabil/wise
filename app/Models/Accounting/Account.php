@@ -116,6 +116,20 @@ class Account extends Model
         }
     }
 
+    ///scopes
+    public function scopeByNature($query, $nature)
+    {
+        return $query->where('nature', $nature);
+    }
+    public function scopeSearchBy($query, $text)
+    {
+        return $query->where('name',  "LIKE", "%$text%");
+    }
+    public function scopeByType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
     ////relations
     public function entries()
     {
