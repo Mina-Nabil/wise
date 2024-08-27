@@ -166,8 +166,10 @@ class JournalEntry extends Model
         return self::newJournalEntry($this->amount, $this->debit_id, $this->credit_id, $this->currency, $this->currency_amount, $this->currency_rate, revert_entry_id: $this->id);
     }
 
+    /** per entry */
     public function downloadCashReceipt() {}
 
+    /** modal needed to query by day */
     public function downloadDailyTransaction(Carbon $day) {}
 
     ///scopes
