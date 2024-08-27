@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class Account extends Model
 {
     use HasFactory;
-    protected $table = 'account_types';
+    protected $table = 'accounts';
     protected $fillable = [
         'name',
         'desc',
