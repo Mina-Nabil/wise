@@ -122,6 +122,14 @@
                             </span>
                         </a>
                     </li>  
+                    <li>
+                        <a href="{{ url('/entries') }}" class="navItem {{ $entries ?? '' }}">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="vaadin:money-exchange"></iconify-icon>
+                                <span>Journal Entry</span>
+                            </span>
+                        </a>
+                    </li> 
                 </ul>
             </div>
         </div>
