@@ -20,8 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Livewire\Accounting\AccountTypeIndex;
 use App\Http\Livewire\Accounting\AccountIndex;
-
-
+use App\Http\Livewire\JournalEntryIndex;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,6 +102,7 @@ Route::middleware('auth', 'active')->group(function () {
     //accounting
     Route::get( '/accounts/types', AccountTypeIndex::class );
     Route::get( '/accounts', AccountIndex::class );
+    Route::get('/entries',JournalEntryIndex::class);
 
 });
 
