@@ -2,6 +2,7 @@
 
 use App\Models\Accounting\Account;
 use App\Models\Accounting\JournalEntry;
+use App\Models\Accounting\MainAccount;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,18 +16,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('account_types', function (Blueprint $table) {
+        Schema::create('main_accounts', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique(); //masrofat - revenue - clients
+            $table->enum('type', MainAccount::TYPES);
             $table->text('desc')->nullable();
+
         });
 
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
             $table->string('name'); //dyafa - 7sab allianz - 7sab motorcity
             $table->text('desc')->nullable();
+            $table->foreignIdFor(MainAccount::class)->constrained();
             $table->enum('nature', Account::NATURES);
-            $table->enum('type', Account::TYPES);
             $table->double('balance');
             $table->timestamps();
         });

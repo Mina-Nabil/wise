@@ -29,32 +29,22 @@ class Account extends Model
         self::NATURE_CREDIT,
     ];
 
-    const TYPE_EXPENSE = 'expense';
-    const TYPE_REVENUE = 'revenue';
-    const TYPE_ASSET = 'asset';
-    const TYPE_LIABILITY = 'liability';
-    const TYPES = [
-        self::TYPE_EXPENSE,
-        self::TYPE_REVENUE,
-        self::TYPE_ASSET,
-        self::TYPE_LIABILITY,
-    ];
 
     ////static functions
-    public static function newAccount($name, $nature, $type, $limit, $desc = null): self|false
+    public static function newAccount($name, $nature, $main_account_id, $limit, $desc = null, $is_seeding = false): self|false
     {
 
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('create', self::class)) return false;
+        if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
 
         $newAccount = new self([
-            "name"  =>  $name,
-            "nature"  =>  $nature,
-            "type"  =>  $type,
-            "desc"  =>  $desc,
-            "limit"  =>  $limit,
-            "balance"  =>  0,
+            "name"      =>  $name,
+            "nature"    =>  $nature,
+            "main_account_id"  =>  $main_account_id,
+            "desc"      =>  $desc,
+            "limit"     =>  $limit,
+            "balance"   =>  0,
         ]);
         try {
             $newAccount->save();
@@ -135,8 +125,8 @@ class Account extends Model
     {
         return $this->hasMany(JournalEntry::class);
     }
-    public function account_type()
+    public function main_account()
     {
-        return $this->belongsTo(AccountType::class);
+        return $this->belongsTo(MainAccount::class);
     }
 }

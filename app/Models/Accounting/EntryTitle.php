@@ -15,11 +15,10 @@ class EntryTitle extends Model
     public $timestamps = false;
 
     ////static functions
-    public static function newOrCreateEntry($account_id, $name)
+    public static function newOrCreateEntry($name)
     {
         try {
             return self::firstOrCreate([
-                'account_id'    =>  $account_id,
                 'name'          =>  $name,
             ]);
         } catch (Exception $e) {

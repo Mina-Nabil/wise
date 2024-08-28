@@ -71,8 +71,9 @@ class JournalEntry extends Model
         $approver_id = null,
         Carbon $approved_at = null,
         $user_id = null,
+        $is_seeding = false,
     ): self|UnapprovedEntry|false {
-        $entryTitle = EntryTitle::newOrCreateEntry($credit_id, $title);
+        $entryTitle = EntryTitle::newOrCreateEntry($title);
         $day_serial = self::getTodaySerial();
         $newAccount = new self([
             "user_id"           => $user_id ?? Auth::id(),
@@ -96,7 +97,7 @@ class JournalEntry extends Model
 
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('create', self::class)) return false;
+        if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
 
         /** @var Account */
         $credit_account = Account::findOrFail($credit_id);

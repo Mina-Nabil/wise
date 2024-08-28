@@ -6,19 +6,37 @@ use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
-class AccountType extends Model
+class MainAccount extends Model
 {
     use HasFactory;
-    protected $table = 'account_types';
-    protected $fillable = ['name', 'desc'];
+    protected $table = 'main_accounts';
+    protected $fillable = ['name', 'desc', 'type'];
     public $timestamps = false;
 
+
+    const TYPE_EXPENSE = 'expense';
+    const TYPE_REVENUE = 'revenue';
+    const TYPE_ASSET = 'asset';
+    const TYPE_LIABILITY = 'liability';
+    const TYPES = [
+        self::TYPE_EXPENSE,
+        self::TYPE_REVENUE,
+        self::TYPE_ASSET,
+        self::TYPE_LIABILITY,
+    ];
+
     ////static functions
-    public static function newAccountType($name, $desc = null): self|false
+    public static function newMainAccount($name, $type, $desc = null, $is_seeding = false): self|false
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
+
         $newType = new self([
             'name' => $name,
+            'type' => $type,
             'desc' => $desc,
         ]);
         try {
@@ -33,10 +51,11 @@ class AccountType extends Model
     }
 
     ////model functions
-    public function editInfo($name, $desc = null): bool
+    public function editInfo($name, $type, $desc = null): bool
     {
         $this->update([
             'name' => $name,
+            'type' => $type,
             'desc' => $desc,
         ]);
         try {
