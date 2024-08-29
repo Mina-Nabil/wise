@@ -107,10 +107,10 @@
                 <ul class="sidebar-menu">
                     <li class="sidebar-menu-title">Main</li>
                     <li>
-                        <a href="{{ url('/accounts/types') }}" class="navItem {{ $account_types ?? '' }}">
+                        <a href="{{ url('/accounts/main') }}" class="navItem {{ $main_accounts ?? '' }}">
                             <span class="flex items-center">
                                 <iconify-icon class=" nav-icon" icon="material-symbols-light:account-tree-rounded"></iconify-icon>
-                                <span>Account Types</span>
+                                <span>Main Account</span>
                             </span>
                         </a>
                     </li>  

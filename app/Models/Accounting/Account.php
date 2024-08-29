@@ -17,7 +17,7 @@ class Account extends Model
         'name',
         'desc',
         'nature',
-        'type',
+        'main_account_id',
         'limit',
         'balance'
     ];
@@ -115,9 +115,9 @@ class Account extends Model
     {
         return $query->where('name',  "LIKE", "%$text%");
     }
-    public function scopeByType($query, $type)
+    public function scopeByMainAccount($query, $main_account_id)
     {
-        return $query->where('type', $type);
+        return $query->where('main_account_id ', $main_account_id);
     }
 
     ////relations

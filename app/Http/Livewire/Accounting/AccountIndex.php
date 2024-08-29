@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Accounting;
 
 use App\Models\Accounting\Account;
+use App\Models\Accounting\MainAccount;
 use App\Traits\AlertFrontEnd;
 use Livewire\Component;
 
@@ -12,20 +13,20 @@ class AccountIndex extends Component
 
     public $page_title = 'Accounts';
     public $isAddNewModalOpen = false;
-    public $Type_name;
-    public $Type_desc;
+    public $acc_name;
+    public $acc_desc;
     public $nature;
-    public $type;
+    public $main_account_id;
     public $limit;
 
     // filters properties
-    public $account_nature = 'all';
-    public $account_type = 'all';
+    public $account_nature;
+    public $mainAccID;
 
     // Method to open the modal
     public function openAddNewModal()
     {
-        $this->reset(['Type_name', 'Type_desc', 'nature', 'type', 'limit']);
+        $this->reset(['acc_name', 'acc_desc', 'nature', 'main_account_id', 'limit']);
         $this->isAddNewModalOpen = true;
     }
 
@@ -36,34 +37,32 @@ class AccountIndex extends Component
     }
 
     // Define variables to hold options
-    public $types;
     public $natures;
 
     public function updateNature($text){
         $this->account_nature = $text;
     }
 
-    public function updateType($text){
-        $this->account_type = $text;
+    public function updateMainAccountID($text){
+        $this->mainAccID = $text;
     }
 
     public function mount()
     {
-        $this->types = Account::TYPES;
         $this->natures = Account::NATURES;
     }
 
     public function save()
     {
         $this->validate([
-            'Type_name' => 'required|string|max:100',
+            'acc_name' => 'required|string|max:100',
             'nature' => 'required|in:' . implode(',', Account::NATURES),
-            'type' => 'required|in:' . implode(',', Account::TYPES),
+            'main_account_id' => 'required|exists:main_accounts,id',
             'limit' => 'required|numeric',
-            'Type_desc' => 'nullable|string',
+            'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount($this->Type_name, $this->nature, $this->type, $this->limit, $this->Type_desc);
+        $res = Account::newAccount($this->acc_name, $this->nature, $this->main_account_id, $this->limit, $this->acc_desc);
 
         if ($res) {
             $this->closeAddNewModal();
@@ -75,10 +74,19 @@ class AccountIndex extends Component
 
     public function render()
     {
-        $accounts = Account::orderBy('id', 'desc')->get();
+        $accounts = Account::orderBy('id', 'desc')
+        ->when($this->account_nature,function ($q){
+            return $q->byNature($this->account_nature);
+        })
+        ->when($this->mainAccID,function ($q){
+            return $q->byMainAccount($this->mainAccID);
+        })
+        ->get();
+        $main_accounts = MainAccount::all();
 
         return view('livewire.accounting.account-index', [
             'accounts' => $accounts,
+            'main_accounts' => $main_accounts
         ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }
 }

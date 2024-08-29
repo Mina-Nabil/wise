@@ -18,12 +18,12 @@
     <div class="flex">
         <div class="dropdown relative mb-3 mr-2">
             <button class="btn btn-sm inline-flex justify-center btn-dark items-center" type="button" id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                Nature: {{ $account_nature }}
+                Nature: {{ $account_nature ?? 'All' }}
                 <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
             </button>
             <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                         z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                <li wire:click="updateNature('all')">
+                <li wire:click="updateNature(null)">
                     <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                             dark:hover:text-white">
                         All
@@ -40,32 +40,9 @@
 
             </ul>
         </div>
-
-        <div class="dropdown relative mb-3">
-            <button class="btn btn-sm inline-flex justify-center btn-dark items-center" type="button" id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                Type: {{ $account_type }}
-                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
-            </button>
-            <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
-                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                <li wire:click="updateType('all')">
-                    <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                            dark:hover:text-white">
-                        All
-                    </a>
-                </li>
-                @foreach ($types as $type)
-                    <li wire:click="updateType('{{ $type }}')">
-                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                        dark:hover:text-white">
-                            {{ ucwords($type) }}
-                        </a>
-                    </li>
-                @endforeach
-
-            </ul>
-        </div>
     </div>
+
+
 
 
 
@@ -87,7 +64,7 @@
                             <div class="text-sm text-slate-500 dark:text-slate-400 flex space-x-3">
                                 <!-- Type Badge -->
                                 <span class="badge bg-primary-500 text-white capitalize inline-flex items-center">
-                                    @switch($account->type)
+                                    @switch($account->main_account->type)
                                         @case('expense')
                                             <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:cash"></iconify-icon>
                                         @break
@@ -107,7 +84,7 @@
                                         @default
                                             <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:badge-check"></iconify-icon>
                                     @endswitch
-                                    {{ ucfirst($account->type) }}
+                                    {{ ucfirst($account->main_account->type) }}
                                 </span>
 
                                 <!-- Nature Badge -->
@@ -173,16 +150,16 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="form-group mb-5">
-                                <label for="Type_name" class="form-label">Name</label>
-                                <input type="text" id="Type_name" class="form-control mt-2 w-full {{ $errors->has('Type_name') ? '!border-danger-500' : '' }}" wire:model.defer="Type_name" max="100">
-                                @error('Type_name')
+                                <label for="acc_name" class="form-label">Name</label>
+                                <input type="text" id="acc_name" class="form-control mt-2 w-full {{ $errors->has('acc_name') ? '!border-danger-500' : '' }}" wire:model.defer="acc_name" max="100">
+                                @error('acc_name')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="form-group mb-5">
-                                <label for="Type_desc" class="form-label">Description</label>
-                                <textarea id="Type_desc" class="form-control mt-2 w-full {{ $errors->has('Type_desc') ? '!border-danger-500' : '' }}" wire:model.defer="Type_desc"></textarea>
-                                @error('Type_desc')
+                                <label for="acc_desc" class="form-label">Description</label>
+                                <textarea id="acc_desc" class="form-control mt-2 w-full {{ $errors->has('acc_desc') ? '!border-danger-500' : '' }}" wire:model.defer="acc_desc"></textarea>
+                                @error('acc_desc')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -199,14 +176,14 @@
                                 @enderror
                             </div>
                             <div class="form-group mb-5">
-                                <label for="type" class="form-label">Type</label>
-                                <select id="type" class="form-control mt-2 w-full {{ $errors->has('type') ? '!border-danger-500' : '' }}" wire:model.defer="type">
-                                    <option value="">Select Type</option>
-                                    @foreach ($types as $types)
-                                        <option value="{{ $types }}">{{ ucwords($types) }}</option>
+                                <label for="main_account_id" class="form-label">Main Account</label>
+                                <select id="main_account_id" class="form-control mt-2 w-full {{ $errors->has('main_account_id') ? '!border-danger-500' : '' }}" wire:model.defer="main_account_id">
+                                    <option>Select Type</option>
+                                    @foreach ($main_accounts as $main_account)
+                                        <option value="{{ $main_account->id }}">{{ ucwords($main_account->name) . ' • ' . ucwords($main_account->type) }}</option>
                                     @endforeach
                                 </select>
-                                @error('type')
+                                @error('main_account_id')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>

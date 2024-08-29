@@ -192,11 +192,16 @@ class JournalEntry extends Model
     ////relations
     public function credit_account(): BelongsTo
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(Account::class,'credit_id');
     }
 
     public function debit_account(): BelongsTo
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(Account::class,'debit_id');
+    }
+
+    public function entry_title(): BelongsTo
+    {
+        return $this->belongsTo(EntryTitle::class);
     }
 }

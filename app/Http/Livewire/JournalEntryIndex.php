@@ -17,6 +17,14 @@ class JournalEntryIndex extends Component
     public $searchText;
     public $isNewJournalEntryModalOpen = false;
 
+    public function openAddNewModal(){
+        $this->isNewJournalEntryModalOpen = true;
+    }
+
+    public function closeAddNewModal(){
+        $this->isNewJournalEntryModalOpen = false;
+    }
+
     public function render()
     {
         $entries = JournalEntry::paginate(50);
