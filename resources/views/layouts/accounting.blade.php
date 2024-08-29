@@ -129,6 +129,14 @@
                                 <span>Journal Entry</span>
                             </span>
                         </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/entries/unapproved') }}" class="navItem {{ $unapproved_entries ?? '' }}">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="material-symbols:do-not-touch-rounded"></iconify-icon>
+                                <span>Unapproved Entry</span>
+                            </span>
+                        </a>
                     </li> 
                 </ul>
             </div>

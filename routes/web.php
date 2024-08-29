@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Accounting\MainAccountIndex;
 use App\Http\Livewire\Accounting\AccountIndex;
 use App\Http\Livewire\Accounting\CreateJournalEntry;
+use App\Http\Livewire\Accounting\UnapprovedEntryIndex;
 use App\Http\Livewire\JournalEntryIndex;
 
 /*
@@ -105,6 +106,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get( '/accounts', AccountIndex::class );
     Route::get('/entries',JournalEntryIndex::class);
     Route::get('/entries/new',CreateJournalEntry::class);
+    Route::get('/entries/unapproved',UnapprovedEntryIndex::class);
 
 });
 

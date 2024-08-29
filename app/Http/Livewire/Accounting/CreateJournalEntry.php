@@ -43,9 +43,9 @@ class CreateJournalEntry extends Component
             'receiver_name' => 'required|string|max:255', 
             'amount' => 'required|numeric|min:0', // Must be a positive number
             'debit_id' => 'required|exists:accounts,id', // Should be a valid ID from the accounts table
-            'debit_doc_url' => 'nullable|url', // Should be a valid URL if provided
+            'debit_doc_url' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             'credit_id' => 'required|exists:accounts,id', // Should be a valid ID from the accounts table
-            'credit_doc_url' => 'nullable|url', // Should be a valid URL if provided
+            'credit_doc_url' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             'currency' => 'required|in:' . implode(',', JournalEntry::CURRENCIES),
             'currency_amount' => 'nullable|numeric|min:0', // Must be a positive number
             'currency_rate' => 'nullable|numeric|min:0', // Must be a positive number
@@ -55,8 +55,33 @@ class CreateJournalEntry extends Component
             'credit_id' =>'credit account',
         ]);
 
-        $credit_doc_url = null;
-        $debit_doc_url = null;
+        if($this->credit_doc_url){
+            $credit_doc_url = $this->credit_doc_url->store(JournalEntry::FILES_DIRECTORY, 's3');
+        }else{
+            $credit_doc_url = null;
+        }
+
+        if($this->debit_doc_url){
+            $debit_doc_url = $this->debit_doc_url->store(JournalEntry::FILES_DIRECTORY, 's3');
+        }else{
+            $debit_doc_url = null;
+        }
+        
+        // dd(
+        //     $this->title,
+        //     $this->amount,
+        //     $this->credit_id,
+        //     $this->credit_id,
+        //     $this->currency,
+        //     $this->currency_amount,
+        //     $this->currency_rate,
+        //     $credit_doc_url,
+        //     $debit_doc_url,
+        //     $this->notes,
+        //     $this->receiver_name,
+
+        // );
+
 
         $res = JournalEntry::newJournalEntry(
             $this->title,

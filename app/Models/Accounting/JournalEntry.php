@@ -3,6 +3,7 @@
 namespace App\Models\Accounting;
 
 use App\Models\Users\AppLog;
+use App\Models\Users\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -203,5 +204,10 @@ class JournalEntry extends Model
     public function entry_title(): BelongsTo
     {
         return $this->belongsTo(EntryTitle::class);
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class,'approver_id');
     }
 }

@@ -6,13 +6,14 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UnapprovedEntry extends Model
 {
     use HasFactory;
-    protected $table = 'journal_entries';
+    protected $table = 'unapproved_entries';
     protected $fillable = [
         'user_id',
         'entry_title_id',
@@ -154,5 +155,20 @@ class UnapprovedEntry extends Model
 
         $this->delete();
         return true;
+    }
+
+    public function credit_account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class,'credit_id');
+    }
+
+    public function debit_account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class,'debit_id');
+    }
+
+    public function entry_title(): BelongsTo
+    {
+        return $this->belongsTo(EntryTitle::class);
     }
 }
