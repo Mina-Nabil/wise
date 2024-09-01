@@ -57,7 +57,7 @@
                                     <label for="debit_id" class="block text-gray-700 dark:text-gray-300">Account</label>
                                     <select id="debit_id" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="debit_id">
                                         <option value="">Select Debit Account</option>
-                                        @foreach ($debitAccounts as $account)
+                                        @foreach ($accounts as $account)
                                             <option value="{{ $account->id }}">{{ $account->name }}</option>
                                         @endforeach
                                     </select>
@@ -81,7 +81,7 @@
                                     <label for="credit_id" class="block text-gray-700 dark:text-gray-300">Account</label>
                                     <select id="credit_id" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="credit_id">
                                         <option value="">Select Credit Account</option>
-                                        @foreach ($creditAccounts as $account)
+                                        @foreach ($accounts as $account)
                                             <option value="{{ $account->id }}">{{ $account->name }}</option>
                                         @endforeach
                                     </select>

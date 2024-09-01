@@ -84,8 +84,8 @@ class JournalEntry extends Model
             "amount"        =>  $amount,
             "currency"      =>  $currency,
             "day_serial"        =>  $day_serial,
-            "currency_amount"   =>  $currency_amount,
-            "currency_rate"     =>  $currency_rate,
+            "currency_amount"   =>  $currency_amount ?? $amount,
+            "currency_rate"     =>  $currency_rate ?? 1,
             "credit_doc_url"    =>  $credit_doc_url,
             "debit_doc_url"     =>  $debit_doc_url,
             "revert_entry_id"   =>  $revert_entry_id,
@@ -123,11 +123,11 @@ class JournalEntry extends Model
 
         try {
             ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
-            DB::transaction(function () use ($newAccount, $credit_account, $debit_account) {
+            DB::transaction(function () use ($amount, $newAccount, $credit_account, $debit_account) {
 
 
-                $new_credit_balance = $credit_account->updateBalance($this->amount);
-                $new_debit_balance = $debit_account->updateBalance(-1 * $this->amount);
+                $new_credit_balance = $credit_account->updateBalance($amount);
+                $new_debit_balance = $debit_account->updateBalance(-1 * $amount);
 
                 $newAccount->credit_balance = $new_credit_balance;
                 $newAccount->debit_balance = $new_debit_balance;
@@ -149,7 +149,7 @@ class JournalEntry extends Model
         if ($latestToday) return $latestToday->day_serial;
 
         $maxSerial = DB::table('journal_entries')->selectRaw('MAX(day_serial) as latest_serial')->first()->latest_serial;
-        return $maxSerial ? $maxSerial + 1 : 0;
+        return $maxSerial ? $maxSerial + 1 : 1;
     }
 
     ////model functions
@@ -177,7 +177,9 @@ class JournalEntry extends Model
     ///scopes
     public function scopeByAccount($query, $account_id)
     {
-        return $query->where('account_id', $account_id);
+        return $query->where(function ($q) use ($account_id) {
+            $q->where('debit_id', $account_id)->orwhere("credit_id", $account_id);
+        });
     }
 
     public function scopeByDay($query, Carbon $day)
@@ -193,12 +195,12 @@ class JournalEntry extends Model
     ////relations
     public function credit_account(): BelongsTo
     {
-        return $this->belongsTo(Account::class,'credit_id');
+        return $this->belongsTo(Account::class, 'credit_id');
     }
 
     public function debit_account(): BelongsTo
     {
-        return $this->belongsTo(Account::class,'debit_id');
+        return $this->belongsTo(Account::class, 'debit_id');
     }
 
     public function entry_title(): BelongsTo
@@ -208,6 +210,6 @@ class JournalEntry extends Model
 
     public function approver(): BelongsTo
     {
-        return $this->belongsTo(User::class,'approver_id');
+        return $this->belongsTo(User::class, 'approver_id');
     }
 }

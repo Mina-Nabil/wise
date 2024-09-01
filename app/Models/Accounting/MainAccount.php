@@ -32,7 +32,7 @@ class MainAccount extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
+        if (!$is_seeding && !$loggedInUser->can('create', Account::class)) return false;
 
         $newType = new self([
             'name' => $name,

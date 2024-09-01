@@ -113,13 +113,11 @@ class CreateJournalEntry extends Component
 
     public function render()
     {
-        $creditAccounts = Account::byNature(Account::NATURE_CREDIT)->get();
-        $debitAccounts = Account::byNature(Account::NATURE_DEBIT)->get();
+        $accounts = Account::all();
         $CURRENCIES = JournalEntry::CURRENCIES;
 
         return view('livewire.accounting.create-journal-entry', [
-            'creditAccounts' => $creditAccounts,
-            'debitAccounts' => $debitAccounts,
+            'accounts' => $accounts,
             'CURRENCIES' => $CURRENCIES,
         ])->layout('layouts.accounting', ['page_title' => 'Journal Entry • New', 'entries' => 'active']);
     }
