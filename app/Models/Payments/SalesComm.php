@@ -157,7 +157,7 @@ class SalesComm extends Model
         }
 
         $amount = ($this->comm_percentage / 100) * $from_amount;
-        Log::info("Amount: " . $from_amount);
+        Log::info("Amount: " . $amount);
 
         try {
             $this->update([
