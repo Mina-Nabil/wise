@@ -101,6 +101,6 @@ class SoldPolicyPolicy
      */
     public function delete(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->id == 1 || $user->id == 12 || $user->id == 10;
+        return $user->id == 1 || $user->id == 10;
     }
 }

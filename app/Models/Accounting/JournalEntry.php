@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class JournalEntry extends Model
 {
@@ -169,7 +170,36 @@ class JournalEntry extends Model
     }
 
     /** per entry */
-    public function downloadCashReceipt() {}
+    public function downloadCashReceipt() {
+
+        $template = IOFactory::load(resource_path('import/cash_receipt.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+        $activeSheet->getCell('I1')->setValue("NOTE");
+        $i = 2;
+        // foreach ($leads as $lead) {
+        //     $activeSheet->getCell('A' . $i)->setValue($lead->id);
+        //     $activeSheet->getCell('B' . $i)->setValue($lead->first_name);
+        //     $activeSheet->getCell('C' . $i)->setValue($lead->last_name);
+        //     $activeSheet->getCell('D' . $i)->setValue($lead->arabic_first_name);
+        //     $activeSheet->getCell('E' . $i)->setValue($lead->arabic_last_name);
+        //     $activeSheet->getCell('F' . $i)->setValue($lead->telephone1);
+        //     $activeSheet->getCell('G' . $i)->setValue($lead->telephone2);
+        //     $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
+        //     $i++;
+        // }
+
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "leads_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+
+    }
 
     /** modal needed to query by day */
     public function downloadDailyTransaction(Carbon $day) {}
