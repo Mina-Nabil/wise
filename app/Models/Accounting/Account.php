@@ -83,7 +83,7 @@ class Account extends Model
         return $this->limit <= $amount;
     }
 
-    public function editInfo($name, $nature, $type, $limit, $desc = null): bool
+    public function editInfo($name, $nature, $main_account_id, $limit, $desc = null): bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -93,7 +93,7 @@ class Account extends Model
             $this->update([
                 "name"  =>  $name,
                 "nature"  =>  $nature,
-                "type"  =>  $type,
+                "main_account_id"  =>  $main_account_id,
                 "desc"  =>  $desc,
                 "limit"  =>  $limit,
             ]);
