@@ -238,6 +238,11 @@ class JournalEntry extends Model
         return $this->belongsTo(EntryTitle::class);
     }
 
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');

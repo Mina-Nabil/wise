@@ -9,106 +9,137 @@
                 <div class="container-fluid  p-6">
 
                     <form wire:submit.prevent="save">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- First Column: Title and Amount -->
-                            <div>
-                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Info</h3>
-                                <div class="mb-4">
-                                    <label for="title" class="block text-gray-700 dark:text-gray-300">Title</label>
+
+                        <div class="from-group">
+                            <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Information</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+
+                                <div class="input-area">
+                                    <label for="title" class="form-label">Title</label>
                                     <input type="text" id="title" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('title') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="title" maxlength="100">
                                     @error('title')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
                                 </div>
 
-                                <div class="text-sm mb-4">
-                                    @if ($entry_titles)
-                                        @foreach ($entry_titles as $entry_title)
-                                            <p><iconify-icon icon="material-symbols:person"></iconify-icon>
-                                                {{ $entry_title->name }} <Span wire:click="selectTitle('{{ $entry_title->name }}')" class="cursor-pointer text-primary-500">Select title</Span>
-                                            </p>
-                                        @endforeach
-                                    @endif
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="amount" class="block text-gray-700 dark:text-gray-300">Amount</label>
+                                <div class="input-area">
+                                    <label for="amount" class="form-label">Amount</label>
                                     <input type="number" id="amount" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('amount') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="amount" step="0.01">
                                     @error('amount')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
                                 </div>
 
-                                <div class="mb-4">
-                                    <label for="receiver_name" class="block text-gray-700 dark:text-gray-300">Reciever Name</label>
-                                    <input type="text" id="receiver_name" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('receiver_name') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="receiver_name" step="0.01">
-                                    @error('receiver_name')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
+                                @if ($entry_titles)
+                                    <div class="text-sm mb-4 col-span-2">
+                                        @foreach ($entry_titles as $entry_title)
+                                            <p class="flex items-center">
+                                                <iconify-icon icon="fluent:rename-24-filled" class="mr-2"></iconify-icon>
+                                                {{ $entry_title->name }}
+                                                <span wire:click="selectTitle('{{ $entry_title->name }}')" class="cursor-pointer text-primary-500 ml-2">Select title</span>
+                                            </p>
+                                        @endforeach
+                                    </div>
+                                @endif
 
-                            <!-- Second Column: Debit and Credit Accounts with Documents -->
-                            <div>
-                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Accounts</h3>
-
-                                <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Debit</h4>
-                                <div class="mb-4">
-                                    <label for="debit_id" class="block text-gray-700 dark:text-gray-300">Account</label>
-                                    <select id="debit_id" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="debit_id">
-                                        <option value="">Select Debit Account</option>
-                                        @foreach ($accounts as $account)
-                                            <option value="{{ $account->id }}">{{ $account->name }}</option>
+                                <div class="input-area">
+                                    <label for="cash_entry_type" class="form-label">Cash entry type</label>
+                                    <select id="cash_entry_type" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('cash_entry_type') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="cash_entry_type">
+                                        <option value="">Select type</option>
+                                        @foreach ($CASH_ENTRY_TYPES as $CASH_ENTRY_TYPE)
+                                            <option value="{{ $CASH_ENTRY_TYPE }}">{{ ucwords($CASH_ENTRY_TYPE) }}</option>
                                         @endforeach
                                     </select>
-                                    @error('debit_id')
+                                    @error('cash_entry_type')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
                                 </div>
 
-                                <div class="mb-4">
-                                    <label for="debit_doc_url" class="block text-gray-700 dark:text-gray-300">Document</label>
-                                    <input type="file" id="debit_doc_url" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_doc_url') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="debit_doc_url">
-                                    @error('debit_doc_url')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
+                                <div class="flex justify-between items-end space-x-6">
+                                    <div class="input-area w-full">
+                                        <label for="receiver_name" class="form-label">Receiver name</label>
+                                        <input type="text" id="receiver_name" @if (!$cash_entry_type) disabled @endif class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('receiver_name') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="receiver_name"
+                                            step="0.01">
+                                        @error('receiver_name')
+                                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
 
-                                <hr class="m-2"><br>
+                            </div>
+                        </div>
 
-                                <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Credit</h4>
-                                <div class="mb-4">
-                                    <label for="credit_id" class="block text-gray-700 dark:text-gray-300">Account</label>
-                                    <select id="credit_id" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="credit_id">
-                                        <option value="">Select Credit Account</option>
-                                        @foreach ($accounts as $account)
-                                            <option value="{{ $account->id }}">{{ $account->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('credit_id')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
-                                </div>
 
-                                <div class="mb-4">
-                                    <label for="credit_doc_url" class="block text-gray-700 dark:text-gray-300">Document</label>
-                                    <input type="file" id="credit_doc_url" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_doc_url') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="credit_doc_url">
-                                    @error('credit_doc_url')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
+
+                        <!-- Second Column: Debit and Credit Accounts with Documents -->
+                        <div class="my-5">
+                            <div class="">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                    <div  class=" card-body rounded-md bg-[#E5F9FF] dark:bg-slate-800 shadow-base menu-open p-5">
+                                        <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Debit Account</h4>
+                                        <div class="mb-4">
+                                            <label for="debit_id" class="block text-gray-700 dark:text-gray-300">Account</label>
+                                            <select id="debit_id" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="debit_id">
+                                                <option value="">Select Debit Account</option>
+                                                @foreach ($accounts as $account)
+                                                    <option value="{{ $account->id }}">{{ $account->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('debit_id')
+                                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label for="debit_doc_url" class="block text-gray-700 dark:text-gray-300">Document</label>
+                                            <input type="file" id="debit_doc_url" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_doc_url') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="debit_doc_url">
+                                            @error('debit_doc_url')
+                                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+
+
+                                    <div  class=" card-body rounded-md bg-[#E5F9FF] dark:bg-slate-800 shadow-base menu-open p-5">
+                                        <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Credit Account</h4>
+                                        <div class="mb-4">
+                                            <label for="credit_id" class="block text-gray-700 dark:text-gray-300">Account</label>
+                                            <select id="credit_id" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="credit_id">
+                                                <option value="">Select Credit Account</option>
+                                                @foreach ($accounts as $account)
+                                                    <option value="{{ $account->id }}">{{ $account->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('credit_id')
+                                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label for="credit_doc_url" class="block text-gray-700 dark:text-gray-300">Document</label>
+                                            <input type="file" id="credit_doc_url" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_doc_url') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="credit_doc_url">
+                                            @error('credit_doc_url')
+                                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Third Column: Currency Data and Notes -->
-                            <div>
-                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Currency Info</h3>
+
+                        <div class="from-group mt-5">
+                            <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Currency</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- Third Column: Currency Data and Notes -->
                                 <div class="mb-4">
                                     <label for="currency" class="block text-gray-700 dark:text-gray-300">Currency</label>
                                     <select id="currency" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('currency') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="currency">
                                         <option value="">Select Currency</option>
-                                        @foreach ($CURRENCIES as $CURRENCY)
-                                            <option value="{{ $CURRENCY }}">{{ ucwords($CURRENCY) }}</option>
-                                        @endforeach
+                                            @foreach ($CURRENCIES as $CURRENCY)
+                                            <iconify-icon icon="openmoji:flag-egypt" width="1.2em" height="1.2em"></iconify-icon><option value="{{ $CURRENCY }}">{{ ucwords($CURRENCY) }}</option>
+                                            @endforeach
                                     </select>
                                     @error('currency')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -130,21 +161,21 @@
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
                                 </div>
-
-                                <div class="mb-4">
-                                    <label for="notes" class="block text-gray-700 dark:text-gray-300">Notes</label>
-                                    <textarea id="notes" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('notes') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="notes" rows="6"></textarea>
-                                    @error('notes')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="notes" class="block text-gray-700 dark:text-gray-300">Notes</label>
+                                <textarea id="notes" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('notes') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="notes" rows="6"></textarea>
+                                @error('notes')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
                         <!-- Submit Button -->
                         <div class="flex justify-end mt-6">
-                            <button type="submit" class="bg-black-500 hover:bg-black-600 text-white font-semibold py-2 px-4 rounded-md">
-                                Submit Entry
+                            <button wire:click="save" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="save">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="save" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </form>
