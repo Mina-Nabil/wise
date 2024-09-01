@@ -141,6 +141,7 @@ class SalesComm extends Model
         }
 
         $this->load('sold_policy');
+        $from_amount = 0;
         switch ($this->from) {
             case CommProfileConf::FROM_NET_PREM:
                 $from_amount = $this->sold_policy->net_premium;
