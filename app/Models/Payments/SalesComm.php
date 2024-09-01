@@ -150,12 +150,15 @@ class SalesComm extends Model
                 $from_amount = $this->sold_policy->insured_value;
                 break;
             case CommProfileConf::FROM_NET_COMM:
+                Log::info("GEET HNA");
                 $this->sold_policy->calculateTotalPolicyComm();
                 $from_amount =  $this->sold_policy->total_policy_comm;
                 break;
         }
 
         $amount = ($this->comm_percentage / 100) * $from_amount;
+        Log::info("Amount: " . $from_amount);
+
         try {
             $this->update([
                 "amount"            =>  $amount,
