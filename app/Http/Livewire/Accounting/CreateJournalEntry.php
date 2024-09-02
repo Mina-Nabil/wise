@@ -15,7 +15,7 @@ use PgSql\Lob;
 
 class CreateJournalEntry extends Component
 {
-    use WithFileUploads, AlertFrontEnd ,AuthorizesRequests;
+    use WithFileUploads, AlertFrontEnd, AuthorizesRequests;
 
     public $title;
     public $amount;
@@ -42,14 +42,13 @@ class CreateJournalEntry extends Component
 
     public function save()
     {
-        Log::info("GEEET");
-
+        if (!$this->currency) $this->currency = JournalEntry::CURRENCIES[0];
         if ($this->cash_entry_type) {
             $this->validate([
                 'receiver_name' => 'required|string|max:255',
                 'cash_entry_type' =>  'required|in:' . implode(',', JournalEntry::CASH_ENTRY_TYPES),
             ]);
-        }else{
+        } else {
             $this->receiver_name = null;
         }
 
@@ -100,8 +99,9 @@ class CreateJournalEntry extends Component
         }
     }
 
-    public function mount(){
-        $this->authorize('create',JournalEntry::class);
+    public function mount()
+    {
+        $this->authorize('create', JournalEntry::class);
     }
 
     public function selectTitle($v)

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UnapprovedEntry extends Model
 {
@@ -23,13 +24,14 @@ class UnapprovedEntry extends Model
         'debit_id',
         'credit_doc_url',
         'debit_doc_url',
+        'amount',
         'currency',
         'currency_amount',
         'currency_rate',
         'entry_title_id',
         'comment',
         'receiver_name',
-        'cash_type',
+        'cash_entry_type',
     ];
 
     ////static functions
@@ -56,14 +58,15 @@ class UnapprovedEntry extends Model
                 'debit_id'      => $debit_id,
                 'credit_doc_url'    => $credit_doc_url,
                 'debit_doc_url'     => $debit_doc_url,
-                'currency'      => $currency,
-                'currency_amount'   => $currency_amount,
-                'currency_rate'     => $currency_rate,
+                'currency'      => $currency ?? JournalEntry::CURRENCY_EGP,
+                'currency_amount'   => $currency_amount ?? $amount,
+                'currency_rate'     => $currency_rate ?? 1,
                 'entry_title_id'    => $entry_title_id,
                 'comment'       => $comment,
                 'receiver_name' => $receiver_name,
-                'cash_type'     => $cash_type,
+                'cash_entry_type'     => $cash_type,
             ]);
+            $newEntry->save();
             return $newEntry;
         } catch (Exception $e) {
             report($e);
@@ -87,9 +90,9 @@ class UnapprovedEntry extends Model
                 amount: $this->amount,
                 credit_id: $this->credit_id,
                 debit_id: $this->debit_id,
-                currency: $this->currency,
-                currency_amount: $this->currency_amount,
-                currency_rate: $this->currency_rate,
+                currency: $this->currency ?? JournalEntry::CURRENCY_EGP,
+                currency_amount: $this->currency_amount ?? $this->amount,
+                currency_rate: $this->currency_rate ?? 1,
                 credit_doc_url: $this->credit_doc_url,
                 debit_doc_url: $this->debit_doc_url,
                 comment: $this->comment,

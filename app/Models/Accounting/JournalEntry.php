@@ -2,6 +2,7 @@
 
 namespace App\Models\Accounting;
 
+use App\Helpers\Helpers;
 use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -36,6 +38,7 @@ class JournalEntry extends Model
         'comment',
         'is_reviewed',
         'day_serial',
+        'cash_entry_type',
         'receiver_name',
         'cash_type',
         'approver_id',
@@ -117,6 +120,7 @@ class JournalEntry extends Model
                 $entryTitle->id,
                 $credit_id,
                 $debit_id,
+                $amount,
                 $credit_doc_url,
                 $debit_doc_url,
                 $currency,
@@ -131,14 +135,10 @@ class JournalEntry extends Model
         try {
             ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
             DB::transaction(function () use ($amount, $newAccount, $credit_account, $debit_account) {
-
-
                 $new_credit_balance = $credit_account->updateBalance($amount);
                 $new_debit_balance = $debit_account->updateBalance(-1 * $amount);
-
                 $newAccount->credit_balance = $new_credit_balance;
                 $newAccount->debit_balance = $new_debit_balance;
-
                 $newAccount->save();
             });
             AppLog::info("Created entry", loggable: $newAccount);
@@ -152,7 +152,7 @@ class JournalEntry extends Model
 
     private static function getTodaySerial()
     {
-        $latestToday = self::where('created_at', Carbon::now()->format('Y-m-d'))->limit(1)->first();
+        $latestToday = self::whereDate('created_at', Carbon::today())->limit(1)->first();
         if ($latestToday) return $latestToday->day_serial;
 
         $maxSerial = DB::table('journal_entries')->selectRaw('MAX(day_serial) as latest_serial')->first()->latest_serial;
@@ -179,7 +179,7 @@ class JournalEntry extends Model
     public function downloadCashReceipt()
     {
 
-        $template = IOFactory::load(resource_path('import/cash_receipt.xlsx'));
+        $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
         }
@@ -227,7 +227,39 @@ class JournalEntry extends Model
     }
 
     /** modal needed to query by day */
-    public function downloadDailyTransaction(Carbon $day) {}
+    public function downloadDailyTransaction(Carbon $day) {
+
+        // $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
+        // if (!$template) {
+        //     throw new Exception('Failed to read template file');
+        // }
+        // $newFile = $template->copy();
+        // $activeSheet = $newFile->getSheet(3);
+    
+        // $activeSheet->getCell('B3')->setValue("كشف حركة الخزينة عن يوم ال" . Helpers::dayInArabic($day->dayOfWeek) . "  الموافق $day->day / $day->month / $day->year						");
+        // $trans = self::byDay($day)->get();
+        // $i = 6;
+        // foreach ($trans as $t) {
+        //     $activeSheet->getCell('A' . $i)->setValue($lead->id);
+        //     $activeSheet->getCell('B' . $i)->setValue($lead->first_name);
+        //     $activeSheet->getCell('C' . $i)->setValue($lead->last_name);
+        //     $activeSheet->getCell('D' . $i)->setValue($lead->arabic_first_name);
+        //     $activeSheet->getCell('E' . $i)->setValue($lead->arabic_last_name);
+        //     $activeSheet->getCell('F' . $i)->setValue($lead->telephone1);
+        //     $activeSheet->getCell('G' . $i)->setValue($lead->telephone2);
+        //     $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
+        //     $i++;
+        // }
+
+        // $writer = new Xlsx($newFile);
+        // $file_path = SoldPolicy::FILES_DIRECTORY . "cash_receipt.xlsx";
+        // $public_file_path = storage_path($file_path);
+        // $writer->save($public_file_path);
+
+        // return response()->download($public_file_path)->deleteFileAfterSend(true);
+
+
+    }
 
     ///scopes
     public function scopeByAccount($query, $account_id)
@@ -245,6 +277,14 @@ class JournalEntry extends Model
     public function scopeByDaySerial($query, int $day_serial)
     {
         return $query->where('day_serial', $day_serial);
+    }
+
+    public function scopeBetween($query, Carbon $from, Carbon $to)
+    {
+        return $query->whereBetween('created_at', [
+            $from->format('Y-m-d 00:00:00'),
+            $to->format('Y-m-d 23:59:59')
+        ]);
     }
 
     ////relations

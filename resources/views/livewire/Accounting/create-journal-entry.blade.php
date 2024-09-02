@@ -132,10 +132,10 @@
                             <div class="mb-4">
                                 <label for="currency" class="block text-gray-700 dark:text-gray-300">Currency</label>
                                 <select id="currency" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('currency') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="currency">
-                                    <option value="">Select Currency</option>
+
                                     @foreach ($CURRENCIES as $CURRENCY)
                                         <iconify-icon icon="openmoji:flag-egypt" width="1.2em" height="1.2em"></iconify-icon>
-                                        <option value="{{ $CURRENCY }}">{{ ucwords($CURRENCY) }}</option>
+                                        <option value="{{ $CURRENCY }}" >{{ ucwords($CURRENCY) }}</option>
                                     @endforeach
                                 </select>
                                 @error('currency')

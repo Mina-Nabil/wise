@@ -2,12 +2,15 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Account extends Model
 {
@@ -60,7 +63,45 @@ class Account extends Model
     }
 
     ////model functions
-    public function downloadAccountDetails(Carbon $from, Carbon $to) {}
+    public function downloadAccountDetails(Carbon $from, Carbon $to) {
+        $debit_entries = $this->debit_entries()->with('entry_title')->between($from, $to)->get();
+        $credit_entries = $this->credit_entries()->with('entry_title')->between($from, $to)->get();
+        $all_entries = $debit_entries->merge($credit_entries);
+        $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getSheet(0);
+    
+        $activeSheet->getCell('C3')->setValue("تحليلى	" . $this->name);
+     
+        $i = 8 ;
+        foreach ($all_entries as $e) {
+            $activeSheet->getCell('C' . $i)->setValue($e->id);
+            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($e->created_at)->format('d / M / Y'));
+
+            $activeSheet->getCell('E' . $i)->setValue($e->entry_title->name);
+            
+            if($e->debit_id){
+                $activeSheet->getCell('E' . $i)->setValue($e->amount);
+                $activeSheet->getCell('H' . $i)->setValue($e->debit_balance);
+            } else {
+                $activeSheet->getCell('F' . $i)->setValue($e->amount);   
+                $activeSheet->getCell('H' . $i)->setValue($e->credit_balance);
+            }
+            $activeSheet->insertNewRowBefore($i);
+
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = SoldPolicy::FILES_DIRECTORY . "account_balance.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+
+    }
 
 
     /** returns new balance after update */
@@ -123,9 +164,14 @@ class Account extends Model
     }
 
     ////relations
-    public function entries()
+    public function credit_entries()
     {
-        return $this->hasMany(JournalEntry::class);
+        return $this->hasMany(JournalEntry::class, 'credit_id');
+    }
+
+    public function debit_entries()
+    {
+        return $this->hasMany(JournalEntry::class, 'debit_id');
     }
     public function main_account()
     {

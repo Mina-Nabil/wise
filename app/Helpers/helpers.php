@@ -17,4 +17,25 @@ class Helpers
         }
         return false;
     }
+
+
+    public static function dayInArabic($day)
+    {
+        switch ($day) {
+            case 0:
+                return "حد";
+            case 1:
+                return "اثنين";
+            case 2:
+                return "ثلاثاء";
+            case 4:
+                return "اربعاء";
+            case 5:
+                return "خميس";
+            case 6:
+                return "جمعه";
+            case 7:
+                return "سبت";
+        }
+    }
 }
