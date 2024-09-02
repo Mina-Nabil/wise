@@ -189,7 +189,7 @@
 
                                         <td class="table-td ">{{ $entry->entry_title->name }}</td>
 
-                                        <td class="table-td "><b>{{ $entry->currency }} {{ number_format($entry->amount, 2) }}</b></td>
+                                        <td class="table-td "><b>{{ number_format($entry->amount, 2) }}</b></td>
 
                                         <td class="table-td ">{{ $entry->credit_account->name }}</td>
 
@@ -214,7 +214,7 @@
 
                                         <td class="table-td ">{{ number_format($entry->currency_amount, 2) }}</td>
 
-                                        <td class="table-td ">{{ $entry->currency_rate }}</td>
+                                        <td class="table-td ">{{ $entry->currency_rate }} {{ $entry->currency }}</td>
 
                                         <td class="table-td flex justify-between">
                                             <div>

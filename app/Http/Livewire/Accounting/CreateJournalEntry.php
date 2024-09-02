@@ -10,7 +10,8 @@ use Http\Client\Common\Plugin\Journal;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
+use Illuminate\Support\Facades\Log;
+use PgSql\Lob;
 
 class CreateJournalEntry extends Component
 {
@@ -41,6 +42,8 @@ class CreateJournalEntry extends Component
 
     public function save()
     {
+        Log::info("GEEET");
+
         if ($this->cash_entry_type) {
             $this->validate([
                 'receiver_name' => 'required|string|max:255',
