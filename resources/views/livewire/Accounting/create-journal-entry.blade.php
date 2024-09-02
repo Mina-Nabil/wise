@@ -45,7 +45,7 @@
                                 <div class="input-area">
                                     <label for="cash_entry_type" class="form-label">Cash entry type</label>
                                     <select id="cash_entry_type" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('cash_entry_type') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="cash_entry_type">
-                                        <option value="">Select type</option>
+                                        <option value="">N/A</option>
                                         @foreach ($CASH_ENTRY_TYPES as $CASH_ENTRY_TYPE)
                                             <option value="{{ $CASH_ENTRY_TYPE }}">{{ ucwords($CASH_ENTRY_TYPE) }}</option>
                                         @endforeach

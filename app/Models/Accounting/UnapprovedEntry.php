@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 class UnapprovedEntry extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'unapproved_entry';
+
     protected $table = 'unapproved_entries';
     protected $fillable = [
         'user_id',
@@ -159,12 +161,12 @@ class UnapprovedEntry extends Model
 
     public function credit_account(): BelongsTo
     {
-        return $this->belongsTo(Account::class,'credit_id');
+        return $this->belongsTo(Account::class, 'credit_id');
     }
 
     public function debit_account(): BelongsTo
     {
-        return $this->belongsTo(Account::class,'debit_id');
+        return $this->belongsTo(Account::class, 'debit_id');
     }
 
     public function entry_title(): BelongsTo

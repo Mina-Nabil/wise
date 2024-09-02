@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 class Account extends Model
 {
     use HasFactory;
+    const MORPH_TYPE = 'account';
+
     protected $table = 'accounts';
     protected $fillable = [
         'name',

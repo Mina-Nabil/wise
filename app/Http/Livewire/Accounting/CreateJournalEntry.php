@@ -81,7 +81,7 @@ class CreateJournalEntry extends Component
             $debit_doc_url = null;
         }
 
-        $res = JournalEntry::newJournalEntry($this->title, $this->amount, $this->credit_id, $this->debit_id, $this->currency, $this->currency_amount, $this->currency_rate, $credit_doc_url, $debit_doc_url, comment: $this->notes, receiver_name: $this->receiver_name, approver_id: auth()->id());
+        $res = JournalEntry::newJournalEntry($this->title, $this->amount, $this->credit_id, $this->debit_id, $this->currency, $this->currency_amount, $this->currency_rate, $credit_doc_url, $debit_doc_url, comment: $this->notes, receiver_name: $this->receiver_name);
 
         if ($res) {
             redirect(url('/entries'));

@@ -41,6 +41,10 @@ class Policy extends Model
     const BUSINESS_EXTENDED_WARRANTY = 'extended_warranty';
     const BUSINESS_LIABILITY = 'liability';
 
+    const BUSINESS_FIRE_ALL = 'fire_all';
+    const BUSINESS_FIRE_AND_BURGLARY = 'fire_and_burgulary';
+
+
     const PERSONAL_TYPES = [
         self::BUSINESS_PERSONAL_MOTOR,
         self::BUSINESS_PERSONAL_MEDICAL,
@@ -49,6 +53,8 @@ class Policy extends Model
         self::BUSINESS_HOME,
         self::BUSINESS_BUSINESS,
         self::BUSINESS_PROPERTY,
+        self::BUSINESS_FIRE_ALL,
+        self::BUSINESS_FIRE_AND_BURGLARY,
     ];
 
     const CORPORATE_TYPES = [
@@ -61,6 +67,8 @@ class Policy extends Model
         self::BUSINESS_EXTENDED_WARRANTY,
         self::BUSINESS_CORPORATE_LIFE,
         self::BUSINESS_PROPERTY,
+        self::BUSINESS_FIRE_ALL,
+        self::BUSINESS_FIRE_AND_BURGLARY,
     ];
 
     const LINES_OF_BUSINESS = [
@@ -79,6 +87,8 @@ class Policy extends Model
         self::BUSINESS_PERSONAL_LIFE,
         self::BUSINESS_CORPORATE_LIFE,
         self::BUSINESS_BUSINESS,
+        self::BUSINESS_FIRE_ALL,
+        self::BUSINESS_FIRE_AND_BURGLARY,
     ];
 
     protected $table = 'policies';

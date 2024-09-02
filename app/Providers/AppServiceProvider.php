@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Accounting\Account;
+use App\Models\Accounting\JournalEntry;
+use App\Models\Accounting\MainAccount;
+use App\Models\Accounting\UnapprovedEntry;
 use App\Models\Base\Area;
 use App\Models\Base\City;
 use App\Models\Cars\Brand;
@@ -102,6 +106,11 @@ class AppServiceProvider extends ServiceProvider
             ClientPayment::MORPH_TYPE => ClientPayment::class,
             SalesComm::MORPH_TYPE => SalesComm::class,
             Target::MORPH_TYPE => Target::class,
+            
+            JournalEntry::MORPH_TYPE => JournalEntry::class,
+            MainAccount::MORPH_TYPE => MainAccount::class,
+            Account::MORPH_TYPE => Account::class,
+            UnapprovedEntry::MORPH_TYPE => UnapprovedEntry::class,
 
 
         ]);

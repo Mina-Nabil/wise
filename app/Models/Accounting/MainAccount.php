@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class MainAccount extends Model
 {
+    
     use HasFactory;
+
+    const MORPH_TYPE = 'main_account';
+
     protected $table = 'main_accounts';
     protected $fillable = ['name', 'desc', 'type'];
     public $timestamps = false;

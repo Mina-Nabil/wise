@@ -18,6 +18,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class JournalEntry extends Model
 {
+    const MORPH_TYPE = 'journal_entry';
+
     use HasFactory;
     protected $table = 'journal_entries';
     protected $fillable = [
@@ -27,6 +29,7 @@ class JournalEntry extends Model
         'currency',
         'credit_doc_url',
         'debit_doc_url',
+        'amount',
         'currency_amount',
         'currency_rate',
         'entry_title_id',
