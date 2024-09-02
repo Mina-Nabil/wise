@@ -9,10 +9,12 @@ use App\Traits\AlertFrontEnd;
 use Http\Client\Common\Plugin\Journal;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class CreateJournalEntry extends Component
 {
-    use WithFileUploads ,AlertFrontEnd;
+    use WithFileUploads, AlertFrontEnd ,AuthorizesRequests;
 
     public $title;
     public $amount;
@@ -24,6 +26,7 @@ class CreateJournalEntry extends Component
     public $currency_amount;
     public $currency_rate;
     public $notes;
+    public $cash_entry_type;
     public $receiver_name;
 
     public $entry_titles;
@@ -38,71 +41,64 @@ class CreateJournalEntry extends Component
 
     public function save()
     {
-        $this->validate([
-            'title' => 'required|string|max:255', // Assuming title is a string and required
-            'receiver_name' => 'required|string|max:255', 
-            'amount' => 'required|numeric|min:0', // Must be a positive number
-            'debit_id' => 'required|exists:accounts,id', // Should be a valid ID from the accounts table
-            'debit_doc_url' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
-            'credit_id' => 'required|exists:accounts,id', // Should be a valid ID from the accounts table
-            'credit_doc_url' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
-            'currency' => 'required|in:' . implode(',', JournalEntry::CURRENCIES),
-            'currency_amount' => 'nullable|numeric|min:0', // Must be a positive number
-            'currency_rate' => 'nullable|numeric|min:0', // Must be a positive number
-            'notes' => 'nullable|string', // Optional field; if provided, must be a string
-        ],attributes:[
-            'debit_id' => 'debit account',
-            'credit_id' =>'credit account',
-        ]);
-
-        if($this->credit_doc_url){
-            $credit_doc_url = $this->credit_doc_url->store(JournalEntry::FILES_DIRECTORY, 's3');
+        if ($this->cash_entry_type) {
+            $this->validate([
+                'receiver_name' => 'required|string|max:255',
+                'cash_entry_type' =>  'required|in:' . implode(',', JournalEntry::CASH_ENTRY_TYPES),
+            ]);
         }else{
+            $this->receiver_name = null;
+        }
+
+        $this->validate(
+            [
+                'title' => 'required|string|max:255', // Assuming title is a string and required
+                'amount' => 'required|numeric|min:0', // Must be a positive number
+                'debit_id' => 'required|exists:accounts,id', // Should be a valid ID from the accounts table
+                'debit_doc_url' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+                'credit_id' => 'required|exists:accounts,id', // Should be a valid ID from the accounts table
+                'credit_doc_url' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+                'currency' => 'required|in:' . implode(',', JournalEntry::CURRENCIES),
+                'currency_amount' => 'nullable|numeric|min:0', // Must be a positive number
+                'currency_rate' => 'nullable|numeric|min:0', // Must be a positive number
+                'notes' => 'nullable|string', // Optional field; if provided, must be a string
+            ],
+            attributes: [
+                'debit_id' => 'debit account',
+                'credit_id' => 'credit account',
+            ],
+        );
+
+        if ($this->credit_doc_url) {
+            $credit_doc_url = $this->credit_doc_url->store(JournalEntry::FILES_DIRECTORY, 's3');
+        } else {
             $credit_doc_url = null;
         }
 
-        if($this->debit_doc_url){
+        if ($this->debit_doc_url) {
             $debit_doc_url = $this->debit_doc_url->store(JournalEntry::FILES_DIRECTORY, 's3');
-        }else{
+        } else {
             $debit_doc_url = null;
         }
-        
-        // dd(
-        //     $this->title,
-        //     $this->amount,
-        //     $this->credit_id,
-        //     $this->credit_id,
-        //     $this->currency,
-        //     $this->currency_amount,
-        //     $this->currency_rate,
-        //     $credit_doc_url,
-        //     $debit_doc_url,
-        //     $this->notes,
-        //     $this->receiver_name,
 
-        // );
+        $res = JournalEntry::newJournalEntry($this->title, $this->amount, $this->credit_id, $this->debit_id, $this->currency, $this->currency_amount, $this->currency_rate, $credit_doc_url, $debit_doc_url, comment: $this->notes, receiver_name: $this->receiver_name, approver_id: auth()->id());
 
-
-        $res = JournalEntry::newJournalEntry(
-            $this->title,
-            $this->amount,
-            $this->credit_id,
-            $this->credit_id,
-            $this->currency,
-            $this->currency_amount,
-            $this->currency_rate,
-            $credit_doc_url,
-            $debit_doc_url,
-            comment: $this->notes,
-            receiver_name: $this->receiver_name,
-            approver_id: auth()->id(),
-        );
-
-        if($res){
+        if ($res) {
             redirect(url('/entries'));
-        }else{
-            $this->alert('failed','server error');
+        } else {
+            $this->alert('failed', 'server error');
         }
+    }
+
+    public function updatedCashEntryType()
+    {
+        if ($this->cash_entry_type === '') {
+            $this->reset('receiver_name');
+        }
+    }
+
+    public function mount(){
+        $this->authorize('create',JournalEntry::class);
     }
 
     public function selectTitle($v)
@@ -115,10 +111,12 @@ class CreateJournalEntry extends Component
     {
         $accounts = Account::all();
         $CURRENCIES = JournalEntry::CURRENCIES;
+        $CASH_ENTRY_TYPES = JournalEntry::CASH_ENTRY_TYPES;
 
         return view('livewire.accounting.create-journal-entry', [
             'accounts' => $accounts,
             'CURRENCIES' => $CURRENCIES,
+            'CASH_ENTRY_TYPES' => $CASH_ENTRY_TYPES,
         ])->layout('layouts.accounting', ['page_title' => 'Journal Entry • New', 'entries' => 'active']);
     }
 }

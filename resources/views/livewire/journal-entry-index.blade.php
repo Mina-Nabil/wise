@@ -3,7 +3,7 @@
 
     @if (count($selectedEntries) > 0)
         <div class="grid md:grid-cols-1 select-action-btns-container gap-2">
-            <button  wire:click='reviewSelectedEntries'  class="btn btn-sm inline-flex justify-center btn-primary block-btn">
+            <button wire:click='reviewSelectedEntries' class="btn btn-sm inline-flex justify-center btn-primary block-btn">
                 <span class="flex items-center">
                     <span>Review Entries</span>
                 </span>
@@ -40,12 +40,11 @@
 
 
     @if ($selectedAccount)
-
         <div class="card dark active mb-2">
             <div class="card-body rounded-md bg-white dark:bg-slate-800 shadow-base menu-open">
                 <div class="items-center p-5">
                     <div class="flex justify-between">
-                        <h3 class="card-title text-slate-900 dark:text-white">Allianz • حساب شركه اليانز</h3>
+                        <h3 class="card-title text-slate-900 dark:text-white">{{ $selectedAccount->name }} • {{ $selectedAccount->desc }}</h3>
                         <button wire:click.prevent="clearAccountFilter" class="action-btn" type="button">
                             <iconify-icon icon="material-symbols:close"></iconify-icon>
                         </button>
@@ -124,7 +123,7 @@
                                         </div>
                                     </th>
 
-                                    <th scope="col" class=" table-th ">
+                                    <th scope="col" class=" table-th !p-1">
                                         #
                                     </th>
 
@@ -219,11 +218,9 @@
 
                                         <td class="table-td flex justify-between">
                                             <div>
-                                                @if ($entry->comment)
-                                                    <button class="action-btn" type="button">
-                                                        <iconify-icon icon="iconamoon:comment"></iconify-icon>
-                                                    </button>
-                                                @endif
+                                                <button class="action-btn" type="button" wire:click="showEntry({{ $entry->id }})">
+                                                    <iconify-icon icon="bi:info" class="text-lg"></iconify-icon>
+                                                </button>
 
                                             </div>
                                             <div class="dropstart relative text-right">
@@ -304,7 +301,7 @@
     @can('viewAny', \App\Models\Accounting\JournalEntry::class)
         @if ($isOpenFilterAccountModal)
             <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-                <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none" style="min-width:800px;">
+                <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
                     <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                         <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                             <!-- Modal header -->
@@ -316,7 +313,7 @@
                                 <button wire:click="toggleAddLead" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
                                 </button>
@@ -386,90 +383,10 @@
                                                             </td>
                                                         </tr>
                                                     @endforeach
-
-
                                                 </tbody>
                                             </table>
-
-
-
-
-                                            {{-- @foreach ($fetched_accounts as $account)
-                                            <div class="card rounded-md bg-white dark:bg-slate-800 shadow-base mb-3">
-                                                <div class="card-body flex flex-col p-6 active">
-                                                    <div class="card-text h-full menu-open active">
-                                                        <div class="flex justify-between mb-4">
-                                                            <div>
-                                                                <div class="text-xl text-slate-900 dark:text-white">
-                                                                    {{ $account->name }}
-                                                                </div>
-                                                                <div class="text-sm text-slate-500 dark:text-slate-400 flex space-x-3">
-                                                                    <!-- Type Badge -->
-                                                                    <span class="badge bg-primary-500 text-white capitalize inline-flex items-center">
-                                                                        @switch($account->main_account->type)
-                                                                            @case('expense')
-                                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:cash"></iconify-icon>
-                                                                            @break
-
-                                                                            @case('revenue')
-                                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:currency-dollar"></iconify-icon>
-                                                                            @break
-
-                                                                            @case('asset')
-                                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:home"></iconify-icon>
-                                                                            @break
-
-                                                                            @case('liability')
-                                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:document-text"></iconify-icon>
-                                                                            @break
-
-                                                                            @default
-                                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:badge-check"></iconify-icon>
-                                                                        @endswitch
-                                                                        {{ ucfirst($account->main_account->type) }}
-                                                                    </span>
-
-                                                                    <!-- Nature Badge -->
-                                                                    <span class="badge bg-secondary-500 text-white capitalize inline-flex items-center">
-                                                                        @if ($account->nature === 'credit')
-                                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-up"></iconify-icon>
-                                                                        @elseif ($account->nature === 'debit')
-                                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-down"></iconify-icon>
-                                                                        @else
-                                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:question-mark-circle"></iconify-icon>
-                                                                        @endif
-                                                                        {{ ucfirst($account->nature) }}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card-text mt-4 menu-open active">
-                                                            <div class="mt-6 flex justify-between menu-open">
-                                                                <div>
-                                                                    <p>Balance</p>
-                                                                    <div class="text-lg text-slate-900 dark:text-white">
-                                                                        <b>
-                                                                            EGP {{ number_format($account->balance, 2) }}
-                                                                        </b>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach --}}
                                         @endif
-
                                     </div>
-
-
-                                </div>
-                                <!-- Modal footer -->
-                                <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                    <button wire:click="addLead" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                        Accept
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -478,4 +395,65 @@
         @endif
     @endcan
 
+    @can('viewAny', \App\Models\Accounting\JournalEntry::class)
+        @if ($entryId)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px;">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    #{{ $entryInfo->id }} • {{ $entryInfo->day_serial }}
+                                </h3>
+
+                                <button wire:click="closeShowInfo" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comment</p>
+                                    <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                        {{ $entryInfo->comment ?? 'No comment added.' }}
+                                    </div>
+                                </div>
+
+                                @if ($entryInfo->cash_entry_type)
+                                    <div>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $entryInfo->cash_entry_type }}</p>
+                                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                            <b>{{ $entryInfo->receiver_name ?? 'No comment added.' }}</b>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <hr>
+
+                                <div class="flex justify-end">
+                                    <div class="mr-6">
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 text-right">Approver</p>
+                                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                            <b>{{ $entryInfo->approver->full_name ?? 'Not approved yet.' }}</b>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 text-right">Creator</p>
+                                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                            <b>{{ $entryInfo->creator->full_name }}</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        @endif
+    @endcan
 </div>

@@ -27,9 +27,27 @@ class JournalEntryIndex extends Component
 
     protected $queryString = ['AccountId'];
 
+    // for bulk actions
     public $entries;
     public $selectedEntries = [];
     public $selectAll = false;
+
+    // for entry show info
+    public $entryInfo;
+    public $entryId;
+
+    public function showEntry($id){
+        $this->entryId  = $id;
+        
+        $this->entryInfo = JournalEntry::findOrFail($id);
+        
+        $this->authorize('view',$this->entryInfo);
+        
+    }
+
+    public function closeShowInfo(){
+        $this->reset(['entryId','entryInfo']);
+    }
 
     public function updatedSelectAll($value)
     {
