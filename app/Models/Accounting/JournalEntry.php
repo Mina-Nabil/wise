@@ -2,8 +2,10 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
+use ArPHP\I18N\Arabic;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class JournalEntry extends Model
 {
@@ -170,16 +173,36 @@ class JournalEntry extends Model
     }
 
     /** per entry */
-    public function downloadCashReceipt() {
+    public function downloadCashReceipt()
+    {
 
         $template = IOFactory::load(resource_path('import/cash_receipt.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
         }
         $newFile = $template->copy();
-        $activeSheet = $newFile->getActiveSheet();
-        $activeSheet->getCell('I1')->setValue("NOTE");
-        $i = 2;
+        if ($this->cash_entry_type == self::CASH_ENTRY_RECEIVED) {
+            $activeSheet = $newFile->getSheet(1);
+        } elseif ($this->cash_entry_type == self::CASH_ENTRY_DELIVERED) {
+            $activeSheet = $newFile->getSheet(2);
+        } else {
+            return false;
+        }
+        $Arabic = new Arabic('Numbers');
+
+        $Arabic->setNumberFeminine(1);
+        $Arabic->setNumberFormat(1);
+    
+        
+        $text = $Arabic->int2str($this->amount);
+        $number_format = number_format($this->amount, 2);
+    
+        $activeSheet->getCell('B7')->setValue($this->amount);
+        $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('Y / m / d'));
+        $activeSheet->getCell('B9')->setValue("/    .......................................{$this->receiver_name}................................................"  );
+        $activeSheet->getCell('B11')->setValue("/    ......{$number_format}...... نقدا / شيك رقم : ............................................				"  );
+        $activeSheet->getCell('B13')->setValue("/.............................$text............................................				"  );
+
         // foreach ($leads as $lead) {
         //     $activeSheet->getCell('A' . $i)->setValue($lead->id);
         //     $activeSheet->getCell('B' . $i)->setValue($lead->first_name);
@@ -193,12 +216,11 @@ class JournalEntry extends Model
         // }
 
         $writer = new Xlsx($newFile);
-        $file_path = self::FILES_DIRECTORY . "leads_export.xlsx";
+        $file_path = SoldPolicy::FILES_DIRECTORY . "cash_receipt.xlsx";
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
 
         return response()->download($public_file_path)->deleteFileAfterSend(true);
-
     }
 
     /** modal needed to query by day */

@@ -9,6 +9,7 @@
         "doctrine/dbal": "^2.13.1",
         "guzzlehttp/guzzle": "^7.2",
         "jeroendesloovere/vcard": "^1.7",
+        "khaled.alshamaa/ar-php": "^6.3",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
