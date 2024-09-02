@@ -8,7 +8,7 @@
                 </header>
                 <div class="container-fluid  p-6">
 
-                    <form wire:submit.prevent="save">
+                    <form>
 
                         <div class="from-group">
                             <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Information</h4>
@@ -58,8 +58,7 @@
                                 <div class="flex justify-between items-end space-x-6">
                                     <div class="input-area w-full">
                                         <label for="receiver_name" class="form-label">Receiver name</label>
-                                        <input type="text" id="receiver_name" @if (!$cash_entry_type) disabled @endif class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('receiver_name') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="receiver_name"
-                                            step="0.01">
+                                        <input type="text" id="receiver_name" @if (!$cash_entry_type) disabled @endif class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('receiver_name') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="receiver_name" step="0.01">
                                         @error('receiver_name')
                                             <span class="text-red-500 text-sm">{{ $message }}</span>
                                         @enderror
@@ -75,7 +74,7 @@
                         <div class="my-5">
                             <div class="">
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    <div  class=" card-body rounded-md bg-[#E5F9FF] dark:bg-slate-800 shadow-base menu-open p-5">
+                                    <div class=" card-body rounded-md bg-[#E5F9FF] dark:bg-slate-800 shadow-base menu-open p-5">
                                         <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Debit Account</h4>
                                         <div class="mb-4">
                                             <label for="debit_id" class="block text-gray-700 dark:text-gray-300">Account</label>
@@ -101,7 +100,7 @@
 
 
 
-                                    <div  class=" card-body rounded-md bg-[#E5F9FF] dark:bg-slate-800 shadow-base menu-open p-5">
+                                    <div class=" card-body rounded-md bg-[#E5F9FF] dark:bg-slate-800 shadow-base menu-open p-5">
                                         <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Credit Account</h4>
                                         <div class="mb-4">
                                             <label for="credit_id" class="block text-gray-700 dark:text-gray-300">Account</label>
@@ -137,9 +136,10 @@
                                     <label for="currency" class="block text-gray-700 dark:text-gray-300">Currency</label>
                                     <select id="currency" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('currency') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="currency">
                                         <option value="">Select Currency</option>
-                                            @foreach ($CURRENCIES as $CURRENCY)
-                                            <iconify-icon icon="openmoji:flag-egypt" width="1.2em" height="1.2em"></iconify-icon><option value="{{ $CURRENCY }}">{{ ucwords($CURRENCY) }}</option>
-                                            @endforeach
+                                        @foreach ($CURRENCIES as $CURRENCY)
+                                            <iconify-icon icon="openmoji:flag-egypt" width="1.2em" height="1.2em"></iconify-icon>
+                                            <option value="{{ $CURRENCY }}">{{ ucwords($CURRENCY) }}</option>
+                                        @endforeach
                                     </select>
                                     @error('currency')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
