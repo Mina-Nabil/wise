@@ -25,6 +25,12 @@
                     Account Entries
                 </button>
             @endcan
+            @can('viewAny', \App\Models\Accounting\JournalEntry::class)
+                <button wire:click="showDownloadDailyTransactionsForm" class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="line-md:download-loop"></iconify-icon>
+                    Download daily Transactions
+                </button>
+            @endcan
             @can('create', \App\Models\Accounting\JournalEntry::class)
                 <a href="{{ url('/entries/new') }}">
                     <button wire:click="openAddNewModal" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
@@ -100,10 +106,10 @@
     @endif
 
     <div class="card">
-        <header class=" card-header noborder">
+        {{-- <header class=" card-header noborder">
             <h4 class="card-title">Table Head
             </h4>
-        </header>
+        </header> --}}
 
         <div class="card-body px-6 pb-6">
             <div class="overflow-x-auto -mx-6">
@@ -265,6 +271,14 @@
                                                                     <span>Download debit document</span></span>
                                                             </li>
                                                         @endif
+                                                        @if ($entry->cash_entry_type)
+                                                            <li wire:click="downloadCashReceipt({{ $entry->id }})">
+                                                                <span
+                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                    <iconify-icon icon="fluent:receipt-cube-20-filled"></iconify-icon>
+                                                                    <span>Download cash receipt</span></span>
+                                                            </li>
+                                                        @endif
                                                     @endcan
                                                 </ul>
                                             </div>
@@ -272,24 +286,28 @@
 
                                     </tr>
                                 @empty
-                                    {{-- START: empty filter result --}}
-                                    <div class="card m-5 p-5">
-                                        <div class="card-body rounded-md bg-white dark:bg-slate-800 m-5">
-                                            <div class="items-center text-center p-5 m-5">
-                                                <h2><iconify-icon icon="ph:empty-bold"></iconify-icon></h2>
-                                                <h2 class="card-title text-slate-900 dark:text-white mb-3">No Entries Found!</h2>
-                                                <p class="card-text">Try changing the filters or search terms for this view.
-                                                </p>
-                                                <a href="{{ url('/entries/new') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">New Entry</a>
+                                    <tr>
+                                        <td colspan="11">
+                                            {{-- START: empty filter result --}}
+                                            <div class="card m-5 p-5">
+                                                <div class="card-body rounded-md bg-white dark:bg-slate-800 m-5">
+                                                    <div class="items-center text-center p-5 m-5">
+                                                        <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
+                                                        <h2 class="card-title text-slate-900 dark:text-white mb-3">No Entries Found!</h2>
+                                                        <p class="card-text">Try changing the filters or search terms for this view.</p>
+                                                        <a href="{{ url('/entries/new') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">New Entry</a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    {{-- END: empty filter result --}}
+                                            {{-- END: empty filter result --}}
+                                        </td>
+                                    </tr>
                                 @endforelse
 
                             </tbody>
                         </table>
                     </div>
+                    {{-- {{ $entries->links('vendor.livewire.bootstrap') }} --}}
                 </div>
             </div>
         </div>
@@ -313,7 +331,7 @@
                                 <button wire:click="toggleAddLead" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
                                 </button>
@@ -410,7 +428,7 @@
                                 <button wire:click="closeShowInfo" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
                                 </button>
@@ -456,4 +474,51 @@
                 </div>
         @endif
     @endcan
+
+
+    @if ($isOpenDailyTrans)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal-dialog relative w-auto pointer-events-none">
+                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Download daily transactions
+                                </h3>
+                                <button wire:click="hideDownloadDailyTransactionsForm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                                                                                                                                                                                                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+
+                                <div class="from-group">
+                                    <div class="input-area">
+                                        <label for="tranactionsDay" class="form-label">Select day</label>
+                                        <input id="tranactionsDay" type="date" class="form-control @error('tranactionsDay') !border-danger-500 @enderror" wire:model.lazy="tranactionsDay" autocomplete="off">
+                                    </div>
+                                    @error('tranactionsDay')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="downloadDailyTransaction" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="downloadDailyTransaction">Download</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadDailyTransaction" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
 </div>

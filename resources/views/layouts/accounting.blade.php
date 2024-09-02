@@ -73,7 +73,7 @@
             <div id="bodyOverlay"
                 class="w-screen h-screen fixed top-0 bg-slate-900 bg-opacity-50 backdrop-blur-sm z-10 hidden"></div>
             <div class="logo-segment">
-                <a class="flex items-center" href="{{ url('/') }}">
+                <a class="flex items-center" href="{{ url('/entries') }}">
                     <img src="{{ asset('assets/images/logo/wise-acc-logo-wide.png') }}" class="black_logo" alt="logo">
                     <img src="{{ asset('assets/images/logo/wise-acc-logo-wide.png') }}" class="white_logo"
                         alt="logo">
@@ -175,6 +175,11 @@
                                     </span>
                                 </button>
 
+                            </div>
+                            <div class="text-right">
+                                <a href="/">
+                                    <button class="btn btn-sm inline-flex justify-center btn-outline-light rounded-[25px]">CRM APP</button>
+                                </a>
                             </div>
                             <!-- end vertcial -->
                             <div class="items-center space-x-4 rtl:space-x-reverse horizental-box">

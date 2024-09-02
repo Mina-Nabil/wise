@@ -12,12 +12,21 @@ class UnapprovedEntryIndex extends Component
 
     public $page_title = '• Unapproved Entries';
 
-    protected $listeners = ['approveEntry']; //functions need confirmation
+    protected $listeners = ['approveEntry','deleteEntry']; //functions need confirmation
 
     public function approveEntry($id){
         $res = UnapprovedEntry::findOrFail($id)->approveRecord();
         if($res){
             $this->alert('success' , 'Entry approved');
+        }else{
+            $this->alert('failed','server error');
+        }
+    }
+
+    public function deleteEntry($id){
+        $res = UnapprovedEntry::findOrFail($id)->deleteRecord();
+        if($res){
+            $this->alert('success' , 'Entry deleted');
         }else{
             $this->alert('failed','server error');
         }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Users\AppLog;
 
 class UnapprovedEntry extends Model
 {
@@ -110,7 +111,7 @@ class UnapprovedEntry extends Model
     }
 
     public function editRecord(
-        $entry_title_id,
+        $title,
         $amount,
         $credit_id,
         $debit_id,
@@ -123,10 +124,11 @@ class UnapprovedEntry extends Model
         $receiver_name = null,
         $cash_type = null,
     ) {
+        $entryTitle = EntryTitle::newOrCreateEntry($title);
         try {
             $this->update([
                 'user_id'           => Auth::id(),
-                'entry_title_id'    => $entry_title_id,
+                'entry_title_id'    => $entryTitle->id,
                 'amount'            => $amount,
                 'credit_id'     => $credit_id,
                 'debit_id'      => $debit_id,
@@ -135,10 +137,9 @@ class UnapprovedEntry extends Model
                 'currency'      => $currency,
                 'currency_amount'   => $currency_amount,
                 'currency_rate'     => $currency_rate,
-                'entry_title_id'    => $entry_title_id,
                 'comment'       => $comment,
                 'receiver_name' => $receiver_name,
-                'cash_type'     => $cash_type,
+                'cash_entry_type'     => $cash_type,
             ]);
             /** @var Account */
             $creditAccount = Account::findOrFail($credit_id);
@@ -148,6 +149,7 @@ class UnapprovedEntry extends Model
             return true;
         } catch (Exception $e) {
             report($e);
+            AppLog::error("Can't create entry", desc: $e->getMessage());
             return false;
         }
     }

@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\JournalEntry;
 use App\Traits\AlertFrontEnd;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -36,6 +37,10 @@ class JournalEntryIndex extends Component
     public $entryInfo;
     public $entryId;
 
+    //for download daily transactions
+    public $isOpenDailyTrans = false;
+    public $tranactionsDay;
+
     public function showEntry($id){
         $this->entryId  = $id;
         
@@ -43,6 +48,33 @@ class JournalEntryIndex extends Component
         
         $this->authorize('view',$this->entryInfo);
         
+    }
+
+    public function downloadDailyTransaction(){
+        $day = Carbon::parse($this->tranactionsDay);
+        $res = JournalEntry::downloadDailyTransaction($day);
+        if ($res) {
+            $this->alert('success', 'transactions downloaded!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function showDownloadDailyTransactionsForm(){
+        $this->isOpenDailyTrans = true;
+    }
+
+    public function hideDownloadDailyTransactionsForm(){
+        $this->isOpenDailyTrans = false;
+    }
+
+    public function downloadCashReceipt($id){
+        $res = JournalEntry::findOrFail($id)->downloadCashReceipt();
+        if ($res) {
+            $this->alert('success', 'Reciept downloaded!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function closeShowInfo(){

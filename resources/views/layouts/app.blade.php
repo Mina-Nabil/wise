@@ -543,6 +543,15 @@
                                 </button>
 
                             </div>
+
+                            @if (Auth::user()->is_admin || Auth::user()->is_finance)
+                            <div class="text-right">
+                                <a href="/entries">
+                                    <button class="btn btn-sm inline-flex justify-center btn-outline-light rounded-[25px]">Accounting APP</button>
+                                </a>
+                            </div>
+                            @endif
+
                             <!-- end vertcial -->
                             <div class="items-center space-x-4 rtl:space-x-reverse horizental-box">
                                 <a href="{{ url('/') }}">
