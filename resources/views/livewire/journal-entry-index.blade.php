@@ -214,7 +214,7 @@
 
                                         <td class="table-td ">{{ number_format($entry->currency_amount, 2) }}</td>
 
-                                        <td class="table-td ">{{ number_format($entry->currency_amount,$entry->currency_rate, 2) }}</td>
+                                        <td class="table-td ">{{ number_format($entry->currency_rate, 2) }}</td>
 
                                         <td class="table-td flex justify-between">
                                             <div>
