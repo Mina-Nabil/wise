@@ -105,11 +105,12 @@ class Account extends Model
 
 
     /** returns new balance after update */
-    public function updateBalance($amount)
+    public function updateBalance($amount, $type)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
+        if($this->type !== $type) $amount = -1 * $amount;
 
         $this->balance = $this->balance + $amount;
         try {

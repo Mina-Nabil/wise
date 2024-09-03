@@ -136,8 +136,8 @@ class JournalEntry extends Model
         try {
             ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
             DB::transaction(function () use ($amount, $newAccount, $credit_account, $debit_account) {
-                $new_credit_balance = $credit_account->updateBalance($amount);
-                $new_debit_balance = $debit_account->updateBalance(-1 * $amount);
+                $new_credit_balance = $credit_account->updateBalance($amount, 'credit');
+                $new_debit_balance = $debit_account->updateBalance($amount, 'debit');
                 $newAccount->credit_balance = $new_credit_balance;
                 $newAccount->debit_balance = $new_debit_balance;
                 $newAccount->save();
