@@ -43,6 +43,7 @@ class JournalEntry extends Model
         'cash_type',
         'approver_id',
         'approved_at',
+        'revert_entry_id'
     ];
 
     const CURRENCY_EGP  = 'EGP';
@@ -167,12 +168,12 @@ class JournalEntry extends Model
         if (!$loggedInUser->can('review', $this)) return false;
 
         $this->is_reviewed = 1;
-        $this->save();
+        return $this->save();
     }
 
     public function revertEntry()
     {
-        return self::newJournalEntry($this->amount, $this->debit_id, $this->credit_id, $this->currency, $this->currency_amount, $this->currency_rate, revert_entry_id: $this->id);
+        return self::newJournalEntry($this->entry_title->name, $this->amount, $this->debit_id, $this->credit_id, $this->currency, $this->currency_amount, $this->currency_rate, revert_entry_id: $this->id);
     }
 
     /** per entry */

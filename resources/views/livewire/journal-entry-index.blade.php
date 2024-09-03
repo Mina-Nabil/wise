@@ -197,9 +197,9 @@
 
                                         <td class="table-td "><b>{{ number_format($entry->amount, 2) }}</b></td>
 
-                                        <td class="table-td ">{{ $entry->credit_account->name }}</td>
+                                        <td class="table-td ">{{ $entry->credit_account->name }} ({{number_format($entry->credit_balance)}})</td>
 
-                                        <td class="table-td ">{{ $entry->debit_account->name }}</td>
+                                        <td class="table-td ">{{ $entry->debit_account->name }} ({{number_format($entry->debit_balance)}})</td>
 
                                         <td class="table-td ">
                                             @if ($entry->is_reviewed)

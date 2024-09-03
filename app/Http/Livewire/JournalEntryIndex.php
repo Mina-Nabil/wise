@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Log;
 
 class JournalEntryIndex extends Component
 {
@@ -190,14 +191,16 @@ class JournalEntryIndex extends Component
 
     public function revertEntry($id)
     {
-        $e = JournalEntry::findOrFail($id);
 
+        $e = JournalEntry::findOrFail($id);
+        
         $this->authorize('update', $e);
 
         $res = $e->revertEntry();
 
         if ($res) {
             $this->alert('success', 'Entry reverted successfuly!');
+            $this->mount();
         } else {
             $this->alert('failed', 'server error');
         }
