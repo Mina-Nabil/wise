@@ -78,6 +78,6 @@ class AccountTypeIndex extends Component
 
         return view('livewire.Accounting.account-type-index', [
             'accountsTypes' => $accountsTypes,
-        ])->layout('layouts.Accounting', ['page_title' => $this->page_title , 'account_types' => 'active'  ]);
+        ])->layout('livewire.Accounting', ['page_title' => $this->page_title , 'account_types' => 'active'  ]);
     }
 }

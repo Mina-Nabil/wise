@@ -195,6 +195,6 @@ class UpdateUnapprovedEntry extends Component
             'accounts' => $accounts,
             'CURRENCIES' => $CURRENCIES,
             'CASH_ENTRY_TYPES' => $CASH_ENTRY_TYPES,
-        ])->layout('layouts.Accounting', ['page_title' => $this->page_title, 'unapproved_entries' => 'active']);
+        ])->layout('livewire.Accounting', ['page_title' => $this->page_title, 'unapproved_entries' => 'active']);
     }
 }

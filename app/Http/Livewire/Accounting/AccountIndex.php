@@ -130,6 +130,6 @@ class AccountIndex extends Component
         return view('livewire.Accounting.account-index', [
             'accounts' => $accounts,
             'main_accounts' => $main_accounts
-        ])->layout('layouts.Accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
+        ])->layout('livewire.Accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }
 }
