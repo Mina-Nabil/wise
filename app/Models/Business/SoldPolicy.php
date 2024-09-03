@@ -316,7 +316,7 @@ class SoldPolicy extends Model
     {
         $tmp = 0;
         $total_sales_out = 0;
-        foreach ($this->sales_comms()->get() as $comm) {
+        foreach ($this->sales_comms()->notCancelled()->get() as $comm) {
             $tmp += $comm->amount;
             if ($comm->is_sales_out) $total_sales_out += $comm->amount;
         }
