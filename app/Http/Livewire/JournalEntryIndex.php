@@ -236,6 +236,6 @@ class JournalEntryIndex extends Component
             'entries' => $entries,
             'creditAccounts' => $creditAccounts,
             'debitAccounts' => $debitAccounts,
-        ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'entries' => 'active']);
+        ])->layout('layouts.Accounting', ['page_title' => $this->page_title, 'entries' => 'active']);
     }
 }
