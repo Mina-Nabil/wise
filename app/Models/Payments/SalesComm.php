@@ -307,7 +307,7 @@ class SalesComm extends Model
 
     public function scopeNotCancelled(Builder $query)
     {
-        $query->where('status', self::PYMT_STATE_CANCELLED);
+        $query->whereNot('status', self::PYMT_STATE_CANCELLED);
     }
 
     public function scopeNotConfirmed(Builder $query)
