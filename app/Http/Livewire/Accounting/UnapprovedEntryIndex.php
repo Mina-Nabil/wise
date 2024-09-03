@@ -35,8 +35,8 @@ class UnapprovedEntryIndex extends Component
     public function render()
     {
         $entries = UnapprovedEntry::paginate(50);
-        return view('livewire.Accounting.unapproved-entry-index',[
+        return view('livewire.accounting.unapproved-entry-index',[
             'entries' => $entries
-        ])->layout('livewire.Accounting', ['page_title' => $this->page_title, 'unapproved_entries' => 'active']);
+        ])->layout('layouts.Accounting', ['page_title' => $this->page_title, 'unapproved_entries' => 'active']);
     }
 }

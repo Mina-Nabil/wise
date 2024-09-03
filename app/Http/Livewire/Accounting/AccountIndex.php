@@ -127,9 +127,9 @@ class AccountIndex extends Component
         ->get();
         $main_accounts = MainAccount::all();
 
-        return view('livewire.Accounting.account-index', [
+        return view('livewire.accounting.account-index', [
             'accounts' => $accounts,
             'main_accounts' => $main_accounts
-        ])->layout('livewire.Accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
+        ])->layout('layouts.Accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }
 }
