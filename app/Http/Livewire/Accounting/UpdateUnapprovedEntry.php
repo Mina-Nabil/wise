@@ -191,7 +191,7 @@ class UpdateUnapprovedEntry extends Component
         $accounts = Account::all();
         $CURRENCIES = JournalEntry::CURRENCIES;
         $CASH_ENTRY_TYPES = JournalEntry::CASH_ENTRY_TYPES;
-        return view('livewire.accounting.update-unapproved-entry',[
+        return view('livewire.Accounting.update-unapproved-entry',[
             'accounts' => $accounts,
             'CURRENCIES' => $CURRENCIES,
             'CASH_ENTRY_TYPES' => $CASH_ENTRY_TYPES,

@@ -80,7 +80,7 @@ class MainAccountIndex extends Component
     {
         $ACC_TYPES = MainAccount::TYPES;
         $mainAccounts = MainAccount::search($this->searchText)->paginate(30);
-        return view('livewire.accounting.main-account-index', [
+        return view('livewire.Accounting.main-account-index', [
             'mainAccounts' => $mainAccounts,
             'ACC_TYPES' => $ACC_TYPES
         ])->layout('layouts.accounting', ['page_title' => $this->page_title , 'main_accounts' => 'active'  ]);

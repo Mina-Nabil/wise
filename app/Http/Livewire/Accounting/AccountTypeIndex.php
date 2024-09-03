@@ -76,7 +76,7 @@ class AccountTypeIndex extends Component
     {
         $accountsTypes = AccountType::search($this->searchText)->paginate(30);
 
-        return view('livewire.accounting.account-type-index', [
+        return view('livewire.Accounting.account-type-index', [
             'accountsTypes' => $accountsTypes,
         ])->layout('layouts.accounting', ['page_title' => $this->page_title , 'account_types' => 'active'  ]);
     }
