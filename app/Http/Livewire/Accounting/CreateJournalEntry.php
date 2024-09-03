@@ -116,10 +116,10 @@ class CreateJournalEntry extends Component
         $CURRENCIES = JournalEntry::CURRENCIES;
         $CASH_ENTRY_TYPES = JournalEntry::CASH_ENTRY_TYPES;
 
-        return view('livewire.accounting.create-journal-entry', [
+        return view('livewire.Accounting.create-journal-entry', [
             'accounts' => $accounts,
             'CURRENCIES' => $CURRENCIES,
             'CASH_ENTRY_TYPES' => $CASH_ENTRY_TYPES,
-        ])->layout('layouts.Accounting', ['page_title' => 'Journal Entry • New', 'entries' => 'active']);
+        ])->layout('layouts.accounting', ['page_title' => 'Journal Entry • New', 'entries' => 'active']);
     }
 }
