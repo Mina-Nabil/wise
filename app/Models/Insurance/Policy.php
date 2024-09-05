@@ -602,7 +602,7 @@ class Policy extends Model
                 "value"             =>  $value,
                 "due_penalty"       =>  $due_penalty,
                 "penalty_percent"   =>  $penalty_percent,
-                "sales_out_only"    =>  $sales_out_only,
+                "sales_out_only"    =>  $sales_out_only ?? false,
             ]);
         } catch (Exception $e) {
             report($e);
