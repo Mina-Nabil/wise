@@ -85,28 +85,34 @@ class UnapprovedEntry extends Model
         $loggedInUser = Auth::user();
         if ($creditAccount->needsApproval($this->amount) && !$loggedInUser->can('approve', JournalEntry::class)) return false;
         $newEntry = null;
-        DB::transaction(function () use ($creditAccount, &$newEntry) {
-            $newEntry = JournalEntry::newJournalEntry(
-                title: EntryTitle::findOrFail($this->entry_title_id)->name,
-                amount: $this->amount,
-                credit_id: $this->credit_id,
-                debit_id: $this->debit_id,
-                currency: $this->currency ?? JournalEntry::CURRENCY_EGP,
-                currency_amount: $this->currency_amount ?? $this->amount,
-                currency_rate: $this->currency_rate ?? 1,
-                credit_doc_url: $this->credit_doc_url,
-                debit_doc_url: $this->debit_doc_url,
-                comment: $this->comment,
-                receiver_name: $this->receiver_name,
-                cash_entry_type: $this->cash_entry_type,
-                approver_id: $creditAccount->needsApproval($this->amount) ? Auth::id() : null,
-                approved_at: $creditAccount->needsApproval($this->amount) ? Carbon::now() : null,
-                user_id: $creditAccount->needsApproval($this->amount) ? $this->user_id : Auth::id()
-            );
-            if ($newEntry) {
-                $this->delete();
-            }
-        });
+        try {
+
+            DB::transaction(function () use ($creditAccount, &$newEntry) {
+                $newEntry = JournalEntry::newJournalEntry(
+                    title: EntryTitle::findOrFail($this->entry_title_id)->name,
+                    amount: $this->amount,
+                    credit_id: $this->credit_id,
+                    debit_id: $this->debit_id,
+                    currency: $this->currency ?? JournalEntry::CURRENCY_EGP,
+                    currency_amount: $this->currency_amount ?? $this->amount,
+                    currency_rate: $this->currency_rate ?? 1,
+                    credit_doc_url: $this->credit_doc_url,
+                    debit_doc_url: $this->debit_doc_url,
+                    comment: $this->comment,
+                    receiver_name: $this->receiver_name,
+                    cash_entry_type: $this->cash_entry_type,
+                    approver_id: Auth::id(),
+                    approved_at: Carbon::now(),
+                    user_id: $creditAccount->needsApproval($this->amount) ? $this->user_id : Auth::id()
+                );
+                Log::info($newEntry);
+                if ($newEntry) {
+                    $this->delete();
+                }
+            });
+        } catch (Exception $e) {
+            report($e);
+        }
         return $newEntry;
     }
 

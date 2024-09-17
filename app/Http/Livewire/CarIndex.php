@@ -229,7 +229,7 @@ class CarIndex extends Component
 
         $this->validate(
             [
-                'editModelName' => 'required|string|unique:car_models,name',
+                'editModelName' => 'required|string',
             ],
             [],
             [

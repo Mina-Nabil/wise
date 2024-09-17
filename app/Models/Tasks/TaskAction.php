@@ -42,6 +42,8 @@ class TaskAction extends Model
             'insured_value',
             'expiry',
             'in_favor_to',
+            'net_premium',
+            'gross_premium',
         ]
     ];
 

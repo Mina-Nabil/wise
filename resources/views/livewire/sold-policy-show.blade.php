@@ -95,7 +95,7 @@
                         </li>
                         <li class="nav-item" role="presentation" wire:click="changeSection('operations')">
                             <a href="#tabs-messages-withIcon"
-                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'followups') active @endif dark:text-slate-300"
+                                class="@if(!$soldPolicy->endorsements->isEmpty()) text-danger-500 @else dark:text-slate-300! @endif  w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'operations') active @endif "
                                 id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
                                 data-bs-target="#tabs-messages-withIcon" role="tab"
                                 aria-controls="tabs-messages-withIcon" aria-selected="false">
@@ -104,7 +104,7 @@
                         </li>
                         <li class="nav-item" role="presentation" wire:click="changeSection('policydetails')">
                             <a href="#tabs-messages-withIcon"
-                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'offers') active @endif dark:text-slate-300"
+                                class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'policydetails') active @endif dark:text-slate-300"
                                 id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
                                 data-bs-target="#tabs-messages-withIcon" role="tab"
                                 aria-controls="tabs-messages-withIcon" aria-selected="false">

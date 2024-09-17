@@ -257,7 +257,7 @@
                     </li>
                     @if (Auth::user()->is_admin || Auth::user()->is_hr|| Auth::user()->is_finance)
                         <li class="sidebar-menu-title">Settings</li>
-                        @if (Auth::user()->is_admin)
+                        @if (Auth::user()->is_admin || Auth::user()->is_finance)
                             <li>
                                 <a href="{{ url('/commissions') }}" class="navItem @yield('commissions')">
                                     <span class="flex items-center">

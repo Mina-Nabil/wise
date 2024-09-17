@@ -163,7 +163,7 @@
                                                 </li>
                                                 <li
                                                     class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white mr-5">
-                                                    {{ $offer->item->car->category }}
+                                                    {{ $offer->item->car->category }} {{ $offer->item->model_year }}
                                                 </li>
                                             </ul>
                                         </h3>

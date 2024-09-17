@@ -27,8 +27,8 @@ class AddNewCar extends Component
             $this->validate(
                 [
                     'brandName' => 'required|unique:brands,name',
-                    'modelName' => 'required|unique:car_models,name',
-                    'categoryName' => 'required|unique:cars,category',
+                    'modelName' => 'required',
+                    'categoryName' => 'required',
                     'country' => 'required|exists:countries,id',
                 ],
                 [],

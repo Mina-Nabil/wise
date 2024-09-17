@@ -115,8 +115,9 @@ class JournalEntry extends Model
         $credit_account = Account::findOrFail($credit_id);
         /** @var Account */
         $debit_account = Account::findOrFail($debit_id);
+        Log::info("Approver:" . $approver_id);
 
-        if ($debit_account->needsApproval($amount) || $credit_account->needsApproval($amount)) {
+        if (!$approver_id && ($debit_account->needsApproval($amount) || $credit_account->needsApproval($amount))) {
             return UnapprovedEntry::newEntry(
                 $entryTitle->id,
                 $credit_id,
@@ -132,12 +133,12 @@ class JournalEntry extends Model
                 $cash_entry_type
             );
         }
-
+        Log::info("HNAAA");
         try {
             ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
             DB::transaction(function () use ($amount, $newAccount, $credit_account, $debit_account) {
-                $new_credit_balance = $credit_account->updateBalance($amount, 'credit');
-                $new_debit_balance = $debit_account->updateBalance($amount, 'debit');
+                $new_credit_balance = $credit_account->updateBalance($amount, Account::NATURE_CREDIT);
+                $new_debit_balance = $debit_account->updateBalance($amount,  Account::NATURE_DEBIT);
                 $newAccount->credit_balance = $new_credit_balance;
                 $newAccount->debit_balance = $new_debit_balance;
                 $newAccount->save();

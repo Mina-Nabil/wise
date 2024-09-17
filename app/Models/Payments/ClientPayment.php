@@ -213,21 +213,32 @@ class ClientPayment extends Model
     {
         /** @var User */
         $user = Auth::user();
-        if (!$user->can('update', $this)) return false;
+        if ($this->is_paid) {
+            if (!$user->can('updateIfCancelled', $this)) return false;
+        } else {
+            if (!$user->can('update', $this)) return false;
+        }
 
-        if ($this->is_new || is_null($this->status)) {
-            try {
-                $date = $date ?? new Carbon();
-                AppLog::info("Setting Client Payment as cancelled", loggable: $this);
-                return $this->update([
-                    "closed_by_id"   =>  Auth::id(),
-                    "payment_date"  => $date->format('Y-m-d H:i'),
-                    "status"  =>  self::PYMT_STATE_CANCELLED,
-                ]);
-            } catch (Exception $e) {
-                report($e);
-                AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+
+        try {
+            $date = $date ?? new Carbon();
+            AppLog::info("Setting Client Payment as cancelled", loggable: $this);
+            $wasPaid = $this->status == self::PYMT_STATE_PAID;
+            $res = $this->update([
+                "closed_by_id"   =>  Auth::id(),
+                "payment_date"  => $date->format('Y-m-d H:i'),
+                "status"  =>  self::PYMT_STATE_CANCELLED,
+            ]);
+            if ($res && $wasPaid) {
+                $this->load('sold_policy');
+                $this->sold_policy->setClientPaymentDate(null);
+                $this->sold_policy->generatePolicyCommissions(true);
+                $this->sold_policy->calculateTotalClientPayments();
+                $this->sold_policy->updateSalesCommsPaymentInfo();
             }
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
 

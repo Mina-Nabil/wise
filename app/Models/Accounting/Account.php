@@ -110,7 +110,7 @@ class Account extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
-        if($this->type !== $type) $amount = -1 * $amount;
+        if($this->nature != $type) $amount = -1 * $amount;
 
         $this->balance = $this->balance + $amount;
         try {

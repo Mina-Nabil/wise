@@ -42,7 +42,7 @@ class CarPolicy
      */
     public function update(User $user, Car $car)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_operations;
     }
 
     /**
