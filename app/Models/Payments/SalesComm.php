@@ -35,13 +35,28 @@ class SalesComm extends Model
     const FILES_DIRECTORY = 'sold_policies/sales_comm_docs/';
     protected $table = 'sales_comms';
     protected $fillable = [
-        'status', 'title', 'amount', 'note', 'payment_date', 'doc_url', 'comm_percentage', 'sold_policy_id', 'user_id', 'from', 'client_paid_percent', 'company_paid_percent', 'comm_profile_id', 'unapproved_balance_offset', 'created_at', 'is_direct'
+        'status',
+        'title',
+        'amount',
+        'note',
+        'payment_date',
+        'doc_url',
+        'comm_percentage',
+        'sold_policy_id',
+        'user_id',
+        'from',
+        'client_paid_percent',
+        'company_paid_percent',
+        'comm_profile_id',
+        'unapproved_balance_offset',
+        'created_at',
+        'is_direct'
     ];
 
     ///static functions
     public static function getBySoldPoliciesIDs($comm_profile_id, $sold_policies_ids, $new_only = true)
     {
-        return self::whereIn('sold_policy_id' , $sold_policies_ids)
+        return self::whereIn('sold_policy_id', $sold_policies_ids)
             ->where('comm_profile_id', $comm_profile_id)
             ->when($new_only, function ($q) {
                 $q->where('comm_percentage', 0);
@@ -124,7 +139,7 @@ class SalesComm extends Model
             ]);
             $this->load('sold_policy');
             $this->sold_policy->generatePolicyCommissions();
-            $this->refreshPaymentInfo(false);
+            $this->refreshPaymentInfo(false, true);
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
@@ -132,7 +147,7 @@ class SalesComm extends Model
         }
     }
 
-    public function refreshPaymentInfo($check_user = true)
+    public function refreshPaymentInfo($check_user = true, $increment_amount = false)
     {
         if ($check_user) {
             /** @var User */
@@ -157,12 +172,13 @@ class SalesComm extends Model
         }
 
         $amount = ($this->comm_percentage / 100) * $from_amount;
-        Log::info("Amount: " . $amount);
 
         try {
-            $this->update([
-                "amount"            =>  $amount,
-            ]);
+            if ($increment_amount) {
+                $this->increment("amount",  $amount,);
+            } else {
+                $this->update(["amount" =>  $amount]);
+            }
             $this->sold_policy->calculateTotalSalesComm();
             return true;
         } catch (Exception $e) {
@@ -188,6 +204,7 @@ class SalesComm extends Model
                 "status"  =>  self::PYMT_STATE_PAID,
             ])) {
                 $this->load('sold_policy');
+                $this->sold_policy->calculateTotalSalesComm();
                 return true;
             }
         } catch (Exception $e) {
@@ -328,10 +345,10 @@ class SalesComm extends Model
     public function scopeBySoldPoliciesStartEnd(Builder $query, Carbon $start, Carbon $end)
     {
         return $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
-        ->whereBetween('sold_policies.created_at', [
-            $start->format('Y-m-d'),
-            $end->format('Y-m-d')
-        ]);
+            ->whereBetween('sold_policies.created_at', [
+                $start->format('Y-m-d'),
+                $end->format('Y-m-d')
+            ]);
     }
 
     ///relations
