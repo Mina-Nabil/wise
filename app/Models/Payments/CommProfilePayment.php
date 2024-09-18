@@ -140,15 +140,7 @@ class CommProfilePayment extends Model
 
         try {
             DB::transaction(function () use ($date) {
-                $this->load('comm_profile');
-                if ($this->needs_approval) {
-                    $this->comm_profile->unapproved_balance = $this->comm_profile->unapproved_balance - ($this->amount - $this->comm_profile->balance);
-                    $this->comm_profile->balance = 0;
-                } else {
-                    $this->comm_profile->balance = $this->comm_profile->balance - $this->amount;
-                }
-
-                $this->comm_profile->save();
+           
 
                 $date = $date ?? new Carbon();
                 AppLog::info("Setting Profile Payment as paid", loggable: $this);

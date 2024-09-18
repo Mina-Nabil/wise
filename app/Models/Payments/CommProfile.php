@@ -299,12 +299,21 @@ class CommProfile extends Model
         $note = null,
         $must_add = false
     ) {
-        if ($amount < $this->balance)
+        if ($amount <= $this->balance)
             $needs_approval = false;
-        else if ($amount < ($this->balance + $this->unapproved_balance) || $must_add)
+        else if ($must_add)
             $needs_approval = true;
         else throw new Exception("Amount is more than the available balance");
         try {
+
+            // if ($needs_approval) {
+            //     $this->unapproved_balance = $this->unapproved_balance - ($this->amount - $this->balance);
+            //     $this->comm_profile->balance = 0;
+            // } else {
+            // $this->balance = $this->balance - $this->amount;
+            // }
+
+            // $this->save();
 
             $payment = $this->payments()->create([
                 "creator_id"    =>  Auth::id(),
@@ -314,7 +323,9 @@ class CommProfile extends Model
                 "needs_approval"   =>  $needs_approval,
                 "note"      =>  $note
             ]);
-            $payment->save();
+            if ($payment->save()) {
+                $this->decrement('balance', $amount);
+            }
             if ($payment->needs_approval) {
                 /** @var User */
                 $remon = User::find(1);

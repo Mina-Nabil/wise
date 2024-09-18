@@ -89,7 +89,7 @@ class Target extends Model
                 $this->comm_profile->updateBalance($balance_update);
 
             if ($payment_to_add)
-                $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id base payment", must_add: true);
+                $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true);
 
             $this->addRun($balance_update - $payment_to_add, $payment_to_add);
         });
