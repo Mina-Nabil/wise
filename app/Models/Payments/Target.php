@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Target extends Model
 {
@@ -48,16 +49,22 @@ class Target extends Model
      * If yes it will update the related sales commissions */
     public function processTargetPayments(Carbon $end_date = null)
     {
+        Log::info("processing target #$this->id");
         $this->load('comm_profile');
         $end_date = $end_date ?? Carbon::now();
         $start_date = $end_date->clone()->subMonths($this->each_month);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
+        Log::info("Sold Policies");
+        Log::info("===================================================");
+        Log::info($soldPolicies);
+        Log::info("===================================================");
+
         foreach ($soldPolicies as $sp) {
             $totalIncome += ($sp->total_policy_comm *
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->sales_out_comm;
         }
-
+        Log::info("Total Income: " . $totalIncome);
         //return false if the target is not acheived
         if ($totalIncome <= $this->min_income_target) return false;
 
@@ -67,10 +74,13 @@ class Target extends Model
                 (($this->max_income_target ?? $totalIncome) - $this->min_income_target)
             ) * ($this->add_to_balance / 100);
 
-        $payment_to_add = $this->base_payment ?? (($this->add_as_payment / 100) * $balance_update);
+        $payment_to_add = max($this->base_payment, (($this->add_as_payment / 100) * $balance_update));
+        
+        Log::info("Balance Update: " . $balance_update);
+        Log::info("Payment to add: " . $payment_to_add);
 
         DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add) {
-            $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->id, $soldPolicies->pluck('id')->toArray());
+            $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
 
             foreach ($salesCommissions as $s)
                 $s->updatePaymentByTarget($this);

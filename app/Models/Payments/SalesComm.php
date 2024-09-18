@@ -41,7 +41,7 @@ class SalesComm extends Model
     ///static functions
     public static function getBySoldPoliciesIDs($comm_profile_id, $sold_policies_ids, $new_only = true)
     {
-        return self::whereIn('sold_policy_id' . $sold_policies_ids)
+        return self::whereIn('sold_policy_id' , $sold_policies_ids)
             ->where('comm_profile_id', $comm_profile_id)
             ->when($new_only, function ($q) {
                 $q->where('comm_percentage', 0);
@@ -118,6 +118,7 @@ class SalesComm extends Model
     public function updatePaymentByTarget(Target $t)
     {
         try {
+            Log::info("updating sales comm");
             $this->update([
                 "comm_percentage"   =>  $t->comm_percentage,
             ]);
@@ -150,7 +151,6 @@ class SalesComm extends Model
                 $from_amount = $this->sold_policy->insured_value;
                 break;
             case CommProfileConf::FROM_NET_COMM:
-                Log::info("GEET HNA");
                 $this->sold_policy->calculateTotalPolicyComm();
                 $from_amount =  $this->sold_policy->total_policy_comm;
                 break;
