@@ -16,7 +16,7 @@ class MainAccount extends Model
     const MORPH_TYPE = 'main_account';
 
     protected $table = 'main_accounts';
-    protected $fillable = ['name', 'desc', 'type'];
+    protected $fillable = ['code', 'name', 'desc', 'type'];
     public $timestamps = false;
 
 
@@ -24,11 +24,13 @@ class MainAccount extends Model
     const TYPE_REVENUE = 'revenue';
     const TYPE_ASSET = 'asset';
     const TYPE_LIABILITY = 'liability';
+    const TYPE_EQUITY = 'equity';
     const TYPES = [
         self::TYPE_EXPENSE,
         self::TYPE_REVENUE,
         self::TYPE_ASSET,
         self::TYPE_LIABILITY,
+        self::TYPE_EQUITY,
     ];
 
     ////static functions

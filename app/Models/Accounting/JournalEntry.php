@@ -133,12 +133,25 @@ class JournalEntry extends Model
                 $cash_entry_type
             );
         }
-        Log::info("HNAAA");
+
         try {
             ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
-            DB::transaction(function () use ($amount, $newAccount, $credit_account, $debit_account) {
+            DB::transaction(function () use ($amount, $newAccount, $credit_account, $debit_account, $currency, $currency_amount) {
                 $new_credit_balance = $credit_account->updateBalance($amount, Account::NATURE_CREDIT);
                 $new_debit_balance = $debit_account->updateBalance($amount,  Account::NATURE_DEBIT);
+                if($currency_amount && ($currency == $credit_account->default_currency)){
+                    $new_credit_foreign_balance = $credit_account->updateForeignBalance($amount, Account::NATURE_CREDIT);
+                    $newAccount->credit_foreign_balance = $new_credit_foreign_balance;
+                } else {
+                    $newAccount->credit_foreign_balance = 0;
+                }
+
+                if($currency_amount && ($currency == $debit_account->default_currency)){
+                    $new_debit_foreign_balance = $debit_account->updateForeignBalance($amount, Account::NATURE_DEBIT);
+                    $newAccount->debit_foreign_balance = $new_debit_foreign_balance;
+                } else {
+                    $newAccount->debit_foreign_balance = 0;
+                }
                 $newAccount->credit_balance = $new_credit_balance;
                 $newAccount->debit_balance = $new_debit_balance;
                 $newAccount->save();

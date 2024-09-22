@@ -175,7 +175,7 @@ class SalesComm extends Model
 
         try {
             if ($increment_amount) {
-                $this->increment("amount",  $amount,);
+                $this->increment("amount",  $amount);
             } else {
                 $this->update(["amount" =>  $amount]);
             }

@@ -255,7 +255,7 @@
 
                         </ul>
                     </li>
-                    @if (Auth::user()->is_admin || Auth::user()->is_hr|| Auth::user()->is_finance)
+                    @if (Auth::user()->is_admin || Auth::user()->is_hr || Auth::user()->is_finance || Auth::user()->is_operations)
                         <li class="sidebar-menu-title">Settings</li>
                         @if (Auth::user()->is_admin || Auth::user()->is_finance)
                             <li>
@@ -296,7 +296,7 @@
                             </a>
                         </li>
                         @endif
-                        @if (Auth::user()->is_admin)
+                        @if (Auth::user()->is_admin || Auth::user()->is_operations )
                             <li>
                                 <a href="{{ url('/cars') }}" class="navItem @yield('cars')">
                                     <span class="flex items-center">

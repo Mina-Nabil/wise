@@ -37,21 +37,30 @@ return new class extends Migration
             $table->string('name'); //dyafa - 7sab allianz - 7sab motorcity
             $table->text('desc')->nullable();
             $table->foreignIdFor(MainAccount::class)->constrained();
+            $table->foreignIdFor(Account::class, 'parent_account_id')->constrained('accounts');
             $table->enum('nature', Account::NATURES);
-            $table->double('balance');
+            $table->string('default_currency')->default(JournalEntry::CURRENCY_EGP);
+            $table->double('balance')->default(0);
+            $table->double('foreign_balance')->default(0);
             $table->timestamps();
+        });
+
+        Schema::create('accounts', function (Blueprint $table) {
+            $table->foreignIdFor(Account::class, 'parent_account_id')->nullable()->constrained('accounts');
         });
 
         Schema::create('journal_entries', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Account::class, 'credit_id')->constrained('accounts');
-            $table->foreignIdFor(Account::class, 'debit_id')->constrained('accounts');
+            $table->foreignIdFor(Account::class)->constrained();
+            // $table->foreignIdFor(Account::class, 'debit_id')->constrained('accounts');
             $table->foreignIdFor(JournalEntry::class, 'revert_entry_id')->nullable()->constrained('journal_entries')->nullOnDelete(); //internal
             $table->double('amount')->default(0);
-            $table->text('credit_doc_url')->nullable();
-            $table->text('debit_doc_url')->nullable();
-            $table->double('credit_balance'); //internal
-            $table->double('debit_balance'); //internal
+            $table->text('doc_url')->nullable();
+            $table->text('doc_url_2')->nullable();
+            $table->double('account_balance'); //internal
+            // $table->double('debit_balance'); //internal
+            $table->double('account_foreign_balance'); //internal
+            // $table->double('credit_foreign_balance'); //internal
             $table->enum('currency', JournalEntry::CURRENCIES);
             $table->double('currency_amount')->default(0);
             $table->double('currency_rate')->default(0);
