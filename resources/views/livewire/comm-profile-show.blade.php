@@ -478,7 +478,7 @@
                                                     </td>
 
                                                     <td class="table-td px-0">
-                                                        {{ number_format($comm->insured_value, 2, '.', ',') }} EGP
+                                                        {{ number_format($comm->sold_policy?->insured_value, 2, '.', ',') }} EGP
                                                     </td>
 
                                                     @can('update', $comm)
