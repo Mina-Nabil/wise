@@ -421,7 +421,7 @@
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
-
+                                                    Sum Insured
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
@@ -478,14 +478,7 @@
                                                     </td>
 
                                                     <td class="table-td px-0">
-
-                                                        @if ($comm->doc_url)
-                                                            <iconify-icon class=" cursor-pointer" wire:loading.remove wire:target="downloadCommDoc({{ $comm->id }})" wire:click="downloadCommDoc({{ $comm->id }})" icon="pepicons-pop:file" width="1.2em" height="1.2em"></iconify-icon>
-                                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadCommDoc({{ $comm->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                                        @endif
-                                                        @if ($comm->note)
-                                                            <iconify-icon class=" cursor-pointer" wire:click="showCommNote({{ $comm->id }})" icon="gravity-ui:comment" width="1.2em" height="1.2em"></iconify-icon>
-                                                        @endif
+                                                        {{ number_format($comm->insured_value, 2, '.', ',') }} EGP
                                                     </td>
 
                                                     @can('update', $comm)
