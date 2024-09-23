@@ -47,7 +47,18 @@ class EntryTitle extends Model
     }
 
 
-    ///model function
+    /////////model functions
+    public function isEntryValid($accounts){
+        $this->load('accounts');
+        foreach($accounts as $account_id => $entry_arr){
+            $tmpAccount = $this->accounts->firstWhere('id', $account_id);
+            if($tmpAccount->pivot->nature == $entry_arr['nature'] && $tmpAccount->pivot->limit < $entry_arr['amount']  ){
+                return false;
+            }
+        }
+        return true;
+    }
+
     /** 
      * Must show a warning before the edit. That it's going to update title on old journal entries
      * @param $accounts should be an array of 

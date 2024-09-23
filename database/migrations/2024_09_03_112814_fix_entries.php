@@ -97,7 +97,7 @@ return new class extends Migration
 
 
 
-        Schema::create('unapproved_entries', function (Blueprint $table) {
+        Schema::create('unapp_entries', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(EntryTitle::class)->constrained();
             $table->foreignIdFor(User::class)->constrained(); //creator
@@ -107,14 +107,12 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('unapproved_entry_accounts', function (Blueprint $table) {
+        Schema::create('unapp_entry_accounts', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(UnapprovedEntry::class)->constrained('unapproved_entries');
             $table->foreignIdFor(Account::class)->constrained();
             $table->enum('nature', Account::NATURES);
             $table->double('amount')->default(0);
-            $table->double('account_foreign_balance'); //internal
-            $table->double('account_balance'); //internal
             $table->enum('currency', JournalEntry::CURRENCIES);
             $table->double('currency_amount')->default(0);
             $table->double('currency_rate')->default(0);

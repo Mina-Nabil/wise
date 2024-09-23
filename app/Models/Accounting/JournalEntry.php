@@ -73,7 +73,6 @@ class JournalEntry extends Model
      */
     public static function newJournalEntry(
         $entry_title_id,
-        $amount,
         $cash_entry_type = null,
         $receiver_name = null,
         Carbon $approved_at = null,
@@ -84,7 +83,26 @@ class JournalEntry extends Model
         $is_seeding = false,
         $accounts = [],
     ): self|UnapprovedEntry|false {
+
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
+
+        //////////////////////////////loading & checking data//////////////////////////////
+        /** @var EntryTitle */
+        $entry = EntryTitle::findOrFail($entry_title_id);
         $day_serial = self::getTodaySerial();
+
+        if (!$revert_entry_id && !$approver_id && !$entry->isEntryValid($accounts)) return UnapprovedEntry::newEntry(
+            $entry_title_id,
+            $cash_entry_type,
+            $receiver_name,
+            $comment,
+            $accounts
+        );
+
+
+        ///////////////////////////////preparing entry
         $newEntry = new self([
             "user_id"           => $user_id ?? Auth::id(),
             "entry_title_id"    =>  $entry_title_id,
@@ -94,79 +112,28 @@ class JournalEntry extends Model
             "receiver_name"     =>  $receiver_name,
             "approver_id"       =>  $approver_id,
             "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
-            "comment"           =>  $comment,
-            
-
-            "amount"        =>  $amount,
-            "currency"      =>  $currency,
-            "currency_amount"   =>  $currency_amount ?? $amount,
-            "currency_rate"     =>  $currency_rate ?? 1,
+            "comment"           =>  $comment
         ]);
 
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
-
-        foreach($accounts as $account_id => $entry_arr){
-            /** @var Account */
-            $account = Account::findOrFail($account_id);
-            $entry_arr['account_balance'] =  $account->updateBalance($amount, $entry_arr['nature']);
-            if($entry_arr['currency'] && $entry_arr['currency'] != self::CURRENCY_EGP && $entry_arr['currency'] == $account->default_currency){
-                $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['currency'], $entry_arr['nature']);
-            }
-            
-            $newEntry->accounts()->attach($account_id, [
-
-            ]);
-        }
-
-        $newEntry->accounts()->sync($accounts);
-
-        /** @var Account */
-        $debit_account = Account::findOrFail($debit_id);
-
-
-        if (!$approver_id && ($debit_account->needsApproval($amount) || $credit_account->needsApproval($amount))) {
-            return UnapprovedEntry::newEntry(
-                $entry_title_id,
-                $credit_id,
-                $debit_id,
-                $amount,
-                $credit_doc_url,
-                $debit_doc_url,
-                $currency,
-                $currency_amount,
-                $currency_rate,
-                $comment,
-                $receiver_name,
-                $cash_entry_type
-            );
-        }
 
         try {
-            ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
-            DB::transaction(function () use ($amount, $newAccount, $credit_account, $debit_account, $currency, $currency_amount) {
-            
-                $new_debit_balance = $debit_account->updateBalance($amount,  Account::NATURE_DEBIT);
-                if ($currency_amount && ($currency == $credit_account->default_currency)) {
-                    $new_credit_foreign_balance = $credit_account->updateForeignBalance($amount, Account::NATURE_CREDIT);
-                    $newAccount->credit_foreign_balance = $new_credit_foreign_balance;
-                } else {
-                    $newAccount->credit_foreign_balance = 0;
-                }
+            ///////////////////////////////saving entry
+            DB::transaction(function () use ($newEntry, $accounts) {
 
-                if ($currency_amount && ($currency == $debit_account->default_currency)) {
-                    $new_debit_foreign_balance = $debit_account->updateForeignBalance($amount, Account::NATURE_DEBIT);
-                    $newAccount->debit_foreign_balance = $new_debit_foreign_balance;
-                } else {
-                    $newAccount->debit_foreign_balance = 0;
+                $newEntry->save();
+
+                foreach ($accounts as $account_id => $entry_arr) {
+                    /** @var Account */
+                    $account = Account::findOrFail($account_id);
+                    $entry_arr['account_balance'] =  $account->updateBalance($accounts['amount'], $entry_arr['nature']);
+                    if ($entry_arr['currency'] && $entry_arr['currency'] != self::CURRENCY_EGP && $entry_arr['currency'] == $account->default_currency) {
+                        $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['currency'], $entry_arr['nature']);
+                    }
+                    $newEntry->accounts()->attach($account_id, $entry_arr);
                 }
-                $newAccount->credit_balance = $new_credit_balance;
-                $newAccount->debit_balance = $new_debit_balance;
-                $newAccount->save();
             });
-            AppLog::info("Created entry", loggable: $newAccount);
-            return $newAccount;
+            AppLog::info("Created entry", loggable: $newEntry);
+            return $newEntry;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't create entry", desc: $e->getMessage());
@@ -196,7 +163,25 @@ class JournalEntry extends Model
 
     public function revertEntry()
     {
-        return self::newJournalEntry($this->entry_title->name, $this->amount, $this->debit_id, $this->credit_id, $this->currency, $this->currency_amount, $this->currency_rate, revert_entry_id: $this->id);
+        $this->load('accounts');
+        foreach ($this->accounts as $ac) {
+            $accounts[$ac->id] = [
+                'nature'    =>  $ac->pivot->nature,
+                'amount'    =>  $ac->pivot->amount,
+                'currency' => $ac->pivot->currency,
+                'currency_amount' => $ac->pivot->currency_amount,
+                'currency_rate' => $ac->pivot->currency_rate,
+                'doc_url' => $ac->pivot->doc_url,
+            ];
+        }
+        return self::newJournalEntry(
+            $this->entry_title_id,
+            $this->cash_entry_type = null,
+            $this->receiver_name = null,
+            revert_entry_id: $this->id,
+            comment: $this->comment,
+            accounts: $accounts
+        );
     }
 
     /** per entry */
