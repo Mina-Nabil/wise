@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,21 +27,12 @@ class JournalEntry extends Model
     protected $table = 'journal_entries';
     protected $fillable = [
         'user_id',
-        'credit_id',
-        'debit_id',
-        'currency',
-        'credit_doc_url',
-        'debit_doc_url',
-        'amount',
-        'currency_amount',
-        'currency_rate',
         'entry_title_id',
         'comment',
         'is_reviewed',
         'day_serial',
-        'cash_entry_type',
         'receiver_name',
-        'cash_type',
+        'cash_entry_type',
         'approver_id',
         'approved_at',
         'revert_entry_id'
@@ -66,60 +58,77 @@ class JournalEntry extends Model
     ];
 
     ////static functions
+
+    /** 
+     * @param array $accounts example [
+     *  $account_id => [
+     *  'nature'    =>  'debit' ,
+     *  'amount'    =>  102000 ,
+     *  'currency' => 'USD' ,
+     *  'currency_amount' => 200 ,
+     *  'currency_rate' => 50.1 , 
+     *  'doc_url' => url
+     * ]
+     * ]
+     */
     public static function newJournalEntry(
-        $title,
+        $entry_title_id,
         $amount,
-        $credit_id,
-        $debit_id,
-        $currency,
-        $currency_amount = null,
-        $currency_rate = null,
-        $credit_doc_url = null,
-        $debit_doc_url = null,
-        $revert_entry_id = null,
-        $comment = null,
         $cash_entry_type = null,
         $receiver_name = null,
-        $approver_id = null,
         Carbon $approved_at = null,
+        $revert_entry_id = null,
+        $comment = null,
         $user_id = null,
+        $approver_id = null,
         $is_seeding = false,
+        $accounts = [],
     ): self|UnapprovedEntry|false {
-        $entryTitle = EntryTitle::newOrCreateEntry($title);
         $day_serial = self::getTodaySerial();
-        $newAccount = new self([
+        $newEntry = new self([
             "user_id"           => $user_id ?? Auth::id(),
-            "entry_title_id"    =>  $entryTitle->id,
-            "credit_id"     =>  $credit_id,
-            "debit_id"      =>  $debit_id,
-            "amount"        =>  $amount,
-            "currency"      =>  $currency,
+            "entry_title_id"    =>  $entry_title_id,
             "day_serial"        =>  $day_serial,
-            "currency_amount"   =>  $currency_amount ?? $amount,
-            "currency_rate"     =>  $currency_rate ?? 1,
-            "credit_doc_url"    =>  $credit_doc_url,
-            "debit_doc_url"     =>  $debit_doc_url,
             "revert_entry_id"   =>  $revert_entry_id,
-            "comment"           =>  $comment,
             "cash_entry_type"   =>  $cash_entry_type,
             "receiver_name"     =>  $receiver_name,
             "approver_id"       =>  $approver_id,
             "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
+            "comment"           =>  $comment,
+            
+
+            "amount"        =>  $amount,
+            "currency"      =>  $currency,
+            "currency_amount"   =>  $currency_amount ?? $amount,
+            "currency_rate"     =>  $currency_rate ?? 1,
         ]);
 
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
 
-        /** @var Account */
-        $credit_account = Account::findOrFail($credit_id);
+        foreach($accounts as $account_id => $entry_arr){
+            /** @var Account */
+            $account = Account::findOrFail($account_id);
+            $entry_arr['account_balance'] =  $account->updateBalance($amount, $entry_arr['nature']);
+            if($entry_arr['currency'] && $entry_arr['currency'] != self::CURRENCY_EGP && $entry_arr['currency'] == $account->default_currency){
+                $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['currency'], $entry_arr['nature']);
+            }
+            
+            $newEntry->accounts()->attach($account_id, [
+
+            ]);
+        }
+
+        $newEntry->accounts()->sync($accounts);
+
         /** @var Account */
         $debit_account = Account::findOrFail($debit_id);
-        Log::info("Approver:" . $approver_id);
+
 
         if (!$approver_id && ($debit_account->needsApproval($amount) || $credit_account->needsApproval($amount))) {
             return UnapprovedEntry::newEntry(
-                $entryTitle->id,
+                $entry_title_id,
                 $credit_id,
                 $debit_id,
                 $amount,
@@ -137,16 +146,16 @@ class JournalEntry extends Model
         try {
             ///hat2kd en el title mwgood fl entry types .. law msh mwgod ha create new entry type
             DB::transaction(function () use ($amount, $newAccount, $credit_account, $debit_account, $currency, $currency_amount) {
-                $new_credit_balance = $credit_account->updateBalance($amount, Account::NATURE_CREDIT);
+            
                 $new_debit_balance = $debit_account->updateBalance($amount,  Account::NATURE_DEBIT);
-                if($currency_amount && ($currency == $credit_account->default_currency)){
+                if ($currency_amount && ($currency == $credit_account->default_currency)) {
                     $new_credit_foreign_balance = $credit_account->updateForeignBalance($amount, Account::NATURE_CREDIT);
                     $newAccount->credit_foreign_balance = $new_credit_foreign_balance;
                 } else {
                     $newAccount->credit_foreign_balance = 0;
                 }
 
-                if($currency_amount && ($currency == $debit_account->default_currency)){
+                if ($currency_amount && ($currency == $debit_account->default_currency)) {
                     $new_debit_foreign_balance = $debit_account->updateForeignBalance($amount, Account::NATURE_DEBIT);
                     $newAccount->debit_foreign_balance = $new_debit_foreign_balance;
                 } else {
@@ -210,16 +219,16 @@ class JournalEntry extends Model
 
         $Arabic->setNumberFeminine(1);
         $Arabic->setNumberFormat(1);
-    
-        
+
+
         $text = $Arabic->int2str($this->amount);
         $number_format = number_format($this->amount, 2);
-    
+
         $activeSheet->getCell('B7')->setValue($this->amount);
         $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('Y / m / d'));
-        $activeSheet->getCell('B9')->setValue("/    .......................................{$this->receiver_name}................................................"  );
-        $activeSheet->getCell('B11')->setValue("/    ......{$number_format}...... نقدا / شيك رقم : ............................................				"  );
-        $activeSheet->getCell('B13')->setValue("/.............................$text............................................				"  );
+        $activeSheet->getCell('B9')->setValue("/    .......................................{$this->receiver_name}................................................");
+        $activeSheet->getCell('B11')->setValue("/    ......{$number_format}...... نقدا / شيك رقم : ............................................				");
+        $activeSheet->getCell('B13')->setValue("/.............................$text............................................				");
 
         // foreach ($leads as $lead) {
         //     $activeSheet->getCell('A' . $i)->setValue($lead->id);
@@ -242,7 +251,8 @@ class JournalEntry extends Model
     }
 
     /** modal needed to query by day */
-    public function downloadDailyTransaction(Carbon $day) {
+    public function downloadDailyTransaction(Carbon $day)
+    {
 
         // $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
         // if (!$template) {
@@ -250,7 +260,7 @@ class JournalEntry extends Model
         // }
         // $newFile = $template->copy();
         // $activeSheet = $newFile->getSheet(3);
-    
+
         // $activeSheet->getCell('B3')->setValue("كشف حركة الخزينة عن يوم ال" . Helpers::dayInArabic($day->dayOfWeek) . "  الموافق $day->day / $day->month / $day->year						");
         // $trans = self::byDay($day)->get();
         // $i = 6;
@@ -303,14 +313,18 @@ class JournalEntry extends Model
     }
 
     ////relations
-    public function credit_account(): BelongsTo
+    public function accounts(): BelongsToMany
     {
-        return $this->belongsTo(Account::class, 'credit_id');
-    }
-
-    public function debit_account(): BelongsTo
-    {
-        return $this->belongsTo(Account::class, 'debit_id');
+        return $this->belongsToMany(Account::class, 'entry_accounts')->withPivot([
+            'nature',
+            'amount',
+            'account_foreign_balance',
+            'account_balance',
+            'currency',
+            'currency_amount',
+            'currency_rate',
+            'doc_url'
+        ]);
     }
 
     public function entry_title(): BelongsTo
@@ -322,7 +336,7 @@ class JournalEntry extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    
+
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');

@@ -409,15 +409,15 @@
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
-                                                    From
+                                                    Issue Date
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
-                                                    Payment Date
+                                                    Client Payment
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
-                                                    Status
+                                                    Sales Out
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
@@ -465,7 +465,7 @@
                                                     </td>
 
                                                     <td class="table-td ">
-                                                        {{ ucwords(str_replace('_', ' ', $comm->from)) }}
+                                                        {{ $comm->sold_policy?->created_at ? \Carbon\Carbon::parse($comm->sold_policy?->created_at)->format('D d/m/Y') : 'Not set.' }}
                                                     </td>
 
                                                     <td class="table-td ">
@@ -474,19 +474,7 @@
 
 
                                                     <td class="table-td">
-                                                        @if (str_contains($comm->status, 'not_confirmed'))
-                                                            <span class="badge bg-warning-500 text-white h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @elseif(str_contains($comm->status, 'cancelled'))
-                                                            <span class="badge bg-danger-500 text-white h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
-                                                            <span class="badge bg-success-500 text-white h-auto">
-                                                                <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @endif
+                                                        {{ number_format($comm->sales_out_comm, 2, '.', ',') }} EGP
                                                     </td>
 
                                                     <td class="table-td px-0">

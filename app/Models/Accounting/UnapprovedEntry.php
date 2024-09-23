@@ -89,7 +89,7 @@ class UnapprovedEntry extends Model
 
             DB::transaction(function () use ($creditAccount, &$newEntry) {
                 $newEntry = JournalEntry::newJournalEntry(
-                    title: EntryTitle::findOrFail($this->entry_title_id)->name,
+                    entry_title_id: $this->entry_title_id,
                     amount: $this->amount,
                     credit_id: $this->credit_id,
                     debit_id: $this->debit_id,
