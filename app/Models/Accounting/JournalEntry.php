@@ -72,7 +72,7 @@ class JournalEntry extends Model
      * ]
      */
     public static function newJournalEntry(
-        $entry_title_id,
+        $entry_title_id, //changed
         $cash_entry_type = null,
         $receiver_name = null,
         Carbon $approved_at = null,
@@ -83,7 +83,6 @@ class JournalEntry extends Model
         $is_seeding = false,
         $accounts = [],
     ): self|UnapprovedEntry|false {
-
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
@@ -115,19 +114,18 @@ class JournalEntry extends Model
             "comment"           =>  $comment
         ]);
 
-
         try {
             ///////////////////////////////saving entry
-            DB::transaction(function () use ($newEntry, $accounts) {
+            DB::transaction(function () use ($newEntry, $accounts, $is_seeding) {
 
                 $newEntry->save();
 
                 foreach ($accounts as $account_id => $entry_arr) {
                     /** @var Account */
                     $account = Account::findOrFail($account_id);
-                    $entry_arr['account_balance'] =  $account->updateBalance($accounts['amount'], $entry_arr['nature']);
+                    $entry_arr['account_balance'] =  $account->updateBalance($entry_arr['amount'], $entry_arr['nature'], $is_seeding);
                     if ($entry_arr['currency'] && $entry_arr['currency'] != self::CURRENCY_EGP && $entry_arr['currency'] == $account->default_currency) {
-                        $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['currency'], $entry_arr['nature']);
+                        $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['currency'], $entry_arr['nature'], $is_seeding);
                     }
                     $newEntry->accounts()->attach($account_id, $entry_arr);
                 }
@@ -272,11 +270,30 @@ class JournalEntry extends Model
     }
 
     ///scopes
+
+    /** this will add account model & pivot to the returning journal entries
+     * $entry->account->{any_account column} 
+     * $entry->account->pivot-> (entry_accounts table columns)
+     */
+    public function scopeIncludeAccountsName($query)
+    {
+        return $query->with('accounts');
+    }
+
+    /** this will add entry_title_name to the returning journal entries */
+    public function scopeIncludeEntryName($query)
+    {
+        return $query->select('entry_titles.name as entry_title_name')
+            ->join('entry_titles', 'entry_titles.id', '=', 'journal_entries.entry_title_id');
+    }
+
+
     public function scopeByAccount($query, $account_id)
     {
-        return $query->where(function ($q) use ($account_id) {
-            $q->where('debit_id', $account_id)->orwhere("credit_id", $account_id);
-        });
+        return $query->select('journal_entries.*')
+            ->join('entry_accounts', 'entry_accounts.journal_entry_id', '=', 'journal_entries.id')
+            ->where('entry_accounts.account_id', $account_id)
+            ->groupBy('journal_entries.id');
     }
 
     public function scopeByDay($query, Carbon $day)

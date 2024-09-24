@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -24,7 +25,7 @@ class Account extends Model
         'desc',
         'nature',
         'main_account_id',
-        'parent_account_id',
+        'parent_account_id', //list of accounts from the same main account
         'limit',
         'balance',
         'foreign_balance'
@@ -39,7 +40,28 @@ class Account extends Model
 
 
     ////static functions
-    public static function newAccount($name, $nature, $main_account_id, $limit, $desc = null, $is_seeding = false): self|false
+    public static function getEntries($account_id, Carbon $from, Carbon $to)
+    {
+        return DB::table('journal_entries')
+            ->join('entry_accounts', 'entry_accounts.journal_entry_id', '=', 'journal_entries.id')
+            ->join('entry_titles', 'entry_titles.id', '=', 'journal_entries.entry_title_id')
+            ->where('entry_accounts.account_id', $account_id)
+            ->whereBetween('created_at', [
+                $from->format('Y-m-d H:i'),
+                $to->format('Y-m-d H:i'),
+            ])
+            ->groupBy('journal_entries.id')
+
+            ->select('journal_entries.*')
+            ->select('account_foreign_balance', 'account_balance', 'currency_rate', 'doc_url')
+            ->selectRaw('IF(entry_accounts.nature == "debit" , entry_accounts.amount , 0 ) as debit_amount')
+            ->selectRaw('IF(entry_accounts.nature == "credit" , entry_accounts.amount , 0 ) as credit_amount')
+            ->selectRaw('IF(entry_accounts.nature == "debit" , entry_accounts.currency_amount , 0 ) as debit_foreign_amount')
+            ->selectRaw('IF(entry_accounts.nature == "credit" , entry_accounts.currency_amount , 0 ) as credit_foreign_amount')
+            ->get();
+    }
+
+    public static function newAccount($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $is_seeding = false): self|false
     {
 
         /** @var User */
@@ -47,11 +69,12 @@ class Account extends Model
         if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
 
         $newAccount = new self([
+            "code"      =>  $code,
             "name"      =>  $name,
             "nature"    =>  $nature,
+            "parent_account_id"  =>  $parent_account_id,
             "main_account_id"  =>  $main_account_id,
             "desc"      =>  $desc,
-            "limit"     =>  $limit,
             "balance"   =>  0,
             "foreign_balance"   =>  0,
         ]);
@@ -108,11 +131,13 @@ class Account extends Model
 
 
     /** returns new balance after update */
-    public function updateBalance($amount, $type)
+    public function updateBalance($amount, $type, $is_seeding = false)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
+        if(!$is_seeding){
+            /** @var User */
+            $loggedInUser = Auth::user();
+            if (!$loggedInUser->can('update', $this)) return false;
+        }
         if ($this->nature != $type) $amount = -1 * $amount;
 
         $this->balance = $this->balance + $amount;
@@ -125,11 +150,13 @@ class Account extends Model
         }
     }
 
-    public function updateForeignBalance($amount, $type)
+    public function updateForeignBalance($amount, $type, $is_seeding = false)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
+        if(!$is_seeding){
+            /** @var User */
+            $loggedInUser = Auth::user();
+            if (!$loggedInUser->can('update', $this)) return false;
+        }
         if ($this->nature != $type) $amount = -1 * $amount;
 
         $this->foreign_balance = $this->foreign_balance + $amount;
@@ -147,7 +174,7 @@ class Account extends Model
         return $this->limit <= $amount;
     }
 
-    public function editInfo($name, $nature, $main_account_id, $limit, $desc = null): bool
+    public function editInfo($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null): bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -155,11 +182,12 @@ class Account extends Model
 
         try {
             $this->update([
+                "code"  =>  $code,
                 "name"  =>  $name,
                 "nature"  =>  $nature,
                 "main_account_id"  =>  $main_account_id,
+                "parent_account_id"  =>  $parent_account_id,
                 "desc"  =>  $desc,
-                "limit"  =>  $limit,
             ]);
             AppLog::info("Updating account", loggable: $this);
             return $this->save();
@@ -180,6 +208,17 @@ class Account extends Model
         else return $this->parent_account->full_code . '-' . $this->code;
     }
 
+    public function getIsForeignAttribute()
+    {
+        $this->default_currency !== JournalEntry::CURRENCY_EGP;
+    }
+
+    public function getHasChildrenAttribute()
+    {
+        $this->loadCount('children_accounts');
+        return $this->children_accounts_count > 0;
+    }
+
     ///scopes
     public function scopeByNature($query, $nature)
     {
@@ -193,16 +232,20 @@ class Account extends Model
     {
         return $query->where('main_account_id ', $main_account_id);
     }
+    public function scopeParentAccounts($query, $main_account_id)
+    {
+        return $query->whereNull('parent_account_id ');
+    }
 
     ////relations
     public function credit_entries()
     {
-        return $this->hasMany(JournalEntry::class, 'credit_id');
+        return $this->hasMany(JournalEntry::class)->where();
     }
 
     public function debit_entries()
     {
-        return $this->hasMany(JournalEntry::class, 'debit_id');
+        return $this->hasMany(JournalEntry::class);
     }
 
     public function main_account()
@@ -213,5 +256,10 @@ class Account extends Model
     public function parent_account()
     {
         return $this->belongsTo(self::class, 'parent_account_id');
+    }
+
+    public function children_accounts()
+    {
+        return $this->hasMany(self::class, 'parent_account_id');
     }
 }

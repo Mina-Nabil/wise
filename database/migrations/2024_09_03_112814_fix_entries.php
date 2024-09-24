@@ -19,15 +19,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('journal_entries');
+
         Schema::dropIfExists('unapproved_entries');
+        Schema::dropIfExists('unapp_entry_accounts');
+        Schema::dropIfExists('unapp_entries');
+        Schema::dropIfExists('entry_accounts');
+        Schema::dropIfExists('journal_entries');
+        Schema::dropIfExists('titles_accounts');
         Schema::dropIfExists('accounts');
         Schema::dropIfExists('entry_titles');
         Schema::dropIfExists('main_accounts');
 
         Schema::create('main_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('code'); 
+            $table->string('code')->unique(); 
             $table->string('name')->unique(); //masrofat - revenue - clients
             $table->enum('type', MainAccount::TYPES);
             $table->text('desc')->nullable();
@@ -39,18 +44,13 @@ return new class extends Migration
             $table->string('name'); //dyafa - 7sab allianz - 7sab motorcity
             $table->text('desc')->nullable();
             $table->foreignIdFor(MainAccount::class)->constrained();
-            $table->foreignIdFor(Account::class, 'parent_account_id')->constrained('accounts');
+            $table->foreignIdFor(Account::class, 'parent_account_id')->nullable()->constrained('accounts');
             $table->enum('nature', Account::NATURES);
-            $table->string('default_currency')->default(JournalEntry::CURRENCY_EGP);
+            $table->enum('default_currency', JournalEntry::CURRENCIES)->default(JournalEntry::CURRENCY_EGP);
             $table->double('balance')->default(0);
             $table->double('foreign_balance')->default(0);
             $table->timestamps();
         });
-
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->foreignIdFor(Account::class, 'parent_account_id')->nullable()->constrained('accounts');
-        });
-
 
         Schema::create('entry_titles', function (Blueprint $table) {
             $table->id();
@@ -69,7 +69,7 @@ return new class extends Migration
         Schema::create('journal_entries', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(EntryTitle::class)->constrained();
-            $table->foreignIdFor(User::class, 'approver_id')->constrained('users');
+            $table->foreignIdFor(User::class, 'approver_id')->nullable()->constrained('users');
             $table->dateTime('approved_at')->nullable();
             $table->foreignIdFor(User::class)->constrained(); //creator
             $table->boolean('is_reviewed')->default(false);
@@ -109,7 +109,7 @@ return new class extends Migration
 
         Schema::create('unapp_entry_accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(UnapprovedEntry::class)->constrained('unapproved_entries');
+            $table->foreignIdFor(UnapprovedEntry::class)->constrained('unapp_entries');
             $table->foreignIdFor(Account::class)->constrained();
             $table->enum('nature', Account::NATURES);
             $table->double('amount')->default(0);

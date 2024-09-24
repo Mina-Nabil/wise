@@ -34,13 +34,14 @@ class MainAccount extends Model
     ];
 
     ////static functions
-    public static function newMainAccount($name, $type, $desc = null, $is_seeding = false): self|false
+    public static function newMainAccount($code, $name, $type, $desc = null, $is_seeding = false): self|false
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$is_seeding && !$loggedInUser->can('create', Account::class)) return false;
 
         $newType = new self([
+            'code' => $code,
             'name' => $name,
             'type' => $type,
             'desc' => $desc,
@@ -57,9 +58,10 @@ class MainAccount extends Model
     }
 
     ////model functions
-    public function editInfo($name, $type, $desc = null): bool
+    public function editInfo($code, $name, $type, $desc = null): bool
     {
         $this->update([
+            'code' => $code,
             'name' => $name,
             'type' => $type,
             'desc' => $desc,

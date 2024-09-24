@@ -520,10 +520,9 @@ class Policy extends Model
         $rate,
         $note = null
     ): false|PolicyCondition {
-        //TODO remove comment
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('update', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
 
         try {
             $order = $this->conditions()->count() + 1;
@@ -546,10 +545,10 @@ class Policy extends Model
 
     public function addBenefit($benefit, $value)
     {
-        //TODO remove comment
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('update', $this)) return false;
+
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
         try {
             AppLog::info("Adding benefit", loggable: $this);
 
@@ -567,10 +566,9 @@ class Policy extends Model
 
     public function addGrossCalculation($title, $calculation_type, $value)
     {
-        //TODO remove comment
         /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('update', $this)) return false;
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
         try {
             AppLog::info("Adding gross calculation", loggable: $this);
 

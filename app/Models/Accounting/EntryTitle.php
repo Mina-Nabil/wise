@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class EntryTitle extends Model
 {
@@ -26,14 +27,14 @@ class EntryTitle extends Model
      * 'limit => nullable or double
      * ] ] 
      */
-    public static function newOrCreateEntry($name, $desc = null, $accounts = [])
+    public static function newEntry($name, $desc = null, $accounts = [])
     {
         try {
-            $entryTitle = self::firstOrCreate([
+            $entryTitle = new self([
                 'name'          =>  $name,
-            ], [
                 'desc'          =>  $desc,
             ]);
+            $entryTitle->save();
             if (count($accounts)) {
                 $entryTitle->accounts()->sync(
                     $accounts
@@ -48,15 +49,18 @@ class EntryTitle extends Model
 
 
     /////////model functions
-    public function isEntryValid($accounts){
+    public function isEntryValid($accounts)
+    {
+        return true;
+        //TODO check children
         $this->load('accounts');
-        foreach($accounts as $account_id => $entry_arr){
+        foreach ($accounts as $account_id => $entry_arr) {
             $tmpAccount = $this->accounts->firstWhere('id', $account_id);
-            if($tmpAccount->pivot->nature == $entry_arr['nature'] && $tmpAccount->pivot->limit < $entry_arr['amount']  ){
+            Log::info($tmpAccount);
+            if ($tmpAccount->pivot->nature == $entry_arr['nature'] && $tmpAccount->pivot->limit < $entry_arr['amount']) {
                 return false;
             }
         }
-        return true;
     }
 
     /** 
@@ -67,28 +71,19 @@ class EntryTitle extends Model
      * 'limit => nullable or double
      * ] ] 
      */
-    public function editTitle($title, $desc = null, array $accounts = [])
+    public function editTitle($name, $desc = null, array $accounts = [])
     {
         try {
-            $this->title = $title;
+            $this->name = $name;
             $this->desc = $desc;
             $this->save();
             if (count($accounts)) {
                 $this->accounts()->sync(
                     $accounts
                 );
+            } else {
+                $this->accounts()->sync([]);
             }
-        } catch (Exception $e) {
-            report($e);
-            return false;
-        }
-    }
-
-    public function editDesc($desc)
-    {
-        try {
-            $this->desc = $desc;
-            $this->save();
         } catch (Exception $e) {
             report($e);
             return false;
