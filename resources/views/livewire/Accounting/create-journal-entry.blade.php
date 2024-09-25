@@ -11,13 +11,27 @@
                         <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Information</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
 
-                            <div class="input-area">
-                                <label for="title" class="form-label">Title</label>
-                                <input type="text" id="title" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('title') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="title" maxlength="100">
-                                @error('title')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
+                            @if ($selectedTitle)
+                                <div class="card ring-1 ring-primary-500">
+                                    <div class="card-body p-6">
+                                        <div class="flex-1 items-center">
+                                            <div class="card-title mb-5">{{ $selectedTitle->name }}</div>
+                                            <p class="card-text">{{ $selectedTitle->desc }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="input-area">
+                                    <label for="title" class="form-label">Title</label>
+                                    <input type="text" id="title" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('title') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="title" maxlength="100">
+                                    @error('title')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+
+
+
 
                             <div class="input-area">
                                 <label for="amount" class="form-label">Amount</label>
@@ -33,7 +47,7 @@
                                         <p class="flex items-center">
                                             <iconify-icon icon="fluent:rename-24-filled" class="mr-2"></iconify-icon>
                                             {{ $entry_title->name }}
-                                            <span wire:click="selectTitle('{{ $entry_title->name }}')" class="cursor-pointer text-primary-500 ml-2">Select title</span>
+                                            <span wire:click="selectTitle('{{ $entry_title->id }}')" class="cursor-pointer text-primary-500 ml-2">Select title</span>
                                         </p>
                                     @endforeach
                                 </div>
@@ -55,7 +69,8 @@
                             <div class="flex justify-between items-end space-x-6">
                                 <div class="input-area w-full">
                                     <label for="receiver_name" class="form-label">Receiver name</label>
-                                    <input type="text" id="receiver_name" @if (!$cash_entry_type) disabled @endif class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('receiver_name') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="receiver_name" step="0.01">
+                                    <input type="text" id="receiver_name" @if (!$cash_entry_type) disabled @endif class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('receiver_name') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="receiver_name"
+                                        step="0.01">
                                     @error('receiver_name')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
@@ -135,7 +150,7 @@
 
                                     @foreach ($CURRENCIES as $CURRENCY)
                                         <iconify-icon icon="openmoji:flag-egypt" width="1.2em" height="1.2em"></iconify-icon>
-                                        <option value="{{ $CURRENCY }}" >{{ ucwords($CURRENCY) }}</option>
+                                        <option value="{{ $CURRENCY }}">{{ ucwords($CURRENCY) }}</option>
                                     @endforeach
                                 </select>
                                 @error('currency')

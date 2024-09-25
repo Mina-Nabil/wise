@@ -232,9 +232,10 @@ class Account extends Model
     {
         return $query->where('main_account_id ', $main_account_id);
     }
-    public function scopeParentAccounts($query, $main_account_id)
+    
+    public function scopeParentAccounts($query)
     {
-        return $query->whereNull('parent_account_id ');
+        return $query->whereNull('parent_account_id');
     }
 
     ////relations

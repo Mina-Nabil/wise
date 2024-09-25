@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Accounting;
 
 use App\Models\Accounting\Account;
+use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\MainAccount;
 use App\Traits\AlertFrontEnd;
 use Livewire\Component;
@@ -16,8 +17,11 @@ class AccountIndex extends Component
     public $acc_name;
     public $acc_desc;
     public $nature;
-    public $main_account_id;
+    public $currency;
+    public $mainAccountId;
+    public $parent_account_id;
     public $limit;
+    private $filteredAccounts;
 
     // filters properties
     public $searchText;
@@ -27,10 +31,37 @@ class AccountIndex extends Component
     //edit info
     public $accountID;
 
+    //to show child accounts
+    public $showChildAccounts = [];
+
+    public function showThisChildAccount($accountId)
+    {
+        // Check if the ID is already in the array, to avoid duplicates
+        if (!in_array($accountId, $this->showChildAccounts)) {
+            // Add the account ID to the array
+            $this->showChildAccounts[] = $accountId;
+        }
+    }
+
+    public function hideThisChildAccount($accountId)
+    {
+        $this->showChildAccounts = array_filter($this->showChildAccounts, function($id) use ($accountId) {
+            return $id !== $accountId;
+        });
+    }
+
+    public function updatedMainAccountId(){
+        if ($this->mainAccountId) {
+            $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
+        }
+        // dd($this->filteredAccounts);
+        
+    }
+
     // Method to open the modal
     public function openAddNewModal()
     {
-        $this->reset(['acc_name', 'acc_desc', 'nature', 'main_account_id', 'limit']);
+        $this->reset(['acc_name', 'acc_desc', 'nature', 'mainAccountId', 'limit']);
         $this->isAddNewModalOpen = true;
     }
 
@@ -41,7 +72,7 @@ class AccountIndex extends Component
         $this->acc_name = $a->name;
         $this->acc_desc = $a->desc;
         $this->nature = $a->nature;
-        $this->main_account_id = $a->main_account_id ;
+        $this->mainAccountId = $a->main_account_id ;
         $this->limit = $a->limit;
         $this->accountID = $id;
     }
@@ -49,7 +80,7 @@ class AccountIndex extends Component
     // Method to close edit modal
     public function closeEditModal()
     {
-        $this->reset(['acc_name', 'acc_desc', 'nature', 'main_account_id', 'limit' ,'accountID']);
+        $this->reset(['acc_name', 'acc_desc', 'nature', 'mainAccountId', 'limit' ,'accountID']);
     }
 
     // Method to close the modal
@@ -78,12 +109,12 @@ class AccountIndex extends Component
         $this->validate([
             'acc_name' => 'required|string|max:100',
             'nature' => 'required|in:' . implode(',', Account::NATURES),
-            'main_account_id' => 'required|exists:main_accounts,id',
+            'mainAccountId' => 'required|exists:main_accounts,id',
             'limit' => 'required|numeric',
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount($this->acc_name, $this->nature, $this->main_account_id, $this->limit, $this->acc_desc);
+        $res = Account::newAccount($this->acc_name, $this->nature, $this->mainAccountId, $this->limit, $this->acc_desc);
         if ($res) {
             $this->closeEditModal();
             $this->alert('success', 'Account successfully updated');
@@ -97,12 +128,12 @@ class AccountIndex extends Component
         $this->validate([
             'acc_name' => 'required|string|max:100',
             'nature' => 'required|in:' . implode(',', Account::NATURES),
-            'main_account_id' => 'required|exists:main_accounts,id',
+            'mainAccountId' => 'required|exists:main_accounts,id',
             'limit' => 'required|numeric',
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount($this->acc_name, $this->nature, $this->main_account_id, $this->limit, $this->acc_desc);
+        $res = Account::newAccount($this->acc_name, $this->nature, $this->mainAccountId, $this->limit, $this->acc_desc);
 
         if ($res) {
             $this->closeAddNewModal();
@@ -124,12 +155,16 @@ class AccountIndex extends Component
         ->when($this->searchText,function ($q){
             return $q->searchBy($this->searchText);
         })
+        ->parentAccounts()
         ->get();
         $main_accounts = MainAccount::all();
+        $CURRENCIES = JournalEntry::CURRENCIES;
 
         return view('livewire.Accounting.account-index', [
             'accounts' => $accounts,
-            'main_accounts' => $main_accounts
+            'main_accounts' => $main_accounts,
+            'CURRENCIES' => $CURRENCIES,
+            'filteredAccounts' => $this->filteredAccounts
         ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }
 }

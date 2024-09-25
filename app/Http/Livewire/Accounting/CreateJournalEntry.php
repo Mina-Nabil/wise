@@ -17,6 +17,7 @@ class CreateJournalEntry extends Component
 {
     use WithFileUploads, AlertFrontEnd, AuthorizesRequests;
 
+    public $selectedTitle;
     public $title;
     public $amount;
     public $debit_id;
@@ -104,9 +105,9 @@ class CreateJournalEntry extends Component
         $this->authorize('create', JournalEntry::class);
     }
 
-    public function selectTitle($v)
+    public function selectTitle($id)
     {
-        $this->title = $v;
+        $this->selectedTitle = EntryTitle::find($id);
         $this->entry_titles = null;
     }
 
