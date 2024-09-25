@@ -219,6 +219,11 @@ class Account extends Model
         return $this->children_accounts_count > 0;
     }
 
+    public function getIsTopParentAttribute()
+    {
+        return is_null($this->parent_account_id);
+    }
+
     ///scopes
     public function scopeByNature($query, $nature)
     {

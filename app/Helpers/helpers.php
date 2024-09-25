@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\Log;
+
 class Helpers
 {
     public static function joined($query, $table)
@@ -36,6 +38,16 @@ class Helpers
                 return "جمعه";
             case 7:
                 return "سبت";
+        }
+    }
+
+    public static function printAccountChildren($indentation, $account)
+    {
+        Log::info("Printing $account->name's children" );
+        if(!($indentation || $account->is_top_parent)) return;
+        echo "<option value='$account->id'>$indentation$account->name</option>";
+        foreach($account->children_accounts as $ac){
+            self::printAccountChildren($indentation . "* ", $ac);
         }
     }
 }
