@@ -113,7 +113,7 @@ class CreateJournalEntry extends Component
 
     public function render()
     {
-        $accounts = Account::all();
+        $accounts = Account::whereIn('id', [2])->get();
         $CURRENCIES = JournalEntry::CURRENCIES;
         $CASH_ENTRY_TYPES = JournalEntry::CASH_ENTRY_TYPES;
 
