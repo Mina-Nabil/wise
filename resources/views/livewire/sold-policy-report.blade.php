@@ -28,10 +28,16 @@
                                         dark:hover:text-white cursor-pointer">
                                 Start date ( From-To )</span>
                         </li>
+                    
                         <li wire:click="toggleExpiryDate">
                             <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                         dark:hover:text-white cursor-pointer">
                                 Expiry date ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleIssuedDate">
+                            <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Issued date ( From-To )</span>
                         </li>
                         <li wire:click="toggleCreator">
                             <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
@@ -125,6 +131,19 @@
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearExpiryDates">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+
+                            @if ($issued_from || $issued_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleIssuedDate">
+                                        {{ $issued_from ? 'Issued From: ' . \Carbon\Carbon::parse($issued_from)->format('l d/m/Y') : '' }} {{ $issued_from && $issued_to ? '-' : '' }} {{ $issued_to ? 'Issued To: ' . \Carbon\Carbon::parse($issued_to)->format('l d/m/Y') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearIssuedDates">
                                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                                     </span>
                                 </button>
@@ -544,6 +563,55 @@
                             <button wire:click="setExpiryDates" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setExpiryDates">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setExpiryDates" icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($issuedSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Issued date
+                            </h3>
+                            <button wire:click="toggleIssuedDate" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eissued_from" class="form-label">Issued from</label>
+                                <input name="Eissued_from" type="date" class="form-control mt-2 w-full @error('Eissued_from') !border-danger-500 @enderror" wire:model.defer="Eissued_from">
+                                @error('Eissued_from')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="from-group">
+                                <label for="Eissued_to" class="form-label">Issued to</label>
+                                <input name="Eissued_to" type="date" class="form-control mt-2 w-full @error('Eissued_to') !border-danger-500 @enderror" wire:model.defer="Eissued_to">
+                                @error('Eissued_to')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setIssuedDates" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setIssuedDates">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setIssuedDates" icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
