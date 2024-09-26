@@ -27,6 +27,7 @@ class SoldPolicyReport extends Component
     public $brandSection = false;
     public $companySection = false;
     public $PolicySection = false;
+    public $issuedSection = false;
     public $creatorName;
     public $mainSalesName;
 
@@ -42,6 +43,8 @@ class SoldPolicyReport extends Component
     public $search;
     public $start_from;
     public $start_to;
+    public $issued_from;
+    public $issued_to;
     public $expiry_from;
     public $expiry_to;
     public $creator_id;
@@ -60,6 +63,8 @@ class SoldPolicyReport extends Component
 
     public $Estart_from;
     public $Estart_to;
+    public $Eissued_from;
+    public $Eissued_to;
     public $Eexpiry_from;
     public $Eexpiry_to;
     public $Ecreator_id;
@@ -323,6 +328,15 @@ class SoldPolicyReport extends Component
         }
     }
 
+    public function toggleIssuedDate()
+    {
+        $this->toggle($this->issuedSection);
+        if ($this->issuedSection) {
+            $this->Eissued_from = Carbon::parse($this->issued_from)->toDateString();
+            $this->Eissued_to = Carbon::parse($this->issued_to)->toDateString();
+        }
+    }
+
     public function exportReport()
     {
         if (Auth::user()->is_admin) {
@@ -345,6 +359,8 @@ class SoldPolicyReport extends Component
                 $this->search,
                 $this->is_renewal,
                 $this->main_sales_id,
+                $this->issued_from,
+                $this->issued_to,
             );
         }
     }
@@ -360,6 +376,19 @@ class SoldPolicyReport extends Component
     {
         $this->start_from = null;
         $this->start_to = null;
+    }
+
+    public function setIssuedDates()
+    {
+        $this->issued_from = Carbon::parse($this->Eissued_from);
+        $this->issued_to = Carbon::parse($this->Eissued_to);
+        $this->toggle($this->issuedSection);
+    }
+
+    public function clearIssuedDates()
+    {
+        $this->issued_from = null;
+        $this->issued_to = null;
     }
 
     public function mount()
@@ -408,6 +437,8 @@ class SoldPolicyReport extends Component
             $this->search,
             $this->is_renewal,
             $this->main_sales_id,
+            $this->issued_from,
+            $this->issued_to,
         )->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,

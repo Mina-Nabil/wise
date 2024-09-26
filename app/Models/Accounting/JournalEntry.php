@@ -22,6 +22,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class JournalEntry extends Model
 {
     const MORPH_TYPE = 'journal_entry';
+    const FILES_DIRECTORY = 'journal_entries/';
 
     use HasFactory;
     protected $table = 'journal_entries';

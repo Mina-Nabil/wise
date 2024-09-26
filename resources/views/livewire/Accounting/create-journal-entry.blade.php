@@ -90,6 +90,7 @@
                         </div>
                     </div>
                     @inject('helper', 'App\Helpers\Helpers')
+
                     <!-- Second Column: Debit and Credit Accounts with Documents -->
                     <div class="my-5">
                         <div class="">
@@ -98,6 +99,9 @@
                                     class=" card-body rounded-md bg-[#E5F9FF] dark:bg-slate-800 shadow-base menu-open p-5">
                                     <h4 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Debit Account
                                     </h4>
+                                    @php
+                                        $printed_arr = [];
+                                    @endphp
                                     <div class="mb-4">
                                         <label for="debit_id"
                                             class="block text-gray-700 dark:text-gray-300">Account</label>
@@ -106,7 +110,7 @@
                                             wire:model.defer="debit_id">
                                             <option value="">Select Debit Account</option>
                                             @foreach ($accounts as $account)
-                                                {{ $helper->printAccountChildren('', $account) }}
+                                                {{ $helper->printAccountChildren('', $account, $printed_arr) }}
                                             @endforeach
                                         </select>
                                         @error('debit_id')

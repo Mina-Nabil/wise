@@ -935,9 +935,9 @@ class SoldPolicy extends Model
         }
     }
 
-    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null)
+    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to)->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
         if (!$template) {
@@ -1364,13 +1364,17 @@ class SoldPolicy extends Model
         });
     }
 
-    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null)
+    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null)
     {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
                 $q->where('start', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($start_to, function ($q, $v) {
                 $q->where('start', "<=", $v->format('Y-m-d 23:59:59'));
+            })->when($issued_from, function ($q, $v) {
+                $q->where('sold_policies.created_at', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($issued_to, function ($q, $v) {
+                $q->where('sold_policies.created_at', "<=", $v->format('Y-m-d 23:59:59'));
             })->when($expiry_from, function ($q, $v) {
                 $q->where('expiry', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($expiry_to, function ($q, $v) {

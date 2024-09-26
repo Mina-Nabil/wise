@@ -41,13 +41,15 @@ class Helpers
         }
     }
 
-    public static function printAccountChildren($indentation, $account)
+    public static function printAccountChildren($indentation, $account, &$printed_arr = [])
     {
-        Log::info("Printing $account->name's children" );
-        if(!($indentation || $account->is_top_parent)) return;
+        if (in_array($account->id, $printed_arr)) return;
+
         echo "<option value='$account->id'>$indentation$account->name</option>";
-        foreach($account->children_accounts as $ac){
-            self::printAccountChildren($indentation . "* ", $ac);
+        array_push($printed_arr, $account->id);
+
+        foreach ($account->children_accounts as $ac) {
+            self::printAccountChildren($indentation . "* ", $ac, $printed_arr);
         }
     }
 }
