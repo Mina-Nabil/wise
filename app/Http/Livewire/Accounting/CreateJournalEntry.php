@@ -31,6 +31,9 @@ class CreateJournalEntry extends Component
     public $cash_entry_type;
     public $receiver_name;
 
+    public $credit_accounts = [];
+    public $debit_accounts = [];
+
     public $entry_titles;
 
     public function updatedTitle()
@@ -109,7 +112,33 @@ class CreateJournalEntry extends Component
     {
         $this->selectedTitle = EntryTitle::find($id);
         $this->entry_titles = null;
+
+        $credit_accounts = $this->selectedTitle->accounts()->wherePivot('nature', Account::NATURE_CREDIT)->get();
+        $debit_accounts = $this->selectedTitle->accounts()->wherePivot('nature', Account::NATURE_DEBIT)->get();
+
+        foreach ($credit_accounts as $account) {
+            $this->credit_accounts[$account->id] = [
+                'nature' => 'credit',
+                'amount' => $account->pivot->amount ?? 0,
+                'currency' => $account->pivot->currency ?? 'USD',
+                'currency_amount' => $account->pivot->currency_amount ?? 0,
+                'currency_rate' => $account->pivot->currency_rate ?? 1,
+                'doc_url' => $account->pivot->doc_url ?? null,
+            ];
+        }
+
+        foreach ($debit_accounts as $account) {
+            $this->debit_accounts[$account->id] = [
+                'nature' => 'debit',
+                'amount' => $account->pivot->amount ?? 0,
+                'currency' => $account->pivot->currency ?? 'USD',
+                'currency_amount' => $account->pivot->currency_amount ?? 0,
+                'currency_rate' => $account->pivot->currency_rate ?? 1,
+                'doc_url' => $account->pivot->doc_url ?? null,
+            ];
+        }
     }
+
 
     public function render()
     {
