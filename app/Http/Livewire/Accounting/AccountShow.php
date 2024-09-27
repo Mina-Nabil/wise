@@ -13,7 +13,7 @@ class AccountShow extends Component
     public $page_title = 'Account';
 
     public $account;
-    public $entryId;
+    public $accountId;
     public $fromDate = '2024-01-01';
     public $toDate = '2024-12-01';
     protected $listeners = ['dateRangeSelected'];
@@ -28,15 +28,16 @@ class AccountShow extends Component
 
     public function mount($id)
     {
-        $this->entryId = $id;
+        $this->accountId = $id;
+        $this->account = Account::findOrFail($id);
     }
 
     public function render()
     {
         $fromDate = Carbon::parse($this->fromDate);
         $toDate = Carbon::parse($this->toDate);
-        $entries = collect(Account::getEntries($this->entryId, Carbon::parse($fromDate), Carbon::parse($toDate)));
+        $entries = collect(Account::getEntries($this->accountId, Carbon::parse($fromDate), Carbon::parse($toDate)));
 
-        return view('livewire.accounting.account-show',[ 'entries' => $entries ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
+        return view('livewire.accounting.account-show', ['entries' => $entries])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }
 }

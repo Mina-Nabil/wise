@@ -45,19 +45,19 @@ class Account extends Model
         return DB::table('journal_entries')
             ->join('entry_accounts', 'entry_accounts.journal_entry_id', '=', 'journal_entries.id')
             ->join('entry_titles', 'entry_titles.id', '=', 'journal_entries.entry_title_id')
+            ->join('users', 'users.id', '=', 'journal_entries.user_id')
             ->where('entry_accounts.account_id', $account_id)
-            ->whereBetween('created_at', [
+            ->whereBetween('journal_entries.created_at', [
                 $from->format('Y-m-d H:i'),
                 $to->format('Y-m-d H:i'),
             ])
             ->groupBy('journal_entries.id')
 
-            ->select('journal_entries.*')
-            ->select('account_foreign_balance', 'account_balance', 'currency_rate', 'doc_url')
-            ->selectRaw('IF(entry_accounts.nature == "debit" , entry_accounts.amount , 0 ) as debit_amount')
-            ->selectRaw('IF(entry_accounts.nature == "credit" , entry_accounts.amount , 0 ) as credit_amount')
-            ->selectRaw('IF(entry_accounts.nature == "debit" , entry_accounts.currency_amount , 0 ) as debit_foreign_amount')
-            ->selectRaw('IF(entry_accounts.nature == "credit" , entry_accounts.currency_amount , 0 ) as credit_foreign_amount')
+            ->select('journal_entries.*', 'account_foreign_balance', 'account_balance', 'currency_rate', 'doc_url', 'users.username', 'entry_titles.name')
+            ->selectRaw('IF(entry_accounts.nature = "debit" , entry_accounts.amount , 0 ) as debit_amount')
+            ->selectRaw('IF(entry_accounts.nature = "credit" , entry_accounts.amount , 0 ) as credit_amount')
+            ->selectRaw('IF(entry_accounts.nature = "debit" , entry_accounts.currency_amount , 0 ) as debit_foreign_amount')
+            ->selectRaw('IF(entry_accounts.nature = "credit" , entry_accounts.currency_amount , 0 ) as credit_foreign_amount')
             ->get();
     }
 
@@ -133,7 +133,7 @@ class Account extends Model
     /** returns new balance after update */
     public function updateBalance($amount, $type, $is_seeding = false)
     {
-        if(!$is_seeding){
+        if (!$is_seeding) {
             /** @var User */
             $loggedInUser = Auth::user();
             if (!$loggedInUser->can('update', $this)) return false;
@@ -152,7 +152,7 @@ class Account extends Model
 
     public function updateForeignBalance($amount, $type, $is_seeding = false)
     {
-        if(!$is_seeding){
+        if (!$is_seeding) {
             /** @var User */
             $loggedInUser = Auth::user();
             if (!$loggedInUser->can('update', $this)) return false;
@@ -237,7 +237,7 @@ class Account extends Model
     {
         return $query->where('main_account_id ', $main_account_id);
     }
-    
+
     public function scopeParentAccounts($query)
     {
         return $query->whereNull('parent_account_id');
