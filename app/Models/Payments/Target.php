@@ -2,6 +2,7 @@
 
 namespace App\Models\Payments;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use Carbon\Carbon;
 use Exception;
@@ -56,9 +57,11 @@ class Target extends Model
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
 
+        /** @var SoldPolicy */
         foreach ($soldPolicies as $sp) {
+            $sp->calculateTotalSalesOutComm();
             $totalIncome += ($sp->total_policy_comm *
-                ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->sales_out_comm;
+                ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions;
         }
 
         //return false if the target is not acheived

@@ -117,7 +117,7 @@ class SoldPolicy extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$skipUserCheck && !$loggedInUser->can('update', $this)) return false;
-        
+
         $this->load('policy');
         $this->load('policy.comm_confs');
         try {
@@ -312,13 +312,34 @@ class SoldPolicy extends Model
         }
     }
 
+    public function calculateTotalSalesOutComm()
+    {
+        $total_sales_out = 0;
+        foreach ($this->sales_comms()->notCancelled()->get() as $comm) {
+            if ($comm->is_sales_out) {
+                $comm->refreshPaymentInfo(false);
+                $total_sales_out += $comm->amount;
+            }
+        }
+        $this->sales_out_comm = $total_sales_out;
+        try {
+            $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     public function calculateTotalSalesComm()
     {
         $tmp = 0;
         $total_sales_out = 0;
         foreach ($this->sales_comms()->notCancelled()->get() as $comm) {
             $tmp += $comm->amount;
-            if ($comm->is_sales_out) $total_sales_out += $comm->amount;
+            if ($comm->is_sales_out) {
+                $comm->refreshPaymentInfo(false);
+                $total_sales_out += $comm->amount;
+            }
         }
         $this->total_sales_comm = $tmp;
         $this->sales_out_comm = $total_sales_out;
@@ -1467,6 +1488,11 @@ class SoldPolicy extends Model
     {
         $now = Carbon::now();
         return $now->isAfter(new Carbon($this->expiry));
+    }
+
+    public function getTotalCommSubtractionsAttribute()
+    {
+        return $this->sales_out_comm + $this->discount;
     }
 
     public function getHasSalesOutAttribute()
