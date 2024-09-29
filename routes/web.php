@@ -111,7 +111,6 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/entries',JournalEntryIndex::class);
     Route::get('/entries/new',CreateJournalEntry::class);
     Route::get('/entries/unapproved',UnapprovedEntryIndex::class);
-    Route::get('/entries/unapproved/{id}',UpdateUnapprovedEntry::class)->name('entries.unapproved');
     Route::get( '/accounts/gettree/{id}', function($id){
         return response()->json(Account::findOrFail($id)->getTree());
     });
