@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 class JournalEntryIndex extends Component
 {
     use AlertFrontEnd, WithPagination, AuthorizesRequests;
+    protected $paginationTheme = 'bootstrap';
 
     public $page_title = '• Journal Entry';
 
@@ -49,6 +50,25 @@ class JournalEntryIndex extends Component
         
         $this->authorize('view',$this->entryInfo);
         
+    }
+
+    //to show child accounts
+    public $showChildAccounts = [];
+
+    public function showThisChildAccount($entryId)
+    {
+        // Check if the ID is already in the array, to avoid duplicates
+        if (!in_array($entryId, $this->showChildAccounts)) {
+            // Add the account ID to the array
+            $this->showChildAccounts[] = $entryId;
+        }
+    }
+
+    public function hideThisChildAccount($entryId)
+    {
+        $this->showChildAccounts = array_filter($this->showChildAccounts, function($id) use ($entryId) {
+            return $id !== $entryId;
+        });
     }
 
     public function downloadDailyTransaction(){
@@ -227,7 +247,7 @@ class JournalEntryIndex extends Component
     {
         $entries = JournalEntry::when($this->selectedAccount, function ($q) {
             return $q->byAccount($this->selectedAccount->id);
-        })->paginate(50);
+        })->get();
 
         $creditAccounts = Account::byNature(Account::NATURE_CREDIT)->get();
         $debitAccounts = Account::byNature(Account::NATURE_DEBIT)->get();

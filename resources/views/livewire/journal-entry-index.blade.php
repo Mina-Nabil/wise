@@ -142,19 +142,19 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Status / Nature
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Amount
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Credit Account
+                                        Balance
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Debit Account
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
-                                        Status
+                                        Foreign Balance
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -195,12 +195,6 @@
 
                                         <td class="table-td ">{{ $entry->entry_title->name }}</td>
 
-                                        <td class="table-td "><b>{{ number_format($entry->amount, 2) }}</b></td>
-
-                                        <td class="table-td ">{{ $entry->credit_account->name }} ({{number_format($entry->credit_balance)}})</td>
-
-                                        <td class="table-td ">{{ $entry->debit_account->name }} ({{number_format($entry->debit_balance)}})</td>
-
                                         <td class="table-td ">
                                             @if ($entry->is_reviewed)
                                                 <span class="badge bg-success-500 text-white capitalize inline-flex items-center mt-2">
@@ -214,15 +208,34 @@
                                             @endif
                                         </td>
 
-                                        <td class="table-td ">
-                                            <span class="badge bg-secondary-500 text-secondary-500 bg-opacity-30 capitalize rounded-3xl">{{ $entry->currency }}</span>
-                                        </td>
+                                        <td class="table-td ">-</td>
 
-                                        <td class="table-td ">{{ number_format($entry->currency_amount, 2) }}</td>
+                                        <td class="table-td ">-</td>
 
-                                        <td class="table-td ">{{ number_format($entry->currency_rate, 2) }}</td>
+                                        <td class="table-td ">-</td>
+
+                                        <td class="table-td ">-</td>
+
+                                        <td class="table-td ">-</td>
+
+                                        <td class="table-td ">-</td>
 
                                         <td class="table-td flex justify-between">
+
+                                            <div>
+                                                @if ($entry->accounts->isNotEmpty())
+                                                    @if (in_array($entry->id, $showChildAccounts))
+                                                        <button class="action-btn mr-2" type="button" wire:click="hideThisChildAccount({{ $entry->id }})">
+                                                            <iconify-icon icon="mingcute:up-fill"></iconify-icon>
+                                                        </button>
+                                                    @else
+                                                        <button class="action-btn mr-2" type="button" wire:click="showThisChildAccount({{ $entry->id }})">
+                                                            <iconify-icon icon="mingcute:down-fill"></iconify-icon>
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            </div>
+
                                             <div>
                                                 <button class="action-btn" type="button" wire:click="showEntry({{ $entry->id }})">
                                                     <iconify-icon icon="bi:info" class="text-lg"></iconify-icon>
@@ -283,8 +296,37 @@
                                                 </ul>
                                             </div>
                                         </td>
-
                                     </tr>
+
+                                    @if (in_array($entry->id, $showChildAccounts))
+                                        @foreach ($entry->accounts as $childAccount)
+                                            <tr class="bg-slate-50 dark:bg-slate-700">
+                                                <td class="table-td">Account</td>
+                                                <td class="table-td" colspan="3"><b>{{ $childAccount->main_account->name }} • {{ $childAccount->name }}</b></td>
+
+                                                <td class="table-td">
+                                                    <span class="badge bg-black-500 text-white capitalize inline-flex items-center">
+                                                        @if ($childAccount->nature === 'credit')
+                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-up"></iconify-icon>
+                                                        @elseif ($childAccount->nature === 'debit')
+                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-down"></iconify-icon>
+                                                        @else
+                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:question-mark-circle"></iconify-icon>
+                                                        @endif
+                                                        {{ ucfirst($childAccount->nature) }}
+                                                    </span>
+                                                </td>
+
+                                                <td class="table-td"><b>{{ number_format($childAccount->pivot->amount, 2) }}</b></td>
+                                                <td class="table-td">{{ number_format($childAccount->pivot->account_balance, 2) }}</td>
+                                                <td class="table-td">{{ number_format($childAccount->pivot->account_foreign_balance, 2) }}</td>
+                                                <td class="table-td">{{ $childAccount->pivot->currency }}</td>
+                                                <td class="table-td">{{ number_format($childAccount->pivot->currency_amount, 2) }}</td>
+                                                <td class="table-td">{{ $childAccount->pivot->currency_rate }}</td>
+                                                <td class="table-td"></td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                 @empty
                                     <tr>
                                         <td colspan="11">
@@ -308,6 +350,7 @@
                         </table>
                     </div>
                     {{-- {{ $entries->links('vendor.livewire.bootstrap') }} --}}
+
                 </div>
             </div>
         </div>
@@ -331,7 +374,7 @@
                                 <button wire:click="toggleAddLead" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
                                 </button>
@@ -428,7 +471,7 @@
                                 <button wire:click="closeShowInfo" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
                                 </button>
@@ -477,48 +520,50 @@
 
 
     @if ($isOpenDailyTrans)
-            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
-                <div class="modal-dialog relative w-auto pointer-events-none">
-                    <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                            <!-- Modal header -->
-                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                    Download daily transactions
-                                </h3>
-                                <button wire:click="hideDownloadDailyTransactionsForm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
-                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                                                                                                                                                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span class="sr-only">Close modal</span>
-                                </button>
-                            </div>
-                            <!-- Modal body -->
-                            <div class="p-6 space-y-4">
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Download daily transactions
+                            </h3>
+                            <button wire:click="hideDownloadDailyTransactionsForm" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white" data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                                                                                                                                                                                                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
 
-                                <div class="from-group">
-                                    <div class="input-area">
-                                        <label for="tranactionsDay" class="form-label">Select day</label>
-                                        <input id="tranactionsDay" type="date" class="form-control @error('tranactionsDay') !border-danger-500 @enderror" wire:model.lazy="tranactionsDay" autocomplete="off">
-                                    </div>
-                                    @error('tranactionsDay')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
+                            <div class="from-group">
+                                <div class="input-area">
+                                    <label for="tranactionsDay" class="form-label">Select day</label>
+                                    <input id="tranactionsDay" type="date" class="form-control @error('tranactionsDay') !border-danger-500 @enderror" wire:model.lazy="tranactionsDay" autocomplete="off">
                                 </div>
+                                @error('tranactionsDay')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                            </div>
-                            <!-- Modal footer -->
-                            <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                <button wire:click="downloadDailyTransaction" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                                    <span wire:loading.remove wire:target="downloadDailyTransaction">Download</span>
-                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadDailyTransaction" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                </button>
-                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="downloadDailyTransaction" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="downloadDailyTransaction">Download</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="downloadDailyTransaction" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        @endif
+        </div>
+    @endif
 
 </div>
