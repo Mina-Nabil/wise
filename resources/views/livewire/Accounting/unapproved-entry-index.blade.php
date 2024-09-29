@@ -34,19 +34,19 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Status / Nature
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Amount
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Credit Account
+                                        Balance
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Debit Account
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
-                                        Status
+                                        Foreign Balance
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -78,12 +78,6 @@
 
                                         <td class="table-td ">{{ $entry->entry_title->name }}</td>
 
-                                        <td class="table-td "><b>{{ number_format($entry->amount, 2) }}</b></td>
-
-                                        <td class="table-td ">{{ $entry->credit_account->name }}</td>
-
-                                        <td class="table-td ">{{ $entry->debit_account->name }}</td>
-
                                         <td class="table-td ">
                                             @if ($entry->is_reviewed)
                                                 <span class="badge bg-success-500 text-white capitalize inline-flex items-center mt-2">
@@ -97,15 +91,33 @@
                                             @endif
                                         </td>
 
-                                        <td class="table-td ">
-                                            <span class="badge bg-secondary-500 text-secondary-500 bg-opacity-30 capitalize rounded-3xl">{{ $entry->currency }}</span>
-                                        </td>
+                                        <td class="table-td ">-</td>
 
-                                        <td class="table-td ">{{ number_format($entry->currency_amount, 2) }}</td>
+                                        <td class="table-td ">-</td>
 
-                                        <td class="table-td ">{{ number_format($entry->currency_rate, 2) }}</td>
+                                        <td class="table-td ">-</td>
+
+                                        <td class="table-td ">-</td>
+
+                                        <td class="table-td ">-</td>
+
+                                        <td class="table-td ">-</td>
 
                                         <td class="table-td flex justify-between">
+                                            <div>
+                                                @if ($entry->accounts->isNotEmpty())
+                                                    @if (in_array($entry->id, $showChildAccounts))
+                                                        <button class="action-btn mr-2" type="button" wire:click="hideThisChildAccount({{ $entry->id }})">
+                                                            <iconify-icon icon="mingcute:up-fill"></iconify-icon>
+                                                        </button>
+                                                    @else
+                                                        <button class="action-btn mr-2" type="button" wire:click="showThisChildAccount({{ $entry->id }})">
+                                                            <iconify-icon icon="mingcute:down-fill"></iconify-icon>
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            </div>
+
                                             <div>
                                                 <button class="action-btn" type="button" wire:click="showEntry({{ $entry->id }})">
                                                     <iconify-icon icon="bi:info" class="text-lg"></iconify-icon>
@@ -117,14 +129,6 @@
                                                     <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                 </button>
                                                 <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                    <a href="{{ route('entries.unapproved', ['id' => $entry->id]) }}">
-                                                        <li>
-                                                            <span
-                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                <iconify-icon icon="bx:edit"></iconify-icon>
-                                                                <span>Edit info</span></span>
-                                                        </li>
-                                                    </a>
                                                     @can('approve', \App\Models\Accounting\JournalEntry::class)
                                                         <li wire:click="$emit('showConfirmation', 'Are you sure you want to Approve this entry?','black','approveEntry' , {{ $entry->id }})">
                                                             <span
@@ -144,6 +148,36 @@
                                         </td>
 
                                     </tr>
+
+                                    @if (in_array($entry->id, $showChildAccounts))
+                                        @foreach ($entry->accounts as $childAccount)
+                                            <tr class="bg-slate-50 dark:bg-slate-700">
+                                                <td class="table-td" colspan="3"><b>{{ $childAccount->main_account->name }} • {{ $childAccount->name }}</b></td>
+
+                                                <td class="table-td">
+                                                    <span class="badge bg-black-500 text-white capitalize inline-flex items-center">
+                                                        @if ($childAccount->nature === 'credit')
+                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-up"></iconify-icon>
+                                                        @elseif ($childAccount->nature === 'debit')
+                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-down"></iconify-icon>
+                                                        @else
+                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:question-mark-circle"></iconify-icon>
+                                                        @endif
+                                                        {{ ucfirst($childAccount->nature) }}
+                                                    </span>
+                                                </td>
+
+                                                <td class="table-td"><b>{{ number_format($childAccount->pivot->amount, 2) }}</b></td>
+                                                <td class="table-td">{{ number_format($childAccount->pivot->account_balance, 2) }}</td>
+                                                <td class="table-td">{{ number_format($childAccount->pivot->account_foreign_balance, 2) }}</td>
+                                                <td class="table-td">{{ $childAccount->pivot->currency }}</td>
+                                                <td class="table-td">{{ number_format($childAccount->pivot->currency_amount, 2) }}</td>
+                                                <td class="table-td">{{ $childAccount->pivot->currency_rate }}</td>
+                                                <td class="table-td"></td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+
                                 @empty
                                     <tr>
                                         <td colspan="11">

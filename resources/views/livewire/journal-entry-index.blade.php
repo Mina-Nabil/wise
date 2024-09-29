@@ -19,18 +19,18 @@
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
-            @can('viewAny', \App\Models\Accounting\JournalEntry::class)
+            {{-- @can('viewAny', \App\Models\Accounting\JournalEntry::class)
                 <button wire:click="openSelectAccountModel" class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                     <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ion:filter"></iconify-icon>
                     Account Entries
                 </button>
-            @endcan
-            @can('viewAny', \App\Models\Accounting\JournalEntry::class)
+            @endcan --}}
+            {{-- @can('viewAny', \App\Models\Accounting\JournalEntry::class)
                 <button wire:click="showDownloadDailyTransactionsForm" class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                     <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="line-md:download-loop"></iconify-icon>
                     Download daily Transactions
                 </button>
-            @endcan
+            @endcan --}}
             @can('create', \App\Models\Accounting\JournalEntry::class)
                 <a href="{{ url('/entries/new') }}">
                     <button wire:click="openAddNewModal" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
