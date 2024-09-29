@@ -232,6 +232,7 @@ class ClientPayment extends Model
             if ($res && $wasPaid) {
                 $this->load('sold_policy');
                 $this->sold_policy->setClientPaymentDate(null);
+                $this->sold_policy->setClientCancellationDate(null);
                 $this->sold_policy->generatePolicyCommissions(true);
                 $this->sold_policy->calculateTotalClientPayments();
                 $this->sold_policy->updateSalesCommsPaymentInfo();

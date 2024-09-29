@@ -15,7 +15,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('sales_comms', function(Blueprint $table){
+        Schema::table('sold_policies', function(Blueprint $table){
             $table->dateTime('cancellation_time')->nullable();
         });
 

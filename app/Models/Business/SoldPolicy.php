@@ -366,6 +366,22 @@ class SoldPolicy extends Model
         }
     }
 
+    /** Use only when client who paid in the past cancelled his payment. */
+    public function setClientCancellationDate(Carbon $date)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateClientPayments', $this)) return false;
+        try {
+            $this->is_paid = 1;
+            $this->cancellation_time = $date->format('Y-m-d H:i');
+            return $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     public function setPolicyCommission($amount, $note = null)
     {
         /** @var User */
