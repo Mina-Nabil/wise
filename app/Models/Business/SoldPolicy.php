@@ -314,17 +314,13 @@ class SoldPolicy extends Model
 
     public function calculateTotalSalesOutComm()
     {
-        Log::info("calculating total out #$this->id");
-
         $total_sales_out = 0;
         /** @var SalesComm */
         foreach ($this->sales_comms()->notCancelled()->get() as $comm) {
             if ($comm->is_sales_out) {
-                Log::info("feha sales out #$comm->id");
                 $comm->refreshPaymentInfo(false, update_soldpolicy: false);
                 $total_sales_out += $comm->amount;
             }
-            Log::info("sales out=$total_sales_out");
         }
         $this->sales_out_comm = $total_sales_out;
         try {

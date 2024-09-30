@@ -50,7 +50,6 @@ class Target extends Model
      * If yes it will update the related sales commissions */
     public function processTargetPayments(Carbon $end_date = null)
     {
-        Log::info("processing target #$this->id");
         $this->load('comm_profile');
         $end_date = $end_date ?? Carbon::now();
         $start_date = $end_date->clone()->subMonths($this->each_month);
