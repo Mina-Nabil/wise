@@ -147,7 +147,7 @@ class SalesComm extends Model
         }
     }
 
-    public function refreshPaymentInfo($check_user = true, $increment_amount = false)
+    public function refreshPaymentInfo($check_user = true, $increment_amount = false, $update_soldpolicy = true)
     {
         if ($check_user) {
             /** @var User */
@@ -179,7 +179,8 @@ class SalesComm extends Model
             } else {
                 $this->update(["amount" =>  $amount]);
             }
-            $this->sold_policy->calculateTotalSalesComm();
+            if ($update_soldpolicy)
+                $this->sold_policy->calculateTotalSalesComm();
             return true;
         } catch (Exception $e) {
             report($e);

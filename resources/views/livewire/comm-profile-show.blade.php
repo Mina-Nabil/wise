@@ -474,7 +474,7 @@
 
 
                                                     <td class="table-td">
-                                                        {{ number_format($comm->sales_out_comm, 2, '.', ',') }} EGP
+                                                        {{ number_format($comm->sold_policy?->sales_out_comm, 2, '.', ',') }} EGP
                                                     </td>
 
                                                     <td class="table-td px-0">
