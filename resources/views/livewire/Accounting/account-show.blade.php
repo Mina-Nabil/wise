@@ -7,7 +7,10 @@
                 @if ($account->desc)
                     <p class="card-text my-5 break-words">{{ $account->desc }}</p>
                 @endif
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ ucwords($account->nature) }}</p>
+                <div class="flex justify-between">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ ucwords($account->nature) }}</p>
+                    <button class="btn inline-flex justify-center btn-outline-secondary btn-sm"><iconify-icon icon="bxs:edit" width="1.2em" height="1.2em"></iconify-icon></button>
+                </div>
             </div>
         </div>
     </div>
@@ -92,6 +95,10 @@
         @endif
     </div>
 
+
+    @if ($is_open_edit)
+        
+    @endif
 
 
 

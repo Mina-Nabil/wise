@@ -13,15 +13,17 @@
 @endphp
 
 <tr>
-    <td class="table-td"><b>{{ $account->full_code }}</b></td>
-    <td class="table-td @if($level != 0) padding-y-0 @endif" style="display: flex; align-items: center; height: 100%;">
+    <td class="table-td" style="position: sticky; left: 0; background-color: white; z-index: 10;">
+        <b>{{ $account->full_code }}</b>
+    </td>
+    <td class="table-td @if ($level != 0) padding-y-0 @endif" style="position: sticky; left: 100px; background-color: white; z-index: 10; display: flex; align-items: center; height: 100%;">
         {{-- Display bars based on the level --}}
         @for ($i = 0; $i < $level; $i++)
             <span style="display: block; width: 25px; height: 40px; background-color: {{ $colors[$i] ?? '#000000' }};opacity: 30%;"></span>
         @endfor
-        <div style="flex-grow: 1; @if($level != 0) padding-left: 10px; @endif  display: flex; align-items: center;">
+        <div style="flex-grow: 1; @if ($level != 0) padding-left: 10px; @endif  display: flex; align-items: center;">
             <a class="hover:underline cursor-pointer" href="{{ route('accounts.show', $account->id) }}">
-            <b>{{ $account->name }}</b>
+                <b>{{ $account->name }}</b>
             </a>
         </div>
     </td>
@@ -66,21 +68,27 @@
         </span>
     </td>
     <td class="table-td">{{ $account->default_currency }}</td>
-
-    <td class="table-td">
-        @if($account->children_accounts->isNotEmpty())
-            @if (in_array($account->id, $showChildAccounts))
-                <button class="action-btn" type="button" wire:click="hideThisChildAccount({{ $account->id }})">
-                    <iconify-icon icon="mingcute:up-fill"></iconify-icon>
-                </button>
-            @else
-                <button class="action-btn" type="button" wire:click="showThisChildAccount({{ $account->id }})">
-                    <iconify-icon icon="mingcute:down-fill"></iconify-icon>
-                </button>
+    <td class="table-td ">
+        <div class="flex justify-between @if (!$account->children_accounts->isNotEmpty()) float-right @endif">
+            @if ($account->children_accounts->isNotEmpty())
+                @if (in_array($account->id, $showChildAccounts))
+                    <button class="action-btn mr-2" type="button" wire:click="hideThisChildAccount({{ $account->id }})">
+                        <iconify-icon icon="mingcute:up-fill"></iconify-icon>
+                    </button>
+                @else
+                    <button class="action-btn mr-2" type="button" wire:click="showThisChildAccount({{ $account->id }})">
+                        <iconify-icon icon="mingcute:down-fill"></iconify-icon>
+                    </button>
+                @endif
             @endif
-        @endif
+
+            <button class="action-btn float-right" type="button" wire:click="openEditModal({{ $account->id }})">
+                <iconify-icon icon="bxs:edit"></iconify-icon>
+            </button>
+        </div>
     </td>
 </tr>
+
 
 <!-- Recursive call to display child accounts if any -->
 @if (in_array($account->id, $showChildAccounts))

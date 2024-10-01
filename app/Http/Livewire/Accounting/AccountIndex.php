@@ -14,13 +14,14 @@ class AccountIndex extends Component
 
     public $page_title = 'Accounts';
     public $isAddNewModalOpen = false;
+
+    public $acc_code;
     public $acc_name;
-    public $acc_desc;
     public $nature;
-    public $currency;
     public $mainAccountId;
     public $parent_account_id;
-    public $limit;
+    public $acc_desc;
+
     private $filteredAccounts;
 
     // filters properties
@@ -53,15 +54,16 @@ class AccountIndex extends Component
     public function updatedMainAccountId(){
         if ($this->mainAccountId) {
             $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
+        }else{
+            $this->parent_account_id = null;
         }
-        // dd($this->filteredAccounts);
         
     }
 
     // Method to open the modal
     public function openAddNewModal()
     {
-        $this->reset(['acc_name', 'acc_desc', 'nature', 'mainAccountId', 'limit']);
+        $this->reset(['acc_code' ,'acc_name' , 'nature', 'mainAccountId', 'parent_account_id' ,'acc_desc']);
         $this->isAddNewModalOpen = true;
     }
 
@@ -69,18 +71,21 @@ class AccountIndex extends Component
     public function openEditModal($id)
     {
         $a = Account::findOrFail($id);
+        $this->acc_code = $a->code;
         $this->acc_name = $a->name;
-        $this->acc_desc = $a->desc;
         $this->nature = $a->nature;
-        $this->mainAccountId = $a->main_account_id ;
-        $this->limit = $a->limit;
+        $this->mainAccountId = $a->main_account_id;
+        $this->parent_account_id = $a->parent_account_id ;
+        $this->acc_desc = $a->desc;
+        $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
         $this->accountID = $id;
     }
 
     // Method to close edit modal
     public function closeEditModal()
     {
-        $this->reset(['acc_name', 'acc_desc', 'nature', 'mainAccountId', 'limit' ,'accountID']);
+        $this->filteredAccounts = null;
+        $this->reset(['acc_code','acc_name', 'acc_desc', 'nature', 'mainAccountId', 'parent_account_id' ,'accountID']);
     }
 
     // Method to close the modal
@@ -106,15 +111,17 @@ class AccountIndex extends Component
     }
 
     public function saveEdit(){
+        $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
         $this->validate([
+            'acc_code' => 'required|numeric|gt:0',
             'acc_name' => 'required|string|max:100',
             'nature' => 'required|in:' . implode(',', Account::NATURES),
             'mainAccountId' => 'required|exists:main_accounts,id',
-            'limit' => 'required|numeric',
+            'parent_account_id' => 'nullable|exists:accounts,id',
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount($this->acc_name, $this->nature, $this->mainAccountId, $this->limit, $this->acc_desc);
+        $res = Account::findOrFail($this->accountID)->editInfo($this->acc_code,$this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
         if ($res) {
             $this->closeEditModal();
             $this->alert('success', 'Account successfully updated');
@@ -126,14 +133,15 @@ class AccountIndex extends Component
     public function save()
     {
         $this->validate([
+            'acc_code' => 'required|numeric|gt:0',
             'acc_name' => 'required|string|max:100',
             'nature' => 'required|in:' . implode(',', Account::NATURES),
             'mainAccountId' => 'required|exists:main_accounts,id',
-            'limit' => 'required|numeric',
+            'parent_account_id' => 'nullable|exists:main_accounts,id',
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount($this->acc_name, $this->nature, $this->mainAccountId, $this->limit, $this->acc_desc);
+        $res = Account::newAccount($this->acc_code,$this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
 
         if ($res) {
             $this->closeAddNewModal();

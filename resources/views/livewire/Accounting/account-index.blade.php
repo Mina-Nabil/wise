@@ -226,6 +226,13 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="form-group mb-5">
+                                <label for="acc_code" class="form-label">Code</label>
+                                <input type="text" id="acc_code" class="form-control mt-2 w-full {{ $errors->has('acc_code') ? '!border-danger-500' : '' }}" wire:model.defer="acc_code" max="100">
+                                @error('acc_code')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="form-group mb-5">
                                 <label for="acc_name" class="form-label">Name</label>
                                 <input type="text" id="acc_name" class="form-control mt-2 w-full {{ $errors->has('acc_name') ? '!border-danger-500' : '' }}" wire:model.defer="acc_name" max="100">
                                 @error('acc_name')
@@ -252,21 +259,9 @@
                                 @enderror
                             </div>
                             <div class="form-group mb-5">
-                                <label for="currency" class="form-label">Currency</label>
-                                <select id="currency" class="form-control mt-2 w-full {{ $errors->has('currency') ? '!border-danger-500' : '' }}" wire:model.defer="currency">
-                                    <option>Select currency</option>
-                                    @foreach ($CURRENCIES as $CURRENCY)
-                                        <option value="{{ $CURRENCY }}">{{ $CURRENCY }}</option>
-                                    @endforeach
-                                </select>
-                                @error('currency')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="form-group mb-5">
                                 <label for="mainAccountId" class="form-label">Main Account</label>
                                 <select id="mainAccountId" class="form-control mt-2 w-full {{ $errors->has('mainAccountId') ? '!border-danger-500' : '' }}" wire:model="mainAccountId">
-                                    <option>Select Type</option>
+                                    <option value="">Select Type</option>
                                     @foreach ($main_accounts as $main_account)
                                         <option value="{{ $main_account->id }}">{{ ucwords($main_account->name) . ' • ' . ucwords($main_account->type) }}</option>
                                     @endforeach
@@ -275,14 +270,23 @@
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
+                            @inject('helper', 'App\Helpers\Helpers')
+                            @php
+                                $accounts_printed_arr = [];
+                            @endphp
                             @if ($mainAccountId)
                                 <div class="form-group mb-5">
                                     <label for="parent_account_id" class="form-label">Parent Account</label>
-                                    <select id="parent_account_id" class="form-control mt-2 w-full {{ $errors->has('parent_account_id') ? '!border-danger-500' : '' }}" wire:model.defer="parent_account_id">
-                                        <option>Select Type</option>
-                                        @foreach ($filteredAccounts as $filteredAccount)
+                                    <select class="form-control mt-2 w-full {{ $errors->has('parent_account_id') ? '!border-danger-500' : '' }}" wire:model.defer="parent_account_id">
+                                        <option value="">Select Type</option>
+                                        {{-- @foreach ($filteredAccounts as $filteredAccount)
                                             <option value="{{ $filteredAccount->id }}">{{ ucwords($filteredAccount->name) . ucwords($filteredAccount->desc ? ' • ' . $filteredAccount->desc : '') }}</option>
-                                        @endforeach
+                                        @endforeach --}}
+                                        @if ($filteredAccounts)
+                                            @foreach ($filteredAccounts as $account)
+                                                {{ $helper->printAccountChildren('', $account, $accounts_printed_arr) }}
+                                            @endforeach
+                                        @endif
                                     </select>
                                     @error('parent_account_id')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -290,9 +294,9 @@
                                 </div>
                             @endif
                             <div class="form-group mb-5">
-                                <label for="limit" class="form-label">Limit</label>
-                                <input type="number" id="limit" class="form-control mt-2 w-full {{ $errors->has('limit') ? '!border-danger-500' : '' }}" wire:model.defer="limit" step="0.01">
-                                @error('limit')
+                                <label for="acc_desc" class="form-label">Desciption</label>
+                                <input type="number" id="acc_desc" class="form-control mt-2 w-full {{ $errors->has('acc_desc') ? '!border-danger-500' : '' }}" wire:model.defer="acc_desc" step="0.01">
+                                @error('acc_desc')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>

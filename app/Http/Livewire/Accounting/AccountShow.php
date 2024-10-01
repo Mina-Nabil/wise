@@ -3,13 +3,14 @@
 namespace App\Http\Livewire\Accounting;
 
 use App\Models\Accounting\Account;
+use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class AccountShow extends Component
 {
-    use WithPagination;
+    use WithPagination ,ToggleSectionLivewire;
     public $page_title = 'Account';
 
     public $account;
@@ -17,6 +18,8 @@ class AccountShow extends Component
     public $fromDate = '2024-01-01';
     public $toDate = '2024-12-01';
     protected $listeners = ['dateRangeSelected'];
+
+    public $is_open_edit = true;
 
     public function dateRangeSelected($startDate, $endDate)
     {
