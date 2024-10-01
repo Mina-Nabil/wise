@@ -114,6 +114,10 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get( '/accounts/gettree/{id}', function($id){
         return response()->json(Account::findOrFail($id)->getTree());
     });
+    Route::get( '/accounts/importtree', function(){
+        Account::importAccounts();
+        return response()->redirectTo('/accounts/main');
+    });
 
 });
 

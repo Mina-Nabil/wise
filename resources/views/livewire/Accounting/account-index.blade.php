@@ -101,7 +101,7 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 no-wrap">
 
                                 @foreach ($accounts as $account)
                                     @include('livewire.components.account-row', ['account' => $account, 'level' => 0])

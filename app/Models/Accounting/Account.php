@@ -8,8 +8,10 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -87,6 +89,81 @@ class Account extends Model
             AppLog::error("Can't create account", desc: $e->getMessage());
             return false;
         }
+    }
+
+    public static function importAccounts($file = null)
+    {
+        self::query()->update([
+            'parent_account_id' =>  null
+        ]);
+
+        self::query()->delete();
+        MainAccount::query()->delete();
+        if ($file) {
+            $spreadsheet = IOFactory::load($file);
+        } else {
+            $spreadsheet = IOFactory::load(resource_path('import/AccountsTree.xlsx'));
+        }
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+        $code = 1;
+        for ($i = 2; $i <= $highestRow; $i++) {
+
+            $start_char = 'F';
+            $account_name     =  $activeSheet->getCell('F' . $i)->getValue();
+
+            while ($account_name == null) {
+                $start_char = chr(ord($start_char) - 1);
+                if ($start_char == 'A') return;
+                $account_name =  $activeSheet->getCell($start_char . $i)->getValue();
+            }
+            $parent_name = $start_char == 'C' ? null : $activeSheet->getCell(chr(ord($start_char) - 1) . $i)->getValue();
+            $main_account_name     =  $activeSheet->getCell('B' . $i)->getValue();
+            $nature =  $activeSheet->getCell('G' . $i)->getValue();
+            $desc   =  $activeSheet->getCell('H' . $i)->getValue();
+
+            $prev_parent_name = $activeSheet->getCell(chr(ord($start_char) - 1) . ($i - 1))->getValue();
+            $above_account_name =  $activeSheet->getCell($start_char . ($i - 1))->getValue();
+            Log::info("Current Parent: " . $parent_name);
+            Log::info("Prev Parent: " . $prev_parent_name);
+            if ($above_account_name != '' && ($prev_parent_name == $parent_name)) {
+                $code++;
+            } else {
+                $code = 1;
+            }
+            try {
+                $main_account = MainAccount::firstOrCreate([
+                    "name"  =>  $main_account_name
+                ], [
+                    "code"  =>  $code,
+                    "type"  => MainAccount::getTypeByArabicName($main_account_name),
+                    "desc"  =>  $desc
+                ]);
+            } catch (QueryException $e) {
+                if ($e->getCode() == 23000) {
+                    $main_account = MainAccount::firstOrCreate([
+                        "name"  =>  $main_account_name
+                    ], [
+                        "code"  => MainAccount::getNextCode(),
+                        "type"  => MainAccount::getTypeByArabicName($main_account_name),
+                        "desc"  =>  $desc
+                    ]);
+                }
+            }
+
+            if (!$account_name) continue;
+            $parent_account = null;
+            if ($parent_name) {
+                $parent_account = self::byName($parent_name)->first();
+            }
+
+            self::newAccount($code, $account_name, $nature, $main_account->id, $parent_account?->id, $desc);
+        }
+
+        return true;
     }
 
     ////model functions
@@ -229,6 +306,10 @@ class Account extends Model
     {
         return $query->where('nature', $nature);
     }
+    public function scopeByName($query, $text)
+    {
+        return $query->where('name',  "=", "$text");
+    }
     public function scopeSearchBy($query, $text)
     {
         return $query->where('name',  "LIKE", "%$text%");
@@ -236,6 +317,14 @@ class Account extends Model
     public function scopeByMainAccount($query, $main_account_id)
     {
         return $query->where('main_account_id ', $main_account_id);
+    }
+
+    public function scopeOrderByCode($query)
+    {
+        return $query->select('accounts.*')
+        ->join('main_accounts', 'main_accounts.id', '=', 'accounts.main_account_id')
+            ->orderBy('main_accounts.code')
+            ->orderBy('accounts.code');
     }
 
     public function scopeParentAccounts($query)

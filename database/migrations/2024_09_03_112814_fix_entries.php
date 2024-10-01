@@ -32,7 +32,7 @@ return new class extends Migration
 
         Schema::create('main_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); 
+            $table->string('code')->autoIncrement(); 
             $table->string('name')->unique(); //masrofat - revenue - clients
             $table->enum('type', MainAccount::TYPES);
             $table->text('desc')->nullable();

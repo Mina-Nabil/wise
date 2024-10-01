@@ -145,7 +145,7 @@ class AccountIndex extends Component
 
     public function render()
     {
-        $accounts = Account::orderBy('id', 'desc')
+        $accounts = Account::orderByCode()
         ->when($this->account_nature,function ($q){
             return $q->byNature($this->account_nature);
         })

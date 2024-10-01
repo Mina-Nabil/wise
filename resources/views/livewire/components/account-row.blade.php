@@ -1,5 +1,5 @@
 <tr>
-    <td class="table-td"><b>#{{ $account->code }}</b></td>
+    <td class="table-td"><b>{{ $account->full_code }}</b></td>
     <td class="table-td"><b>{{ str_repeat('• ', $level) . $account->name }}</b></td>
     <td class="table-td">{{ $account->desc }}</td>
     <td class="table-td">{{ number_format($account->balance, 2) }}</td>
@@ -16,7 +16,7 @@
             {{ ucfirst($account->nature) }}
         </span>
     </td>
-    <td class="table-td">{{ $account->main_account->name }} • 
+    <td class="table-td">
         <span class="badge bg-primary-500 text-white capitalize inline-flex items-center">
             @switch($account->main_account->type)
                 @case('expense')
@@ -38,7 +38,7 @@
                 @default
                     <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:badge-check"></iconify-icon>
             @endswitch
-            {{ ucfirst($account->main_account->type) }}
+            {{ ucfirst($account->main_account->name) }}
         </span>
     </td>
     <td class="table-td">{{ $account->default_currency }}</td>

@@ -469,7 +469,7 @@
                                                     </td>
 
                                                     <td class="table-td ">
-                                                        {{ $comm->sold_policy?->client_payment_date ? \Carbon\Carbon::parse($comm->client_payment_date)->format('D d/m/Y') : 'Not set.' }}
+                                                        {{ $comm->sold_policy?->client_payment_date ? \Carbon\Carbon::parse($comm->sold_policy?->client_payment_date)->format('D d/m/Y') : 'Not set.' }}
                                                     </td>
 
 

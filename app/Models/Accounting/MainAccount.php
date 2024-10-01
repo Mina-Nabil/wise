@@ -7,10 +7,11 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MainAccount extends Model
 {
-    
+
     use HasFactory;
 
     const MORPH_TYPE = 'main_account';
@@ -56,6 +57,32 @@ class MainAccount extends Model
             return false;
         }
     }
+
+    public static function getTypeByArabicName($name)
+    {
+        switch ($name) {
+            case 'اصول':
+                return self::TYPE_ASSET;
+            case 'حقوق ملكية':
+                return self::TYPE_EQUITY;
+            case 'خصوم':
+                return self::TYPE_LIABILITY;
+            case 'المصروفات':
+                return self::TYPE_EXPENSE;
+            case 'ايرادات':
+                return self::TYPE_REVENUE;
+            default:
+                return self::TYPE_ASSET;
+        }
+    }
+
+    public static function getNextCode()
+    {
+        return (DB::table("main_accounts")
+            ->selectRaw("MAX(code) as max_code")
+            ->first()?->max_code ?? 0) + 1;
+    }
+
 
     ////model functions
     public function editInfo($code, $name, $type, $desc = null): bool
