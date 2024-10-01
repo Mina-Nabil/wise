@@ -64,7 +64,6 @@
                         <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                             <thead class="bg-slate-200 dark:bg-slate-700">
                                 <tr>
-
                                     <th scope="col" class=" table-th ">
                                         Code
                                     </th>
@@ -105,126 +104,7 @@
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                 @foreach ($accounts as $account)
-                                    <tr>
-                                        <td class="table-td"><b>#{{ $account->code }}</b></td>
-                                        <td class="table-td"><b>{{ $account->name }}</b></td>
-                                        <td class="table-td">{{ $account->desc }}</td>
-                                        <td class="table-td">{{ number_format($account->balance, 2) }}</td>
-                                        <td class="table-td">{{ number_format($account->foreign_balance, 2) }}</td>
-                                        <td class="table-td">
-                                            <!-- Nature Badge -->
-                                            <span class="badge bg-secondary-500 text-white capitalize inline-flex items-center">
-                                                @if ($account->nature === 'credit')
-                                                    <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-up"></iconify-icon>
-                                                @elseif ($account->nature === 'debit')
-                                                    <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-down"></iconify-icon>
-                                                @else
-                                                    <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:question-mark-circle"></iconify-icon>
-                                                @endif
-                                                {{ ucfirst($account->nature) }}
-                                            </span>
-                                        </td>
-                                        <td class="table-td">{{ $account->main_account->name }} • <!-- Type Badge -->
-                                            <span class="badge bg-primary-500 text-white capitalize inline-flex items-center">
-                                                @switch($account->main_account->type)
-                                                    @case('expense')
-                                                        <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:cash"></iconify-icon>
-                                                    @break
-
-                                                    @case('revenue')
-                                                        <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:currency-dollar"></iconify-icon>
-                                                    @break
-
-                                                    @case('asset')
-                                                        <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:home"></iconify-icon>
-                                                    @break
-
-                                                    @case('liability')
-                                                        <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:document-text"></iconify-icon>
-                                                    @break
-
-                                                    @default
-                                                        <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:badge-check"></iconify-icon>
-                                                @endswitch
-                                                {{ ucfirst($account->main_account->type) }}
-                                            </span>
-                                        </td>
-                                        <td class="table-td">{{ $account->default_currency }}</td>
-
-                                        @if($account->children_accounts->isNotEmpty())
-                                        @if (in_array($account->id, $showChildAccounts))
-                                        <td class="table-td">
-                                            <button class="action-btn" type="button" wire:click="hideThisChildAccount({{ $account->id }})">
-                                                <iconify-icon icon="mingcute:up-fill"></iconify-icon>
-                                            </button>
-                                        </td>
-                                        @else
-                                        <td class="table-td">
-                                            <button class="action-btn" type="button" wire:click="showThisChildAccount({{ $account->id }})">
-                                                <iconify-icon icon="mingcute:down-fill"></iconify-icon>
-                                            </button>
-                                        </td>
-                                        @endif
-                                        @endif
-
-                                    </tr>
-
-                                    @if (in_array($account->id, $showChildAccounts))
-                                        @foreach ($account->children_accounts as $childAccount)
-                                            <tr class="bg-slate-50 dark:bg-slate-700">
-                                                <td class="table-td">{{ $childAccount->code }}</td>
-                                                <td class="table-td">{{ $childAccount->name }}</td>
-                                                <td class="table-td">{{ $childAccount->desc }}</td>
-                                                <td class="table-td">{{ number_format($childAccount->balance, 2) }}</td>
-                                                <td class="table-td">{{ $childAccount->foreign_balance ?? '-' }}</td>
-                                                <td class="table-td">
-                                                    <!-- Nature Badge -->
-                                                    <span class="badge bg-secondary-500 text-white capitalize inline-flex items-center">
-                                                        @if ($childAccount->nature === 'credit')
-                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-up"></iconify-icon>
-                                                        @elseif ($childAccount->nature === 'debit')
-                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-down"></iconify-icon>
-                                                        @else
-                                                            <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:question-mark-circle"></iconify-icon>
-                                                        @endif
-                                                        {{ ucfirst($childAccount->nature) }}
-                                                    </span>
-                                                </td>
-                                                <td class="table-td">{{ $childAccount->main_account->name }} • <!-- Type Badge -->
-                                                    <span class="badge bg-primary-500 text-white capitalize inline-flex items-center">
-                                                        @switch($childAccount->main_account->type)
-                                                            @case('expense')
-                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:cash"></iconify-icon>
-                                                            @break
-
-                                                            @case('revenue')
-                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:currency-dollar"></iconify-icon>
-                                                            @break
-
-                                                            @case('asset')
-                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:home"></iconify-icon>
-                                                            @break
-
-                                                            @case('liability')
-                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:document-text"></iconify-icon>
-                                                            @break
-
-                                                            @default
-                                                                <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:badge-check"></iconify-icon>
-                                                        @endswitch
-                                                        {{ ucfirst($childAccount->main_account->type) }}
-                                                    </span>
-                                                </td>
-                                                <td class="table-td" colspan="2">{{ $childAccount->default_currency }}</td>
-
-                                            </tr>
-                                            @if ($loop->last)
-                                            <tr class="bg-slate-50 dark:bg-slate-700"><td class="table-td" colspan="9"></td></tr>
-                                            @endif
-                                        @endforeach
-
-                                        
-                                    @endif
+                                    @include('livewire.components.account-row', ['account' => $account, 'level' => 0])
                                 @endforeach
 
                             </tbody>
@@ -400,19 +280,19 @@
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
-                            @if($mainAccountId)
-                            <div class="form-group mb-5">
-                                <label for="parent_account_id" class="form-label">Parent Account</label>
-                                <select id="parent_account_id" class="form-control mt-2 w-full {{ $errors->has('parent_account_id') ? '!border-danger-500' : '' }}" wire:model.defer="parent_account_id">
-                                    <option>Select Type</option>
-                                    @foreach ($filteredAccounts as $filteredAccount)
-                                        <option value="{{ $filteredAccount->id }}">{{ ucwords($filteredAccount->name) .  ucwords($filteredAccount->desc ? ' • '.$filteredAccount->desc : '' ) }}</option>
-                                    @endforeach
-                                </select>
-                                @error('parent_account_id')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
+                            @if ($mainAccountId)
+                                <div class="form-group mb-5">
+                                    <label for="parent_account_id" class="form-label">Parent Account</label>
+                                    <select id="parent_account_id" class="form-control mt-2 w-full {{ $errors->has('parent_account_id') ? '!border-danger-500' : '' }}" wire:model.defer="parent_account_id">
+                                        <option>Select Type</option>
+                                        @foreach ($filteredAccounts as $filteredAccount)
+                                            <option value="{{ $filteredAccount->id }}">{{ ucwords($filteredAccount->name) . ucwords($filteredAccount->desc ? ' • ' . $filteredAccount->desc : '') }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('parent_account_id')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             @endif
                             <div class="form-group mb-5">
                                 <label for="limit" class="form-label">Limit</label>
