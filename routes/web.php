@@ -107,7 +107,7 @@ Route::middleware('auth', 'active')->group(function () {
     //accounting
     Route::get( '/accounts/main', MainAccountIndex::class );
     Route::get( '/accounts', AccountIndex::class );
-    Route::get( '/account/{id}', AccountShow::class );
+    Route::get( '/accounts/{id}', AccountShow::class)->name('accounts.show');
     Route::get('/entries',JournalEntryIndex::class);
     Route::get('/entries/new',CreateJournalEntry::class);
     Route::get('/entries/unapproved',UnapprovedEntryIndex::class);

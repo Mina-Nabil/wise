@@ -17511,16 +17511,14 @@ ul.custom-list ul {
     border: 0;
     white-space: nowrap;
   }
-  
+
   /* END Radio btn */
-
-
   .no-wrap{
     text-wrap: nowrap;
   }
 
-
-
-
-
+.padding-y-0 {
+    padding-bottom: 0;
+    padding-top: 0;
+}
 

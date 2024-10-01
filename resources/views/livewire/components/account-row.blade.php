@@ -1,6 +1,30 @@
+@php
+    // Define an array of colors for each level
+    $colors = [
+        0 => '#FF6347', // Level 0: Tomato
+        1 => '#FFD700', // Level 1: Gold
+        2 => '#ADFF2F', // Level 2: GreenYellow
+        3 => '#00FA9A', // Level 3: MediumSpringGreen
+        4 => '#1E90FF', // Level 4: DodgerBlue
+        5 => '#9370DB', // Level 5: MediumPurple
+        6 => '#FF69B4', // Level 6: HotPink
+        7 => '#FF4500', // Level 7: OrangeRed
+    ];
+@endphp
+
 <tr>
     <td class="table-td"><b>{{ $account->full_code }}</b></td>
-    <td class="table-td"><b>{{ str_repeat('• ', $level) . $account->name }}</b></td>
+    <td class="table-td @if($level != 0) padding-y-0 @endif" style="display: flex; align-items: center; height: 100%;">
+        {{-- Display bars based on the level --}}
+        @for ($i = 0; $i < $level; $i++)
+            <span style="display: block; width: 25px; height: 40px; background-color: {{ $colors[$i] ?? '#000000' }};opacity: 30%;"></span>
+        @endfor
+        <div style="flex-grow: 1; @if($level != 0) padding-left: 10px; @endif  display: flex; align-items: center;">
+            <a class="hover:underline cursor-pointer" href="{{ route('accounts.show', $account->id) }}">
+            <b>{{ $account->name }}</b>
+            </a>
+        </div>
+    </td>
     <td class="table-td">{{ $account->desc }}</td>
     <td class="table-td">{{ number_format($account->balance, 2) }}</td>
     <td class="table-td">{{ number_format($account->foreign_balance ?? 0, 2) }}</td>

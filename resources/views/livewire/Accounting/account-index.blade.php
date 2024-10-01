@@ -42,21 +42,16 @@
         </div>
     </div>
 
-
-
-
-
-
     <div class="mb-5">
         <iconify-icon wire:loading wire:target="searchText" class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
         <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search..." wire:model="searchText">
     </div>
 
     <div class="card">
-        <header class=" card-header noborder">
+        {{-- <header class=" card-header noborder">
             <h4 class="card-title">Table Head
             </h4>
-        </header>
+        </header> --}}
         <div class="card-body px-6 pb-6">
             <div class="overflow-x-auto -mx-6">
                 <div class="inline-block min-w-full align-middle">
