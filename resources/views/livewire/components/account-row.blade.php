@@ -82,9 +82,11 @@
                 @endif
             @endif
 
+            @can('update',$account)
             <button class="action-btn float-right" type="button" wire:click="openEditModal({{ $account->id }})">
                 <iconify-icon icon="bxs:edit"></iconify-icon>
             </button>
+            @endcan
         </div>
     </td>
 </tr>

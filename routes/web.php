@@ -23,7 +23,7 @@ use App\Http\Livewire\Accounting\AccountIndex;
 use App\Http\Livewire\Accounting\AccountShow;
 use App\Http\Livewire\Accounting\CreateJournalEntry;
 use App\Http\Livewire\Accounting\UnapprovedEntryIndex;
-use App\Http\Livewire\Accounting\UpdateUnapprovedEntry;
+use App\Http\Livewire\EntryTitleIndex;
 use App\Http\Livewire\JournalEntryIndex;
 use App\Models\Accounting\Account;
 
@@ -109,6 +109,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get( '/accounts', AccountIndex::class );
     Route::get( '/accounts/{id}', AccountShow::class)->name('accounts.show');
     Route::get('/entries',JournalEntryIndex::class);
+    Route::get('/titles',EntryTitleIndex::class);
     Route::get('/entries/new',CreateJournalEntry::class);
     Route::get('/entries/unapproved',UnapprovedEntryIndex::class);
     Route::get( '/accounts/gettree/{id}', function($id){

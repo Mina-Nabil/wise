@@ -7,10 +7,12 @@ use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\MainAccount;
 use App\Traits\AlertFrontEnd;
 use Livewire\Component;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class AccountIndex extends Component
 {
-    use AlertFrontEnd;
+    use AlertFrontEnd,AuthorizesRequests;
 
     public $page_title = 'Accounts';
     public $isAddNewModalOpen = false;
@@ -107,6 +109,7 @@ class AccountIndex extends Component
 
     public function mount()
     {
+        $this->authorize('view',Auth::user(),Account::class);
         $this->natures = Account::NATURES;
     }
 

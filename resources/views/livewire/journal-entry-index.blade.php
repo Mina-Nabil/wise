@@ -31,7 +31,7 @@
                     Download daily Transactions
                 </button>
             @endcan --}}
-            @can('create', \App\Models\Accounting\JournalEntry::class)
+            @can('create', \App\Models\Accounting\Accounts::class)
                 <a href="{{ url('/entries/new') }}">
                     <button wire:click="openAddNewModal" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                         <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
@@ -43,7 +43,6 @@
 
 
     </div>
-
 
     @if ($selectedAccount)
         <div class="card dark active mb-2">

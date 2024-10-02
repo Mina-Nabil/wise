@@ -84,6 +84,7 @@ class EntryTitle extends Model
             } else {
                 $this->accounts()->sync([]);
             }
+            return true;
         } catch (Exception $e) {
             report($e);
             return false;
