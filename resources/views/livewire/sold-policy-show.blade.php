@@ -315,42 +315,6 @@
                     </div>
                 @endif
 
-                @if (!$soldPolicy->comms_details->isEmpty())
-                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
-                        <div class="card-body flex flex-col p-6 active justify-center">
-                            <header class="card-header noborder flex justify-between">
-                                <h4 class="card-title">
-                                    Policy Commission
-                                </h4>
-                            </header>
-                            @foreach ($soldPolicy->comms_details as $commDetails)
-                                <div class="card-body px-6 pb-6">
-                                    <div class="flex justify-between">
-                                        <div>
-                                            <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                                                {{ $commDetails->title }}
-                                            </span>
-                                            <h5 class="text-slate-900 dark:text-white block">
-                                                {{ number_format($commDetails->amount, 0, '.', ',') }} EGP
-                                            </h5>
-                                        </div>
-                                        <div>
-                                            <button wire:click="confirmDeletePolCom({{ $commDetails->id }})"
-                                                class="action-btn float-right text-sm" type="button">
-                                                <iconify-icon icon="material-symbols:delete"></iconify-icon>
-                                            </button>
-                                            <button wire:click="openUpdatePolCom({{ $commDetails->id }})"
-                                                class="action-btn float-right text-sm mr-2" type="button">
-                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
                 {{-- Insured values --}}
                 <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
                     <div class="card-body flex flex-col p-6 active text-center">

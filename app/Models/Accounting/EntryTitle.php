@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class EntryTitle extends Model
@@ -91,6 +92,15 @@ class EntryTitle extends Model
         }
     }
 
+    public function deleteTitle()
+    {
+        if($this->entries()->get()->count()) return false;
+
+        DB::table('titles_accounts')->where('entry_title_id', $this->id)->delete();
+        $this->delete();
+        return true;
+    }
+
     ///relations
     public function entries(): HasMany
     {
@@ -100,5 +110,15 @@ class EntryTitle extends Model
     public function accounts(): BelongsToMany
     {
         return $this->belongsToMany(Account::class, 'titles_accounts')->withPivot('nature', 'limit');
+    }
+
+    public function debit_accounts(): BelongsToMany
+    {
+        return $this->belongsToMany(Account::class, 'titles_accounts')->withPivot('nature', 'limit')->wherePivot('nature', 'debit');
+    }
+
+    public function credit_accounts(): BelongsToMany
+    {
+        return $this->belongsToMany(Account::class, 'titles_accounts')->withPivot('nature', 'limit')->wherePivot('nature', 'credit');
     }
 }
