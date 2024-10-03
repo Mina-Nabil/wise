@@ -89,11 +89,11 @@ class CreateJournalEntry extends Component
             // Ensure the account_id is set before adding to the formatted array
             if (!is_null($account['account_id'])) {
                 $formatted[$account['account_id']] = [
-                    'nature' => $account['nature'], // Always "debit" for debit accounts
+                    'nature' => 'debit', // Always "debit" for debit accounts
                     'amount' => $account['amount'],
-                    'currency' => $account['currency'],
-                    'currency_amount' => $account['currency_amount'],
-                    'currency_rate' => $account['currency_rate'],
+                    'currency' => $account['currency'] ?? JournalEntry::CURRENCY_EGP,
+                    'currency_amount' => $account['currency_amount'] ?? 0,
+                    'currency_rate' => $account['currency_rate'] ?? 1,
                     'doc_url' => $account['doc_url'],
                 ];
             }
@@ -110,11 +110,11 @@ class CreateJournalEntry extends Component
             // Ensure the account_id is set before adding to the formatted array
             if (!is_null($account['account_id'])) {
                 $formatted[$account['account_id']] = [
-                    'nature' => $account['nature'], // Always "credit" for credit accounts
+                    'nature' => 'credit', // Always "credit" for credit accounts
                     'amount' => $account['amount'],
-                    'currency' => $account['currency'],
-                    'currency_amount' => $account['currency_amount'],
-                    'currency_rate' => $account['currency_rate'],
+                    'currency' => $account['currency'] ?? JournalEntry::CURRENCY_EGP,
+                    'currency_amount' => $account['currency_amount'] ?? 0,
+                    'currency_rate' => $account['currency_rate'] ?? 1,
                     'doc_url' => $account['doc_url'],
                 ];
             }
@@ -125,8 +125,8 @@ class CreateJournalEntry extends Component
 
     public function save()
     {
-        $this->authorize('create',JournalEntry::class);
-        
+        $this->authorize('create', JournalEntry::class);
+
         if ($this->cash_entry_type) {
             $this->validate([
                 'receiver_name' => 'required|string|max:255',
@@ -179,9 +179,10 @@ class CreateJournalEntry extends Component
 
         $accounts = $formattedDebitAccounts + $formattedCreditAccounts;
 
-        $res = JournalEntry::newJournalEntry($this->selectedTitle->id, $this->cash_entry_type, $this->receiver_name,comment: $this->notes, accounts: $accounts);
-
-        if ($res) {
+        $res = JournalEntry::newJournalEntry($this->selectedTitle->id, $this->cash_entry_type, $this->receiver_name, comment: $this->notes, accounts: $accounts);
+        if (is_string($res)) {
+            $this->alert('failed', $res);
+        } else if ($res) {
             redirect(url('/entries'));
         } else {
             $this->alert('failed', 'server error');

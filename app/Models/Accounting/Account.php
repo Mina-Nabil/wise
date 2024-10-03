@@ -285,6 +285,16 @@ class Account extends Model
         else return $this->parent_account->full_code . '-' . $this->code;
     }
 
+    public function getTotalBalanceAttribute()
+    {
+        $this->loadMissing('children_accounts');
+        $blnce = 0 ;
+        foreach($this->children_accounts as $ac){
+            $blnce += $ac->total_balance;
+        }
+        return $blnce + $this->balance;
+    }
+
     public function getIsForeignAttribute()
     {
         $this->default_currency !== JournalEntry::CURRENCY_EGP;

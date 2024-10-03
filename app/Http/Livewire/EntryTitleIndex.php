@@ -80,7 +80,6 @@ class EntryTitleIndex extends Component
             'name' => 'required|string|max:255',
             'desc' => 'nullable|string',
             'accounts.*.account_id' => 'required|exists:accounts,id',
-            'accounts.*.limit' => 'required|numeric|min:0',
             'accounts.*.nature' => 'required|in:' . implode(',', Account::NATURES),
         ]);
 
@@ -124,7 +123,6 @@ class EntryTitleIndex extends Component
             'name' => 'required|string|max:255',
             'desc' => 'nullable|string',
             'accounts.*.account_id' => 'required|exists:accounts,id',
-            'accounts.*.limit' => 'required|numeric|min:0',
             'accounts.*.nature' => 'required|in:' . implode(',', Account::NATURES),
         ]);
 

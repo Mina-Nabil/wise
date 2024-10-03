@@ -60,6 +60,9 @@
                             <thead class="bg-slate-200 dark:bg-slate-700">
                                 <tr>
                                     <th scope="col" class=" table-th ">
+                                        Action
+                                    </th>
+                                    <th scope="col" class=" table-th ">
                                         Code
                                     </th>
 
@@ -76,7 +79,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Foreign Balance
+                                        $ Balance
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -84,16 +87,14 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Main Account
+                                        Main
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Default Currency
+                                        Curr.
                                     </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Action
-                                    </th>
+                            
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 no-wrap">

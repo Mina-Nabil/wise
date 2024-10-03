@@ -83,10 +83,20 @@ class JournalEntry extends Model
         $approver_id = null,
         $is_seeding = false,
         $accounts = [],
-    ): self|UnapprovedEntry|false {
+    ): self|UnapprovedEntry|string|false {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
+
+        $total_debit = 0;
+        $total_credit = 0;
+
+        foreach ($accounts as $ac) {
+         if($ac['nature'] == 'debit') $total_debit += $ac['amount'];
+         else $total_credit += $ac['amount'];
+        }
+
+        if($total_credit != $total_debit) return "Debit not equal to credit";
 
         //////////////////////////////loading & checking data//////////////////////////////
         /** @var EntryTitle */

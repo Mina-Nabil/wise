@@ -13,6 +13,27 @@
 @endphp
 
 <tr>
+    <td class="table-td ">
+        <div class="flex justify-between @if (!$account->children_accounts->isNotEmpty()) float-right @endif">
+            @if ($account->children_accounts->isNotEmpty())
+                @if (in_array($account->id, $showChildAccounts))
+                    <button class="action-btn mr-2" type="button" wire:click="hideThisChildAccount({{ $account->id }})">
+                        <iconify-icon icon="mingcute:up-fill"></iconify-icon>
+                    </button>
+                @else
+                    <button class="action-btn mr-2" type="button" wire:click="showThisChildAccount({{ $account->id }})">
+                        <iconify-icon icon="mingcute:down-fill"></iconify-icon>
+                    </button>
+                @endif
+            @endif
+
+            @can('update',$account)
+            <button class="action-btn float-right" type="button" wire:click="openEditModal({{ $account->id }})">
+                <iconify-icon icon="bxs:edit"></iconify-icon>
+            </button>
+            @endcan
+        </div>
+    </td>
     <td class="table-td" style="position: sticky; left: 0; background-color: white; z-index: 10;">
         <b>{{ $account->full_code }}</b>
     </td>
@@ -28,7 +49,7 @@
         </div>
     </td>
     <td class="table-td">{{ $account->desc }}</td>
-    <td class="table-td">{{ number_format($account->balance, 2) }}</td>
+    <td class="table-td">{{ number_format($account->total_balance, 2) }}</td>
     <td class="table-td">{{ number_format($account->foreign_balance ?? 0, 2) }}</td>
     <td class="table-td">
         <span class="badge bg-secondary-500 text-white capitalize inline-flex items-center">
@@ -68,27 +89,7 @@
         </span>
     </td>
     <td class="table-td">{{ $account->default_currency }}</td>
-    <td class="table-td ">
-        <div class="flex justify-between @if (!$account->children_accounts->isNotEmpty()) float-right @endif">
-            @if ($account->children_accounts->isNotEmpty())
-                @if (in_array($account->id, $showChildAccounts))
-                    <button class="action-btn mr-2" type="button" wire:click="hideThisChildAccount({{ $account->id }})">
-                        <iconify-icon icon="mingcute:up-fill"></iconify-icon>
-                    </button>
-                @else
-                    <button class="action-btn mr-2" type="button" wire:click="showThisChildAccount({{ $account->id }})">
-                        <iconify-icon icon="mingcute:down-fill"></iconify-icon>
-                    </button>
-                @endif
-            @endif
 
-            @can('update',$account)
-            <button class="action-btn float-right" type="button" wire:click="openEditModal({{ $account->id }})">
-                <iconify-icon icon="bxs:edit"></iconify-icon>
-            </button>
-            @endcan
-        </div>
-    </td>
 </tr>
 
 

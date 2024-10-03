@@ -31,7 +31,7 @@
                     Download daily Transactions
                 </button>
             @endcan --}}
-            @can('create', \App\Models\Accounting\Accounts::class)
+            @can('create', \App\Models\Accounting\Account::class)
                 <a href="{{ url('/entries/new') }}">
                     <button wire:click="openAddNewModal" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                         <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
@@ -133,39 +133,35 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Serial
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
                                         Title
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Status / Nature
+                                        Status
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Amount
+                                        Amnt
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Balance
+                                        Blnc
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Foreign Balance
+                                        $ Blnc
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Currency
+                                        Curr.
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Currency Amount
+                                        Curr. Amnt
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Currency Rate
+                                        Curr. Rate
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -188,9 +184,7 @@
                                             </div>
                                         </td>
 
-                                        <td class="table-td"><b>#{{ $entry->id }}</b></td>
-
-                                        <td class="table-td"><b>{{ $entry->day_serial }}</b></td>
+                                        <td class="table-td"><b>{{ $entry->day_serial }} / #{{ $entry->id }}</b></td>
 
                                         <td class="table-td ">{{ $entry->entry_title->name }}</td>
 
@@ -300,19 +294,19 @@
                                     @if (in_array($entry->id, $showChildAccounts))
                                         @foreach ($entry->accounts as $childAccount)
                                             <tr class="bg-slate-50 dark:bg-slate-700">
-                                                <td class="table-td">Account</td>
+
                                                 <td class="table-td" colspan="3"><b>{{ $childAccount->main_account->name }} • {{ $childAccount->name }}</b></td>
 
                                                 <td class="table-td">
                                                     <span class="badge bg-black-500 text-white capitalize inline-flex items-center">
-                                                        @if ($childAccount->nature === 'credit')
+                                                        @if ($childAccount->pivot->nature === 'credit')
                                                             <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-up"></iconify-icon>
-                                                        @elseif ($childAccount->nature === 'debit')
+                                                        @elseif ($childAccount->pivot->nature === 'debit')
                                                             <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:arrow-circle-down"></iconify-icon>
                                                         @else
                                                             <iconify-icon class="ltr:mr-1 rtl:ml-1" icon="heroicons-outline:question-mark-circle"></iconify-icon>
                                                         @endif
-                                                        {{ ucfirst($childAccount->nature) }}
+                                                        {{ ucfirst($childAccount->pivot->nature) }}
                                                     </span>
                                                 </td>
 
