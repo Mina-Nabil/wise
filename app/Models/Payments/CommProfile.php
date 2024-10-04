@@ -129,7 +129,7 @@ class CommProfile extends Model
         $this->load('targets');
         /** @var Target */
         foreach ($this->targets as $t) {
-            $t->processTargetPayments($end_date);
+            $t->processTargetPayments($end_date, true);
         }
         return true;
     }

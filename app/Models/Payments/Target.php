@@ -48,7 +48,7 @@ class Target extends Model
     ///model functions
     /** Should be called periodically to check target. It will check if target if acheived. 
      * If yes it will update the related sales commissions */
-    public function processTargetPayments(Carbon $end_date = null)
+    public function processTargetPayments(Carbon $end_date = null, $is_manual = false)
     {
         $this->load('comm_profile');
         $end_date = $end_date ?? Carbon::now();
@@ -62,7 +62,6 @@ class Target extends Model
             $totalIncome += ($sp->total_policy_comm *
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions;
         }
-
         //return false if the target is not acheived
         if ($totalIncome <= $this->min_income_target) return false;
 
@@ -74,11 +73,12 @@ class Target extends Model
 
         $payment_to_add = max($this->base_payment, (($this->add_as_payment / 100) * $balance_update));
 
-        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add) {
+        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual) {
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
 
+            /** @var SalesComm */
             foreach ($salesCommissions as $s)
-                $s->updatePaymentByTarget($this);
+                $s->updatePaymentByTarget($this, $is_manual);
 
             if ($balance_update)
                 $this->comm_profile->updateBalance($balance_update);

@@ -52,16 +52,21 @@ class EntryTitle extends Model
     /////////model functions
     public function isEntryValid($accounts)
     {
-        return true;
-        //TODO check children
+
         $this->load('accounts');
+        $entry_accounts_ids = $this->accounts->pluck('id')->toArray();
         foreach ($accounts as $account_id => $entry_arr) {
-            $tmpAccount = $this->accounts->firstWhere('id', $account_id);
-            Log::info($tmpAccount);
-            if ($tmpAccount->pivot->nature == $entry_arr['nature'] && $tmpAccount->pivot->limit < $entry_arr['amount']) {
+            $tmpAccount = Account::with('parent_account')->findOrFail($account_id);
+            while (!in_array($tmpAccount->id, $entry_accounts_ids)) {
+                $tmpAccount = $tmpAccount->parent_account;
+            }
+            $entryAccount = $this->accounts->firstWhere('id', $tmpAccount->id);
+            Log::info($entryAccount);
+            if ($entryAccount->pivot->limit && $entryAccount->pivot->nature == $entry_arr['nature'] && $entryAccount->pivot->limit < $entry_arr['amount']) {
                 return false;
             }
         }
+        return true;
     }
 
     /** 
@@ -94,7 +99,7 @@ class EntryTitle extends Model
 
     public function deleteTitle()
     {
-        if($this->entries()->get()->count()) return false;
+        if ($this->entries()->get()->count()) return false;
 
         DB::table('titles_accounts')->where('entry_title_id', $this->id)->delete();
         $this->delete();

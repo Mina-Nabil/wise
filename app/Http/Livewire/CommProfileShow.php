@@ -143,6 +143,7 @@ class CommProfileShow extends Component
             $this->mount($this->profile->id);
             $this->reset(['downloadAccountStatementSec' ,'downloadAccountStartDate' ,'downloadAccountEndDate' ]);
             $this->alert('success', 'Statement downloaded!');
+            return $res;
         } else {
             $this->alert('failed', 'server error');
         }

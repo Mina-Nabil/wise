@@ -143,7 +143,7 @@
                     <li>
                         <a href="{{ url('/titles') }}" class="navItem {{ $entry_titles ?? '' }}">
                             <span class="flex items-center">
-                                <iconify-icon class=" nav-icon" icon="material-symbols:do-not-touch-rounded"></iconify-icon>
+                                <iconify-icon class=" nav-icon" icon="material-symbols:text-fields"></iconify-icon>
                                 <span>Titles</span>
                             </span>
                         </a>

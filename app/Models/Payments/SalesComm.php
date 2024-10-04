@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -54,13 +55,10 @@ class SalesComm extends Model
     ];
 
     ///static functions
-    public static function getBySoldPoliciesIDs($comm_profile_id, $sold_policies_ids, $new_only = true)
+    public static function getBySoldPoliciesIDs($comm_profile_id, $sold_policies_ids)
     {
         return self::whereIn('sold_policy_id', $sold_policies_ids)
             ->where('comm_profile_id', $comm_profile_id)
-            ->when($new_only, function ($q) {
-                $q->where('comm_percentage', 0);
-            })
             ->get();
     }
 
@@ -130,21 +128,53 @@ class SalesComm extends Model
     }
 
     /** Should be used while target calculation only */
-    public function updatePaymentByTarget(Target $t)
+    public function updatePaymentByTarget(Target $t, $is_manual = false)
     {
+
+        if ($is_manual) {
+            /** @var User */
+            $user = Auth::user();
+            if (!$user->can('update', $this)) return false;
+        }
+        $this->clearPreviousPaymentTargetInfo();
+
+        $this->load('sold_policy');
+
+        $this->sold_policy->calculateTotalPolicyComm();
+        $from_amount =  $this->sold_policy->total_policy_comm;
+        $target_amount = ($t->comm_percentage / 100) * $from_amount;
+
         try {
-            Log::info("updating sales comm");
-            $this->update([
-                "comm_percentage"   =>  $t->comm_percentage,
+            $this->comm_target_runs()->firstOrCreate([
+                'target_id' =>  $t->id
+            ], [
+                'percentage'    =>  $t->comm_percentage,
+                'amount'    =>  $target_amount,
             ]);
-            $this->load('sold_policy');
-            $this->sold_policy->generatePolicyCommissions();
-            $this->refreshPaymentInfo(false, true);
+
+            $this->load('comm_target_runs');
+
+            $this->update([
+                "comm_percentage"   =>  $this->comm_target_runs->sum('percentage'),
+                "amount"   =>  $this->comm_target_runs->sum('amount'),
+            ]);
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
+    }
+
+    private function clearPreviousPaymentTargetInfo()
+    {
+        $prev = Carbon::now()->subMinutes(2);
+        $this->comm_target_runs()
+            ->where('created_at', '<=', $prev->format('Y-m-d H:i:s'))
+            ->delete();
+        $this->load('comm_target_runs');
+        $this->comm_percentage =  $this->comm_target_runs->sum('percentage');
+        $this->amount = $this->comm_target_runs->sum('amount');
+        $this->save();
     }
 
     public function refreshPaymentInfo($check_user = true, $increment_amount = false, $update_soldpolicy = true)
@@ -353,6 +383,11 @@ class SalesComm extends Model
     }
 
     ///relations
+    public function comm_target_runs(): HasMany
+    {
+        return $this->hasMany(CommTargetRun::class);
+    }
+
     public function sold_policy(): BelongsTo
     {
         return $this->belongsTo(SoldPolicy::class);

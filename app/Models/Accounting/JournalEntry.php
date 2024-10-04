@@ -175,7 +175,7 @@ class JournalEntry extends Model
         $this->load('accounts');
         foreach ($this->accounts as $ac) {
             $accounts[$ac->id] = [
-                'nature'    =>  $ac->pivot->nature,
+                'nature'    =>  $ac->pivot->nature == 'debit' ? 'credit' : 'debit',
                 'amount'    =>  $ac->pivot->amount,
                 'currency' => $ac->pivot->currency,
                 'currency_amount' => $ac->pivot->currency_amount,

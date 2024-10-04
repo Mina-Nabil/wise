@@ -26,39 +26,35 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Serial
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
                                         Title
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Status / Nature
+                                        Status
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Amount
+                                        Amnt
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Balance
+                                        Blnc
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Foreign Balance
+                                        $ Balance
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Currency
+                                        Curr.
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Currency Amount
+                                        Curr. Amount
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Currency Rate
+                                        Curr. Rate
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -73,8 +69,6 @@
                                     <tr>
 
                                         <td class="table-td"><b>#{{ $entry->id }}</b></td>
-
-                                        <td class="table-td"><b>{{ $entry->day_serial }}</b></td>
 
                                         <td class="table-td ">{{ $entry->entry_title->name }}</td>
 

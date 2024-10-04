@@ -105,7 +105,7 @@ class UnapprovedEntry extends Model
                 );
                 Log::info($newEntry);
                 if ($newEntry) {
-                    $this->delete();
+                    $this->deleteRecord();
                 }
             });
         } catch (Exception $e) {
@@ -118,9 +118,6 @@ class UnapprovedEntry extends Model
 
     public function deleteRecord()
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('approve', JournalEntry::class)) return false;
         $this->accounts()->sync([]);
         $this->delete();
         return true;

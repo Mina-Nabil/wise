@@ -17,10 +17,22 @@
         <header class=" card-header noborder">
             <div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Start Balance</p>
-                <h4 class="card-title">{{ $entries->first() ? number_format($entries->first()->account_balance, 2) : number_format(0, 2) }}
+                <h4 class="card-title">
+                    {{ $entries->first()
+                        ? ($account->nature == 'debit'
+                            ? number_format(
+                                $entries->first()->account_balance + $entries->first()->credit_amount - $entries->first()->debit_amount,
+                                2,
+                            )
+                            : number_format(
+                                $entries->first()->account_balance + $entries->first()->debit_amount - $entries->first()->credit_amount,
+                                2,
+                            ))
+                        : number_format($account->balance, 2) }}
                 </h4>
             </div>
-            <input type="text" class="form-control w-auto d-inline-block cursor-pointer" style="width:auto" name="datetimes" id="reportrange" />
+            <input type="text" class="form-control w-auto d-inline-block cursor-pointer" style="width:auto"
+                name="datetimes" id="reportrange" />
         </header>
         <div class="card-body px-6 pb-6">
             <div class="overflow-x-auto -mx-6">
@@ -31,17 +43,18 @@
                                 <tr>
                                     <th scope="col" class="table-th">Day Serial</th>
                                     <th scope="col" class="table-th">Title</th>
-                                    <th scope="col" class="table-th">Debit Amount</th>
-                                    <th scope="col" class="table-th">Credit Amount</th>
-                                    <th scope="col" class="table-th">Account Balance</th>
-                                    <th scope="col" class="table-th">Debit Foreign Amount</th>
-                                    <th scope="col" class="table-th">Credit Foreign Amount</th>
-                                    <th scope="col" class="table-th">Account Foreign Balance</th>
+                                    <th scope="col" class="table-th">Debit</th>
+                                    <th scope="col" class="table-th">Credit</th>
+                                    <th scope="col" class="table-th">Balance</th>
+                                    <th scope="col" class="table-th">Debit $</th>
+                                    <th scope="col" class="table-th">Credit $</th>
+                                    <th scope="col" class="table-th">Balance $</th>
                                     <th scope="col" class="table-th">Creator</th>
 
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 no-wrap">
+                            <tbody
+                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 no-wrap">
 
                                 @foreach ($entries as $entry)
                                     <tr>
@@ -52,7 +65,8 @@
                                         <td class="table-td">{{ number_format($entry->account_balance, 2) }}</td>
                                         <td class="table-td">{{ number_format($entry->debit_foreign_amount, 2) }}</td>
                                         <td class="table-td">{{ number_format($entry->credit_foreign_amount, 2) }}</td>
-                                        <td class="table-td">{{ number_format($entry->account_foreign_balance, 2) }}</td>
+                                        <td class="table-td">{{ number_format($entry->account_foreign_balance, 2) }}
+                                        </td>
                                         <td class="table-td">{{ $entry->username }}</td>
                                     </tr>
                                 @endforeach
@@ -72,7 +86,8 @@
                                     No entries found!</h2>
                                 <p class="card-text">Try changing the filters or search terms for this view.
                                 </p>
-                                <a href="{{ url('/accounts') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">
+                                <a href="{{ url('/accounts') }}"
+                                    class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">
                                     View Accounts</a>
                             </div>
                         </div>
@@ -85,7 +100,7 @@
             <header class=" card-header noborder">
                 <div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">End Balance</p>
-                    <h4 class="card-title">{{ $entries->last() ? number_format($entries->last()->account_balance, 2) : number_format(0, 2) }}
+                    <h4 class="card-title">{{ number_format($account->balance, 2) }}
                     </h4>
                 </div>
             </header>
