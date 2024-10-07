@@ -6,10 +6,8 @@
             <h4 class=" font-medium text-white mb-2">
                 <div>
                     <span class="block"><b><iconify-icon icon="iconoir:privacy-policy"></iconify-icon>
-                            {{ $soldPolicy->policy->company->name }} - {{ $soldPolicy->policy->name }}
+                            {{ $soldPolicy->policy->company->name }} - {{ $soldPolicy->policy->name }} - {{ $soldPolicy->policy_number }}
                         </b></span>
-
-
                 </div>
                 <span class="block mb-3">
                     <p class="text-sm text-slate-400  font-light">
