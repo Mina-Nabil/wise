@@ -66,6 +66,7 @@ class CommProfileShow extends Component
     public $addAsPayment;
     public $basePayment;
     public $isEndOfMonth;
+    public $isFullAmount;
 
     public $deleteTargetId;
     public $editTargetId;
@@ -551,6 +552,7 @@ class CommProfileShow extends Component
         $this->addAsPayment = 100;
         $this->basePayment = null;
         $this->isEndOfMonth = false;
+        $this->isFullAmount = false;
     }
 
     public function openNewTargetSection()
@@ -565,6 +567,7 @@ class CommProfileShow extends Component
         $this->premTarget = $t->prem_target;
         $this->dayOfMonth = $t->day_of_month;
         $this->isEndOfMonth = $t->is_end_of_month;
+        $this->isFullAmount = $t->is_full_amount;
         $this->eachMonth = $t->each_month;
         $this->premTarget = $t->prem_target;
         $this->minIncomeTarget = $t->min_income_target;
@@ -590,6 +593,7 @@ class CommProfileShow extends Component
         $this->addAsPayment = 100;
         $this->basePayment = null;
         $this->isEndOfMonth = false;
+        $this->isFullAmount = false;
     }
 
     public function editarget()
@@ -605,6 +609,7 @@ class CommProfileShow extends Component
             'addAsPayment' => 'required|numeric',
             'basePayment' => 'nullable|numeric',
             'nextRunDate' => 'nullable|date',
+            'isFullAmount' => 'nullable|boolean',
         ]);
 
         $res = Target::find($this->editTargetId)->editInfo(
@@ -618,7 +623,8 @@ class CommProfileShow extends Component
             $this->basePayment,
             $this->maxIncomeTarget,
             $this->nextRunDate ? new Carbon($this->nextRunDate) : null,
-            $this->isEndOfMonth
+            $this->isEndOfMonth,
+            $this->isFullAmount,
         );
         if ($res) {
             $this->closeEditTargetSection();
@@ -665,6 +671,7 @@ class CommProfileShow extends Component
             'addToBalance' => 'required|numeric|between:0,100',
             'addAsPayment' => 'required|numeric|between:0,100',
             'basePayment' => 'nullable|numeric',
+            'isFullAmount' => 'nullable|boolean',
         ]);
 
         $res = $this->profile->addTarget(
@@ -678,7 +685,8 @@ class CommProfileShow extends Component
             $this->basePayment,
             $this->maxIncomeTarget,
             $this->nextRunDate ? new Carbon($this->nextRunDate) : null,
-            $this->isEndOfMonth
+            $this->isEndOfMonth,
+            $this->isFullAmount
         );
 
         if ($res) {

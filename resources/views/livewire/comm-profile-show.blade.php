@@ -1730,19 +1730,36 @@
                                     <label for="firstName" class="form-label">Next Run Date</label>
                                     <input type="date" class="form-control" wire:model.defer="nextRunDate">
                                 </div>
-
-                                <div class="input-area mt-3">
-                                    <label for="commPercentage" class="form-label">Comm. Percentage</label>
-                                    <div class="relative">
-                                        <input type="number" name="commPercentage"
-                                            class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="commPercentage">
-                                        <span
-                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
-                                            %
-                                        </span>
+                                
+                                <div class="flex justify-between items-start space-x-6">
+                                    <div class="input-area mt-3">
+                                        <label for="commPercentage" class="form-label">Comm. Percentage</label>
+                                        <div class="relative">
+                                            <input type="number" name="commPercentage"
+                                                class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
+                                                wire:model.defer="commPercentage">
+                                            <span
+                                                class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                                %
+                                            </span>
+                                        </div>
                                     </div>
 
+                                    <div class="input-area mt-3 flex flex-col">
+                                        <label for="checkBox" class="form-label no-wrap">Full Amount?</label>
+                                        <div class="checkbox-area mt-2">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" class="hidden row-checkbox"
+                                                    wire:model="isFullAmount">
+                                                <span
+                                                    class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
+                                                        alt=""
+                                                        class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 @error('commPercentage')
                                     <span
@@ -1903,19 +1920,38 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
-                                <div class="input-area mt-3">
-                                    <label for="commPercentage" class="form-label">Comm. Percentage</label>
-                                    <div class="relative">
-                                        <input type="number" name="commPercentage"
-                                            class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="commPercentage">
-                                        <span
-                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
-                                            %
-                                        </span>
+                                <div class="flex justify-between items-start space-x-6">
+                                    <div class="input-area mt-3">
+                                        <label for="commPercentage" class="form-label">Comm. Percentage</label>
+                                        <div class="relative">
+                                            <input type="number" name="commPercentage"
+                                                class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
+                                                wire:model.defer="commPercentage">
+                                            <span
+                                                class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                                %
+                                            </span>
+                                        </div>
                                     </div>
 
+                                    <div class="input-area mt-3 flex flex-col">
+                                        <label for="checkBox" class="form-label no-wrap">Full Amount?</label>
+                                        <div class="checkbox-area mt-2">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" class="hidden row-checkbox"
+                                                    wire:model="isFullAmount">
+                                                <span
+                                                    class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
+                                                        alt=""
+                                                        class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
+
+                               
                                 @error('commPercentage')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

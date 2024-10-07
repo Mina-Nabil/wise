@@ -32,7 +32,8 @@ class Target extends Model
         "add_to_balance",
         "add_as_payment",
         "next_run_date",
-        "is_end_of_month"
+        "is_end_of_month",
+        "is_full_amount"
     ];
     public $timestamps = false;
 
@@ -67,10 +68,12 @@ class Target extends Model
         if ($totalIncome <= $this->min_income_target) return false;
 
         $balance_update = ($this->comm_percentage / 100) *
-            min(
-                $totalIncome,
-                (($this->max_income_target ?? $totalIncome) - $this->min_income_target)
-            ) * ($this->add_to_balance / 100);
+            ($this->is_full_amount ? $totalIncome :
+                min(
+                    $totalIncome,
+                    ($this->max_income_target ?? $totalIncome)
+                )) * (
+                $this->add_to_balance / 100);
 
         $payment_to_add = max($this->base_payment, (($this->add_as_payment / 100) * $balance_update));
 
@@ -115,6 +118,7 @@ class Target extends Model
         $max_income_target = null,
         $next_run_date = null,
         $is_end_of_month = false,
+        $is_full_amount = false,
     ) {
         try {
             AppLog::info("Updating comm profile target", loggable: $this);
@@ -129,6 +133,7 @@ class Target extends Model
                 "add_as_payment"   =>  $add_as_payment,
                 "max_income_target"   =>  $max_income_target,
                 "is_end_of_month"   =>  $is_end_of_month,
+                "is_full_amount"   =>  $is_full_amount,
             ];
             if ($next_run_date)
                 $updates['next_run_date'] = $next_run_date->format('Y-m-d');
