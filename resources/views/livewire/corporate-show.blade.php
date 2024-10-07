@@ -463,15 +463,15 @@
                                             <h3 class="card-title mb-0 text-success-500">
                                                 <ul class="m-0 p-0 list-none">
                                                     <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                                        {{ $offer->item->car->car_model->brand->name }}
+                                                        {{ $offer->item?->car->car_model->brand->name }}
                                                         <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
                                                     </li>
                                                     <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                                        {{ $offer->item->car->car_model->name }}
+                                                        {{ $offer->item?->car->car_model->name }}
                                                         <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
                                                     </li>
                                                     <li class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white mr-5">
-                                                        {{ $offer->item->car->category }}
+                                                        {{ $offer->item?->car->category }}
                                                     </li>
                                                 </ul>
                                             </h3>
