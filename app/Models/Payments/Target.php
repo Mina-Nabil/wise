@@ -60,7 +60,7 @@ class Target extends Model
         foreach ($soldPolicies as $sp) {
             $sp->generatePolicyCommissions();
             $sp->calculateTotalSalesOutComm();
-            $totalIncome += ($sp->total_policy_comm *
+            $totalIncome += ($sp->after_tax_comm *
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions;
         }
         //return false if the target is not acheived
