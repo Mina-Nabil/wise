@@ -41,6 +41,6 @@ class AccountShow extends Component
         $toDate = Carbon::parse($this->toDate);
         $entries = collect(Account::getEntries($this->accountId, Carbon::parse($fromDate), Carbon::parse($toDate)));
 
-        return view('livewire.accounting.account-show', ['entries' => $entries])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
+        return view('livewire.Accounting.account-show', ['entries' => $entries])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }
 }

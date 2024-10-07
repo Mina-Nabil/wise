@@ -105,21 +105,20 @@ Route::middleware('auth', 'active')->group(function () {
 
 
     //accounting
-    Route::get( '/accounts/main', MainAccountIndex::class );
-    Route::get( '/accounts', AccountIndex::class );
-    Route::get( '/accounts/{id}', AccountShow::class)->name('accounts.show');
-    Route::get('/entries',JournalEntryIndex::class);
-    Route::get('/titles',EntryTitleIndex::class);
-    Route::get('/entries/new',CreateJournalEntry::class);
-    Route::get('/entries/unapproved',UnapprovedEntryIndex::class);
-    Route::get( '/accounts/gettree/{id}', function($id){
-        return response()->json(Account::findOrFail($id)->getTree());
-    });
-    Route::get( '/accounts/importtree', function(){
+    Route::get('/accounts/main', MainAccountIndex::class);
+    Route::get('/accounts', AccountIndex::class);
+    Route::get('/accounts/importtree', function () {
         Account::importAccounts();
         return response()->redirectTo('/accounts/main');
     });
-
+    Route::get('/accounts/{id}', AccountShow::class)->name('accounts.show');
+    Route::get('/entries', JournalEntryIndex::class);
+    Route::get('/titles', EntryTitleIndex::class);
+    Route::get('/entries/new', CreateJournalEntry::class);
+    Route::get('/entries/unapproved', UnapprovedEntryIndex::class);
+    Route::get('/accounts/gettree/{id}', function ($id) {
+        return response()->json(Account::findOrFail($id)->getTree());
+    });
 });
 
 Route::get('/welcome', [HomeController::class, 'welcome']);

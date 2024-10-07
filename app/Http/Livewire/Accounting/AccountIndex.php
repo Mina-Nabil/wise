@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AccountIndex extends Component
 {
-    use AlertFrontEnd,AuthorizesRequests;
+    use AlertFrontEnd, AuthorizesRequests;
 
     public $page_title = 'Accounts';
     public $isAddNewModalOpen = false;
@@ -48,24 +48,22 @@ class AccountIndex extends Component
 
     public function hideThisChildAccount($accountId)
     {
-        $this->showChildAccounts = array_filter($this->showChildAccounts, function($id) use ($accountId) {
+        $this->showChildAccounts = array_filter($this->showChildAccounts, function ($id) use ($accountId) {
             return $id !== $accountId;
         });
     }
 
-    public function updatedMainAccountId(){
+    public function updatedMainAccountId()
+    {
         if ($this->mainAccountId) {
             $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
-        }else{
-            $this->parent_account_id = null;
         }
-        
     }
 
     // Method to open the modal
     public function openAddNewModal()
     {
-        $this->reset(['acc_code' ,'acc_name' , 'nature', 'mainAccountId', 'parent_account_id' ,'acc_desc']);
+        $this->reset(['acc_code', 'acc_name', 'nature', 'mainAccountId', 'parent_account_id', 'acc_desc']);
         $this->isAddNewModalOpen = true;
     }
 
@@ -77,7 +75,7 @@ class AccountIndex extends Component
         $this->acc_name = $a->name;
         $this->nature = $a->nature;
         $this->mainAccountId = $a->main_account_id;
-        $this->parent_account_id = $a->parent_account_id ;
+        $this->parent_account_id = $a->parent_account_id;
         $this->acc_desc = $a->desc;
         $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
         $this->accountID = $id;
@@ -87,7 +85,7 @@ class AccountIndex extends Component
     public function closeEditModal()
     {
         $this->filteredAccounts = null;
-        $this->reset(['acc_code','acc_name', 'acc_desc', 'nature', 'mainAccountId', 'parent_account_id' ,'accountID']);
+        $this->reset(['acc_code', 'acc_name', 'acc_desc', 'nature', 'mainAccountId', 'parent_account_id', 'accountID']);
     }
 
     // Method to close the modal
@@ -99,22 +97,25 @@ class AccountIndex extends Component
     // Define variables to hold options
     public $natures;
 
-    public function updateNature($text){
+    public function updateNature($text)
+    {
         $this->account_nature = $text;
     }
 
-    public function updateMainAccountID($text){
+    public function updateMainAccountID($text)
+    {
         $this->mainAccID = $text;
     }
 
     public function mount()
     {
-        $this->authorize('view',Auth::user(),Account::class);
+        $this->authorize('view', Auth::user(), Account::class);
         $this->natures = Account::NATURES;
     }
 
-    public function saveEdit(){
-        $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
+    public function saveEdit()
+    {
+        // $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
         $this->validate([
             'acc_code' => 'required|numeric|gt:0',
             'acc_name' => 'required|string|max:100',
@@ -124,7 +125,7 @@ class AccountIndex extends Component
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::findOrFail($this->accountID)->editInfo($this->acc_code,$this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
+        $res = Account::findOrFail($this->accountID)->editInfo($this->acc_code, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
         if ($res) {
             $this->closeEditModal();
             $this->alert('success', 'Account successfully updated');
@@ -144,7 +145,7 @@ class AccountIndex extends Component
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount($this->acc_code,$this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
+        $res = Account::newAccount($this->acc_code, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
 
         if ($res) {
             $this->closeAddNewModal();
@@ -157,17 +158,17 @@ class AccountIndex extends Component
     public function render()
     {
         $accounts = Account::orderByCode()
-        ->when($this->account_nature,function ($q){
-            return $q->byNature($this->account_nature);
-        })
-        ->when($this->mainAccID,function ($q){
-            return $q->byMainAccount($this->mainAccID);
-        })
-        ->when($this->searchText,function ($q){
-            return $q->searchBy($this->searchText);
-        })
-        ->parentAccounts()
-        ->get();
+            ->when($this->account_nature, function ($q) {
+                return $q->byNature($this->account_nature);
+            })
+            ->when($this->mainAccID, function ($q) {
+                return $q->byMainAccount($this->mainAccID);
+            })
+            ->when($this->searchText, function ($q) {
+                return $q->searchBy($this->searchText);
+            })
+            ->parentAccounts()
+            ->get();
         $main_accounts = MainAccount::all();
         $CURRENCIES = JournalEntry::CURRENCIES;
 
