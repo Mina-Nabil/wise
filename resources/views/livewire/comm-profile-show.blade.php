@@ -42,7 +42,7 @@
                                 info</button>
 
                             <button
-                                wire:click="$emit('showConfirmation', 'Are you sure you want to delete this profile?', 'deleteProfile')"
+                                wire:click="$emit('showConfirmation', 'Are you sure you want to delete this profile?','danger','deleteProfile')"
                                 class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
                         @endcan
                         @can('manage', $profile)
