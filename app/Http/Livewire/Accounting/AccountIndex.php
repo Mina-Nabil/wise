@@ -120,7 +120,7 @@ class AccountIndex extends Component
             'acc_name' => 'required|string|max:100',
             'nature' => 'required|in:' . implode(',', Account::NATURES),
             'mainAccountId' => 'required|exists:main_accounts,id',
-            'parent_account_id' => 'nullable|exists:accounts,id',
+            'parent_account_id' => 'nullable',
             'acc_desc' => 'nullable|string',
         ]);
 
