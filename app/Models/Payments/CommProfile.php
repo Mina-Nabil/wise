@@ -134,9 +134,8 @@ class CommProfile extends Model
         return true;
     }
 
-    public function getValidDirectCommissionConf(OfferOption $option): CommProfileConf|false
+    public function getValidDirectCommissionConf(OfferOption|Policy $option): CommProfileConf|false
     {
-        $option->load('policy');
         $this->load('configurations');
         foreach ($this->configurations as $conf) {
             if ($conf->matches($option)) {

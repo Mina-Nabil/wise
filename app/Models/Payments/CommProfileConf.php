@@ -27,7 +27,10 @@ class CommProfileConf extends Model
     const FROMS = [self::FROM_NET_PREM, self::FROM_NET_COMM, self::FROM_SUM_INSURED];
 
     public $fillable = [
-        "percentage", "from", "line_of_business", "order"
+        "percentage",
+        "from",
+        "line_of_business",
+        "order"
     ];
     public $timestamps = false;
 
@@ -40,18 +43,26 @@ class CommProfileConf extends Model
     }
 
     ///model functions
-    public function matches(OfferOption $option)
+    public function matches(OfferOption|Policy $option)
     {
         $this->load('condition');
-        $option->load('policy');
+        $policy = null;
+        if (is_a($option, Policy::class)) {
+            $policy =  $option;
+        } else {
+            $option->load('policy');
+            $policy =  $option->policy;
+        }
+
+
         if ($this->condition_type) {
             if ($this->condition_type == Policy::MORPH_TYPE) {
-                return $this->condition_id == $option->policy->id;
+                return $this->condition_id == $policy->id;
             } else if ($this->condition_type == Company::MORPH_TYPE) {
-                return $this->condition_id == $option->policy->company_id;
+                return $this->condition_id == $policy->company_id;
             }
         } else if ($this->line_of_business) {
-            return $this->line_of_business == $option->policy->business;
+            return $this->line_of_business == $policy->business;
         } else return true;
     }
 
@@ -147,18 +158,19 @@ class CommProfileConf extends Model
     }
 
     ///attributes
-    public function getConditionTitleAttribute(){
-        if($this->line_of_business === null && $this->condition_type == null) return 'Default';
+    public function getConditionTitleAttribute()
+    {
+        if ($this->line_of_business === null && $this->condition_type == null) return 'Default';
 
-        if($this->line_of_business) return ucwords(str_replace('_', ' ', $this->line_of_business));
+        if ($this->line_of_business) return ucwords(str_replace('_', ' ', $this->line_of_business));
 
         $this->load('condition');
 
-        if($this->condition_type == Policy::MORPH_TYPE){
+        if ($this->condition_type == Policy::MORPH_TYPE) {
             $this->load('condition.company');
             return $this->condition->company->name  . " - " . $this->condition->name;
         } else {
-            return $this->condition->name ;
+            return $this->condition->name;
         }
     }
 

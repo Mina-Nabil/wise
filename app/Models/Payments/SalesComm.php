@@ -187,18 +187,28 @@ class SalesComm extends Model
         }
 
         $this->load('sold_policy');
+        $this->load('sold_policy.policy');
+        $this->load('comm_profile');
         $from_amount = 0;
-        switch ($this->from) {
-            case CommProfileConf::FROM_NET_PREM:
-                $from_amount = $this->sold_policy->net_premium;
-                break;
-            case CommProfileConf::FROM_SUM_INSURED:
-                $from_amount = $this->sold_policy->insured_value;
-                break;
-            case CommProfileConf::FROM_NET_COMM:
-                $this->sold_policy->calculateTotalPolicyComm();
-                $from_amount =  $this->sold_policy->total_policy_comm;
-                break;
+        $valid_conf = $this->comm_profile->getValidDirectCommissionConf($this->sold_policy->policy);
+        if($valid_conf) {
+            $from =  $valid_conf->from;
+            $this->comm_percentage = $valid_conf->percentage;
+            $this->save();
+            switch ($from) {
+                case CommProfileConf::FROM_NET_PREM:
+                    $from_amount = $this->sold_policy->net_premium;
+                    break;
+                case CommProfileConf::FROM_SUM_INSURED:
+                    $from_amount = $this->sold_policy->insured_value;
+                    break;
+                case CommProfileConf::FROM_NET_COMM:
+                    $from_amount =  $this->sold_policy->after_tax_comm;
+                    break;
+            }
+        } else {
+            $this->sold_policy->calculateTotalPolicyComm();
+            $from_amount =  $this->sold_policy->after_tax_comm;
         }
 
         $amount = ($this->comm_percentage / 100) * $from_amount;
