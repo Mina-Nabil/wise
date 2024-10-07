@@ -411,6 +411,12 @@ class CorporateShow extends Component
         }
     }
 
+    public function redirectToOffer($id)
+    {
+        return redirect(Route('offers.show', $id));
+    }
+
+
     public function setFollowupAsCalled($id)
     {
         $res = Followup::find($id)->setAsCalled($this->note);
