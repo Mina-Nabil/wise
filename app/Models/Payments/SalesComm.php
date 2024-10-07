@@ -208,7 +208,7 @@ class SalesComm extends Model
             }
         } else {
             $this->sold_policy->calculateTotalPolicyComm();
-            $from_amount =  $this->sold_policy->after_tax_comm;
+            $from_amount =  $this->sold_policy->after_tax_comm - $this->sold_policy->sales_out_comm;
         }
 
         $amount = ($this->comm_percentage / 100) * $from_amount;
