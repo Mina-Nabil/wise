@@ -58,6 +58,7 @@ class Target extends Model
 
         /** @var SoldPolicy */
         foreach ($soldPolicies as $sp) {
+            $sp->generatePolicyCommissions();
             $sp->calculateTotalSalesOutComm();
             $totalIncome += ($sp->total_policy_comm *
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions;
