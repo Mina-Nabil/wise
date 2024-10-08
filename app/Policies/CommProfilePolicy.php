@@ -18,7 +18,7 @@ class CommProfilePolicy
      */
     public function viewAny(User $user)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
@@ -30,7 +30,7 @@ class CommProfilePolicy
      */
     public function view(User $user, CommProfile $commProfil)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
