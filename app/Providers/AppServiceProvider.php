@@ -41,6 +41,7 @@ use App\Models\Payments\PolicyCommConf;
 use App\Models\Payments\SalesComm;
 use App\Models\Payments\Target;
 use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskComment;
 use App\Models\Tasks\TaskFile;
 use App\Models\Tasks\TaskWatcher;
@@ -111,6 +112,8 @@ class AppServiceProvider extends ServiceProvider
             MainAccount::MORPH_TYPE => MainAccount::class,
             Account::MORPH_TYPE => Account::class,
             UnapprovedEntry::MORPH_TYPE => UnapprovedEntry::class,
+
+            TaskAction::MORPH_TYPE => TaskAction::class,
 
 
         ]);
