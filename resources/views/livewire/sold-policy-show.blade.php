@@ -357,7 +357,7 @@
                                 <p class="text-xs">Gross Premium</p>
                             </div>
                             <div class="border-l">
-                                <h5>{{ $soldPolicy->discount }} %</h5>
+                                <h5>{{ $soldPolicy->discount }} EGP</h5>
                                 <p class="text-xs">Discount</p>
                             </div>
                         </div>
