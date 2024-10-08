@@ -133,7 +133,7 @@ class Target extends Model
                 "add_as_payment"   =>  $add_as_payment,
                 "max_income_target"   =>  $max_income_target,
                 "is_end_of_month"   =>  $is_end_of_month,
-                "is_full_amount"   =>  $is_full_amount,
+                "is_full_amount"   =>  $is_full_amount ?? false,
             ];
             if ($next_run_date)
                 $updates['next_run_date'] = $next_run_date->format('Y-m-d');

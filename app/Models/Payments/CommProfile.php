@@ -280,7 +280,7 @@ class CommProfile extends Model
                 "base_payment"      =>  $base_payment,
                 "max_income_target" =>  $max_income_target,
                 "is_end_of_month"   =>  $is_end_of_month,
-                "is_full_amount"   =>  $is_full_amount,
+                "is_full_amount"   =>  $is_full_amount ?? false,
                 "next_run_date"     =>  $next_run_date->format('Y-m-d'),
                 "order"             =>  $order
             ]);
