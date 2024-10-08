@@ -852,6 +852,11 @@ class SoldPolicy extends Model
         }
     }
 
+    public function cancelSoldPolicy($client_return = 0)
+    {
+        
+    }
+
     public function deleteSoldPolicy()
     {
         try {
