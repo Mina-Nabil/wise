@@ -281,7 +281,7 @@ class CommProfile extends Model
                 "max_income_target" =>  $max_income_target,
                 "is_end_of_month"   =>  $is_end_of_month,
                 "is_full_amount"   =>  $is_full_amount ?? false,
-                "next_run_date"     =>  $next_run_date->format('Y-m-d'),
+                "next_run_date"     =>  $next_run_date?->format('Y-m-d') ?? null,
                 "order"             =>  $order
             ]);
             $target->save();
