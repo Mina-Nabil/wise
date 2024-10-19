@@ -93,76 +93,97 @@ class Account extends Model
 
     public static function importAccounts($file = null)
     {
-        self::query()->update([
-            'parent_account_id' =>  null
-        ]);
+        try {
 
-        self::query()->delete();
-        MainAccount::query()->delete();
-        if ($file) {
-            $spreadsheet = IOFactory::load($file);
-        } else {
-            $spreadsheet = IOFactory::load(resource_path('import/AccountsTree.xlsx'));
-        }
-        if (!$spreadsheet) {
-            throw new Exception('Failed to read files content');
-        }
-        $activeSheet = $spreadsheet->getActiveSheet();
-        $highestRow = $activeSheet->getHighestDataRow();
-        $code = 1;
-        for ($i = 2; $i <= $highestRow; $i++) {
+            DB::transaction(function () {
 
-            $start_char = 'F';
-            $account_name     =  $activeSheet->getCell('F' . $i)->getValue();
-
-            while ($account_name == null) {
-                $start_char = chr(ord($start_char) - 1);
-                if ($start_char == 'A') return;
-                $account_name =  $activeSheet->getCell($start_char . $i)->getValue();
-            }
-            $parent_name = $start_char == 'C' ? null : $activeSheet->getCell(chr(ord($start_char) - 1) . $i)->getValue();
-            $main_account_name     =  $activeSheet->getCell('B' . $i)->getValue();
-            $nature =  $activeSheet->getCell('G' . $i)->getValue();
-            $desc   =  $activeSheet->getCell('H' . $i)->getValue();
-
-            $prev_parent_name = $activeSheet->getCell(chr(ord($start_char) - 1) . ($i - 1))->getValue();
-            $above_account_name =  $activeSheet->getCell($start_char . ($i - 1))->getValue();
-            Log::info("Current Parent: " . $parent_name);
-            Log::info("Prev Parent: " . $prev_parent_name);
-            if ($above_account_name != '' && ($prev_parent_name == $parent_name)) {
-                $code++;
-            } else {
-                $code = 1;
-            }
-            try {
-                $main_account = MainAccount::firstOrCreate([
-                    "name"  =>  $main_account_name
-                ], [
-                    "code"  =>  $code,
-                    "type"  => MainAccount::getTypeByArabicName($main_account_name),
-                    "desc"  =>  $desc
+                self::query()->update([
+                    'parent_account_id' =>  null
                 ]);
-            } catch (QueryException $e) {
-                if ($e->getCode() == 23000) {
-                    $main_account = MainAccount::firstOrCreate([
-                        "name"  =>  $main_account_name
-                    ], [
-                        "code"  => MainAccount::getNextCode(),
-                        "type"  => MainAccount::getTypeByArabicName($main_account_name),
-                        "desc"  =>  $desc
-                    ]);
+
+                self::query()->delete();
+                MainAccount::query()->delete();
+                if ($file) {
+                    $spreadsheet = IOFactory::load($file);
+                } else {
+                    $spreadsheet = IOFactory::load(resource_path('import/AccountsTree.xlsx'));
                 }
-            }
+                if (!$spreadsheet) {
+                    throw new Exception('Failed to read files content');
+                }
+                $activeSheet = $spreadsheet->getActiveSheet();
+                $highestRow = $activeSheet->getHighestDataRow();
+                $code = 1;
+                $found_balances = [];
+                for ($i = 2; $i <= $highestRow; $i++) {
 
-            if (!$account_name) continue;
-            $parent_account = null;
-            if ($parent_name) {
-                $parent_account = self::byName($parent_name)->first();
-            }
+                    $start_char = 'F';
+                    $account_name     =  $activeSheet->getCell('F' . $i)->getValue();
 
-            self::newAccount($code, $account_name, $nature, $main_account->id, $parent_account?->id, $desc);
+                    while ($account_name == null) {
+                        $start_char = chr(ord($start_char) - 1);
+                        if ($start_char == 'A') return;
+                        $account_name =  $activeSheet->getCell($start_char . $i)->getValue();
+                    }
+                    $parent_name = $start_char == 'C' ? null : $activeSheet->getCell(chr(ord($start_char) - 1) . $i)->getValue();
+                    $main_account_name     =  $activeSheet->getCell('B' . $i)->getValue();
+                    $nature =  $activeSheet->getCell('G' . $i)->getValue();
+                    $desc   =  $activeSheet->getCell('H' . $i)->getValue();
+                    $balance =  $activeSheet->getCell('I' . $i)->getValue();
+
+                    $prev_parent_name = $activeSheet->getCell(chr(ord($start_char) - 1) . ($i - 1))->getValue();
+                    $above_account_name =  $activeSheet->getCell($start_char . ($i - 1))->getValue();
+                    Log::info("Current Parent: " . $parent_name);
+                    Log::info("Prev Parent: " . $prev_parent_name);
+                    if ($above_account_name != '' && ($prev_parent_name == $parent_name)) {
+                        $code++;
+                    } else {
+                        $code = 1;
+                    }
+                    try {
+                        $main_account = MainAccount::firstOrCreate([
+                            "name"  =>  $main_account_name
+                        ], [
+                            "code"  =>  $code,
+                            "type"  => MainAccount::getTypeByArabicName($main_account_name),
+                            "desc"  =>  $desc
+                        ]);
+                    } catch (QueryException $e) {
+                        if ($e->getCode() == 23000) {
+                            $main_account = MainAccount::firstOrCreate([
+                                "name"  =>  $main_account_name
+                            ], [
+                                "code"  => MainAccount::getNextCode(),
+                                "type"  => MainAccount::getTypeByArabicName($main_account_name),
+                                "desc"  =>  $desc
+                            ]);
+                        }
+                    }
+
+                    if (!$account_name) continue;
+                    $parent_account = null;
+                    if ($parent_name) {
+                        $parent_account = self::byName($parent_name)->first();
+                    }
+
+                    $tmpAccount = self::newAccount($code, $account_name, $nature, $main_account->id, $parent_account?->id, $desc);
+
+                    if ($balance) {
+                        $found_balances[$tmpAccount->id] = [
+                            'nature'    =>  $balance > 0 ? $nature : (($nature == 'debit') ? 'credit' : 'debit'),
+                            'amount'    =>  abs($balance),
+                            'currency' => 'EGP',
+                        ];
+                    }
+                }
+                $starting_entry = JournalEntry::newJournalEntry(1, is_seeding: true, accounts: $found_balances);
+                if(!$starting_entry) throw new Exception("Import failed please check balances");
+                if (is_string($starting_entry)) throw new Exception($starting_entry);
+            });
+        } catch (Exception $e) {
+            report($e);
+            return false;
         }
-
         return true;
     }
 
@@ -288,8 +309,8 @@ class Account extends Model
     public function getTotalBalanceAttribute()
     {
         $this->loadMissing('children_accounts');
-        $blnce = 0 ;
-        foreach($this->children_accounts as $ac){
+        $blnce = 0;
+        foreach ($this->children_accounts as $ac) {
             $blnce += $ac->total_balance;
         }
         return $blnce + $this->balance;
@@ -332,7 +353,7 @@ class Account extends Model
     public function scopeOrderByCode($query)
     {
         return $query->select('accounts.*')
-        ->join('main_accounts', 'main_accounts.id', '=', 'accounts.main_account_id')
+            ->join('main_accounts', 'main_accounts.id', '=', 'accounts.main_account_id')
             ->orderBy('main_accounts.code')
             ->orderBy('accounts.code');
     }
