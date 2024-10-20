@@ -71,7 +71,7 @@ class Account extends Model
         if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
 
         $newAccount = new self([
-            "code"      =>  $code,
+            "code"      =>  self::getNextCode($main_account_id, $parent_account_id),
             "name"      =>  $name,
             "nature"    =>  $nature,
             "parent_account_id"  =>  $parent_account_id,
@@ -99,7 +99,11 @@ class Account extends Model
                 self::query()->update([
                     'parent_account_id' =>  null
                 ]);
-
+                $entries = JournalEntry::all();
+                foreach ($entries as $e) {
+                    $e->accounts()->sync([]);
+                    $e->delete();
+                }
                 self::query()->delete();
                 MainAccount::query()->delete();
                 if ($file) {
@@ -112,7 +116,6 @@ class Account extends Model
                 }
                 $activeSheet = $spreadsheet->getActiveSheet();
                 $highestRow = $activeSheet->getHighestDataRow();
-                $code = 1;
                 $found_balances = [];
                 $endLoop = false;
                 for ($i = 2; $i <= $highestRow; $i++) {
@@ -135,20 +138,12 @@ class Account extends Model
                     $desc   =  $activeSheet->getCell('H' . $i)->getValue();
                     $balance =  $activeSheet->getCell('I' . $i)->getValue();
 
-                    $prev_parent_name = $activeSheet->getCell(chr(ord($start_char) - 1) . ($i - 1))->getValue();
-                    $above_account_name =  $activeSheet->getCell($start_char . ($i - 1))->getValue();
-                    Log::info("Current Parent: " . $parent_name);
-                    Log::info("Prev Parent: " . $prev_parent_name);
-                    if ($above_account_name != '' && ($prev_parent_name == $parent_name)) {
-                        $code++;
-                    } else {
-                        $code = 1;
-                    }
+
                     try {
                         $main_account = MainAccount::firstOrCreate([
                             "name"  =>  $main_account_name
                         ], [
-                            "code"  =>  $code,
+                            "code"  =>  MainAccount::getNextCode(),
                             "type"  => MainAccount::getTypeByArabicName($main_account_name),
                             "desc"  =>  $desc
                         ]);
@@ -170,7 +165,7 @@ class Account extends Model
                         $parent_account = self::byName($parent_name)->first();
                     }
 
-                    $tmpAccount = self::newAccount($code, $account_name, $nature, $main_account->id, $parent_account?->id, $desc);
+                    $tmpAccount = self::newAccount(1, $account_name, $nature, $main_account->id, $parent_account?->id, $desc);
 
                     if ($balance) {
                         $found_balances[$tmpAccount->id] = [
@@ -190,6 +185,15 @@ class Account extends Model
             return false;
         }
         return true;
+    }
+
+    public static function getNextCode($main_account_id, $parent_account_id )
+    {
+        return (DB::table("accounts")
+            ->selectRaw("MAX(code) as max_code")
+            ->where('parent_account_id', $parent_account_id)
+            ->where('main_account_id', $main_account_id)
+            ->first()?->max_code ?? 0) + 1;
     }
 
     ////model functions

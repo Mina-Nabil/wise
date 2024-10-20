@@ -92,11 +92,11 @@ class JournalEntry extends Model
         $total_credit = 0;
 
         foreach ($accounts as $ac) {
-         if($ac['nature'] == 'debit') $total_debit += $ac['amount'];
-         else $total_credit += $ac['amount'];
+         if($ac['nature'] == 'debit') $total_debit += round($ac['amount'], 2);
+         else $total_credit += round($ac['amount'], 2);
         }
 
-        if($total_credit != $total_debit) return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
+        if(round($total_credit - $total_debit) != 0) return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
 
         //////////////////////////////loading & checking data//////////////////////////////
         /** @var EntryTitle */

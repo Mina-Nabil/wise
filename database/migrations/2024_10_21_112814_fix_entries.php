@@ -32,7 +32,7 @@ return new class extends Migration
 
         Schema::create('main_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->autoIncrement(); 
+            $table->unsignedInteger('code'); 
             $table->string('name')->unique(); //masrofat - revenue - clients
             $table->enum('type', MainAccount::TYPES);
             $table->text('desc')->nullable();
@@ -40,7 +40,7 @@ return new class extends Migration
 
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('code'); 
+            $table->unsignedInteger('code'); 
             $table->string('name'); //dyafa - 7sab allianz - 7sab motorcity
             $table->text('desc')->nullable();
             $table->foreignIdFor(MainAccount::class)->constrained();
