@@ -86,6 +86,18 @@ class CommProfile extends Model
         }
     }
 
+    public static function getTotalCommsPaid($profile_id)
+    {
+        return DB::table('comm_payments_details')
+            ->selectRaw('SUM("comm_payments_details.amount") as paid_amount')
+            ->join('comm_payments_details', 'sales_comms.id', '=', 'comm_payments_details.sales_comm_id')
+            ->join('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
+            ->where('sales_comms.comm_profile_id', '=', $profile_id)
+            ->where('comm_payments_details.paid_percentage', '>', 0)
+            ->first()->paid_amount;
+    }
+
+
     ///model functions
     public function downloadAccountStatement(Carbon $start, Carbon $end)
     {
@@ -171,9 +183,40 @@ class CommProfile extends Model
         }
     }
 
+    public function refreshBalances()
+    {
+        try {
+            // $total_comms = $this->sales_comm()->notCancelled()
+            // ->selectRaw('SUM("amount") as total_paid')->first()->total_paid;
+            $total_balance_comms = 0;
+            $total_unapproved_comms = 0;
+            foreach ($this->sales_comm as  $comm) {
+                if ($comm->is_direct) {
+                    $total_balance_comms += (min($comm->company_paid_percent / 100, 1) * $comm->amount);
+                    $total_unapproved_comms += (min($comm->client_paid_percent / 100, 1) * $comm->amount);
+                } else {
+                    $total_balance_comms += $comm->amount;
+                }
+            }
+
+            $total_paid =  $this->payments()->notCancelled()->selectRaw('SUM("amount") as total_paid')->first()->total_paid;
+
+            $this->update([
+                    "balance" => $total_balance_comms - $total_paid, 
+                    "unapproved_balance" => $total_unapproved_comms - $total_paid, 
+            ]);
+            AppLog::info("Updating comm profile balance",  loggable: $this);
+            return $this->save();
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't update comm profile balance", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function updateBalance(
         float $amount
-    ) {
+        ) {
         try {
             $this->increment(
                 "balance",
@@ -293,12 +336,19 @@ class CommProfile extends Model
         }
     }
 
+    /**
+     * @param array $linked_sales_comms [
+     *  $sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
+     * ]
+     * Use scope notTotalyPaid in SalesComm
+     */
     public function addPayment(
         $amount,
         $type,
         $doc_url = null,
         $note = null,
-        $must_add = false
+        $must_add = false,
+        $linked_sales_comms = []
     ) {
         if ($amount <= $this->balance)
             $needs_approval = false;
@@ -306,16 +356,7 @@ class CommProfile extends Model
             $needs_approval = true;
         else throw new Exception("Amount is more than the available balance");
         try {
-
-            // if ($needs_approval) {
-            //     $this->unapproved_balance = $this->unapproved_balance - ($this->amount - $this->balance);
-            //     $this->comm_profile->balance = 0;
-            // } else {
-            // $this->balance = $this->balance - $this->amount;
-            // }
-
-            // $this->save();
-
+            /** @var CommProfilePayment */
             $payment = $this->payments()->create([
                 "creator_id"    =>  Auth::id(),
                 "amount"    =>  $amount,
@@ -325,7 +366,8 @@ class CommProfile extends Model
                 "note"      =>  $note
             ]);
             if ($payment->save()) {
-                $this->decrement('balance', $amount);
+                $payment->sales_commissions()->sync($linked_sales_comms);
+                $this->refreshBalances();
             }
             if ($payment->needs_approval) {
                 /** @var User */
@@ -381,6 +423,12 @@ class CommProfile extends Model
     public function scopeOverride($query)
     {
         return $query->where('type', self::TYPE_OVERRIDE);
+    }
+    public function scopeLinkedToSoldPolicy($query, $sold_policy_id)
+    {
+        return $query->select('comm_profiles.*')
+            ->join('sales_comms', 'sales_comms.comm_profile_id', '=', 'comm_profiles.id')
+            ->where('sales_comms.sold_policy_id', $sold_policy_id);
     }
 
     ///relations

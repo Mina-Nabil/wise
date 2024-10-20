@@ -52,7 +52,7 @@ class EntryTitle extends Model
     /////////model functions
     public function isEntryValid($accounts)
     {
-
+        if($this->id == 1) return true;
         $this->load('accounts');
         $entry_accounts_ids = $this->accounts->pluck('id')->toArray();
         foreach ($accounts as $account_id => $entry_arr) {

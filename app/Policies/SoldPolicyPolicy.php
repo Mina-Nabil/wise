@@ -87,6 +87,18 @@ class SoldPolicyPolicy
      * @param  \App\Models\Business\SoldPolicy  $soldPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
+    public function updateWiseCommPayments(User $user, SoldPolicy $soldPolicy)
+    {
+        return $user->id == 1 || $user->id == 10 || $user->id == 11  ; //remon w mina N. w michael 
+    }
+
+    /**
+     * Determine whether the user can update a sold policy payment's info
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Business\SoldPolicy  $soldPolicy
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
     public function updateClientPayments(User $user, SoldPolicy $soldPolicy)
     {
         return $user->is_admin ||  $user->is_finance || $user->id == $soldPolicy->creator_id || $user->id == 12 || $user->id == $soldPolicy->main_sales_id;

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -43,7 +44,15 @@ class CommProfilePayment extends Model
     ];
 
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'needs_approval', 'creator_id', 'approver_id'
+        'status',
+        'type',
+        'amount',
+        'note',
+        'payment_date',
+        'doc_url',
+        'needs_approval',
+        'creator_id',
+        'approver_id'
     ];
 
     ///model functions
@@ -135,12 +144,12 @@ class CommProfilePayment extends Model
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
-        
+
         if (!($this->is_new || $this->is_approved)) return false;
 
         try {
             DB::transaction(function () use ($date) {
-           
+
 
                 $date = $date ?? new Carbon();
                 AppLog::info("Setting Profile Payment as paid", loggable: $this);
@@ -165,12 +174,19 @@ class CommProfilePayment extends Model
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
-            AppLog::error("Setting Profile Payment as cancelled", loggable: $this);
-            return $this->update([
-                "closed_by_id"   =>  Auth::id(),
-                "payment_date"  => $date->format('Y-m-d H:i'),
-                "status"  =>  self::PYMT_STATE_CANCELLED,
-            ]);
+            DB::transaction(function () use($date) {
+                AppLog::info("Setting Profile Payment as cancelled", loggable: $this);
+                $this->sales_commissions()->syncWithPivotValues(
+                    $this->sales_commissions->pluck('ids')->toArray(),
+                    ['paid_percentage' => 0,'amount' => 0]
+                );
+                $this->comm_profile->updateBalance();
+                $this->update([
+                    "closed_by_id"   =>  Auth::id(),
+                    "payment_date"  => $date->format('Y-m-d H:i'),
+                    "status"  =>  self::PYMT_STATE_CANCELLED,
+                ]);
+            });
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Profile Payment info failed", desc: $e->getMessage(), loggable: $this);
@@ -197,8 +213,17 @@ class CommProfilePayment extends Model
     {
         $query->where('status', self::PYMT_STATE_PAID);
     }
+    public function scopeNotCancelled(Builder $query)
+    {
+        $query->whereNot('status', self::PYMT_STATE_CANCELLED);
+    }
 
     ///relations
+    public function sales_commissions(): BelongsToMany
+    {
+        return $this->belongsToMany(SalesComm::class, 'comm_payments_details')->withPivot('paid_percentage', 'amount');
+    }
+
     public function comm_profile(): BelongsTo
     {
         return $this->belongsTo(CommProfile::class);

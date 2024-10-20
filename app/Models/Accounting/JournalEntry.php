@@ -96,7 +96,7 @@ class JournalEntry extends Model
          else $total_credit += $ac['amount'];
         }
 
-        if($total_credit != $total_debit) return "Debit not equal to credit";
+        if($total_credit != $total_debit) return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
 
         //////////////////////////////loading & checking data//////////////////////////////
         /** @var EntryTitle */
@@ -130,7 +130,6 @@ class JournalEntry extends Model
             DB::transaction(function () use ($newEntry, $accounts, $is_seeding) {
 
                 $newEntry->save();
-
                 foreach ($accounts as $account_id => $entry_arr) {
                     /** @var Account */
                     $account = Account::findOrFail($account_id);

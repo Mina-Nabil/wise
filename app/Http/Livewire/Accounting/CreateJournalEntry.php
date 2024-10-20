@@ -209,15 +209,20 @@ class CreateJournalEntry extends Component
     {
         $this->selectedTitle = EntryTitle::find($id);
         $this->entry_titles = null;
-
-        $this->credit_accounts_list = $this->selectedTitle
-            ->accounts()
-            ->wherePivot('nature', Account::NATURE_CREDIT)
-            ->get();
-        $this->debit_accounts_list = $this->selectedTitle
-            ->accounts()
-            ->wherePivot('nature', Account::NATURE_DEBIT)
-            ->get();
+        if ($id == 1) {
+            $all_accounts = Account::all();
+            $this->credit_accounts_list = $all_accounts;
+            $this->debit_accounts_list = $all_accounts;
+        } else {
+            $this->credit_accounts_list = $this->selectedTitle
+                ->accounts()
+                ->wherePivot('nature', Account::NATURE_CREDIT)
+                ->get();
+            $this->debit_accounts_list = $this->selectedTitle
+                ->accounts()
+                ->wherePivot('nature', Account::NATURE_DEBIT)
+                ->get();
+        }
 
         $this->addAnotherCreditAccount();
         $this->addAnotherDebitAccount();

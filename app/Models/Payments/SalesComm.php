@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -66,36 +67,37 @@ class SalesComm extends Model
     public function setPaidInfo(float $client_paid_percent, float $company_paid_percent)
     {
         if (!$this->is_confirmed || !$this->is_direct) return false;
-        // Log::info("client percentage: " . $client_paid_percent);
-        // Log::info("company percentage: " . $company_paid_percent);
+
         $updates['client_paid_percent'] = $client_paid_percent;
         $updates['company_paid_percent'] = $company_paid_percent;
 
         try {
             $this->load('comm_profile');
-            //balance calculation
-            $company_diff_amount = round(($company_paid_percent - $this->company_paid_percent) * $this->amount / 100, 2);
-            $add_to_balance = $company_diff_amount;
+            // //balance calculation
+            // $company_diff_amount = round(($company_paid_percent - $this->company_paid_percent) * $this->amount / 100, 2);
+            // $add_to_balance = $company_diff_amount;
 
-            //unapproved balance calculation 
-            $client_diff_amount = round(($client_paid_percent - $this->client_paid_percent) * $this->amount / 100, 2);
-            // Log::info("client diff: " . $client_diff_amount);
-            // Log::info("company diff: " . $company_diff_amount);
-            $new_offset = $client_diff_amount - $company_diff_amount;
-            if ($new_offset > 0) {
-                $add_to_unapproved_balance = $new_offset;
-            } else {
-                $add_to_unapproved_balance = max($new_offset, -1 * $this->unapproved_balance_offset);
-            }
+            // //unapproved balance calculation 
+            // $client_diff_amount = round(($client_paid_percent - $this->client_paid_percent) * $this->amount / 100, 2);
+            // // Log::info("client diff: " . $client_diff_amount);
+            // // Log::info("company diff: " . $company_diff_amount);
+            // $new_offset = $client_diff_amount - $company_diff_amount;
+            // if ($new_offset > 0) {
+            //     $add_to_unapproved_balance = $new_offset;
+            // } else {
+            //     $add_to_unapproved_balance = max($new_offset, -1 * $this->unapproved_balance_offset);
+            // }
 
 
-            $this->comm_profile->balance = $this->comm_profile->balance + $add_to_balance;
-            $this->comm_profile->unapproved_balance = $this->comm_profile->unapproved_balance + $add_to_unapproved_balance;
-            $this->comm_profile->save();
+            // $this->comm_profile->balance = $this->comm_profile->balance + $add_to_balance;
+            // $this->comm_profile->unapproved_balance = $this->comm_profile->unapproved_balance + $add_to_unapproved_balance;
+            // $this->comm_profile->save();
 
-            $updates['unapproved_balance_offset'] = $this->unapproved_balance_offset + $new_offset;
+            // $updates['unapproved_balance_offset'] = $this->unapproved_balance_offset + $new_offset;
             AppLog::info("Setting comm profile paid info",  loggable: $this);
             $this->update($updates);
+            $this->comm_profile->refreshBalances();
+
             return $this->save();
         } catch (Exception $e) {
             report($e);
@@ -158,6 +160,7 @@ class SalesComm extends Model
                 "comm_percentage"   =>  $this->comm_target_runs->sum('percentage'),
                 "amount"   =>  $this->comm_target_runs->sum('amount'),
             ]);
+            return $target_amount;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
@@ -167,7 +170,7 @@ class SalesComm extends Model
 
     private function clearPreviousPaymentTargetInfo()
     {
-        $prev = Carbon::now()->subMinutes(2);
+        $prev = Carbon::now()->subMinute();
         $this->comm_target_runs()
             ->where('created_at', '<=', $prev->format('Y-m-d H:i:s'))
             ->delete();
@@ -191,21 +194,11 @@ class SalesComm extends Model
         $this->load('comm_profile');
         $from_amount = 0;
         $valid_conf = $this->comm_profile->getValidDirectCommissionConf($this->sold_policy->policy);
-        if($valid_conf) {
+        if ($valid_conf) {
             $from =  $valid_conf->from;
             $this->comm_percentage = $valid_conf->percentage;
             $this->save();
-            switch ($from) {
-                case CommProfileConf::FROM_NET_PREM:
-                    $from_amount = $this->sold_policy->net_premium;
-                    break;
-                case CommProfileConf::FROM_SUM_INSURED:
-                    $from_amount = $this->sold_policy->insured_value;
-                    break;
-                case CommProfileConf::FROM_NET_COMM:
-                    $from_amount =  $this->sold_policy->after_tax_comm;
-                    break;
-            }
+            $from_amount = $this->sold_policy->getFromAmount($from);
         } else {
             $this->sold_policy->calculateTotalPolicyComm();
             $from_amount =  $this->sold_policy->after_tax_comm - $this->sold_policy->total_comm_subtractions;
@@ -383,6 +376,16 @@ class SalesComm extends Model
         $query->where('status', self::PYMT_STATE_PAID);
     }
 
+    public function scopeNotTotalyPaid(Builder $query, $profile_id)
+    {
+        $query->select('sales_comms.*')
+        ->selectRaw('SUM("comm_payments_details.paid_percentage") as paid_percent')
+        ->join('comm_payments_details', 'sales_comms.id', '=', 'comm_payments_details.sales_comm_id')
+        ->where('comm_profile_id', $profile_id)
+        ->where('paid_percent', '<', 100)
+        ->groupBy('sales_comms.id');
+    }
+
     public function scopeBySoldPoliciesStartEnd(Builder $query, Carbon $start, Carbon $end)
     {
         return $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
@@ -392,10 +395,24 @@ class SalesComm extends Model
             ]);
     }
 
+    public function scopeAddPaidAmount(Builder $query)
+    {
+        return $query->select('sales_comms.*')
+            ->selectRaw('SUM("comm_payments_details.amount") as paid_amount')
+            ->join('comm_payments_details', 'sales_comms.id', '=', 'comm_payments_details.sales_comm_id')
+            ->where('comm_payments_details.paid_percentage', '>', 0)
+            ->groupBy('sales_comms.id');
+    }
+
     ///relations
     public function comm_target_runs(): HasMany
     {
         return $this->hasMany(CommTargetRun::class);
+    }
+
+    public function sales_commissions(): BelongsToMany
+    {
+        return $this->belongsToMany(CommProfilePayment::class, 'comm_payments_details')->withPivot('paid_percentage', 'amount');
     }
 
     public function sold_policy(): BelongsTo

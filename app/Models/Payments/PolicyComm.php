@@ -63,6 +63,12 @@ class PolicyComm extends Model
         }
     }
 
+    ///scopes
+    public function scopeAutomatic($query)
+    {
+        return $query->where('is_manual', false);
+    }
+
     ///relations
     public function sold_policy(): BelongsTo
     {

@@ -56,6 +56,7 @@ class Target extends Model
         $start_date = $end_date->clone()->subMonths($this->each_month);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
+        $linkedComms = []; //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
 
         /** @var SoldPolicy */
         foreach ($soldPolicies as $sp) {
@@ -81,11 +82,18 @@ class Target extends Model
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
 
             /** @var SalesComm */
-            foreach ($salesCommissions as $s)
-                $s->updatePaymentByTarget($this, $is_manual);
+            foreach ($salesCommissions as $s){
+                $paid_amount = $s->updatePaymentByTarget($this, $is_manual);
+                if(is_numeric($paid_amount)){
+                    $linkedComms[$s->id] = [
+                        'paid_percentage'   =>  ($paid_amount / $s->amount) * 100,
+                        'amount'            =>  $paid_amount
+                    ];
+                }
+            }
 
             if ($balance_update)
-                $this->comm_profile->updateBalance($balance_update);
+                $this->comm_profile->refreshBalances();
 
             if ($payment_to_add)
                 $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true);

@@ -119,6 +119,8 @@ return new class extends Migration
             $table->text('doc_url')->nullable();
         });
 
+        EntryTitle::newEntry("All");
+
     }
 
     /**

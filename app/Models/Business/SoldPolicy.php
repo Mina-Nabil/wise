@@ -16,6 +16,8 @@ use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
 use App\Models\Payments\ClientPayment;
+use App\Models\Payments\CommProfile;
+use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\PolicyComm;
 use App\Models\Payments\SalesComm;
@@ -122,7 +124,7 @@ class SoldPolicy extends Model
         $this->load('policy.comm_confs');
         try {
             DB::transaction(function () {
-                $this->comms_details()->delete();
+                $this->comms_details()->automatic()->delete();
                 $clientPaymentDate = new Carbon($this->client_payment_date);
                 $issueDate = $this->issuing_date ? new Carbon($this->issuing_date) : null;
                 $policyStart = new Carbon($this->start);
@@ -159,13 +161,14 @@ class SoldPolicy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('updatePayments', $this)) return false;
+        if (!$loggedInUser->can('updateWiseCommPayments', $this)) return false;
 
         try {
             DB::transaction(function () use ($title, $amount) {
                 $this->comms_details()->create([
                     "title"     =>  $title,
-                    "amount"    =>  $amount
+                    "amount"    =>  $amount,
+                    "is_manual" =>  true
                 ]);
                 AppLog::info("Commission changed", loggable: $this, desc: "Sold Policy commission added manually");
             });
@@ -205,6 +208,41 @@ class SoldPolicy extends Model
             return false;
         }
     }
+
+    //takhod profile id men el nas el already leha sales comms 3al sold policy .. use CommProfile -> scopeLinkedToSoldPolicy 
+    public function adjustSalesCommission($from, $amount, $comm_profile_id = null, $note = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updatePayments', $this)) return false;
+
+        try {
+            $from = CommProfileConf::FROM_NET_PREM;
+
+            $from_amount = $this->getFromAmount($from);
+
+            $comm_percentage = ($amount * 100) / $from_amount ;
+            /** @var SalesComm */
+            $tmp = $this->sales_comms()->create([
+                "title"             => "Manual Adjustment",
+                "from"              => $from,
+                "comm_percentage"   => $comm_percentage,
+                "comm_profile_id"   => $comm_profile_id,
+                "note"              => $note,
+                "created_at"        => $this->created_at,
+                "is_direct"         => true
+            ]);
+            $tmp->refreshPaymentInfo();
+            AppLog::info("Sales commission added", loggable: $this);
+            return true;
+
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't edit sales commission", desc: $e->getMessage());
+            return false;
+        }
+    }
+
 
     public function addClientPayment($type, $amount, Carbon $due, $assigned_to_id = null, $note = null, $sales_out_id = null)
     {
@@ -854,7 +892,7 @@ class SoldPolicy extends Model
 
     public function cancelSoldPolicy($client_return = 0)
     {
-        
+            //TODO bas lsa shwya
     }
 
     public function deleteSoldPolicy()
@@ -881,6 +919,18 @@ class SoldPolicy extends Model
         } catch (Exception $e) {
             report($e);
             return false;
+        }
+    }
+
+    public function getFromAmount($from)
+    {
+        switch ($from) {
+            case CommProfileConf::FROM_NET_PREM:
+                return  $this->net_premium;
+            case CommProfileConf::FROM_SUM_INSURED:
+                return  $this->insured_value;
+            case CommProfileConf::FROM_NET_COMM:
+                return   $this->after_tax_comm;
         }
     }
 

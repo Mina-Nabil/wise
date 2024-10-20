@@ -94,8 +94,7 @@ class Account extends Model
     public static function importAccounts($file = null)
     {
         try {
-
-            DB::transaction(function () {
+            DB::transaction(function () use ($file) {
 
                 self::query()->update([
                     'parent_account_id' =>  null
@@ -115,6 +114,7 @@ class Account extends Model
                 $highestRow = $activeSheet->getHighestDataRow();
                 $code = 1;
                 $found_balances = [];
+                $endLoop = false;
                 for ($i = 2; $i <= $highestRow; $i++) {
 
                     $start_char = 'F';
@@ -122,9 +122,13 @@ class Account extends Model
 
                     while ($account_name == null) {
                         $start_char = chr(ord($start_char) - 1);
-                        if ($start_char == 'A') return;
+                        if ($start_char == 'A') {
+                            $endLoop = true;
+                            break;
+                        }
                         $account_name =  $activeSheet->getCell($start_char . $i)->getValue();
                     }
+                    if ($endLoop) break;
                     $parent_name = $start_char == 'C' ? null : $activeSheet->getCell(chr(ord($start_char) - 1) . $i)->getValue();
                     $main_account_name     =  $activeSheet->getCell('B' . $i)->getValue();
                     $nature =  $activeSheet->getCell('G' . $i)->getValue();
@@ -176,8 +180,9 @@ class Account extends Model
                         ];
                     }
                 }
+                Log::info($found_balances);
                 $starting_entry = JournalEntry::newJournalEntry(1, is_seeding: true, accounts: $found_balances);
-                if(!$starting_entry) throw new Exception("Import failed please check balances");
+                if (!$starting_entry) throw new Exception("Import failed please check balances");
                 if (is_string($starting_entry)) throw new Exception($starting_entry);
             });
         } catch (Exception $e) {
