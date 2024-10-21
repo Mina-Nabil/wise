@@ -18,7 +18,7 @@ class PolicyComm extends Model
     use HasFactory;
 
     protected $table = 'sold_policy_comms';
-    protected $fillable = ['title', 'amount'];
+    protected $fillable = ['title', 'amount', 'is_manual'];
 
     public function editAmount($amount)
     {

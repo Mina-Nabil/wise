@@ -1442,7 +1442,7 @@
                                                         <option value="">None</option>
                                                         @foreach ($salesComms as $salesComm)
                                                             <option value="{{ $salesComm->id }}">
-                                                                {{ ucwords(str_replace('_', ' ', $salesComm->title)) }}
+                                                                {{ ucwords(str_replace('_', ' ', $salesComm->title)) }} - {{$salesComm->sold_policy->policy_number}} - {{ $salesComm->amount }}EGP - Paid: {{ $salesComm->paid_percent ?? '0' }}%
                                                             </option>
                                                         @endforeach
                                                     </select>

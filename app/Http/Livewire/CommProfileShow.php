@@ -346,11 +346,11 @@ class CommProfileShow extends Component
 
     public function editPayment()
     {
-        if ($this->pymtAmount > $this->profile->balance + $this->profile->unapproved_balance) {
-            throw ValidationException::withMessages([
-                'pymtAmount' => 'Payment amount cannot exceed your balance.',
-            ]);
-        }
+        // if ($this->pymtAmount > $this->profile->balance + $this->profile->unapproved_balance) {
+        //     throw ValidationException::withMessages([
+        //         'pymtAmount' => 'Payment amount cannot exceed your balance.',
+        //     ]);
+        // }
 
         $this->validate([
             'pymtAmount' => 'required|numeric|gt:0',
@@ -550,11 +550,11 @@ class CommProfileShow extends Component
             }
         }
 
-        if ($this->pymtAmount > $this->profile->balance + $this->profile->unapproved_balance) {
-            throw ValidationException::withMessages([
-                'pymtAmount' => 'Payment amount cannot exceed your balance.',
-            ]);
-        }
+        // if ($this->pymtAmount > $this->profile->balance + $this->profile->unapproved_balance) {
+        //     throw ValidationException::withMessages([
+        //         'pymtAmount' => 'Payment amount cannot exceed your balance.',
+        //     ]);
+        // }
 
         if ($this->pymtDoc) {
             $docUrl = $this->pymtDoc->store(CommProfilePayment::FILES_DIRECTORY, 's3');
@@ -986,7 +986,9 @@ class CommProfileShow extends Component
         $LOBs = Policy::LINES_OF_BUSINESS;
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         $overrides = CommProfile::override()->get();
-        $salesComms = SalesComm::select('id', 'title')->get();
+        $salesComms = SalesComm::NotTotalyPaid($this->profile->id)->with('sold_policy', 'sold_policy.client')->get();
+        
+        Log::info($salesComms);
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,

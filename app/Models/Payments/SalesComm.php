@@ -194,7 +194,9 @@ class SalesComm extends Model
         $this->load('comm_profile');
         $from_amount = 0;
         $valid_conf = $this->comm_profile->getValidDirectCommissionConf($this->sold_policy->policy);
-        if ($valid_conf) {
+        if ($this->is_direct) {
+            $from_amount = $this->sold_policy->getFromAmount($this->from);
+        } else if ($valid_conf) {
             $from =  $valid_conf->from;
             $this->comm_percentage = $valid_conf->percentage;
             $this->save();
@@ -379,11 +381,14 @@ class SalesComm extends Model
     public function scopeNotTotalyPaid(Builder $query, $profile_id)
     {
         $query->select('sales_comms.*')
-        ->selectRaw('SUM("comm_payments_details.paid_percentage") as paid_percent')
-        ->join('comm_payments_details', 'sales_comms.id', '=', 'comm_payments_details.sales_comm_id')
-        ->where('comm_profile_id', $profile_id)
-        ->where('paid_percent', '<', 100)
-        ->groupBy('sales_comms.id');
+            ->selectRaw('SUM(comm_payments_details.paid_percentage) as paid_percent')
+            ->leftjoin('comm_payments_details', 'sales_comms.id', '=', 'comm_payments_details.sales_comm_id')
+            ->where('comm_profile_id', $profile_id)
+            ->having(function ($h) {
+                $h->having('paid_percent', '<', 100)
+                    ->orhavingNull('paid_percent');
+            })
+            ->groupBy('sales_comms.id');
     }
 
     public function scopeBySoldPoliciesStartEnd(Builder $query, Carbon $start, Carbon $end)
