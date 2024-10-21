@@ -94,7 +94,7 @@ class Account extends Model
     {
         try {
             DB::transaction(function () use ($file) {
-
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
                 self::query()->update([
                     'parent_account_id' =>  null
                 ]);
@@ -112,6 +112,8 @@ class Account extends Model
                 }
                 self::query()->delete();
                 MainAccount::query()->delete();
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                
                 if ($file) {
                     $spreadsheet = IOFactory::load($file);
                 } else {
