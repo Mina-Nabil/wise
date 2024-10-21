@@ -169,7 +169,7 @@ class Account extends Model
 
                     if ($balance) {
                         $found_balances[$tmpAccount->id] = [
-                            'nature'    =>  $balance > 0 ? $nature : (($nature == 'debit') ? 'credit' : 'debit'),
+                            'nature'    =>  ($balance > 0) ? $nature : (($nature == 'debit') ? 'credit' : 'debit'),
                             'amount'    =>  abs($balance),
                             'currency' => 'EGP',
                         ];
