@@ -113,7 +113,7 @@ class Account extends Model
                 self::query()->delete();
                 MainAccount::query()->delete();
                 DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-                
+
                 if ($file) {
                     $spreadsheet = IOFactory::load($file);
                 } else {
@@ -142,7 +142,7 @@ class Account extends Model
                     if ($endLoop) break;
                     $parent_name = $start_char == 'C' ? null : $activeSheet->getCell(chr(ord($start_char) - 1) . $i)->getValue();
                     $main_account_name     =  $activeSheet->getCell('B' . $i)->getValue();
-                    $nature =  $activeSheet->getCell('G' . $i)->getValue();
+                    $nature =  strtolower($activeSheet->getCell('G' . $i)->getValue());
                     $desc   =  $activeSheet->getCell('H' . $i)->getValue();
                     $balance =  $activeSheet->getCell('I' . $i)->getValue();
 
