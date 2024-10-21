@@ -24,9 +24,11 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 
+use function Clue\StreamFilter\fun;
+
 class CommProfileShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads, AuthorizesRequests ,WithPagination;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads, AuthorizesRequests, WithPagination;
     public $profile;
 
     public $updatedCommSec = false;
@@ -112,6 +114,8 @@ class CommProfileShow extends Component
     public $downloadAccountStartDate;
     public $downloadAccountEndDate;
 
+    public $isSortLatest = true;
+
     protected $listeners = ['deleteProfile']; //functions need confirmation
 
     public $section = 'payments';
@@ -121,8 +125,14 @@ class CommProfileShow extends Component
     public function changeSection($section)
     {
         $this->section = $section;
+        $this->isSortLatest = true;
         $this->resetPage();
         $this->mount($this->profile->id);
+    }
+
+    public function changeSortDirection()
+    {
+        $this->toggle($this->isSortLatest);
     }
 
     public function openDownloadAccountStatement()
@@ -170,12 +180,14 @@ class CommProfileShow extends Component
         }
     }
 
-    public function openLinkedSalesComm($id){
+    public function openLinkedSalesComm($id)
+    {
         $this->showLinkedSalesComm = $id;
         $this->linkedSalesComm = CommProfilePayment::findOrFail($id)->sales_commissions()->get();
     }
 
-    public function closeLinkedSalesComm(){
+    public function closeLinkedSalesComm()
+    {
         $this->showLinkedSalesComm = null;
         $this->linkedSalesComm = null;
     }
@@ -564,7 +576,7 @@ class CommProfileShow extends Component
             $docUrl = null;
         }
 
-        $res = $this->profile->addPayment($this->pymtAmount, $this->pymtType, $docUrl, $this->pymtNote, linked_sales_comms:$formattedArray);
+        $res = $this->profile->addPayment($this->pymtAmount, $this->pymtType, $docUrl, $this->pymtNote, linked_sales_comms: $formattedArray);
 
         if ($res) {
             $this->closeNewPymtSection();
@@ -989,11 +1001,36 @@ class CommProfileShow extends Component
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         $overrides = CommProfile::override()->get();
         $salesComms = SalesComm::select('id', 'title')->get();
-        $payments = $this->profile->payments()->paginate(10);
-        $sales_comm = $this->profile->sales_comm()->paginate(10);
-        $targets = $this->profile->targets()->paginate(10);
-        $configurations = $this->profile->configurations()->paginate(10);
-        $client_payments = $this->profile->client_payments()->paginate(10);
+
+        $payments = $this->profile
+            ->payments()
+            ->when($this->isSortLatest, function ($query) {
+                return $query->latest(); // Sort payments by latest
+            })
+            ->paginate(10);
+
+        $sales_comm = $this->profile
+            ->sales_comm()
+            ->when($this->isSortLatest, function ($query) {
+                return $query->latest(); // Sort sales commissions by latest
+            })
+            ->paginate(10);
+
+        $targets = $this->profile
+            ->targets()
+            ->paginate(10);
+
+        $configurations = $this->profile
+            ->configurations()
+            ->paginate(10);
+
+        $client_payments = $this->profile
+            ->client_payments()
+            ->when($this->isSortLatest, function ($query) {
+                return $query->latest(); // Sort client payments by latest
+            })
+            ->paginate(10);
+
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
@@ -1006,7 +1043,7 @@ class CommProfileShow extends Component
             'sales_comm' => $sales_comm,
             'targets' => $targets,
             'configurations' => $configurations,
-            'client_payments' => $client_payments
+            'client_payments' => $client_payments,
         ]);
     }
 }
