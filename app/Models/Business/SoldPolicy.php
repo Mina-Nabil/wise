@@ -217,7 +217,6 @@ class SoldPolicy extends Model
         if (!$loggedInUser?->can('updatePayments', $this)) return false;
 
         try {
-            $from = CommProfileConf::FROM_NET_PREM;
 
             $from_amount = $this->getFromAmount($from);
 
