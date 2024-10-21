@@ -410,6 +410,13 @@
                                                                                 <span>Approve</span></a>
                                                                         </li>
                                                                     @endcan
+                                                                    <li>
+                                                                        <a wire:click="downloadPaymentDetails({{ $payment->id }})"
+                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <iconify-icon
+                                                                                icon="ic:baseline-download"></iconify-icon>
+                                                                            <span>Download details</span></a>
+                                                                    </li>
                                                                 </ul>
                                                             </div>
                                                         </td>
@@ -1602,7 +1609,15 @@
                     </div>
                     <!-- Modal footer -->
                     <div
-                        class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                        class="flex items-center justify-between p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+
+                        <button wire:click="downloadPaymentDetails({{ $showLinkedSalesComm }})" data-bs-dismiss="modal"
+                            class="btn inline-flex justify-center text-white bg-success-500 btn-sm">
+                            <span wire:loading.remove wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})">Download Payment Details</span>
+                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})" icon="line-md:loading-twotone-loop"></iconify-icon>
+                        </button>
+
                         <button wire:click="closeLinkedSalesComm" data-bs-dismiss="modal"
                             class="btn inline-flex justify-center text-white bg-black-500 btn-sm">
                             <span wire:loading.remove wire:target="closeLinkedSalesComm">close</span>

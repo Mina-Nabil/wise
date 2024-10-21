@@ -987,6 +987,10 @@ class CommProfileShow extends Component
         $this->paymentNoteSec = null;
     }
 
+    public function downloadPaymentDetails($id){
+        CommProfilePayment::findOrFail($id)->downloadPaymentDetails();
+    }
+
     public function mount($id)
     {
         $this->profile = CommProfile::with('sales_comm', 'sales_comm.sold_policy', 'sales_comm.sold_policy.policy', 'sales_comm.sold_policy.policy.company')->find($id);
