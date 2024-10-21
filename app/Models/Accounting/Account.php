@@ -348,11 +348,11 @@ class Account extends Model
     }
     public function scopeByName($query, $text)
     {
-        return $query->where('name',  "=", "$text");
+        return $query->where('accounts.name',  "=", "$text");
     }
     public function scopeSearchBy($query, $text)
     {
-        return $query->where('name',  "LIKE", "%$text%");
+        return $query->where('accounts.name',  "LIKE", "%$text%");
     }
     public function scopeByMainAccount($query, $main_account_id)
     {
