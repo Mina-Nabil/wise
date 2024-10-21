@@ -22,10 +22,11 @@ use Livewire\WithFileUploads;
 use App\Models\Payments\SalesComm;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
+use Livewire\WithPagination;
 
 class CommProfileShow extends Component
 {
-    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads, AuthorizesRequests;
+    use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads, AuthorizesRequests ,WithPagination;
     public $profile;
 
     public $updatedCommSec = false;
@@ -120,6 +121,7 @@ class CommProfileShow extends Component
     public function changeSection($section)
     {
         $this->section = $section;
+        $this->resetPage();
         $this->mount($this->profile->id);
     }
 
@@ -987,8 +989,11 @@ class CommProfileShow extends Component
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         $overrides = CommProfile::override()->get();
         $salesComms = SalesComm::NotTotalyPaid($this->profile->id)->with('sold_policy', 'sold_policy.client')->get();
-        
-        Log::info($salesComms);
+        $payments = $this->profile->payments()->paginate(10);
+        $sales_comm = $this->profile->sales_comm()->paginate(10);
+        $targets = $this->profile->targets()->paginate(10);
+        $configurations = $this->profile->configurations()->paginate(10);
+        $client_payments = $this->profile->client_payments()->paginate(10);
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
@@ -997,6 +1002,11 @@ class CommProfileShow extends Component
             'PYMT_TYPES' => $PYMT_TYPES,
             'overrides' => $overrides,
             'salesComms' => $salesComms,
+            'payments' => $payments,
+            'sales_comm' => $sales_comm,
+            'targets' => $targets,
+            'configurations' => $configurations,
+            'client_payments' => $client_payments
         ]);
     }
 }

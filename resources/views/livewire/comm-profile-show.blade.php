@@ -227,7 +227,7 @@
                                             <tbody
                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                                @foreach ($profile->payments as $payment)
+                                                @foreach ($payments as $payment)
                                                     <tr>
 
                                                         <td class="table-td ">
@@ -408,7 +408,7 @@
                                                         </td>
                                                     </tr>
                                                 @endforeach
-                                                @if ($profile->payments->isEmpty())
+                                                @if ($payments->isEmpty())
                                                     <tr>
                                                         <td colspan="6" class="text-center p-5">
                                                             <div
@@ -435,6 +435,7 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                    {{ $payments->links('vendor.livewire.bootstrap') }}
                                 </div>
                             </div>
                         </div>
@@ -461,7 +462,7 @@
                     <div class="overflow-x-auto -mx-6 ">
                         <div class="inline-block min-w-full align-middle">
                             <div class="overflow-hidden ">
-                                @if ($profile->sales_comm->isEmpty())
+                                @if ($sales_comm->isEmpty())
                                     <p class="text-sm text-center">
                                         No sales commissions found.
                                     </p>
@@ -511,7 +512,7 @@
                                         <tbody
                                             class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                            @foreach ($profile->sales_comm as $comm)
+                                            @foreach ($sales_comm as $comm)
                                                 @if (!$comm->sold_policy_id)
                                                     @continue
                                                 @endif
@@ -651,8 +652,11 @@
 
                                         </tbody>
                                     </table>
+                                    
                                 @endif
+                                {{ $sales_comm->links('vendor.livewire.bootstrap') }}
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -677,7 +681,7 @@
                     <div class="overflow-x-auto -mx-6 ">
                         <div class="inline-block min-w-full align-middle">
                             <div class="overflow-hidden ">
-                                @if ($profile->client_payments->isEmpty())
+                                @if ($client_payments->isEmpty())
                                     <p class="text-sm text-center">
                                         No collected payments found.
                                     </p>
@@ -720,7 +724,7 @@
                                         <tbody
                                             class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                            @foreach ($profile->client_payments as $payment)
+                                            @foreach ($client_payments as $payment)
                                                 <tr>
 
                                                     <td class="table-td ">
@@ -800,6 +804,7 @@
                                     </table>
                                 @endif
                             </div>
+                            {{ $client_payments->links('vendor.livewire.bootstrap') }}
                         </div>
                     </div>
                 </div>
@@ -862,7 +867,7 @@
                                             <tbody
                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                                @foreach ($profile->targets as $target)
+                                                @foreach ($targets as $target)
                                                     <tr>
                                                         <td class="table-td ">
                                                             <p class="text-success-600 text-lg">
@@ -930,7 +935,7 @@
                                                         </td>
                                                     </tr>
                                                 @endforeach
-                                                @if ($profile->targets->isEmpty())
+                                                @if ($targets->isEmpty())
                                                     <tr>
                                                         <td colspan="6" class="text-center p-5">
                                                             <div
@@ -957,6 +962,7 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                    {{ $targets->links('vendor.livewire.bootstrap') }}
                                 </div>
                             </div>
                         </div>
@@ -1013,7 +1019,7 @@
                                             <tbody
                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                                @foreach ($profile->configurations as $conf)
+                                                @foreach ($configurations as $conf)
                                                     <tr>
 
                                                         <td class="table-td ">
@@ -1061,7 +1067,7 @@
                                                         </td>
                                                     </tr>
                                                 @endforeach
-                                                @if ($profile->configurations->isEmpty())
+                                                @if ($configurations->isEmpty())
                                                     <tr>
                                                         <td colspan="6" class="text-center p-5">
                                                             <div
@@ -1088,6 +1094,7 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                    {{ $configurations->links('vendor.livewire.bootstrap') }}
                                 </div>
                             </div>
                         </div>
