@@ -249,8 +249,8 @@
 
                     <!-- Submit Button -->
                     <div class="flex justify-end mt-6">
-                        <button wire:click="save" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500">
-                            <span wire:loading.remove wire:target="save">Submit</span>
+                        <button wire:click="save" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500" @disabled($this->selectedTitle == null)>
+                            <span wire:loading.remove wire:target="save" >Submit</span>
                             <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="save" icon="line-md:loading-twotone-loop"></iconify-icon>
                         </button>
                     </div>

@@ -126,9 +126,6 @@ class CreateJournalEntry extends Component
     public function save()
     {
         $this->authorize('create', JournalEntry::class);
-        $this->validate([
-            'title' =>  'required',
-        ]);
 
         if ($this->cash_entry_type) {
             $this->validate([
