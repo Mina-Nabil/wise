@@ -24,7 +24,7 @@
                                 </div>
                             @else
                                 <div class="input-area">
-                                    <input placeholder="Serach title..." type="text" id="title" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('title') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="title" maxlength="100">
+                                    <input placeholder="Search title..." type="text" id="title" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('title') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="title" maxlength="100">
                                     @error('title')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror

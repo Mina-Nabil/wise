@@ -126,6 +126,9 @@ class CreateJournalEntry extends Component
     public function save()
     {
         $this->authorize('create', JournalEntry::class);
+        $this->validate([
+            'title' =>  'required',
+        ]);
 
         if ($this->cash_entry_type) {
             $this->validate([
@@ -158,7 +161,7 @@ class CreateJournalEntry extends Component
         $formattedCreditAccounts = $this->reformatCreditAccounts();
 
         // Upload documents and update URLs for debit accounts
-        foreach ($this->debit_accounts as $index => $account) {
+        foreach ($this->debit_accounts as $account) {
             if (isset($account['doc_url']) && $account['doc_url']) {
                 // Store the file and get the URL
                 $doc = $account['doc_url'];
@@ -168,7 +171,7 @@ class CreateJournalEntry extends Component
         }
 
         // Upload documents and update URLs for credit accounts
-        foreach ($this->credit_accounts as $index => $account) {
+        foreach ($this->credit_accounts as $account) {
             if (isset($account['doc_url']) && $account['doc_url']) {
                 // Store the file and get the URL
                 $doc = $account['doc_url'];
