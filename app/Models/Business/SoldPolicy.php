@@ -195,7 +195,7 @@ class SoldPolicy extends Model
                 "comm_profile_id"   => $comm_profile_id,
                 "note"              => $note,
                 "created_at"        => $this->created_at,
-                "is_direct"         => true
+                "is_direct"         => false
             ]);
             $tmp->refreshPaymentInfo();
             AppLog::info("Sales commission added", loggable: $this);
@@ -226,12 +226,12 @@ class SoldPolicy extends Model
                 "title"             => "Manual Adjustment",
                 "from"              => $from,
                 "comm_percentage"   => $comm_percentage,
+                "amount"            => $amount,
                 "comm_profile_id"   => $comm_profile_id,
                 "note"              => $note,
                 "created_at"        => $this->created_at,
-                "is_direct"         => true
+                "is_direct"         => false
             ]);
-            $tmp->refreshPaymentInfo();
             AppLog::info("Sales commission added", loggable: $this);
             return true;
 

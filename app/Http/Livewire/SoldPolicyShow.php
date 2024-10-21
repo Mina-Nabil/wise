@@ -1520,7 +1520,8 @@ class SoldPolicyShow extends Component
         $PYMT_TYPES = ClientPayment::PYMT_TYPES;
         $FROMS = CommProfileConf::FROMS;
         $CommProfiles = CommProfile::all();
-        $linkedCommProfiles = CommProfile::linkedToSoldPolicy($this->soldPolicy->id)->get();
+        // $linkedCommProfiles = CommProfile::linkedToSoldPolicy($this->soldPolicy->id)->get();
+        $linkedCommProfiles = CommProfile::all();
         $salesOuts = CommProfile::salesOut()->get();
 
         return view('livewire.sold-policy-show', [

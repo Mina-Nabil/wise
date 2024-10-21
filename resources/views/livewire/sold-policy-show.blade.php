@@ -1638,13 +1638,13 @@
                 <div class="card-body flex flex-col p-6 active justify-center">
                     <header class="card-header noborder flex justify-between">
                         <h4 class="card-title">
-                            Sales Commission
+                            Add Target Commission
                         </h4>
                         <div>
                             @can('updatePayments', $soldPolicy)
                                 <button wire:click="toggleAdjustComm"
                                     class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">
-                                    Adjust Sales Commission
+                                    Add Direct Commission
                                 </button>
                             @endcan
 

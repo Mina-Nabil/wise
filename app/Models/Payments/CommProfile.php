@@ -202,8 +202,8 @@ class CommProfile extends Model
             $total_paid =  $this->payments()->notCancelled()->selectRaw('SUM("amount") as total_paid')->first()->total_paid;
 
             $this->update([
-                    "balance" => $total_balance_comms - $total_paid, 
-                    "unapproved_balance" => $total_unapproved_comms - $total_paid, 
+                "balance" => $total_balance_comms - $total_paid,
+                "unapproved_balance" => $total_unapproved_comms - $total_paid,
             ]);
             AppLog::info("Updating comm profile balance",  loggable: $this);
             return $this->save();
@@ -216,7 +216,7 @@ class CommProfile extends Model
 
     public function updateBalance(
         float $amount
-        ) {
+    ) {
         try {
             $this->increment(
                 "balance",
@@ -352,9 +352,9 @@ class CommProfile extends Model
     ) {
         if ($amount <= $this->balance)
             $needs_approval = false;
-        else if ($must_add)
+        else
             $needs_approval = true;
-        else throw new Exception("Amount is more than the available balance");
+
         try {
             /** @var CommProfilePayment */
             $payment = $this->payments()->create([
