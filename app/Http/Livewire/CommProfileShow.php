@@ -89,6 +89,8 @@ class CommProfileShow extends Component
     public $pymtDocFile;
     public $pymtId;
     public $salesCommArray = [];
+    public $showLinkedSalesComm; //payment id
+    public $linkedSalesComm;
 
     public $commNote;
     public $RemoveCommDocId;
@@ -164,6 +166,16 @@ class CommProfileShow extends Component
         } else {
             $this->alert('failed', 'server error');
         }
+    }
+
+    public function openLinkedSalesComm($id){
+        $this->showLinkedSalesComm = $id;
+        $this->linkedSalesComm = CommProfilePayment::findOrFail($id)->sales_commissions()->get();
+    }
+
+    public function closeLinkedSalesComm(){
+        $this->showLinkedSalesComm = null;
+        $this->linkedSalesComm = null;
     }
 
     public function openStartTargetRunSec()
