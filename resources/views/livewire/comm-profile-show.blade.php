@@ -1411,6 +1411,74 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
+
+
+                                <!-- Dynamic Sales Commission Entries -->
+                                <div class="input-area mt-3">
+                                    @if (!empty($salesCommArray))
+                                        <h4 class="text-lg font-medium mt-5 mb-2">Sales Commissions</h4>
+                                    @endif
+
+                                    @foreach ($salesCommArray as $index => $salesComm)
+                                        <div class="card active">
+                                            <div
+                                                class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-800 shadow-base menu-open p-5 mb-5">
+                                                <p><b>Commission {{ $index + 1 }}</b></p>
+                                                <!-- ID and Remove Button in one line -->
+                                                <div class="flex space-x-4 mt-3">
+                                                    <select name="salesCommArray.{{ $index }}.sales_comm_id"
+                                                        class="form-control w-full mt-2 @error('salesCommArray.{{ $index }}.sales_comm_id') !border-danger-500 @enderror"
+                                                        wire:model.defer="salesCommArray.{{ $index }}.sales_comm_id">
+                                                        <option value="">None</option>
+                                                        @foreach ($salesComms as $salesComm)
+                                                            <option value="{{ $salesComm->id }}">
+                                                                {{ ucwords(str_replace('_', ' ', $salesComm->title)) }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <button class="action-btn"
+                                                        wire:click="removeSalesComm({{ $index }})"
+                                                        type="button">
+                                                        <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                    </button>
+                                                </div>
+                                                @error('salesCommArray.' . $index . '.sales_comm_id')
+                                                    <span
+                                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                @enderror
+
+                                                <!-- Percentage and Amount in another line -->
+                                                <div class="flex space-x-4 mt-3">
+                                                    <input type="number"
+                                                        wire:model.defer="salesCommArray.{{ $index }}.paid_percentage"
+                                                        placeholder="Percentage"
+                                                        class="form-control w-1/2 @error('salesCommArray.' . $index . '.paid_percentage') !border-danger-500 @enderror">
+                                                    <input type="number"
+                                                        wire:model.defer="salesCommArray.{{ $index }}.amount"
+                                                        placeholder="Amount"
+                                                        class="form-control w-1/2 @error('salesCommArray.' . $index . '.amount') !border-danger-500 @enderror">
+                                                </div>
+                                                @error('salesCommArray.' . $index . '.paid_percentage')
+                                                    <span
+                                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                @enderror
+                                                @error('salesCommArray.' . $index . '.amount')
+                                                    <span
+                                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    <button type="button" wire:click="addSalesComm"
+                                        class="btn text-green-500 mt-3"></button>
+                                    <button wire:click="addSalesComm"
+                                        class="btn inline-flex justify-center btn-outline-secondary block-btn">
+                                        <span class="flex items-center">
+                                            <span>Add Sales Commission</span>
+                                        </span>
+                                    </button>
+                                </div>
+
                             </div>
 
                         </div>
@@ -1730,7 +1798,7 @@
                                     <label for="firstName" class="form-label">Next Run Date</label>
                                     <input type="date" class="form-control" wire:model.defer="nextRunDate">
                                 </div>
-                                
+
                                 <div class="flex justify-between items-start space-x-6">
                                     <div class="input-area mt-3">
                                         <label for="commPercentage" class="form-label">Comm. Percentage</label>
@@ -1951,7 +2019,7 @@
                                     </div>
                                 </div>
 
-                               
+
                                 @error('commPercentage')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

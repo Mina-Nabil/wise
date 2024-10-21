@@ -88,6 +88,7 @@ class CommProfileShow extends Component
     public $uploadPymtDocId;
     public $pymtDocFile;
     public $pymtId;
+    public $salesCommArray = [];
 
     public $commNote;
     public $RemoveCommDocId;
@@ -108,7 +109,6 @@ class CommProfileShow extends Component
     public $downloadAccountStartDate;
     public $downloadAccountEndDate;
 
-
     protected $listeners = ['deleteProfile']; //functions need confirmation
 
     public $section = 'payments';
@@ -121,37 +121,43 @@ class CommProfileShow extends Component
         $this->mount($this->profile->id);
     }
 
-    public function openDownloadAccountStatement(){
+    public function openDownloadAccountStatement()
+    {
         $this->downloadAccountStatementSec = true;
     }
 
-    public function closeDownloadAccountStatementSec(){
+    public function closeDownloadAccountStatementSec()
+    {
         $this->downloadAccountStatementSec = false;
     }
 
-    public function downloadAccountStatement(){
-        $this->validate([
-            'downloadAccountStartDate' => 'required|date',
-            'downloadAccountEndDate' => 'required|date'
-        ],attributes:[
-            'downloadAccountStartDate' => 'start date',
-            'downloadAccountEndDate' => 'end date'
-        ]);
+    public function downloadAccountStatement()
+    {
+        $this->validate(
+            [
+                'downloadAccountStartDate' => 'required|date',
+                'downloadAccountEndDate' => 'required|date',
+            ],
+            attributes: [
+                'downloadAccountStartDate' => 'start date',
+                'downloadAccountEndDate' => 'end date',
+            ],
+        );
 
-        $res = $this->profile->downloadAccountStatement(Carbon::parse($this->downloadAccountStartDate),Carbon::parse($this->downloadAccountEndDate));
+        $res = $this->profile->downloadAccountStatement(Carbon::parse($this->downloadAccountStartDate), Carbon::parse($this->downloadAccountEndDate));
 
         if ($res) {
             $this->mount($this->profile->id);
-            $this->reset(['downloadAccountStatementSec' ,'downloadAccountStartDate' ,'downloadAccountEndDate' ]);
+            $this->reset(['downloadAccountStatementSec', 'downloadAccountStartDate', 'downloadAccountEndDate']);
             $this->alert('success', 'Statement downloaded!');
             return $res;
         } else {
             $this->alert('failed', 'server error');
         }
-
     }
 
-    public function deleteProfile(){
+    public function deleteProfile()
+    {
         $res = $this->profile->deleteProfile();
         if ($res) {
             return redirect(route('comm.profile.index'));
@@ -160,17 +166,20 @@ class CommProfileShow extends Component
         }
     }
 
-    public function openStartTargetRunSec(){
+    public function openStartTargetRunSec()
+    {
         $this->startTargetRunSection = true;
     }
 
-    public function closeStartTargetRunSec(){
-        $this->reset(['startTargetRunSection' ,'startTargetRunEndDate']);
+    public function closeStartTargetRunSec()
+    {
+        $this->reset(['startTargetRunSection', 'startTargetRunEndDate']);
     }
 
-    public function startManualTargetsRun(){
+    public function startManualTargetsRun()
+    {
         $this->validate([
-            'startTargetRunEndDate' => 'required|date'
+            'startTargetRunEndDate' => 'required|date',
         ]);
 
         $res = $this->profile->startManualTargetsRun(Carbon::parse($this->startTargetRunEndDate));
@@ -206,7 +215,6 @@ class CommProfileShow extends Component
 
     public function removeCommDoc()
     {
-
         $res = SalesComm::find($this->RemoveCommDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->profile->id);
@@ -232,11 +240,9 @@ class CommProfileShow extends Component
         $this->commDocId = $id;
     }
 
-
     public function refreshCommAmmount($id)
     {
-
-        $res =  SalesComm::find($id)->refreshPaymentInfo();
+        $res = SalesComm::find($id)->refreshPaymentInfo();
         if ($res) {
             $this->mount($this->profile->id);
             $this->alert('success', 'Commission updated');
@@ -247,8 +253,7 @@ class CommProfileShow extends Component
 
     public function setCommCancelled($id)
     {
-
-        $res =  SalesComm::find($id)->setAsCancelled();
+        $res = SalesComm::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->profile->id);
             $this->alert('success', 'Commission updated');
@@ -259,8 +264,7 @@ class CommProfileShow extends Component
 
     public function setCommPaid($id)
     {
-
-        $res =  SalesComm::find($id)->setAsPaid();
+        $res = SalesComm::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->profile->id);
             $this->alert('success', 'Commission updated');
@@ -296,7 +300,6 @@ class CommProfileShow extends Component
 
     public function updatedCommDoc()
     {
-
         $this->validate([
             'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
@@ -331,17 +334,16 @@ class CommProfileShow extends Component
 
     public function editPayment()
     {
-
-        if (($this->pymtAmount) > ($this->profile->balance + $this->profile->unapproved_balance)) {
+        if ($this->pymtAmount > $this->profile->balance + $this->profile->unapproved_balance) {
             throw ValidationException::withMessages([
-                'pymtAmount' => 'Payment amount cannot exceed your balance.'
+                'pymtAmount' => 'Payment amount cannot exceed your balance.',
             ]);
         }
 
         $this->validate([
             'pymtAmount' => 'required|numeric|gt:0',
             'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
-            'pymtNote' => 'nullable|string'
+            'pymtNote' => 'nullable|string',
         ]);
 
         $res = CommProfilePayment::find($this->pymtId)->setInfo($this->pymtAmount, $this->pymtType, $this->pymtNote);
@@ -382,7 +384,6 @@ class CommProfileShow extends Component
             $this->alert('failed', 'Server Error!');
         }
     }
-
 
     public function dismissDeletePymtDoc()
     {
@@ -494,18 +495,54 @@ class CommProfileShow extends Component
 
     public function addPayment()
     {
-        if (($this->pymtAmount) > ($this->profile->balance + $this->profile->unapproved_balance)) {
-            throw ValidationException::withMessages([
-                'pymtAmount' => 'Payment amount cannot exceed your balance.'
-            ]);
+        $this->validate(
+            [
+                'pymtAmount' => 'required|numeric|gt:0',
+                'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
+                'pymtDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+                'pymtNote' => 'nullable|string',
+                'salesCommArray.*.sales_comm_id' => 'required',
+                'salesCommArray.*.paid_percentage' => 'required|numeric|min:0|max:100',
+                'salesCommArray.*.amount' => 'required|numeric|min:0',
+            ],
+            attributes: [
+                'pymtAmount' => 'amount',
+                'pymtType' => 'payment type',
+                'pymtDoc' => 'payment file',
+                'pymtNote' => 'note',
+                'salesCommArray.*.sales_comm_id' => 'sales commission',
+                'salesCommArray.*.paid_percentage' => 'paid percentage',
+                'salesCommArray.*.amount' => 'amount',
+            ],
+        );
+
+        $formattedArray = [];
+        $total = 0;
+
+        foreach ($this->salesCommArray as $salesComm) {
+            // Ensure that sales_comm_id is set before adding to the formatted array
+            if (!empty($salesComm['sales_comm_id'])) {
+                $formattedArray[$salesComm['sales_comm_id']] = [
+                    'paid_percentage' => $salesComm['paid_percentage'],
+                    'amount' => $salesComm['amount'],
+                ];
+                $total = $total + $salesComm['amount'];
+            }
         }
 
-        $this->validate([
-            'pymtAmount' => 'required|numeric|gt:0',
-            'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
-            'pymtDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
-            'pymtNote' => 'nullable|string'
-        ]);
+        if (!empty($salesComm['sales_comm_id'])) {
+            if ($total != $this->pymtAmount) {
+                throw ValidationException::withMessages([
+                    'pymtAmount' => 'Amount is not equal to total comissions',
+                ]);
+            }
+        }
+
+        if ($this->pymtAmount > $this->profile->balance + $this->profile->unapproved_balance) {
+            throw ValidationException::withMessages([
+                'pymtAmount' => 'Payment amount cannot exceed your balance.',
+            ]);
+        }
 
         if ($this->pymtDoc) {
             $docUrl = $this->pymtDoc->store(CommProfilePayment::FILES_DIRECTORY, 's3');
@@ -513,7 +550,7 @@ class CommProfileShow extends Component
             $docUrl = null;
         }
 
-        $res = $this->profile->addPayment($this->pymtAmount, $this->pymtType, $docUrl, $this->pymtNote);
+        $res = $this->profile->addPayment($this->pymtAmount, $this->pymtType, $docUrl, $this->pymtNote, linked_sales_comms:$formattedArray);
 
         if ($res) {
             $this->closeNewPymtSection();
@@ -522,6 +559,17 @@ class CommProfileShow extends Component
         } else {
             $this->alert('failed', 'server error!');
         }
+    }
+
+    public function addSalesComm()
+    {
+        $this->salesCommArray[] = ['sales_comm_id' => '', 'paid_percentage' => '', 'amount' => ''];
+    }
+
+    public function removeSalesComm($index)
+    {
+        unset($this->salesCommArray[$index]);
+        $this->salesCommArray = array_values($this->salesCommArray); // Re-index the array
     }
 
     public function openNewPymtSection()
@@ -536,6 +584,7 @@ class CommProfileShow extends Component
         $this->pymtType = null;
         $this->pymtDoc = null;
         $this->pymtNote = null;
+        $this->salesCommArray = [];
     }
 
     public function closeNewTargetSection()
@@ -612,20 +661,7 @@ class CommProfileShow extends Component
             'isFullAmount' => 'nullable|boolean',
         ]);
 
-        $res = Target::find($this->editTargetId)->editInfo(
-            $this->isEndOfMonth ? 28 : $this->dayOfMonth,
-            $this->eachMonth,
-            $this->premTarget,
-            $this->minIncomeTarget,
-            $this->commPercentage,
-            $this->addToBalance,
-            $this->addAsPayment,
-            $this->basePayment,
-            $this->maxIncomeTarget,
-            $this->nextRunDate ? new Carbon($this->nextRunDate) : null,
-            $this->isEndOfMonth,
-            $this->isFullAmount,
-        );
+        $res = Target::find($this->editTargetId)->editInfo($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount);
         if ($res) {
             $this->closeEditTargetSection();
             $this->mount($this->profile->id);
@@ -645,7 +681,6 @@ class CommProfileShow extends Component
         $this->deleteTargetId = $id;
     }
 
-
     public function deleteTarget()
     {
         $res = Target::find($this->deleteTargetId)->deleteTarget();
@@ -660,7 +695,6 @@ class CommProfileShow extends Component
 
     public function addTarget()
     {
-
         $this->validate([
             'minIncomeTarget' => 'required|numeric',
             'dayOfMonth' => 'required_unless:isEndOfMonth,true|between:0,31',
@@ -674,20 +708,7 @@ class CommProfileShow extends Component
             'isFullAmount' => 'nullable|boolean',
         ]);
 
-        $res = $this->profile->addTarget(
-            $this->isEndOfMonth ? 28 : $this->dayOfMonth,
-            $this->eachMonth,
-            $this->premTarget,
-            $this->minIncomeTarget,
-            $this->commPercentage,
-            $this->addToBalance,
-            $this->addAsPayment,
-            $this->basePayment,
-            $this->maxIncomeTarget,
-            $this->nextRunDate ? new Carbon($this->nextRunDate) : null,
-            $this->isEndOfMonth,
-            $this->isFullAmount
-        );
+        $res = $this->profile->addTarget($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount);
 
         if ($res) {
             $this->closeNewTargetSection();
@@ -800,9 +821,13 @@ class CommProfileShow extends Component
     public function updatedSearchCon()
     {
         if ($this->conditionType == 'company') {
-            $this->searchlist = Company::searchBy($this->searchCon)->get()->take(5);
+            $this->searchlist = Company::searchBy($this->searchCon)
+                ->get()
+                ->take(5);
         } elseif ($this->conditionType == 'policy') {
-            $this->searchlist = Policy::searchBy($this->searchCon)->get()->take(5);
+            $this->searchlist = Policy::searchBy($this->searchCon)
+                ->get()
+                ->take(5);
         }
     }
 
@@ -884,11 +909,11 @@ class CommProfileShow extends Component
             ]);
         }
         $this->validate([
-            'updatedType'  => 'required|in:' . implode(',', CommProfile::TYPES),
-            'updatedAutomaticOverrideId'  => 'nullable|exists:comm_profiles,id',
+            'updatedType' => 'required|in:' . implode(',', CommProfile::TYPES),
+            'updatedAutomaticOverrideId' => 'nullable|exists:comm_profiles,id',
             'updatedPerPolicy' => 'boolean',
             'updatedSelectAvailable' => 'boolean',
-            'updatedDesc' => 'nullable|string'
+            'updatedDesc' => 'nullable|string',
         ]);
 
         $res = $this->profile->editProfile($this->updatedType, $this->updatedPerPolicy, $this->updatedTitle, $this->updatedDesc, $this->updatedSelectAvailable, $this->updatedAutomaticOverrideId);
@@ -949,6 +974,7 @@ class CommProfileShow extends Component
         $LOBs = Policy::LINES_OF_BUSINESS;
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         $overrides = CommProfile::override()->get();
+        $salesComms = SalesComm::select('id', 'title')->get();
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
@@ -956,6 +982,7 @@ class CommProfileShow extends Component
             'LOBs' => $LOBs,
             'PYMT_TYPES' => $PYMT_TYPES,
             'overrides' => $overrides,
+            'salesComms' => $salesComms,
         ]);
     }
 }
