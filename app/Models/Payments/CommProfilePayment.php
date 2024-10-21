@@ -2,6 +2,7 @@
 
 namespace App\Models\Payments;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CommProfilePayment extends Model
 {
@@ -174,11 +177,11 @@ class CommProfilePayment extends Model
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
-            DB::transaction(function () use($date) {
+            DB::transaction(function () use ($date) {
                 AppLog::info("Setting Profile Payment as cancelled", loggable: $this);
                 $this->sales_commissions()->syncWithPivotValues(
                     $this->sales_commissions->pluck('ids')->toArray(),
-                    ['paid_percentage' => 0,'amount' => 0]
+                    ['paid_percentage' => 0, 'amount' => 0]
                 );
                 $this->comm_profile->updateBalance();
                 $this->update([
@@ -191,6 +194,50 @@ class CommProfilePayment extends Model
             report($e);
             AppLog::error("Setting Profile Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
+    }
+
+    public function downloadPaymentDetails()
+    {
+        $comms = $this->sales_commissions()
+            ->with(
+                'sold_policy',
+                'sold_policy.client',
+                'sold_policy.policy',
+                'sold_policy.policy.company',
+            )
+            ->get();
+
+        $template = IOFactory::load(resource_path('import/profile_payment_details.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getSheet(0);
+
+        $i = 3;
+        foreach ($comms as $c) {
+            $activeSheet->getCell('A' . $i)->setValue($c->sold_policy->policy_number);
+            $activeSheet->getCell('B' . $i)->setValue($c->sold_policy?->created_at ?
+                Carbon::parse($c->sold_policy?->created_at)->format('D d/m/Y') :
+                'Not set.');
+            $activeSheet->getCell('C' . $i)->setValue($c->sold_policy?->policy?->company?->name . '-' . $c->sold_policy?->policy?->name);
+            $activeSheet->getCell('D' . $i)->setValue($c->sold_policy->client->full_name);
+
+            $activeSheet->getCell('E' . $i)->setValue(number_format($c->amount));
+            $activeSheet->getCell('F' . $i)->setValue(number_format($c->comm_percentage, 2));
+            $activeSheet->getCell('G' . $i)->setValue(number_format($c->sales_out_comm));
+            $activeSheet->getCell('H' . $i)->setValue(number_format($c->insured_value));
+
+
+            $activeSheet->insertNewRowBefore($i);
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = SoldPolicy::FILES_DIRECTORY . "commission_payment_details.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
     public function delete()
