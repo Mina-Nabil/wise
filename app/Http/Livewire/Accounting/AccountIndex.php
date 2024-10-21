@@ -9,6 +9,7 @@ use App\Traits\AlertFrontEnd;
 use Livewire\Component;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AccountIndex extends Component
 {
@@ -166,9 +167,9 @@ class AccountIndex extends Component
             })
             ->when($this->searchText, function ($q) {
                 return $q->searchBy($this->searchText);
-            })
-            ->parentAccounts()
+            })->when(!$this->searchText, fn($q) => $q->parentAccounts())
             ->get();
+        Log::info($accounts);
         $main_accounts = MainAccount::all();
         $CURRENCIES = JournalEntry::CURRENCIES;
 
