@@ -45,17 +45,17 @@ class SoldPolicyShow extends Component
     public $editInfoSec = false;
 
     public $deleteBenefitId;
-    public $benefitId;  //for edit
-    public $eBenefit;   //edited benefit
-    public $eValue;     //edited value
+    public $benefitId; //for edit
+    public $eBenefit; //edited benefit
+    public $eValue; //edited value
     public $newBenefit;
     public $newValue;
     public $newBenefitSec = false;
 
     public $deleteExcId;
     public $excId;
-    public $eExcTitle;  //edited exc title
-    public $eExcValue;  //edited exc value
+    public $eExcTitle; //edited exc title
+    public $eExcValue; //edited exc value
     public $newExcTitle;
     public $newExcValue;
     public $newExcSection = false;
@@ -93,7 +93,9 @@ class SoldPolicyShow extends Component
     public $commNote;
     //sales comm
     public $addCommSec = false;
+    public $adjustCommSec = false;
     public $commTitle;
+    public $commAmount;
     public $commFrom;
     public $commProfile;
     public $commPer;
@@ -104,7 +106,9 @@ class SoldPolicyShow extends Component
 
     public $deletePolComSec;
     public $updatePolComSec;
+    public $policyCommTitle;
     public $policyCommAmount;
+    public $newPolComSec = false;
 
     public $addClientPaymentSec;
     public $paymentType;
@@ -120,7 +124,7 @@ class SoldPolicyShow extends Component
     public $clientPaymentDateSec = false;
     public $clientPaymentDate;
     public $editPaymentSec;
-    
+
     public $salesOutSelected;
     public $client_payment_date;
     public $setPaidSec;
@@ -156,7 +160,8 @@ class SoldPolicyShow extends Component
     protected $queryString = ['section'];
     public $uploadedFile;
 
-    public function openEditPaymentSec($id){
+    public function openEditPaymentSec($id)
+    {
         $this->editPaymentSec = $id;
         $p = ClientPayment::find($id);
         $this->paymentType = $p->type;
@@ -166,7 +171,8 @@ class SoldPolicyShow extends Component
         $this->salesOutID = $p->sales_out_id;
     }
 
-    public function closeEditPaymentSec(){
+    public function closeEditPaymentSec()
+    {
         $this->editPaymentSec = null;
         $this->paymentType = null;
         $this->paymentDue = null;
@@ -175,17 +181,17 @@ class SoldPolicyShow extends Component
         $this->salesOutID = null;
     }
 
-    public function editClientPayment(){
-
+    public function editClientPayment()
+    {
         $this->validate([
             'paymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
             'paymentDue' => 'required|date',
             'paymentNote' => 'nullable|string',
-            'paymentAssignee'   => 'nullable|integer|exists:users,id',
-            'salesOutID'   => 'nullable|integer|exists:users,id',
+            'paymentAssignee' => 'nullable|integer|exists:users,id',
+            'salesOutID' => 'nullable|integer|exists:users,id',
         ]);
 
-        $res = ClientPayment::find($this->editPaymentSec)->setInfo(Carbon::parse($this->paymentDue), $this->paymentType, $this->paymentAssignee ,$this->paymentNote, $this->salesOutID);
+        $res = ClientPayment::find($this->editPaymentSec)->setInfo(Carbon::parse($this->paymentDue), $this->paymentType, $this->paymentAssignee, $this->paymentNote, $this->salesOutID);
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->closeEditPaymentSec();
@@ -195,23 +201,27 @@ class SoldPolicyShow extends Component
         }
     }
 
-    public function closeSetPaymentCollectedSec(){
+    public function closeSetPaymentCollectedSec()
+    {
         $this->setPaymentCollectedSec = null;
-        $this->payment_collected_note  = null;
+        $this->payment_collected_note = null;
         $this->paymentCollectedDoc = null;
     }
 
-    public function closeSetPaymentPaidSec(){
+    public function closeSetPaymentPaidSec()
+    {
         $this->setPaymentPaidSec = null;
-        $this->payment_type  = null;
+        $this->payment_type = null;
         $this->payment_date = null;
     }
 
-    public function openSetPaymentCollectedSec($id){
+    public function openSetPaymentCollectedSec($id)
+    {
         $this->setPaymentCollectedSec = $id;
     }
 
-    public function openSetPaymentPaidSec($id){
+    public function openSetPaymentPaidSec($id)
+    {
         $this->setPaymentPaidSec = $id;
     }
 
@@ -219,7 +229,7 @@ class SoldPolicyShow extends Component
     {
         $this->editTotalPolCommSection = false;
         $this->updateTotalPolComm = null;
-        $this->updateTotalPolCommNote = null; 
+        $this->updateTotalPolCommNote = null;
     }
 
     public function openEditTotalPolCommSection()
@@ -229,22 +239,26 @@ class SoldPolicyShow extends Component
         $this->updateTotalPolCommNote = $this->soldPolicy->policy_comm_note;
     }
 
-    public function updateTotalPolComm(){
-        $this->validate([
-            'updateTotalPolComm' => 'required|numeric',
-            'updateTotalPolCommNote' => 'nullable|string',
-        ],attributes:[
-            'updateTotalPolComm' => 'total policy commission',
-            'updateTotalPolCommNote' => 'total commission note'
-        ]);
+    public function updateTotalPolComm()
+    {
+        $this->validate(
+            [
+                'updateTotalPolComm' => 'required|numeric',
+                'updateTotalPolCommNote' => 'nullable|string',
+            ],
+            attributes: [
+                'updateTotalPolComm' => 'total policy commission',
+                'updateTotalPolCommNote' => 'total commission note',
+            ],
+        );
 
         // dd($this->updateTotalPolCommNote);
-        $res = $this->soldPolicy->setPolicyCommission($this->updateTotalPolComm,$this->updateTotalPolCommNote);
+        $res = $this->soldPolicy->setPolicyCommission($this->updateTotalPolComm, $this->updateTotalPolCommNote);
         if ($res) {
             $this->closeEditTotalPolCommSection();
             $this->mount($this->soldPolicy->id);
-            $this->alert('success','Policy Commission updated!');
-        }else{
+            $this->alert('success', 'Policy Commission updated!');
+        } else {
             $this->alert('failed', 'server error');
         }
     }
@@ -262,14 +276,13 @@ class SoldPolicyShow extends Component
 
     public function addCompanyPayment()
     {
-
         $this->validate([
             'compPaymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
             'compPaymentAmount' => 'required|numeric',
             'compPaymentNote' => 'nullable|string',
         ]);
 
-        if (!($this->compPaymentAmount <= ($this->soldPolicy->total_policy_comm - $this->soldPolicy->total_company_paid))) {
+        if (!($this->compPaymentAmount <= $this->soldPolicy->total_policy_comm - $this->soldPolicy->total_company_paid)) {
             $this->throwError('compPaymentAmount', 'Amount is more that what the company should pay. Please make sure the amount is less than the total commission plus the company payments total.');
         }
 
@@ -343,7 +356,6 @@ class SoldPolicyShow extends Component
 
     public function removePaymentDoc()
     {
-
         $res = ClientPayment::find($this->RemovePaymentDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -356,7 +368,6 @@ class SoldPolicyShow extends Component
 
     public function updatedPaymentDoc()
     {
-
         $this->validate([
             'paymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
@@ -419,7 +430,6 @@ class SoldPolicyShow extends Component
 
     public function updatedCompPaymentDoc()
     {
-
         $this->validate([
             'compPaymentDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
@@ -439,7 +449,6 @@ class SoldPolicyShow extends Component
 
     public function setCompanyPaymentPaid($id)
     {
-
         $res = CompanyCommPayment::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -451,7 +460,6 @@ class SoldPolicyShow extends Component
 
     public function setCompanyPaymentCancelled($id)
     {
-
         $res = CompanyCommPayment::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -473,7 +481,6 @@ class SoldPolicyShow extends Component
 
     public function removeCompPaymentDoc()
     {
-
         $res = CompanyCommPayment::find($this->RemoveCompPaymentDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -496,7 +503,7 @@ class SoldPolicyShow extends Component
             'payment_date' => 'required|date',
         ]);
 
-        $res = ClientPayment::find($this->setPaymentPaidSec)->setAsPaid($this->payment_type,Carbon::parse($this->payment_date));
+        $res = ClientPayment::find($this->setPaymentPaidSec)->setAsPaid($this->payment_type, Carbon::parse($this->payment_date));
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->closeSetPaymentPaidSec();
@@ -511,7 +518,7 @@ class SoldPolicyShow extends Component
         $this->validate([
             'paymentCollectedDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
-        if($this->paymentCollectedDoc){
+        if ($this->paymentCollectedDoc) {
             $url = $this->paymentCollectedDoc->store(SalesComm::FILES_DIRECTORY, 's3');
         } else {
             $url = null;
@@ -529,7 +536,6 @@ class SoldPolicyShow extends Component
 
     public function setPaymentCancelled($id)
     {
-
         $res = ClientPayment::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -541,7 +547,6 @@ class SoldPolicyShow extends Component
 
     public function deleteClientPayment($id)
     {
-
         $res = ClientPayment::find($id)?->deletePayment();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -551,9 +556,10 @@ class SoldPolicyShow extends Component
         }
     }
 
-    public function updatedPaymentType(){
+    public function updatedPaymentType()
+    {
         $this->salesOutID = null;
-        if($this->paymentType == ClientPayment::PYMT_TYPE_SALES_OUT){
+        if ($this->paymentType == ClientPayment::PYMT_TYPE_SALES_OUT) {
             $this->salesOutSelected = true;
         } else {
             $this->salesOutSelected = false;
@@ -562,18 +568,21 @@ class SoldPolicyShow extends Component
 
     public function addClientPayment()
     {
-        $this->validate([
-            'paymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
-            'paymentAmount' => 'required|numeric',
-            'paymentDue' => 'required|date',
-            'paymentNote' => 'nullable|string',
-            'paymentAssignee'   => 'nullable|integer|exists:users,id',
-            'salesOutID'   => 'required_if:paymentType,' . ClientPayment::PYMT_TYPE_SALES_OUT . '|nullable|exists:sales_comms,id',
-        ], [
-            'salesOutID'    =>  "Must select a profile if the payment type is Sales Out"
-        ]);
+        $this->validate(
+            [
+                'paymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),
+                'paymentAmount' => 'required|numeric',
+                'paymentDue' => 'required|date',
+                'paymentNote' => 'nullable|string',
+                'paymentAssignee' => 'nullable|integer|exists:users,id',
+                'salesOutID' => 'required_if:paymentType,' . ClientPayment::PYMT_TYPE_SALES_OUT . '|nullable|exists:sales_comms,id',
+            ],
+            [
+                'salesOutID' => 'Must select a profile if the payment type is Sales Out',
+            ],
+        );
 
-        $res = $this->soldPolicy->addClientPayment($this->paymentType, $this->paymentAmount, Carbon::parse($this->paymentDue), $this->paymentAssignee ,$this->paymentNote, $this->salesOutID);
+        $res = $this->soldPolicy->addClientPayment($this->paymentType, $this->paymentAmount, Carbon::parse($this->paymentDue), $this->paymentAssignee, $this->paymentNote, $this->salesOutID);
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->addClientPaymentSec = false;
@@ -604,6 +613,38 @@ class SoldPolicyShow extends Component
     public function closeUpdatePolCom()
     {
         $this->updatePolComSec = null;
+    }
+
+    public function openNewPolCom()
+    {
+        $this->authorize('updateWiseCommPayments', $this->soldPolicy);
+        $this->newPolComSec = true;
+    }
+
+    public function closeNewPolCom()
+    {
+        $this->newPolComSec = false;
+        $this->reset(['policyCommTitle', 'policyCommAmount']);
+    }
+
+    public function newPolicyComm()
+    {
+        $this->authorize('updateWiseCommPayments', $this->soldPolicy);
+
+        $this->validate([
+            'policyCommTitle' => 'required|string|max:255',
+            'policyCommAmount' => 'required|numeric|min:1',
+        ]);
+
+        $res = $this->soldPolicy->addPolicyCommission($this->policyCommTitle, $this->policyCommAmount);
+
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closeNewPolCom();
+            $this->alert('success', 'Commission added!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function updateCommAmount()
@@ -711,16 +752,14 @@ class SoldPolicyShow extends Component
         }
     }
 
-
-
     public function addComm()
     {
         $this->validate([
-            'commTitle'  => 'required|string|max:255',
-            'commPer'    => 'required|numeric',
-            'commProfile'   => 'nullable|integer|exists:comm_profiles,id',
-            'commNote'   => 'nullable|string',
-            'commFrom'   => 'required|in:' . implode(',', CommProfileConf::FROMS),
+            'commTitle' => 'required|string|max:255',
+            'commPer' => 'required|numeric',
+            'commProfile' => 'nullable|integer|exists:comm_profiles,id',
+            'commNote' => 'nullable|string',
+            'commFrom' => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
 
         $res = $this->soldPolicy->addSalesCommission($this->commTitle, $this->commFrom, $this->commPer, $this->commProfile, $this->newcommNote);
@@ -741,6 +780,41 @@ class SoldPolicyShow extends Component
     public function toggleAddComm()
     {
         $this->toggle($this->addCommSec);
+
+        if (!$this->addCommSec) {
+            $this->reset(['commTitle', 'commFrom', 'commPer', 'commProfile', 'newcommNote']);
+        }
+    }
+
+    public function toggleAdjustComm()
+    {
+        $this->toggle($this->adjustCommSec);
+
+        if (!$this->adjustCommSec) {
+            $this->reset(['commFrom', 'commAmount', 'commProfile', 'newcommNote']);
+        }
+    }
+
+    public function adjustComm()
+    {
+        $this->authorize('updatePayments',$this->soldPolicy);
+
+        $this->validate([
+            'commAmount' => 'required|numeric|min:1',
+            'commProfile' => 'nullable|integer|exists:comm_profiles,id',
+            'commNote' => 'nullable|string',
+            'commFrom' => 'required|in:' . implode(',', CommProfileConf::FROMS),
+        ]);
+
+        $res = $this->soldPolicy->adjustSalesCommission($this->commFrom,$this->commAmount,$this->commProfile,$this->commNote);
+
+        if ($res) {
+            $this->toggleAdjustComm();
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Commission added!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
     }
 
     public function showCommNote($id)
@@ -761,7 +835,6 @@ class SoldPolicyShow extends Component
 
     public function updatedCommDoc()
     {
-
         $this->validate([
             'commDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
@@ -808,7 +881,6 @@ class SoldPolicyShow extends Component
 
     public function removeCommDoc()
     {
-
         $res = SalesComm::find($this->RemoveCommDocId)->deleteDocument();
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -821,8 +893,7 @@ class SoldPolicyShow extends Component
 
     public function setCommPaid($id)
     {
-
-        $res =  SalesComm::find($id)->setAsPaid();
+        $res = SalesComm::find($id)->setAsPaid();
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'Commission updated');
@@ -833,8 +904,7 @@ class SoldPolicyShow extends Component
 
     public function setCommCancelled($id)
     {
-
-        $res =  SalesComm::find($id)->setAsCancelled();
+        $res = SalesComm::find($id)->setAsCancelled();
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'Commission updated');
@@ -845,8 +915,7 @@ class SoldPolicyShow extends Component
 
     public function refreshCommAmmount($id)
     {
-
-        $res =  SalesComm::find($id)->refreshPaymentInfo();
+        $res = SalesComm::find($id)->refreshPaymentInfo();
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'Commission updated');
@@ -866,7 +935,7 @@ class SoldPolicyShow extends Component
     public function editNote()
     {
         $this->validate([
-            'note' => 'required|string|max:255'
+            'note' => 'required|string|max:255',
         ]);
 
         $res = $this->soldPolicy->setNote($this->note);
@@ -986,7 +1055,7 @@ class SoldPolicyShow extends Component
     public function setPaid()
     {
         $this->validate([
-            'client_payment_date' => 'required|date'
+            'client_payment_date' => 'required|date',
         ]);
         $res = $this->soldPolicy->setPaid(1, Carbon::parse($this->client_payment_date));
         if ($res) {
@@ -1008,7 +1077,6 @@ class SoldPolicyShow extends Component
             $this->alert('failed', 'server error');
         }
     }
-
 
     public function openEditInfoSection()
     {
@@ -1036,16 +1104,7 @@ class SoldPolicyShow extends Component
             'in_favor_to' => 'nullable|string|max:255',
         ]);
 
-        $res = $this->soldPolicy->editInfo(
-            Carbon::parse($this->start),
-            Carbon::parse($this->expiry),
-            $this->policy_number,
-            $this->car_chassis,
-            $this->car_plate_no,
-            $this->car_engine,
-            $this->in_favor_to,
-            Carbon::parse($this->issuing_date),
-        );
+        $res = $this->soldPolicy->editInfo(Carbon::parse($this->start), Carbon::parse($this->expiry), $this->policy_number, $this->car_chassis, $this->car_plate_no, $this->car_engine, $this->in_favor_to, Carbon::parse($this->issuing_date));
 
         if ($res) {
             $this->mount($this->soldPolicy->id);
@@ -1157,7 +1216,6 @@ class SoldPolicyShow extends Component
         }
     }
 
-
     public function removeAcion($index)
     {
         if (count($this->actions) > 1) {
@@ -1166,14 +1224,15 @@ class SoldPolicyShow extends Component
         }
     }
 
-    public function toggleDeleteSoldPolicy(){
+    public function toggleDeleteSoldPolicy()
+    {
         $this->deleteSoldPolicySec = !$this->deleteSoldPolicySec;
     }
 
     public function deleteSoldPolicy()
     {
         $res = $this->soldPolicy->deleteSoldPolicy();
-        if($res){
+        if ($res) {
             $this->alert('success', 'Sold Policy deleted');
             return redirect(route('sold.policy.index'));
         } else {
@@ -1217,15 +1276,7 @@ class SoldPolicyShow extends Component
             'discount' => 'required|numeric',
         ]);
 
-        $res = $this->soldPolicy->updatePaymentInfo(
-            $this->insured_value,
-            $this->net_rate,
-            $this->net_premium,
-            $this->gross_premium,
-            $this->installements_count,
-            $this->payment_frequency,
-            $this->discount
-        );
+        $res = $this->soldPolicy->updatePaymentInfo($this->insured_value, $this->net_rate, $this->net_premium, $this->gross_premium, $this->installements_count, $this->payment_frequency, $this->discount);
 
         if ($res) {
             $this->togglePaymentInfoSection();
@@ -1242,8 +1293,6 @@ class SoldPolicyShow extends Component
         $this->newBenefitSec = true;
     }
 
-
-
     public function closeNewBenefitSec()
     {
         $this->newBenefitSec = false;
@@ -1255,7 +1304,7 @@ class SoldPolicyShow extends Component
     {
         $this->validate([
             'newBenefit' => 'required|in:' . implode(',', PolicyBenefit::BENEFITS),
-            'newValue' => 'required|string|max:255'
+            'newValue' => 'required|string|max:255',
         ]);
 
         $res = $this->soldPolicy->addBenefit($this->newBenefit, $this->newValue);
@@ -1287,7 +1336,7 @@ class SoldPolicyShow extends Component
     {
         $this->validate([
             'eBenefit' => 'required|in:' . implode(',', PolicyBenefit::BENEFITS),
-            'eValue' => 'required|string|max:255'
+            'eValue' => 'required|string|max:255',
         ]);
 
         $res = SoldPolicyBenefit::find($this->benefitId)->editInfo($this->eBenefit, $this->eValue);
@@ -1339,7 +1388,7 @@ class SoldPolicyShow extends Component
     {
         $this->validate([
             'newExcTitle' => 'required|string|max:255',
-            'newExcValue' => 'required|string|max:255'
+            'newExcValue' => 'required|string|max:255',
         ]);
 
         $res = $this->soldPolicy->addExclusion($this->newExcTitle, $this->newExcValue);
@@ -1371,7 +1420,7 @@ class SoldPolicyShow extends Component
     {
         $this->validate([
             'eExcTitle' => 'required|string|max:255',
-            'eExcValue' => 'required|string|max:255'
+            'eExcValue' => 'required|string|max:255',
         ]);
 
         $res = SoldPolicyExclusion::find($this->excId)->editInfo($this->eExcTitle, $this->eExcValue);
@@ -1422,12 +1471,16 @@ class SoldPolicyShow extends Component
     }
     public function saveWatchers()
     {
-        $this->validate([
-            'setWatchersList' => 'nullable|array',
-            'setWatchersList.*' => 'integer|exists:users,id',
-        ], [], [
-            'setWatchersList' => 'Watchers',
-        ]);
+        $this->validate(
+            [
+                'setWatchersList' => 'nullable|array',
+                'setWatchersList.*' => 'integer|exists:users,id',
+            ],
+            [],
+            [
+                'setWatchersList' => 'Watchers',
+            ],
+        );
 
         $t = $this->soldPolicy->setWatchers($this->setWatchersList);
         if ($t) {
@@ -1467,18 +1520,20 @@ class SoldPolicyShow extends Component
         $PYMT_TYPES = ClientPayment::PYMT_TYPES;
         $FROMS = CommProfileConf::FROMS;
         $CommProfiles = CommProfile::all();
+        $linkedCommProfiles = CommProfile::linkedToSoldPolicy($this->soldPolicy->id)->get();
         $salesOuts = CommProfile::salesOut()->get();
 
         return view('livewire.sold-policy-show', [
-            'BENEFITS'      => $BENEFITS,
+            'BENEFITS' => $BENEFITS,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
-            'COLUMNS'       => $COLUMNS,
-            'FIELDSTITLES'  => $FIELDSTITLES,
-            "users"         =>  $users,
-            'PYMT_TYPES'    => $PYMT_TYPES,
-            'FROMS'         => $FROMS,
-            'CommProfiles'  => $CommProfiles,
-            'salesOuts'     => $salesOuts,
+            'COLUMNS' => $COLUMNS,
+            'FIELDSTITLES' => $FIELDSTITLES,
+            'users' => $users,
+            'PYMT_TYPES' => $PYMT_TYPES,
+            'FROMS' => $FROMS,
+            'CommProfiles' => $CommProfiles,
+            'linkedCommProfiles' => $linkedCommProfiles,
+            'salesOuts' => $salesOuts,
         ]);
     }
 }
