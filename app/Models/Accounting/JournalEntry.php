@@ -87,16 +87,18 @@ class JournalEntry extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
+        if (!$is_seeding) {
 
-        $total_debit = 0;
-        $total_credit = 0;
+            $total_debit = 0;
+            $total_credit = 0;
 
-        foreach ($accounts as $ac) {
-         if($ac['nature'] == 'debit') $total_debit += round($ac['amount'], 2);
-         else $total_credit += round($ac['amount'], 2);
+            foreach ($accounts as $ac) {
+                if ($ac['nature'] == 'debit') $total_debit += round($ac['amount'], 2);
+                else $total_credit += round($ac['amount'], 2);
+            }
+
+            if (round($total_credit - $total_debit) != 0) return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
         }
-
-        if(round($total_credit - $total_debit) != 0) return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
 
         //////////////////////////////loading & checking data//////////////////////////////
         /** @var EntryTitle */

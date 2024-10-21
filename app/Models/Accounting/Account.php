@@ -145,7 +145,7 @@ class Account extends Model
                     $nature =  strtolower($activeSheet->getCell('G' . $i)->getValue());
                     $desc   =  $activeSheet->getCell('H' . $i)->getValue();
                     $balance =  $activeSheet->getCell('I' . $i)->getValue();
-
+                    Log::info("Check negative? " . $balance);
 
                     try {
                         $main_account = MainAccount::firstOrCreate([
