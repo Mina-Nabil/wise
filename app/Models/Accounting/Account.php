@@ -40,7 +40,6 @@ class Account extends Model
         self::NATURE_CREDIT,
     ];
 
-
     ////static functions
     public static function getEntries($account_id, Carbon $from, Carbon $to)
     {
@@ -99,6 +98,13 @@ class Account extends Model
                 self::query()->update([
                     'parent_account_id' =>  null
                 ]);
+                $titles = EntryTitle::all();
+                foreach ($titles as $t) {
+                    if ($t->id == 1) continue;
+                    $t->accounts()->sync([]);
+                    $t->delete();
+                }
+
                 $entries = JournalEntry::all();
                 foreach ($entries as $e) {
                     $e->accounts()->sync([]);
@@ -169,7 +175,7 @@ class Account extends Model
 
                     if ($balance) {
                         $found_balances[$tmpAccount->id] = [
-                            'nature'    =>  ($balance > 0) ? $nature : (($nature == 'debit') ? 'credit' : 'debit'),
+                            'nature'    => ($balance > 0) ? $nature : (($nature == 'debit') ? 'credit' : 'debit'),
                             'amount'    =>  abs($balance),
                             'currency' => 'EGP',
                         ];
@@ -187,7 +193,7 @@ class Account extends Model
         return true;
     }
 
-    public static function getNextCode($main_account_id, $parent_account_id )
+    public static function getNextCode($main_account_id, $parent_account_id)
     {
         return (DB::table("accounts")
             ->selectRaw("MAX(code) as max_code")
@@ -235,7 +241,6 @@ class Account extends Model
 
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
-
 
     /** returns new balance after update */
     public function updateBalance($amount, $type, $is_seeding = false)
@@ -346,14 +351,17 @@ class Account extends Model
     {
         return $query->where('nature', $nature);
     }
+
     public function scopeByName($query, $text)
     {
         return $query->where('accounts.name',  "=", "$text");
     }
+
     public function scopeSearchBy($query, $text)
     {
         return $query->where('accounts.name',  "LIKE", "%$text%");
     }
+
     public function scopeByMainAccount($query, $main_account_id)
     {
         return $query->where('main_account_id ', $main_account_id);
