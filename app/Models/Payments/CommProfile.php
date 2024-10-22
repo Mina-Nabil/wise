@@ -201,8 +201,6 @@ class CommProfile extends Model
             }
 
             $total_paid =  $this->payments()->notCancelled()->selectRaw('SUM(amount) as total_paid')->first()->total_paid;
-            Log::info("Total paid: " . $total_paid);
-            Log::info("Total Comms: " . $total_balance_comms);
             $this->update([
                 "balance" => $total_balance_comms - $total_paid,
                 "unapproved_balance" => max($total_unapproved_comms - $total_paid, 0),

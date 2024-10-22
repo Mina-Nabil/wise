@@ -183,9 +183,7 @@ class CommProfileShow extends Component
     public function refreshBalances()
     {
         $res = $this->profile->refreshBalances();
-        if ($res) {
-            return redirect(route('comm.profile.index'));
-        } else {
+        if (!$res) {
             $this->alert('failed', 'server error');
         }
     }
@@ -997,7 +995,8 @@ class CommProfileShow extends Component
         $this->paymentNoteSec = null;
     }
 
-    public function downloadPaymentDetails($id){
+    public function downloadPaymentDetails($id)
+    {
         return CommProfilePayment::findOrFail($id)->downloadPaymentDetails();
     }
 
