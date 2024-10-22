@@ -642,9 +642,12 @@ class SoldPolicy extends Model
 
     public function updateSalesCommsPaymentInfo()
     {
+        Log::info("GEET");
         $client_paid_percentage = $this->gross_premium ? round(100 * $this->total_client_paid / $this->gross_premium, 2) : 0;
         $company_paid_percentage = $this->total_policy_comm ? round(100 * $this->total_comp_paid / $this->total_policy_comm, 2) : 0;
-
+        
+        Log::info("Comp%" . $company_paid_percentage);
+        Log::info("Client%" . $client_paid_percentage);
         try {
             /** @var SalesComm */
             foreach ($this->sales_comms()->get() as $commaya) {

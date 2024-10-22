@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -199,11 +200,12 @@ class CommProfile extends Model
                 }
             }
 
-            $total_paid =  $this->payments()->notCancelled()->selectRaw('SUM("amount") as total_paid')->first()->total_paid;
-
+            $total_paid =  $this->payments()->notCancelled()->selectRaw('SUM(amount) as total_paid')->first()->total_paid;
+            Log::info("Total paid: " . $total_paid);
+            Log::info("Total Comms: " . $total_balance_comms);
             $this->update([
                 "balance" => $total_balance_comms - $total_paid,
-                "unapproved_balance" => $total_unapproved_comms - $total_paid,
+                "unapproved_balance" => max($total_unapproved_comms - $total_paid, 0),
             ]);
             AppLog::info("Updating comm profile balance",  loggable: $this);
             return $this->save();

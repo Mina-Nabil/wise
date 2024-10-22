@@ -66,7 +66,7 @@ class SalesComm extends Model
     ///model functions
     public function setPaidInfo(float $client_paid_percent, float $company_paid_percent)
     {
-        if (!$this->is_confirmed || !$this->is_direct) return false;
+        if ($this->is_cancelled || !$this->is_direct) return false;
 
         $updates['client_paid_percent'] = $client_paid_percent;
         $updates['company_paid_percent'] = $company_paid_percent;

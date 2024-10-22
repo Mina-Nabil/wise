@@ -47,8 +47,8 @@
                         @endcan
                         @can('manage', $profile)
                         <button
-                        wire:click="$emit('showConfirmation', 'Are you sure you want to refresh the profile balances?','dark','refreshBalances')"
-                        class="btn inline-flex justify-center btn-outline-danger btn-sm"> Refresh Balance</button>
+                        wire:click="$emit('showConfirmation', 'Are you sure you want to refresh the profile balances?','black','refreshBalances')"
+                        class="btn inline-flex justify-center btn-outline-light btn-sm"> Refresh Balance</button>
                             <button wire:click="openStartTargetRunSec"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
                             @if ($profile->sales_out)
@@ -104,7 +104,7 @@
                     </div>
                     <div class="flex-1">
                         <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                            Unapproved Balance
+                            Unapproved Balance (Direct Conf. Only)
                         </div>
                         <div class="text-slate-900 dark:text-white text-lg font-medium">
                             {{ number_format($profile->unapproved_balance, 2, '.', ',') }} EGP
