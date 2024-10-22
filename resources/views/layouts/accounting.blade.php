@@ -652,7 +652,7 @@
     <script>
         $(function() {
             var start = moment().subtract(4, 'months');
-            var end = moment();
+            var end = moment().add(1, 'days');
 
             function cb(start, end) {
                 $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
