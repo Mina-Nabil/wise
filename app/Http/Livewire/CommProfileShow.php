@@ -116,7 +116,7 @@ class CommProfileShow extends Component
 
     public $isSortLatest = true;
 
-    protected $listeners = ['deleteProfile']; //functions need confirmation
+    protected $listeners = ['deleteProfile', 'refreshBalances']; //functions need confirmation
 
     public $section = 'payments';
 
@@ -173,6 +173,16 @@ class CommProfileShow extends Component
     public function deleteProfile()
     {
         $res = $this->profile->deleteProfile();
+        if ($res) {
+            return redirect(route('comm.profile.index'));
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function refreshBalances()
+    {
+        $res = $this->profile->refreshBalances();
         if ($res) {
             return redirect(route('comm.profile.index'));
         } else {
@@ -988,7 +998,7 @@ class CommProfileShow extends Component
     }
 
     public function downloadPaymentDetails($id){
-        CommProfilePayment::findOrFail($id)->downloadPaymentDetails();
+        return CommProfilePayment::findOrFail($id)->downloadPaymentDetails();
     }
 
     public function mount($id)

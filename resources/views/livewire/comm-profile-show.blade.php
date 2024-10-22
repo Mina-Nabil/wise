@@ -46,6 +46,9 @@
                                 class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
                         @endcan
                         @can('manage', $profile)
+                        <button
+                        wire:click="$emit('showConfirmation', 'Are you sure you want to refresh the profile balances?','dark','refreshBalances')"
+                        class="btn inline-flex justify-center btn-outline-danger btn-sm"> Refresh Balance</button>
                             <button wire:click="openStartTargetRunSec"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
                             @if ($profile->sales_out)
