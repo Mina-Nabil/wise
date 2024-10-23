@@ -101,7 +101,7 @@
                                                                             </td>
                                                                             <td class="table-td">
                                                                                 <div class="dropstart relative">
-                                                                                    <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                                    <button class="inline-flex justify-center items-center" type="button"   data-bs-toggle="dropdown" aria-expanded="false">
                                                                                         <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                                     </button>
                                                                                     <ul

@@ -192,7 +192,7 @@
         @foreach ($contacts as $contact)
             <div class="card p-5" style="text-align: -webkit-center;">
                 <div class="dropstart relative float-right">
-                    <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2"
+                    <button class="inline-flex justify-center items-center" type="button"  
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
                             icon="heroicons-outline:dots-vertical"></iconify-icon>

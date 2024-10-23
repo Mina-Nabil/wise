@@ -119,7 +119,7 @@
 
                                             </div>
                                             <div class="dropstart relative text-right">
-                                                <button class="inline-flex justify-center items-center" type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="inline-flex justify-center items-center" type="button"   data-bs-toggle="dropdown" aria-expanded="false">
                                                     <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                 </button>
                                                 <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
