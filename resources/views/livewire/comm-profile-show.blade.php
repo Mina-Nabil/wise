@@ -36,8 +36,8 @@
                 </div>
                 <div class="card-text mt-4 menu-open">
                     <p>{{ $profile->desc }}</p>
-                    @can('create', \App\Models\Payments\CommProfile::class)
-                        <div class="mt-4 space-x-4 rtl:space-x-reverse">
+                    <div class="mt-4 space-x-4 rtl:space-x-reverse">
+                        @can('create', \App\Models\Payments\CommProfile::class)
                             <button wire:click="openUpdateSec" class="btn inline-flex justify-center btn-light btn-sm">Edit
                                 info</button>
 
@@ -46,9 +46,9 @@
                                 class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
                         @endcan
                         @can('manage', $profile)
-                        <button
-                        wire:click="$emit('showConfirmation', 'Are you sure you want to refresh the profile balances?','black','refreshBalances')"
-                        class="btn inline-flex justify-center btn-outline-light btn-sm"> Refresh Balance</button>
+                            <button
+                                wire:click="$emit('showConfirmation', 'Are you sure you want to refresh the profile balances?','black','refreshBalances')"
+                                class="btn inline-flex justify-center btn-outline-light btn-sm"> Refresh Balance</button>
                             <button wire:click="openStartTargetRunSec"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
                             @if ($profile->sales_out)
@@ -1611,11 +1611,15 @@
                     <div
                         class="flex items-center justify-between p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
 
-                        <button wire:click="downloadPaymentDetails({{ $showLinkedSalesComm }})" data-bs-dismiss="modal"
+                        <button wire:click="downloadPaymentDetails({{ $showLinkedSalesComm }})"
+                            data-bs-dismiss="modal"
                             class="btn inline-flex justify-center text-white bg-success-500 btn-sm">
-                            <span wire:loading.remove wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})">Download Payment Details</span>
+                            <span wire:loading.remove
+                                wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})">Download Payment
+                                Details</span>
                             <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})"
+                                icon="line-md:loading-twotone-loop"></iconify-icon>
                         </button>
 
                         <button wire:click="closeLinkedSalesComm" data-bs-dismiss="modal"
@@ -1914,7 +1918,8 @@
 
                             <div class="input-area mt-3">
                                 <label for="eachMonth" class="form-label">Each month</label>
-                                <input id="eachMonth" type="number" class="form-control" wire:model="eachMonth">
+                                <input id="eachMonth" type="number" class="form-control"
+                                    wire:model="eachMonth">
                             </div>
                             @error('eachMonth')
                                 <span
