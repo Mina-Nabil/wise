@@ -115,12 +115,12 @@
         </div>
     </div>
 
-    <div class="card-body flex flex-col col-span-2 mb-5 mt-5" >
+    <div class="card-body flex flex-col col-span-2 mb-5 mt-5" wire:ignore>
         <div class="card-text h-full">
             <div>
                 <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab"
                     role="tablist">
-                    <li class="nav-item" role="presentation" wire:click="changeSection('payments')">
+                    <li class="nav-item" role="presentation" wire:click='changeSection("payments")'>
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'payments') active @endif dark:text-slate-300"
                             id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
@@ -129,7 +129,7 @@
                             <iconify-icon class="mr-1" icon="material-symbols:payments"></iconify-icon>
                             Payments</a>
                     </li>
-                    <li class="nav-item" role="presentation" wire:click="changeSection('salescomm')">
+                    <li class="nav-item" role="presentation" wire:click='changeSection("salescomm")'>
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'salescomm') active @endif dark:text-slate-300"
                             id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
@@ -139,7 +139,7 @@
                             Sales Commission</a>
                     </li>
                     @if ($profile->is_sales_out)
-                        <li class="nav-item" role="presentation" wire:click="changeSection('clientpayments')">
+                        <li class="nav-item" role="presentation" wire:click='changeSection("clientpayments")'>
                             <a href="#tabs-messages-withIcon"
                                 class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'clientpayments') active @endif dark:text-slate-300"
                                 id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
@@ -149,7 +149,7 @@
                                 Collected Client Payments</a>
                         </li>
                     @endif
-                    <li class="nav-item" role="presentation" wire:click="changeSection('targets')">
+                    <li class="nav-item" role="presentation" wire:click='changeSection("targets")'>
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'targets') active @endif dark:text-slate-300"
                             id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
@@ -158,7 +158,7 @@
                             <iconify-icon class="mr-1" icon="lets-icons:target-fill"></iconify-icon>
                             Targets</a>
                     </li>
-                    <li class="nav-item" role="presentation" wire:click="changeSection('configurations')">
+                    <li class="nav-item" role="presentation" wire:click='changeSection("configurations")'>
                         <a href="#tabs-messages-withIcon"
                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'configurations') active @endif dark:text-slate-300"
                             id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
