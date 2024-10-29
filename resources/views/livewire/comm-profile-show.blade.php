@@ -115,7 +115,7 @@
         </div>
     </div>
 
-    <div class="card-body flex flex-col col-span-2 mb-5 mt-5" wire:ignore>
+    <div class="card-body flex flex-col col-span-2 mb-5 mt-5" >
         <div class="card-text h-full">
             <div>
                 <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0" id="tabs-tab"
