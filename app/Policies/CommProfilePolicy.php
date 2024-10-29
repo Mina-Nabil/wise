@@ -77,6 +77,6 @@ class CommProfilePolicy
      */
     public function delete(User $user, CommProfile $commProfil)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin ;
     }
 }
