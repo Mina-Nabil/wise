@@ -43,6 +43,7 @@ use App\Models\Payments\Target;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskComment;
+use App\Models\Tasks\TaskField;
 use App\Models\Tasks\TaskFile;
 use App\Models\Tasks\TaskWatcher;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -80,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
             Policy::MORPH_TYPE => Policy::class,
             PolicyCondition::MORPH_TYPE => PolicyCondition::class,
             Task::MORPH_TYPE => Task::class,
+            TaskField::MORPH_TYPE => TaskField::class,
             Customer::MORPH_TYPE => Customer::class,
             Corporate::MORPH_TYPE => Corporate::class,
             Address::MORPH_TYPE => Address::class,
