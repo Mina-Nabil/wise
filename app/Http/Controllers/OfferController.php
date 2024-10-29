@@ -25,7 +25,7 @@ class OfferController extends Controller
     public function commissionsShow($id)
     {
         $c  = CommProfile::findorFail($id);
-        Gate::authorize('view', $c);
+        // Gate::authorize('view', $c);
         return view('offers.comm-prof-show', compact('id'));
     }
 
