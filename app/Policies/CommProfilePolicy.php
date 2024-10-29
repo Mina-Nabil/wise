@@ -41,7 +41,7 @@ class CommProfilePolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
@@ -53,7 +53,7 @@ class CommProfilePolicy
      */
     public function update(User $user, CommProfile $commProfil)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
@@ -77,6 +77,6 @@ class CommProfilePolicy
      */
     public function delete(User $user, CommProfile $commProfil)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 }
