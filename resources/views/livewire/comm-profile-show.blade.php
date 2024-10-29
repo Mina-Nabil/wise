@@ -483,9 +483,6 @@
                             Sort:<b>&nbsp;Oldest</b>
                         @endif
                     </button>
-                    {{-- @can('create', \App\Models\Payments\SalesComm::class)
-                        <button wire:click="toggleAddComm" class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add commission</button>
-                    @endcan --}}
 
                 </header>
                 <div class="card-body px-6 pb-6">
