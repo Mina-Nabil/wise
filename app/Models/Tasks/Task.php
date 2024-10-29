@@ -479,8 +479,11 @@ class Task extends Model
                             ->where('task_temp_assignee.status', TaskTempAssignee::STATUS_ACCEPTED)
                             ->whereDate('task_temp_assignee.end_date', '>=', Carbon::now()->format('Y-m-d'));
                     });
-                $q->when($includeWatchers, fn ($qq) => $qq->orwhere('task_watchers.user_id', $loggedInUser->id));
-            })->when($assignedToMeOnly, fn ($qq) => $qq->where('assigned_to_id', $loggedInUser->id));
+                $q->when($includeWatchers, fn($qq) => $qq->orwhere('task_watchers.user_id', $loggedInUser->id));
+            })->when($assignedToMeOnly, function ($qq) use ($loggedInUser, $includeWatchers) {
+                $qq->where('assigned_to_id', $loggedInUser->id);
+                $qq->when($includeWatchers, fn($qqq) => $qqq->orwhere('task_watchers.user_id', $loggedInUser->id));
+            });
         }
 
         $query->when($upcoming_only, function ($q) {
