@@ -183,7 +183,7 @@ class CommProfilePayment extends Model
                     $this->sales_commissions->pluck('ids')->toArray(),
                     ['paid_percentage' => 0, 'amount' => 0]
                 );
-                $this->comm_profile->updateBalance();
+                $this->comm_profile->updateBalance($this->amount);
                 $this->update([
                     "closed_by_id"   =>  Auth::id(),
                     "payment_date"  => $date->format('Y-m-d H:i'),
