@@ -190,11 +190,12 @@ class CommProfilePayment extends Model
                     "status"  =>  self::PYMT_STATE_CANCELLED,
                 ]);
             });
-            return true;
+      
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Profile Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
+        return true;
     }
 
     public function downloadPaymentDetails()
