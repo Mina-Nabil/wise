@@ -191,7 +191,7 @@ class CommProfileShow extends Component
     public function openLinkedSalesComm($id)
     {
         $this->showLinkedSalesComm = $id;
-        $this->linkedSalesComm = CommProfilePayment::findOrFail($id)->sales_commissions()->get();
+        $this->linkedSalesComm = CommProfilePayment::findOrFail($id)->sales_commissions()->with('sold_policy')->get();
     }
 
     public function closeLinkedSalesComm()

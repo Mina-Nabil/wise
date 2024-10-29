@@ -183,17 +183,19 @@ class CommProfilePayment extends Model
                     $this->sales_commissions->pluck('ids')->toArray(),
                     ['paid_percentage' => 0, 'amount' => 0]
                 );
-                $this->comm_profile->updateBalance();
+                $this->comm_profile->updateBalance($this->amount);
                 $this->update([
                     "closed_by_id"   =>  Auth::id(),
                     "payment_date"  => $date->format('Y-m-d H:i'),
                     "status"  =>  self::PYMT_STATE_CANCELLED,
                 ]);
             });
+      
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Profile Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
+        return true;
     }
 
     public function downloadPaymentDetails()
@@ -224,8 +226,8 @@ class CommProfilePayment extends Model
             $activeSheet->getCell('D' . $i)->setValue($c->sold_policy->client->full_name);
             $activeSheet->getCell('E' . $i)->setValue(number_format($c->amount));
             $activeSheet->getCell('F' . $i)->setValue(number_format($c->comm_percentage, 2));
-            $activeSheet->getCell('G' . $i)->setValue(number_format($c->sales_out_comm));
-            $activeSheet->getCell('H' . $i)->setValue(number_format($c->insured_value));
+            $activeSheet->getCell('G' . $i)->setValue(number_format($c->sold_policy->sales_out_comm));
+            $activeSheet->getCell('H' . $i)->setValue(number_format($c->sold_policy->insured_value));
 
             $activeSheet->insertNewRowBefore($i);
         }

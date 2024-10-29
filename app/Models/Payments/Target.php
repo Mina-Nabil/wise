@@ -82,11 +82,11 @@ class Target extends Model
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
 
             /** @var SalesComm */
-            foreach ($salesCommissions as $s){
+            foreach ($salesCommissions as $s) {
                 $paid_amount = $s->updatePaymentByTarget($this, $is_manual);
-                if(is_numeric($paid_amount)){
+                if (is_numeric($paid_amount)) {
                     $linkedComms[$s->id] = [
-                        'paid_percentage'   =>  ($paid_amount / $s->amount) * 100,
+                        'paid_percentage'   => ($paid_amount / $s->amount) * 100,
                         'amount'            =>  $paid_amount
                     ];
                 }
@@ -96,7 +96,7 @@ class Target extends Model
                 $this->comm_profile->refreshBalances();
 
             if ($payment_to_add)
-                $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true);
+                $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true, linked_sales_comms: $linkedComms);
 
             $this->addRun($balance_update - $payment_to_add, $payment_to_add);
         });

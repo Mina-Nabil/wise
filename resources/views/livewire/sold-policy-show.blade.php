@@ -2880,6 +2880,7 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
+                            <label for="discount" class="form-label">Discount</label>
                             <div class="from-group">
                                 <div class="relative">
                                     <input type="number"
@@ -2889,7 +2890,7 @@
                                         class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
                                         % </span>
                                 </div>
-                                <label for="discount" class="form-label">Discount</label>
+          
                                 <input name="discount" max="12" min="1" type="number"
                                     class="form-control mt-2 w-full @error('discount') !border-danger-500 @enderror">
                                 @error('discount')
