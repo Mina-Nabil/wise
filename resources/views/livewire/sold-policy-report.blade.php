@@ -408,7 +408,7 @@
                                                                     <th scope="col" class="table-th ">
                                                                         NET PREM.
                                                                     </th>
-                                                                    @can('viewCommission', App\Models\Business\Policy::class )
+                                                                    @can('viewCommission', App\Models\Business\SoldPolicy::class )
                                                                     <th scope="col" class="table-th ">
                                                                         Comm.
                                                                     </th>
