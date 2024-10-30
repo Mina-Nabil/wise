@@ -8,6 +8,7 @@ use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use App\Models\Insurance\Policy;
+use App\Models\Payments\CommProfile;
 use App\Models\Users\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,7 +51,28 @@ class OfferReport extends Component
     public $Evalue_to;
     public $Eis_renewal;
 
+    public $commProfilesSection;
+    public $Eprofiles = [];
+    public $profiles = [];
 
+    public function toggleProfiles()
+    {
+        $this->toggle($this->commProfilesSection);
+        if ($this->commProfilesSection) {
+            $this->Eprofiles = $this->profiles;
+        }
+    }
+
+    public function clearProfiles()
+    {
+        $this->profiles = [];
+    }
+
+    public function setProfiles()
+    {
+        $this->profiles = $this->Eprofiles;
+        $this->toggle($this->commProfilesSection);
+    }
 
     public function togglestatuses()
     {
@@ -237,6 +259,7 @@ class OfferReport extends Component
         $STATUSES = Offer::STATUSES;
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $users = User::all();
+        $COMM_PROFILES = CommProfile::select('title','id')->get();
 
         if ($this->creator_id) {
             $c = User::find($this->creator_id);
@@ -252,7 +275,6 @@ class OfferReport extends Component
             $c = User::find($this->closed_by_id);
             $this->closerName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
         }
-
         $offers = Offer::report(
             $this->from,
             $this->to,
@@ -264,14 +286,16 @@ class OfferReport extends Component
             $this->value_from,
             $this->value_to,
             $this->search,
-            $this->is_renewal
+            $this->is_renewal,
+            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all()
         )->paginate(30);
         return view('livewire.offer-report', [
             'offers' => $offers,
             'STATUSES' => $STATUSES,
             'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
             'users' => $users,
-            'types' => User::TYPES
+            'types' => User::TYPES,
+            'COMM_PROFILES' => $COMM_PROFILES
         ]);
     }
 }
