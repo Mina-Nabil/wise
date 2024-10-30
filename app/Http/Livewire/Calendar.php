@@ -3,7 +3,6 @@
 namespace App\Http\Livewire;
 
 use App\Models\Customers\Followup;
-use App\Models\Event;
 use App\Models\Offers\Offer;
 use App\Models\Payments\ClientPayment;
 use App\Models\Tasks\Task;
@@ -11,11 +10,9 @@ use App\Models\Users\CalendarEvent;
 use App\Models\Users\User;
 use App\Models\Users\CalendarEventUser;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use App\Traits\AlertFrontEnd;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class Calendar extends Component
 {

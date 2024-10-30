@@ -71,7 +71,8 @@
                             Item Value ( From-To )</span>
                     </li>
                     <li wire:click="toggleRenewal">
-                        <span href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                        <span href="#"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                     dark:hover:text-white cursor-pointer">
                             is Renewal</span>
                     </li>
@@ -188,20 +189,20 @@
             @endif
 
             @if (!is_null($is_renewal))
-            <button class="btn inline-flex justify-center btn-dark btn-sm">
-                <span wire:click="toggleRenewal">
-                    @if ($is_renewal)
-                        Renewal:&nbsp;Yes
-                    @else
-                    Renewal:&nbsp;No
-                    @endif
-                    &nbsp;&nbsp;
-                </span>
-                <span wire:click="clearrenewal">
-                    <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
-                </span>
-            </button>
-        @endif
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleRenewal">
+                        @if ($is_renewal)
+                            Renewal:&nbsp;Yes
+                        @else
+                            Renewal:&nbsp;No
+                        @endif
+                        &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearrenewal">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
 
         </header>
 
@@ -236,6 +237,10 @@
 
                                     <th scope="col" class=" table-th ">
                                         Value
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Net Prem.
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -307,6 +312,14 @@
 
                                         <td class="table-td ">
                                             <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b>
+                                        </td>
+
+                                        <td class="table-td ">
+                                            <b>
+                                                {{ $offer->selected_option?->net_premium
+                                                    ? number_format($offer->selected_option?->net_premium, 0, '.', ',')
+                                                    : 'N/A' }}
+                                            </b>
                                         </td>
 
                                         <td class="table-td ">

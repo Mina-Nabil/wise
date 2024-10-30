@@ -226,7 +226,7 @@ class Offer extends Model
                 $commaya->refreshPaymentInfo();
             }
             if ($main_sales_id) {
-                $soldPolicy->setMainSales($main_sales_id);
+                $soldPolicy->setMainSales($main_sales_id, false);
             }
             $this->load('files', 'selected_option.docs');
             foreach ($this->files as $f) {
@@ -980,7 +980,7 @@ class Offer extends Model
         return $query->groupBy('offers.id')->orderBy('due');
     }
 
-    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null)
+    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [])
     {
         $query->userData($searchText)
             ->when($from, function ($q, $v) {
@@ -1005,6 +1005,10 @@ class Offer extends Model
                 $q->where('offers.type', "=", $v);
             })->when($is_renewal !== null, function ($q, $v) use ($is_renewal) {
                 $q->where('offers.is_renewal', "=", $is_renewal);
+            })->when(count($comm_profile_ids), function ($q) use ($comm_profile_ids) {
+                $q->join('offer_comm_profiles', 'offer_comm_profiles.offer_id', '=', 'offers.id')
+                    ->whereIn('offer_comm_profiles.comm_profile_id', $comm_profile_ids)
+                    ->groupBy('offers.id');
             });
         $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
         return $query;

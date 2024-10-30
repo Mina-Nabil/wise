@@ -512,8 +512,14 @@ class SoldPolicy extends Model
         }
     }
 
-    public function setMainSales($main_sales_id)
+    public function setMainSales($main_sales_id, $manual_change = true)
     {
+        if($manual_change){
+            /** @var User */
+            $loggedInUser = Auth::user();
+            if (!$loggedInUser->can('updateMainSales', $this)) return false;
+        }
+
         $this->update([
             'main_sales_id' => $main_sales_id,
         ]);
