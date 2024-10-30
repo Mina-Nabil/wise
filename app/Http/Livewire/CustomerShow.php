@@ -127,6 +127,9 @@ class CustomerShow extends Component
     public $followupDesc;
     public $followupId;
     public $deleteFollowupId;
+    public $isMeeting;
+    public $FollowupLineOfBussiness;
+    public $is_meeting = true;
 
 
     public $deletePhoneId;
@@ -157,6 +160,7 @@ class CustomerShow extends Component
     public $interested;
     public $interestNote;
     public $editInteresetSec = false;
+    public $isCreateFollowup;
 
     //customer ralative
     public $addCustomerRelativeSection;
@@ -552,6 +556,8 @@ class CustomerShow extends Component
         $this->followupCallTime = null;
         $this->followupDesc = null;
         $this->addFollowupSection = false;
+        $this->is_meeting = true;
+        $this->FollowupLineOfBussiness = null;
     }
 
     public function OpenAddFollowupSection()
@@ -568,6 +574,8 @@ class CustomerShow extends Component
         $this->followupCallDate = $combinedDateTime->format('Y-m-d');
         $this->followupCallTime = $combinedDateTime->format('H:i:s');
         $this->followupDesc = $f->desc;
+        $this->is_meeting = $f->is_meeting;
+        $this->FollowupLineOfBussiness = $f->line_of_business;
     }
 
     public function deleteThisFollowup($id)
@@ -598,7 +606,9 @@ class CustomerShow extends Component
             'followupTitle' => 'required|string|max:255',
             'followupCallDate' => 'nullable|date',
             'followupCallTime' => 'nullable',
-            'followupDesc' => 'nullable|string|max:255'
+            'followupDesc' => 'nullable|string|max:255',
+            'FollowupLineOfBussiness' => 'nullable|in:' . implode(',', policy::LINES_OF_BUSINESS),
+            'is_meeting' => 'nullable|boolean',
         ]);
 
         $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
@@ -609,7 +619,10 @@ class CustomerShow extends Component
         $res = $customer->addFollowup(
             $this->followupTitle,
             $combinedDateTime,
-            $this->followupDesc
+            $this->followupDesc,
+            $this->is_meeting,
+            $this->FollowupLineOfBussiness,
+
         );
 
         if ($res) {
@@ -628,7 +641,9 @@ class CustomerShow extends Component
             'followupTitle' => 'required|string|max:255',
             'followupCallDate' => 'nullable|date',
             'followupCallTime' => 'nullable',
-            'followupDesc' => 'nullable|string|max:255'
+            'followupDesc' => 'nullable|string|max:255',
+            'FollowupLineOfBussiness' => 'nullable|in:' . implode(',', policy::LINES_OF_BUSINESS),
+            'is_meeting' => 'nullable|boolean',
         ]);
 
         $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
@@ -639,7 +654,9 @@ class CustomerShow extends Component
         $res = $followup->editInfo(
             $this->followupTitle,
             $combinedDateTime,
-            $this->followupDesc
+            $this->followupDesc,
+            $this->is_meeting,
+            $this->FollowupLineOfBussiness
         );
 
         if ($res) {
@@ -1376,6 +1393,11 @@ class CustomerShow extends Component
             $this->interestNote = null;
             $this->mount($this->customer->id);
             $this->alert('success', 'Interest edited!');
+            if($this->isCreateFollowup){
+                $this->FollowupLineOfBussiness = $res->business;
+                $this->section = 'followups';
+                $this->OpenAddFollowupSection();
+            }
         } else {
             $this->alert('failed', 'Server error');
         }

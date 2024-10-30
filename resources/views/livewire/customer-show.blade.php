@@ -746,10 +746,21 @@
                         @else
                             @foreach ($customer->followups as $followup)
                                 <div class="flex items-center ">
-                                    <b class="mr-auto">{{ ucfirst($followup->title) }}</b>
 
+                                    <div>
+                                        <b class="mr-auto">{{ ucfirst($followup->title) }}</b>
+                                        @if ($followup->line_of_business)
+                                            <p>{{ ucwords(str_replace('_',' ',$followup->line_of_business)) }}</p>
+                                        @endif
+                                    </div>
+                                    
                                     <div class="ml-auto">
                                         <div class="relative flex">
+                                            @if ($followup->is_meeting)
+                                                <span
+                                                    class="badge bg-primary-500 text-white capitalize rounded-3xl mr-2">Meeting</span>
+                                            @endif
+
                                             <span
                                                 class="badge bg-slate-900 text-slate-900 dark:text-slate-200 bg-opacity-30 capitalize ml-auto h-auto">{{ $followup->status }}</span>
 
@@ -2882,6 +2893,20 @@
                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                             @enderror
                         </div>
+
+                        <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="hidden" name="checkbox"
+                                    wire:model="isCreateFollowup">
+                                <span
+                                    class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
+                                        class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                <span
+                                    class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">Create
+                                    followup</span>
+                            </label>
+                        </div>
                     </div>
                     <!-- Modal footer -->
                     <div
@@ -3110,6 +3135,34 @@
                                 @enderror
                             </div>
 
+                            <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="hidden" name="checkbox"
+                                        wire:model="is_meeting">
+                                    <span
+                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                        <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
+                                            alt=""
+                                            class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                    <span
+                                        class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">is
+                                        Meeting ?</span>
+                                </label>
+                            </div>
+
+                            <div class="input-area mt-3">
+                                <label for="firstName" class="form-label">Line of business</label>
+                                <select name="basicSelect"
+                                    class="form-control w-full mt-2 @error('FollowupLineOfBussiness') !border-danger-500 @enderror"
+                                    wire:model="FollowupLineOfBussiness">
+                                    @foreach ($LINES_OF_BUSINESS as $LOB)
+                                        <option value="{{ $LOB }}"
+                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ ucwords(str_replace('_', ' ', $LOB)) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div class="input-area mt-3">
                                 <label for="firstName" class="form-label">Description</label>
                                 <input id="lastName" type="text"
@@ -3198,6 +3251,34 @@
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+                            </div>
+
+                            <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="hidden" name="checkbox"
+                                        wire:model="is_meeting">
+                                    <span
+                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                        <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
+                                            alt=""
+                                            class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                    <span
+                                        class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">is
+                                        Meeting ?</span>
+                                </label>
+                            </div>
+
+                            <div class="input-area mt-3">
+                                <label for="firstName" class="form-label">Line of business</label>
+                                <select name="basicSelect"
+                                    class="form-control w-full mt-2 @error('FollowupLineOfBussiness') !border-danger-500 @enderror"
+                                    wire:model="FollowupLineOfBussiness">
+                                    @foreach ($LINES_OF_BUSINESS as $LOB)
+                                        <option value="{{ $LOB }}"
+                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ ucwords(str_replace('_', ' ', $LOB)) }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="input-area mt-3">
