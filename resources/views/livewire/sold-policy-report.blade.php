@@ -406,6 +406,14 @@
                                                                         CLIENT NAME
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
+                                                                        NET PREM.
+                                                                    </th>
+                                                                    @can('viewCommission', App\Models\Business\Policy::class )
+                                                                    <th scope="col" class="table-th ">
+                                                                        Comm.
+                                                                    </th>
+                                                                    @endcan
+                                                                    <th scope="col" class="table-th ">
                                                                         STATUS
                                                                     </th>
                                                                 </tr>
@@ -471,6 +479,14 @@
                                                                                 </div>
                                                                             </div>
                                                                         </td>
+                                                                        <td class="table-td ">
+                                                                            <b>{{ number_format($policy->net_premium, 0, '.', ',') }}</b>
+                                                                        </td>
+                                                                        @can('viewCommission', $policy)
+                                                                        <td class="table-td ">
+                                                                            <b>{{ number_format($policy->total_policy_comm, 0, '.', ',') }}</b>
+                                                                        </td>
+                                                                        @endcan
                                                                         <td class="table-td">
                                                                             @if ($policy->is_valid)
                                                                                 <span

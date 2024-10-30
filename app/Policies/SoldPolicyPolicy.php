@@ -63,7 +63,7 @@ class SoldPolicyPolicy
      * @param  \App\Models\Business\SoldPolicy  $soldPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewCommission(User $user, SoldPolicy $soldPolicy)
+    public function viewCommission(User $user, SoldPolicy $soldPolicy=null)
     {
         return $user->is_admin ||  $user->is_finance || $user->id == 12 ;
     }
