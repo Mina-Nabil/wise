@@ -93,17 +93,19 @@ class Corporate extends Model
         'type', 'name', 'arabic_name', 'email', 'commercial_record',
         'commercial_record_doc', 'tax_id', 'tax_id_doc', 'kyc',
         'kyc_doc', 'contract_doc', 'main_bank_evidence', 'creator_id',
-        'owner_id', 'note'
+        'owner_id', 'note', 'is_welcomed'
     ];
 
     ///model functions
-    public function addFollowup($title, $call_time, $desc = null): Followup|false
+    public function addFollowup($title, $call_time, $desc = null, $is_meeting = false, $line_of_business = null): Followup|false
     {
         try {
             $res = $this->followups()->create([
                 "creator_id" =>  Auth::id(),
                 "title"     =>  $title,
                 "call_time" =>  $call_time,
+                "is_meeting"        =>  $is_meeting,
+                "line_of_business"  =>  $line_of_business,
                 "desc"      =>  $desc
             ]);
             AppLog::info("Follow-up created", loggable: $res);
@@ -334,6 +336,18 @@ class Corporate extends Model
                 "reason"    =>  $reason,
                 "note"    =>  $note,
             ]);
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function setIsWelcomed(bool $status): bool
+    {
+        try {
+            $this->is_welcomed = $status;
+            $this->save();
+            return true;
         } catch (Exception $e) {
             report($e);
             return false;

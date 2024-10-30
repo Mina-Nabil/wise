@@ -132,9 +132,9 @@ class Offer extends Model
         $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
-    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal)
+    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal, array $comm_profile_ids = [])
     {
-        $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText, $is_renewal)->get();
+        $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText, $is_renewal, $comm_profile_ids)->get();
         $template = IOFactory::load(resource_path('import/offers_report.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
@@ -1007,8 +1007,7 @@ class Offer extends Model
                 $q->where('offers.is_renewal', "=", $is_renewal);
             })->when(count($comm_profile_ids), function ($q) use ($comm_profile_ids) {
                 $q->join('offer_comm_profiles', 'offer_comm_profiles.offer_id', '=', 'offers.id')
-                    ->whereIn('offer_comm_profiles.comm_profile_id', $comm_profile_ids)
-                    ->groupBy('offers.id');
+                    ->whereIn('offer_comm_profiles.comm_profile_id', $comm_profile_ids);
             });
         $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
         return $query;

@@ -36,16 +36,20 @@ class Followup extends Model
         'desc',
         'caller_note',
         'creator_id',
+        'is_meeting',
+        'line_of_business'
     ];
 
     ///model functions
-    public function editInfo($title, $call_time = null, $desc = null)
+    public function editInfo($title, $call_time = null, $desc = null, $is_meeting = false, $line_of_business = null)
     {
         try {
             $res = $this->update([
-                "title"     =>  $title,
-                "call_time" =>  $call_time,
-                "desc"      =>  $desc
+                "title"             =>  $title,
+                "call_time"         =>  $call_time,
+                "is_meeting"        =>  $is_meeting,
+                "line_of_business"  =>  $line_of_business,
+                "desc"              =>  $desc
             ]);
             AppLog::info("Follow-up updated", loggable: $this);
             return $res;

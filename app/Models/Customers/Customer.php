@@ -122,18 +122,21 @@ class Customer extends Model
         'driver_license_doc',
         'note',
         'id_doc_2',
-        'driver_license_doc_2'
+        'driver_license_doc_2',
+        'is_welcomed'
     ];
 
     ///model functions
-    public function addFollowup($title, $call_time, $desc = null): Followup|false
+    public function addFollowup($title, $call_time, $desc = null, $is_meeting = false, $line_of_business = null): Followup|false
     {
         try {
             $res = $this->followups()->create([
                 "creator_id" =>  Auth::id(),
                 "title"     =>  $title,
                 "call_time" =>  $call_time,
-                "desc"      =>  $desc
+                "desc"      =>  $desc,
+                "is_meeting"        =>  $is_meeting,
+                "line_of_business"  =>  $line_of_business,
             ]);
             AppLog::info("Follow-up created", loggable: $res);
             return $res;
@@ -344,6 +347,18 @@ class Customer extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Adding customer interest failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    public function setIsWelcomed(bool $status): bool
+    {
+        try {
+            $this->is_welcomed = $status;
+            $this->save();
+            return true;
+        } catch (Exception $e) {
+            report($e);
             return false;
         }
     }

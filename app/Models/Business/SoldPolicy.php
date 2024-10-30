@@ -220,7 +220,7 @@ class SoldPolicy extends Model
 
             $from_amount = $this->getFromAmount($from);
 
-            $comm_percentage = ($amount * 100) / $from_amount ;
+            $comm_percentage = ($amount * 100) / $from_amount;
             /** @var SalesComm */
             $tmp = $this->sales_comms()->create([
                 "title"             => "Manual Adjustment",
@@ -234,7 +234,6 @@ class SoldPolicy extends Model
             ]);
             AppLog::info("Sales commission added", loggable: $this);
             return true;
-
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't edit sales commission", desc: $e->getMessage());
@@ -514,7 +513,7 @@ class SoldPolicy extends Model
 
     public function setMainSales($main_sales_id, $manual_change = true)
     {
-        if($manual_change){
+        if ($manual_change) {
             /** @var User */
             $loggedInUser = Auth::user();
             if (!$loggedInUser->can('updateMainSales', $this)) return false;
@@ -651,7 +650,7 @@ class SoldPolicy extends Model
         Log::info("GEET");
         $client_paid_percentage = $this->gross_premium ? round(100 * $this->total_client_paid / $this->gross_premium, 2) : 0;
         $company_paid_percentage = $this->total_policy_comm ? round(100 * $this->total_comp_paid / $this->total_policy_comm, 2) : 0;
-        
+
         Log::info("Comp%" . $company_paid_percentage);
         Log::info("Client%" . $client_paid_percentage);
         try {
@@ -900,7 +899,7 @@ class SoldPolicy extends Model
 
     public function cancelSoldPolicy($client_return = 0)
     {
-            //TODO bas lsa shwya
+        //TODO bas lsa shwya
     }
 
     public function deleteSoldPolicy()
@@ -1465,7 +1464,7 @@ class SoldPolicy extends Model
         });
     }
 
-    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null)
+    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [])
     {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
@@ -1512,6 +1511,9 @@ class SoldPolicy extends Model
                     })->when($policy_ids, function ($qq, $vv) {
                         $qq->whereIn('policies.id', $vv);
                     });
+            })->when(count($comm_profile_ids), function ($qq) use ($comm_profile_ids) {
+                $qq->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
+                    ->whereIn('sales_comms.comm_profile_id', $comm_profile_ids);
             });
         $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
         return $query;
