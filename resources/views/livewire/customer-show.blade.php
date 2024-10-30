@@ -3085,7 +3085,12 @@
                     <div
                         class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                         <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                            Add Follow up
+                            @if ($is_meeting)
+                                Add Meeting
+                                @else 
+                                Add Follow up
+                            @endif
+                            
                         </h3>
                         <button wire:click="closeFollowupSection" type="button"
                             class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
@@ -3133,21 +3138,6 @@
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
-                            </div>
-
-                            <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="hidden" name="checkbox"
-                                        wire:model="is_meeting">
-                                    <span
-                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                        <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                            alt=""
-                                            class="h-[10px] w-[10px] block m-auto opacity-0"></span>
-                                    <span
-                                        class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">is
-                                        Meeting ?</span>
-                                </label>
                             </div>
 
                             <div class="input-area mt-3">
@@ -3203,7 +3193,12 @@
                     <div
                         class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                         <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                            Edit Follow up
+                            @if ($is_meeting)
+                                Edit Meeting
+                                @else 
+                                Edit Follow up
+                            @endif
+                            
                         </h3>
                         <button wire:click="closeEditFollowup" type="button"
                             class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
@@ -3251,21 +3246,6 @@
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
-                            </div>
-
-                            <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="hidden" name="checkbox"
-                                        wire:model="is_meeting">
-                                    <span
-                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                        <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                            alt=""
-                                            class="h-[10px] w-[10px] block m-auto opacity-0"></span>
-                                    <span
-                                        class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">is
-                                        Meeting ?</span>
-                                </label>
                             </div>
 
                             <div class="input-area mt-3">

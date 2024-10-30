@@ -129,7 +129,7 @@ class CustomerShow extends Component
     public $deleteFollowupId;
     public $isMeeting;
     public $FollowupLineOfBussiness;
-    public $is_meeting = true;
+    public $is_meeting = false;
 
 
     public $deletePhoneId;
@@ -556,7 +556,7 @@ class CustomerShow extends Component
         $this->followupCallTime = null;
         $this->followupDesc = null;
         $this->addFollowupSection = false;
-        $this->is_meeting = true;
+        $this->is_meeting = false;
         $this->FollowupLineOfBussiness = null;
     }
 
@@ -1395,6 +1395,7 @@ class CustomerShow extends Component
             $this->alert('success', 'Interest edited!');
             if($this->isCreateFollowup){
                 $this->FollowupLineOfBussiness = $res->business;
+                $this->is_meeting = true;
                 $this->section = 'followups';
                 $this->OpenAddFollowupSection();
             }
