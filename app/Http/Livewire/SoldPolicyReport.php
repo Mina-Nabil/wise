@@ -7,7 +7,10 @@ use App\Models\Business\SoldPolicy;
 use App\Models\Users\User;
 use App\Models\Insurance\Policy;
 use App\Models\Cars\Brand;
+use App\Models\Corporates\Corporate;
+use App\Models\Customers\Customer;
 use App\Models\Insurance\Company;
+use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
@@ -15,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SoldPolicyReport extends Component
 {
-    use WithPagination, ToggleSectionLivewire;
+    use WithPagination, ToggleSectionLivewire ,AlertFrontEnd;
 
     public $startSection = false;
     public $expirySection = false;
@@ -79,6 +82,56 @@ class SoldPolicyReport extends Component
     public $Epolicy_ids = [];
     public $Eis_valid;
     public $Eis_renewal;
+
+    public $isWelcomedClientId;
+    public $isWelcomedClientType;
+    public $isWelcomed;
+
+    public function openEditIsWelcomed($id,$clientType){
+        $this->isWelcomedClientId = $id;
+        $this->isWelcomedClientType = $clientType;
+        $isWelcomed = 'no';
+        if($clientType === 'customer'){
+            $isWelcomed = Customer::findOrFail($id)->is_welcomed;
+        }elseif($clientType === 'corporate'){
+            $isWelcomed = Corporate::findOrFail($id)->is_welcomed;
+        }
+
+        if($isWelcomed){
+            $this->isWelcomed = 'yes';
+        }else{
+            $this->isWelcomed = 'no';
+        }
+    }
+
+    public function closeEditIsWelcomed(){
+        $this->isWelcomedClientId = null;
+        $this->isWelcomedClientType = null;
+        $this->isWelcomed = null;
+    }
+
+    public function updateIsWelcomed(){
+        if($this->isWelcomed === 'yes'){
+            $status = true;
+        }else{
+            $status = false;
+        }
+        if($this->isWelcomedClientType === 'customer'){
+            $res = Customer::findOrFail($this->isWelcomedClientId)->setIsWelcomed($status);
+        }elseif($this->isWelcomedClientType === 'corporate'){
+            $res = Corporate::findOrFail($this->isWelcomedClientId)->setIsWelcomed($status);
+        }
+
+        if ($res) {
+            $this->closeEditIsWelcomed();
+            $this->mount();
+            $this->alert('success','Changed Welcome status!');
+        }else{
+            $this->alert('failed','server error!');
+        }
+    }
+
+
 
     public function clearpaid()
     {
