@@ -155,10 +155,36 @@ class SoldPolicyShow extends Component
     public $payment_type;
     public $payment_date;
 
+    public $setMainSalesSec = false;
+    public $updatedMainSaledID;
+
     public $section = 'profile';
 
     protected $queryString = ['section'];
     public $uploadedFile;
+
+    public function updateMainSales(){
+        $this->authorize('updateMainSales', $this->soldPolicy);
+        if ($this->updatedMainSaledID === '') $this->updatedMainSaledID = null;
+        $res = $this->soldPolicy->setMainSales($this->updatedMainSaledID);
+        if($res){
+            $this->closeSetMainSalesSection();
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success','Main sales updated!');
+        }else{
+            $this->alert('failed','server error');
+        }
+    }
+
+    public function openSetMainSalesSection(){
+        $this->setMainSalesSec = true;
+        $this->updatedMainSaledID = $this->soldPolicy->main_sales_id;
+    }
+
+    public function closeSetMainSalesSection(){
+        $this->setMainSalesSec = false;
+        $this->updatedMainSaledID = null;
+    }
 
     public function openEditPaymentSec($id)
     {
