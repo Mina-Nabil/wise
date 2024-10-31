@@ -10,6 +10,7 @@ use App\Models\Cars\Brand;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
 use App\Models\Insurance\Company;
+use App\Models\Payments\CommProfile;
 use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
@@ -86,6 +87,29 @@ class SoldPolicyReport extends Component
     public $isWelcomedClientId;
     public $isWelcomedClientType;
     public $isWelcomed;
+
+    public $commProfilesSection;
+    public $Eprofiles = [];
+    public $profiles = [];
+
+    public function toggleProfiles()
+    {
+        $this->toggle($this->commProfilesSection);
+        if ($this->commProfilesSection) {
+            $this->Eprofiles = $this->profiles;
+        }
+    }
+
+    public function clearProfiles()
+    {
+        $this->profiles = [];
+    }
+
+    public function setProfiles()
+    {
+        $this->profiles = $this->Eprofiles;
+        $this->toggle($this->commProfilesSection);
+    }
 
     public function openEditIsWelcomed($id,$clientType){
         $this->isWelcomedClientId = $id;
@@ -469,6 +493,8 @@ class SoldPolicyReport extends Component
             $this->mainSalesName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
         }
 
+        $COMM_PROFILES = CommProfile::select('title','id')->get();
+
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $users = User::all();
         $policies = SoldPolicy::report(
@@ -492,10 +518,12 @@ class SoldPolicyReport extends Component
             $this->main_sales_id,
             $this->issued_from,
             $this->issued_to,
+            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all()
         )->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
             'users' => $users,
+            'COMM_PROFILES' => $COMM_PROFILES,
             'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
         ]);
     }
