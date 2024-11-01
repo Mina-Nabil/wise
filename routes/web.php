@@ -25,6 +25,7 @@ use App\Http\Livewire\Accounting\CreateJournalEntry;
 use App\Http\Livewire\Accounting\UnapprovedEntryIndex;
 use App\Http\Livewire\EntryTitleIndex;
 use App\Http\Livewire\JournalEntryIndex;
+use App\Http\Livewire\TaskReport;
 use App\Models\Accounting\Account;
 
 /*
@@ -90,6 +91,7 @@ Route::middleware('auth', 'active')->group(function () {
 
     Route::get('/reports/sold-policy', [ReportController::class, 'soldPolicyIndex'])->name('reports.soldpolicy');
     Route::get('/reports/offers', [ReportController::class, 'offersIndex'])->name('reports.offers');
+    Route::get('/reports/tasks', [ReportController::class, 'tasksIndex'])->name('reports.tasks');
     Route::get('/reports/client-payment-finance', [ReportController::class, 'clientPaymentsFinance'])->name('reports.offers');
 
     //Cars routes

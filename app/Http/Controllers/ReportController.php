@@ -30,4 +30,10 @@ class ReportController extends Controller
         // if (Auth::user()->is_admin) {
         return view('reports.reports-index');
     }
+
+    public function tasksIndex()
+    {
+        // if (Auth::user()->is_admin) {
+        return view('reports.tasks-index');
+    }
 }

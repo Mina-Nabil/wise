@@ -246,6 +246,9 @@
                                 <a href="{{ url('/reports/offers') }}" class="@yield('reports.offers')">Offers</a>
                             </li>
                             <li>
+                                <a href="{{ url('/reports/tasks') }}" class="@yield('reports.yasks')">Tasks</a>
+                            </li>
+                            <li>
                                 <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold
                                     Policies</a>
                             </li>
