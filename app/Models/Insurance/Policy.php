@@ -308,9 +308,9 @@ class Policy extends Model
                             $i++;
                         }
                         $i++;
-                        $activeSheet->getStyle("A$i:I$i")
+                        $activeSheet->getStyle("A$i:J$i")
                             ->getFill()->setFillType(Fill::FILL_SOLID);
-                        $activeSheet->getStyle("A$i:I$i")
+                        $activeSheet->getStyle("A$i:J$i")
                             ->getFill()->getStartColor()->setARGB('00000000');
                         $i++;
                     }
@@ -365,7 +365,7 @@ class Policy extends Model
                 $conf_sales_out     =  $activeSheet->getCell('I' . $i)->getValue() == 'Yes' ? true : false;
                 $conf_main_penalty  =  $activeSheet->getCell('J' . $i)->getValue() == 'Yes' ? true : false;
                 
-                $policy->addCommConf($conf_title, $conf_type, $conf_value, $conf_due, $conf_due_percent, $conf_sales_out);
+                $policy->addCommConf($conf_title, $conf_type, $conf_value, $conf_due, $conf_due_percent, $conf_sales_out, $conf_main_penalty);
             }
 
         }
