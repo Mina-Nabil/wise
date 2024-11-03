@@ -534,11 +534,15 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Penalty %
+                                        Penalty%
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        SalesOut?
+                                        SalesOut
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Main?
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -579,6 +583,10 @@
                                                 <input type="checkbox"  name="checkbox" checked="checked" wire:model="eSalesOut">
                                             </td>
 
+                                            <td class="table-td">
+                                                <input type="checkbox"  name="checkbox" checked="checked" wire:model="eMainPenalty">
+                                            </td>
+
                                             <td class="table-td  p-1">
                                                 <div class="flex">
                                                     <button class="bg-slate-900 text-white action-btn m-1" wire:click="editConf" type="button">
@@ -614,6 +622,10 @@
                                             
                                             <td class="table-td">
                                                 {{ $conf->sales_out_only ? "Yes" : "No" }}
+                                            </td>
+
+                                            <td class="table-td">
+                                                {{ $conf->is_main_penalty ? "Yes" : "No" }}
                                             </td>
 
 
@@ -660,6 +672,9 @@
 
                                     <td class="table-td">
                                         <input type="checkbox"  name="checkbox" checked="checked" wire:model="newSalesOut">
+                                    </td>
+                                    <td class="table-td">
+                                        <input type="checkbox"  name="checkbox" checked="checked" wire:model="newMainPenalty">
                                     </td>
 
                                     <td class="table-td  p-1">

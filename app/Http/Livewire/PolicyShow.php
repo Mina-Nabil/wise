@@ -70,6 +70,8 @@ class PolicyShow extends Component
     public $eConfDue;
     public $eConfPen;
     public $eSalesOut;
+    public $eMainPenalty;
+
     public $deleteConfId;
     public $newConfTitle;
     public $newConfType = '%';
@@ -77,6 +79,7 @@ class PolicyShow extends Component
     public $newConfDue;
     public $newConfPen;
     public $newSalesOut;
+    public $newMainPenalty;
 
     public function addConf()
     {
@@ -88,7 +91,7 @@ class PolicyShow extends Component
             'newConfPen' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        $res = Policy::find($this->policyId)->addCommConf($this->newConfTitle, $this->newConfType, $this->newConfValue, $this->newConfDue, $this->newConfPen, $this->newSalesOut);
+        $res = Policy::find($this->policyId)->addCommConf($this->newConfTitle, $this->newConfType, $this->newConfValue, $this->newConfDue, $this->newConfPen, $this->newSalesOut, $this->newMainPenalty);
         if ($res) {
             $this->mount();
             $this->newConfTitle = null;
@@ -97,6 +100,7 @@ class PolicyShow extends Component
             $this->newConfDue = null;
             $this->newConfPen = null;
             $this->newSalesOut = false;
+            $this->newMainPenalty = false;
             $this->alert('success', 'Configuration added!');
         } else {
             $this->alert('failed', 'server error');
@@ -113,7 +117,7 @@ class PolicyShow extends Component
             'eConfPen' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        $res = PolicyCommConf::find($this->editConfId)->editInfo($this->eConfTitle, $this->eConfType, $this->eConfValue, $this->eConfDue, $this->eConfPen, $this->eSalesOut);
+        $res = PolicyCommConf::find($this->editConfId)->editInfo($this->eConfTitle, $this->eConfType, $this->eConfValue, $this->eConfDue, $this->eConfPen, $this->eSalesOut, $this->eMainPenalty);
         if ($res) {
             $this->mount();
             $this->editConfId = null;
@@ -123,6 +127,7 @@ class PolicyShow extends Component
             $this->eConfDue = null;
             $this->eConfPen = null;
             $this->eSalesOut = false;
+            $this->eMainPenalty = false;
             $this->alert('success', 'Configurations updated!');
         } else {
             $this->alert('failed', 'server error');
@@ -161,6 +166,7 @@ class PolicyShow extends Component
         $this->eConfDue = $g->due_penalty;
         $this->eConfPen = $g->penalty_percent;
         $this->eSalesOut = $g->sales_out_only ? true : false;
+        $this->eMainPenalty = $g->is_main_penalty ? true : false;
     }
 
     public function closeEditConf()

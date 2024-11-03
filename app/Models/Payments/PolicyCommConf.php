@@ -24,7 +24,7 @@ class PolicyCommConf extends Model
     ];
 
     ///model functions
-    public function editInfo($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null, $sales_out_only = false)
+    public function editInfo($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null, $sales_out_only = false, $is_main_penalty = false)
     {
         $this->load('policy');
         /** @var User */
@@ -39,6 +39,7 @@ class PolicyCommConf extends Model
                 "value"             =>  $value,
                 "due_penalty"       =>  $due_penalty,
                 "penalty_percent"   =>  $penalty_percent,
+                "is_main_penalty"   =>  $is_main_penalty,
                 "sales_out_only"    =>  $sales_out_only
             ]);
         } catch (Exception $e) {

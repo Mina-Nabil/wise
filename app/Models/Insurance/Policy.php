@@ -303,6 +303,7 @@ class Policy extends Model
                             $activeSheet->getCell('G' . $i)->setValue($confaya->due_penalty);
                             $activeSheet->getCell('H' . $i)->setValue($confaya->penalty_percent);
                             $activeSheet->getCell('I' . $i)->setValue($confaya->sales_out_only ? 'Yes' : 'No');
+                            $activeSheet->getCell('J' . $i)->setValue($confaya->is_main_penalty ? 'Yes' : 'No');
 
                             $i++;
                         }
@@ -362,6 +363,7 @@ class Policy extends Model
                 $conf_due           =  $activeSheet->getCell('G' . $i)->getValue();
                 $conf_due_percent   =  $activeSheet->getCell('H' . $i)->getValue();
                 $conf_sales_out     =  $activeSheet->getCell('I' . $i)->getValue() == 'Yes' ? true : false;
+                $conf_main_penalty  =  $activeSheet->getCell('J' . $i)->getValue() == 'Yes' ? true : false;
                 
                 $policy->addCommConf($conf_title, $conf_type, $conf_value, $conf_due, $conf_due_percent, $conf_sales_out);
             }
@@ -585,7 +587,7 @@ class Policy extends Model
         }
     }
 
-    public function addCommConf($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null, $sales_out_only = false)
+    public function addCommConf($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null, $sales_out_only = false, $is_main_penalty = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -601,6 +603,7 @@ class Policy extends Model
                 "due_penalty"       =>  $due_penalty,
                 "penalty_percent"   =>  $penalty_percent,
                 "sales_out_only"    =>  $sales_out_only ?? false,
+                "is_main_penalty"   =>  $is_main_penalty ?? false,
             ]);
         } catch (Exception $e) {
             report($e);
