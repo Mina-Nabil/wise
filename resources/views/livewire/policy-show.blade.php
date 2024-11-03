@@ -536,13 +536,13 @@
                                     <th scope="col" class=" table-th ">
                                         Penalty%
                                     </th>
-
+                                    
                                     <th scope="col" class=" table-th ">
-                                        SalesOut
+                                        Main?
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Main?
+                                        SalesOut
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -578,14 +578,15 @@
                                             <td class="table-td">
                                                 <input type="number" class="form-control text-center @error('eConfPen') !border-danger-500 @else !border-success-500 @enderror" wire:model="eConfPen"> 
                                             </td>
+
+                                            <td class="table-td">
+                                                <input type="checkbox"  name="checkbox" checked="checked" wire:model="eMainPenalty">
+                                            </td>
                                             
                                             <td class="table-td">
                                                 <input type="checkbox"  name="checkbox" checked="checked" wire:model="eSalesOut">
                                             </td>
 
-                                            <td class="table-td">
-                                                <input type="checkbox"  name="checkbox" checked="checked" wire:model="eMainPenalty">
-                                            </td>
 
                                             <td class="table-td  p-1">
                                                 <div class="flex">
@@ -621,11 +622,11 @@
                                             </td>
                                             
                                             <td class="table-td">
-                                                {{ $conf->sales_out_only ? "Yes" : "No" }}
+                                                {{ $conf->is_main_penalty ? "Yes" : "No" }}
                                             </td>
 
                                             <td class="table-td">
-                                                {{ $conf->is_main_penalty ? "Yes" : "No" }}
+                                                {{ $conf->sales_out_only ? "Yes" : "No" }}
                                             </td>
 
 
@@ -671,10 +672,11 @@
                                     </td>
 
                                     <td class="table-td">
-                                        <input type="checkbox"  name="checkbox" checked="checked" wire:model="newSalesOut">
-                                    </td>
-                                    <td class="table-td">
                                         <input type="checkbox"  name="checkbox" checked="checked" wire:model="newMainPenalty">
+                                    </td>
+
+                                    <td class="table-td">
+                                        <input type="checkbox"  name="checkbox" checked="checked" wire:model="newSalesOut">
                                     </td>
 
                                     <td class="table-td  p-1">
