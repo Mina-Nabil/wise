@@ -231,7 +231,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        {{  number_foramt(($payment->penalty_percent / 100) * ($payment->calculation_type == '%' ? ($payment->value / 100) * $payment->net_premium : $payment->value), 2)}}
+                                        {{  number_format(($payment->penalty_percent / 100) * ($payment->calculation_type == '%' ? ($payment->value / 100) * $payment->net_premium : $payment->value), 2)}}
                                     </td>
 
                                 </tr>
