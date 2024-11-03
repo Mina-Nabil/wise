@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Task extends Model
 {
@@ -424,6 +426,44 @@ class Task extends Model
             AppLog::error("Can't create task", $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * export tasks functions
+     */
+    public static function exportReport(Carbon $created_from = null,
+    Carbon $created_to = null,
+    Carbon $due_from = null,
+    Carbon $due_to = null,
+    string $assignee_id = null,
+    string $openedBy_id = null,
+    bool $is_expired = null)
+    {
+        $tasks = self::report($created_from, $created_to, $due_from, $due_to, $assignee_id, $openedBy_id, $is_expired)->get();
+        $template = IOFactory::load(resource_path('import/tasks_report.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 2;
+        foreach ($tasks as $task) {
+            $activeSheet->getCell('A' . $i)->setValue($task->created_at->format('D d/m'));
+            $activeSheet->getCell('B' . $i)->setValue(Carbon::parse($task->due)->format('D d/M H:i'));
+            $activeSheet->getCell('C' . $i)->setValue($task->assigned_to_id ? $task->assigned_to?->first_name . ' '. $task->assigned_to?->last_name : ($task->assigned_to_type ? $task->assigned_to_type : '-' ));
+            $activeSheet->getCell('D' . $i)->setValue($task->title);
+            $activeSheet->getCell('E' . $i)->setValue($task->status);
+            $activeSheet->getCell('F' . $i)->setValue($task->open_by?->first_name . ' ' . $task->open_by?->last_name);
+            $activeSheet->insertNewRowBefore($i);
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "tasks_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
     /////automatically set the last action by date
