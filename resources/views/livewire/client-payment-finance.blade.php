@@ -143,10 +143,6 @@
                                     Amount
                                 </th>
 
-                                <th scope="col" class="table-th">
-                                    Type
-                                </th>
-
                                 <th scope="col" class=" table-th ">
                                     Status
                                 </th>
@@ -197,10 +193,6 @@
 
                                     <td class="table-td">
                                         <p><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
-                                    </td>
-
-                                    <td class="table-td">
-                                        {{ ucwords(str_replace('_', ' ', $payment->type)) }}
                                     </td>
 
                                     <td class="table-td">
