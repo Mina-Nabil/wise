@@ -20,7 +20,7 @@ class PolicyCommConf extends Model
     public $timestamps = false;
     protected $fillable = [
         'title', 'calculation_type', 'value', 'due_penalty', 'penalty_percent',
-        'sales_out_only'
+        'sales_out_only', 'is_main_penalty'
     ];
 
     ///model functions
