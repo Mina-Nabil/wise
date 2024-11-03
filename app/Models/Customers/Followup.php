@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Followup extends Model
 {
@@ -175,6 +177,36 @@ class Followup extends Model
         });
     }
 
+    ///static functions
+    public function exportReport(Carbon $from= null, Carbon $to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
+    {
+        $followups = self::report($from, $to, $sales_id, $client_type, $client_id, $is_meeting, $line_of_business)->get();
+        $template = IOFactory::load(resource_path('import/followups_report.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 2;
+        foreach ($followups as $followup) {
+            $activeSheet->getCell('A' . $i)->setValue($followup->creator->first_name . ' ' . $followup->creator->last_name);
+            $activeSheet->getCell('B' . $i)->setValue($followup->line_of_business);
+            $activeSheet->getCell('C' . $i)->setValue($followup->title);
+            $activeSheet->getCell('D' . $i)->setValue($followup->status);
+            $activeSheet->getCell('E' . $i)->setValue(Carbon::parse($followup->call_time)->format('Y-m-d'));
+            $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($followup->action_time)->format('Y-m-d'));
+            $activeSheet->getCell('G' . $i)->setValue($followup->caller_note);
+            $activeSheet->insertNewRowBefore($i);
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = Customer::FILES_DIRECTORY . "followups_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
 
     ///relations
     public function owner(): BelongsTo
