@@ -227,10 +227,10 @@
                                         @endif
                                     </td>
 
-                                    <td>
+                                    <td class="table-td">
                                         {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0)->format('D d/m/Y') }}
                                     </td>
-                                    <td>
+                                    <td class="table-td">
                                         {{ \Carbon\Carbon::now()->diffInDays(
                                             \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0),
                                             false,
@@ -238,7 +238,7 @@
                                         Days
                                     </td>
 
-                                    <td>
+                                    <td class="table-td">
                                         {{ ($payment->penalty_percent / 100) * ($payment->calculation_type == '%' ? ($payment->value / 100) * $payment->net_premium : $payment->value) }}
                                     </td>
 
