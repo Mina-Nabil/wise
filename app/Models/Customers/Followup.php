@@ -158,6 +158,23 @@ class Followup extends Model
         return $query->latest();
     }
 
+    public function scopeReport($query, Carbon $from= null, Carbon $to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
+    {
+        $query->when($from, function($q, $v){
+            $q->where('call_time', ">=", $v->format('Y-m-d'));
+        })->when($to, function($q, $v){
+            $q->where('call_time', "<=", $v->format('Y-m-d'));
+        })->when($sales_id, function($q, $v){
+            $q->where('user_id', ">=", $v);
+        })->when($client_type && $client_id, function($q) use($client_type, $client_id){
+            $q->where('called_type', $client_type)->where('called_id', $client_id);
+        })->when($is_meeting !== null, function($q) use ($is_meeting){
+            $q->where('is_meeting', $is_meeting);
+        })->when($line_of_business, function($q, $v){
+            $q->where('line_of_business', "=", $v);
+        });
+    }
+
 
     ///relations
     public function owner(): BelongsTo

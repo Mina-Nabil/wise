@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('followups', function(Blueprint $table){
             $table->boolean('is_meeting')->default(false);
-            $table->string('line_of_business')->default(false);
+            $table->string('line_of_business')->nullable();
         });
     }
 

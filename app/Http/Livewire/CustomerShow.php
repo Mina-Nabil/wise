@@ -128,7 +128,7 @@ class CustomerShow extends Component
     public $followupId;
     public $deleteFollowupId;
     public $isMeeting;
-    public $FollowupLineOfBussiness;
+    public $FollowupLineOfBussiness = Policy::BUSINESS_PERSONAL_MOTOR;
     public $is_meeting = false;
 
 
@@ -557,7 +557,7 @@ class CustomerShow extends Component
         $this->followupDesc = null;
         $this->addFollowupSection = false;
         $this->is_meeting = false;
-        $this->FollowupLineOfBussiness = null;
+        $this->FollowupLineOfBussiness = Policy::BUSINESS_PERSONAL_MOTOR;
     }
 
     public function OpenAddFollowupSection()

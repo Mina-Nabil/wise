@@ -615,7 +615,8 @@ class Task extends Model
         bool $is_expired = null
     ) {
         // Filter by creation date range
-        $query->when($created_from, function ($q, $v) {
+        $query->myTasksQuery(false)
+        ->when($created_from, function ($q, $v) {
             $q->where('created_at', '>=', $v->startOfDay());
         })->when($created_to, function ($q, $v) {
             $q->where('created_at', '<=', $v->endOfDay());
