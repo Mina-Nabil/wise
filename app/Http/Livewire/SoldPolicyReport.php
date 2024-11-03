@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SoldPolicyReport extends Component
 {
-    use WithPagination, ToggleSectionLivewire ,AlertFrontEnd;
+    use WithPagination, ToggleSectionLivewire, AlertFrontEnd;
 
     public $startSection = false;
     public $expirySection = false;
@@ -87,6 +87,7 @@ class SoldPolicyReport extends Component
     public $isWelcomedClientId;
     public $isWelcomedClientType;
     public $isWelcomed;
+    public $welcomedNote;
 
     public $commProfilesSection;
     public $Eprofiles = [];
@@ -111,47 +112,55 @@ class SoldPolicyReport extends Component
         $this->toggle($this->commProfilesSection);
     }
 
-    public function openEditIsWelcomed($id,$clientType){
+    public function openEditIsWelcomed($id, $clientType)
+    {
         $this->isWelcomedClientId = $id;
         $this->isWelcomedClientType = $clientType;
         $isWelcomed = 'no';
-        if($clientType === 'customer'){
-            $isWelcomed = Customer::findOrFail($id)->is_welcomed;
-        }elseif($clientType === 'corporate'){
-            $isWelcomed = Corporate::findOrFail($id)->is_welcomed;
+
+        if ($clientType === 'customer') {
+            $client = Customer::findOrFail($id);
+        } elseif ($clientType === 'corporate') {
+            $client = Corporate::findOrFail($id)->is_welcomed;
         }
 
-        if($isWelcomed){
+        $isWelcomed = $client->is_welcomed;
+        $this->welcomedNote = $client->welcome_note;
+
+        if ($isWelcomed) {
             $this->isWelcomed = 'yes';
-        }else{
+        } else {
             $this->isWelcomed = 'no';
         }
     }
 
-    public function closeEditIsWelcomed(){
+    public function closeEditIsWelcomed()
+    {
         $this->isWelcomedClientId = null;
         $this->isWelcomedClientType = null;
         $this->isWelcomed = null;
+        $this->welcomedNote = null;
     }
 
-    public function updateIsWelcomed(){
-        if($this->isWelcomed === 'yes'){
+    public function updateIsWelcomed()
+    {
+        if ($this->isWelcomed === 'yes') {
             $status = true;
-        }else{
+        } else {
             $status = false;
         }
-        if($this->isWelcomedClientType === 'customer'){
-            $res = Customer::findOrFail($this->isWelcomedClientId)->setIsWelcomed($status);
-        }elseif($this->isWelcomedClientType === 'corporate'){
-            $res = Corporate::findOrFail($this->isWelcomedClientId)->setIsWelcomed($status);
+        if ($this->isWelcomedClientType === 'customer') {
+            $res = Customer::findOrFail($this->isWelcomedClientId)->setIsWelcomed($status, $this->welcomedNote);
+        } elseif ($this->isWelcomedClientType === 'corporate') {
+            $res = Corporate::findOrFail($this->isWelcomedClientId)->setIsWelcomed($status, $this->welcomedNote);
         }
 
         if ($res) {
             $this->closeEditIsWelcomed();
             $this->mount();
-            $this->alert('success','Changed Welcome status!');
-        }else{
-            $this->alert('failed','server error!');
+            $this->alert('success', 'Changed Welcome status!');
+        } else {
+            $this->alert('failed', 'server error!');
         }
     }
 
@@ -493,7 +502,7 @@ class SoldPolicyReport extends Component
             $this->mainSalesName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
         }
 
-        $COMM_PROFILES = CommProfile::select('title','id')->get();
+        $COMM_PROFILES = CommProfile::select('title', 'id')->get();
 
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $users = User::all();

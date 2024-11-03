@@ -123,7 +123,8 @@ class Customer extends Model
         'note',
         'id_doc_2',
         'driver_license_doc_2',
-        'is_welcomed'
+        'is_welcomed',
+        'welcome_note'
     ];
 
     ///model functions
@@ -351,10 +352,11 @@ class Customer extends Model
         }
     }
 
-    public function setIsWelcomed(bool $status): bool
+    public function setIsWelcomed(bool $status, string $note = null): bool
     {
         try {
             $this->is_welcomed = $status;
+            $this->welcome_note = $note;
             $this->save();
             return true;
         } catch (Exception $e) {

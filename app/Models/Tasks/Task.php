@@ -570,6 +570,8 @@ class Task extends Model
         Carbon $created_to = null,
         Carbon $due_from = null,
         Carbon $due_to = null,
+        string $assignee_id = null,
+        string $openedBy_id = null,
         bool $is_expired = null
     ) {
         // Filter by creation date range
@@ -584,6 +586,10 @@ class Task extends Model
             $q->where('due', '>=', $v->startOfDay());
         })->when($due_to, function ($q, $v) {
             $q->where('due', '<=', $v->endOfDay());
+        })->when($assignee_id, function ($q, $v) {
+            $q->assignedTo($v);
+        })->when($openedBy_id, function ($q, $v) {
+            $q->openBy($v);
         });
     
         // Filter by expiration status

@@ -15,9 +15,11 @@ return new class extends Migration
     {
         Schema::table('customers', function(Blueprint $table){
             $table->boolean('is_welcomed')->default(false);
+            $table->string('welcome_note')->nullable();
         });
         Schema::table('corporates', function(Blueprint $table){
             $table->boolean('is_welcomed')->default(false);
+            $table->string('welcome_note')->nullable();
         });
     }
 

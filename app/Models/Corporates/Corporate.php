@@ -93,7 +93,7 @@ class Corporate extends Model
         'type', 'name', 'arabic_name', 'email', 'commercial_record',
         'commercial_record_doc', 'tax_id', 'tax_id_doc', 'kyc',
         'kyc_doc', 'contract_doc', 'main_bank_evidence', 'creator_id',
-        'owner_id', 'note', 'is_welcomed'
+        'owner_id', 'note', 'is_welcomed', 'welcome_note'
     ];
 
     ///model functions
@@ -342,10 +342,11 @@ class Corporate extends Model
         }
     }
 
-    public function setIsWelcomed(bool $status): bool
+    public function setIsWelcomed(bool $status, string $note = null): bool
     {
         try {
             $this->is_welcomed = $status;
+            $this->welcome_note = $note;
             $this->save();
             return true;
         } catch (Exception $e) {

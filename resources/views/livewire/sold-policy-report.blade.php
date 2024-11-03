@@ -705,6 +705,12 @@
                                     </option>
                                 </select>
                             </div>
+                            <div class="from-group">
+                                <label  class="form-label">Welcome Note</label>
+                                <textarea rows=3
+                                class="form-control py-2 flatpickr cursor-pointer flatpickr-input active"
+                                id="default-picker" type="text" wire:model.defer="welcomedNote" autocomplete="off"></textarea>
+                            </div>
                         </div>
                         <!-- Modal footer -->
                         <div
