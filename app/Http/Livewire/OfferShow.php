@@ -161,7 +161,7 @@ class OfferShow extends Component
     {
         if (!empty($this->commSearch)) {
             // Perform the query using a scope or direct query
-            $this->profilesRes = CommProfile::searchBy($this->commSearch)->take(5)->get();
+            $this->profilesRes = CommProfile::searchBy($this->commSearch)->take(15)->get();
         } else {
             // Return an empty collection if the search term is empty
             $this->profilesRes = collect(); // This creates an empty Laravel collection
