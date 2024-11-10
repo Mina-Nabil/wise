@@ -132,7 +132,7 @@ class Offer extends Model
         $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
-    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal, array $comm_profile_ids = [])
+    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [])
     {
         $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText, $is_renewal, $comm_profile_ids)->get();
         $template = IOFactory::load(resource_path('import/offers_report.xlsx'));
