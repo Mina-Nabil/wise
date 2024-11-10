@@ -3077,7 +3077,7 @@
     <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
         tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
         style="display: block;">
-        <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+        <div class="modal-dialog  relative w-auto pointer-events-none">
             <div
                 class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                 <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
@@ -3116,6 +3116,21 @@
                                 <span
                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                             @enderror
+
+                            @if (!$is_meeting)
+                            <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="hidden" name="checkbox"
+                                        wire:model="is_meeting">
+                                    <span
+                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                        <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
+                                            class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                    <span
+                                        class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">is Meeting ?</span>
+                                </label>
+                            </div>
+                            @endif
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                 <div class="input-area">

@@ -28,6 +28,8 @@ class TaskReport extends Component
 
     public $isExpired;
 
+
+
     protected $queryString = ['start_from','start_to','due_from','due_to','isExpired'];
 
     public function toggleIsExpired()
@@ -67,6 +69,12 @@ class TaskReport extends Component
         $this->due_from = null;
         $this->due_to = null;
         
+    }
+
+    public function exportReport(){
+        Task::exportReport(
+            $this->start_from,$this->start_to,$this->due_from,$this->due_to, null , null , $this->isExpired
+        );
     }
 
     public function toggleStartDate()
