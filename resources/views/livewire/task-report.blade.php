@@ -43,6 +43,20 @@
                                 Due date ( From-To )</span>
                         </li>
 
+                        <li wire:click="toggleAssignee">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Assignee</span>
+                        </li>
+
+                        <li wire:click="toggleCreator">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                        Creator</span>
+                        </li>
+
                         <li wire:click="toggleIsExpired">
                             <span
                                 class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
@@ -113,56 +127,84 @@
                                 </button>
                             @endif
 
+                            @if ($assignee_id)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleAssignee">
+                                        {{ $assignee_id ? 'Assignee: ' . $assigneeName : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearAssignee">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($creator_id)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleCreator">
+                                        {{ $creator_id ? 'Creator: ' . $creatorName : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearCreator">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
                         </header>
 
                         <div class="card-body px-6 pb-6">
                             <div class=" -mx-6">
                                 <div class="inline-block min-w-full align-middle">
                                     <div class="overflow-hidden ">
-                                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                            <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
+                                        <table
+                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                            <thead
+                                                class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                                 <tr>
                                                     <th scope="col" class="table-th">
                                                         Created
                                                     </th>
-                    
+
                                                     <th scope="col" class="table-th">
                                                         Due
                                                     </th>
-                    
+
                                                     <th scope="col" class="table-th">
                                                         Assignee
                                                     </th>
-                    
+
                                                     <th scope="col" class=" table-th ">
                                                         Title
                                                     </th>
-                    
+
                                                     <th scope="col" class=" table-th ">
                                                         Type
                                                     </th>
-                    
+
                                                     <th scope="col" class=" table-th ">
                                                         Status
                                                     </th>
-                    
+
                                                     <th scope="col" class=" table-th ">
                                                         Creator
                                                     </th>
-                    
+
                                                 </tr>
                                             </thead>
                                             <tbody
                                                 class="bg-white divide-y cursor-pointer divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                    
+
                                                 @foreach ($tasks as $task)
                                                     <tr class="hover:bg-slate-200 dark:hover:bg-slate-700"
                                                         wire:click="redirectToShowPage({{ $task->id }})">
-                    
+
                                                         <td class="table-td">
                                                             {{ $task->created_at->format('D d/m') }}
                                                         </td>
-                    
+
                                                         <td class="table-td" style="vertical-align: middle;">
                                                             @if ($task->due && \Carbon\Carbon::parse($task->due)->isPast())
                                                                 <span
@@ -171,22 +213,27 @@
                                                             @endif
                                                             &nbsp;
                                                             {{ $task->due ? \Carbon\Carbon::parse($task->due)->format('D d/M H:i') : 'N/A' }}
-                    
+
                                                             @php
                                                                 $currentDate = now();
                                                                 $startDate = $task->created_at;
                                                                 $dueDate = $task->due;
                                                                 $totalDuration = $startDate->diffInSeconds($dueDate);
-                                                                $elapsedDuration = $startDate->diffInSeconds($currentDate);
-                                                                $percentagePassed = ($elapsedDuration / $totalDuration) * 100;
+                                                                $elapsedDuration = $startDate->diffInSeconds(
+                                                                    $currentDate,
+                                                                );
+                                                                $percentagePassed =
+                                                                    ($elapsedDuration / $totalDuration) * 100;
                                                             @endphp
-                    
-                                                            <div class="w-full bg-slate-200 h-2 m-1 rounded-xl overflow-hidden">
+
+                                                            <div
+                                                                class="w-full bg-slate-200 h-2 m-1 rounded-xl overflow-hidden">
                                                                 <div class="@if ($percentagePassed >= 0 && $percentagePassed < 30) bg-success-500 @elseif($percentagePassed >= 30 && $percentagePassed < 70) bg-warning-500 @else bg-danger-500 @endif h-full rounded-xl"
-                                                                    style="width: {{ number_format($percentagePassed, 0) }}%"></div>
+                                                                    style="width: {{ number_format($percentagePassed, 0) }}%">
+                                                                </div>
                                                             </div>
                                                         </td>
-                    
+
                                                         <td class="table-td">
                                                             @if ($task->assigned_to_id)
                                                                 <b>{{ $task->assigned_to?->first_name }}
@@ -197,18 +244,18 @@
                                                                 <b> - </b>
                                                             @endif
                                                         </td>
-                    
-                                                        <td class="table-td" >
+
+                                                        <td class="table-td">
                                                             {{ $task->title }}
                                                         </td>
-                    
+
                                                         <td class="table-td ">
                                                             {{ $task->taskable_type }}
                                                             @if ($task->file_url)
                                                                 <iconify-icon icon="bx:file"></iconify-icon>
                                                             @endif
                                                         </td>
-                    
+
                                                         <td class="table-td">
                                                             @if ($task->status === 'new')
                                                                 <div
@@ -241,28 +288,31 @@
                                                                     Closed
                                                                 </div>
                                                             @endif
-                    
+
                                                         </td>
-                    
+
                                                         <td class="table-td">
                                                             {{ $task->open_by?->first_name }}
                                                         </td>
                                                     </tr>
                                                 @endforeach
-                    
+
                                             </tbody>
                                         </table>
-                    
+
                                         @if ($tasks->isEmpty())
                                             {{-- START: empty filter result --}}
                                             <div class="card p-5">
                                                 <div class="card-body rounded-md bg-white dark:bg-slate-800">
                                                     <div class="items-center text-center p-5">
-                                                        <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
-                                                        <h2 class="card-title text-slate-900 dark:text-white mb-3">No Tasks with the
+                                                        <h2><iconify-icon
+                                                                icon="icon-park-outline:search"></iconify-icon></h2>
+                                                        <h2 class="card-title text-slate-900 dark:text-white mb-3">No
+                                                            Tasks with the
                                                             applied
                                                             filters</h2>
-                                                        <p class="card-text">Try changing the filters or search terms for this view.
+                                                        <p class="card-text">Try changing the filters or search terms
+                                                            for this view.
                                                         </p>
                                                         <a href="{{ url('/tasks') }}"
                                                             class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
@@ -272,26 +322,160 @@
                                             </div>
                                             {{-- END: empty filter result --}}
                                         @endif
-                    
+
                                     </div>
-                    
-                    
-                    
+
+
+
                                     {{ $tasks->links('vendor.livewire.bootstrap') }}
-                    
+
                                 </div>
                             </div>
                         </div>
-                        
+
 
                     </div>
                 </div>
             </div>
         </div>
 
-        
+
 
     </div>
+
+    @if ($creatorSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Creator
+                            </h3>
+                            <button wire:click="toggleCreator" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Ecreator_id" class="form-label">Creator</label>
+                                <select name="Ecreator_id" id="Ecreator_id" class="form-control w-full mt-2"
+                                    wire:model.defer="Ecreator_id">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
+                                        value="">
+                                        Select user</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $user->first_name . ' ' . $user->last_name }}
+                                        </option>
+                                    @endforeach
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setCreator" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setCreator">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="setCreator"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($assigneeSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Assignee
+                            </h3>
+                            <button wire:click="toggleAssignee" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eassignee_id" class="form-label">Assignee</label>
+                                <select name="Eassignee_id" id="Eassignee_id" class="form-control w-full mt-2"
+                                    wire:model.defer="Eassignee_id">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
+                                        value="">
+                                        Select user</option>
+                                    <optgroup label="Users">
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}"
+                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ $user->first_name . ' ' . $user->last_name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Types">
+                                        @foreach ($types as $type)
+                                            <option value="{{ $type }}"
+                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ $type }}
+                                            </option>
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setAssignee" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setAssignee">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="setAssignee"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if ($startSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
