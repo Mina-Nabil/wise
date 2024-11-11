@@ -160,27 +160,31 @@ class Followup extends Model
         return $query->latest();
     }
 
-    public function scopeReport($query, Carbon $from= null, Carbon $to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
+    public function scopeReport($query, Carbon $due_from = null, Carbon $due_to = null, Carbon $action_from = null, Carbon $action_to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
     {
-        $query->when($from, function($q, $v){
+        $query->when($due_from, function ($q, $v) {
             $q->where('call_time', ">=", $v->format('Y-m-d'));
-        })->when($to, function($q, $v){
+        })->when($due_to, function ($q, $v) {
             $q->where('call_time', "<=", $v->format('Y-m-d'));
-        })->when($sales_id, function($q, $v){
+        })->when($action_from, function ($q, $v) {
+            $q->where('action_time', ">=", $v->format('Y-m-d'));
+        })->when($action_to, function ($q, $v) {
+            $q->where('action_time', "<=", $v->format('Y-m-d'));
+        })->when($sales_id, function ($q, $v) {
             $q->where('user_id', ">=", $v);
-        })->when($client_type && $client_id, function($q) use($client_type, $client_id){
+        })->when($client_type && $client_id, function ($q) use ($client_type, $client_id) {
             $q->where('called_type', $client_type)->where('called_id', $client_id);
-        })->when($is_meeting !== null, function($q) use ($is_meeting){
+        })->when($is_meeting !== null, function ($q) use ($is_meeting) {
             $q->where('is_meeting', $is_meeting);
-        })->when($line_of_business, function($q, $v){
+        })->when($line_of_business, function ($q, $v) {
             $q->where('line_of_business', "=", $v);
         });
     }
 
     ///static functions
-    public function exportReport(Carbon $from= null, Carbon $to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
+    public function exportReport(Carbon $due_from = null, Carbon $due_to = null, Carbon $action_from = null, Carbon $action_to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
     {
-        $followups = self::report($from, $to, $sales_id, $client_type, $client_id, $is_meeting, $line_of_business)->get();
+        $followups = self::report($due_from, $due_to, $action_from, $action_to, $sales_id, $client_type, $client_id, $is_meeting, $line_of_business)->get();
         $template = IOFactory::load(resource_path('import/followups_report.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');

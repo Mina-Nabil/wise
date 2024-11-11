@@ -881,6 +881,23 @@ class Customer extends Model
         return $query->latest();
     }
 
+    /**
+     * @param array $interests = [
+     *      'line_of_business' => 1 or 0
+     * ]
+     */
+    public function scopeReport($query, $searchText = null, Carbon $from = null, Carbon $to = null, array $interests = []) {
+        $query->userData($searchText)
+        ->when($from, function($q, $v){
+            $q->where('customers.created_at', '>=', $v->format('Y-m-d'));
+        })
+        ->when($from, function($q, $v){
+            $q->where('customers.created_at', '<=', $v->format('Y-m-d'));
+        });
+        
+
+    }
+
     public function scopeLeads($query)
     {
         return $query->where('type', self::TYPE_LEAD);
