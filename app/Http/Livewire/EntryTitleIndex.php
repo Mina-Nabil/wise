@@ -138,7 +138,7 @@ class EntryTitleIndex extends Component
 
     public function delete($id)
     {
-        $res = EntryTitle::findOrFail($id)->delete();
+        $res = EntryTitle::findOrFail($id)->deleteTitle();
         if ($res) {
             $this->alert('success', 'Title deleted!');
         } else {
