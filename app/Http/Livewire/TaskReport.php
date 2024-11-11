@@ -13,8 +13,6 @@ class TaskReport extends Component
 {
     use WithPagination, ToggleSectionLivewire;
 
-    public $page_title = '• Tasks Report';
-
     public $startSection = false;
     public $dueSection = false;
 

@@ -167,7 +167,7 @@ class Followup extends Model
         })->when($to, function($q, $v){
             $q->where('call_time', "<=", $v->format('Y-m-d'));
         })->when($sales_id, function($q, $v){
-            $q->where('user_id', ">=", $v);
+            $q->where('creator_id', "=", $v);
         })->when($client_type && $client_id, function($q) use($client_type, $client_id){
             $q->where('called_type', $client_type)->where('called_id', $client_id);
         })->when($is_meeting !== null, function($q) use ($is_meeting){
@@ -178,7 +178,7 @@ class Followup extends Model
     }
 
     ///static functions
-    public function exportReport(Carbon $from= null, Carbon $to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
+    public static function exportReport(Carbon $from= null, Carbon $to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
     {
         $followups = self::report($from, $to, $sales_id, $client_type, $client_id, $is_meeting, $line_of_business)->get();
         $template = IOFactory::load(resource_path('import/followups_report.xlsx'));

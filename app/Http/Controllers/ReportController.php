@@ -25,6 +25,10 @@ class ReportController extends Controller
         return view('reports.sold-policy-index');
     }
 
+    public function followupsIndex(){
+        return view('reports.followups-index');
+    }
+
     public function offersIndex()
     {
         // if (Auth::user()->is_admin) {
