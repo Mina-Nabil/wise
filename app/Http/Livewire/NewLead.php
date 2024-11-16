@@ -25,6 +25,7 @@ class NewLead extends Component
     public $note;
     public $followupCallDateTime;
     public $leadType = 'customer';
+    public $followup_is_meeting = false;
 
 
     public function toggleAddLead()
@@ -50,6 +51,13 @@ class NewLead extends Component
                 'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
             ]);
 
+            if ($this->followupCallDateTime || $this->followup_is_meeting){
+                $this->validate([
+                    'followupCallDateTime' => 'required',
+                    'followup_is_meeting' => 'boolean',
+                ]);
+            }
+
             $customer = new Customer();
             $res = $customer->newLead(
                 $this->leadFirstName,
@@ -64,8 +72,8 @@ class NewLead extends Component
                 note: $this->note
             );
 
-            if ($this->followupCallDateTime) {
-                $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->note);
+            if ($this->followupCallDateTime || $this->followup_is_meeting) {
+                $fres = $res->addFollowup('Initial Contact',new \DateTime($this->followupCallDateTime),$this->note,$this->followup_is_meeting);
             }else{
                 $fres = true;
             }
