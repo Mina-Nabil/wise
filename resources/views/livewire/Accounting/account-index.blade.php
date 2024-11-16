@@ -226,13 +226,13 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
-                            <div class="form-group mb-5">
+                            {{-- <div class="form-group mb-5">
                                 <label for="acc_code" class="form-label">Code</label>
                                 <input type="text" id="acc_code" class="form-control mt-2 w-full {{ $errors->has('acc_code') ? '!border-danger-500' : '' }}" wire:model.defer="acc_code" max="100">
                                 @error('acc_code')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
-                            </div>
+                            </div> --}}
                             <div class="form-group mb-5">
                                 <label for="acc_name" class="form-label">Name</label>
                                 <input type="text" id="acc_name" class="form-control mt-2 w-full {{ $errors->has('acc_name') ? '!border-danger-500' : '' }}" wire:model.defer="acc_name" max="100">

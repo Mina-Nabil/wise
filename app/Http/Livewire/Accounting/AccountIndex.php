@@ -138,7 +138,7 @@ class AccountIndex extends Component
     public function save()
     {
         $this->validate([
-            'acc_code' => 'required|numeric|gt:0',
+            // 'acc_code' => 'required|numeric|gt:0',
             'acc_name' => 'required|string|max:100',
             'nature' => 'required|in:' . implode(',', Account::NATURES),
             'mainAccountId' => 'required|exists:main_accounts,id',
@@ -146,7 +146,7 @@ class AccountIndex extends Component
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount($this->acc_code, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
+        $res = Account::newAccount(null, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
 
         if ($res) {
             $this->closeAddNewModal();
