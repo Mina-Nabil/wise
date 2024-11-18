@@ -120,6 +120,12 @@
                                         dark:hover:text-white cursor-pointer">
                                 is Renewal</span>
                         </li>
+                        <li wire:click="toggleWelcomed">
+                            <span href="#"
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Welcomed</span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -173,7 +179,7 @@
                             @if ($profiles)
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleProfiles">
-                                        Status:&nbsp;(
+                                        Profiles:&nbsp;(
                                         @foreach ($profiles as $profile)
                                             @php
                                                 $decodedProfile = json_decode($profile, true); // Decode JSON string to array
@@ -398,6 +404,23 @@
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearrenewal">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_welcomed))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleWelcomed">
+                                        @if ($is_welcomed)
+                                            Welcomed:&nbsp;Yes
+                                        @else
+                                            Welcomed:&nbsp;No
+                                        @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearwelcomed">
                                         <iconify-icon icon="material-symbols:close" width="1.2em"
                                             height="1.2em"></iconify-icon>
                                     </span>

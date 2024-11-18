@@ -101,7 +101,7 @@ class SoldPolicy extends Model
             due: $due,
             item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null,
             is_renewal: true,
-            in_favor_to: $in_favor_to ?? $this->in_favor_to, 
+            in_favor_to: $in_favor_to ?? $this->in_favor_to,
             renewal_policy_id: $this->id
         );
         if ($newOffer) {
@@ -1037,9 +1037,9 @@ class SoldPolicy extends Model
         }
     }
 
-    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null)
+    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed)->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
         if (!$template) {
@@ -1400,7 +1400,7 @@ class SoldPolicy extends Model
             });
         }
 
-        $query->when($searchText, function ($q, $v) use ($loggedInUser, $is_expiring) {
+        $query->when($searchText, function ($q, $v) {
             $q->leftjoin('corporates', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'corporates.id')
                     ->where('sold_policies.client_type', Corporate::MORPH_TYPE)
@@ -1414,7 +1414,7 @@ class SoldPolicy extends Model
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp, $loggedInUser, $is_expiring) {
+                $q->where(function ($qq) use ($tmp) {
                     $qq->where('customers.first_name', 'LIKE', "%$tmp%")
                         //search using customer info
                         ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
@@ -1467,7 +1467,7 @@ class SoldPolicy extends Model
         });
     }
 
-    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [])
+    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], bool $is_welcomed = null)
     {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
@@ -1495,6 +1495,14 @@ class SoldPolicy extends Model
                 $q->where('is_valid', "=", $is_valid);
             })->when($is_renewal !== null, function ($q, $v) use ($is_renewal) {
                 $q->where('offers.is_renewal', "=", $is_renewal);
+            })->when($is_welcomed !== null, function ($q, $v) use ($is_welcomed) {
+                if (!Helpers::joined($q, 'customers')) {
+                    $q->join('customers', function ($qq) {
+                        $qq->on('sold_policies.client_id', '=', 'customers.id')
+                            ->where('sold_policies.client_type', Customer::MORPH_TYPE);
+                    });
+                }
+                $q->where('customers.is_welcomed', "=", $is_welcomed);
             })->when($is_paid !== null, function ($q, $v) use ($is_paid) {
                 $q->where('is_paid', "=", $is_paid);
             })->when($value_from, function ($q, $v) {
@@ -1685,5 +1693,10 @@ class SoldPolicy extends Model
     public function files(): HasMany
     {
         return $this->hasMany(SoldPolicyDoc::class);
+    }
+
+    public function renewal_policy(): BelongsTo
+    {
+        return $this->belongsTo(SoldPolicy::class, 'renewal_policy_id');
     }
 }
