@@ -121,7 +121,7 @@ class Followup extends Model
         $query->select('followups.*')
             ->join('users', "followups.creator_id", '=', 'users.id');
 
-        if ($loggedInUser->type !== User::TYPE_ADMIN || $mineOnly) {
+        if ($loggedInUser->type !== User::TYPE_ADMIN || $loggedInUser->id != 12 || $mineOnly) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->where('users.manager_id', $loggedInUser->id)
                     ->orwhere('users.id', $loggedInUser->id);
