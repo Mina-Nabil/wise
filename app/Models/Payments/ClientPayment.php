@@ -314,7 +314,7 @@ class ClientPayment extends Model
 
     public function scopePaid(Builder $query)
     {
-        return $query->where('status', self::PYMT_STATE_PAID);
+        return $query->where('client_payments.status', self::PYMT_STATE_PAID);
     }
 
     public function scopeNotPaidOnly(Builder $query)
@@ -328,11 +328,11 @@ class ClientPayment extends Model
         if (count($states)) {
             if (in_array(self::PYMT_STATE_NEW, $states)) {
                 $query->where(function ($q) use ($states) {
-                    $q->whereIn('status', $states)
-                        ->orWhereNull('status');
+                    $q->whereIn('client_payments.status', $states)
+                        ->orWhereNull('client_payments.status');
                 });
             } else {
-                $query->whereIn('status', $states);
+                $query->whereIn('client_payments.status', $states);
             }
         }
         return $query;
