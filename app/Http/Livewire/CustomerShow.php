@@ -1426,7 +1426,7 @@ class CustomerShow extends Component
         $bankAccTypes = BankAccount::TYPES;
         $companies = Company::all();
         // dd($tasks);
-        $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
+        $LINES_OF_BUSINESS = Policy::PERSONAL_TYPES;
 
         return view('livewire.customer-show', [
             'customer' => $this->customer,
