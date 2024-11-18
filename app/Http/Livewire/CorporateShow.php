@@ -11,8 +11,10 @@ use App\Models\Customers\Customer;
 use App\Models\Corporates\Address;
 use App\Models\Corporates\BankAccount;
 use App\Models\Corporates\Contact;
+use App\Models\Corporates\Interest;
 use App\Models\Corporates\Phone;
 use App\Models\Customers\Followup;
+use App\Models\Insurance\Policy;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Livewire\WithFileUploads;
@@ -66,6 +68,9 @@ class CorporateShow extends Component
     public $followupDesc;
     public $followupId;
     public $deleteFollowupId;
+    public $isMeeting;
+    public $FollowupLineOfBussiness = Policy::BUSINESS_CORPORATE_MOTOR;
+    public $is_meeting = false;
 
     //contact
     public $contactName;
@@ -87,6 +92,14 @@ class CorporateShow extends Component
     public $bankAccountId;
     public $deleteBankAccountId;
     public $addBankAccountSection;
+
+    //interests
+    public $interestSection = false;
+    public $editedLob;
+    public $interested;
+    public $interestNote;
+    public $editInteresetSec = false;
+    public $isCreateFollowup;
 
     public $callerNoteSec = false;
     public $callerNotetype;
@@ -320,6 +333,8 @@ class CorporateShow extends Component
         $this->followupCallTime = null;
         $this->followupDesc = null;
         $this->addFollowupSection = false;
+        $this->is_meeting = false;
+        $this->FollowupLineOfBussiness = Policy::BUSINESS_CORPORATE_MOTOR;
     }
 
     public function OpenAddFollowupSection()
@@ -336,6 +351,8 @@ class CorporateShow extends Component
         $this->followupCallDate = $combinedDateTime->format('Y-m-d');
         $this->followupCallTime = $combinedDateTime->format('H:i:s');
         $this->followupDesc = $f->desc;
+        $this->is_meeting = $f->is_meeting;
+        $this->FollowupLineOfBussiness = $f->line_of_business;
     }
 
     public function deleteThisFollowup($id)
@@ -347,6 +364,69 @@ class CorporateShow extends Component
     {
         $this->deleteFollowupId = null;
     }
+
+    public function toggleAddInterest()
+    {
+        $this->toggle($this->interestSection);
+    }
+
+    public function removeInterest($id)
+    {
+        $res = Interest::find($id)->delete();
+        if ($res) {
+            $this->mount($this->corporate->id);
+            $this->alert('success', 'Interest removed!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function editThisInterest($status, $lob)
+    {
+        $this->editInteresetSec = true;
+        $this->editedLob  = $lob;
+        $this->interested = $status;
+    }
+
+    public function closeEditInterest()
+    {
+        $this->editInteresetSec = false;
+    }
+
+    public function editInterest()
+    {
+        if ($this->interested === 'YES') {
+            $this->interested = true;
+        } else {
+            $this->interested = false;
+        }
+
+        $this->validate([
+            'editedLob' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),
+            'interested' => 'required|boolean',
+            'interestNote' => 'nullable|string|max:255'
+        ]);
+
+        $res = $this->corporate->addInterest($this->editedLob, $this->interested, $this->interestNote);
+
+        if ($res) {
+            $this->editInteresetSec = false;
+            $this->editedLob = null;
+            $this->interested = null;
+            $this->interestNote = null;
+            $this->mount($this->corporate->id);
+            $this->alert('success', 'Interest edited!');
+            if ($this->isCreateFollowup) {
+                $this->FollowupLineOfBussiness = $res->business;
+                $this->is_meeting = true;
+                $this->section = 'followups';
+                $this->OpenAddFollowupSection();
+            }
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
 
     public function deleteFollowup()
     {
@@ -367,6 +447,8 @@ class CorporateShow extends Component
             'followupCallDate' => 'nullable|date',
             'followupCallTime' => 'nullable',
             'followupDesc' => 'nullable|string|max:255',
+            'FollowupLineOfBussiness' => 'nullable|in:' . implode(',', policy::LINES_OF_BUSINESS),
+            'is_meeting' => 'nullable|boolean',
         ]);
 
         $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
@@ -374,7 +456,13 @@ class CorporateShow extends Component
 
         $corporate = Corporate::find($this->corporate->id);
 
-        $res = $corporate->addFollowup($this->followupTitle, $combinedDateTime, $this->followupDesc);
+        $res = $corporate->addFollowup(
+            $this->followupTitle,
+            $combinedDateTime,
+            $this->followupDesc,
+            $this->is_meeting,
+            $this->FollowupLineOfBussiness
+        );
 
         if ($res) {
             $this->alert('success', 'Followup added successfuly');
@@ -393,6 +481,8 @@ class CorporateShow extends Component
             'followupCallDate' => 'nullable|date',
             'followupCallTime' => 'nullable',
             'followupDesc' => 'nullable|string|max:255',
+            'FollowupLineOfBussiness' => 'nullable|in:' . implode(',', policy::LINES_OF_BUSINESS),
+            'is_meeting' => 'nullable|boolean',
         ]);
 
         $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
@@ -400,7 +490,13 @@ class CorporateShow extends Component
 
         $followup = Followup::find($this->followupId);
 
-        $res = $followup->editInfo($this->followupTitle, $combinedDateTime, $this->followupDesc);
+        $res = $followup->editInfo(
+            $this->followupTitle,
+            $combinedDateTime,
+            $this->followupDesc,
+            $this->is_meeting,
+            $this->FollowupLineOfBussiness
+        );
 
         if ($res) {
             $this->alert('success', 'Followup updated successfuly');
@@ -459,7 +555,7 @@ class CorporateShow extends Component
 
     public function downloadDoc($url, $fileType)
     {
-        $filename = $this->corporate->name . '_'.$fileType.'.' . pathinfo($url, PATHINFO_EXTENSION);
+        $filename = $this->corporate->name . '_' . $fileType . '.' . pathinfo($url, PATHINFO_EXTENSION);
         $fileContents = Storage::disk('s3')->get($url);
         $headers = [
             'Content-Type' => 'application/octet-stream',
@@ -483,13 +579,13 @@ class CorporateShow extends Component
             $url = null;
         } elseif (!is_null($this->corporate->$fieldName) && is_null($this->$property)) {
             $url = null;
-        } elseif (!is_null($this->corporate->$fieldName) && !is_null($this->$property) && (is_string($this->$property)) ) {
-                $this->$property = null;
-                $url = $this->corporate->$fieldName;
-        } else{
+        } elseif (!is_null($this->corporate->$fieldName) && !is_null($this->$property) && (is_string($this->$property))) {
+            $this->$property = null;
+            $url = $this->corporate->$fieldName;
+        } else {
 
             $this->validate([
-                $property => ['file', 'nullable' , 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp' , 'max:33000'],
+                $property => ['file', 'nullable', 'mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp', 'max:33000'],
             ]);
 
             $url =  $this->$property->store(Customer::FILES_DIRECTORY, 's3');
@@ -500,8 +596,8 @@ class CorporateShow extends Component
 
     public function editCorporate()
     {
-        
-        
+
+
         $this->validate([
             'name' => 'required|string|max:255',
             'arabicName' => 'nullable|string|max:255',
@@ -511,11 +607,11 @@ class CorporateShow extends Component
             'kyc' => 'nullable|string|max:255',
         ]);
 
-        $commercialRecordDoc = $this->generateUrl('commercial_record_doc','commercialRecordDoc');
-        $taxIdDoc = $this->generateUrl('tax_id_doc','taxIdDoc');
-        $kycDoc = $this->generateUrl('kyc_doc','kycDoc');
-        $contractDoc = $this->generateUrl('contract_doc','contractDoc');
-        $mainBandEvidence = $this->generateUrl('main_bank_evidence','mainBandEvidence');
+        $commercialRecordDoc = $this->generateUrl('commercial_record_doc', 'commercialRecordDoc');
+        $taxIdDoc = $this->generateUrl('tax_id_doc', 'taxIdDoc');
+        $kycDoc = $this->generateUrl('kyc_doc', 'kycDoc');
+        $contractDoc = $this->generateUrl('contract_doc', 'contractDoc');
+        $mainBandEvidence = $this->generateUrl('main_bank_evidence', 'mainBandEvidence');
 
         $c = Corporate::find($this->corporate->id);
         $res = $c->editInfo($this->name, $this->arabicName, $this->email, $this->commercialRecord, $commercialRecordDoc, $this->taxId, $taxIdDoc, $this->kyc, $kycDoc, $contractDoc, $mainBandEvidence);
@@ -799,6 +895,9 @@ class CorporateShow extends Component
         $countries = Country::all();
         $tasks = $this->corporate->tasks;
         $offers = $this->corporate->offers;
+        $LINES_OF_BUSINESS = Policy::CORPORATE_TYPES;
+
+
         return view('livewire.corporate-show', [
             'addressTypes' => $addressTypes,
             'bankAccTypes' => $bankAccTypes,
@@ -808,6 +907,7 @@ class CorporateShow extends Component
             'cities' => $cities,
             'countries' => $countries,
             'offers' => $offers,
+            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS
         ]);
     }
 }

@@ -18,11 +18,13 @@ use App\Models\Corporates\Address;
 use App\Models\Corporates\BankAccount;
 use App\Models\Corporates\Contact;
 use App\Models\Corporates\Corporate;
+use App\Models\Corporates\Interest as CorporatesInterest;
 use App\Models\Corporates\Phone;
 use App\Models\Customers\Address as CustomersAddress;
 use App\Models\Customers\Car as CustomersCar;
 use App\Models\Customers\Customer;
 use App\Models\Customers\Followup;
+use App\Models\Customers\Interest;
 use App\Models\Customers\Phone as CustomersPhone;
 use App\Models\Customers\Profession;
 use App\Models\Customers\Relative;
@@ -116,6 +118,8 @@ class AppServiceProvider extends ServiceProvider
             UnapprovedEntry::MORPH_TYPE => UnapprovedEntry::class,
 
             TaskAction::MORPH_TYPE => TaskAction::class,
+            Interest::MORPH_TYPE => Interest::class,
+            CorporatesInterest::MORPH_TYPE => CorporatesInterest::class,
 
 
         ]);

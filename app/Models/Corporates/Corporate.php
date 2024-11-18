@@ -383,6 +383,44 @@ class Corporate extends Model
         }
     }
 
+    public function setInterests(array $interests): bool
+    {
+        try {
+            DB::transaction(function () use ($interests) {
+                $this->interests()->delete();
+                foreach ($interests as $intr) {
+                    $this->addInterest($intr["business"], $intr["interested"], $adrs["note"] ?? null);
+                }
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function addInterest($business, bool $interested, $note = null): Interest|false
+    {
+        try {
+            /** @var Interest */
+            $tmp = $this->interests()->updateOrCreate(
+                [
+                    "business"      =>  $business,
+                ],
+                [
+                    "interested"    =>  $interested,
+                    "note"    =>  $note
+                ]
+            );
+            AppLog::info("Adding corporate interest", loggable: $this);
+            return $tmp;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Adding corporate interest failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     ///static functions
     public static function newLead(
         $name,
@@ -564,5 +602,10 @@ class Corporate extends Model
     public function offers(): MorphMany
     {
         return $this->morphMany(Offer::class, 'client');
+    }
+
+    public function interests(): HasMany
+    {
+        return $this->hasMany(Interest::class);
     }
 }
