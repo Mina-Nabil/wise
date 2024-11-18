@@ -155,6 +155,7 @@ class OfferShow extends Component
     public $profilesRes;
 
     public $subStatusSection;
+    public $subStatusOfferStatus;
     public $subStatus;
 
     public function updatedCommSearch()
@@ -1009,7 +1010,8 @@ class OfferShow extends Component
 
     public function setStatus($s = null)
     {
-        if ($s == Offer::STATUS_PENDING_INSUR) {
+        if ($s == Offer::STATUS_PENDING_INSUR || $s == Offer::STATUS_PENDING_CUSTOMER) {
+            $this->subStatusOfferStatus = $s;
             $this->subStatusSection = true;
             return;
         }
@@ -1028,7 +1030,7 @@ class OfferShow extends Component
         $this->validate([
             'subStatus' => 'nullable',
         ]);
-        $res = $this->offer->setStatus(Offer::STATUS_PENDING_INSUR, $this->subStatus);
+        $res = $this->offer->setStatus($this->subStatusOfferStatus, $this->subStatus);
         if ($res) {
             $this->alert('info', $res);
             $this->closeSubStatusSection();
