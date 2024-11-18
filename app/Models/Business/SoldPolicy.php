@@ -101,7 +101,8 @@ class SoldPolicy extends Model
             due: $due,
             item: ($this->customer_car_id) ? Car::find($this->customer_car_id) : null,
             is_renewal: true,
-            in_favor_to: $in_favor_to ?? $this->in_favor_to
+            in_favor_to: $in_favor_to ?? $this->in_favor_to, 
+            renewal_policy_id: $this->id
         );
         if ($newOffer) {
             $this->update([
@@ -996,7 +997,7 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null): self|bool
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null, $renewal_policy_id = null): self|bool
     {
         $created_at = $issuing_date ? $issuing_date->format('Y-m-d') : (Carbon::now()->format('Y-m-d'));
         $newSoldPolicy = new self([
@@ -1022,6 +1023,7 @@ class SoldPolicy extends Model
             'in_favor_to'   => $in_favor_to,
             'policy_doc'    => $policy_doc,
             'created_at'    => $created_at,
+            "renewal_policy_id" =>  $renewal_policy_id,
         ]);
         $newSoldPolicy->client()->associate($client);
         try {

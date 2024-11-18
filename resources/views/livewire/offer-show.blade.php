@@ -27,7 +27,7 @@
                                 <span class="badge bg-warning-500 h-auto">
                                     <iconify-icon
                                         icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                        {{ $offer->sub_status ? " - $offer->sub_status" : "" }}
+                                    {{ $offer->sub_status ? " - $offer->sub_status" : '' }}
                                 </span>
                             @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
                                 <span class="badge bg-danger-500 h-auto">
@@ -131,6 +131,10 @@
                             <div class="flex-1 font-Inter">
                                 <iconify-icon class="text-lg" icon="mdi:tick-circle-outline"></iconify-icon> This Offer
                                 is <b>Renewal</b>!
+                                @if ($offer->renewal_policy)
+                                    Expiry:
+                                    {{ \Carbon\Carbon::parse($offer->renewal_policy->expiry)->format('l d-m-Y') }}
+                                @endif
                             </div>
                         </div>
                     </div>

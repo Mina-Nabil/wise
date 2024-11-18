@@ -85,12 +85,13 @@ class Offer extends Model
         'assignee_id',
         'in_favor_to',
         'renewal_policy',
-        'sub_status'
+        'sub_status', 
+        'renewal_policy_id'
     ];
 
 
     ////static functions
-    public static function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false, $in_favor_to = null, $renewal_policy = null): self|false
+    public static function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false, $in_favor_to = null, $renewal_policy = null, $renewal_policy_id = null): self|false
     {
         $newOffer = new self([
             "creator_id"    =>  Auth::id(),
@@ -104,6 +105,7 @@ class Offer extends Model
             "note"          =>  $note,
             "is_renewal"    =>  $is_renewal,
             "renewal_policy" =>  $renewal_policy,
+            "renewal_policy_id" =>  $renewal_policy_id,
             "due"           =>  $due->format('Y-m-d H:i:s'),
         ]);
         $newOffer->client()->associate($client);
@@ -210,7 +212,8 @@ class Offer extends Model
             car_plate_no: $car_plate_no,
             car_engine: $car_engine,
             policy_doc: $policy_doc,
-            issuing_date: $issuing_date
+            issuing_date: $issuing_date, 
+            renewal_policy_id: $this->renewal_policy_id
         );
         $clientDueDate = $issuing_date ?  ($issuing_date->isBefore($start) ? $start : $issuing_date) : $start;
         if ($soldPolicy) {
@@ -485,14 +488,15 @@ class Offer extends Model
         }
     }
 
-    public function setRenewalFlag(bool $is_renewal)
+    public function setRenewalFlag(bool $is_renewal, $renewal_policy_id = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateFlag', $this)) return false;
 
         $this->update([
-            "is_renewal"    =>  $is_renewal
+            "is_renewal"            =>  $is_renewal,
+            "renewal_policy_id"     =>  $renewal_policy_id,
         ]);
 
         try {
@@ -1097,6 +1101,11 @@ class Offer extends Model
     public function closed_by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'closed_by_id');
+    }
+
+    public function renewal_policy(): BelongsTo
+    {
+        return $this->belongsTo(SoldPolicy::class, 'renewal_policy_id');
     }
 
     public function watcher_ids(): HasMany
