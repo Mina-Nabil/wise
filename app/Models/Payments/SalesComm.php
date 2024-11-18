@@ -130,7 +130,7 @@ class SalesComm extends Model
     }
 
     /** Should be used while target calculation only */
-    public function updatePaymentByTarget(Target $t, $is_manual = false)
+    public function updatePaymentByTarget(Target $t, $paid_amount, $is_manual = false)
     {
 
         if ($is_manual) {
@@ -140,18 +140,12 @@ class SalesComm extends Model
         }
         $this->clearPreviousPaymentTargetInfo();
 
-        $this->load('sold_policy');
-
-        $this->sold_policy->calculateTotalPolicyComm();
-        $from_amount =  $this->sold_policy->total_policy_comm;
-        $target_amount = ($t->comm_percentage / 100) * $from_amount;
-
         try {
             $this->comm_target_runs()->firstOrCreate([
                 'target_id' =>  $t->id
             ], [
                 'percentage'    =>  $t->comm_percentage,
-                'amount'    =>  $target_amount,
+                'amount'    =>  $paid_amount,
             ]);
 
             $this->load('comm_target_runs');
@@ -160,7 +154,6 @@ class SalesComm extends Model
                 "comm_percentage"   =>  $this->comm_target_runs->sum('percentage'),
                 "amount"   =>  $this->comm_target_runs->sum('amount'),
             ]);
-            return $target_amount;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
