@@ -57,14 +57,14 @@ class Target extends Model
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
         $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
-        $paidAmounts = []; 
+        $paidAmounts = [];
 
         /** @var SoldPolicy */
         foreach ($soldPolicies as $sp) {
             $sp->generatePolicyCommissions();
             $sp->calculateTotalSalesOutComm();
             $tmpAmount = ($sp->after_tax_comm *
-            ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions ;
+                ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions;
             $totalIncome += $tmpAmount;
             $paidAmounts[$sp->id] = $tmpAmount;
         }
@@ -81,18 +81,16 @@ class Target extends Model
 
         $payment_to_add = max($this->base_payment, (($this->add_as_payment / 100) * $balance_update));
 
-        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmounts) {
+        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmounts, &$linkedComms) {
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
 
             /** @var SalesComm */
             foreach ($salesCommissions as $s) {
-                $paid_amount = $s->updatePaymentByTarget($this, $paidAmounts[$s->sold_policy_id], $is_manual);
-                if (is_numeric($paid_amount)) {
-                    $linkedComms[$s->id] = [
-                        'paid_percentage'   => ($paidAmounts[$s->sold_policy_id] / $s->amount) * 100,
-                        'amount'            =>  $paidAmounts[$s->sold_policy_id]
-                    ];
-                }
+                $s->updatePaymentByTarget($this, $paidAmounts[$s->sold_policy_id], $is_manual);
+                $linkedComms[$s->id] = [
+                    'paid_percentage'   => ($paidAmounts[$s->sold_policy_id] / $s->amount) * 100,
+                    'amount'            =>  $paidAmounts[$s->sold_policy_id]
+                ];
             }
 
             if ($balance_update)
