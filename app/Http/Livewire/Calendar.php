@@ -191,7 +191,7 @@ class Calendar extends Component
     {
         $events = [];
 
-        foreach (Task::myTasksQuery(upcoming_only: true, includeWatchers: true)->get() as $t) {
+        foreach (Task::myTasksQuery(upcoming_only: true, assignedToMeOnly: true, includeWatchers: true)->get() as $t) {
             $events[] =  [
                 'id'        =>  "task" . $t->id,
                 'title'     => "T. " . $t->title,
@@ -215,7 +215,7 @@ class Calendar extends Component
             ];
         }
 
-        foreach (ClientPayment::userData(upcoming_only: true)->with('sold_policy', 'sold_policy.client')->get() as $t) {
+        foreach (ClientPayment::userData(upcoming_only: true, assigned_only: true)->with('sold_policy', 'sold_policy.client')->get() as $t) {
             $events[] =  [
                 'id'        =>  "clientpayment" . $t->id,
                 'title'     => "CP. " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
@@ -228,14 +228,14 @@ class Calendar extends Component
         }
 
 
-        foreach (Offer::userData(upcomingOnly: true)->with('client')->get() as $t) {
+        foreach (Offer::userData(upcomingOnly: true, assignedToMe: true)->with('client')->get() as $t) {
             $events[] =  [
                 'id'        => "offer" . $t->id,
                 'title'     => "OF: " . $t->client->name,
                 'backgroundColor' => '#73c2fb', //blue
                 'allDay'    => true,
-                'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
-                'end'       => (new Carbon($t->call_time))->toIso8601String(),
+                'start'     => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
+                'end'       => (new Carbon($t->due))->toIso8601String(),
                 'url'       => url('offers', $t->id)
             ];
         }
