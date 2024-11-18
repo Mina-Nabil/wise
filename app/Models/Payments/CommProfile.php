@@ -424,6 +424,10 @@ class CommProfile extends Model
     {
         return $query->where('type', self::TYPE_OVERRIDE);
     }
+    public function scopeAvailableForSelection($query)
+    {
+        return $query->where('select_available', 1);
+    }
     public function scopeLinkedToSoldPolicy($query, $sold_policy_id)
     {
         return $query->select('comm_profiles.*')
