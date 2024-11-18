@@ -58,7 +58,7 @@ class ClientPaymentFinance extends Component
     {
         $statuses = ClientPayment::PYMT_STATES;
         $companies = Company::all();
-        $payments = ClientPayment::includeDue()
+        $payments = ClientPayment::userData()->includeDue()
             ->when($this->selectedCompany, fn($q) => $q->byCompany($this->selectedCompany->id))
             ->when($this->dueDays && !$this->isDuePassed, fn($q) => $q->dueAfter($this->dueDays))
             ->when($this->dueDays && $this->isDuePassed, fn($q) => $q->duePassed($this->dueDays))

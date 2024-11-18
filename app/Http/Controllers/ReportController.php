@@ -15,7 +15,7 @@ class ReportController extends Controller
         /** @var User */
         $loggedInUser = Auth::user();
 
-        if($loggedInUser->can('viewAny', ClientPayment::class))
+        // if($loggedInUser->can('viewAny', ClientPayment::class))
 
         return view('reports.client-payment-finance');
     }
