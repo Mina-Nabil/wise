@@ -280,13 +280,14 @@ class ClientPayment extends Model
         $query->select('client_payments.*')
             ->leftjoin('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
             ->leftjoin('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
+            ->leftjoin('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
             ->groupBy('client_payments.id');
 
         if (!$canSeeAll) $query->where(
             function ($q) use ($user) {
                 $q->where('sold_policies.main_sales_id', $user->id)
                     // ->orwhere('sold_policies.creator_id', $user->id) 
-                    ->orwhere('sales_comms.user_id', $user->id)
+                    ->orwhere('comm_profiles.user_id', $user->id)
                     ->orwhere('client_payments.assigned_to', $user->id);
             }
         );
