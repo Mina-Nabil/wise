@@ -1383,7 +1383,8 @@ class SoldPolicy extends Model
             ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id')
             ->leftjoin('offers', 'sold_policies.offer_id', '=', 'offers.id')
             ->leftjoin('client_payments', 'client_payments.sold_policy_id', '=', 'sold_policies.id')
-            ->groupBy('sold_policies.id');
+            ->groupBy('sold_policies.id')
+            ->orderByDesc('sold_policies.created_at');
 
         // if (!($loggedInUser->is_admin
         //     || (($loggedInUser->is_operations || $loggedInUser->is_finance) && ($searchText || $is_expiring)))) {
