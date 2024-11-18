@@ -56,6 +56,7 @@ class Target extends Model
         $start_date = $end_date->clone()->subMonths($this->each_month);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
+        $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
         $paidAmounts = []; 
 
         /** @var SoldPolicy */
@@ -65,7 +66,6 @@ class Target extends Model
             $tmpAmount = ($sp->after_tax_comm *
             ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions ;
             $totalIncome += $tmpAmount;
-            $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
             $paidAmounts[$sp->id] = $tmpAmount;
         }
         //return false if the target is not acheived
