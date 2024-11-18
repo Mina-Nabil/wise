@@ -81,7 +81,7 @@ class Target extends Model
 
         $payment_to_add = max($this->base_payment, (($this->add_as_payment / 100) * $balance_update));
 
-        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmounts, $linkedComms) {
+        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmounts, &$linkedComms) {
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
 
             /** @var SalesComm */
