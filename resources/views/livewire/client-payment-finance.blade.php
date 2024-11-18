@@ -148,7 +148,7 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
-                                    Due
+                                    Penalty
                                 </th>
                                 <th scope="col" class=" table-th ">
                                     Left
