@@ -319,7 +319,7 @@ class ClientPayment extends Model
 
     public function scopeNotPaidOnly(Builder $query)
     {
-        return $query->whereNot('status', self::PYMT_STATE_PAID);
+        return $query->whereNot('client_payments.status', self::PYMT_STATE_PAID);
     }
 
     public function scopeFilterByStates(Builder $query, array $states)
