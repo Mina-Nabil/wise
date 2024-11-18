@@ -1598,7 +1598,7 @@
                                 @foreach ($linkedSalesComm as $linkedSC)
                                     <tr class="even:bg-slate-50 dark:even:bg-slate-700">
                                         <td class="table-td">{{ $linkedSC->sold_policy->policy_number }}</td>
-                                        <td class="table-td"><b>{{ number_format($linkedSC->pivot->amount) }} EGP</b>
+                                        <td class="table-td"><b>{{ number_format($linkedSC->pivot?->amount) }} EGP</b>
                                         </td>
                                         <td class="table-td "><b>{{ $linkedSC->comm_percentage }}%</b></td>
                                     </tr>
