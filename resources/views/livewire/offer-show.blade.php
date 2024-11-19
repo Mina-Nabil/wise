@@ -131,7 +131,7 @@
                             <div class="flex-1 font-Inter">
                                 <iconify-icon class="text-lg" icon="mdi:tick-circle-outline"></iconify-icon> This Offer
                                 is <b>Renewal</b>!
-                                @if ($offer->renewal_policy)
+                                @if ($offer->renewal_policy?->id)
                                     Expiry:
                                     {{ \Carbon\Carbon::parse($offer->renewal_policy->expiry)->format('l d-m-Y') }}
                                 @endif
