@@ -1103,7 +1103,7 @@ class Offer extends Model
         return $this->belongsTo(User::class, 'closed_by_id');
     }
 
-    public function renewal_policy(): BelongsTo
+    public function renewal_sold_policy(): BelongsTo
     {
         return $this->belongsTo(SoldPolicy::class, 'renewal_policy_id');
     }
