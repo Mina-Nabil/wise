@@ -234,8 +234,8 @@ class Calendar extends Component
                 'title'     => "OF: " . $t->client->name,
                 'backgroundColor' => '#73c2fb', //blue
                 'allDay'    => true,
-                'start'     => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
-                'end'       => (new Carbon($t->due))->toIso8601String(),
+                'start'     => (new Carbon($t->due))->toIso8601String(),
+                'end'       => (new Carbon($t->due))->addMinutes(15)->toIso8601String(),
                 'url'       => url('offers', $t->id)
             ];
         }
