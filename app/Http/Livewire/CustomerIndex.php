@@ -300,7 +300,7 @@ class CustomerIndex extends Component
         $professions = Profession::all();
         $customerStatus = Status::STATUSES;
         $countries = Country::all();
-        $customers = Customer::userData($this->search)->paginate(10);
+        $customers = Customer::userData($this->search)->latest()->paginate(10);
         $users = User::all();
 
         // dd($usersList);

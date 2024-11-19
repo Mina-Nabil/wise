@@ -867,6 +867,7 @@ class Customer extends Model
                     //         ->orwhere('customer_phones.number', '=', "$tmp");
                     // } else {
                     $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                        ->orwhere('customers.id', '=', "$tmp")
                         ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")

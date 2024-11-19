@@ -4,7 +4,7 @@
         <div class="max-w-screen-lg">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                    <b>{{ $customer->first_name }} {{ $customer->middle_name }} {{ $customer->last_name }}
+                    <b>#{{ $customer->id }} - {{ $customer->first_name }} {{ $customer->middle_name }} {{ $customer->last_name }}
                         {{ $customer->arabic_first_name ? '-' : '' }} {{ $customer->arabic_first_name }}
                         {{ $customer->arabic_middle_name }} {{ $customer->arabic_last_name }} </b><iconify-icon
                         class="ml-3" style="position: absolute" wire:loading wire:target="changeSection"

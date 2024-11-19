@@ -37,6 +37,10 @@
                                 <tr>
 
                                     <th scope="col" class=" table-th ">
+                                       #
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Customer Name
                                     </th>
 
@@ -70,6 +74,9 @@
 
                                 @foreach ($customers as $customer)
                                     <tr>
+                                        <td class="table-td ">
+                                            {{ $customer->id }}
+                                        </td>
 
                                         <td wire:click="redirectToShowPage({{ $customer }})"
                                             class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
