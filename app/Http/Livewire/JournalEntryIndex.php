@@ -31,7 +31,7 @@ class JournalEntryIndex extends Component
     protected $queryString = ['AccountId'];
 
     // for bulk actions
-    public $entries;
+    public $Sentries;
     public $selectedEntries = [];
     public $selectAll = false;
 
@@ -105,7 +105,7 @@ class JournalEntryIndex extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selectedEntries = $this->entries->pluck('id')->toArray();
+            $this->selectedEntries = collect($this->Sentries['data'])->pluck('id')->toArray();
         } else {
             $this->selectedEntries = [];
         }
@@ -236,7 +236,7 @@ class JournalEntryIndex extends Component
 
     public function mount()
     {
-        $this->entries = JournalEntry::all();
+        $this->Sentries = JournalEntry::all();
         $this->authorize('viewAny', JournalEntry::class);
         if ($this->AccountId) {
             $this->selectedAccount = Account::findOrFail($this->AccountId);
@@ -247,7 +247,9 @@ class JournalEntryIndex extends Component
     {
         $entries = JournalEntry::when($this->selectedAccount, function ($q) {
             return $q->byAccount($this->selectedAccount->id);
-        })->get();
+        })->paginate(20);
+
+        $this->Sentries = $entries->toArray();
 
         $creditAccounts = Account::byNature(Account::NATURE_CREDIT)->get();
         $debitAccounts = Account::byNature(Account::NATURE_DEBIT)->get();

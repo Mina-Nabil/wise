@@ -111,7 +111,7 @@
         </header> --}}
 
         <div class="card-body px-6 pb-6">
-            <div class="overflow-x-auto -mx-6">
+            <div class="overflow-x-auto overflow-y-hidden -mx-6">
                 <div class="inline-block min-w-full align-middle">
                     <div class="overflow-hidden ">
                         <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
@@ -343,6 +343,9 @@
                         </table>
                     </div>
                     {{-- {{ $entries->links('vendor.livewire.bootstrap') }} --}}
+                    {{ $entries->links('vendor.livewire.bootstrap') }}
+
+
 
                 </div>
             </div>
