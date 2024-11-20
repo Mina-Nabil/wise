@@ -246,7 +246,7 @@ class JournalEntry extends Model
     }
 
     /** modal needed to query by day */
-    public function downloadDailyTransaction(Carbon $day)
+    public static function downloadDailyTransaction(Carbon $day)
     {
 
         // $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
