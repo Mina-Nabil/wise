@@ -636,6 +636,56 @@
                                 </div>
 
                             </div>
+
+
+                            @if ($isRenewal)
+                                <div class="from-group">
+                                    <p class="text-lg"><b>Select renewal policy</b></p>
+                                    <div class="input-area">
+                                        <label for="lastName" class="form-label">
+                                            @if ($selectedPolicy)
+                                                Selected Policy
+                                            @else
+                                                Search policy <iconify-icon wire:loading wire:target="searchPolicyText"
+                                                    class="loading-icon text-lg"
+                                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                            @endif
+
+                                        </label>
+                                        @if ($selectedPolicy)
+                                            {{ $selectedPolicy->policy_number . ' | ' . $selectedPolicy->client->name }}
+                                            <Span wire:click="clearSelectedPolicy"
+                                                class="cursor-pointer text-primary-500">clear</Span></p>
+                                        @else
+                                            <input placeholder="Search policy..." type="text" class="form-control"
+                                                wire:model="searchPolicyText">
+                                        @endif
+
+                                    </div>
+
+                                    @error('clientType')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="text-sm">
+                                    @if ($searchedPolicies)
+                                        @foreach ($searchedPolicies as $searchedPolicy)
+                                            <p><iconify-icon icon="iconoir:privacy-policy"></iconify-icon>
+                                                {{ $searchedPolicy->policy_number }} |
+                                                {{ $searchedPolicy->client->name ?? 'N/A' }} | <Span
+                                                    wire:click="selectPolicy({{ $searchedPolicy->id }})"
+                                                    class="cursor-pointer text-primary-500">Select Policy</Span></p>
+                                        @endforeach
+
+                                    @endif
+                                </div>
+                            @endif
+
+
+
+
+
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Item value</label>
                                 <input type="number" class="form-control mt-2 w-full" wire:model.defer="item_value">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Customers\Customer;
 use App\Models\Corporates\Corporate;
 use App\Models\Cars\Car;
@@ -68,6 +69,30 @@ class OfferIndex extends Component
     public $startDate;
     public $endDate;
 
+    //renewal policy
+    public $searchPolicyText;
+    public $searchedPolicies;
+    public $selectedPolicy;
+
+    public function updatedsearchPolicyText()
+    {
+        $this->searchedPolicies = SoldPolicy::userdata($this->searchPolicyText)
+            ->get()
+            ->take(5);
+    }
+
+    public function selectPolicy($id)
+    {
+        $this->selectedPolicy = SoldPolicy::findOrFail($id);
+        $this->searchPolicyText = null;
+        $this->searchedPolicies = null;
+    }
+
+    public function clearSelectedPolicy()
+    {
+        $this->selectedPolicy = null;
+    }
+
     public $relatives = [];
 
     protected $listeners = ['dataReceived'];
@@ -75,7 +100,7 @@ class OfferIndex extends Component
         'startDate' => ['except' => ''],
         'endDate' => ['except' => ''],
     ];
-    
+
     public function dataReceived($data)
     {
         $this->clientType = ucwords($data['clientTypeRecieved']);
@@ -213,10 +238,9 @@ class OfferIndex extends Component
         }
     }
 
-
     public function newOffer()
     {
-        if(!$this->owner) {
+        if (!$this->owner) {
             $this->alert('warning', 'Please select the client');
             return;
         }
@@ -230,6 +254,11 @@ class OfferIndex extends Component
             'isRenewal' => 'boolean',
             'inFavorTo' => 'nullable|string|max:255',
         ]);
+
+        $renewal_soldPolicy = null;
+        if ($this->isRenewal) {
+            $renewal_soldPolicy = SoldPolicy::findOrFail($this->selectedPolicy->id); // double checks
+        }
 
         $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : Carbon::tomorrow();
         $dueTime = $this->dueTime ? Carbon::parse($this->dueTime) : null;
@@ -262,7 +291,7 @@ class OfferIndex extends Component
             $item = null;
         }
 
-        $res = Offer::newOffer($this->owner, $this->type, $this->item_value, $this->item_title, $this->item_desc, $this->note, $combinedDateTime, $item, $this->isRenewal, $this->inFavorTo);
+        $res = Offer::newOffer($this->owner, $this->type, $this->item_value, $this->item_title, $this->item_desc, $this->note, $combinedDateTime, $item, $this->isRenewal, $this->inFavorTo, $renewal_soldPolicy?->policy_number, $renewal_soldPolicy?->id);
         if ($res) {
             return redirect(route('offers.show', $res->id));
         } else {
@@ -282,12 +311,11 @@ class OfferIndex extends Component
         $this->resetPage();
     }
 
-
     public function mount()
     {
         $this->startDate = null;
         $this->endDate = null;
-        $this->dateRange = ($this->startDate && $this->endDate) ? $this->startDate . ' to ' . $this->endDate : "N/A";
+        $this->dateRange = $this->startDate && $this->endDate ? $this->startDate . ' to ' . $this->endDate : 'N/A';
     }
 
     public function render()
@@ -302,19 +330,25 @@ class OfferIndex extends Component
 
         $offers = Offer::userData($this->search, $this->myOffers)
             ->when($this->isRenewalCB, function ($q, $v) {
-                if ($v === 'isRenewal') return $q->byRenewal(1);
-                elseif ($v === 'notRenewal') return $q->byRenewal(0);
-            })->when($this->filteredStatus, function ($query) {
+                if ($v === 'isRenewal') {
+                    return $q->byRenewal(1);
+                } elseif ($v === 'notRenewal') {
+                    return $q->byRenewal(0);
+                }
+            })
+            ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);
-            })->when($this->filteredStatus == null, function ($query) {
+            })
+            ->when($this->filteredStatus == null, function ($query) {
                 return $query->byStates(['active']);
-            })->when($this->startDate && $this->endDate, function ($query) {
+            })
+            ->when($this->startDate && $this->endDate, function ($query) {
                 $startDate = Carbon::parse($this->startDate);
                 $endDate = Carbon::parse($this->endDate);
                 return $query->fromTo($startDate, $endDate);
             })
             ->paginate(10);
-    
+
         return view('livewire.offer-index', [
             'offers' => $offers,
             'clientNames' => $this->clientNames,
