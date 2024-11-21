@@ -247,7 +247,7 @@ class JournalEntryIndex extends Component
     {
         $entries = JournalEntry::when($this->selectedAccount, function ($q) {
             return $q->byAccount($this->selectedAccount->id);
-        })->paginate(20);
+        })->latest()->paginate(20);
 
         $this->Sentries = $entries->toArray();
 
