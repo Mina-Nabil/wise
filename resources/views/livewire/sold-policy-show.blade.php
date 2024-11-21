@@ -372,6 +372,25 @@
                     </div>
                 </div>
 
+                @if ($soldPolicy->renewal_policy)
+                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                        <div class="card-body flex flex-col p-6 active justify-center">
+                            <div>
+                                <div class="flex justify-between">
+                                    <b>Renewal Policy</b>
+                                    <a href="{{ route('sold.policy.show', $soldPolicy->renewal_policy->id) }}"
+                                        target="_blank">
+                                        <button class="btn inline-flex justify-center btn-outline-light btn-sm">View
+                                            Policy</button>
+                                    </a>
+                                </div>
+                                <p class="mb-5">
+                                    Policy Number: {{ $soldPolicy->renewal_policy->policy_number }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <div>
@@ -430,28 +449,31 @@
                         </div>
 
                     </div>
+
+
                 </div>
 
-                @if($soldPolicy->main_sales)
-                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-                    <div class="card-body flex flex-col p-6 active justify-center">
-                        <div>
-                            <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                                Main sales
-                                @can('updateMainSales', $soldPolicy)
-                                <span class="float-right">
-                                    <button wire:click="openSetMainSalesSection" class="action-btn" type="button">
-                                        <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                    </button>
+                @if ($soldPolicy->main_sales)
+                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                        <div class="card-body flex flex-col p-6 active justify-center">
+                            <div>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                    Main sales
+                                    @can('updateMainSales', $soldPolicy)
+                                        <span class="float-right">
+                                            <button wire:click="openSetMainSalesSection" class="action-btn"
+                                                type="button">
+                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                            </button>
+                                        </span>
+                                    @endcan
                                 </span>
-                                @endcan
-                            </span>
-                            <span class="text-lg font-medium text-slate-900 dark:text-white block">
-                                {{ $soldPolicy->main_sales->full_name }}
-                            </span>
+                                <span class="text-lg font-medium text-slate-900 dark:text-white block">
+                                    {{ $soldPolicy->main_sales->full_name }}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div> 
                 @endif
 
 
@@ -1363,8 +1385,8 @@
                                                             <td class="table-td ">
                                                                 <div class="dropstart relative">
                                                                     <button class="inline-flex justify-center items-center"
-                                                                        type="button"  
-                                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        type="button" data-bs-toggle="dropdown"
+                                                                        aria-expanded="false">
                                                                         <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
                                                                             icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                     </button>
@@ -2767,7 +2789,7 @@
                                     <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -2920,7 +2942,7 @@
                                         class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
                                         % </span>
                                 </div>
-          
+
                                 <input name="discount" max="12" min="1" type="number"
                                     class="form-control mt-2 w-full @error('discount') !border-danger-500 @enderror">
                                 @error('discount')
@@ -3908,7 +3930,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4026,7 +4048,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4057,7 +4079,8 @@
 
                                 <div class="from-group">
                                     <label for="commAmount" class="form-label">Amount</label>
-                                    <input type="number" name="commAmount" class="form-control mt-2 w-full @error('commAmount') !border-danger-500 @enderror"
+                                    <input type="number" name="commAmount"
+                                        class="form-control mt-2 w-full @error('commAmount') !border-danger-500 @enderror"
                                         wire:model.defer="commAmount"></textarea>
                                     @error('commAmount')
                                         <span
@@ -4255,7 +4278,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4388,7 +4411,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4479,7 +4502,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4493,7 +4516,8 @@
                                     <select name="updatedMainSaledID" id="basicSelect"
                                         class="form-control w-full mt-2 @error('updatedMainSaledID') !border-danger-500 @enderror"
                                         wire:model="updatedMainSaledID">
-                                        <option value="" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        <option value=""
+                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             None</option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}"

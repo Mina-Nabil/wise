@@ -92,6 +92,12 @@ class OfferShow extends Component
     public $deleteCommId;
     public $commId;
 
+    //renewal
+    public $setRenewalSec = false;
+    public $searchPolicyText;
+    public $searchedPolicies;
+    public $selectedPolicy;
+
 
 
     public $editOptionId;
@@ -972,10 +978,44 @@ class OfferShow extends Component
         }
     }
 
+    public function openSetRenewal(){
+        $this->setRenewalSec = true;
+    }
+
+    public function closeSetRenewal(){
+        $this->setRenewalSec = false;
+    }
+
+    public function updatedsearchPolicyText()
+    {
+        $this->searchedPolicies = SoldPolicy::userdata($this->searchPolicyText)
+            ->get()
+            ->take(5);
+    }
+
+    public function selectRenewalPolicy($id)
+    {
+        $this->selectedPolicy = SoldPolicy::findOrFail($id);
+        $this->searchPolicyText = null;
+        $this->searchedPolicies = null;
+    }
+
+    public function clearSelectedPolicy()
+    {
+        $this->selectedPolicy = null;
+    }
+
     public function setIsRenewal()
     {
-        $res = $this->offer->setRenewalFlag(true);
+        $this->validate([
+            'selectedPolicy' => 'required'
+        ],messages:[
+            'selectedPolicy.required' => 'Sold policy is required.'
+        ]);
+        SoldPolicy::findOrFail($this->selectedPolicy->id);
+        $res = $this->offer->setRenewalFlag(true,$this->selectedPolicy->id);
         if ($res) {
+            $this->closeSetRenewal();
             $this->alert('success', 'Renewal Status Changed!');
         } else {
             $this->alert('failed', 'server error');
@@ -984,7 +1024,7 @@ class OfferShow extends Component
 
     public function removeRenewal()
     {
-        $res = $this->offer->setRenewalFlag(false);
+        $res = $this->offer->setRenewalFlag(false,);
         if ($res) {
             $this->alert('success', 'Renewal removed!');
         } else {
