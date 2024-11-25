@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -288,22 +289,26 @@ class Task extends Model
 
         $this->addComment("Changing status from $this->status to $status", false);
         $this->status = $status;
-        $this->save();
-        if ($status == self::STATUS_COMPLETED) {
-            foreach ($this->actions as $a) {
-                if (in_array($a->id, $accepted_actions_ids)) {
-                    $a->confirmAction();
-                } else {
-                    $a->rejectAction();
+        DB::transaction(function () use ($status, $loggedInUser, $accepted_actions_ids, $comment) {
+
+            $this->save();
+            if ($status == self::STATUS_COMPLETED) {
+                foreach ($this->actions as $a) {
+                    if (in_array($a->id, $accepted_actions_ids)) {
+                        if (!$a->confirmAction()) throw new Exception('Unauthorized');
+                    } else {
+                        $a->rejectAction();
+                    }
                 }
             }
-        }
-        if ($comment) {
-            $this->addComment($comment, false);
-        }
-        $this->last_action_by()->associate($loggedInUser);
-        $this->sendTaskNotifications('Status changed', "Task#$this->id is set to $status");
-        return true;
+            if ($comment) {
+                $this->addComment($comment, false);
+            }
+            $this->last_action_by()->associate($loggedInUser);
+            $this->sendTaskNotifications('Status changed', "Task#$this->id is set to $status");
+            return true;
+        });
+
         try {
             AppLog::info('Status changed', "Task#$this->id state changed to $status", $this);
             return $this->save();
@@ -361,10 +366,10 @@ class Task extends Model
         try {
             if (
                 $this->actions()
-                    ->where('id', $id)
-                    ->update([
-                        'value' => $value,
-                    ])
+                ->where('id', $id)
+                ->update([
+                    'value' => $value,
+                ])
             ) {
                 $this->addComment("Action set to {$value}", true);
             }
@@ -431,14 +436,15 @@ class Task extends Model
     /**
      * export tasks functions
      */
-    public static function exportReport(Carbon $created_from = null,
-    Carbon $created_to = null,
-    Carbon $due_from = null,
-    Carbon $due_to = null,
-    string $assignee_id = null,
-    string $openedBy_id = null,
-    bool $is_expired = null)
-    {
+    public static function exportReport(
+        Carbon $created_from = null,
+        Carbon $created_to = null,
+        Carbon $due_from = null,
+        Carbon $due_to = null,
+        string $assignee_id = null,
+        string $openedBy_id = null,
+        bool $is_expired = null
+    ) {
         $tasks = self::report($created_from, $created_to, $due_from, $due_to, $assignee_id, $openedBy_id, $is_expired)->get();
         $template = IOFactory::load(resource_path('import/tasks_report.xlsx'));
         if (!$template) {
@@ -451,7 +457,7 @@ class Task extends Model
         foreach ($tasks as $task) {
             $activeSheet->getCell('A' . $i)->setValue($task->created_at->format('D d/m'));
             $activeSheet->getCell('B' . $i)->setValue(Carbon::parse($task->due)->format('D d/M H:i'));
-            $activeSheet->getCell('C' . $i)->setValue($task->assigned_to_id ? $task->assigned_to?->first_name . ' '. $task->assigned_to?->last_name : ($task->assigned_to_type ? $task->assigned_to_type : '-' ));
+            $activeSheet->getCell('C' . $i)->setValue($task->assigned_to_id ? $task->assigned_to?->first_name . ' ' . $task->assigned_to?->last_name : ($task->assigned_to_type ? $task->assigned_to_type : '-'));
             $activeSheet->getCell('D' . $i)->setValue($task->title);
             $activeSheet->getCell('E' . $i)->setValue($task->status);
             $activeSheet->getCell('F' . $i)->setValue($task->open_by?->first_name . ' ' . $task->open_by?->last_name);
@@ -616,12 +622,12 @@ class Task extends Model
     ) {
         // Filter by creation date range
         $query->myTasksQuery(false)
-        ->when($created_from, function ($q, $v) {
-            $q->where('created_at', '>=', $v->startOfDay());
-        })->when($created_to, function ($q, $v) {
-            $q->where('created_at', '<=', $v->endOfDay());
-        });
-    
+            ->when($created_from, function ($q, $v) {
+                $q->where('created_at', '>=', $v->startOfDay());
+            })->when($created_to, function ($q, $v) {
+                $q->where('created_at', '<=', $v->endOfDay());
+            });
+
         // Filter by due date range
         $query->when($due_from, function ($q, $v) {
             $q->where('due', '>=', $v->startOfDay());
@@ -632,12 +638,12 @@ class Task extends Model
         })->when($openedBy_id, function ($q, $v) {
             $q->openBy($v);
         });
-    
+
         // Filter by expiration status
         if ($is_expired !== null) {
             $query->where('due', $is_expired ? '<' : '>=', now());
         }
-    
+
         return $query;
     }
 
