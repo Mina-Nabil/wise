@@ -2,11 +2,13 @@
 
 namespace App\Models\Tasks;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class TaskAction extends Model
 {
@@ -15,7 +17,10 @@ class TaskAction extends Model
 
     protected $table = 'task_actions';
     protected $fillable = [
-        "title", "status", "column_name", "value"
+        "title",
+        "status",
+        "column_name",
+        "value"
     ];
     const STATUS_NEW = 'new';
     const STATUS_DONE = 'done';
@@ -58,10 +63,17 @@ class TaskAction extends Model
 
     private function makeAction()
     {
+
+
         if ($this->status !== self::STATUS_NEW) return false;
 
         try {
             $this->load('task', 'task.taskable');
+            if (is_a($this->task->taskable, SoldPolicy::class)) {
+                /** @var User */
+                $loggedInUser = Auth::user();
+                if (!$loggedInUser->can('update', $this->task->taskable)) return false;
+            }
             $this->task->taskable->{$this->column_name} = $this->value;
             $this->task->taskable->save();
             $new_val = $this->value ?? 'NULL';

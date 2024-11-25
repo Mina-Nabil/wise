@@ -726,9 +726,6 @@ class SoldPolicy extends Model
 
     public function addClaim($due = null, $desc = null, $fields = [])
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
 
         $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim - " . $this->client->name, $desc, $due);
         if (!$newTask) return false;
