@@ -57,6 +57,18 @@ class SoldPolicyPolicy
     }
 
     /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Business\SoldPolicy  $soldPolicy
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateClaim(User $user, SoldPolicy $soldPolicy)
+    {
+        return $user->is_admin || $user->is_operations;
+    }
+
+    /**
      * Determine whether the user can update a sold policy payment's info
      *
      * @param  \App\Models\Users\User  $user

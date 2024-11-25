@@ -72,7 +72,7 @@ class TaskAction extends Model
             if (is_a($this->task->taskable, SoldPolicy::class)) {
                 /** @var User */
                 $loggedInUser = Auth::user();
-                if (!$loggedInUser->can('update', $this->task->taskable)) return false;
+                if (!$loggedInUser->can('updateClaim', $this->task->taskable)) return false;
             }
             $this->task->taskable->{$this->column_name} = $this->value;
             $this->task->taskable->save();
