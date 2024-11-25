@@ -132,6 +132,7 @@
                                 <iconify-icon class="text-lg" icon="mdi:tick-circle-outline"></iconify-icon> This Offer
                                 is <b>Renewal</b>!
                                 @if ($offer->renewal_sold_policy)
+                                    For: {{ $offer->renewal_sold_policy->policy_number }}
                                     Expiry:
                                     {{ \Carbon\Carbon::parse($offer->renewal_sold_policy->expiry)->format('l d-m-Y') }}
                                 @endif
@@ -2367,12 +2368,13 @@
                                         <Span wire:click="clearSelectedPolicy"
                                             class="cursor-pointer text-primary-500">clear</Span></p>
                                     @else
-                                        <input placeholder="Search policy..." type="text" class="form-control  @error('selectedPolicy') !border-danger-500 @enderror"
+                                        <input placeholder="Search policy..." type="text"
+                                            class="form-control  @error('selectedPolicy') !border-danger-500 @enderror"
                                             wire:model="searchPolicyText">
-                                            @error('selectedPolicy')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
+                                        @error('selectedPolicy')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
                                     @endif
 
                                 </div>
@@ -2398,7 +2400,7 @@
                                 <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading
                                     wire:target="setIsRenewal" icon="line-md:loading-twotone-loop"></iconify-icon>
                                 <span wire:loading.remove wire:target="setIsRenewal">Submit</span>
-                                
+
                             </button>
                         </div>
                     </div>

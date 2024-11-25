@@ -166,6 +166,11 @@ class SoldPolicyReport extends Component
         }
     }
 
+    public function updatedSearchCompany()
+    {
+        $this->companies = Company::when($this->searchCompany, fn($q) => $q->SearchBy($this->searchCompany))->get()->take(5);
+    }
+
 
 
     public function clearpaid()
@@ -458,7 +463,7 @@ class SoldPolicyReport extends Component
                 $this->is_renewal,
                 $this->main_sales_id,
                 $this->issued_from,
-                $this->issued_to, 
+                $this->issued_to,
                 $this->profiles,
                 $this->is_welcomed,
             );
@@ -494,7 +499,7 @@ class SoldPolicyReport extends Component
     public function mount()
     {
         $this->brands = Brand::all()->take(5);
-        $this->companies = Company::all()->take(5);
+        $this->companies = Company::when($this->searchCompany, fn($q) => $q->SearchBy($this->searchCompany))->get()->take(5);
         $this->InsurancePolicies = Policy::all()->take(5);
     }
 
