@@ -171,7 +171,7 @@ class Followup extends Model
         })->when($action_to, function ($q, $v) {
             $q->where('action_time', "<=", $v->format('Y-m-d'));
         })->when($sales_id, function ($q, $v) {
-            $q->where('owner_id', ">=", $v);
+            $q->where('creator_id', ">=", $v);
         })->when($client_type && $client_id, function ($q) use ($client_type, $client_id) {
             $q->where('called_type', $client_type)->where('called_id', $client_id);
         })->when($is_meeting !== null, function ($q) use ($is_meeting) {
@@ -213,10 +213,6 @@ class Followup extends Model
     }
 
     ///relations
-    public function owner(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'owner_id');
-    }
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
