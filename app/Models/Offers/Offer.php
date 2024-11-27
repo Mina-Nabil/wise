@@ -85,7 +85,7 @@ class Offer extends Model
         'assignee_id',
         'in_favor_to',
         'renewal_policy',
-        'sub_status', 
+        'sub_status',
         'renewal_policy_id'
     ];
 
@@ -212,7 +212,7 @@ class Offer extends Model
             car_plate_no: $car_plate_no,
             car_engine: $car_engine,
             policy_doc: $policy_doc,
-            issuing_date: $issuing_date, 
+            issuing_date: $issuing_date,
             renewal_policy_id: $this->renewal_policy_id
         );
         $clientDueDate = $issuing_date ?  ($issuing_date->isBefore($start) ? $start : $issuing_date) : $start;
@@ -984,7 +984,7 @@ class Offer extends Model
         return $query->groupBy('offers.id')->orderByDesc('due');
     }
 
-    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [])
+    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], Carbon $expiry_from = null, Carbon $expiry_to = null)
     {
         $query->userData($searchText)
             ->when($from, function ($q, $v) {
@@ -1012,6 +1012,13 @@ class Offer extends Model
             })->when(count($comm_profile_ids), function ($q) use ($comm_profile_ids) {
                 $q->join('offer_comm_profiles', 'offer_comm_profiles.offer_id', '=', 'offers.id')
                     ->whereIn('offer_comm_profiles.comm_profile_id', $comm_profile_ids);
+            })->when($expiry_from || $expiry_to, function ($q) use ($expiry_from, $expiry_to) {
+                $q->join('sold_policies', 'sold_policies.id', '=', 'offers.renewal_policy_id')
+                    ->when($expiry_from, function ($qq, $v) {
+                        $qq->where('sold_policies.expiry', ">=", $v->format('Y-m-d 00:00:00'));
+                    })->when($expiry_to, function ($qq, $v) {
+                        $qq->where('sold_policies.expiry', "<=", $v->format('Y-m-d 00:00:00'));
+                    });
             });
         $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
         return $query;
