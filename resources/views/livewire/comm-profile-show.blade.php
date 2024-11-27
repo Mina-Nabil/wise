@@ -2581,6 +2581,18 @@
                             </div>
 
                             <div class="input-area mt-3">
+                                <label for="updatedAvailableForId" class="form-label">Available For User</label>
+                                <select name="updatedAvailableForId" class="form-control w-full mt-2 "
+                                    wire:model.defer="updatedAvailableForId">
+                                    <option>None</option>
+                                    @foreach ($users as $u)
+                                        <option value="{{ $u->id }}">
+                                            {{ $u->username }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="input-area mt-3">
                                 <label for="updatedAutomaticOverrideId" class="form-label">Automatic
                                     Override</label>
                                 <select name="updatedAutomaticOverrideId" class="form-control w-full mt-2 "

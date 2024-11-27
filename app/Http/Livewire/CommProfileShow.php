@@ -41,6 +41,7 @@ class CommProfileShow extends Component
     public $updatedUserId;
     public $updatedTitle;
     public $updatedDesc;
+    public $updatedAvailableForId;
 
     public $editedRowId;
 
@@ -924,7 +925,7 @@ class CommProfileShow extends Component
         $this->updatedCommSec = true;
         $this->updatedType = $this->profile->type;
         $this->updatedPerPolicy = $this->profile->per_policy;
-        // $this->updatedUserId = $this->profile->user_id;
+        $this->updatedAvailableForId = $this->profile->updatedAvailableForId;
         $this->updatedAutomaticOverrideId = $this->profile->auto_override_id;
         $this->updatedTitle = $this->profile->title;
         $this->updatedDesc = $this->profile->desc;
@@ -945,12 +946,13 @@ class CommProfileShow extends Component
         $this->validate([
             'updatedType' => 'required|in:' . implode(',', CommProfile::TYPES),
             'updatedAutomaticOverrideId' => 'nullable|exists:comm_profiles,id',
+            'updatedAvailableForId' => 'nullable|exists:users,id',
             'updatedPerPolicy' => 'boolean',
             'updatedSelectAvailable' => 'boolean',
             'updatedDesc' => 'nullable|string',
         ]);
 
-        $res = $this->profile->editProfile($this->updatedType, $this->updatedPerPolicy, $this->updatedTitle, $this->updatedDesc, $this->updatedSelectAvailable, $this->updatedAutomaticOverrideId);
+        $res = $this->profile->editProfile($this->updatedType, $this->updatedPerPolicy, $this->updatedTitle, $this->updatedDesc, $this->updatedSelectAvailable, $this->updatedAutomaticOverrideId, $this->updatedAvailableForId);
 
         if ($res) {
             $this->updatedCommSec = false;

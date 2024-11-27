@@ -711,9 +711,6 @@ class SoldPolicy extends Model
 
     public function addEndorsement($due = null, $desc = null, $actions = [])
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
 
         $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement - " . $this->client->name, $desc, $due);
         if (!$newEndors) return false;
@@ -742,9 +739,6 @@ class SoldPolicy extends Model
 
     public function addTaskToOperations($due = null, $desc = null)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
 
         $newTask = $this->addTask(Task::TYPE_TASK, "Policy# $this->policy_number task", $desc, $due);
         if (!$newTask) return false;

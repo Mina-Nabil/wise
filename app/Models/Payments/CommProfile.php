@@ -47,8 +47,9 @@ class CommProfile extends Model
         'user_id',
         'balance',
         'unapproved_balance',
-        'select_available',
-        'auto_override_id' //Available for Selection
+        'select_available', //Available for Selection
+        'available_for_id',
+        'auto_override_id'
     ];
 
     ///static functions
@@ -60,6 +61,7 @@ class CommProfile extends Model
         string $desc = null,
         bool $select_available = false, //switch,
         $auto_override_id = null, //can be linked to user
+        $available_for_id = null, //can be linked to user
     ): self|bool {
         assert($user_id !== null || $title != null, "Must include a title or select a user");
         try {
@@ -75,6 +77,7 @@ class CommProfile extends Model
                 "user_id"       =>  $user_id,
                 "title"         =>  $formattedTitle,
                 "auto_override_id"  =>  $auto_override_id,
+                "available_for_id"  =>  $available_for_id,
                 "desc"          =>  $desc,
             ]);
             AppLog::error("creating new comm profile");
@@ -165,6 +168,7 @@ class CommProfile extends Model
         string $desc = null,
         bool $select_available = false, //switch
         $auto_override_id = null,
+        $available_for_id = null,
     ) {
         try {
             $this->update([
@@ -172,6 +176,7 @@ class CommProfile extends Model
                 "per_policy"    =>  $per_policy,
                 "select_available"    =>  $select_available,
                 "auto_override_id"  =>  $auto_override_id,
+                "available_for_id"  =>  $available_for_id,
                 "title"         =>  $title,
                 "desc"          =>  $desc,
             ]);
@@ -426,7 +431,10 @@ class CommProfile extends Model
     }
     public function scopeAvailableForSelection($query)
     {
-        return $query->where('select_available', 1);
+        return $query->where(function ($q) {
+            $q->where('select_available', 1)
+                ->orWhere('available_for_id', Auth::id());
+        });
     }
     public function scopeLinkedToSoldPolicy($query, $sold_policy_id)
     {
