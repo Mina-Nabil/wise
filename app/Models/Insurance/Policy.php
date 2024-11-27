@@ -61,6 +61,7 @@ class Policy extends Model
         self::BUSINESS_INLAND,
         self::BUSINESS_ENGINEERING,
         self::BUSINESS_LIABILITY,
+        self::BUSINESS_ACCIDENT,
         self::BUSINESS_EXTENDED_WARRANTY,
         self::BUSINESS_CORPORATE_LIFE,
         self::BUSINESS_PROPERTY,
