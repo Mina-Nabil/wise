@@ -1986,7 +1986,7 @@
                             @if ($policyConditions)
                                 @if ($conditionId)
                                     <label for="lastName" class="form-label" style="margin:0">Condition</label>
-                                    <p> Rate:{{ $conditionData->rate }}
+                                    <p> Rate:{{ $conditionData?->rate }}
                                     </p>
                                     <br>
                                 @else
@@ -2574,14 +2574,15 @@
                         <div class="p-6">
                             <label for="lastName" class="form-label" style="margin: 0">Policy</label>
                             <p>{{ $policyData->company->name }} | {{ $policyData->company->name }}</p><br>
-
-                            <label for="lastName" class="form-label" style="margin:0">Condition</label>
-                            <p>{{ ucwords(str_replace('_', ' ', $conditionData->scope)) }}
-                                <b>
-                                    {{ $conditionData->operator == 'gte' ? '>=' : ($conditionData->operator == 'gt' ? '>' : ($conditionData->operator == 'lte' ? '<=' : ($conditionData->operator == 'lt' ? '<' : ($conditionData->operator == 'e' ? '=' : '')))) }}
-                                </b>
-                                {{ $conditionData->value }} | Rate:{{ $conditionData->value }}
-                            </p>
+                            @if ($conditionData)
+                                <label for="lastName" class="form-label" style="margin:0">Condition</label>
+                                <p>{{ ucwords(str_replace('_', ' ', $conditionData->scope)) }}
+                                    <b>
+                                        {{ $conditionData->operator == 'gte' ? '>=' : ($conditionData->operator == 'gt' ? '>' : ($conditionData->operator == 'lte' ? '<=' : ($conditionData->operator == 'lt' ? '<' : ($conditionData->operator == 'e' ? '=' : '')))) }}
+                                    </b>
+                                    {{ $conditionData->value }} | Rate:{{ $conditionData->value }}
+                                </p>
+                            @endif
                             <br>
 
                             <div class="from-group">
