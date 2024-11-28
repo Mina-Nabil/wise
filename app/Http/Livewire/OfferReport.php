@@ -18,6 +18,7 @@ class OfferReport extends Component
     use WithPagination, ToggleSectionLivewire;
 
     public $dateSection;
+    public $expirySection;
     public $lobSection;
     public $creatorSection = false;
     public $assigneeSection = false;
@@ -30,6 +31,8 @@ class OfferReport extends Component
 
     public $from;
     public $to;
+    public $expiryFrom;
+    public $expiryTo;
     public $statuses = [];
     public $creator_id;
     public $assignee_id;
@@ -42,6 +45,8 @@ class OfferReport extends Component
 
     public $Efrom;
     public $Eto;
+    public $EExpiryfrom;
+    public $EExpiryto;
     public $Estatuses = [];
     public $Ecreator_id;
     public $Eassignee_id;
@@ -210,6 +215,8 @@ class OfferReport extends Component
         }
     }
 
+
+
     public function setDates()
     {
         $this->from = Carbon::parse($this->Efrom);
@@ -221,6 +228,28 @@ class OfferReport extends Component
     {
         $this->from = null;
         $this->to = null;
+    }
+
+    public function setExpiry()
+    {
+        $this->expiryFrom = Carbon::parse($this->EExpiryfrom);
+        $this->expiryTo = Carbon::parse($this->EExpiryto);
+        $this->toggle($this->expirySection);
+    }
+
+    public function clearExpiry()
+    {
+        $this->expiryFrom = null;
+        $this->expiryTo = null;
+    }
+
+    public function toggleExpiry()
+    {
+        $this->toggle($this->expirySection);
+        if ($this->expirySection) {
+            $this->EExpiryfrom = Carbon::parse($this->from)->toDateString();
+            $this->EExpiryto = Carbon::parse($this->to)->toDateString();
+        }
     }
 
     public function redirectToShowPage($id)
@@ -243,6 +272,8 @@ class OfferReport extends Component
                 $this->value_to,
                 $this->search,
                 $this->is_renewal,
+                $this->expiryFrom,
+                $this->expiryTo,
             );
         }
     }
@@ -259,7 +290,7 @@ class OfferReport extends Component
         $STATUSES = Offer::STATUSES;
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $users = User::all();
-        $COMM_PROFILES = CommProfile::select('title','id')->get();
+        $COMM_PROFILES = CommProfile::select('title', 'id')->get();
 
         if ($this->creator_id) {
             $c = User::find($this->creator_id);
