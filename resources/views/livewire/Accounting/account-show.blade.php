@@ -41,7 +41,7 @@
                         <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                             <thead class=" border-t border-slate-100 dark:border-slate-800 no-wrap">
                                 <tr>
-                                    <th scope="col" class="table-th">Day Serial</th>
+                                    <th scope="col" class="table-th">#</th>
                                     <th scope="col" class="table-th">Title</th>
                                     <th scope="col" class="table-th">Debit</th>
                                     <th scope="col" class="table-th">Credit</th>
@@ -58,7 +58,7 @@
 
                                 @foreach ($entries as $entry)
                                     <tr>
-                                        <td class="table-td"><b>{{ $entry->day_serial }}</b></td>
+                                        <td class="table-td"><b>{{ $entry->id }}</b></td>
                                         <td class="table-td"><b>{{ $entry->name }}</b></td>
                                         <td class="table-td">{{ number_format($entry->debit_amount, 2) }}</td>
                                         <td class="table-td">{{ number_format($entry->credit_amount, 2) }}</td>
