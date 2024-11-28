@@ -247,8 +247,8 @@ class OfferReport extends Component
     {
         $this->toggle($this->expirySection);
         if ($this->expirySection) {
-            $this->EExpiryfrom = Carbon::parse($this->from)->toDateString();
-            $this->EExpiryto = Carbon::parse($this->to)->toDateString();
+            $this->EExpiryfrom = Carbon::parse($this->expiryFrom)->toDateString();
+            $this->EExpiryto = Carbon::parse($this->expiryTo)->toDateString();
         }
     }
 
