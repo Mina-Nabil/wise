@@ -1013,12 +1013,12 @@ class Offer extends Model
                 $q->join('offer_comm_profiles', 'offer_comm_profiles.offer_id', '=', 'offers.id')
                     ->whereIn('offer_comm_profiles.comm_profile_id', $comm_profile_ids);
             })->when($expiry_from || $expiry_to, function ($q) use ($expiry_from, $expiry_to) {
-                $q->join('sold_policies', 'sold_policies.id', '=', 'offers.renewal_policy_id');
-                    // ->when($expiry_from, function ($qq, $v) {
-                    //     $qq->where('sold_policies.expiry', ">=", $v->format('Y-m-d 00:00:00'));
-                    // })->when($expiry_to, function ($qq, $v) {
-                    //     $qq->where('sold_policies.expiry', "<=", $v->format('Y-m-d 00:00:00'));
-                    // });
+                $q->join('sold_policies', 'sold_policies.id', '=', 'offers.renewal_policy_id')
+                    ->when($expiry_from, function ($qq, $v) {
+                        $qq->where('sold_policies.expiry', ">=", $v->format('Y-m-d 00:00:00'));
+                    })->when($expiry_to, function ($qq, $v) {
+                        $qq->where('sold_policies.expiry', "<=", $v->format('Y-m-d 23:59:59'));
+                    });
             });
         $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
         return $query;
