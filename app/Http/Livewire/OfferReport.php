@@ -318,7 +318,9 @@ class OfferReport extends Component
             $this->value_to,
             $this->search,
             $this->is_renewal,
-            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all()
+            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all() ,
+            $this->expiryFrom,
+            $this->expiryTo,
         )->paginate(30);
         return view('livewire.offer-report', [
             'offers' => $offers,
