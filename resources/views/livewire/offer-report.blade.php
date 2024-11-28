@@ -537,11 +537,11 @@
                         <!-- Modal footer -->
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setDates" data-bs-dismiss="modal"
+                            <button wire:click="setExpiry" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="setDates">Submit</span>
+                                <span wire:loading.remove wire:target="setExpiry">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="setDates"
+                                    wire:loading wire:target="setExpiry"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
