@@ -180,6 +180,15 @@ class Policy extends Model
             ->first();
     }
 
+    public static function getPolicyByName($company_name, $policy_name)
+    {
+        return self::select("policies.*")
+            ->join('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
+            ->where('insurance_companies.name', $company_name)
+            ->where('policies.name', $policy_name)
+            ->first();
+    }
+
     public static function matchOrCreate($company_id, $name, $business)
     {
         $oldPolicy = self::where('company_id', $company_id)

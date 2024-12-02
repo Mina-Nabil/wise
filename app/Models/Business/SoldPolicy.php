@@ -443,18 +443,20 @@ class SoldPolicy extends Model
 
     public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null, Carbon $issuing_date = null): self|bool
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
-        $updates = [
-            'policy_number' => $policy_number,
-            'start' => $start->format('Y-m-d H:i:s'),
-            'expiry' => $expiry->format('Y-m-d H:i:s'),
-            'car_chassis' => $car_chassis,
-            'car_plate_no' => $car_plate_no,
-            'in_favor_to' => $in_favor_to,
-            'car_engine' => $car_engine
-        ];
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('update', $this)) return false;
+        $updates = [];
+
+        if ($car_chassis) $updates['car_chassis'] = $car_chassis;
+        if ($car_plate_no) $updates['car_plate_no'] = $car_plate_no;
+        if ($in_favor_to) $updates['in_favor_to'] = $in_favor_to;
+        if ($car_engine) $updates['car_engine'] = $car_engine;
+
+        $updates['policy_number'] = $policy_number;
+        $updates['start'] = $start->format('Y-m-d H:i:s');
+        $updates['expiry'] = $expiry->format('Y-m-d H:i:s');
+
         if ($issuing_date) {
             $updates['created_at'] = $issuing_date->format('Y-m-d');
             $this->sales_comms()->update([
@@ -576,9 +578,9 @@ class SoldPolicy extends Model
 
     public function setPaid($is_paid, Carbon $client_payment_date = null)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('updatePayments', $this)) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('updatePayments', $this)) return false;
 
         try {
             $this->update([
@@ -587,7 +589,7 @@ class SoldPolicy extends Model
             ]);
 
             $is_paid ?
-                $this->sendPolicyNotifications("Policy#$this->id paid", Auth::user()->username . " set the policy as paid") :
+                $this->sendPolicyNotifications("Policy#$this->id paid", Auth::user()?->username . " set the policy as paid") :
                 $this->sendPolicyNotifications("Policy#$this->id unpaid", Auth::user()->username . " set the policy as unpaid");
             AppLog::info("Sold Policy is_paid set to " . $is_paid, loggable: $this);
             return true;
@@ -620,9 +622,9 @@ class SoldPolicy extends Model
 
     public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, $discount)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('updatePayments', $this)) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('updatePayments', $this)) return false;
 
         $this->update([
             'insured_value' => $insured_value,
@@ -636,7 +638,7 @@ class SoldPolicy extends Model
 
         try {
             $this->save();
-            $this->sendPolicyNotifications("Policy#$this->id payment info changed", Auth::user()->username . " updated payment info");
+            $this->sendPolicyNotifications("Policy#$this->id payment info changed", Auth::user()?->username . " updated payment info");
             AppLog::info("Sold Policy payment edited", loggable: $this);
             return true;
         } catch (Exception $e) {
@@ -699,7 +701,7 @@ class SoldPolicy extends Model
 
         try {
             $this->save();
-            $this->sendPolicyNotifications("Policy#$this->id note changed", Auth::user()->username . " set the policy note");
+            $this->sendPolicyNotifications("Policy#$this->id note changed", Auth::user()?->username . " set the policy note");
             AppLog::info("Sold Policy note edited", loggable: $this);
             return true;
         } catch (Exception $e) {
@@ -988,11 +990,11 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null, $renewal_policy_id = null): self|bool
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null, $renewal_policy_id = null, $sales_id = null): self|bool
     {
         $created_at = $issuing_date ? $issuing_date->format('Y-m-d') : (Carbon::now()->format('Y-m-d'));
         $newSoldPolicy = new self([
-            'creator_id' => Auth::id() ?? 1,
+            'creator_id' => Auth::id() ?? ($sales_id ?? 1),
             'policy_number' => $policy_number,
             'offer_id'      => $offer_id,
             'policy_id'     => $policy_id,
@@ -1181,6 +1183,161 @@ class SoldPolicy extends Model
         }
     }
 
+    public static function importData2($file)
+    {
+        $spreadsheet = IOFactory::load($file);
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+        $rows_not_added = [];
+        for ($i = 2; $i <= $highestRow; $i++) {
+            try {
+                //client data
+                $full_name = $activeSheet->getCell('E' . $i)->getValue();
+                $phone = $activeSheet->getCell('I' . $i)->getValue();
+                $is_renewal = $activeSheet->getCell('C' . $i)->getValue() == "Renewal";
+
+                //policy data
+                $company_name = $activeSheet->getCell('A' . $i)->getValue();
+                $policy_name = $activeSheet->getCell('B' . $i)->getValue();
+
+                $policy = Policy::getPolicyByName($company_name, $policy_name);
+
+
+                if (!$policy) {
+                    Log::warning("Row#$i missed, failed to get policy");
+                    array_push($rows_not_added, [$i , "Row#$i missed, failed to get policy"]);
+                    continue;
+                }
+
+                if (!$activeSheet->getCell('G' . $i)) {
+                    Log::warning("Row#$i missed, failed to get issue date");
+                    continue;
+                }
+                if (!$activeSheet->getCell('F' . $i)) {
+                    Log::warning("Row#$i missed, failed to get start date");
+                    continue;
+                }
+                if (!$activeSheet->getCell('J' . $i)) {
+                    Log::warning("Row#$i missed, failed to get end date");
+                    continue;
+                }
+
+                //sold policy data
+                $policy_number = $activeSheet->getCell('D' . $i)->getValue();
+                $start_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('F' . $i)->getValue());
+                $issued_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('G' . $i)->getValue());
+                $end_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('H' . $i)->getValue());
+
+                $net_premium = $activeSheet->getCell('K' . $i)->getValue();
+                $gross_premium = $activeSheet->getCell('L' . $i)->getValue();
+                $insured_value = $activeSheet->getCell('O' . $i)->getValue();
+
+                $chassis = $activeSheet->getCell('P' . $i)->getValue();
+                $car = $activeSheet->getCell('R' . $i)->getValue();
+                $year = $activeSheet->getCell('Q' . $i)->getValue();
+
+                $sales1 = $activeSheet->getCell('M' . $i)->getValue();
+                $sales2 = $activeSheet->getCell('N' . $i)->getValue();
+                $salesOut1 = null;
+                $salesIn = null;
+
+                /** @var CommProfile */
+                if ($sales1) $salesOut1 = CommProfile::searchBy($sales1)->salesOut()->first();
+                if (!$sales1) $salesIn = CommProfile::searchBy($sales1)->first();
+                /** @var CommProfile */
+                if ($sales2) $salesOut2 = CommProfile::searchBy($sales2)->salesOut()->first();
+
+                $discount = $activeSheet->getCell('T' . $i)->getValue();
+
+                $tmpClient = null;
+                $client_payment_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) ($activeSheet->getCell('J' . $i)->getValue()));
+
+                $name_array = explode(" ", $full_name);
+                $middle_name = "";
+                for ($j = 1; $j < count($name_array) - 1; $j++) $middle_name .= "$name_array[$j] ";
+
+                $duplicatePolicy = self::getIfExists($policy_number, new Carbon($start_date));
+
+                if ($duplicatePolicy) {
+                    $duplicatePolicy->editInfo(
+                        new Carbon($start_date),
+                        new Carbon($end_date),
+                        $policy_number,
+                        $chassis,
+                        issuing_date: new Carbon($issued_date)
+                    );
+                    $duplicatePolicy->updatePaymentInfo($insured_value, $insured_value ? ($net_premium / $insured_value) : 0, $net_premium, $gross_premium, 1, OfferOption::PAYMENT_FREQ_YEARLY, $discount);
+                    $duplicatePolicy->setPaid(true, new Carbon($client_payment_date));
+                    Log::warning("Row#$i edited");
+                } else {
+                    $tmpClient = Customer::newCustomer(
+                        owner_id: $salesIn?->user_id ?? 1,
+                        first_name: $name_array[0],
+                        last_name: $name_array[count($name_array) - 1],
+                        middle_name: trim($middle_name),
+                        gender: Customer::GENDER_MALE,
+                        email: "test@mail"
+                    );
+                    if ($phone) $tmpClient->addPhone(Phone::TYPE_MOBILE, $phone, true);
+
+                    if (is_numeric($net_premium) && is_numeric($insured_value)) {
+                        $soldP = SoldPolicy::newSoldPolicy(
+                            client: $tmpClient,
+                            policy_id: $policy->id,
+                            policy_number: $policy_number,
+                            insured_value: $insured_value ?? 0,
+                            net_rate: $insured_value ? ($net_premium / $insured_value) : 0,
+                            net_premium: $net_premium ?? 0,
+                            gross_premium: $gross_premium ?? 0,
+                            installements_count: 1,
+                            payment_frequency: OfferOption::PAYMENT_FREQ_YEARLY,
+                            start: new Carbon($start_date),
+                            expiry: new Carbon($end_date),
+                            issuing_date: new Carbon($issued_date),
+                            car_chassis: $chassis,
+                            discount: $discount ?? 0,
+                            note: $car . ' / ' . $year,
+                            sales_id: $salesIn?->user_id ?? 1,
+                        );
+                        if (!$soldP) {
+                            Log::warning("Couldn't create Row#$i");
+                            continue;
+                        }
+                        $soldP->setPaid(true, new Carbon($client_payment_date));
+                        $soldP->load('policy');
+                        if ($salesOut1) {
+                            $conf = $salesOut1->getValidDirectCommissionConf($soldP->policy);
+                            if ($conf) {
+                                $soldP->addSalesCommission($salesOut1->title, $conf->from, $conf->percentage, $salesOut1->id, "Added for direct commission during migration", true);
+                            }
+                        }
+                        if ($salesOut2) {
+                            $conf = $salesOut2->getValidDirectCommissionConf($soldP->policy);
+                            if ($conf) {
+                                $soldP->addSalesCommission($salesOut2->title, $conf->from, $conf->percentage, $salesOut2->id, "Added for direct commission during migration", true);
+                            }
+                        }
+                        Log::warning("Row#$i added");
+                    } else {
+                        Log::warning("Invalid insured / net prem on Row#$i");
+                        array_push($rows_not_added, [$i , "Invalid insured / net prem on Row#$i"]);
+                    }
+                }
+            } catch (Exception $e) {
+                Log::warning("Row#$i crashed");
+                Log::warning($e->getMessage());
+                Log::warning($e->getFile() . " " . $e->getLine());
+            }
+        }
+        foreach($rows_not_added as $i => $r){
+            echo $r[0] . " => " . $r[1] . "\n";
+        }
+    
+    }
+
     public static function importNewAllianzFile($file)
     {
         $spreadsheet = IOFactory::load($file);
@@ -1339,6 +1496,14 @@ class SoldPolicy extends Model
                 }
             }
         }
+    }
+
+    public static function getIfExists($policy_number, Carbon $start): self|null
+    {
+        return self::whereMonth('start', $start->format('m'))
+            ->whereYear('start', $start->format('Y'))
+            ->where('policy_number', $policy_number)
+            ->first();
     }
 
     public static function checkOverlap($policy_number, Carbon $from, Carbon $to)
