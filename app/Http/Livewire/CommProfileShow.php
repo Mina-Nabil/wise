@@ -115,6 +115,8 @@ class CommProfileShow extends Component
     public $downloadAccountStartDate;
     public $downloadAccountEndDate;
 
+    public $salesCommStatus;
+
     public $isSortLatest = true;
 
     protected $listeners = ['deleteProfile', 'refreshBalances']; //functions need confirmation
@@ -129,6 +131,18 @@ class CommProfileShow extends Component
         $this->isSortLatest = true;
         $this->resetPage();
         $this->mount($this->profile->id);
+    }
+
+    public function setSalesCommStatus($status = null){
+        if ($status) {
+            // $this->validate([
+            //     'salesCommStatus' => 'required|in:' . implode(',', SalesComm::PYMT_STATES),
+            // ]);
+            $this->salesCommStatus = $status;
+        }else{
+            $this->salesCommStatus = null;
+        }
+        
     }
 
     public function changeSortDirection()
@@ -1025,7 +1039,7 @@ class CommProfileShow extends Component
             ->paginate(10);
 
         $sales_comm = $this->profile
-            ->sales_comm()
+            ->sales_comm()->filterByStatus($this->salesCommStatus)
             ->when($this->isSortLatest, function ($query) {
                 return $query->latest(); // Sort sales commissions by latest
             })
@@ -1046,6 +1060,8 @@ class CommProfileShow extends Component
             })
             ->paginate(10);
 
+        $SALES_COMM_STATUSES = SalesComm::PYMT_STATES;
+
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
@@ -1059,6 +1075,7 @@ class CommProfileShow extends Component
             'targets' => $targets,
             'configurations' => $configurations,
             'client_payments' => $client_payments,
+            'SALES_COMM_STATUSES' => $SALES_COMM_STATUSES
         ]);
     }
 }

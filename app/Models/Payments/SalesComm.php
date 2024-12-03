@@ -384,6 +384,13 @@ class SalesComm extends Model
         $query->where('status', self::PYMT_STATE_PAID);
     }
 
+    public function scopeFilterByStatus(Builder $query, string $status = null)
+    {
+        if ($status && in_array($status, self::PYMT_STATES, true)) {
+            $query->where('status', $status);
+        }
+    }
+
     public function scopeNotTotalyPaid(Builder $query, $profile_id)
     {
         $query->select('sales_comms.*')
