@@ -225,6 +225,7 @@ class SalesComm extends Model
 
         if (!$this->is_new) return false;
         try {
+            $this->load('comm_profile');
             $date = $date ?? new Carbon();
             AppLog::error("Setting Sales Comm as paid", loggable: $this);
             if ($this->update([
@@ -234,6 +235,18 @@ class SalesComm extends Model
             ])) {
                 $this->load('sold_policy');
                 $this->sold_policy->calculateTotalSalesComm();
+                if ($this->is_direct) {
+                    $this->comm_profile->addPayment(
+                        $this->amount,
+                        ClientPayment::PYMT_TYPE_CASH,
+                        linked_sales_comms: [
+                            $this->id => [
+                                'paid_percentage' => 100,
+                                "amount" => $this->amount
+                            ]
+                        ]
+                    );
+                }
                 return true;
             }
         } catch (Exception $e) {

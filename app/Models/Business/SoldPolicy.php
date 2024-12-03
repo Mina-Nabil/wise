@@ -183,9 +183,9 @@ class SoldPolicy extends Model
 
     public function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updatePayments', $this)) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser?->can('updatePayments', $this)) return false;
 
         try {
             /** @var SalesComm */
@@ -198,7 +198,7 @@ class SoldPolicy extends Model
                 "created_at"        => $this->created_at,
                 "is_direct"         => false
             ]);
-            $tmp->refreshPaymentInfo();
+            $tmp->refreshPaymentInfo(false);
             AppLog::info("Sales commission added", loggable: $this);
             return true;
 
@@ -1203,14 +1203,7 @@ class SoldPolicy extends Model
                 $company_name = $activeSheet->getCell('A' . $i)->getValue();
                 $policy_name = $activeSheet->getCell('B' . $i)->getValue();
 
-                $policy = Policy::getPolicyByName($company_name, $policy_name);
 
-
-                if (!$policy) {
-                    Log::warning("Row#$i missed, failed to get policy");
-                    array_push($rows_not_added, [$i , "Row#$i missed, failed to get policy"]);
-                    continue;
-                }
 
                 if (!$activeSheet->getCell('G' . $i)) {
                     Log::warning("Row#$i missed, failed to get issue date");
@@ -1242,13 +1235,17 @@ class SoldPolicy extends Model
                 $sales1 = $activeSheet->getCell('M' . $i)->getValue();
                 $sales2 = $activeSheet->getCell('N' . $i)->getValue();
                 $salesOut1 = null;
-                $salesIn = null;
+                $salesOut2 = null;
+                $salesIn1 = null;
+                $salesIn2 = null;
 
                 /** @var CommProfile */
-                if ($sales1) $salesOut1 = CommProfile::searchBy($sales1)->salesOut()->first();
-                if (!$sales1) $salesIn = CommProfile::searchBy($sales1)->first();
+                if ($sales1) $salesOut1 = CommProfile::bytitle(trim($sales1))->salesOut()->first();
+                if (!$salesOut1) $salesIn1 = CommProfile::bytitle(trim($sales1))->first();
+
                 /** @var CommProfile */
-                if ($sales2) $salesOut2 = CommProfile::searchBy($sales2)->salesOut()->first();
+                if ($sales2) $salesOut2 = CommProfile::bytitle(trim($sales2))->salesOut()->first();
+                if (!$salesOut2) $salesIn2 = CommProfile::bytitle(trim($sales2))->first();
 
                 $discount = $activeSheet->getCell('T' . $i)->getValue();
 
@@ -1269,12 +1266,55 @@ class SoldPolicy extends Model
                         $chassis,
                         issuing_date: new Carbon($issued_date)
                     );
-                    $duplicatePolicy->updatePaymentInfo($insured_value, $insured_value ? ($net_premium / $insured_value) : 0, $net_premium, $gross_premium, 1, OfferOption::PAYMENT_FREQ_YEARLY, $discount);
+                    $duplicatePolicy->updatePaymentInfo(
+                        $insured_value,
+                        $insured_value ? (($net_premium / $insured_value) * 100) : 0,
+                        $net_premium,
+                        $gross_premium,
+                        1,
+                        OfferOption::PAYMENT_FREQ_YEARLY,
+                        $discount
+                    );
                     $duplicatePolicy->setPaid(true, new Carbon($client_payment_date));
+                    Log::info($duplicatePolicy->sales_comms()->get()->count());
+                    if (!$duplicatePolicy->sales_comms()->get()->count()) {
+                        $duplicatePolicy->load('policy');
+                        if ($salesOut1) {
+                            Log::info("adding sales out");
+                            $conf = $salesOut1->getValidDirectCommissionConf($duplicatePolicy->policy);
+                            Log::info($conf);
+                            if ($conf) {
+                                $duplicatePolicy->addSalesCommission($salesOut1->title, $conf->from, $conf->percentage, $salesOut1->id, "Added for direct commission during migration", true);
+                            }
+                        } else if ($salesIn1) {
+                            Log::info("adding sales in");
+                            $duplicatePolicy->addSalesCommission($salesIn1->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn1->id, "Added for target commission during migration", true);
+                            Log::info($duplicatePolicy->sales_comms()->get()->count());
+                        }
+
+                        if ($salesOut2) {
+                            $conf = $salesOut2->getValidDirectCommissionConf($duplicatePolicy->policy);
+                            if ($conf) {
+                                $duplicatePolicy->addSalesCommission($salesOut2->title, $conf->from, $conf->percentage, $salesOut2->id, "Added for direct commission during migration", true);
+                            }
+                        } else if ($salesIn2) {
+                            $duplicatePolicy->addSalesCommission($salesIn2->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn2->id, "Added for target commission during migration", true);
+                        }
+                    }
                     Log::warning("Row#$i edited");
                 } else {
+
+                    $policy = Policy::getPolicyByName($company_name, $policy_name);
+
+
+                    if (!$policy) {
+                        Log::warning("Row#$i missed, failed to get policy");
+                        array_push($rows_not_added, [$i, "Row#$i missed, failed to get policy"]);
+                        continue;
+                    }
+
                     $tmpClient = Customer::newCustomer(
-                        owner_id: $salesIn?->user_id ?? 1,
+                        owner_id: $salesIn1?->user_id ?? 1,
                         first_name: $name_array[0],
                         last_name: $name_array[count($name_array) - 1],
                         middle_name: trim($middle_name),
@@ -1283,13 +1323,13 @@ class SoldPolicy extends Model
                     );
                     if ($phone) $tmpClient->addPhone(Phone::TYPE_MOBILE, $phone, true);
 
-                    if (is_numeric($net_premium) && is_numeric($insured_value)) {
+                    if (is_numeric($net_premium)) {
                         $soldP = SoldPolicy::newSoldPolicy(
                             client: $tmpClient,
                             policy_id: $policy->id,
                             policy_number: $policy_number,
                             insured_value: $insured_value ?? 0,
-                            net_rate: $insured_value ? ($net_premium / $insured_value) : 0,
+                            net_rate: $insured_value ? (($net_premium / $insured_value) * 100) : 0,
                             net_premium: $net_premium ?? 0,
                             gross_premium: $gross_premium ?? 0,
                             installements_count: 1,
@@ -1300,30 +1340,38 @@ class SoldPolicy extends Model
                             car_chassis: $chassis,
                             discount: $discount ?? 0,
                             note: $car . ' / ' . $year,
-                            sales_id: $salesIn?->user_id ?? 1,
+                            sales_id: $salesIn1?->user_id ?? 1,
                         );
                         if (!$soldP) {
                             Log::warning("Couldn't create Row#$i");
                             continue;
                         }
+
                         $soldP->setPaid(true, new Carbon($client_payment_date));
                         $soldP->load('policy');
+
                         if ($salesOut1) {
                             $conf = $salesOut1->getValidDirectCommissionConf($soldP->policy);
                             if ($conf) {
                                 $soldP->addSalesCommission($salesOut1->title, $conf->from, $conf->percentage, $salesOut1->id, "Added for direct commission during migration", true);
                             }
+                        } else if ($salesIn1) {
+                            $soldP->addSalesCommission($salesIn1->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn1->id, "Added for target commission during migration", true);
                         }
+
                         if ($salesOut2) {
                             $conf = $salesOut2->getValidDirectCommissionConf($soldP->policy);
                             if ($conf) {
                                 $soldP->addSalesCommission($salesOut2->title, $conf->from, $conf->percentage, $salesOut2->id, "Added for direct commission during migration", true);
                             }
+                        } else if ($salesIn2) {
+                            $soldP->addSalesCommission($salesIn2->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn2->id, "Added for target commission during migration", true);
                         }
+
                         Log::warning("Row#$i added");
                     } else {
                         Log::warning("Invalid insured / net prem on Row#$i");
-                        array_push($rows_not_added, [$i , "Invalid insured / net prem on Row#$i"]);
+                        array_push($rows_not_added, [$i, "Invalid insured / net prem on Row#$i"]);
                     }
                 }
             } catch (Exception $e) {
@@ -1332,10 +1380,9 @@ class SoldPolicy extends Model
                 Log::warning($e->getFile() . " " . $e->getLine());
             }
         }
-        foreach($rows_not_added as $i => $r){
+        foreach ($rows_not_added as $i => $r) {
             echo $r[0] . " => " . $r[1] . "\n";
         }
-    
     }
 
     public static function importNewAllianzFile($file)

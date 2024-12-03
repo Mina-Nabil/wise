@@ -413,6 +413,10 @@ class CommProfile extends Model
     }
 
     ///scopes
+    public function scopeByTitle($query, $text)
+    {
+        return $query->where('title', '=', "$text");
+    }
     public function scopeSearchBy($query, $text)
     {
         return $query->where('title', 'LIKE', "%$text%");
