@@ -47,7 +47,7 @@
 
 
             <p class="text-sm text-white font-normal">
-                Issuing: {{ \Carbon\Carbon::parse($soldPolicy->issuing_date)->format('l d/m/Y') }}
+                Issuing: {{ \Carbon\Carbon::parse($soldPolicy->created_at)->format('l d/m/Y') }}
 
             </p>
 
