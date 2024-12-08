@@ -169,7 +169,7 @@ class AccountIndex extends Component
                 return $q->with('children_accounts')->searchBy($this->searchText);
             })->when(!$this->searchText, fn($q) => $q->parentAccounts())
             ->get();
-        Log::info($accounts);
+        // Log::info($accounts);
         $main_accounts = MainAccount::all();
         $CURRENCIES = JournalEntry::CURRENCIES;
 
