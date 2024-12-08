@@ -166,7 +166,7 @@ class AccountIndex extends Component
                 return $q->byMainAccount($this->mainAccID);
             })
             ->when($this->searchText, function ($q) {
-                return $q->searchBy($this->searchText);
+                return $q->with('children_accounts')->searchBy($this->searchText);
             })->when(!$this->searchText, fn($q) => $q->parentAccounts())
             ->get();
         Log::info($accounts);
