@@ -166,10 +166,10 @@ class AccountIndex extends Component
                 return $q->byMainAccount($this->mainAccID);
             })
             ->when($this->searchText, function ($q) {
-                return $q->with('children_accounts')->searchBy($this->searchText);
+                return $q->searchBy($this->searchText);
             })->when(!$this->searchText, fn($q) => $q->parentAccounts())
             ->get();
-        Log::info($accounts->count());
+        if($accounts->count() > 50) $accounts->whereNull('parent_account_id');
         $main_accounts = MainAccount::all();
         $CURRENCIES = JournalEntry::CURRENCIES;
 

@@ -363,7 +363,7 @@ class Account extends Model
     {
         return $query->where('accounts.name',  "LIKE", "%$text%");
     }
-
+    
     public function scopeByMainAccount($query, $main_account_id)
     {
         return $query->where('main_account_id ', $main_account_id);
