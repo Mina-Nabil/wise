@@ -1011,6 +1011,11 @@ class CommProfileShow extends Component
         $this->paymentNoteSec = null;
     }
 
+    public function updateCommBox($i, $amount){
+        $this->salesCommArray[$i]['paid_percentage'] = 100;
+        $this->salesCommArray[$i]['amount'] = $amount;
+    }
+
     public function downloadPaymentDetails($id)
     {
         return CommProfilePayment::findOrFail($id)->downloadPaymentDetails();
