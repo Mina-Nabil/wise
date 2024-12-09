@@ -191,7 +191,7 @@ class Calendar extends Component
     {
         $events = [];
 
-        foreach (Task::myTasksQuery(upcoming_only: true, assignedToMeOnly: true, includeWatchers: true)->get() as $t) {
+        foreach (Task::myTasksQuery(upcoming_only: true, assignedToMeOnly: true, includeWatchers: false)->get() as $t) {
             $events[] =  [
                 'id'        =>  "task" . $t->id,
                 'title'     => "T. " . $t->title,
