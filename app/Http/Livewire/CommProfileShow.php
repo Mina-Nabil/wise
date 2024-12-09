@@ -1014,7 +1014,8 @@ class CommProfileShow extends Component
     public function updateCommBox($i)
     {
         if (!$this->salesCommArray[$i]) return;
-        $salesComm = SalesComm::find($this->salesCommArray[$i]);
+        $salesComm = SalesComm::find($this->salesCommArray[$i]['sales_comm_id']);
+        if(!$salesComm) return ;
         $this->salesCommArray[$i]['paid_percentage'] = 100;
         $this->salesCommArray[$i]['amount'] = $salesComm->amount;
     }
