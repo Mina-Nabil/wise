@@ -368,6 +368,7 @@ class ClientPayment extends Model
                 ->where('is_main_penalty', 1);
         })->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent', 'policy_comm_conf.calculation_type', 'sold_policies.net_premium')
             ->selectRaw('IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start)  policy_payment_due')
+            ->orderBy('sold_policies.start')
             ->groupBy('client_payments.id');
     }
 

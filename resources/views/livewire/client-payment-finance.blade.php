@@ -131,6 +131,10 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
+                                    Start
+                                </th>
+
+                                <th scope="col" class=" table-th ">
                                     Due
                                 </th>
 
@@ -181,6 +185,10 @@
                                     </td>
                                     <td class="table-td">
                                         {{ $payment->sold_policy->client->name }}
+                                    </td>
+
+                                    <td class="table-td">
+                                        {{ \Carbon\Carbon::parse($payment->sold_policy->start)->format('D d/m/Y') }}
                                     </td>
 
                                     <td class="table-td">
