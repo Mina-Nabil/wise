@@ -133,16 +133,16 @@ class CommProfileShow extends Component
         $this->mount($this->profile->id);
     }
 
-    public function setSalesCommStatus($status = null){
+    public function setSalesCommStatus($status = null)
+    {
         if ($status) {
             // $this->validate([
             //     'salesCommStatus' => 'required|in:' . implode(',', SalesComm::PYMT_STATES),
             // ]);
             $this->salesCommStatus = $status;
-        }else{
+        } else {
             $this->salesCommStatus = null;
         }
-        
     }
 
     public function changeSortDirection()
@@ -1011,9 +1011,12 @@ class CommProfileShow extends Component
         $this->paymentNoteSec = null;
     }
 
-    public function updateCommBox($i, $amount){
+    public function updateCommBox($i)
+    {
+        if (!$this->salesCommArray[$i]) return;
+        $salesComm = SalesComm::find($this->salesCommArray[$i]);
         $this->salesCommArray[$i]['paid_percentage'] = 100;
-        $this->salesCommArray[$i]['amount'] = $amount;
+        $this->salesCommArray[$i]['amount'] = $salesComm->amount;
     }
 
     public function downloadPaymentDetails($id)

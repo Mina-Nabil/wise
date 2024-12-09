@@ -170,7 +170,7 @@ class AccountIndex extends Component
             })->when(!$this->searchText, fn($q) => $q->parentAccounts())
             ->get();
         if ($accounts->count() > 50) $accounts = $accounts->whereNull('parent_account_id');
-        Log::info($accounts->count());
+
         $main_accounts = MainAccount::all();
         $CURRENCIES = JournalEntry::CURRENCIES;
 

@@ -1510,7 +1510,7 @@
                 <div class="flex space-x-4 mt-3">
                     <select name="salesCommArray.{{ $index }}.sales_comm_id"
                         class="form-control w-full mt-2 @error('salesCommArray.{{ $index }}.sales_comm_id') !border-danger-500 @enderror"
-                        wire:model.defer="salesCommArray.{{ $index }}.sales_comm_id" wire:change="updateCommBox({{$index}}, {{$salesComm->amount}})" >
+                        wire:model.defer="salesCommArray.{{ $index }}.sales_comm_id" wire:change="updateCommBox({{$index}})" >
                         <option value="">None</option>
                         @foreach ($salesComms as $salesComm)
                             <option value="{{ $salesComm->id }}">
