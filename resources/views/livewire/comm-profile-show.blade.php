@@ -1514,7 +1514,7 @@
                         <option value="">None</option>
                         @foreach ($salesComms as $salesComm)
                             <option value="{{ $salesComm->id }}">
-                                {{ ucwords(str_replace('_', ' ', $salesComm->title)) }}
+                                {{ $salesComm->sold_policy->policy_number }} - {{ $salesComm->sold_policy->client->name }}
                             </option>
                         @endforeach
                     </select>
