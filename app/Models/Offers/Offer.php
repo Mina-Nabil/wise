@@ -1020,7 +1020,7 @@ class Offer extends Model
                         $qq->where('sold_policies.expiry', "<=", $v->format('Y-m-d 23:59:59'));
                     });
             });
-        $query->with('client', 'creator', 'assignee', 'selected_option', 'item');
+        $query->with('client', 'creator', 'assignee', 'selected_option', 'item', 'renewal_sold_policy');
         return $query;
     }
 

@@ -220,9 +220,9 @@
                     <span wire:click="toggleProfiles">
                         Status:&nbsp;(
                         @foreach ($profiles as $profile)
-                        @php
-        $decodedProfile = json_decode($profile, true); // Decode JSON string to array
-    @endphp
+                            @php
+                                $decodedProfile = json_decode($profile, true); // Decode JSON string to array
+                            @endphp
                             {{ $decodedProfile['title'] }}
                             @if (!$loop->last)
                                 ,
@@ -282,6 +282,10 @@
 
                                     <th scope="col" class=" table-th ">
                                         Renewal
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Expiry
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -357,6 +361,10 @@
 
                                         <td class="table-td ">
                                             <b>{{ $offer->renewal_policy }}</b>
+                                        </td>
+
+                                        <td class="table-td ">
+                                            {{ $offer->renewal_sold_policy ? date_format(date_create($offer->renewal_sold_policy->expiry), 'Y-m-d') : 'N/A' }}
                                         </td>
 
                                         <td class="table-td ">
@@ -713,7 +721,8 @@
                                 @foreach ($COMM_PROFILES as $COMM_PROFILE)
                                     <div class="checkbox-area">
                                         <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="hidden" value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
+                                            <input type="checkbox" class="hidden"
+                                                value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
                                                 name="checkbox" wire:model.defer="Eprofiles">
                                             <span
                                                 class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
