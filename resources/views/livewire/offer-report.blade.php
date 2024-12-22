@@ -273,10 +273,6 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Offer Type
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
                                         Status
                                     </th>
 
@@ -293,7 +289,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Net Prem.
+                                        Net
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -320,10 +316,10 @@
                                             @endif
 
                                         </td>
-
+{{-- 
                                         <td class="table-td ">
                                             {{ $offer->client_type }}
-                                        </td>
+                                        </td> --}}
 
                                         <td class="table-td ">
                                             {{ ucwords(str_replace('_', ' ', $offer->type)) }}
