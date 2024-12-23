@@ -123,7 +123,7 @@ class SoldPolicyReport extends Component
         if ($clientType === 'customer') {
             $client = Customer::findOrFail($id);
         } elseif ($clientType === 'corporate') {
-            $client = Corporate::findOrFail($id)->is_welcomed;
+            $client = Corporate::findOrFail($id);
         }
 
         $isWelcomed = $client->is_welcomed;
