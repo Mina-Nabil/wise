@@ -68,6 +68,7 @@ class SoldPolicyShow extends Component
     public $installements_count;
     public $payment_frequency;
     public $discount;
+    public $origin_discount;
 
     public $actions = [];
     public $fields = [];
@@ -163,25 +164,28 @@ class SoldPolicyShow extends Component
     protected $queryString = ['section'];
     public $uploadedFile;
 
-    public function updateMainSales(){
+    public function updateMainSales()
+    {
         $this->authorize('updateMainSales', $this->soldPolicy);
         if ($this->updatedMainSaledID === '') $this->updatedMainSaledID = null;
         $res = $this->soldPolicy->setMainSales($this->updatedMainSaledID);
-        if($res){
+        if ($res) {
             $this->closeSetMainSalesSection();
             $this->mount($this->soldPolicy->id);
-            $this->alert('success','Main sales updated!');
-        }else{
-            $this->alert('failed','server error');
+            $this->alert('success', 'Main sales updated!');
+        } else {
+            $this->alert('failed', 'server error');
         }
     }
 
-    public function openSetMainSalesSection(){
+    public function openSetMainSalesSection()
+    {
         $this->setMainSalesSec = true;
         $this->updatedMainSaledID = $this->soldPolicy->main_sales_id;
     }
 
-    public function closeSetMainSalesSection(){
+    public function closeSetMainSalesSection()
+    {
         $this->setMainSalesSec = false;
         $this->updatedMainSaledID = null;
     }
@@ -823,7 +827,7 @@ class SoldPolicyShow extends Component
 
     public function adjustComm()
     {
-        $this->authorize('updatePayments',$this->soldPolicy);
+        $this->authorize('updatePayments', $this->soldPolicy);
 
         $this->validate([
             'commAmount' => 'required|numeric|min:1',
@@ -832,7 +836,7 @@ class SoldPolicyShow extends Component
             'commFrom' => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
 
-        $res = $this->soldPolicy->adjustSalesCommission($this->commFrom,$this->commAmount,$this->commProfile,$this->commNote);
+        $res = $this->soldPolicy->adjustSalesCommission($this->commFrom, $this->commAmount, $this->commProfile, $this->commNote);
 
         if ($res) {
             $this->toggleAdjustComm();
@@ -1300,9 +1304,19 @@ class SoldPolicyShow extends Component
             'installements_count' => 'required|numeric',
             'payment_frequency' => 'nullable|in:' . implode(',', OfferOption::PAYMENT_FREQS),
             'discount' => 'required|numeric',
+            'origin_discount' => 'required|numeric',
         ]);
 
-        $res = $this->soldPolicy->updatePaymentInfo($this->insured_value, $this->net_rate, $this->net_premium, $this->gross_premium, $this->installements_count, $this->payment_frequency, $this->discount);
+        $res = $this->soldPolicy->updatePaymentInfo(
+            $this->insured_value,
+            $this->net_rate,
+            $this->net_premium,
+            $this->gross_premium,
+            $this->installements_count,
+            $this->payment_frequency,
+            $this->discount,
+            $this->origin_discount
+        );
 
         if ($res) {
             $this->togglePaymentInfoSection();
@@ -1529,6 +1543,7 @@ class SoldPolicyShow extends Component
         $this->installements_count = $this->soldPolicy->installements_count;
         $this->payment_frequency = $this->soldPolicy->payment_frequency;
         $this->discount = $this->soldPolicy->discount;
+        $this->origin_discount = $this->soldPolicy->origin_discount;
         $this->clientPaymentDate = $this->soldPolicy->client_payment_date ?? null;
         $this->actions[] = ['column_name' => '', 'value' => ''];
         $this->fields[] = ['title' => '', 'value' => ''];

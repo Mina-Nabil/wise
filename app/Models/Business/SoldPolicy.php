@@ -62,6 +62,7 @@ class SoldPolicy extends Model
         'start',
         'expiry',
         'discount',
+        'origin_discount',
         'payment_frequency',
         'is_valid',
         'customer_car_id',
@@ -183,9 +184,9 @@ class SoldPolicy extends Model
 
     public function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null)
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser?->can('updatePayments', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
 
         try {
             /** @var SalesComm */
@@ -215,7 +216,7 @@ class SoldPolicy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updatePayments', $this)) return false;
+        if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
 
         try {
 
@@ -247,7 +248,7 @@ class SoldPolicy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updateClientPayments', $this)) return false;
+        if ($loggedInUser && !$loggedInUser->can('updateClientPayments', $this)) return false;
 
         assert($amount <= ($this->gross_premium - $this->total_client_paid), "Amount is more that what the client should pay. Please make sure the amount is less than the gross premium plus total paid");
 
@@ -276,7 +277,7 @@ class SoldPolicy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updatePayments', $this)) return false;
+        if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
 
         assert($amount <= ($this->after_tax_comm - $this->total_company_paid), "Amount is more that what the company should pay. Please make sure the amount is less than the total commission after tax plus the company payments total");
 
@@ -409,7 +410,7 @@ class SoldPolicy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updateClientPayments', $this)) return false;
+        if ($loggedInUser && !$loggedInUser->can('updateClientPayments', $this)) return false;
         try {
             $this->is_paid = 1;
             $this->cancellation_time = $date->format('Y-m-d H:i');
@@ -443,9 +444,9 @@ class SoldPolicy extends Model
 
     public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null, Carbon $issuing_date = null): self|bool
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('update', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
         $updates = [];
 
         if ($car_chassis) $updates['car_chassis'] = $car_chassis;
@@ -578,9 +579,9 @@ class SoldPolicy extends Model
 
     public function setPaid($is_paid, Carbon $client_payment_date = null)
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('updatePayments', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updatePayments', $this)) return false;
 
         try {
             $this->update([
@@ -620,11 +621,11 @@ class SoldPolicy extends Model
         }
     }
 
-    public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, $discount)
+    public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, $discount, $origin_discount)
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('updatePayments', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updatePayments', $this)) return false;
 
         $this->update([
             'insured_value' => $insured_value,
@@ -633,7 +634,8 @@ class SoldPolicy extends Model
             'gross_premium' => $gross_premium,
             'installements_count'   => $installements_count,
             'payment_frequency'     => $payment_frequency,
-            'discount'      => $discount
+            'discount'      => $discount,
+            'origin_discount'      => $origin_discount,
         ]);
 
         try {
@@ -990,7 +992,7 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null, $renewal_policy_id = null, $sales_id = null): self|bool
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null, $renewal_policy_id = null, $sales_id = null, $origin_discount = 0): self|bool
     {
         $created_at = $issuing_date ? $issuing_date->format('Y-m-d') : (Carbon::now()->format('Y-m-d'));
         $newSoldPolicy = new self([
@@ -1012,6 +1014,7 @@ class SoldPolicy extends Model
             'car_plate_no'  => $car_plate_no,
             'car_engine'    => $car_engine,
             'discount'      => $discount,
+            'origin_discount'   => $origin_discount,
             'note'          => $note,
             'in_favor_to'   => $in_favor_to,
             'policy_doc'    => $policy_doc,
@@ -1273,7 +1276,8 @@ class SoldPolicy extends Model
                         $gross_premium,
                         1,
                         OfferOption::PAYMENT_FREQ_YEARLY,
-                        $discount
+                        $discount,
+                        0
                     );
                     $duplicatePolicy->setPaid(true, new Carbon($client_payment_date));
                     Log::info($duplicatePolicy->sales_comms()->get()->count());

@@ -213,7 +213,9 @@ class Offer extends Model
             car_engine: $car_engine,
             policy_doc: $policy_doc,
             issuing_date: $issuing_date,
-            renewal_policy_id: $this->renewal_policy_id
+            renewal_policy_id: $this->renewal_policy_id,
+            discount: $this->getDiscountTotal('comm'),
+            origin_discount: $this->getDiscountTotal('origin')
         );
         $clientDueDate = $issuing_date ?  ($issuing_date->isBefore($start) ? $start : $issuing_date) : $start;
         if ($soldPolicy) {
@@ -509,6 +511,20 @@ class Offer extends Model
             report($e);
             AppLog::error("Can't edit offer renewal flag", desc: $e->getMessage());
             return false;
+        }
+    }
+
+    public function getDiscountTotal(string $type)
+    {
+        switch ($type) {
+            case 'comm':
+                return $this->discounts()->where('type', OfferDiscount::TYPE_COMMISSION)->get()->sum('value');
+
+            case 'origin':
+                return $this->discounts()->whereNot('type', OfferDiscount::TYPE_COMMISSION)->get()->sum('value');
+            
+            default:
+                return 0;
         }
     }
 
