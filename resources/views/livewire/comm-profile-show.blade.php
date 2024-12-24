@@ -760,6 +760,14 @@
                                                 </th>
 
                                                 <th scope="col" class=" table-th ">
+                                                    Policy
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
+                                                    Client
+                                                </th>
+
+                                                <th scope="col" class=" table-th ">
                                                     Amount
                                                 </th>
 
@@ -793,6 +801,32 @@
 
                                                     <td class="table-td ">
                                                         {{ $payment->due ? \Carbon\Carbon::parse($payment->due)->format('D d/m/Y') : 'Not set.' }}
+                                                    </td>
+
+                                                    <td class="table-td ">
+                                                        <a href="{{ route('sold.policy.show', $comm->sold_policy?->id) }}"
+                                                            target="_blank"
+                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+
+                                                            <span
+                                                                class="block text-slate-600 dark:text-slate-300">{{ $comm->sold_policy?->policy_number }}</span>
+                                                            <span class="block text-slate-500 text-xs">
+                                                                {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
+                                                            </span>
+                                                        </a>
+
+                                                    </td>
+                                                    <td class="table-td ">
+                                                        <div class="">
+                                                            <span class="text-slate-500 dark:text-slate-400">
+                                                                <span
+                                                                    class="block text-slate-600 dark:text-slate-300">{{ $comm->sold_policy?->policy?->company?->name }}
+                                                                    {{ $comm->sold_policy?->policy?->name }}</span>
+                                                                <span class="block text-slate-500 text-xs">
+                                                                    {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
+                                                                </span>
+                                                            </span>
+                                                        </div>
                                                     </td>
 
                                                     <td class="table-td ">
