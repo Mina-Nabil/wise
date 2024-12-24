@@ -187,8 +187,12 @@ class SalesComm extends Model
         $this->load('comm_profile');
         $from_amount = 0;
         $valid_conf = $this->comm_profile->getValidDirectCommissionConf($this->sold_policy->policy);
+        $comm_disc = 0;
         if ($this->is_direct) {
             $from_amount = $this->sold_policy->getFromAmount($this->from);
+            if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
+                $comm_disc = $this->sold_policy->discount;
+            }
         } else if ($valid_conf) {
             $from =  $valid_conf->from;
             $this->comm_percentage = $valid_conf->percentage;
@@ -199,7 +203,7 @@ class SalesComm extends Model
             $from_amount =  $this->sold_policy->after_tax_comm - $this->sold_policy->total_comm_subtractions;
         }
 
-        $amount = ($this->comm_percentage / 100) * $from_amount;
+        $amount = (($this->comm_percentage / 100) * $from_amount) - $comm_disc;
 
         try {
             if ($increment_amount) {
