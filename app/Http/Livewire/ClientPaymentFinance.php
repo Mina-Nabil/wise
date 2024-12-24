@@ -64,6 +64,7 @@ class ClientPaymentFinance extends Component
             ->when($this->dueDays && $this->isDuePassed, fn($q) => $q->duePassed($this->dueDays))
             ->when($this->searchText, fn($q) => $q->searchBy($this->searchText))
             ->when(count($this->filteredStatus), fn($q) => $q->FilterByStates($this->filteredStatus))
+            ->sortByDue()
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
         $payments =    $payments->paginate(50);
         return view('livewire.client-payment-finance', [
