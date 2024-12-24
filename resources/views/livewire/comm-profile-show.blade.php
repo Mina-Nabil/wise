@@ -823,8 +823,7 @@
                                                         <div class="">
                                                             <span class="text-slate-500 dark:text-slate-400">
                                                                 <span
-                                                                    class="block text-slate-600 dark:text-slate-300">{{ $payment->sold_policy?->policy?->company?->name }}
-                                                                    {{ $payment->sold_policy?->policy?->name }}</span>
+                                                                    class="block text-slate-600 dark:text-slate-300">{{ $payment->sold_policy?->client?->name }}</span>
                                                             </span>
                                                         </div>
                                                     </td>
