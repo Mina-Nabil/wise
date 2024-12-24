@@ -412,6 +412,10 @@ class ClientPayment extends Model
     {
         return $this->belongsTo(SoldPolicy::class);
     }
+    public function sales_out(): BelongsTo
+    {
+        return $this->belongsTo(CommProfile::class, 'sales_out_id');
+    }
     public function closed_by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'closed_by_id');

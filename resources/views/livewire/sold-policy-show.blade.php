@@ -1538,7 +1538,12 @@
 
                                                     <td class="table-td">
                                                         <span
-                                                            class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }}</span>
+                                                            class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }} 
+                                                        @if ($payment->type == 'sales_out')
+                                                         - {{$payment->sales_out?->title}}
+                                                        @endif
+                                                        
+                                                        </span>
                                                     </td>
 
 
@@ -1800,7 +1805,7 @@
                                                             @if (str_contains($comm->status, 'not_confirmed'))
                                                                 <span class="badge bg-warning-500 text-white h-auto">
                                                                     <iconify-icon
-                                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status))  }}
                                                                 </span>
                                                             @elseif(str_contains($comm->status, 'cancelled'))
                                                                 <span class="badge bg-danger-500 text-white h-auto">
