@@ -476,38 +476,44 @@
                     </div>
 
                     <div class="flex gap-2">
-                    <div class="dropdown relative">
-                        <button class="btn inline-flex justify-center btn-light items-center btn-sm" type="button" id="lightDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ $salesCommStatus ? (str_replace('_',' ',$salesCommStatus)) : 'All' }}
-                            <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
-                        </button>
-                        <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                        <div class="dropdown relative">
+                            <button class="btn inline-flex justify-center btn-light items-center btn-sm"
+                                type="button" id="lightDropdownMenuButton" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                {{ $salesCommStatus ? str_replace('_', ' ', $salesCommStatus) : 'All' }}
+                                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
+                                    icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                            </button>
+                            <ul
+                                class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
                                     z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                    <li wire:click='setSalesCommStatus("")' class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                <li wire:click='setSalesCommStatus("")'
+                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                     dark:hover:text-white cursor-pointer">
-                                        All
-                                    </li>
-                                    @foreach ($SALES_COMM_STATUSES as $SALES_COMM_STATUS)
-                            <li wire:click='setSalesCommStatus("{{ $SALES_COMM_STATUS }}")' class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    All
+                                </li>
+                                @foreach ($SALES_COMM_STATUSES as $SALES_COMM_STATUS)
+                                    <li wire:click='setSalesCommStatus("{{ $SALES_COMM_STATUS }}")'
+                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                             dark:hover:text-white cursor-pointer">
-                                {{ ucwords(str_replace('_',' ',$SALES_COMM_STATUS)) }}
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
+                                        {{ ucwords(str_replace('_', ' ', $SALES_COMM_STATUS)) }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
 
-                    <div>
-                        <button wire:click="changeSortDirection"
-                        class="btn inline-flex justify-center btn-outline-light btn-sm">
-                        @if ($isSortLatest)
-                            Sort:<b>&nbsp;Newest</b>
-                        @else
-                            Sort:<b>&nbsp;Oldest</b>
-                        @endif
-                    </button>
+                        <div>
+                            <button wire:click="changeSortDirection"
+                                class="btn inline-flex justify-center btn-outline-light btn-sm">
+                                @if ($isSortLatest)
+                                    Sort:<b>&nbsp;Newest</b>
+                                @else
+                                    Sort:<b>&nbsp;Oldest</b>
+                                @endif
+                            </button>
+                        </div>
+
                     </div>
-                      
-                </div>
 
                 </header>
                 <div class="card-body px-6 pb-6">
@@ -809,10 +815,7 @@
                                                             class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
 
                                                             <span
-                                                                class="block text-slate-600 dark:text-slate-300">{{ $comm->sold_policy?->policy_number }}</span>
-                                                            <span class="block text-slate-500 text-xs">
-                                                                {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
-                                                            </span>
+                                                                class="block text-slate-600 dark:text-slate-300">{{ $payment->sold_policy?->policy_number }}</span>
                                                         </a>
 
                                                     </td>
@@ -820,11 +823,8 @@
                                                         <div class="">
                                                             <span class="text-slate-500 dark:text-slate-400">
                                                                 <span
-                                                                    class="block text-slate-600 dark:text-slate-300">{{ $comm->sold_policy?->policy?->company?->name }}
-                                                                    {{ $comm->sold_policy?->policy?->name }}</span>
-                                                                <span class="block text-slate-500 text-xs">
-                                                                    {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
-                                                                </span>
+                                                                    class="block text-slate-600 dark:text-slate-300">{{ $payment->sold_policy?->policy?->company?->name }}
+                                                                    {{ $payment->sold_policy?->policy?->name }}</span>
                                                             </span>
                                                         </div>
                                                     </td>
@@ -1544,11 +1544,13 @@
                 <div class="flex space-x-4 mt-3">
                     <select name="salesCommArray.{{ $index }}.sales_comm_id"
                         class="form-control w-full mt-2 @error('salesCommArray.{{ $index }}.sales_comm_id') !border-danger-500 @enderror"
-                        wire:model.defer="salesCommArray.{{ $index }}.sales_comm_id" wire:change="updateCommBox({{$index}})" >
+                        wire:model.defer="salesCommArray.{{ $index }}.sales_comm_id"
+                        wire:change="updateCommBox({{ $index }})">
                         <option value="">None</option>
                         @foreach ($salesComms as $salesComm)
                             <option value="{{ $salesComm->id }}">
-                                {{ $salesComm->sold_policy?->policy_number }} - {{ $salesComm->sold_policy?->client?->name }} - {{ $salesComm->amount }}
+                                {{ $salesComm->sold_policy?->policy_number }} -
+                                {{ $salesComm->sold_policy?->client?->name }} - {{ $salesComm->amount }}
                             </option>
                         @endforeach
                     </select>
@@ -1657,7 +1659,8 @@
                                 @foreach ($linkedSalesComm as $linkedSC)
                                     <tr class="even:bg-slate-50 dark:even:bg-slate-700">
                                         <td class="table-td">{{ $linkedSC->sold_policy->policy_number }}</td>
-                                        <td class="table-td"><b>{{ number_format($linkedSC->pivot?->amount) }} EGP</b>
+                                        <td class="table-td"><b>{{ number_format($linkedSC->pivot?->amount) }}
+                                                EGP</b>
                                         </td>
                                         <td class="table-td "><b>{{ $linkedSC->comm_percentage }}%</b></td>
                                     </tr>
