@@ -2952,12 +2952,6 @@
                                         EGP </span>
                                 </div>
 
-                                <input name="discount" min="1" type="number"
-                                    class="form-control mt-2 w-full @error('discount') !border-danger-500 @enderror">
-                                @error('discount')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
                             </div>
 
                             <label for="origin_discount" class="form-label">Origin Discount</label>
@@ -2970,13 +2964,6 @@
                                         class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
                                         EGP </span>
                                 </div>
-
-                                <input name="origin_discount" min="1" type="number"
-                                    class="form-control mt-2 w-full @error('origin_discount') !border-danger-500 @enderror">
-                                @error('origin_discount')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
                             </div>
                         </div>
                         <!-- Modal footer -->
