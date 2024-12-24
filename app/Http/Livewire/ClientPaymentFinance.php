@@ -19,6 +19,21 @@ class ClientPaymentFinance extends Component
     public $myPayments = false;
     public $searchText;
 
+    public $sortColomn;
+    public $sortDirection = 'asc';
+
+    public function sortByColomn($colomn)
+    {
+        $this->sortColomn = $colomn;
+        if ($this->sortDirection) {
+            if ($this->sortDirection === 'asc') {
+                $this->sortDirection = 'desc';
+            } else {
+                $this->sortDirection = 'asc';
+            }
+        }
+    }
+
     public function redirectToShowPage($id)
     {
         $this->dispatchBrowserEvent('openNewTab', ['url' => route('sold.policy.show', ['id' => $id])]);
@@ -64,7 +79,9 @@ class ClientPaymentFinance extends Component
             ->when($this->dueDays && $this->isDuePassed, fn($q) => $q->duePassed($this->dueDays))
             ->when($this->searchText, fn($q) => $q->searchBy($this->searchText))
             ->when(count($this->filteredStatus), fn($q) => $q->FilterByStates($this->filteredStatus))
-            ->sortByDue()
+            ->when($this->sortColomn === 'due' , fn($q) => $q->SortByDue(sort:$this->sortDirection))
+            ->when($this->sortColomn === 'start' , fn($q) => $q->SortByPolicyStart(sort:$this->sortDirection))
+            // ->sortByDue()
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
         $payments =    $payments->paginate(50);
         return view('livewire.client-payment-finance', [

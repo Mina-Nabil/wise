@@ -130,12 +130,29 @@
                                     Client
                                 </th>
 
-                                <th scope="col" class=" table-th ">
-                                    Start
+                                <th scope="col" class=" table-th cursor-pointer">
+                                    <span wire:click="sortByColomn('start')" class="clickable-header">Start
+                                        @if ($sortColomn === 'start')
+                                            @if ($sortDirection === 'asc')
+                                                <iconify-icon icon="fluent:arrow-up-12-filled"></iconify-icon>
+                                            @else
+                                                <iconify-icon icon="fluent:arrow-down-12-filled"></iconify-icon>
+                                            @endif
+                                        @endif
+                                    </span>
+                                    
                                 </th>
 
-                                <th scope="col" class=" table-th ">
-                                    Due
+                                <th scope="col" class=" table-th cursor-pointer">
+                                    <span wire:click="sortByColomn('due')" class="clickable-header">Due
+                                        @if ($sortColomn === 'due')
+                                            @if ($sortDirection === 'asc')
+                                                <iconify-icon icon="fluent:arrow-up-12-filled"></iconify-icon>
+                                            @else
+                                                <iconify-icon icon="fluent:arrow-down-12-filled"></iconify-icon>
+                                            @endif
+                                        @endif
+                                    </span>
                                 </th>
 
 
