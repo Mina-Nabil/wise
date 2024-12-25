@@ -17525,3 +17525,12 @@ ul.custom-list ul {
     padding-top: 0;
 }
 
+.clickable-header {
+    cursor: pointer;
+    text-decoration: underline; /* Remove the default underline if needed */
+}
+
+.clickable-header:hover {
+    text-decoration: none; /* Add underline on hover */
+}
+
