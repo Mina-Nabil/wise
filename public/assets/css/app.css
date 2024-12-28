@@ -3963,6 +3963,7 @@ textarea.form-control.is-invalid {
     left: 0px;
 }
 .top-1\/2 {
+    height: 250px;
     top: 65%;
 }
 .right-0 {
