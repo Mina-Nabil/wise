@@ -45,6 +45,18 @@ class CorporatePolicy
     }
 
     /**
+     * Determine whether the user can view the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Customers\Customer  $customer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function exportAndImport(User $user)
+    {
+        return $user->is_admin;
+    }
+
+    /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\Users\User  $user

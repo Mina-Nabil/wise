@@ -385,9 +385,9 @@ class Customer extends Model
     {
         try {
 
-            if ($checkIfNumberExist) {
-                $tmpPhone = $this->phones()->where('number', $number)->first();
-                return $tmpPhone ?? false;
+            $tmpPhone = $this->phones()->where('number', $number)->first();
+            if ($tmpPhone && $checkIfNumberExist) {
+                return $tmpPhone;
             }
 
             /** @var Phone */
@@ -721,6 +721,7 @@ class Customer extends Model
             $activeSheet->getCell('F' . $i)->setValue($lead->telephone1);
             $activeSheet->getCell('G' . $i)->setValue($lead->telephone2);
             $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
+            $activeSheet->getCell('I' . $i)->setValue($lead->note);
             $i++;
         }
 
@@ -767,6 +768,9 @@ class Customer extends Model
                 $lead->setOwner($user->id);
                 if ($note)
                     $lead->setCustomerNote($note);
+
+                if ($telephone1)
+                    $lead->addPhone(Phone::TYPE_MOBILE, $telephone1, true, true);
 
                 if ($telephone2)
                     $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
@@ -887,16 +891,15 @@ class Customer extends Model
      *      'line_of_business' => 1 or 0
      * ]
      */
-    public function scopeReport($query, $searchText = null, Carbon $from = null, Carbon $to = null, array $interests = []) {
+    public function scopeReport($query, $searchText = null, Carbon $from = null, Carbon $to = null, array $interests = [])
+    {
         $query->userData($searchText)
-        ->when($from, function($q, $v){
-            $q->where('customers.created_at', '>=', $v->format('Y-m-d'));
-        })
-        ->when($from, function($q, $v){
-            $q->where('customers.created_at', '<=', $v->format('Y-m-d'));
-        });
-        
-
+            ->when($from, function ($q, $v) {
+                $q->where('customers.created_at', '>=', $v->format('Y-m-d'));
+            })
+            ->when($from, function ($q, $v) {
+                $q->where('customers.created_at', '<=', $v->format('Y-m-d'));
+            });
     }
 
     public function scopeLeads($query)

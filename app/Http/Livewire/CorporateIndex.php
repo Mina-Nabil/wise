@@ -8,11 +8,11 @@ use App\Models\Users\User;
 use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
-
+use Livewire\WithFileUploads;
 
 class CorporateIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
+    use WithPagination, AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
 
     public $search;
 
@@ -36,6 +36,9 @@ class CorporateIndex extends Component
     public $note;
 
     public $LeadName;
+
+    public $leadsImportFile;
+    public $downloadUserLeadsID;
 
     public function addLead(){
 
@@ -131,6 +134,35 @@ class CorporateIndex extends Component
     {
         return redirect(route('corporates.show',  $id));
     }
+
+     ///import/export functions
+     public function importLeads()
+     {
+         $this->validate([
+             'leadsImportFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+         ]);
+         $importedFile_url = $this->leadsImportFile->store('tmp', 'local');
+         Corporate::importLeads(storage_path('app/' . $importedFile_url));
+         unlink(storage_path('app/' . $importedFile_url));
+         $this->leadsImportFile = null;
+         $this->toggleAddLead();
+         $this->resetPage();
+     }
+ 
+     public function downloadLeadsFile()
+     {
+         $this->validate([
+             'downloadUserLeadsID' => 'nullable|integer|exists:users,id',
+         ]);
+ 
+         return Corporate::exportLeads($this->downloadUserLeadsID);
+     }
+ 
+     public function downloadTemplate()
+     {
+         return Corporate::downloadTemplate();
+     }
+ 
 
 
 

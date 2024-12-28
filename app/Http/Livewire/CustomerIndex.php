@@ -62,8 +62,6 @@ class CustomerIndex extends Component
     public $statusReason;
     public $statusNote;
 
-    public $usersList;
-
     public $leadsImportFile;
     public $downloadUserLeadsID;
 
@@ -302,8 +300,6 @@ class CustomerIndex extends Component
         $countries = Country::all();
         $customers = Customer::userData($this->search)->latest()->paginate(10);
         $users = User::all();
-
-        // dd($usersList);
 
         return view('livewire.customer-index', [
             'customers' => $customers,

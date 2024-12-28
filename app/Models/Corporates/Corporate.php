@@ -16,13 +16,16 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Corporate extends Model
 {
     use HasFactory;
 
     const MORPH_TYPE = 'corporate';
-
+    const FILES_DIRECTORY = 'customers/docs/';
     const TYPE_LEAD = 'lead';
     const TYPE_CLIENT = 'client';
     const TYPES = [
@@ -90,10 +93,23 @@ class Corporate extends Model
     ];
 
     protected $fillable = [
-        'type', 'name', 'arabic_name', 'email', 'commercial_record',
-        'commercial_record_doc', 'tax_id', 'tax_id_doc', 'kyc',
-        'kyc_doc', 'contract_doc', 'main_bank_evidence', 'creator_id',
-        'owner_id', 'note', 'is_welcomed', 'welcome_note'
+        'type',
+        'name',
+        'arabic_name',
+        'email',
+        'commercial_record',
+        'commercial_record_doc',
+        'tax_id',
+        'tax_id_doc',
+        'kyc',
+        'kyc_doc',
+        'contract_doc',
+        'main_bank_evidence',
+        'creator_id',
+        'owner_id',
+        'note',
+        'is_welcomed',
+        'welcome_note'
     ];
 
     ///model functions
@@ -131,20 +147,20 @@ class Corporate extends Model
         $main_bank_evidence = null,
         $note = null,
     ): bool {
-        $this->update([
-            "name"          =>  $name,
-            "arabic_name"   =>  $arabic_name,
-            "email"         =>  $email,
-            "commercial_record"     =>  $commercial_record,
-            "commercial_record_doc" =>  $commercial_record_doc,
-            "tax_id"        =>  $tax_id,
-            "tax_id_doc"    =>  $tax_id_doc,
-            "kyc"           =>  $kyc,
-            "kyc_doc"       =>  $kyc_doc,
-            "contract_doc"  =>  $contract_doc,
-            "note"          =>  $note,
-            "main_bank_evidence"    =>  $main_bank_evidence
-        ]);
+        $updates['name'] = $name;
+        if ($arabic_name) $updates['arabic_name'] = $arabic_name;
+        if ($email) $updates['email'] = $email;
+        if ($commercial_record) $updates['commercial_record'] = $commercial_record;
+        if ($commercial_record_doc) $updates['commercial_record_doc'] = $commercial_record_doc;
+        if ($tax_id) $updates['tax_id'] = $tax_id;
+        if ($tax_id_doc) $updates['tax_id_doc'] = $tax_id_doc;
+        if ($kyc) $updates['kyc'] = $kyc;
+        if ($kyc_doc) $updates['kyc_doc'] = $kyc_doc;
+        if ($contract_doc) $updates['contract_doc'] = $contract_doc;
+        if ($note) $updates['note'] = $note;
+        if ($main_bank_evidence) $updates['main_bank_evidence'] = $contract_doc;
+
+        $this->update($updates);
 
         try {
             $res = $this->save();
@@ -233,9 +249,15 @@ class Corporate extends Model
         }
     }
 
-    public function addPhone($type, $number, $is_default = false): Phone|false
+    public function addPhone($type, $number, $is_default = false, $checkIfNumberExist = false): Phone|false
     {
         try {
+
+            $tmpPhone = $this->phones()->where('number', $number)->first();
+            if ($tmpPhone && $checkIfNumberExist) {
+                return $tmpPhone;
+            }
+
             /** @var Phone */
             $tmp = $this->phones()->create([
                 "type"      =>  $type,
@@ -268,9 +290,14 @@ class Corporate extends Model
         }
     }
 
-    public function addContact($name, $job_title = null, $email = null, $phone = null, $is_default = false): Contact|false
+    public function addContact($name, $job_title = null, $email = null, $phone = null, $is_default = false, $checkIfContactExist = false): Contact|false
     {
         try {
+            $tmpContact = $this->contacts()->where('name', $name)->first();
+            if ($checkIfContactExist && $tmpContact) {
+                return $tmpContact;
+            }
+
             /** @var Contact */
             $tmp = $this->contacts()->create([
                 "name"      =>  $name,
@@ -369,16 +396,17 @@ class Corporate extends Model
         }
     }
 
-    public function setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car=NULL, $model_year=NULL, $insured_value=NULL){
-        try{
+    public function setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car = NULL, $model_year = NULL, $insured_value = NULL)
+    {
+        try {
             $this->name = $full_name;
             $this->commercial_record = $national_id;
-            if($address)
-            $this->addAddress(Address::TYPE_HQ, $address, country: "Egypt");
+            if ($address)
+                $this->addAddress(Address::TYPE_HQ, $address, country: "Egypt");
             if ($tel1) $this->addPhone(Phone::TYPE_WORK, $tel1, true);
             if ($tel2) $this->addPhone(Phone::TYPE_WORK, $tel2, false);
             $this->save();
-        } catch (Exception $e){
+        } catch (Exception $e) {
             report($e);
         }
     }
@@ -420,6 +448,129 @@ class Corporate extends Model
             return false;
         }
     }
+
+    public static function exportLeads($user_id = null)
+    {
+
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('exportAndImport', self::class)) return false;
+
+        $leads = self::leads()->with('phones', 'owner', 'contacts')->when($user_id, function ($q, $v) {
+            $q->where('owner_id', $v);
+        })->get();
+
+        $template = IOFactory::load(resource_path('import/corporate_leads_data.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+        $activeSheet->getCell('I1')->setValue("NOTE");
+        $i = 2;
+        foreach ($leads as $lead) {
+            $main_contact = $lead->contacts()->orderBy('is_default', 'desc')->first();
+            $activeSheet->getCell('A' . $i)->setValue($lead->id);
+            $activeSheet->getCell('B' . $i)->setValue($lead->name);
+            $activeSheet->getCell('C' . $i)->setValue($main_contact?->name);
+            $activeSheet->getCell('D' . $i)->setValue($main_contact?->title);
+            $activeSheet->getCell('E' . $i)->setValue($lead->arabic_name);
+            $activeSheet->getCell('F' . $i)->setValue($lead->telephone1);
+            $activeSheet->getCell('G' . $i)->setValue($main_contact?->phone);
+            $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
+            $activeSheet->getCell('I' . $i)->setValue($lead->note);
+            $i++;
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "corporate_leads_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    public static function importLeads($file)
+    {
+        $spreadsheet = IOFactory::load($file);
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+
+        for ($i = 2; $i <= $highestRow; $i++) {
+            $id     =  $activeSheet->getCell('A' . $i)->getValue();
+            $company_name     =  $activeSheet->getCell('B' . $i)->getValue();
+            $contact_name      =  $activeSheet->getCell('C' . $i)->getValue();
+            $contact_title  =  $activeSheet->getCell('D' . $i)->getValue();
+            $company_arabic_name  =  $activeSheet->getCell('E' . $i)->getValue();
+            $company_phone   =  $activeSheet->getCell('F' . $i)->getValue();
+            $contact_phone     =  $activeSheet->getCell('G' . $i)->getValue();
+            $username     =  $activeSheet->getCell('H' . $i)->getValue();
+            $note           =  $activeSheet->getCell('I' . $i)->getValue();
+
+            if (!$company_name || !$contact_name || !$company_phone || !$contact_phone) continue;
+            $user = User::userExists($username);
+
+
+            if (!$user) $user = Auth::user();
+
+            if ($id) {
+                /** @var self */
+                $lead = self::find($id);
+                if (!$lead) continue;
+
+                $lead->editInfo($company_name, $company_arabic_name);
+                $lead->setOwner($user->id);
+                
+                if ($company_phone)
+                    $lead->addPhone(Phone::TYPE_MOBILE, $company_phone, false, true);
+
+                $lead->addContact($contact_name, $contact_title, null, $contact_phone, true, true);
+
+                if ($note)
+                    $lead->setCorporateNote($note);
+            } else {
+
+                $lead = self::newLead($company_name, $company_arabic_name, owner_id: $user->id);
+                $lead->addContact($contact_name, $contact_title, null, $contact_phone, true);
+
+                if ($company_phone)
+                    $lead->addPhone(Phone::TYPE_MOBILE, $company_phone, false);
+
+                if ($note)
+                    $lead->setCorporateNote($note);
+            }
+        }
+
+        return true;
+    }
+
+    public static function downloadTemplate()
+    {
+        $template = IOFactory::load(resource_path('import/corporate_leads_data.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $sales = User::active()->get();
+        $i = 5;
+        foreach ($sales as $s) {
+            $activeSheet->getCell('N' . $i)->setValue($s->username);
+            $i++;
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "corporate_leads_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
 
     ///static functions
     public static function newLead(
@@ -546,17 +697,32 @@ class Corporate extends Model
                     //         ->orwhere('corporate_phones.number', '=', "$tmp")
                     //         ->orwhere('corporates.arabic_name', '=', "$tmp");
                     // } else {
-                        $qq->where('corporates.name', 'LIKE', "%$tmp%")
-                            ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%")
-                            ->orwhere('corporates.email', 'LIKE', "%$tmp%")
-                            ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
-                            ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%");
+                    $qq->where('corporates.name', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                        ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
+                        ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%");
                     // }
                 });
             }
         });
         return $query->latest();
     }
+
+    ///attributes
+
+    public function getTelephone1Attribute()
+    {
+        $this->load('phones');
+        return $this->phones->where('is_default', 1)->first()?->number;
+    }
+
+    //scopes
+    public function scopeLeads($query)
+    {
+        return $query->where('type', self::TYPE_LEAD);
+    }
+
 
     ///relations
     public function status(): HasOne

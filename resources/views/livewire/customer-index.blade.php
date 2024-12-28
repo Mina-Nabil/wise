@@ -37,7 +37,7 @@
                                 <tr>
 
                                     <th scope="col" class=" table-th ">
-                                       #
+                                        #
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -791,20 +791,19 @@
                                     </button>
 
                                 </div>
+                            @endcan
+                            <!-- Modal footer -->
+                            <div
+                                class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="addLead" data-bs-dismiss="modal"
+                                    class="btn inline-flex justify-center text-white bg-black-500">
+                                    Accept
+                                </button>
                             </div>
-                        @endcan
-                        <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="addLead" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
-                                Accept
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     @endif
 
     @if ($changeCustStatusId)
