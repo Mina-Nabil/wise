@@ -198,7 +198,7 @@ class CompanyShow extends Component
                 'sold_policies_entries.*.pymnt_perm' => 'payment perm',
             ],
         );
-        Log::info($this->sold_policies_entries);
+
         $res = Invoice::newInvoice($this->company->id, $this->serial, $this->gross_total, $this->sold_policies_entries);
 
         if ($res) {
@@ -290,12 +290,6 @@ class CompanyShow extends Component
             ->paginate(20);
         $soldPolicies = []; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
 
-        Log::info(SoldPolicy::when($this->seachAvailablePoliciesText, fn($q) => $q->searchByPolicyNumber($this->seachAvailablePoliciesText))
-            ->byCompany(
-                company_id: $this->company->id,
-                is_paid: $this->availableSoldPolicies_isNotPaid === "0" ? null : false
-            )
-            ->toSql());
 
         $this->available_policies = SoldPolicy::when($this->seachAvailablePoliciesText, fn($q) => $q->searchByPolicyNumber($this->seachAvailablePoliciesText))
             ->byCompany(

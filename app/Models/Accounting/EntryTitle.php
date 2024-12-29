@@ -61,7 +61,7 @@ class EntryTitle extends Model
                 $tmpAccount = $tmpAccount->parent_account;
             }
             $entryAccount = $this->accounts->firstWhere('id', $tmpAccount->id);
-            Log::info($entryAccount);
+
             if ($entryAccount->pivot->limit && $entryAccount->pivot->nature == $entry_arr['nature'] && $entryAccount->pivot->limit < $entry_arr['amount']) {
                 return false;
             }

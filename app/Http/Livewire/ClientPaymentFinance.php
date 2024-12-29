@@ -73,12 +73,10 @@ class ClientPaymentFinance extends Component
     {
         $statuses = ClientPayment::PYMT_STATES;
         $companies = Company::all();
-        $payments = ClientPayment::userData()->includeDue()
+        $payments = ClientPayment::userData(states: $this->filteredStatus, searchText: $this->searchText)->includeDue()
             ->when($this->selectedCompany, fn($q) => $q->byCompany($this->selectedCompany->id))
             ->when($this->dueDays && !$this->isDuePassed, fn($q) => $q->dueAfter($this->dueDays))
             ->when($this->dueDays && $this->isDuePassed, fn($q) => $q->duePassed($this->dueDays))
-            ->when($this->searchText, fn($q) => $q->searchBy($this->searchText))
-            ->when(count($this->filteredStatus), fn($q) => $q->FilterByStates($this->filteredStatus))
             ->when($this->sortColomn === 'due' , fn($q) => $q->SortByDue(sort:$this->sortDirection))
             ->when($this->sortColomn === 'start' , fn($q) => $q->SortByPolicyStart(sort:$this->sortDirection))
             // ->sortByDue()

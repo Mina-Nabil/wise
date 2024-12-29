@@ -145,7 +145,6 @@ class Account extends Model
                     $nature =  strtolower($activeSheet->getCell('G' . $i)->getValue());
                     $desc   =  $activeSheet->getCell('H' . $i)->getValue();
                     $balance =  $activeSheet->getCell('I' . $i)->getValue();
-                    Log::info("Check negative? " . $balance);
 
                     try {
                         $main_account = MainAccount::firstOrCreate([
@@ -183,7 +182,7 @@ class Account extends Model
                         ];
                     }
                 }
-                Log::info($found_balances);
+
                 $starting_entry = JournalEntry::newJournalEntry(1, is_seeding: true, accounts: $found_balances);
                 if (!$starting_entry) throw new Exception("Import failed please check balances");
                 if (is_string($starting_entry)) throw new Exception($starting_entry);

@@ -336,7 +336,7 @@ class ClientPayment extends Model
     ///scopes
     public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc')
     {
-        $query->userData()
+        $query->userData(states: $filteredStatus, searchText: $searchText)
             ->when($start_from, function ($q, $v) {
                 $q->where('sold_policies.start', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($start_to, function ($q, $v) {
@@ -351,7 +351,6 @@ class ClientPayment extends Model
                 $q->where('sold_policies.expiry', "<=", $v->format('Y-m-d 23:59:59'));
             })
             ->when($selectedCompany, fn($q) => $q->byCompany($selectedCompany->id))
-            ->when($searchText, fn($q) => $q->searchBy($searchText))
             ->when($sales_out_ids, fn($q) => $q->bySalesOut($sales_out_ids))
             ->when(count($filteredStatus), fn($q) => $q->FilterByStates($filteredStatus))
             ->when($sortColomn === 'start', fn($q) => $q->SortByPolicyStart(sort: $sortDirection))

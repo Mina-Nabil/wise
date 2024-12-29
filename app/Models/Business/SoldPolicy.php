@@ -652,12 +652,10 @@ class SoldPolicy extends Model
 
     public function updateSalesCommsPaymentInfo()
     {
-        Log::info("GEET");
+
         $client_paid_percentage = $this->gross_premium ? round(100 * $this->total_client_paid / $this->gross_premium, 2) : 0;
         $company_paid_percentage = $this->total_policy_comm ? round(100 * $this->total_comp_paid / $this->total_policy_comm, 2) : 0;
 
-        Log::info("Comp%" . $company_paid_percentage);
-        Log::info("Client%" . $client_paid_percentage);
         try {
             /** @var SalesComm */
             foreach ($this->sales_comms()->get() as $commaya) {
@@ -1290,20 +1288,20 @@ class SoldPolicy extends Model
                         0
                     );
                     $duplicatePolicy->setPaid(true, new Carbon($client_payment_date));
-                    Log::info($duplicatePolicy->sales_comms()->get()->count());
+
                     if (!$duplicatePolicy->sales_comms()->get()->count()) {
                         $duplicatePolicy->load('policy');
                         if ($salesOut1) {
-                            Log::info("adding sales out");
+
                             $conf = $salesOut1->getValidDirectCommissionConf($duplicatePolicy->policy);
-                            Log::info($conf);
+
                             if ($conf) {
                                 $duplicatePolicy->addSalesCommission($salesOut1->title, $conf->from, $conf->percentage, $salesOut1->id, "Added for direct commission during migration", true);
                             }
                         } else if ($salesIn1) {
-                            Log::info("adding sales in");
+
                             $duplicatePolicy->addSalesCommission($salesIn1->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn1->id, "Added for target commission during migration", true);
-                            Log::info($duplicatePolicy->sales_comms()->get()->count());
+
                         }
 
                         if ($salesOut2) {
@@ -1463,9 +1461,7 @@ class SoldPolicy extends Model
             $brandName = $activeSheet->getCell('AI' . $i)->getValue();
             $modelName = $activeSheet->getCell('AJ' . $i)->getValue();
             $car = CarsCar::getByBrandAndModel($brandName, $modelName);
-            if ($car) {
-                Log::info("Car found " . $car->id);
-            }
+
             $foundSoldPolicy = self::byPolicyNumber($policy_number)->first();
             if (!$full_name) {
                 Log::warning("Row#$i has no name");
@@ -1548,7 +1544,7 @@ class SoldPolicy extends Model
                             note: $note,
                         );
                         if (!$is_active) $tmpPolicy->setAsInvalid();
-                        Log::info("Policy#$policy_number added");
+
                     } else Log::warning("Invalid insured / net prem on Row#$i");
                 } catch (Exception $e) {
                     Log::warning("Row#$i crashed");
@@ -1749,7 +1745,6 @@ class SoldPolicy extends Model
 
     public function scopeByPaid($query, $is_paid)
     {
-        Log::info($is_paid);
         return $query->where('sold_policies.is_paid', $is_paid);
     }
 

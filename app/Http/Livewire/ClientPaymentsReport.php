@@ -8,6 +8,7 @@ use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 
 class ClientPaymentsReport extends Component
@@ -288,7 +289,6 @@ class ClientPaymentsReport extends Component
             $this->sortColomn,
             $this->sortDirection
         );
-
         $payments =    $payments->paginate(50);
         return view('livewire.client-payments-report', [
             'STATUSES' => $STATUSES,

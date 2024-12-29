@@ -103,7 +103,7 @@ class UnapprovedEntry extends Model
                     user_id: Auth::id(),
                     accounts: $accounts_arr
                 );
-                Log::info($newEntry);
+
                 if ($newEntry) {
                     $this->deleteRecord();
                 }

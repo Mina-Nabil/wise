@@ -120,9 +120,6 @@ class UserController extends Controller
     {
         /** @var Notification */
         $notf = Notification::findOrFail($id);
-        Log::info($notf->is_seen);
-        if (!$notf->is_seen)
-            Log::info($notf->setAsSeen());
         return response()->json([
             "status"  =>   true
         ]);
