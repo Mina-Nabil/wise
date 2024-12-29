@@ -218,8 +218,9 @@ class SoldPolicyShow extends Component
             'paymentDue' => 'required|date',
             'paymentNote' => 'nullable|string',
             'paymentAssignee' => 'nullable|integer|exists:users,id',
-            'salesOutID' => 'nullable|integer|exists:users,id',
+            'salesOutID' => 'required_if:paymentType,' . ClientPayment::PYMT_TYPE_SALES_OUT . '|integer|exists:users,id',
         ]);
+
 
         $res = ClientPayment::find($this->editPaymentSec)->setInfo(Carbon::parse($this->paymentDue), $this->paymentType, $this->paymentAssignee, $this->paymentNote, $this->salesOutID);
         if ($res) {

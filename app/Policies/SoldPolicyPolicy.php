@@ -101,7 +101,7 @@ class SoldPolicyPolicy
      */
     public function updateWiseCommPayments(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->id == 1 || $user->id == 10 || $user->id == 11  ; //remon w mina N. w michael 
+        return $user->id == 1 || $user->id == 10 || $user->id == 11; //remon w mina N. w michael 
     }
     /**
      * Determine whether the user can update a sold policy's main sales

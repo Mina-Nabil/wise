@@ -228,7 +228,7 @@ class Calendar extends Component
         }
 
 
-        foreach (Offer::userData(upcomingOnly: true, assignedToMe: true)->with('client')->get() as $t) {
+        foreach (Offer::userData(upcomingOnly: true, assignedToMe: true)->byStates(Offer::ACTIVE_STATUSES)->with('client')->get() as $t) {
             $events[] =  [
                 'id'        => "offer" . $t->id,
                 'title'     => "OF: " . $t->client->name,

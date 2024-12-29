@@ -431,6 +431,19 @@ class SoldPolicyReport extends Component
         }
     }
 
+    public function setStartDates()
+    {
+        $this->start_from = Carbon::parse($this->Estart_from);
+        $this->start_to = Carbon::parse($this->Estart_to);
+        $this->toggle($this->startSection);
+    }
+
+    public function clearStartDates()
+    {
+        $this->start_from = null;
+        $this->start_to = null;
+    }
+
     public function toggleIssuedDate()
     {
         $this->toggle($this->issuedSection);
@@ -439,6 +452,20 @@ class SoldPolicyReport extends Component
             $this->Eissued_to = Carbon::parse($this->issued_to)->toDateString();
         }
     }
+
+    public function setIssuedDates()
+    {
+        $this->issued_from = Carbon::parse($this->Eissued_from);
+        $this->issued_to = Carbon::parse($this->Eissued_to);
+        $this->toggle($this->issuedSection);
+    }
+
+    public function clearIssuedDates()
+    {
+        $this->issued_from = null;
+        $this->issued_to = null;
+    }
+
 
     public function exportReport()
     {
@@ -468,32 +495,6 @@ class SoldPolicyReport extends Component
                 $this->is_welcomed,
             );
         }
-    }
-
-    public function setStartDates()
-    {
-        $this->start_from = Carbon::parse($this->Estart_from);
-        $this->start_to = Carbon::parse($this->Estart_to);
-        $this->toggle($this->startSection);
-    }
-
-    public function clearStartDates()
-    {
-        $this->start_from = null;
-        $this->start_to = null;
-    }
-
-    public function setIssuedDates()
-    {
-        $this->issued_from = Carbon::parse($this->Eissued_from);
-        $this->issued_to = Carbon::parse($this->Eissued_to);
-        $this->toggle($this->issuedSection);
-    }
-
-    public function clearIssuedDates()
-    {
-        $this->issued_from = null;
-        $this->issued_to = null;
     }
 
     public function mount()

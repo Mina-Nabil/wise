@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
+    public function clientPayments()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+
+        // if($loggedInUser->can('viewAny', ClientPayment::class))
+
+        return view('reports.client-payments');
+    }
+
     public function clientPaymentsFinance()
     {
         /** @var User */

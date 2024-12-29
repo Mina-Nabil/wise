@@ -465,7 +465,10 @@
                                                                     @can('viewCommission',
                                                                         App\Models\Business\SoldPolicy::class)
                                                                         <th scope="col" class="table-th ">
-                                                                            Comm.
+                                                                            Expected Comm
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
+                                                                            Collected Comm
                                                                         </th>
                                                                     @endcan
                                                                     <th scope="col" class="table-th ">
@@ -502,8 +505,9 @@
                                                                             <a href="{{ route('sold.policy.show', $policy->id) }}"
                                                                                 target="_blank"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <span
-                                                                                    class="block date-text">{{ $policy->policy_number }}</span>
+                                                                                <span class="block date-text">
+                                                                                    {{ $policy->policy_number }}
+                                                                                </span>
                                                                             </a>
                                                                         </td>
                                                                         <td class="table-td">
@@ -530,9 +534,7 @@
                                                                                         @elseif($policy->client_type === 'corporate')
                                                                                             {{ $policy->client->name }}
                                                                                         @endif
-
                                                                                     </a>
-
                                                                                 </div>
                                                                             </div>
                                                                         </td>
@@ -561,6 +563,10 @@
                                                                         @can('viewCommission', $policy)
                                                                             <td class="table-td ">
                                                                                 <b>{{ number_format($policy->total_policy_comm, 0, '.', ',') }}</b>
+                                                                            </td>
+                                                                            <td class="table-td ">
+                                                                                <b>
+                                                                                    {{ number_format($policy->total_comp_paid, 0, '.', ',') }}</b>
                                                                             </td>
                                                                         @endcan
                                                                         <td class="table-td">
@@ -654,7 +660,8 @@
                                 @foreach ($COMM_PROFILES as $COMM_PROFILE)
                                     <div class="checkbox-area">
                                         <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="hidden" value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
+                                            <input type="checkbox" class="hidden"
+                                                value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
                                                 name="checkbox" wire:model.defer="Eprofiles">
                                             <span
                                                 class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
@@ -729,10 +736,9 @@
                                 </select>
                             </div>
                             <div class="from-group">
-                                <label  class="form-label">Welcome Note</label>
-                                <textarea rows=3
-                                class="form-control py-2 flatpickr cursor-pointer flatpickr-input active"
-                                id="default-picker" type="text" wire:model.defer="welcomedNote" autocomplete="off"></textarea>
+                                <label class="form-label">Welcome Note</label>
+                                <textarea rows=3 class="form-control py-2 flatpickr cursor-pointer flatpickr-input active" id="default-picker"
+                                    type="text" wire:model.defer="welcomedNote" autocomplete="off"></textarea>
                             </div>
                         </div>
                         <!-- Modal footer -->
@@ -1573,3 +1579,4 @@
         </div>
     @endif
 </div>
+

@@ -256,7 +256,10 @@
                                     Policies</a>
                             </li>
                             <li>
-                                <a href="{{ url('/reports/client-payment-finance') }}" class="@yield('client-payment-finance')">Client Payments</a>
+                                <a href="{{ url('/reports/client-payment-finance') }}" class="@yield('client-payment-finance')">Payments Due</a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/reports/client-payments') }}" class="@yield('client-payments')">Client Payments</a>
                             </li>
 
                         </ul>

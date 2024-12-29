@@ -1045,6 +1045,12 @@ class SoldPolicy extends Model
         $activeSheet = $newFile->getActiveSheet();
 
         $i = 2;
+        /** @var User */
+        $user = Auth::user();
+        if ($user->can('viewCommission', self::class)) {
+            $activeSheet->getCell('I1')->setValue("Expected Comm.");
+            $activeSheet->getCell('J1')->setValue("Collected Comm.");
+        }
         foreach ($policies as $policy) {
             $activeSheet->getCell('A' . $i)->setValue($policy->policy->company->name);
             $activeSheet->getCell('B' . $i)->setValue($policy->policy->name);
@@ -1054,6 +1060,11 @@ class SoldPolicy extends Model
             $activeSheet->getCell('F' . $i)->setValue($policy->client->name);
             $activeSheet->getCell('G' . $i)->setValue($policy->is_valid ? "Valid" : '');
             $activeSheet->getCell('H' . $i)->setValue($policy->is_paid ? 'Paid' : '');
+            if ($user->can('viewCommission', self::class)) {
+                $activeSheet->getCell('I' . $i)->setValue($policy->total_policy_comm);
+                $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
+            }
+
             $i++;
         }
 
@@ -1123,7 +1134,6 @@ class SoldPolicy extends Model
                     Log::warning("Row#$i missed, failed to get policy");
                     continue;
                 }
-                Log::info($activeSheet->getCell('H' . $i)->getFormattedValue());
 
                 //sold policy data
                 $policy_number = $activeSheet->getCell('E' . $i)->getValue();

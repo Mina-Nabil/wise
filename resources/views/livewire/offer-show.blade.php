@@ -1335,7 +1335,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-2">
                                 <div class="from-group">
                                     <label for="policy_number" class="form-label">Policy Number</label>
-                                    <input type="number" name="policy_number" class="form-control mt-2 w-full"
+                                    <input name="policy_number" class="form-control mt-2 w-full"
                                         wire:model.defer="policy_number">
                                     @error('policy_number')
                                         <span

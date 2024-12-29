@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ClientPayment extends Model
 {
@@ -70,6 +72,67 @@ class ClientPayment extends Model
         'assigned_to',
         'sales_out_id'
     ];
+
+    ///static functions
+    public static function exportReport(
+        Carbon $start_from = null,
+        Carbon $start_to = null,
+        Carbon $expiry_from = null,
+        Carbon $expiry_to = null,
+        Carbon $issued_from = null,
+        Carbon $issued_to = null,
+        $selectedCompany = null,
+        $searchText = null,
+        $sales_out_ids = null,
+        $filteredStatus = null,
+        $sortColomn = null,
+        $sortDirection = 'asc'
+    ) {
+        $payments = self::report(
+            $start_from,
+            $start_to,
+            $expiry_from,
+            $expiry_to,
+            $issued_from,
+            $issued_to,
+            $selectedCompany,
+            $searchText,
+            $sales_out_ids,
+            $filteredStatus,
+            $sortColomn,
+            $sortDirection
+        )->get();
+
+        $template = IOFactory::load(resource_path('import/client_payment_report.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 2;
+        /** @var User */
+
+        foreach ($payments as $payment) {
+
+            $activeSheet->getCell('A' . $i)->setValue($payment->sold_policy->policy_number);
+            $activeSheet->getCell('B' . $i)->setValue($payment->sold_policy->creator->username);
+            $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy->client->name);
+            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($payment->sold_policy->start)->format('d-m-Y'));
+            $activeSheet->getCell('E' . $i)->setValue($payment->assigned->username);
+            $activeSheet->getCell('F' . $i)->setValue($payment->amount);
+            $activeSheet->getCell('G' . $i)->setValue($payment->status);
+
+            $i++;
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = SoldPolicy::FILES_DIRECTORY . "payments_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
 
     ///model functions
     public function setInfo(Carbon $due, $type,  $assigned_to_id, $note = null, $sales_out_id = null)
@@ -271,6 +334,30 @@ class ClientPayment extends Model
     }
 
     ///scopes
+    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc')
+    {
+        $query->userData()
+            ->when($start_from, function ($q, $v) {
+                $q->where('sold_policies.start', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($start_to, function ($q, $v) {
+                $q->where('sold_policies.start', "<=", $v->format('Y-m-d 23:59:59'));
+            })->when($issued_from, function ($q, $v) {
+                $q->where('sold_policies.created_at', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($issued_to, function ($q, $v) {
+                $q->where('sold_policies.created_at', "<=", $v->format('Y-m-d 23:59:59'));
+            })->when($expiry_from, function ($q, $v) {
+                $q->where('sold_policies.expiry', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($expiry_to, function ($q, $v) {
+                $q->where('sold_policies.expiry', "<=", $v->format('Y-m-d 23:59:59'));
+            })
+            ->when($selectedCompany, fn($q) => $q->byCompany($selectedCompany->id))
+            ->when($searchText, fn($q) => $q->searchBy($searchText))
+            ->when($sales_out_ids, fn($q) => $q->bySalesOut($sales_out_ids))
+            ->when(count($filteredStatus), fn($q) => $q->FilterByStates($filteredStatus))
+            ->when($sortColomn === 'start', fn($q) => $q->SortByPolicyStart(sort: $sortDirection))
+            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
+    }
+
     public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false, string $searchText = null, $upcoming_only = false)
     {
         /** @var User */
@@ -318,6 +405,11 @@ class ClientPayment extends Model
     public function scopeNotPaidOnly(Builder $query)
     {
         return $query->whereNot('client_payments.status', self::PYMT_STATE_PAID);
+    }
+
+    public function scopeBySalesOut(Builder $query, array $ids = [])
+    {
+        return $query->whereIn('client_payments.sales_out_id', $ids);
     }
 
     public function scopeFilterByStates(Builder $query, array $states)

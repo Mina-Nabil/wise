@@ -67,6 +67,13 @@ class Offer extends Model
         self::STATUS_APPROVED,
     ];
 
+    const ACTIVE_STATUSES = [
+        self::STATUS_NEW,
+        self::STATUS_PENDING_OPERATIONS,
+        self::STATUS_PENDING_INSUR,
+        self::STATUS_PENDING_CUSTOMER,
+    ];
+
     protected $table = 'offers';
     protected $fillable = [
         'creator_id',
