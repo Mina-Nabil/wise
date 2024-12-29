@@ -167,7 +167,7 @@ class CompanyShow extends Component
         'net_total' => ['required', 'numeric', 'min:0', 'regex:/^\d+(\.\d{1,2})?$/'],
         'sold_policies_entries.*.id' => 'required|integer|exists:policies,id', // Ensure 'policies' is your table and 'id' is a valid ID
         'sold_policies_entries.*.amount' => 'required|numeric|min:0',
-        'sold_policies_entries.*.pymnt_perm' => 'required|numeric|min:0',
+        'sold_policies_entries.*.pymnt_perm' => 'numeric|min:0',
     ];
 
     public function updatedGrossTotal()
@@ -191,7 +191,7 @@ class CompanyShow extends Component
                 'net_total' => 'required|numeric',
                 'sold_policies_entries.*.id' => 'required|integer',
                 'sold_policies_entries.*.amount' => 'required|numeric',
-                'sold_policies_entries.*.pymnt_perm' => 'required|string',
+                'sold_policies_entries.*.pymnt_perm' => 'string',
             ],
             attributes: [
                 'sold_policies_entries.*.amount' => 'amount',
