@@ -222,6 +222,7 @@ class CompanyShow extends Component
                 'pymnt_perm' => '',
             ];
         }
+        $this->updateTotal();
     }
 
     public function unselectPolicy($policyId)
@@ -231,6 +232,7 @@ class CompanyShow extends Component
                 unset($this->sold_policies_entries[$i]);
             }
         }
+        $this->updateTotal();
     }
 
     public function addEntry()
@@ -256,7 +258,6 @@ class CompanyShow extends Component
 
     public function updateTotal()
     {
-        Log::info($this->sold_policies_entries);
         $this->gross_total = 0;
         foreach ($this->sold_policies_entries as $e) {
             $this->gross_total += is_numeric($e['amount']) ? $e['amount'] : 0;
