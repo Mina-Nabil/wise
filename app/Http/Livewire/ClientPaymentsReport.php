@@ -14,7 +14,6 @@ class ClientPaymentsReport extends Component
 {
     use WithPagination, ToggleSectionLivewire;
 
-    public $filteredStatus = ClientPayment::NOT_PAID_STATES;
     public $selectedCompany = null;
     public $isDuePassed = false;
     public $dueDays;
@@ -25,6 +24,7 @@ class ClientPaymentsReport extends Component
     public $expirySection = false;
     public $companySection = false;
     public $issuedSection = false;
+    public $statusesSection = false;
 
     public $company_ids = [];
     public $start_from;
@@ -33,6 +33,7 @@ class ClientPaymentsReport extends Component
     public $issued_to;
     public $expiry_from;
     public $expiry_to;
+    public $statuses = [];
 
     public $Ecompany_ids = [];
     public $Estart_from;
@@ -41,6 +42,7 @@ class ClientPaymentsReport extends Component
     public $Eissued_to;
     public $Eexpiry_from;
     public $Eexpiry_to;
+    public $Estatuses = [];
 
     public $sortColomn;
     public $sortDirection = 'asc';
@@ -73,9 +75,9 @@ class ClientPaymentsReport extends Component
 
     public function filterByStatus($status)
     {
-        if ($status == 'all') $this->filteredStatus = [];
-        else if ($status == 'not_paid') $this->filteredStatus = ClientPayment::NOT_PAID_STATES;
-        else $this->filteredStatus = [$status];
+        if ($status == 'all') $this->statuses = [];
+        else if ($status == 'not_paid') $this->statuses = ClientPayment::NOT_PAID_STATES;
+        else $this->statuses = [$status];
     }
 
     public function filterByCompany($company_id = null)
@@ -201,6 +203,25 @@ class ClientPaymentsReport extends Component
             ->get();
     }
 
+    public function togglestatuses()
+    {
+        $this->toggle($this->statusesSection);
+        if ($this->statusesSection) {
+            $this->Estatuses = $this->statuses;
+        }
+    }
+
+    public function clearstatuses()
+    {
+        $this->statuses = [];
+    }
+
+    public function setStatuses()
+    {
+        $this->statuses = $this->Estatuses;
+        $this->toggle($this->statusesSection);
+    }
+
     public function toggleSalesOut()
     {
         $this->toggle($this->salesOutSection);
@@ -227,7 +248,7 @@ class ClientPaymentsReport extends Component
             $this->selectedCompany,
             $this->searchText,
             $this->sales_out_ids,
-            $this->filteredStatus,
+            $this->statuses,
             $this->sortColomn,
             $this->sortDirection
         );
@@ -251,7 +272,7 @@ class ClientPaymentsReport extends Component
 
     public function render()
     {
-        $statuses = ClientPayment::PYMT_STATES;
+        $STATUSES = ClientPayment::PYMT_STATES;
 
         $payments = ClientPayment::report(
             $this->start_from,
@@ -263,14 +284,14 @@ class ClientPaymentsReport extends Component
             $this->selectedCompany,
             $this->searchText,
             $this->sales_out_ids,
-            $this->filteredStatus,
+            $this->statuses,
             $this->sortColomn,
             $this->sortDirection
         );
 
         $payments =    $payments->paginate(50);
         return view('livewire.client-payments-report', [
-            'statuses' => $statuses,
+            'STATUSES' => $STATUSES,
             'payments' => $payments
         ]);
     }

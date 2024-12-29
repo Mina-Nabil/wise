@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-• Collected Client Payments
+• Client Payments
 @endsection
 
 
