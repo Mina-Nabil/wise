@@ -173,8 +173,8 @@ class CompanyShow extends Component
     public function updatedGrossTotal()
     {
         if ($this->gross_total >= 0) {
-            $this->tax_total = $this->gross_total * 0.05;
-            $this->net_total = $this->gross_total * 0.95;
+            $this->tax_total = round($this->gross_total * 0.05, 2);
+            $this->net_total = round($this->gross_total * 0.95, 2);
         } else {
             $this->tax_total = null;
             $this->net_total = null;
