@@ -468,7 +468,7 @@
                                                     @enderror
                                                 </div>
                                                 <div class="input-area">
-                                                    <label for="firstName" class="form-label">Payment Perm</label>
+                                                    <label for="firstName" class="form-label">اذن صرف عموله</label>
                                                     <input type="number" step="0.01" wire:model.defer="sold_policies_entries.{{ $index }}.pymnt_perm" class="form-control @error('sold_policies_entries.' . $index . '.pymnt_perm') !border-danger-500 @enderror">
 
                                                     @error('sold_policies_entries.' . $index . '.pymnt_perm')
