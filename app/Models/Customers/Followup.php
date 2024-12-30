@@ -182,7 +182,7 @@ class Followup extends Model
     }
 
     ///static functions
-    public function exportReport(Carbon $due_from = null, Carbon $due_to = null, Carbon $action_from = null, Carbon $action_to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
+    public static function exportReport(Carbon $due_from = null, Carbon $due_to = null, Carbon $action_from = null, Carbon $action_to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
     {
         $followups = self::report($due_from, $due_to, $action_from, $action_to, $sales_id, $client_type, $client_id, $is_meeting, $line_of_business)->get();
         $template = IOFactory::load(resource_path('import/followups_report.xlsx'));
