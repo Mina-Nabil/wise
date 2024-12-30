@@ -481,6 +481,16 @@
                                     {{ $soldPolicy->main_sales->full_name }}
                                 </span>
                             </div>
+                            <div>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                    Other Sales Linked
+                                </span>
+                                <span class="text-lg font-medium text-slate-900 dark:text-white block">
+                                    @foreach ($soldPolicy->sales_comms as $comm)
+                                    {{$comm->comm_profile->title}} &nbsp;
+                                    @endforeach
+                                </span>
+                            </div>
                         </div>
                     </div>
                 @endif
