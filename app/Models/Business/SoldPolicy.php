@@ -86,7 +86,8 @@ class SoldPolicy extends Model
         'main_sales_id',
         'created_at',
         'after_tax_comm',
-        'sales_out_comm'
+        'sales_out_comm', 
+        'renewal_policy_id'
     ];
 
     ///model functions
