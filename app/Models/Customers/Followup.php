@@ -178,7 +178,7 @@ class Followup extends Model
             $q->where('is_meeting', $is_meeting);
         })->when($line_of_business, function ($q, $v) {
             $q->where('line_of_business', "=", $v);
-        });
+        })->with('client');
     }
 
     ///static functions
@@ -195,7 +195,7 @@ class Followup extends Model
         $i = 2;
         foreach ($followups as $followup) {
             $activeSheet->getCell('A' . $i)->setValue($followup->creator->username);
-            $activeSheet->getCell('B' . $i)->setValue($followup->client->name);
+            $activeSheet->getCell('B' . $i)->setValue($followup->called->name);
             $activeSheet->getCell('C' . $i)->setValue($followup->line_of_business);
             $activeSheet->getCell('D' . $i)->setValue($followup->title);
             $activeSheet->getCell('E' . $i)->setValue($followup->status);
