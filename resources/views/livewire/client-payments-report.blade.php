@@ -32,7 +32,14 @@
                                     dark:hover:text-white cursor-pointer">
                             By Sales Out</span>
                     </li>
-                    
+
+                    <li wire:click="toggleRenewal">
+                        <span href="#"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            is Renewal</span>
+                    </li>
+
                     <li wire:click="togglestatuses">
                         <span
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
@@ -206,6 +213,23 @@
                             </button>
                         @endif
 
+                        @if (!is_null($is_renewal))
+                            <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                <span wire:click="toggleRenewal">
+                                    @if ($is_renewal)
+                                        Renewal:&nbsp;Yes
+                                    @else
+                                        Renewal:&nbsp;No
+                                    @endif
+                                    &nbsp;&nbsp;
+                                </span>
+                                <span wire:click="clearrenewal">
+                                    <iconify-icon icon="material-symbols:close" width="1.2em"
+                                        height="1.2em"></iconify-icon>
+                                </span>
+                            </button>
+                        @endif
+
                     </header>
                     <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                         <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
@@ -308,6 +332,10 @@
                                                 Cancelled
                                             </div>
                                         @endif
+                                        @if ($payment->sold_policy->is_renewal)
+                                        <span
+                                            class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
+                                    @endif
                                     </td>
                                 </tr>
                             @endforeach

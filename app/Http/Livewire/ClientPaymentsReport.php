@@ -35,8 +35,10 @@ class ClientPaymentsReport extends Component
     public $expiry_from;
     public $expiry_to;
     public $statuses = [];
+    public $is_renewal;
 
     public $Ecompany_ids = [];
+    public $Eis_renewal;
     public $Estart_from;
     public $Estart_to;
     public $Eissued_from;
@@ -236,10 +238,20 @@ class ClientPaymentsReport extends Component
         $this->sales_out_ids = [];
     }
 
+    public function clearrenwal()
+    {
+        $this->is_renewal = null;
+    }
+    public function toggleRenewal()
+    {
+        $this->toggle($this->is_renewal);
+    }
+
     public function exportReport()
     {
 
         return ClientPayment::exportReport(
+            $this->is_renewal,
             $this->start_from,
             $this->start_to,
             $this->expiry_from,
@@ -276,6 +288,7 @@ class ClientPaymentsReport extends Component
         $STATUSES = ClientPayment::PYMT_STATES;
 
         $payments = ClientPayment::report(
+            $this->is_renewal,
             $this->start_from,
             $this->start_to,
             $this->expiry_from,

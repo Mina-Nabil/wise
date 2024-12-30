@@ -75,6 +75,7 @@ class ClientPayment extends Model
 
     ///static functions
     public static function exportReport(
+        bool $is_renewal = null,
         Carbon $start_from = null,
         Carbon $start_to = null,
         Carbon $expiry_from = null,
@@ -89,6 +90,7 @@ class ClientPayment extends Model
         $sortDirection = 'asc'
     ) {
         $payments = self::report(
+            $is_renewal,
             $start_from,
             $start_to,
             $expiry_from,
@@ -334,10 +336,12 @@ class ClientPayment extends Model
     }
 
     ///scopes
-    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc')
+    public function scopeReport($query, $is_renewal = null, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc')
     {
         $query->userData(states: $filteredStatus, searchText: $searchText)
-            ->when($start_from, function ($q, $v) {
+            ->when($is_renewal, function ($q, $v) {
+                $q->where('sold_policies.is_renewal', "=", $v);
+            })->when($start_from, function ($q, $v) {
                 $q->where('sold_policies.start', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($start_to, function ($q, $v) {
                 $q->where('sold_policies.start', "<=", $v->format('Y-m-d 23:59:59'));

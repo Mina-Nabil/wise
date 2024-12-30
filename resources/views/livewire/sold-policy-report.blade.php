@@ -141,7 +141,6 @@
                             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
                                 wire:model="search">
 
-
                         </header>
 
                         <header class="card-header cust-card-header noborder" style="display: block;">
