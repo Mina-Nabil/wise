@@ -194,13 +194,14 @@ class Followup extends Model
 
         $i = 2;
         foreach ($followups as $followup) {
-            $activeSheet->getCell('A' . $i)->setValue($followup->creator->first_name . ' ' . $followup->creator->last_name);
-            $activeSheet->getCell('B' . $i)->setValue($followup->line_of_business);
-            $activeSheet->getCell('C' . $i)->setValue($followup->title);
-            $activeSheet->getCell('D' . $i)->setValue($followup->status);
-            $activeSheet->getCell('E' . $i)->setValue(Carbon::parse($followup->call_time)->format('Y-m-d'));
-            $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($followup->action_time)->format('Y-m-d'));
-            $activeSheet->getCell('G' . $i)->setValue($followup->caller_note);
+            $activeSheet->getCell('A' . $i)->setValue($followup->creator->username);
+            $activeSheet->getCell('B' . $i)->setValue($followup->client->name);
+            $activeSheet->getCell('C' . $i)->setValue($followup->line_of_business);
+            $activeSheet->getCell('D' . $i)->setValue($followup->title);
+            $activeSheet->getCell('E' . $i)->setValue($followup->status);
+            $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($followup->call_time)->format('Y-m-d'));
+            $activeSheet->getCell('G' . $i)->setValue(Carbon::parse($followup->action_time)->format('Y-m-d'));
+            $activeSheet->getCell('H' . $i)->setValue($followup->caller_note);
             $activeSheet->insertNewRowBefore($i);
         }
 
