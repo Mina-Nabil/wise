@@ -332,7 +332,7 @@
                                                 Cancelled
                                             </div>
                                         @endif
-                                        @if ($payment->sold_policy->offer->is_renewal)
+                                        @if ($payment->sold_policy->offer?->is_renewal)
                                         <span
                                             class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
                                     @endif
