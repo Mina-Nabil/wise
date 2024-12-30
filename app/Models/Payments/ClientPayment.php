@@ -340,7 +340,7 @@ class ClientPayment extends Model
     {
         $query->userData(states: $filteredStatus, searchText: $searchText)
             ->when($is_renewal, function ($q, $v) {
-                $q->where('sold_policies.is_renewal', "=", $v);
+                $q->whereNotNull('sold_policies.renewal_policy_id');
             })->when($start_from, function ($q, $v) {
                 $q->where('sold_policies.start', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($start_to, function ($q, $v) {
