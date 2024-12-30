@@ -147,7 +147,7 @@ class FollowupReport extends Component
     }
 
     public function exportReport(){
-        return Followup::exportReport($this->callTime_from,$this->callTime_to,$this->salesId,$this->calledType,$this->calledId,$this->isMeeting,$this->line_of_business);
+        return Followup::exportReport(null, null, $this->callTime_from,$this->callTime_to,$this->salesId,$this->calledType,$this->calledId,$this->isMeeting,$this->line_of_business);
     }
 
     public function render()
