@@ -168,7 +168,7 @@ class FollowupReport extends Component
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $users = User::all();
 
-        $followups = Followup::report($this->callTime_from, $this->callTime_to, sales_id: $this->salesId, client_type:$this->calledType,client_id:$this->calledId ,line_of_business: $this->line_of_business, is_meeting: $this->isMeeting)->paginate(10);
+        $followups = Followup::report(action_from: $this->callTime_from, action_to: $this->callTime_to, sales_id: $this->salesId, client_type:$this->calledType,client_id:$this->calledId ,line_of_business: $this->line_of_business, is_meeting: $this->isMeeting)->paginate(10);
         return view('livewire.followup-report', [
             'followups' => $followups,
             'users' => $users,
