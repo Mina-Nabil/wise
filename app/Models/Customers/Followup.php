@@ -178,7 +178,7 @@ class Followup extends Model
             $q->where('is_meeting', $is_meeting);
         })->when($line_of_business, function ($q, $v) {
             $q->where('line_of_business', "=", $v);
-        })->with('client');
+        })->with('called');
     }
 
     ///static functions
