@@ -408,7 +408,16 @@ class ClientPayment extends Model
 
     public function scopeBySalesOut(Builder $query, array $ids = [])
     {
-        return $query->whereIn('client_payments.sales_out_id', $ids);
+        if (!Helpers::joined($query, 'sold_policies')) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        if (!Helpers::joined($query, 'sales_comms')) {
+            $query->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id');
+        }
+        return $query->where(function ($q) use ($ids) {
+            $q->whereIn('client_payments.sales_out_id', $ids)
+                ->orWhereIn('sales_comms.comm_profile_id', $ids);
+        })->select('client_payments.*')->groupBy('client_payments.id');
     }
 
     public function scopeFilterByStates(Builder $query, array $states)
