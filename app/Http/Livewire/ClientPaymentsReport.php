@@ -200,8 +200,7 @@ class ClientPaymentsReport extends Component
 
     public function updatedSearchSalesOut()
     {
-        $this->sales_outs = CommProfile::salesOut()
-            ->when(fn($q) => $q->where('title', 'like', '%' . $this->searchSalesOut . '%'))
+        $this->sales_outs = CommProfile::when(fn($q) => $q->where('title', 'like', '%' . $this->searchSalesOut . '%'))
             ->take(5)
             ->get();
     }
@@ -278,8 +277,7 @@ class ClientPaymentsReport extends Component
     public function mount()
     {
         $this->companies = Company::when($this->searchCompany, fn($q) => $q->SearchBy($this->searchCompany))->get()->take(5);
-        $this->sales_outs = CommProfile::salesOut()
-            ->when($this->searchSalesOut, fn($q) => $q->where('title', 'like', '%' . $this->searchSalesOut . '%'))
+        $this->sales_outs = CommProfile::when($this->searchSalesOut, fn($q) => $q->where('title', 'like', '%' . $this->searchSalesOut . '%'))
             ->take(5)->get();
     }
 
