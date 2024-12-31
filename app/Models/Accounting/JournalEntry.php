@@ -214,7 +214,7 @@ class JournalEntry extends Model
 
     public function downloadDoc($account_id)
     {
-        $account_entry = $this->accounts()->where('id', $account_id)->first();
+        $account_entry = $this->accounts()->where('accounts.id', $account_id)->first();
         $fileContents = Storage::disk('s3')->get($account_entry->pivot->doc_url);
         $fileExtension = last(explode('.', $account_entry->pivot->doc_url)); 
         $headers = [
