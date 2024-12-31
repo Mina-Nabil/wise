@@ -143,13 +143,13 @@ class CreateJournalEntry extends Component
                 'debit_accounts.*.currency' => 'required|in:' . implode(',', JournalEntry::CURRENCIES), // Currency must be a string of max length 3
                 'debit_accounts.*.currency_amount' => 'nullable|numeric|min:0', // Optional, but must be a positive number if present
                 'debit_accounts.*.currency_rate' => 'nullable|numeric|min:0', // Optional, positive number
-                'debit_accounts.*.doc_url' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Optional file
+                'debit_accounts.*.doc_url' => 'nullable|file|mimes:xlsx,csv,jpg,jpeg,png,pdf|max:2048', // Optional file
                 'credit_accounts.*.account_id' => 'required|exists:accounts,id', // Ensure account_id exists
                 'credit_accounts.*.amount' => 'required|numeric|min:0', // Ensure amount is a positive number
                 'credit_accounts.*.currency' => 'required|in:' . implode(',', JournalEntry::CURRENCIES), // Currency must be a string of max length 3
                 'credit_accounts.*.currency_amount' => 'nullable|numeric|min:0', // Optional, but must be a positive number if present
                 'credit_accounts.*.currency_rate' => 'nullable|numeric|min:0', // Optional, positive number
-                'credit_accounts.*.doc_url' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Optional file
+                'credit_accounts.*.doc_url' => 'nullable|file|mimes:xlsx,csv,jpg,jpeg,png,pdf|max:2048', // Optional file
                 'notes' => 'nullable|string', // Optional field; if provided, must be a string
             ]
         );

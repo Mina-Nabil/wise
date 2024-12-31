@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('journal_entries', function (Blueprint $table) {
+        Schema::table('journal_entries', function (Blueprint $table) {
             $table->unsignedInteger('cash_serial')->nullable();
         });
     }
