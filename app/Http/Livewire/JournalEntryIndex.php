@@ -52,6 +52,11 @@ class JournalEntryIndex extends Component
         
     }
 
+    public function downloadAccountDoc($entry_id , $account_id)
+    {
+        return JournalEntry::findOrFail($entry_id)->downloadDoc($account_id);
+    }
+
     //to show child accounts
     public $showChildAccounts = [];
 
