@@ -592,6 +592,7 @@ class SoldPolicyShow extends Component
         $this->salesOutID = null;
         if ($this->paymentType == ClientPayment::PYMT_TYPE_SALES_OUT) {
             $this->salesOutSelected = true;
+            $this->salesOutID = CommProfile::salesOut()->first()?->id;
         } else {
             $this->salesOutSelected = false;
         }

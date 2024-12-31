@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -36,7 +37,8 @@ class JournalEntry extends Model
         'cash_entry_type',
         'approver_id',
         'approved_at',
-        'revert_entry_id'
+        'revert_entry_id',
+        'cash_serial'
     ];
 
     const CURRENCY_EGP  = 'EGP';
@@ -115,7 +117,7 @@ class JournalEntry extends Model
 
 
         ///////////////////////////////preparing entry
-        $newEntry = new self([
+        $updates = [
             "user_id"           => $user_id ?? Auth::id(),
             "entry_title_id"    =>  $entry_title_id,
             "day_serial"        =>  $day_serial,
@@ -125,7 +127,11 @@ class JournalEntry extends Model
             "approver_id"       =>  $approver_id,
             "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
             "comment"           =>  $comment
-        ]);
+        ];
+        if ($cash_entry_type) {
+            $updates['cash_serial'] = self::getCashSerial($cash_entry_type);
+        }
+        $newEntry = new self($updates);
 
         try {
             ///////////////////////////////saving entry
@@ -149,6 +155,13 @@ class JournalEntry extends Model
             AppLog::error("Can't create entry", desc: $e->getMessage());
             return false;
         }
+    }
+
+    private static function getCashSerial($type)
+    {
+        return (self::where('cash_entry_type', $type)
+            ->orderByDesc('cash_serial')
+            ->limit(1)->first()?->cash_serial ?? 0) + 1;
     }
 
     private static function getTodaySerial()
@@ -191,6 +204,31 @@ class JournalEntry extends Model
             revert_entry_id: $this->id,
             comment: $this->comment,
             accounts: $accounts
+        );
+    }
+
+    public function uploadDoc($account_id, $file_url)
+    {
+        return $this->accounts()->updateExistingPivot($account_id, ['doc_url' => $file_url]);
+    }
+
+    public function downloadDoc($account_id)
+    {
+        $account_entry = $this->accounts()->where('id', $account_id)->first();
+        $fileContents = Storage::disk('s3')->get($account_entry->pivot->doc_url);
+        $fileExtension = last(explode('.', $account_entry->pivot->doc_url)); 
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+        ];
+        if($fileExtension)
+        $headers['Content-Disposition'] = 'attachment; filename="' . $account_entry->name . "_" . $this->id . "_doc" . '"';
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
         );
     }
 
