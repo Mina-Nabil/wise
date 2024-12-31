@@ -11,10 +11,11 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
+use Livewire\WithFileUploads;
 
 class JournalEntryIndex extends Component
 {
-    use AlertFrontEnd, WithPagination, AuthorizesRequests;
+    use AlertFrontEnd, WithPagination, AuthorizesRequests, WithFileUploads;
     protected $paginationTheme = 'bootstrap';
 
     public $page_title = '• Journal Entry';
@@ -50,6 +51,34 @@ class JournalEntryIndex extends Component
         
         $this->authorize('view',$this->entryInfo);
         
+    }
+
+    public $accountDoc;
+    public $uploadFileEntryId;
+    public $uploadFileAccountId;
+
+    public function updatedAccountDoc()
+    {
+        $this->validate([
+            'accountDoc' => 'required|mimes:pdf,jpg,jpeg,png|max:2048', // 2MB Max
+        ]);
+
+        $file_url = $this->accountDoc->store(JournalEntry::FILES_DIRECTORY, 's3');
+
+        $res = JournalEntry::findOrFail($this->uploadFileEntryId)->uploadDoc($this->uploadFileAccountId,$file_url);
+
+        if ($res) {
+            $this->mount();
+            $this->alert('success', 'file uploaded!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function uploadAccountDoc($entryId, $accountId)
+    {
+        $this->uploadFileEntryId = $entryId;
+        $this->uploadFileAccountId = $accountId;
     }
 
     public function downloadAccountDoc($entry_id , $account_id)
