@@ -146,8 +146,9 @@ class FollowupReport extends Component
         $this->resetPage();
     }
 
-    public function exportReport(){
-        return Followup::exportReport(null, null, $this->callTime_from,$this->callTime_to,$this->salesId,$this->calledType,$this->calledId,$this->isMeeting,$this->line_of_business);
+    public function exportReport()
+    {
+        return Followup::exportReport(due_from: $this->callTime_from, due_to: $this->callTime_to, sales_id: $this->salesId, client_type: $this->calledType, client_id: $this->calledId, line_of_business: $this->line_of_business, is_meeting: $this->isMeeting);
     }
 
     public function render()
@@ -168,7 +169,7 @@ class FollowupReport extends Component
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $users = User::all();
 
-        $followups = Followup::report(due_from: $this->callTime_from, due_to: $this->callTime_to, sales_id: $this->salesId, client_type:$this->calledType,client_id:$this->calledId ,line_of_business: $this->line_of_business, is_meeting: $this->isMeeting)->paginate(10);
+        $followups = Followup::report(due_from: $this->callTime_from, due_to: $this->callTime_to, sales_id: $this->salesId, client_type: $this->calledType, client_id: $this->calledId, line_of_business: $this->line_of_business, is_meeting: $this->isMeeting)->paginate(10);
         return view('livewire.followup-report', [
             'followups' => $followups,
             'users' => $users,
