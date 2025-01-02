@@ -491,7 +491,7 @@ class SoldPolicyReport extends Component
                 $this->main_sales_id,
                 $this->issued_from,
                 $this->issued_to,
-                $this->profiles,
+                collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
                 $this->is_welcomed,
             );
         }
@@ -547,9 +547,8 @@ class SoldPolicyReport extends Component
             $this->main_sales_id,
             $this->issued_from,
             $this->issued_to,
-            $this->profiles,
+            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
             $this->is_welcomed,
-            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all()
         )->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
