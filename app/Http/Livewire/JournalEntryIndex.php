@@ -60,7 +60,7 @@ class JournalEntryIndex extends Component
     public function updatedAccountDoc()
     {
         $this->validate([
-            'accountDoc' => 'required|mimes:pdf,jpg,jpeg,png|max:2048', // 2MB Max
+            'accountDoc' => 'required|mimes:pdf,jpg,jpeg,png,xlsx,xls,doc,docx|max:5120', // 2MB Max
         ]);
 
         $file_url = $this->accountDoc->store(JournalEntry::FILES_DIRECTORY, 's3');

@@ -323,6 +323,14 @@
                                                             <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
                                                                 wire:target="downloadAccountDoc({{ $entry->id }} , {{ $childAccount->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
                                                         </button>
+                                                        <label class="btn inline-flex justify-center btn-outline-primary btn-sm cursor-pointer">
+                                                            <span wire:loading.remove wire:target="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})">Upload File</span>
+                                                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                                                wire:target="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                            <input type="file" class="hidden"
+                                                                wire:model="accountDoc"
+                                                                wire:change="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})">
+                                                        </label>
                                                     @else
                                                         <label class="btn inline-flex justify-center btn-outline-primary btn-sm cursor-pointer">
                                                             <span wire:loading.remove wire:target="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})">Upload File</span>
