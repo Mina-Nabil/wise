@@ -4209,10 +4209,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            @error('salesOutID')
-                            <span
-                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                        @enderror
+
                             @if ($salesOutSelected)
                                 <div class="from-group">
                                     <label for="salesOut" class="form-label">Sales Out Profile</label>
