@@ -261,7 +261,7 @@
 
 
                                 <th scope="col" class="table-th">
-                                    Assignee
+                                    Sales Out
                                 </th>
 
                                 <th scope="col" class="table-th">
