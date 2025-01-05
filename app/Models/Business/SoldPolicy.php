@@ -86,7 +86,7 @@ class SoldPolicy extends Model
         'main_sales_id',
         'created_at',
         'after_tax_comm',
-        'sales_out_comm', 
+        'sales_out_comm',
         'renewal_policy_id'
     ];
 
@@ -1302,7 +1302,6 @@ class SoldPolicy extends Model
                         } else if ($salesIn1) {
 
                             $duplicatePolicy->addSalesCommission($salesIn1->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn1->id, "Added for target commission during migration", true);
-
                         }
 
                         if ($salesOut2) {
@@ -1545,7 +1544,6 @@ class SoldPolicy extends Model
                             note: $note,
                         );
                         if (!$is_active) $tmpPolicy->setAsInvalid();
-
                     } else Log::warning("Invalid insured / net prem on Row#$i");
                 } catch (Exception $e) {
                     Log::warning("Row#$i crashed");
@@ -1815,6 +1813,18 @@ class SoldPolicy extends Model
     {
         $this->load('company_comm_payments');
         return $this->total_policy_comm - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW))->sum('amount') - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_PAID))->sum('amount');
+    }
+
+    public function getSalesOutsAttribute()
+    {
+        $this->loadMissing('sales_comms', 'sales_comms.comm_profile');
+        $txt = '';
+        foreach ($this->sales_comms as $s) {
+            if ($s->comm_profile->is_sales_out) {
+                $txt .= $s->comm_profile->title . " ";
+            }
+        }
+        return $txt;
     }
 
     ///relations
