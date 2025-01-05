@@ -142,7 +142,7 @@ class ClientPayment extends Model
     {
         /** @var User */
         $user = Auth::user();
-        if (!$user->can('update', $this) || $this->status != self::PYMT_STATE_NEW) return false;
+        if (!$user->can('update', $this) && $this->status != self::PYMT_STATE_NEW) return false;
 
         try {
             AppLog::info("Setting Client Payment info", loggable: $this);
