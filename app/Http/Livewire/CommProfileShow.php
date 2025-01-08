@@ -1015,7 +1015,7 @@ class CommProfileShow extends Component
     {
         if (!$this->salesCommArray[$i]) return;
         $salesComm = SalesComm::find($this->salesCommArray[$i]['sales_comm_id']);
-        if(!$salesComm) return ;
+        if (!$salesComm) return;
         $this->salesCommArray[$i]['paid_percentage'] = 100;
         $this->salesCommArray[$i]['amount'] = $salesComm->amount;
     }
@@ -1038,7 +1038,8 @@ class CommProfileShow extends Component
         $LOBs = Policy::LINES_OF_BUSINESS;
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         $overrides = CommProfile::override()->get();
-        $salesComms = SalesComm::NotTotalyPaid($this->profile->id)->with('sold_policy', 'sold_policy.client')->get();
+        $salesComms = SalesComm::NotTotalyPaid($this->profile->id)->with('sold_policy', 'sold_policy.client')
+            ->only2025()->get();
 
         $payments = $this->profile
             ->payments()
@@ -1049,6 +1050,7 @@ class CommProfileShow extends Component
 
         $sales_comm = $this->profile
             ->sales_comm()->filterByStatus($this->salesCommStatus)
+            ->only2025()
             ->when($this->isSortLatest, function ($query) {
                 return $query->latest(); // Sort sales commissions by latest
             })

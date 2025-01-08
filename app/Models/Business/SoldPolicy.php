@@ -1662,13 +1662,23 @@ class SoldPolicy extends Model
         });
 
         $query->when($is_commission_outstanding, function ($q) {
-            $q->whereRaw("total_comp_paid < after_tax_comm");
+            $q->whereRaw("total_comp_paid < after_tax_comm")->only2025();
         });
         $query->when($is_client_outstanding, function ($q) {
-            $q->whereRaw("total_client_paid < gross_premium");
+            $q->whereRaw("total_client_paid < gross_premium")->fromOct2024();
         });
 
         return $query->orderBy("sold_policies.start");
+    }
+
+    public function scopeFromOct2024($query)
+    {
+        return $query->where('sold_policies.created_at', ">=", "2024-10-01 00:00:00");
+    }
+
+    public function scopeOnly2025($query)
+    {
+        return $query->where('sold_policies.created_at', ">=", "2024-12-01 00:00:00");
     }
 
     public function scopeFromTo($query, Carbon $from, Carbon $to)

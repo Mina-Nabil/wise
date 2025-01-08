@@ -378,6 +378,11 @@ class SalesComm extends Model
         $query->where('status', self::PYMT_STATE_NOT_CONFIRMED);
     }
 
+    public function scopeOnly2025(Builder $query)
+    {
+        $query->whereDate('sales_comms.created_at', ">=", "2024-12-01 00:00:00");
+    }
+
     public function scopeConfirmed(Builder $query)
     {
         $query->where('status', self::PYMT_STATE_CONFIRMED);

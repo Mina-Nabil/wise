@@ -296,6 +296,7 @@ class CompanyShow extends Component
                 company_id: $this->company->id,
                 is_paid: $this->availableSoldPolicies_isNotPaid === "0" ? null : false
             )
+            ->only2025()
             ->paginate(5);
 
         return view('livewire.company-show', [
