@@ -125,7 +125,8 @@ class ClientPayment extends Model
             $activeSheet->getCell('E' . $i)->setValue($payment->sold_policy->sales_outs);
             $activeSheet->getCell('F' . $i)->setValue($payment->amount);
             $activeSheet->getCell('G' . $i)->setValue($payment->status);
-            $activeSheet->getCell('H' . $i)->setValue($payment->type . ($payment->type == self::PYMT_TYPE_SALES_OUT) ? $payment->sales_out?->title : '');
+            $activeSheet->getCell('H' . $i)->setValue($payment->type .
+                (($payment->type == self::PYMT_TYPE_SALES_OUT) ? (' ' . $payment->sales_out?->title) : ''));
 
             $i++;
         }
