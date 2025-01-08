@@ -272,6 +272,10 @@
                                     Status
                                 </th>
 
+                                <th scope="col" class=" table-th ">
+                                    Type
+                                </th>
+
 
 
                             </tr>
@@ -336,6 +340,16 @@
                                             <span
                                                 class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
                                         @endif
+                                    </td>
+
+                                    <td class="table-td">
+                                        <span
+                                            class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">{{ ucwords(str_replace('_', ' ', $payment->type)) }}
+                                            @if ($payment->type == 'sales_out')
+                                                - {{ $payment->sales_out?->title }}
+                                            @endif
+
+                                        </span>
                                     </td>
                                 </tr>
                             @endforeach

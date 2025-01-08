@@ -125,6 +125,7 @@ class ClientPayment extends Model
             $activeSheet->getCell('E' . $i)->setValue($payment->sold_policy->sales_outs);
             $activeSheet->getCell('F' . $i)->setValue($payment->amount);
             $activeSheet->getCell('G' . $i)->setValue($payment->status);
+            $activeSheet->getCell('H' . $i)->setValue($payment->type . ($payment->type == self::PYMT_TYPE_SALES_OUT) ? $payment->sales_out?->title : '');
 
             $i++;
         }
@@ -340,7 +341,7 @@ class ClientPayment extends Model
     public function scopeReport($query, $is_renewal = null, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc')
     {
         $query->userData(states: $filteredStatus, searchText: $searchText)
-            ->with('sold_policy.offer')
+            ->with('sold_policy.offer', 'sales_out')
             ->when($is_renewal, function ($q, $v) {
                 $q->join('offers', 'offers.id', '=', 'sold_policies.offer_id')
                     ->where('offers.is_renewal', $v);
