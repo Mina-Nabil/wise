@@ -311,6 +311,7 @@ class ClientPaymentsReport extends Component
     public function render()
     {
         $STATUSES = ClientPayment::PYMT_STATES;
+        $Alltypes = ClientPayment::PYMT_TYPES;
 
         $payments = ClientPayment::report(
             $this->is_renewal,
@@ -330,6 +331,7 @@ class ClientPaymentsReport extends Component
         $payments =    $payments->paginate(50);
         return view('livewire.client-payments-report', [
             'STATUSES' => $STATUSES,
+            'Alltypes' => $Alltypes,
             'payments' => $payments
         ]);
     }

@@ -833,12 +833,12 @@
                                     <tbody
                                         class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                        @foreach ($types as $type)
-                                            @if (!in_array($type, $SelectedTypes))
+                                        @foreach ($Alltypes as $ttt)
+                                            @if (!in_array($ttt, $SelectedTypes))
                                                 <tr class="even:bg-slate-50 dark:even:bg-slate-700">
-                                                    <td class="table-td">{{ $type }}</td>
+                                                    <td class="table-td">{{ $ttt }}</td>
                                                     <td class="table-td "><button
-                                                            wire:click="pushType({{ $type }})"
+                                                            wire:click="pushType({{ $ttt }})"
                                                             class="btn inline-flex justify-center btn-success light">Add</button>
                                                     </td>
                                                 </tr>
