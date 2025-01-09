@@ -176,7 +176,7 @@ class ClientPaymentsReport extends Component
     public function setTypes()
     {
         $this->types = $this->Etypes;
-        $this->toggleCompany();
+        $this->toggleTypes();
     }
 
     public function clearTypes()
