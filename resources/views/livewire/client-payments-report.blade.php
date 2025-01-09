@@ -838,7 +838,7 @@
                                                 <tr class="even:bg-slate-50 dark:even:bg-slate-700">
                                                     <td class="table-td">{{ $ttt }}</td>
                                                     <td class="table-td "><button
-                                                            wire:click="pushType({{ $ttt }})"
+                                                            wire:click="pushType(`{{ $ttt }}`)"
                                                             class="btn inline-flex justify-center btn-success light">Add</button>
                                                     </td>
                                                 </tr>
