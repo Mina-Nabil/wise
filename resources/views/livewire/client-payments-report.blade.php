@@ -834,7 +834,7 @@
                                         class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                         @foreach ($Alltypes as $ttt)
-                                            @if (!in_array($ttt, $SelectedTypes))
+                                            @if (!in_array($ttt, $Etypes))
                                                 <tr class="even:bg-slate-50 dark:even:bg-slate-700">
                                                     <td class="table-td">{{ $ttt }}</td>
                                                     <td class="table-td "><button
