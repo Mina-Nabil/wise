@@ -363,7 +363,7 @@ class ClientPayment extends Model
             ->when($selectedCompany, fn($q) => $q->byCompany($selectedCompany->id))
             ->when($sales_out_ids, fn($q) => $q->bySalesOut($sales_out_ids))
             ->when(count($filteredStatus), fn($q) => $q->FilterByStates($filteredStatus))
-            ->when(count($types), fn($q) => $q->FilterByStates($filteredStatus))
+            ->when(count($types), fn($q) => $q->byTypes($types))
             ->when($sortColomn === 'start', fn($q) => $q->SortByPolicyStart(sort: $sortDirection))
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned', 'sold_policy.offer', 'sales_out');
     }
