@@ -326,7 +326,8 @@ class ClientPaymentsReport extends Component
             $this->sales_out_ids,
             $this->statuses,
             $this->sortColomn,
-            $this->sortDirection
+            $this->sortDirection,
+            $this->types,
         );
         $payments =    $payments->paginate(50);
         return view('livewire.client-payments-report', [

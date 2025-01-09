@@ -87,7 +87,8 @@ class ClientPayment extends Model
         $sales_out_ids = null,
         $filteredStatus = null,
         $sortColomn = null,
-        $sortDirection = 'asc'
+        $sortDirection = 'asc',
+        $types = null,
     ) {
         $payments = self::report(
             $is_renewal,
@@ -102,7 +103,8 @@ class ClientPayment extends Model
             $sales_out_ids,
             $filteredStatus,
             $sortColomn,
-            $sortDirection
+            $sortDirection,
+            $types,
         )->get();
 
         $template = IOFactory::load(resource_path('import/client_payment_report.xlsx'));
@@ -339,7 +341,7 @@ class ClientPayment extends Model
     }
 
     ///scopes
-    public function scopeReport($query, $is_renewal = null, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc')
+    public function scopeReport($query, $is_renewal = null, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc', array $types = [])
     {
         $query->userData(states: $filteredStatus, searchText: $searchText)
             ->when($is_renewal, function ($q, $v) {
@@ -361,6 +363,7 @@ class ClientPayment extends Model
             ->when($selectedCompany, fn($q) => $q->byCompany($selectedCompany->id))
             ->when($sales_out_ids, fn($q) => $q->bySalesOut($sales_out_ids))
             ->when(count($filteredStatus), fn($q) => $q->FilterByStates($filteredStatus))
+            ->when(count($types), fn($q) => $q->FilterByStates($filteredStatus))
             ->when($sortColomn === 'start', fn($q) => $q->SortByPolicyStart(sort: $sortDirection))
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned', 'sold_policy.offer', 'sales_out');
     }
@@ -426,6 +429,14 @@ class ClientPayment extends Model
             $q->whereIn('client_payments.sales_out_id', $ids)
                 ->orWhereIn('sales_comms.comm_profile_id', $ids);
         })->select('client_payments.*')->groupBy('client_payments.id');
+    }
+
+    public function scopeByTypes(Builder $query, array $types)
+    {
+        if (count($types)) {
+            $query->whereIn('client_payments.type', $types);
+        }
+        return $query;
     }
 
     public function scopeFilterByStates(Builder $query, array $states)
