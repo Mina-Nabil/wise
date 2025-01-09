@@ -26,7 +26,9 @@ class ClientPaymentsReport extends Component
     public $companySection = false;
     public $issuedSection = false;
     public $statusesSection = false;
+    public $typesSection = false;
 
+    public $types = [];
     public $company_ids = [];
     public $start_from;
     public $start_to;
@@ -38,6 +40,7 @@ class ClientPaymentsReport extends Component
     public $is_renewal;
 
     public $Ecompany_ids = [];
+    public $Etypes = [];
     public $Eis_renewal;
     public $Estart_from;
     public $Estart_to;
@@ -155,6 +158,30 @@ class ClientPaymentsReport extends Component
     {
         $this->issued_from = null;
         $this->issued_to = null;
+    }
+
+    public function toggleTypes()
+    {
+        $this->toggle($this->typesSection);
+        if ($this->typesSection) {
+            $this->Etypes = $this->types;
+        }
+    }
+
+    public function pushType($id)
+    {
+        $this->Etypes[] = $id;
+    }
+
+    public function setTypes()
+    {
+        $this->types = $this->Etypes;
+        $this->toggleCompany();
+    }
+
+    public function clearTypes()
+    {
+        $this->types = [];
     }
 
 
