@@ -221,7 +221,7 @@ class JournalEntry extends Model
             'Content-Type' => 'application/octet-stream',
         ];
         if($fileExtension)
-        $headers['Content-Disposition'] = 'attachment; filename="' . $account_entry->name . "_" . $this->id . "_doc" . '"';
+        $headers['Content-Disposition'] = 'attachment; filename="' . $account_entry->name . "_" . $this->id . "_doc." . $fileExtension . '"';
 
         return response()->stream(
             function () use ($fileContents) {

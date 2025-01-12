@@ -290,7 +290,7 @@
 
 
                                 <th scope="col" class="table-th">
-                                    Sales Out
+                                    SalesOut
                                 </th>
 
                                 <th scope="col" class="table-th">
