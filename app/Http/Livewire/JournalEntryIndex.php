@@ -44,13 +44,13 @@ class JournalEntryIndex extends Component
     public $isOpenDailyTrans = false;
     public $tranactionsDay;
 
-    public function showEntry($id){
+    public function showEntry($id)
+    {
         $this->entryId  = $id;
-        
+
         $this->entryInfo = JournalEntry::findOrFail($id);
-        
-        $this->authorize('view',$this->entryInfo);
-        
+
+        $this->authorize('view', $this->entryInfo);
     }
 
     public $accountDoc;
@@ -65,7 +65,7 @@ class JournalEntryIndex extends Component
 
         $file_url = $this->accountDoc->store(JournalEntry::FILES_DIRECTORY, 's3');
 
-        $res = JournalEntry::findOrFail($this->uploadFileEntryId)->uploadDoc($this->uploadFileAccountId,$file_url);
+        $res = JournalEntry::findOrFail($this->uploadFileEntryId)->uploadDoc($this->uploadFileAccountId, $file_url);
 
         if ($res) {
             $this->mount();
@@ -81,7 +81,7 @@ class JournalEntryIndex extends Component
         $this->uploadFileAccountId = $accountId;
     }
 
-    public function downloadAccountDoc($entry_id , $account_id)
+    public function downloadAccountDoc($entry_id, $account_id)
     {
         return JournalEntry::findOrFail($entry_id)->downloadDoc($account_id);
     }
@@ -100,12 +100,13 @@ class JournalEntryIndex extends Component
 
     public function hideThisChildAccount($entryId)
     {
-        $this->showChildAccounts = array_filter($this->showChildAccounts, function($id) use ($entryId) {
+        $this->showChildAccounts = array_filter($this->showChildAccounts, function ($id) use ($entryId) {
             return $id !== $entryId;
         });
     }
 
-    public function downloadDailyTransaction(){
+    public function downloadDailyTransaction()
+    {
         $day = Carbon::parse($this->tranactionsDay);
         $res = JournalEntry::downloadDailyTransaction($day);
         if ($res) {
@@ -115,25 +116,30 @@ class JournalEntryIndex extends Component
         }
     }
 
-    public function showDownloadDailyTransactionsForm(){
+    public function showDownloadDailyTransactionsForm()
+    {
         $this->isOpenDailyTrans = true;
     }
 
-    public function hideDownloadDailyTransactionsForm(){
+    public function hideDownloadDailyTransactionsForm()
+    {
         $this->isOpenDailyTrans = false;
     }
 
-    public function downloadCashReceipt($id){
+    public function downloadCashReceipt($id)
+    {
         $res = JournalEntry::findOrFail($id)->downloadCashReceipt();
         if ($res) {
             $this->alert('success', 'Reciept downloaded!');
+            return $res;
         } else {
             $this->alert('failed', 'server error');
         }
     }
 
-    public function closeShowInfo(){
-        $this->reset(['entryId','entryInfo']);
+    public function closeShowInfo()
+    {
+        $this->reset(['entryId', 'entryInfo']);
     }
 
     public function updatedSelectAll($value)
@@ -158,11 +164,10 @@ class JournalEntryIndex extends Component
         foreach ($this->selectedEntries as $id) {
             JournalEntry::findOrFail($id)->reviewEntry();
         }
-        
+
         $this->selectedEntries = [];
         $this->mount();
-        $this->alert('success','Entries reviewed');
-
+        $this->alert('success', 'Entries reviewed');
     }
 
     public function reviewEntry($id)
@@ -247,7 +252,7 @@ class JournalEntryIndex extends Component
     {
 
         $e = JournalEntry::findOrFail($id);
-        
+
         $this->authorize('update', $e);
 
         $res = $e->revertEntry();
