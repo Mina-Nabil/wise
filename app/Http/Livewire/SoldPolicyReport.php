@@ -497,6 +497,36 @@ class SoldPolicyReport extends Component
         }
     }
 
+    public function exportHay2aReport()
+    {
+        if (Auth::user()->can('viewCommission', SoldPolicy::class)) {
+            return SoldPolicy::exportHay2aReport(
+                $this->start_from,
+                $this->start_to,
+                $this->expiry_from,
+                $this->expiry_to,
+                $this->creator_id,
+                $this->line_of_business,
+                $this->value_from,
+                $this->value_to,
+                $this->net_premium_to,
+                $this->net_premium_from,
+                $this->brand_ids,
+                $this->company_ids,
+                $this->policy_ids,
+                $this->is_valid,
+                $this->is_paid,
+                $this->search,
+                $this->is_renewal,
+                $this->main_sales_id,
+                $this->issued_from,
+                $this->issued_to,
+                collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
+                $this->is_welcomed,
+            );
+        }
+    }
+
     public function mount()
     {
         $this->brands = Brand::all()->take(5);

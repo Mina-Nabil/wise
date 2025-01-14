@@ -50,6 +50,14 @@ class OfferOption extends Model
         self::PAYMENT_INSTALLEMENTS
     ];
 
+    const PAYMENT_FREQS_ARBC = [
+        self::PAYMENT_FREQ_YEARLY => 'سنوي',
+        self::PAYMENT_FREQ_MONTHLY => 'شهري',
+        self::PAYMENT_FREQ_QUARTER => 'ربع سنوي',
+        self::PAYMENT_FREQ_HALF_YEARLY=> 'نص سنوي',
+        self::PAYMENT_INSTALLEMENTS=> 'اقساط',
+    ];
+
     protected $table = 'offer_options';
     protected $fillable = [
         'status', 'policy_id', 'policy_condition_id',

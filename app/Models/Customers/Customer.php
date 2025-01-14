@@ -828,6 +828,12 @@ class Customer extends Model
             : $this->first_name . ' ' . ($this->middle_name ?  $this->middle_name . ' ' : '')  .  $this->last_name;
     }
 
+    public function getAddressCityAttribute()
+    {
+        $this->load('address');
+        return $this->address->where('is_default', 1)->first()?->city;
+    }
+
     public function getTelephone1Attribute()
     {
         $this->load('phones');

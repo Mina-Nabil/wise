@@ -717,6 +717,13 @@ class Corporate extends Model
         return $this->phones->where('is_default', 1)->first()?->number;
     }
 
+    public function getAddressCityAttribute()
+    {
+        $this->load('address');
+        return $this->address->where('is_default', 1)->first()?->city;
+    }
+
+
     //scopes
     public function scopeLeads($query)
     {

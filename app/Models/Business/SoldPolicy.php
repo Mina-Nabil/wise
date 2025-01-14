@@ -1075,6 +1075,54 @@ class SoldPolicy extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
+    public static function exportHay2aReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null)
+    {
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed)->get();
+
+        $template = IOFactory::load(resource_path('import/sold_policies_hay2a_report.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 4;
+        /** @var User */
+        $user = Auth::user();
+        $activeSheet->getCell('A1')->setValue("سجل الوثائق والعمولات  للربع الرابع عن عام {$start_from->format('Y')}");
+        $activeSheet->getCell('1')->setValue("  الفترة من {$start_from->format('d / m / Y')} حتى {$start_to->format('d / m / Y')}   ");
+
+        $k=1;
+        foreach ($policies as $policy) {
+            $activeSheet->getCell('A' . $i)->setValue($k++);
+            $activeSheet->getCell('B' . $i)->setValue($policy->client->name);
+            $activeSheet->getCell('C' . $i)->setValue($policy->client->address_city);
+            $activeSheet->getCell('D' . $i)->setValue($policy->policy_number);
+            $activeSheet->getCell('E' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);
+            $activeSheet->getCell('F' . $i)->setValue($policy->policy->company->name);
+            if ($user->can('viewCommission', self::class)) {
+                $activeSheet->getCell('G' . $i)->setValue($policy->total_policy_comm);
+                // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
+            }
+            $activeSheet->getCell('I' . $i)->setValue(Carbon::parse($policy->created_at)->format('d-m-Y'));
+            $activeSheet->getCell('J' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
+            $activeSheet->getCell('K' . $i)->setValue("ريمون حنا بطرس");
+            $activeSheet->getCell('L' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
+            $activeSheet->getCell('M' . $i)->setValue($policy->insured_value);
+            $activeSheet->getCell('N' . $i)->setValue($policy->gross_premium);
+            $activeSheet->getCell('O' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
+
+            $i++;
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "policies_gov_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
 
     public static function importData($file)
     {

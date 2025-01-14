@@ -89,6 +89,26 @@ class Policy extends Model
         self::BUSINESS_FIRE_AND_BURGLARY,
     ];
 
+    const LINES_OF_BUSINESS_ARBC = [
+        self::BUSINESS_PERSONAL_MOTOR => '' ,
+        self::BUSINESS_CORPORATE_MOTOR => '' ,
+        self::BUSINESS_PERSONAL_MEDICAL => '' ,
+        self::BUSINESS_CORPORATE_MEDICAL => '' ,
+        self::BUSINESS_ACCIDENT => '' ,
+        self::BUSINESS_HOME => '' ,
+        self::BUSINESS_PROPERTY => '' ,
+        self::BUSINESS_CARGO => '' ,
+        self::BUSINESS_INLAND => '' ,
+        self::BUSINESS_ENGINEERING => '' ,
+        self::BUSINESS_LIABILITY => '' ,
+        self::BUSINESS_EXTENDED_WARRANTY => '' ,
+        self::BUSINESS_PERSONAL_LIFE => '' ,
+        self::BUSINESS_CORPORATE_LIFE => '' ,
+        self::BUSINESS_BUSINESS => '' ,
+        self::BUSINESS_FIRE_ALL => '' ,
+        self::BUSINESS_FIRE_AND_BURGLARY => '' ,
+    ];
+
     protected $table = 'policies';
     protected $fillable = [
         'company_id',
