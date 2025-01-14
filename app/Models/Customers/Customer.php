@@ -830,8 +830,8 @@ class Customer extends Model
 
     public function getAddressCityAttribute()
     {
-        $this->load('address');
-        return $this->address->where('is_default', 1)->first()?->city;
+        $this->load('addresses');
+        return $this->addresses->where('is_default', 1)->first()?->city;
     }
 
     public function getTelephone1Attribute()
