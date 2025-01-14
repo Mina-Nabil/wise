@@ -15,6 +15,7 @@
                             wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
                     </button>
                 @endif
+                @if ($start_from && $start_to)
                 @can('viewCommission', App\Models\Business\SoldPolicy::class)
                     <button wire:click="exportHay2aReport"
                         class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
@@ -23,6 +24,7 @@
                             wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
                     </button>
                 @endcan
+                @endif
                 <div class="dropdown relative ">
                     <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
                         type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">

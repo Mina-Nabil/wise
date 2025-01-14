@@ -1089,8 +1089,8 @@ class SoldPolicy extends Model
         $i = 4;
         /** @var User */
         $user = Auth::user();
-        $activeSheet->getCell('A1')->setValue("سجل الوثائق والعمولات  للربع الرابع عن عام {$start_from->format('Y')}");
-        $activeSheet->getCell('1')->setValue("  الفترة من {$start_from->format('d / m / Y')} حتى {$start_to->format('d / m / Y')}   ");
+        $activeSheet->getCell('D1')->setValue("سجل الوثائق والعمولات  للربع الرابع عن عام {$start_from->format('Y')}");
+        $activeSheet->getCell('D2')->setValue("  الفترة من {$start_from->format('d / m / Y')} حتى {$start_to->format('d / m / Y')}   ");
 
         $k=1;
         foreach ($policies as $policy) {
