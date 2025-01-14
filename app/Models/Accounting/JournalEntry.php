@@ -371,12 +371,12 @@ class JournalEntry extends Model
     ///attribute
     public function getDebitTotalAttribute()
     {
-        return $this->accounts()->wherePivot('nature', 'debit')->get()->sum('amount');
+        return $this->accounts()->wherePivot('nature', 'debit')->get()->sum('pivot_amount');
     }
 
     public function getCreditTotalAttribute()
     {
-        return $this->accounts()->wherePivot('nature', 'credit')->get()->sum('amount');
+        return $this->accounts()->wherePivot('nature', 'credit')->get()->sum('pivot_amount');
     }
 
     ////relations
