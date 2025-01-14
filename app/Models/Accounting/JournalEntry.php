@@ -241,21 +241,25 @@ class JournalEntry extends Model
             throw new Exception('Failed to read template file');
         }
         $newFile = $template->copy();
-        if ($this->cash_entry_type == self::CASH_ENTRY_RECEIVED) {
-            $activeSheet = $newFile->getSheet(1);
-        } elseif ($this->cash_entry_type == self::CASH_ENTRY_DELIVERED) {
-            $activeSheet = $newFile->getSheet(2);
-        } else {
-            return false;
-        }
+
         $Arabic = new Arabic('Numbers');
 
         $Arabic->setNumberFeminine(1);
         $Arabic->setNumberFormat(1);
 
+        if ($this->cash_entry_type == self::CASH_ENTRY_RECEIVED) {
+            $activeSheet = $newFile->getSheet(1);
+            $text = $Arabic->int2str($this->debit_total);
+            $number_format = number_format($this->debit_total, 2);
+        } elseif ($this->cash_entry_type == self::CASH_ENTRY_DELIVERED) {
+            $activeSheet = $newFile->getSheet(2);
+            $text = $Arabic->int2str($this->credit_total);
+            $number_format = number_format($this->credit_total, 2);
+        } else {
+            return false;
+        }
 
-        $text = $Arabic->int2str($this->amount);
-        $number_format = number_format($this->amount, 2);
+
 
         $activeSheet->getCell('B7')->setValue($this->amount);
         $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('Y / m / d'));
@@ -362,6 +366,17 @@ class JournalEntry extends Model
             $from->format('Y-m-d 00:00:00'),
             $to->format('Y-m-d 23:59:59')
         ]);
+    }
+
+    ///attribute
+    public function getDebitTotalAttribute()
+    {
+        return $this->accounts()->where('nature', 'debit')->get()->sum('amount');
+    }
+    
+    public function getCreditTotalAttribute()
+    {
+        return $this->accounts()->where('nature', 'credit')->get()->sum('amount');
     }
 
     ////relations
