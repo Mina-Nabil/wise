@@ -381,7 +381,7 @@ class JournalEntry extends Model
 
     public function getCreditTotalAttribute()
     {
-        $credits = $this->accounts()->wherePivot('nature', 'credit')->get()->sum('pivot_amount');
+        $credits = $this->accounts()->wherePivot('nature', 'credit')->get();
         $sum = 0;
         foreach ($credits as $c) {
             $sum += $c->pivot->amount;
