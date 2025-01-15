@@ -95,6 +95,11 @@ class TaskReport extends Component
         }
     }
 
+    public function redirectToShowPage($id)
+    {
+        return redirect(route('tasks.show', ['id' => $id]));
+    }
+
     public function setDueDates()
     {
         $this->due_from = Carbon::parse($this->Edue_from);
