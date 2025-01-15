@@ -529,7 +529,7 @@ class Offer extends Model
 
             case 'origin':
                 return $this->discounts()->whereNot('type', OfferDiscount::TYPE_COMMISSION)->get()->sum('value');
-            
+
             default:
                 return 0;
         }
@@ -870,6 +870,27 @@ class Offer extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Option accept failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    public function deleteOption($option_id)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateOptions', $this)) return false;
+
+        try {
+            $option = OfferOption::findOrFail($option_id);
+            if ($this->selected_option_id == $option_id && $option->delete()) {
+                $this->selected_option_id = null;
+                $this->save();
+            }
+            $option->delete();
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Option deletion failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }

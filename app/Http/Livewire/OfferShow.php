@@ -561,7 +561,8 @@ class OfferShow extends Component
 
     public function deleteOption()
     {
-        $res = OfferOption::find($this->deleteOptionId)->delete();
+        $res = OfferOption::find($this->deleteOptionId)->deleteOption();
+
         if ($res) {
             $this->alert('success', 'Option deleted');
             $this->dismissDeleteOption();
