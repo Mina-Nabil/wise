@@ -1174,7 +1174,8 @@ class OfferShow extends Component
 
     public function render()
     {
-        $users = User::all();
+        $users = User::active()->get();
+        
         $usersTypes = User::TYPES;
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
