@@ -514,6 +514,14 @@
                                         </div>
                                     </div>
                                 @endif
+                                @if ($entryInfo->cash_serial)
+                                    <div>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Serial</p>
+                                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                            <b>{{ str_pad($entryInfo->cash_serial, 5, '0', STR_PAD_LEFT) }}</b>
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <hr>
 
