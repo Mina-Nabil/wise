@@ -216,12 +216,12 @@ class JournalEntry extends Model
     {
         $account_entry = $this->accounts()->where('accounts.id', $account_id)->first();
         $fileContents = Storage::disk('s3')->get($account_entry->pivot->doc_url);
-        $fileExtension = last(explode('.', $account_entry->pivot->doc_url)); 
+        $fileExtension = last(explode('.', $account_entry->pivot->doc_url));
         $headers = [
             'Content-Type' => 'application/octet-stream',
         ];
-        if($fileExtension)
-        $headers['Content-Disposition'] = 'attachment; filename="' . $account_entry->name . "_" . $this->id . "_doc." . $fileExtension . '"';
+        if ($fileExtension)
+            $headers['Content-Disposition'] = 'attachment; filename="' . $account_entry->name . "_" . $this->id . "_doc." . $fileExtension . '"';
 
         return response()->stream(
             function () use ($fileContents) {
@@ -249,23 +249,24 @@ class JournalEntry extends Model
 
         if ($this->cash_entry_type == self::CASH_ENTRY_RECEIVED) {
             $activeSheet = $newFile->getSheet(1);
-            $text = $Arabic->int2str($this->debit_total);
-            $number_format = number_format($this->debit_total, 2);
+            $number_text = $Arabic->int2str($this->debit_total). ' جنيه لا غير';
+            $number_format = number_format($this->debit_total, 2) ;
         } elseif ($this->cash_entry_type == self::CASH_ENTRY_DELIVERED) {
             $activeSheet = $newFile->getSheet(2);
-            $text = $Arabic->int2str($this->credit_total);
-            $number_format = number_format($this->credit_total, 2);
+            $number_text = $Arabic->int2str($this->credit_total). ' جنيه لا غير';
+            $number_format = number_format($this->credit_total, 2) ;
         } else {
             return false;
         }
 
 
 
-        $activeSheet->getCell('B7')->setValue($this->amount);
+        $activeSheet->getCell('B7')->setValue($number_format);
+        $activeSheet->getCell('F5')->setValue($this->cash_serial);
         $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('d / m / Y'));
         $activeSheet->getCell('B9')->setValue("/    .......................................{$this->receiver_name}................................................");
-        $activeSheet->getCell('B11')->setValue("/    ......{$number_format}...... نقدا / شيك رقم : ............................................				");
-        $activeSheet->getCell('B13')->setValue("/.............................$text............................................				");
+        $activeSheet->getCell('B11')->setValue("/    ......{$number_text}...... نقدا / شيك رقم : ............................................				");
+        $activeSheet->getCell('B13')->setValue("/.............................{$this->entry_title->title}............................................				");
 
         // foreach ($leads as $lead) {
         //     $activeSheet->getCell('A' . $i)->setValue($lead->id);
