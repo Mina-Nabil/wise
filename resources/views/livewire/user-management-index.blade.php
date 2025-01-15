@@ -485,6 +485,23 @@
                                 </div>
 
                                 <div class="from-group">
+                                    <label for="newManagerId" class="form-label">Manager</label>
+                                    <select name="newManagerId" id="newManagerId"
+                                        class="form-control w-full mt-2 @error('newManagerId') !border-danger-500 @enderror"
+                                        wire:model.defer="newManagerId" autocomplete="off">
+                                        <option>None</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->first_name }}
+                                                {{ $user->last_name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('newManagerId')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="from-group">
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                         <div class="input-area">
                                             <label for="phone" class="form-label">Phone</label>

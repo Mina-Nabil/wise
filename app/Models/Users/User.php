@@ -64,7 +64,7 @@ class User extends Authenticatable
 
 
     /////////////functions
-    public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null, $image = null, $password = null): bool
+    public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null, $image = null, $password = null, $manager_id = null): bool
     {
         try {
             $this->first_name   = $first_name;
@@ -73,6 +73,7 @@ class User extends Authenticatable
             $this->phone        = $phone;
             $this->username     = $username;
             $this->type         = $type;
+            $this->manager_id   = $manager_id;
             $this->image         = $image;
             if ($password)
                 $this->password     =   bcrypt($password);

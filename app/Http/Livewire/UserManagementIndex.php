@@ -76,6 +76,7 @@ class UserManagementIndex extends Component
         $this->type = $user->type;
         $this->email = $user->email;
         $this->phone = $user->phone;
+        $this->newManagerId = $user->manager_id;
         if ($user->image) {
             $this->userImage = Storage::disk('s3')->url(str_replace('//', '/', $user->image));
         }
@@ -131,7 +132,7 @@ class UserManagementIndex extends Component
 
         $imageUrl = $this->generateUrl();
 
-        $res = User::find($currentUserId)->editInfo($this->username, $this->first_name, $this->last_name, $this->type, $this->email, $this->phone, $imageUrl, $this->password);
+        $res = User::find($currentUserId)->editInfo($this->username, $this->first_name, $this->last_name, $this->type, $this->email, $this->phone, $imageUrl, $this->password, $this->newManagerId);
         if ($res) {
             $this->closeUpdateThisUser();
             $this->alert('success', 'User updated successfuly!');
