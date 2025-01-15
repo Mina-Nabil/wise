@@ -963,7 +963,9 @@ class Offer extends Model
                         ->orOn("offers.assignee_type", '=', 'users.type');
                 }
             )
-            ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id');
+            ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id')
+            ->leftjoin('offer_comm_profiles', 'offer_comm_profiles.offer_id', '=', 'offers.id')
+            ->leftjoin('comm_profiles', 'comm_profiles.id', '=', 'offer_comm_profiles.comm_profile_id');
 
         if (!(($loggedInUser->is_admin || $loggedInUser->id == 12) ||
             (($loggedInUser->is_operations || $loggedInUser->is_finance) && $searchText))) {
@@ -972,6 +974,7 @@ class Offer extends Model
                     ->orwhere('offers.creator_id', $loggedInUser->id)
                     ->orwhere('offers.assignee_type', $loggedInUser->type)
                     ->orwhere('offers.assignee_id', $loggedInUser->id)
+                    ->orwhere('comm_profiles.user_id', $loggedInUser->id)
                     ->orwhere('offer_watchers.user_id', $loggedInUser->id);
             });
             if ($loggedInUser->is_operations && !$assignedToMe) {
