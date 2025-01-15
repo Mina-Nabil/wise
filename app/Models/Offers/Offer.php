@@ -3,6 +3,7 @@
 namespace App\Models\Offers;
 
 use App\Exceptions\InvalidSoldPolicyException;
+use App\Helpers\Helpers;
 use App\Models\Business\SoldPolicy;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Car;
@@ -1057,8 +1058,10 @@ class Offer extends Model
             })->when($is_renewal !== null, function ($q, $v) use ($is_renewal) {
                 $q->where('offers.is_renewal', "=", $is_renewal);
             })->when(count($comm_profile_ids), function ($q) use ($comm_profile_ids) {
-                $q->join('offer_comm_profiles', 'offer_comm_profiles.offer_id', '=', 'offers.id')
-                    ->whereIn('offer_comm_profiles.comm_profile_id', $comm_profile_ids);
+                if (!Helpers::joined($q, 'offer_comm_profiles')) {
+                    $q->join('offer_comm_profiles', 'offer_comm_profiles.offer_id', '=', 'offers.id');
+                }
+                $q->whereIn('offer_comm_profiles.comm_profile_id', $comm_profile_ids);
             })->when($expiry_from || $expiry_to, function ($q) use ($expiry_from, $expiry_to) {
                 $q->join('sold_policies', 'sold_policies.id', '=', 'offers.renewal_policy_id')
                     ->when($expiry_from, function ($qq, $v) {
