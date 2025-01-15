@@ -15,13 +15,13 @@
                             wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
                     </button>
                 @endif
-                @if ($start_from && $start_to)
+                @if ($issued_from && $issued_to)
                 @can('viewCommission', App\Models\Business\SoldPolicy::class)
                     <button wire:click="exportHay2aReport"
                         class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
-                        <span wire:loading.remove wire:target="exportReport">Export تقرير الهيئه</span>
+                        <span wire:loading.remove wire:target="exportHay2aReport">Export تقرير الهيئه</span>
                         <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                            wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            wire:target="exportHay2aReport" icon="line-md:loading-twotone-loop"></iconify-icon>
                     </button>
                 @endcan
                 @endif
