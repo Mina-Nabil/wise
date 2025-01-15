@@ -262,7 +262,7 @@ class JournalEntry extends Model
 
 
         $activeSheet->getCell('B7')->setValue($number_format);
-        $activeSheet->getCell('F5')->setValue($this->cash_serial);
+        $activeSheet->getCell('F5')->setValue(str_pad($this->cash_serial, 5, '0', STR_PAD_LEFT));
         $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('d / m / Y'));
         $activeSheet->getCell('B9')->setValue("/    .......................................{$this->receiver_name}................................................");
         $activeSheet->getCell('B11')->setValue("/    ......{$number_text}...... نقدا / شيك رقم : ............................................				");
