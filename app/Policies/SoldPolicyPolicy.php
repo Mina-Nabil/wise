@@ -53,7 +53,7 @@ class SoldPolicyPolicy
      */
     public function update(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin || $user->is_operations || $user->id == $soldPolicy->creator_id;
+        return $user->is_admin || $user->is_operations || $user->id == $soldPolicy->creator_id || $user->is_finance;
     }
 
     /**
