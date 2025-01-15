@@ -113,6 +113,9 @@ class SoldPolicy extends Model
             foreach ($this->files()->get() as $f) {
                 $newOffer->addFile($f->name, $f->url);
             }
+            foreach ($this->sales_comms()->get() as $sc) {
+                $newOffer->addCommProfile($sc->comm_profile_id);
+            }
             return $newOffer;
         }
     }
@@ -1092,7 +1095,7 @@ class SoldPolicy extends Model
         $activeSheet->getCell('D1')->setValue("سجل الوثائق والعمولات  للربع الرابع عن عام {$start_from->format('Y')}");
         $activeSheet->getCell('D2')->setValue("  الفترة من {$start_from->format('d / m / Y')} حتى {$start_to->format('d / m / Y')}   ");
 
-        $k=1;
+        $k = 1;
         foreach ($policies as $policy) {
             $activeSheet->getCell('A' . $i)->setValue($k++);
             $activeSheet->getCell('B' . $i)->setValue($policy->client->name);
