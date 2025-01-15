@@ -254,6 +254,10 @@ class OfferShow extends Component
     {
         $this->genarteSoldPolicySection  = true;
         $option = OfferOption::find($this->offer->selected_option_id);
+        if (!$option) {
+            $this->alert('warning', "Please set an option as 'Client Selected'");
+            return;
+        }
         $this->sold_insured_value = $option->insured_value;
         $this->net_rate = $option->policy_condition?->rate;
         $this->net_premium = $option->net_premium;
@@ -978,11 +982,13 @@ class OfferShow extends Component
         }
     }
 
-    public function openSetRenewal(){
+    public function openSetRenewal()
+    {
         $this->setRenewalSec = true;
     }
 
-    public function closeSetRenewal(){
+    public function closeSetRenewal()
+    {
         $this->setRenewalSec = false;
     }
 
@@ -1009,11 +1015,11 @@ class OfferShow extends Component
     {
         $this->validate([
             'selectedPolicy' => 'required'
-        ],messages:[
+        ], messages: [
             'selectedPolicy.required' => 'Sold policy is required.'
         ]);
         SoldPolicy::findOrFail($this->selectedPolicy->id);
-        $res = $this->offer->setRenewalFlag(true,$this->selectedPolicy->id);
+        $res = $this->offer->setRenewalFlag(true, $this->selectedPolicy->id);
         if ($res) {
             $this->closeSetRenewal();
             $this->alert('success', 'Renewal Status Changed!');
