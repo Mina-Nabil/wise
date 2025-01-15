@@ -30,6 +30,7 @@ use App\Models\Payments\CommProfile;
 use App\Models\Payments\SalesComm;
 use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class OfferShow extends Component
 {
@@ -1174,8 +1175,14 @@ class OfferShow extends Component
 
     public function render()
     {
-        $users = User::active()->get();
-        
+        $loggedInUser = Auth::user();
+        if($loggedInUser->is_sales){
+            $users = User::operations()->orwhere('id', $loggedInUser->manager_id)->get();
+            
+        } else {
+            $users = User::active()->get();
+        }
+
         $usersTypes = User::TYPES;
         $STATUSES = Offer::STATUSES;
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
