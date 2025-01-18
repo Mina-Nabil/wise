@@ -65,6 +65,9 @@ class CustomerIndex extends Component
     public $leadsImportFile;
     public $downloadUserLeadsID;
 
+    public $statusSection = false;
+
+
     public function changeThisStatus($id, $status)
     {
         $this->changeCustStatusId = $id;
@@ -246,6 +249,15 @@ class CustomerIndex extends Component
     public function toggleAddCustomer()
     {
         $this->toggle($this->addCustomerSection);
+    }
+
+    public function openStatusSection($customer_id)
+    {
+        $status = Customer::findOrFail($customer_id);
+        $this->changeCustStatusId = $customer_id;
+        $this->changeCustStatusStatus = $status->status;
+        $this->statusReason = $status->reason;
+        $this->statusNote = $status->note;
     }
 
     public function redirectToShowPage($id)

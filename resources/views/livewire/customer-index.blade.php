@@ -84,7 +84,7 @@
                                                 {{ $customer->last_name }}</b>
                                         </td>
 
-                                        <td class="table-td ">
+                                        <td class="table-td" wire:click="openStatusSection({{ $customer->id }})">
                                             {{ $customer->type }} - {{ $customer->status?->status }}
                                         </td>
 
@@ -835,6 +835,22 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
+
+                            <div class="input-area mb-3">
+                                <label for="lastName" class="form-label">Status</label>
+                                <select name="basicSelect" id="basicSelect"
+                                    class="form-control w-full mt-2 @error('changeCustStatusStatus') !border-danger-500 @enderror"
+                                    wire:model="changeCustStatusStatus">
+                                    <option
+                                        class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        Select an option</option>
+                                    @foreach ($customerStatus as $s)
+                                        <option value="{{ $s }}"
+                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $s }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
 
                             <div class="input-area mb-3">
                                 <label class="form-label">Reason</label>
