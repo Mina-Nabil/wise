@@ -92,12 +92,9 @@ class User extends Authenticatable
     }
 
 
-    public function switchSession($user_id)
+    public static function switchSession($user_id)
     {
-        $availableSessions = $this->tmp_access_to()->get()->pluck('from_id')->toArray();
-        if (!in_array($user_id, $availableSessions)) return false;
-        Auth::loginUsingId($this->from_id);
-        Session::put("original_session_id", $this->to_id);
+        Auth::loginUsingId($user_id);
     }
 
     public function addTempAccess($to, Carbon $expiry)
@@ -278,7 +275,7 @@ class User extends Authenticatable
         }
         return $ret;
     }
-    
+
     public function getManagersIdsArrayAttribute()
     {
         $ret = [];
