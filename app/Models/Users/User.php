@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class User extends Authenticatable
@@ -273,6 +274,7 @@ class User extends Authenticatable
             $ret[] = $child->id;
             $children->push(User::where('manager_id', $child->id)->get());
         }
+        Log::info($ret);
         return $ret;
     }
 
