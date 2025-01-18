@@ -27,6 +27,8 @@ use App\Http\Livewire\EntryTitleIndex;
 use App\Http\Livewire\JournalEntryIndex;
 use App\Http\Livewire\TaskReport;
 use App\Models\Accounting\Account;
+use App\Models\Users\User;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +46,9 @@ use App\Models\Accounting\Account;
 Route::middleware('auth', 'active')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
     Route::get('/calendar', [HomeController::class, 'calendar']);
+    Route::get('/switch/session/{id}', function (Request $req) {
+        User::switchSession($req->id);
+    });
 
     //Users routes
     Route::get('/users', [UserController::class, 'index']);
