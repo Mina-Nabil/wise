@@ -295,7 +295,7 @@
                                         @foreach ($entry->accounts as $childAccount)
                                             <tr class="bg-slate-50 dark:bg-slate-700">
 
-                                                <td class="table-td" colspan="3" wire:click="redirectToAccount({{ $childAccount->id}})"><b>{{ $childAccount->main_account->name }} • {{ $childAccount->name }}</b></td>
+                                                <td class="table-td hover:bg-slate-600 " colspan="3" wire:click="redirectToAccount({{ $childAccount->id}})"><b>{{ $childAccount->main_account->name }} • {{ $childAccount->name }}</b></td>
 
                                                 <td class="table-td">
                                                     <span class="badge bg-black-500 text-white capitalize inline-flex items-center">
