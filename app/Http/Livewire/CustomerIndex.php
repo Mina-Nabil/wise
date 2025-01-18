@@ -253,11 +253,11 @@ class CustomerIndex extends Component
 
     public function openStatusSection($customer_id)
     {
-        $status = Customer::findOrFail($customer_id);
+        $statuss = Customer::findOrFail($customer_id);
+        $this->changeCustStatusStatus = $statuss->status;
+        $this->statusReason = $statuss->reason;
+        $this->statusNote = $statuss->note;
         $this->changeCustStatusId = $customer_id;
-        $this->changeCustStatusStatus = $status->status;
-        $this->statusReason = $status->reason;
-        $this->statusNote = $status->note;
     }
 
     public function redirectToShowPage($id)
