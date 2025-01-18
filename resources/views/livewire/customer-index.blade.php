@@ -84,7 +84,7 @@
                                                 {{ $customer->last_name }}</b>
                                         </td>
 
-                                        <td class="table-td" wire:click="openStatusSection({{ $customer->id }})">
+                                        <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" wire:click="openStatusSection({{ $customer->id }})">
                                             {{ $customer->type }} - {{ $customer->status?->status }}
                                         </td>
 
