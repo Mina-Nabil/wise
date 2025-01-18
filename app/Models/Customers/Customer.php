@@ -891,7 +891,7 @@ class Customer extends Model
         });
 
         $query->when($statusFilter, function ($q, $filter) {
-            $q->join('customer_status', 'customer_status.customer_id', '=', 'customer.id')
+            $q->join('customer_status', 'customer_status.customer_id', '=', 'customers.id')
                 ->where('customer_status.status', $filter);
         });
         return $query->latest();
