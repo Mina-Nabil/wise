@@ -971,7 +971,7 @@ class Offer extends Model
         if (!(($loggedInUser->is_admin || $loggedInUser->id == 12) ||
             (($loggedInUser->is_operations || $loggedInUser->is_finance) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
-                $q->orwhereIn('users.manager_id', $loggedInUser->children_ids_array)
+                $q->orwhereIn('users.manager_id', $loggedInUser->id)
                     ->orwhere('offers.creator_id', $loggedInUser->id)
                     ->orwhere('offers.assignee_type', $loggedInUser->type)
                     ->orwhere('offers.assignee_id', $loggedInUser->id)
