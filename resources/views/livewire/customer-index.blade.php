@@ -30,7 +30,7 @@
             <div class="flex items-center space-x-7 flex-wrap h-[30px]">
                 <div class="secondary-radio">
                     <label class="flex items-center cursor-pointer">
-                        <input type="radio" class="hidden" value="all" wire:model="statusFilter">
+                        <input type="radio" name="statusFilter" class="hidden" value="all" wire:model="statusFilter">
                         <span
                             class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                         <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
@@ -41,7 +41,7 @@
                 <div class="flex items-center space-x-7 flex-wrap h-[30px]">
                     <div class="secondary-radio">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" class="hidden" value="{{ $cs }}" wire:model="statusFilter">
+                            <input type="radio" name="statusFilter"  class="hidden" value="{{ $cs }}" wire:model="statusFilter">
                             <span
                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                             <span class="text-secondary-500 text-sm leading-6 capitalize">{{ $cs }}</span>
