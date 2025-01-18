@@ -65,8 +65,7 @@ class CustomerIndex extends Component
     public $leadsImportFile;
     public $downloadUserLeadsID;
 
-    public $statusSection = false;
-
+    public $statusFilter = false;
 
     public function changeThisStatus($id, $status)
     {
@@ -311,7 +310,7 @@ class CustomerIndex extends Component
         $professions = Profession::all();
         $customerStatus = Status::STATUSES;
         $countries = Country::all();
-        $customers = Customer::userData($this->search)->latest()->paginate(10);
+        $customers = Customer::userData($this->search, statusFilter: $this->statusFilter)->latest()->paginate(10);
         $users = User::all();
 
         return view('livewire.customer-index', [

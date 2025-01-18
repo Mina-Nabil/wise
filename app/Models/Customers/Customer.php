@@ -847,7 +847,7 @@ class Customer extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, $searchText = null, $mustMatchSearch = true)
+    public function scopeUserData($query, $searchText = null, $mustMatchSearch = true, $statusFilter = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -888,6 +888,11 @@ class Customer extends Model
                     // }
                 });
             }
+        });
+
+        $query->when($statusFilter, function ($q, $filter) {
+            $q->join('customer_status', 'customer_status.customer_id', '=', 'customer.id')
+                ->where('customer_status.status', $filter);
         });
         return $query->latest();
     }
