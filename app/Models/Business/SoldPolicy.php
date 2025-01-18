@@ -87,7 +87,8 @@ class SoldPolicy extends Model
         'created_at',
         'after_tax_comm',
         'sales_out_comm',
-        'renewal_policy_id'
+        'renewal_policy_id',
+        'is_penalized'
     ];
 
     ///model functions
@@ -144,6 +145,8 @@ class SoldPolicy extends Model
                         $conf->value : (($conf->value / 100) * $this->net_premium);
                     if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
                         $tmp_base_value = $tmp_base_value - (($conf->penalty_percent / 100) * $tmp_base_value);
+                        $this->is_penalized = true;
+                        $this->save();
                     }
                     $this->comms_details()->updateOrCreate([
                         "title"     =>  $conf->title
@@ -1035,9 +1038,9 @@ class SoldPolicy extends Model
         }
     }
 
-    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null)
+    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null, $is_penalized = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized)->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
         if (!$template) {
@@ -1078,9 +1081,9 @@ class SoldPolicy extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function exportHay2aReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null)
+    public static function exportHay2aReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null, $is_penalized = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized)->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_hay2a_report.xlsx'));
         if (!$template) {
@@ -1740,7 +1743,7 @@ class SoldPolicy extends Model
         });
     }
 
-    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], bool $is_welcomed = null)
+    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], bool $is_welcomed = null, bool $is_penalized = null)
     {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
@@ -1768,6 +1771,8 @@ class SoldPolicy extends Model
                 $q->where('is_valid', "=", $is_valid);
             })->when($is_renewal !== null, function ($q, $v) use ($is_renewal) {
                 $q->where('offers.is_renewal', "=", $is_renewal);
+            })->when($is_penalized !== null, function ($q) use ($is_penalized) {
+                $q->where('sold_policies.is_penalized', "=", $is_penalized);
             })->when($is_welcomed !== null, function ($q, $v) use ($is_welcomed) {
                 if (!Helpers::joined($q, 'customers')) {
                     $q->join('customers', function ($qq) {

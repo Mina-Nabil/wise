@@ -130,6 +130,12 @@
                                         dark:hover:text-white cursor-pointer">
                                 is Renewal</span>
                         </li>
+                        <li wire:click="togglePenalized">
+                            <span href="#"
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Penalty</span>
+                        </li>
                         <li wire:click="toggleWelcomed">
                             <span href="#"
                                 class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
@@ -419,6 +425,23 @@
                                 </button>
                             @endif
 
+                            @if (!is_null($is_penalized))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="togglePenalized">
+                                        @if ($is_penalized)
+                                            Penalty:&nbsp;Yes
+                                        @else
+                                            Penalty:&nbsp;No
+                                        @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearpenalized">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
                             @if (!is_null($is_welcomed))
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleWelcomed">
@@ -590,6 +613,10 @@
                                                                             @if ($policy->is_renewal)
                                                                                 <span
                                                                                     class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
+                                                                            @endif
+                                                                            @if ($policy->is_penalized)
+                                                                                <span
+                                                                                    class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Penalty</span>
                                                                             @endif
                                                                         </td>
                                                                     </tr>
