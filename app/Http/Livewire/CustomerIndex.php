@@ -253,7 +253,7 @@ class CustomerIndex extends Component
     public function openStatusSection($customer_id)
     {
         $statuss = Customer::findOrFail($customer_id)?->status;
-        if(!$statuss) return $this->changeThisStatus($customer_id, 'new');
+        if (!$statuss) return $this->changeThisStatus($customer_id, 'new');
         $this->changeCustStatusStatus = $statuss->status;
         $this->statusReason = $statuss->reason;
         $this->statusNote = $statuss->note;
@@ -310,7 +310,10 @@ class CustomerIndex extends Component
         $professions = Profession::all();
         $customerStatus = Status::STATUSES;
         $countries = Country::all();
-        $customers = Customer::userData($this->search, statusFilter: $this->statusFilter)->latest()->paginate(10);
+        $customers = Customer::userData(
+            $this->search,
+            statusFilter: $this->statusFilter != 'all' ? $this->statusFilter  : null
+        )->latest()->paginate(10);
         $users = User::all();
 
         return view('livewire.customer-index', [
