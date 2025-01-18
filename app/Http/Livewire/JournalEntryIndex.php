@@ -273,6 +273,11 @@ class JournalEntryIndex extends Component
         $this->closeSelectAccountModel();
     }
 
+    public function redirectToAccount($id)
+    {
+        return redirect(Route('accounts.show', $id));
+    }
+
     public function mount()
     {
         $this->Sentries = JournalEntry::all();
