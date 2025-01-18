@@ -267,6 +267,29 @@ class User extends Authenticatable
     }
 
     /////attributes
+    public function getChildrenIdsArrayAttribute()
+    {
+        $ret = [];
+        /** @var Collection */
+        $children = User::where('manager_id', $this->id)->get();
+        foreach ($children as $child) {
+            $ret[] = $child->id;
+            $children->push(User::where('manager_id', $child->id)->get());
+        }
+        return $ret;
+    }
+    
+    public function getManagersIdsArrayAttribute()
+    {
+        $ret = [];
+        $parent = $this->manager;
+        while ($parent) {
+            $ret[] = $parent->id;
+            $parent = $parent->manager;
+        }
+        return $ret;
+    }
+
     public function getIsAdminAttribute()
     {
         return $this->type == self::TYPE_ADMIN;
