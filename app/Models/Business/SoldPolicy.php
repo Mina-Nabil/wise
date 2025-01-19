@@ -50,6 +50,20 @@ class SoldPolicy extends Model
 
     const MORPH_TYPE = 'sold_policy';
 
+    const DELIVERY_TYPE_NOT_DELIVERED = 'not_delivered';
+    const DELIVERY_TYPE_PENDING_DELIVERY = 'pending_delivery';
+    const DELIVERY_TYPE_DELIVERED_HARD_CLIENT = 'delivered_hard_to_client';
+    const DELIVERY_TYPE_DELIVERED_HARD_SALESOUT = 'delivered_hard_to_sales_out';
+    const DELIVERY_TYPE_DELIVERED_SOFTCOPY = 'delivered_softcopy';
+
+    const DELIVERY_TYPES = [
+        self::DELIVERY_TYPE_NOT_DELIVERED,
+        self::DELIVERY_TYPE_PENDING_DELIVERY,
+        self::DELIVERY_TYPE_DELIVERED_HARD_CLIENT,
+        self::DELIVERY_TYPE_DELIVERED_HARD_SALESOUT,
+        self::DELIVERY_TYPE_DELIVERED_SOFTCOPY,
+    ];
+
     protected $table = 'sold_policies';
     protected $fillable = [
         'creator_id',
@@ -88,8 +102,10 @@ class SoldPolicy extends Model
         'after_tax_comm',
         'sales_out_comm',
         'renewal_policy_id',
-        'is_penalized'
+        'is_penalized',
+        'delivery_type'
     ];
+
 
     ///model functions
     public function generateRenewalOffer(Carbon $due, string $in_favor_to = null)
@@ -182,6 +198,22 @@ class SoldPolicy extends Model
                 AppLog::info("Commission changed", loggable: $this, desc: "Sold Policy commission added manually");
             });
             $this->calculateTotalPolicyComm();
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    public function setDeliveryType(string $deliveryType)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
+        try {
+            $this->delivery_type = $deliveryType;
+            $this->save();
             return true;
         } catch (Exception $e) {
             report($e);
@@ -1878,7 +1910,7 @@ class SoldPolicy extends Model
     public function getinvoicedAmountAttribute()
     {
         $this->load('company_comm_payments');
-        return $this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW)->sum('amount') ;
+        return $this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW)->sum('amount');
     }
 
     public function getCommissionLeftAttribute()

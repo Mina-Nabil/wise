@@ -1498,10 +1498,47 @@ class SoldPolicyShow extends Component
         }
     }
 
+    ///set delivery type section
+    public $deliveryType;
+    public $changeDeliveryType = false;
+
+    public function openChangeDeliveryType()
+    {
+        $this->deliveryType = $this->soldPolicy->delivery_type;
+        $this->changeDeliveryType = true;
+    }
+
+    public function saveDeliveryType()
+    {
+        $this->validate(
+            [
+                'deliveryType' => 'required|string|in:' . implode(',', SoldPolicy::DELIVERY_TYPES),
+            ],
+            [],
+            [
+                'deliveryType' => 'Delivery Type',
+            ],
+        );
+
+        $t = $this->soldPolicy->setDeliveryType($this->deliveryType);
+        if ($t) {
+            $this->alert('success', 'Delivery Type Updated!');
+            $this->closeChangeDeliveryType();
+            $this->mount($this->soldPolicy->id);
+        } else {
+            $this->alert('error', 'Failed to update Delivery Type.');
+        }
+    }
+
+    public function closeChangeDeliveryType()
+    {
+        $this->changeDeliveryType = false;
+    }
+
     /////watchers sections
     public $changeWatchers = false;
     public $watchersList = [];
-    public $setWatchersList;
+    public $setWatchersList = [];
 
     public function OpenChangeWatchers()
     {
@@ -1562,6 +1599,7 @@ class SoldPolicyShow extends Component
         $users = User::all();
         $PYMT_TYPES = ClientPayment::PYMT_TYPES;
         $FROMS = CommProfileConf::FROMS;
+        $DEL_TYPES = SoldPolicy::DELIVERY_TYPES;
         $CommProfiles = CommProfile::all();
         // $linkedCommProfiles = CommProfile::linkedToSoldPolicy($this->soldPolicy->id)->get();
         $linkedCommProfiles = CommProfile::all();
@@ -1578,6 +1616,7 @@ class SoldPolicyShow extends Component
             'CommProfiles' => $CommProfiles,
             'linkedCommProfiles' => $linkedCommProfiles,
             'salesOuts' => $salesOuts,
+            'DEL_TYPES' => $DEL_TYPES,
         ]);
     }
 }
