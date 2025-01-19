@@ -683,6 +683,7 @@ class Customer extends Model
 
         try {
             $newCustomer->save();
+            $newCustomer->setStatus('new', 'new customer');
             AppLog::info('New customer created', loggable: $newCustomer);
             return $newCustomer;
         } catch (Exception $e) {
