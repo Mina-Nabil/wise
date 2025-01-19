@@ -252,6 +252,15 @@
                                     @if ($soldPolicy->offer?->is_renewal)
                                         <span class="badge bg-success-500 text-white capitalize">Renwal</span>
                                     @endif
+                                    @if ($soldPolicy->is_penalized)
+                                        <span class="badge bg-danger-500 text-white capitalize">Penalty</span>
+                                    @endif
+                                    @if ($soldPolicy->cancellation_time)
+                                    <span  class="badge bg-danger-500 text-slate-800 
+                                    text-danger-500 bg-opacity-30 capitalize rounded-3xl">Cancelled on: 
+                                    {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y')  }}
+                                </span>
+                                    @endif
                                 </span>
                             </span>
                             <span class="text-lg font-medium text-slate-900 dark:text-white block">
