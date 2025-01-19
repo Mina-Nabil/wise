@@ -79,6 +79,7 @@ class Invoice extends Model
                     $comm->setAsPaid();
                 }
             });
+            return true;
         } catch (Exception $e){
             report($e);
             return false;
