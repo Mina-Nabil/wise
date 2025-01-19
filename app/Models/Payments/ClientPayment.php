@@ -88,7 +88,7 @@ class ClientPayment extends Model
         $filteredStatus = null,
         $sortColomn = null,
         $sortDirection = 'asc',
-        $types = null,
+        $types = [],
     ) {
         $payments = self::report(
             $is_renewal,

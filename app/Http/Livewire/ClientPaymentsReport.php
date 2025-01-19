@@ -289,7 +289,8 @@ class ClientPaymentsReport extends Component
             $this->sales_out_ids,
             $this->statuses,
             $this->sortColomn,
-            $this->sortDirection
+            $this->sortDirection, 
+            $this->types,
         );
     }
 
