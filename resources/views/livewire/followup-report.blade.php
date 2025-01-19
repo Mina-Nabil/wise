@@ -164,6 +164,9 @@
                                                 class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                                 <tr>
                                                     <th scope="col" class="table-th">
+                                                        #
+                                                    </th>
+                                                    <th scope="col" class="table-th">
                                                         Sales
                                                     </th>
                                                     
@@ -202,6 +205,9 @@
                                                     <tr class="hover:bg-slate-200 dark:hover:bg-slate-700"
                                                         wire:click="">
 
+                                                        <td class="table-td">
+                                                            {{ $followup->id }}
+                                                        </td>
                                                         <td class="table-td">
                                                             {{ $followup->creator->username }}
                                                         </td>
