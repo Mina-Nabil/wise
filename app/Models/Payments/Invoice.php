@@ -74,9 +74,9 @@ class Invoice extends Model
         try{
 
             DB::transaction(function () {
-                /** @var PolicyComm */
+                /** @var CompanyCommPayment */
                 foreach ($this->commissions()->get() as $comm) {
-                    $comm->confirmInvoice();
+                    $comm->setAsPaid();
                 }
             });
         } catch (Exception $e){
