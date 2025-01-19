@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('sold_policies', function (Blueprint $table) {
-            $table->dateTime('cancellation_time')->nullable();
+
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('sold_policies', function (Blueprint $table) {
-            $table->dropColumn('cancellation_time');
+
         });
     }
 };
