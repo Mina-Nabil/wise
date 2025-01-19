@@ -41,6 +41,10 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Manager
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Type
                                     </th>
 
@@ -88,6 +92,10 @@
 
                                         <td class="table-td">
                                             {{ $user->username }}
+                                        </td>
+
+                                        <td class="table-td">
+                                            {{ $user->manager?->username }}
                                         </td>
 
                                         <td class="table-td ">
@@ -490,9 +498,9 @@
                                         class="form-control w-full mt-2 @error('newManagerId') !border-danger-500 @enderror"
                                         wire:model.defer="newManagerId" autocomplete="off">
                                         <option>None</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->first_name }}
-                                                {{ $user->last_name }}</option>
+                                        @foreach ($allUsers as $u)
+                                            <option value="{{ $u->id }}">{{ $u->first_name }}
+                                                {{ $u->last_name }}</option>
                                         @endforeach
                                     </select>
                                     @error('newManagerId')

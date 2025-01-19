@@ -188,8 +188,10 @@ class UserManagementIndex extends Component
     {
         $TYPES = User::TYPES;
         $users = User::when($this->search, fn ($q) => $q->search($this->search))->paginate(50);
+        $allUsers = User::active()->get();
         return view('livewire.user-management-index', [
             'users' => $users,
+            'allUsers' => $allUsers,
             'TYPES' => $TYPES,
         ]);
     }
