@@ -119,7 +119,6 @@ class Followup extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('followups.*')
-
             ->join('users', "followups.creator_id", '=', 'users.id');
 
         if ($loggedInUser->type !== User::TYPE_ADMIN || $loggedInUser->id != 12 || $mineOnly) {
@@ -136,7 +135,7 @@ class Followup extends Model
             })->leftjoin('customers', function ($j) {
                 $j->on('followups.called_id', '=', 'customers.id')
                     ->where('followups.called_type', Customer::MORPH_TYPE);
-            })->groupBy('followups.id');
+            });
 
             $splittedText = explode(' ', $v);
 
