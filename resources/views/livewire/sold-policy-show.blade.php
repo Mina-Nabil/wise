@@ -2227,7 +2227,7 @@
                                 </div>
                             </div>
                         @endforeach
-                        <span class="font-Inter text-sm pt-2 inline-block">Expiry example: 2024-08-12</span>
+                        <span class="font-Inter text-sm pt-2 inline-block p-6">Expiry example: 2024-08-23</span>
                         <div class="p-6 space-y-4">
                             <button wire:click="addAnotherAction"
                                 class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add Action</button>

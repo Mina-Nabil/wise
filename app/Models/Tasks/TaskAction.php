@@ -48,6 +48,7 @@ class TaskAction extends Model
             'in_favor_to',
             'net_premium',
             'gross_premium',
+            'cancellation_time',
         ]
     ];
 

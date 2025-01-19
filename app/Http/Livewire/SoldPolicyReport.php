@@ -66,6 +66,7 @@ class SoldPolicyReport extends Component
     public $is_renewal;
     public $is_welcomed;
     public $is_penalized;
+    public $is_cancelled;
 
     public $Estart_from;
     public $Estart_to;
@@ -83,9 +84,6 @@ class SoldPolicyReport extends Component
     public $Ebrand_ids = [];
     public $Ecompany_ids = [];
     public $Epolicy_ids = [];
-    public $Eis_valid;
-    public $Eis_renewal;
-    public $Eis_penalized;
 
 
     public $isWelcomedClientId;
@@ -185,6 +183,11 @@ class SoldPolicyReport extends Component
         $this->is_valid = null;
     }
 
+    public function clearcancelled()
+    {
+        $this->is_cancelled = null;
+    }
+
     public function clearpenalized()
     {
         $this->is_penalized = null;
@@ -203,6 +206,11 @@ class SoldPolicyReport extends Component
     public function togglePaid()
     {
         $this->toggle($this->is_paid);
+    }
+
+    public function toggleCancelled()
+    {
+        $this->toggle($this->is_cancelled);
     }
 
     public function togglePenalized()
@@ -506,6 +514,7 @@ class SoldPolicyReport extends Component
                 collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
                 $this->is_welcomed,
                 $this->is_penalized,
+                $this->is_cancelled,
             );
         }
     }
@@ -537,6 +546,7 @@ class SoldPolicyReport extends Component
                 collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
                 $this->is_welcomed,
                 $this->is_penalized,
+                $this->is_cancelled,
             );
         }
     }
@@ -594,6 +604,7 @@ class SoldPolicyReport extends Component
             collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
             $this->is_welcomed,
             $this->is_penalized,
+            $this->is_cancelled,
         )->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,

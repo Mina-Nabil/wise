@@ -442,6 +442,23 @@
                                 </button>
                             @endif
 
+                            @if (!is_null($is_cancelled))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="togglePenalized">
+                                        @if ($is_cancelled)
+                                            Cancelled:&nbsp;Yes
+                                        @else
+                                            Cancelled:&nbsp;No
+                                        @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearcancelled">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
                             @if (!is_null($is_welcomed))
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleWelcomed">
@@ -617,6 +634,12 @@
                                                                             @if ($policy->is_penalized)
                                                                                 <span
                                                                                     class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Penalty</span>
+                                                                            @endif
+                                                                            @if ($policy->cancellation_time)
+                                                                                <span
+                                                                                    class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Cancelled on: 
+                                                                                    {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y')  }}
+                                                                                </span>
                                                                             @endif
                                                                         </td>
                                                                     </tr>
