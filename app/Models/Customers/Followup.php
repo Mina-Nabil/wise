@@ -119,6 +119,7 @@ class Followup extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         $query->select('followups.*')
+
             ->join('users', "followups.creator_id", '=', 'users.id');
 
         if ($loggedInUser->type !== User::TYPE_ADMIN || $loggedInUser->id != 12 || $mineOnly) {
@@ -157,7 +158,7 @@ class Followup extends Model
             ]);
         });
 
-        return $query->latest();
+        return $query->groupBy('followups.id')->latest();
     }
 
     public function scopeReport($query, Carbon $due_from = null, Carbon $due_to = null, Carbon $action_from = null, Carbon $action_to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
