@@ -514,10 +514,13 @@
                                                                     @can('viewCommission',
                                                                         App\Models\Business\SoldPolicy::class)
                                                                         <th scope="col" class="table-th ">
-                                                                            Expected Comm
+                                                                            Expected
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
-                                                                            Collected Comm
+                                                                            Invoice
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
+                                                                            Collected
                                                                         </th>
                                                                     @endcan
                                                                     <th scope="col" class="table-th ">
@@ -612,6 +615,9 @@
                                                                         @can('viewCommission', $policy)
                                                                             <td class="table-td ">
                                                                                 <b>{{ number_format($policy->total_policy_comm, 0, '.', ',') }}</b>
+                                                                            </td>
+                                                                            <td class="table-td ">
+                                                                                <b>{{ number_format($policy->invoiced_amount, 0, '.', ',') }}</b>
                                                                             </td>
                                                                             <td class="table-td ">
                                                                                 <b>

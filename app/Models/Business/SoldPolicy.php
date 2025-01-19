@@ -1875,6 +1875,12 @@ class SoldPolicy extends Model
         return false;
     }
 
+    public function getinvoicedAmountAttribute()
+    {
+        $this->load('company_comm_payments');
+        return $this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW)->sum('amount') ;
+    }
+
     public function getCommissionLeftAttribute()
     {
         $this->load('company_comm_payments');
