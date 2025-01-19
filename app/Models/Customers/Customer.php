@@ -621,6 +621,7 @@ class Customer extends Model
         try {
             $newLead->save();
             $newLead->addPhone(Phone::TYPE_HOME, $phone, true);
+            $newLead->setStatus(Status::STATUS_NEW, 'new lead');
             AppLog::info('New customer lead created', loggable: $newLead);
             return $newLead;
         } catch (Exception $e) {
@@ -683,7 +684,7 @@ class Customer extends Model
 
         try {
             $newCustomer->save();
-            $newCustomer->setStatus('new', 'new customer');
+            $newCustomer->setStatus(Status::STATUS_CLIENT, 'new customer');
             AppLog::info('New customer created', loggable: $newCustomer);
             return $newCustomer;
         } catch (Exception $e) {
