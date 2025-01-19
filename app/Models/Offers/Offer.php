@@ -961,7 +961,8 @@ class Offer extends Model
                 'users',
                 function ($j) {
                     $j->on("offers.assignee_id", '=', 'users.id')
-                        ->orOn("offers.assignee_type", '=', 'users.type');
+                        ->orOn("offers.assignee_type", '=', 'users.type')
+                        ->orOn('offers.creator_id', '=', 'users.id');
                 }
             )
             ->leftjoin('offer_watchers', 'offer_watchers.offer_id', '=', 'offers.id')
@@ -971,7 +972,7 @@ class Offer extends Model
         if (!(($loggedInUser->is_admin || $loggedInUser->id == 12) ||
             (($loggedInUser->is_operations || $loggedInUser->is_finance) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
-                $q->orwhere('users.manager_id', $loggedInUser->id)
+                $q->orwhereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('offers.creator_id', $loggedInUser->id)
                     ->orwhere('offers.assignee_type', $loggedInUser->type)
                     ->orwhere('offers.assignee_id', $loggedInUser->id)

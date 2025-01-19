@@ -514,7 +514,7 @@ class Task extends Model
         if (!($loggedInUser->is_admin && !$assignedToMeOnly)) {
             $query
                 ->where(function ($q) use ($loggedInUser, $includeWatchers) {
-                    $q->where('users.manager_id', $loggedInUser->id)
+                    $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                         ->orwhere('tasks.assigned_to_type', $loggedInUser->type)
                         ->orwhere('tasks.assigned_to_id', $loggedInUser->id)
                         ->orwhere('tasks.open_by_id', $loggedInUser->id)

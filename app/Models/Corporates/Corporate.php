@@ -677,7 +677,7 @@ class Corporate extends Model
         if (!($loggedInUser->is_admin
             || ($loggedInUser->is_operations && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
-                $q->where('users.manager_id', $loggedInUser->id)
+                $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('users.id', $loggedInUser->id);
             });
         }

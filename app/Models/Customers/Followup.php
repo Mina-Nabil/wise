@@ -123,7 +123,7 @@ class Followup extends Model
 
         if ($loggedInUser->type !== User::TYPE_ADMIN || $loggedInUser->id != 12 || $mineOnly) {
             $query->where(function ($q) use ($loggedInUser) {
-                $q->where('users.manager_id', $loggedInUser->id)
+                $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('users.id', $loggedInUser->id);
             });
         }
