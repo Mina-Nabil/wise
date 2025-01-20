@@ -30,7 +30,9 @@ class Status extends Model
     const REASONS = [
         'Test'
     ]; //lsa madaneesh el reasons
-
+    protected $fillable = [
+        'status', 'reason', 'note', 'user_id'
+    ];
     //relations
     public function corporate(): BelongsTo
     {

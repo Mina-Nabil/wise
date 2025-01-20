@@ -36,7 +36,7 @@ class Status extends Model
 
 
     //relations
-    public function corporate(): BelongsTo
+    public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }

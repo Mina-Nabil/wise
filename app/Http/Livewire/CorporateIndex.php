@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Corporates\Corporate;
+use App\Models\Corporates\Status;
 use App\Models\Users\User;
 use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
@@ -35,10 +36,54 @@ class CorporateIndex extends Component
     public $LeadNote;
     public $note;
 
+    //status change
+    public $changeStatusId;
+    public $status;
+    public $statusReason;
+    public $statusNote;
+
     public $LeadName;
 
     public $leadsImportFile;
     public $downloadUserLeadsID;
+
+    public function changeStatus()
+    {
+        $this->validate([
+            'status' => 'required|string|max:255',
+            'statusReason' => 'nullable|string|max:255',
+            'statusNote' => 'nullable|string|max:255',
+        ]);
+
+        $corporate = Corporate::findOrFail($this->changeStatusId);
+        $res = $corporate->setStatus($this->status, $this->statusReason, $this->statusNote);
+
+        if ($res) {
+            $this->alert('success', 'Status Updated');
+            $this->closeChangeStatus();
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function openChangeStatus($id)
+    {
+        $this->changeStatusId = $id;
+        $statuss = Corporate::findOrFail($id)?->status;
+        if ($statuss) {
+            $this->status = $statuss->status;
+            $this->statusReason = $statuss->reason;
+            $this->statusNote = $statuss->note;
+        }
+    }
+
+    public function closeChangeStatus()
+    {
+        $this->changeStatusId = null;
+        $this->status = null;
+        $this->statusReason = null;
+        $this->statusNote = null;
+    }
 
     public function addLead(){
 
@@ -179,9 +224,11 @@ class CorporateIndex extends Component
     {
         $corporates = Corporate::userData($this->search)->paginate(10);
         $users = User::all();
-
+        $customerStatus = Status::STATUSES;
+        
         return view('livewire.corporate-index',[
             'corporates' => $corporates,
+            'customerStatus' => $customerStatus,
             'users' => $users,
         ]);
     }

@@ -17,6 +17,7 @@ use App\Models\Customers\Followup;
 use App\Models\Insurance\Policy;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Exception;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 
@@ -105,6 +106,8 @@ class CorporateShow extends Component
     public $callerNotetype;
     public $callerNoteId;
     public $note;
+
+    public $deleteCorporateId;
 
     public $section = 'profile';
 
@@ -506,6 +509,29 @@ class CorporateShow extends Component
             $this->alert('failed', 'server error');
         }
     }
+
+    public function ConfirmDeleteCorporate($id)
+    {
+        $this->deleteCorporateId = $id;
+    }
+
+    public function DismissDeleteCorporate()
+    {
+        $this->deleteCorporateId = null;
+    }
+
+    public function deleteCorporate()
+    {
+        try {
+            $corporate = Corporate::findOrFail($this->deleteCorporateId);
+            $corporate->delete();
+            $this->alert('success', 'Corporate deleted successfully.');
+            return redirect(Route('corporates.index'));
+        } catch (Exception $e) {
+            $this->alert('error', $e->getMessage());
+        }
+    }
+
 
     public function redirectToOffer($id)
     {

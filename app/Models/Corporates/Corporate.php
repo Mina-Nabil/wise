@@ -33,64 +33,6 @@ class Corporate extends Model
         self::TYPE_CLIENT,
     ];
 
-    const GENDER_MALE = 'male';
-    const GENDER_FEMALE = 'female';
-    const GENDERS = [
-        self::GENDER_MALE,
-        self::GENDER_FEMALE,
-    ];
-
-    const IDTYPE_NATIONAL_ID = 'national_id';
-    const IDTYPE_PASSPORT = 'passport';
-    const IDTYPE_MILITARY_ID = 'military_id';
-    const IDTYPE_DRIVER_LICENSE = 'driver_license';
-    const IDTYPES = [
-        self::IDTYPE_NATIONAL_ID,
-        self::IDTYPE_PASSPORT,
-        self::IDTYPE_MILITARY_ID,
-        self::IDTYPE_DRIVER_LICENSE
-    ];
-
-    const MARITALSTATUS_MARRIED = 'married';
-    const MARITALSTATUS_DIVORCES = 'divorced';
-    const MARITALSTATUS_SEPARATED = 'separated';
-    const MARITALSTATUS_SINGLE = 'single';
-    const MARITALSTATUS_UNKNOWN = 'unknown';
-    const MARITALSTATUS_WIDOWED = 'widowed';
-    const MARITALSTATUSES = [
-        self::MARITALSTATUS_MARRIED,
-        self::MARITALSTATUS_DIVORCES,
-        self::MARITALSTATUS_SEPARATED,
-        self::MARITALSTATUS_SINGLE,
-        self::MARITALSTATUS_UNKNOWN,
-        self::MARITALSTATUS_WIDOWED
-    ];
-
-    const SALARY_RANGE_0_TO_10K = '0_to_10';
-    const SALARY_RANGE_10K_TO_25K = '10_to_25';
-    const SALARY_RANGE_25K_TO_50K = '25_to_50';
-    const SALARY_RANGE_50K_TO_100K = '50_to_100';
-    const SALARY_RANGE_100K_AND_MORE = '100_and_more';
-    const SALARY_RANGES = [
-        self::SALARY_RANGE_0_TO_10K,
-        self::SALARY_RANGE_10K_TO_25K,
-        self::SALARY_RANGE_25K_TO_50K,
-        self::SALARY_RANGE_50K_TO_100K,
-        self::SALARY_RANGE_100K_AND_MORE
-    ];
-
-    const INCOME_SOURCE_SALARY = 'salary';
-    const INCOME_SOURCE_BUSINESS = 'business';
-    const INCOME_SOURCE_PROPERTIES = 'properties';
-    const INCOME_SOURCE_INVESTMENTS = 'invenstments';
-    const INCOME_SOURCE_OTHER = 'other';
-    const INCOME_SOURCES = [
-        self::INCOME_SOURCE_SALARY,
-        self::INCOME_SOURCE_BUSINESS,
-        self::INCOME_SOURCE_PROPERTIES,
-        self::INCOME_SOURCE_INVESTMENTS,
-        self::INCOME_SOURCE_OTHER,
-    ];
 
     protected $fillable = [
         'type',
@@ -358,11 +300,13 @@ class Corporate extends Model
     public function setStatus($status, $reason, $note = null): status|false
     {
         try {
-            return $this->status()->updateOrCreate([], [
+           return $this->status()->updateOrCreate([], [
                 "status"    =>  $status,
                 "reason"    =>  $reason,
                 "note"    =>  $note,
+                "user_id"      =>  Auth::id(),
             ]);
+
         } catch (Exception $e) {
             report($e);
             return false;
@@ -607,6 +551,7 @@ class Corporate extends Model
         ]);
         try {
             $newLead->save();
+            $newLead->setStatus(Status::STATUS_NEW, 'New lead');
             AppLog::info('New corporate lead created', loggable: $newLead);
             return $newLead;
         } catch (Exception $e) {
@@ -651,6 +596,8 @@ class Corporate extends Model
 
         try {
             $newCorporate->save();
+            $newCorporate->setStatus(Status::STATUS_CLIENT, 'New Client');
+
             AppLog::info('New corporate created', loggable: $newCorporate);
             return $newCorporate;
         } catch (Exception $e) {
@@ -659,6 +606,24 @@ class Corporate extends Model
             return false;
         }
     }
+
+    public function delete()
+{
+    if ($this->offers()->exists() || $this->soldpolicies()->exists()) {
+        throw new Exception("Cannot delete corporate with existing offers or sold policies.");
+    }
+
+    // Delete related models
+    $this->phones()->delete();
+    $this->addresses()->delete();
+    $this->status()->delete();
+    $this->followups()->delete();
+    $this->contacts()->delete();
+    $this->bank_accounts()->delete();
+    $this->interests()->delete();
+
+    return parent::delete();
+}
 
     ///attributes
     public function getFullNameAttribute()
@@ -773,6 +738,11 @@ class Corporate extends Model
     }
 
     public function offers(): MorphMany
+    {
+        return $this->morphMany(Offer::class, 'client');
+    }
+
+    public function soldpolicies(): MorphMany
     {
         return $this->morphMany(Offer::class, 'client');
     }
