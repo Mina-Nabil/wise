@@ -816,7 +816,7 @@ class Customer extends Model
 
     public function delete()
     {
-        if ($this->offers()->exists() || $this->soldpo()->exists()) {
+        if ($this->offers()->exists() || $this->soldpolicies()->exists()) {
             throw new Exception("Cannot delete customer with existing offers or sold policies.");
         }
     
