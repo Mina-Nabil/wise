@@ -632,7 +632,7 @@ class Corporate extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, $searchText = null)
+    public function scopeUserData($query, $searchText = null, $statusFilter = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -670,6 +670,11 @@ class Corporate extends Model
                     // }
                 });
             }
+        });
+
+        $query->when($statusFilter, function ($q, $filter) {
+            $q->join('corporate_status', 'corporate_status.corporate_id', '=', 'corporates.id')
+                ->where('corporate_status.status', $filter);
         });
         return $query->latest();
     }

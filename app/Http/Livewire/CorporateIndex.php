@@ -37,6 +37,7 @@ class CorporateIndex extends Component
     public $note;
 
     //status change
+    public $statusFilter;
     public $changeStatusId;
     public $status;
     public $statusReason;
@@ -222,7 +223,7 @@ class CorporateIndex extends Component
 
     public function render()
     {
-        $corporates = Corporate::userData($this->search)->paginate(10);
+        $corporates = Corporate::userData($this->search, $this->statusFilter)->paginate(10);
         $users = User::all();
         $customerStatus = Status::STATUSES;
         
