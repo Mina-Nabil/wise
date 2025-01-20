@@ -266,7 +266,7 @@ class JournalEntry extends Model
         $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('d / m / Y'));
         $activeSheet->getCell('B9')->setValue("/      {$this->receiver_name}");
         $activeSheet->getCell('B11')->setValue("/     {$number_text}       نقدا / شيك رقم : ............................................				");
-        $activeSheet->getCell('B13')->setValue("/     {$this->entry_title->name}				");
+        $activeSheet->getCell('B13')->setValue("/     {$this->comment}				");
 
         // foreach ($leads as $lead) {
         //     $activeSheet->getCell('A' . $i)->setValue($lead->id);
