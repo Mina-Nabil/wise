@@ -110,7 +110,9 @@ class JournalEntryIndex extends Component
         $day = Carbon::parse($this->tranactionsDay);
         $res = JournalEntry::downloadDailyTransaction($day);
         if ($res) {
+
             $this->alert('success', 'transactions downloaded!');
+            return $res;
         } else {
             $this->alert('failed', 'server error');
         }

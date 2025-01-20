@@ -25,12 +25,12 @@
                     Account Entries
                 </button>
             @endcan --}}
-            {{-- @can('viewAny', \App\Models\Accounting\JournalEntry::class)
+            @can('viewAny', \App\Models\Accounting\JournalEntry::class)
                 <button wire:click="showDownloadDailyTransactionsForm" class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                     <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="line-md:download-loop"></iconify-icon>
-                    Download daily Transactions
+                    Download daily Cash Transactions
                 </button>
-            @endcan --}}
+            @endcan
             @can('create', \App\Models\Accounting\Account::class)
                 <a href="{{ url('/entries/new') }}">
                     <button wire:click="openAddNewModal" class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">

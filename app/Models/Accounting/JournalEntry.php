@@ -60,6 +60,9 @@ class JournalEntry extends Model
         self::CASH_ENTRY_DELIVERED,
     ];
 
+    const CASH_ID = 2874;
+    // const CHEQUE_ID = 2920;
+
     ////static functions
 
     /** 
@@ -249,12 +252,12 @@ class JournalEntry extends Model
 
         if ($this->cash_entry_type == self::CASH_ENTRY_RECEIVED) {
             $activeSheet = $newFile->getSheet(1);
-            $number_text = $Arabic->int2str($this->debit_total). ' جنيه لا غير';
-            $number_format = number_format($this->debit_total, 2) ;
+            $number_text = $Arabic->int2str($this->debit_total) . ' جنيه لا غير';
+            $number_format = number_format($this->debit_total, 2);
         } elseif ($this->cash_entry_type == self::CASH_ENTRY_DELIVERED) {
             $activeSheet = $newFile->getSheet(2);
-            $number_text = $Arabic->int2str($this->credit_total). ' جنيه لا غير';
-            $number_format = number_format($this->credit_total, 2) ;
+            $number_text = $Arabic->int2str($this->credit_total) . ' جنيه لا غير';
+            $number_format = number_format($this->credit_total, 2);
         } else {
             return false;
         }
@@ -292,36 +295,62 @@ class JournalEntry extends Model
     public static function downloadDailyTransaction(Carbon $day)
     {
 
-        // $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
-        // if (!$template) {
-        //     throw new Exception('Failed to read template file');
-        // }
-        // $newFile = $template->copy();
-        // $activeSheet = $newFile->getSheet(3);
+        $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getSheet(3);
 
-        // $activeSheet->getCell('B3')->setValue("كشف حركة الخزينة عن يوم ال" . Helpers::dayInArabic($day->dayOfWeek) . "  الموافق $day->day / $day->month / $day->year						");
-        // $trans = self::byDay($day)->get();
-        // $i = 6;
-        // foreach ($trans as $t) {
-        //     $activeSheet->getCell('A' . $i)->setValue($lead->id);
-        //     $activeSheet->getCell('B' . $i)->setValue($lead->first_name);
-        //     $activeSheet->getCell('C' . $i)->setValue($lead->last_name);
-        //     $activeSheet->getCell('D' . $i)->setValue($lead->arabic_first_name);
-        //     $activeSheet->getCell('E' . $i)->setValue($lead->arabic_last_name);
-        //     $activeSheet->getCell('F' . $i)->setValue($lead->telephone1);
-        //     $activeSheet->getCell('G' . $i)->setValue($lead->telephone2);
-        //     $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
-        //     $i++;
-        // }
+        $activeSheet->getCell('B3')->setValue("كشف حركة الخزينة عن يوم ال" . Helpers::dayInArabic($day->dayOfWeek) . "  الموافق $day->day / $day->month / $day->year						");
 
-        // $writer = new Xlsx($newFile);
-        // $file_path = SoldPolicy::FILES_DIRECTORY . "cash_receipt.xlsx";
-        // $public_file_path = storage_path($file_path);
-        // $writer->save($public_file_path);
+        $trans = self::byDay($day)->cashOnly()->get();
 
-        // return response()->download($public_file_path)->deleteFileAfterSend(true);
+        $activeSheet->getCell('E6')->setValue("رصيد المرحل");
+        $activeSheet->getCell('D6')->setValue(self::getLatestCashBalance($day));
 
+        $i = 7;
+        /** @var self */
+        foreach ($trans as $t) {
+            if ($t->cash_entry_type == self::CASH_ENTRY_DELIVERED) {
+                $activeSheet->getCell('I' . $i)->setValue($t->comment);
+                $activeSheet->getCell('H' . $i)->setValue(
+                    $t->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->amount
+                );
+                // $activeSheet->getCell('G' . $i)->setValue(
+                //     $t->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->amount
+                // );
+                $activeSheet->getCell('F' . $i)->setValue(
+                    $t->accounts()->where('accounts.id', self::CASH_ID)->first()?->cash_serial
+                );
+            } else {
+                $activeSheet->getCell('E' . $i)->setValue($t->comment);
+                $activeSheet->getCell('D' . $i)->setValue(
+                    $t->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->amount
+                );
+                $activeSheet->getCell('B' . $i)->setValue(
+                    $t->accounts()->where('accounts.id', self::CASH_ID)->first()?->cash_serial
+                );
+            }
+            $i++;
+        }
 
+        $writer = new Xlsx($newFile);
+        $file_path = SoldPolicy::FILES_DIRECTORY . "daily_cash.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    public static function getLatestCashBalance(Carbon $day)
+    {
+        $latestCashEntry = self::whereDate('created_at', '<', $day->format('Y-m-d'))
+            ->whereNotNull('cash_entry_type')
+            ->orderByDesc('created_at')
+            ->limit(1)
+            ->first();
+        return $latestCashEntry ? $latestCashEntry->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->account_balance : 0;
     }
 
     ///scopes
@@ -349,6 +378,11 @@ class JournalEntry extends Model
             ->join('entry_accounts', 'entry_accounts.journal_entry_id', '=', 'journal_entries.id')
             ->where('entry_accounts.account_id', $account_id)
             ->groupBy('journal_entries.id');
+    }
+
+    public function scopeCashOnly($query)
+    {
+        return $query->whereNotNull('cash_entry_type');
     }
 
     public function scopeByDay($query, Carbon $day)
