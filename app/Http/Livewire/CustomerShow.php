@@ -24,6 +24,7 @@ use App\Models\Customers\Interest;
 use App\Models\Customers\Phone;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
+use Exception;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 
@@ -1248,9 +1249,9 @@ class CustomerShow extends Component
             $this->salaryRange,
             $this->incomeSource,
             $idDoc_url,
-            $driverLicenseDoc_url, 
+            $driverLicenseDoc_url,
             $idDoc2_url,
-            $driverLicenseDoc2_url, 
+            $driverLicenseDoc2_url,
 
         );
         if ($c) {
@@ -1259,6 +1260,17 @@ class CustomerShow extends Component
             $this->toggleEditCustomer();
         } else {
             $this->alert('failed', 'server error');
+        }
+    }
+
+    public function deleteCustomer($customerId)
+    {
+        try {
+            $customer = Customer::findOrFail($customerId);
+            $customer->delete();
+            $this->alert('success', 'Customer deleted successfully.');
+        } catch (Exception $e) {
+            $this->alert('error', $e->getMessage());
         }
     }
 
@@ -1393,7 +1405,7 @@ class CustomerShow extends Component
             $this->interestNote = null;
             $this->mount($this->customer->id);
             $this->alert('success', 'Interest edited!');
-            if($this->isCreateFollowup){
+            if ($this->isCreateFollowup) {
                 $this->FollowupLineOfBussiness = $res->business;
                 $this->is_meeting = true;
                 $this->section = 'followups';

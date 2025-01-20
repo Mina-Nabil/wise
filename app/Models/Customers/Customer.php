@@ -814,6 +814,25 @@ class Customer extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
+    public function delete()
+    {
+        if ($this->offers()->exists() || $this->soldPolicies()->exists()) {
+            throw new Exception("Cannot delete customer with existing offers or sold policies.");
+        }
+    
+        // Delete related models
+        $this->phones()->delete();
+        $this->addresses()->delete();
+        $this->status()->delete();
+        $this->followups()->delete();
+        $this->cars()->delete();
+        $this->relatives()->delete();
+        $this->interests()->delete();
+    
+        return parent::delete();
+    }
+
+
 
     ///attributes
     public function getNameAttribute()

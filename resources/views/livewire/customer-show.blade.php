@@ -444,7 +444,7 @@
                             </div>
                         </div>
 
-
+                        <button wire:click="deleteCustomer({{ $customer->id }})" class="btn btn-danger mt-2">Delete Customer</button>
                     </div>
 
                     <div class="md:flex-1 rounded-md overlay  max-w-[400px] min-w-[310px] sm:col-span-2">
