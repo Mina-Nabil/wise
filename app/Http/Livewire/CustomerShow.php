@@ -1272,6 +1272,7 @@ class CustomerShow extends Component
             $customer = Customer::findOrFail($this->deleteCustomerId);
             $customer->delete();
             $this->alert('success', 'Customer deleted successfully.');
+            return redirect(Route('customers.index'));
         } catch (Exception $e) {
             $this->alert('error', $e->getMessage());
         }
@@ -1280,6 +1281,11 @@ class CustomerShow extends Component
     public function ConfirmDeleteCustomer($id)
     {
         $this->deleteCustomerId = $id;
+    }
+
+    public function DismissDeleteCustomer()
+    {
+        $this->deleteCustomerId = null;
     }
 
     public function mount($customerId)

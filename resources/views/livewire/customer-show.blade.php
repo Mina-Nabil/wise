@@ -1777,7 +1777,7 @@
                     <h3 class="text-base font-medium text-white dark:text-white capitalize">
                         Delete Customer
                     </h3>
-                    <button wire:click="DissRemoveCompPaymentDoc" type="button"
+                    <button wire:click="DismissDeleteCustomer" type="button"
                         class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                     dark:hover:bg-slate-600 dark:hover:text-white"
                         data-bs-dismiss="modal">
