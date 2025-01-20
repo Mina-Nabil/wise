@@ -75,11 +75,11 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Balance
+                                        BLNC
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        $ Balance
+                                        $BLNC
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -294,6 +294,15 @@
                                     @enderror
                                 </div>
                             @endif
+                            <div class="mb-4">
+                                <label for="defaultCurrency" class="block text-sm font-medium text-gray-700">Default Currency</label>
+                                <select id="defaultCurrency" wire:model="defaultCurrency" class="form-control">
+                                    @foreach ($CURRENCIES as $currency)
+                                        <option value="{{ $currency }}">{{ $currency }}</option>
+                                    @endforeach
+                                </select>
+                                @error('defaultCurrency') <span class="text-red-500">{{ $message }}</span> @enderror
+                            </div>
                             <div class="form-group mb-5">
                                 <label for="acc_desc" class="form-label">Desciption</label>
                                 <input type="number" id="acc_desc" class="form-control mt-2 w-full {{ $errors->has('acc_desc') ? '!border-danger-500' : '' }}" wire:model.defer="acc_desc" step="0.01">

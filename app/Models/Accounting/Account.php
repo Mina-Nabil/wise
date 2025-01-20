@@ -30,7 +30,8 @@ class Account extends Model
         'parent_account_id', //list of accounts from the same main account
         'limit',
         'balance',
-        'foreign_balance'
+        'foreign_balance',
+        'default_currency'
     ];
 
     const NATURE_CREDIT = 'credit';
@@ -62,7 +63,7 @@ class Account extends Model
             ->get();
     }
 
-    public static function newAccount($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $is_seeding = false): self|false
+    public static function newAccount($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $is_seeding = false, $default_currency = JournalEntry::CURRENCY_EGP): self|false
     {
 
         /** @var User */
@@ -78,6 +79,7 @@ class Account extends Model
             "desc"      =>  $desc,
             "balance"   =>  0,
             "foreign_balance"   =>  0,
+            "default_currency"   =>  $default_currency,
         ]);
         try {
             $newAccount->save();
@@ -287,7 +289,7 @@ class Account extends Model
         return $this->limit <= $amount;
     }
 
-    public function editInfo($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null): bool
+    public function editInfo($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $default_currency = JournalEntry::CURRENCY_EGP): bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -301,6 +303,7 @@ class Account extends Model
                 "main_account_id"  =>  $main_account_id,
                 "parent_account_id"  =>  $parent_account_id,
                 "desc"  =>  $desc,
+                "default_currency"   =>  $default_currency,
             ]);
             AppLog::info("Updating account", loggable: $this);
             return $this->save();
@@ -384,7 +387,7 @@ class Account extends Model
     ////relations
     public function credit_entries()
     {
-        return $this->hasMany(JournalEntry::class)->where();
+        return $this->hasMany(JournalEntry::class);
     }
 
     public function debit_entries()

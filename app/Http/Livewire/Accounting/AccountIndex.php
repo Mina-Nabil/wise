@@ -24,6 +24,7 @@ class AccountIndex extends Component
     public $mainAccountId;
     public $parent_account_id;
     public $acc_desc;
+    public $defaultCurrency = JournalEntry::CURRENCY_EGP;
 
     private $filteredAccounts;
 
@@ -78,6 +79,7 @@ class AccountIndex extends Component
         $this->mainAccountId = $a->main_account_id;
         $this->parent_account_id = $a->parent_account_id;
         $this->acc_desc = $a->desc;
+        $this->defaultCurrency = $a->default_currency;
         $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
         $this->accountID = $id;
     }
@@ -124,9 +126,10 @@ class AccountIndex extends Component
             'mainAccountId' => 'required|exists:main_accounts,id',
             'parent_account_id' => 'nullable|exists:accounts,id',
             'acc_desc' => 'nullable|string',
+            'defaultCurrency' => 'required|in:' . implode(',', JournalEntry::CURRENCIES)
         ]);
-
-        $res = Account::findOrFail($this->accountID)->editInfo($this->acc_code, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
+        
+        $res = Account::findOrFail($this->accountID)->editInfo($this->acc_code, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc, default_currency: $this->defaultCurrency);
         if ($res) {
             $this->closeEditModal();
             $this->alert('success', 'Account successfully updated');
@@ -146,7 +149,7 @@ class AccountIndex extends Component
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount(null, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc);
+        $res = Account::newAccount(null, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc, default_currency: $this->defaultCurrency);
 
         if ($res) {
             $this->closeAddNewModal();
