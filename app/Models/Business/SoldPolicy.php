@@ -153,7 +153,6 @@ class SoldPolicy extends Model
                 $policyStart = new Carbon($this->start);
                 $refDate = $issueDate ?  ($issueDate->isBefore($policyStart) ? $policyStart : $issueDate) : $policyStart;
                 $dueDays = $clientPaymentDate->diffInDays($refDate);
-                Log::info("Due days: $dueDays");
                 $total_comm = 0;
                 foreach ($this->policy->comm_confs as $conf) {
                     if ($conf->sales_out_only && !$this->has_sales_out) continue;

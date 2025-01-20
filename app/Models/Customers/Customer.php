@@ -816,7 +816,7 @@ class Customer extends Model
 
     public function delete()
     {
-        if ($this->offers()->exists() || $this->soldPolicies()->exists()) {
+        if ($this->offers()->exists() || $this->soldpo()->exists()) {
             throw new Exception("Cannot delete customer with existing offers or sold policies.");
         }
     
@@ -1006,6 +1006,11 @@ class Customer extends Model
     }
 
     public function offers(): MorphMany
+    {
+        return $this->morphMany(Offer::class, 'client');
+    }
+
+    public function soldpolicies(): MorphMany
     {
         return $this->morphMany(Offer::class, 'client');
     }

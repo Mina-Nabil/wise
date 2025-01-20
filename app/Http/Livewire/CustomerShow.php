@@ -172,6 +172,9 @@ class CustomerShow extends Component
     public $deleteRelativeCustId;
 
 
+    public $deleteCustomerId = null;
+
+
 
 
     public $section = 'profile';
@@ -1263,15 +1266,20 @@ class CustomerShow extends Component
         }
     }
 
-    public function deleteCustomer($customerId)
+    public function deleteCustomer()
     {
         try {
-            $customer = Customer::findOrFail($customerId);
+            $customer = Customer::findOrFail($this->deleteCustomerId);
             $customer->delete();
             $this->alert('success', 'Customer deleted successfully.');
         } catch (Exception $e) {
             $this->alert('error', $e->getMessage());
         }
+    }
+
+    public function ConfirmDeleteCustomer($id)
+    {
+        $this->deleteCustomerId = $id;
     }
 
     public function mount($customerId)
