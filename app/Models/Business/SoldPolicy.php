@@ -164,6 +164,9 @@ class SoldPolicy extends Model
                         $tmp_base_value = $tmp_base_value - (($conf->penalty_percent / 100) * $tmp_base_value);
                         $this->is_penalized = true;
                         $this->save();
+                    } else {
+                        $this->is_penalized = false;
+                        $this->save();
                     }
                     $this->comms_details()->updateOrCreate([
                         "title"     =>  $conf->title
