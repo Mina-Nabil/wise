@@ -320,17 +320,13 @@ class JournalEntry extends Model
                 // $activeSheet->getCell('G' . $i)->setValue(
                 //     $t->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->amount
                 // );
-                $activeSheet->getCell('F' . $i)->setValue(
-                    $t->accounts()->where('accounts.id', self::CASH_ID)->first()?->cash_serial
-                );
+                $activeSheet->getCell('F' . $i)->setValue($t->cash_serial);
             } else {
                 $activeSheet->getCell('E' . $i)->setValue($t->comment);
                 $activeSheet->getCell('D' . $i)->setValue(
                     $t->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->amount
                 );
-                $activeSheet->getCell('B' . $i)->setValue(
-                    $t->accounts()->where('accounts.id', self::CASH_ID)->first()?->cash_serial
-                );
+                $activeSheet->getCell('B' . $i)->setValue($t->cash_serial);
             }
             $i++;
         }
