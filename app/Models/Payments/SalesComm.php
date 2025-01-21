@@ -205,7 +205,7 @@ class SalesComm extends Model
             $this->save();
 
             $from_amount = $this->sold_policy->getFromAmount($this->from);
-            if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
+            if ($this->comm_profile->is_sales_out) {
                 $comm_disc = $this->sold_policy->discount;
             } else {
                 $from_amount -= $this->sold_policy->sales_out_comm;
