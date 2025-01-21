@@ -276,14 +276,6 @@
                                     </span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="{{ url('/users') }}" class="navItem @yield('users')">
-                                    <span class="flex items-center">
-                                        <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
-                                        <span>Users</span>
-                                    </span>
-                                </a>
-                            </li>
                         @endif
                         @if (Auth::user()->is_admin || Auth::user()->is_hr )
                         <li>
@@ -301,6 +293,14 @@
                                     <iconify-icon class="nav-icon"
                                         icon="material-symbols:policy-outline-rounded"></iconify-icon>
                                     <span>Policies</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/users') }}" class="navItem @yield('users')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
+                                    <span>Users</span>
                                 </span>
                             </a>
                         </li>
