@@ -30,7 +30,8 @@ class PolicyComm extends Model
             AppLog::info("Editing sold policy cost amount", loggable: $this->sold_policy);
             DB::transaction(function () use ($amount) {
                 $this->update([
-                    "amount"   =>  $amount,
+                    "amount"    =>  $amount,
+                    "is_manual" =>  1,
                 ]);
                 $this->sold_policy->calculateTotalPolicyComm();
             });
