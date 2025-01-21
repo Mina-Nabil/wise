@@ -103,6 +103,18 @@ class SoldPolicyPolicy
     {
         return $user->id == 1 || $user->id == 10 || $user->id == 11; //remon w mina N. w michael 
     }
+
+    /**
+     * Determine whether the user can update a sold policy payment's info
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Business\SoldPolicy  $soldPolicy
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateClientPaymentDate(User $user, SoldPolicy $soldPolicy)
+    {
+        return $user->id == 1 || $user->id == 10 || $user->id == 11; //remon w mina N. w michael 
+    }
     /**
      * Determine whether the user can update a sold policy's main sales
      *
