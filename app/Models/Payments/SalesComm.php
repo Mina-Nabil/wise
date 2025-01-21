@@ -185,13 +185,18 @@ class SalesComm extends Model
         $this->load('sold_policy');
         $this->load('sold_policy.policy');
         $this->load('comm_profile');
-        $from_amount = 0;
+
         $valid_conf = $this->comm_profile->getValidDirectCommissionConf($this->sold_policy->policy);
+
+        $from_amount = 0;
         $comm_disc = 0;
+
         if ($this->is_direct) {
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
                 $comm_disc = $this->sold_policy->discount;
+            } else {
+                $from_amount -= $this->sold_policy->sales_out_comm;
             }
         } else if ($valid_conf) {
             $from =  $valid_conf->from;

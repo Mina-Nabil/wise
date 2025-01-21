@@ -224,7 +224,7 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null)
+    public function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null, $is_direct = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -239,7 +239,7 @@ class SoldPolicy extends Model
                 "comm_profile_id"   => $comm_profile_id,
                 "note"              => $note,
                 "created_at"        => $this->created_at,
-                "is_direct"         => false
+                "is_direct"         => $is_direct
             ]);
             $tmp->refreshPaymentInfo(false);
             AppLog::info("Sales commission added", loggable: $this);
@@ -274,7 +274,7 @@ class SoldPolicy extends Model
                 "comm_profile_id"   => $comm_profile_id,
                 "note"              => $note,
                 "created_at"        => $this->created_at,
-                "is_direct"         => false
+                "is_direct"         => true
             ]);
             AppLog::info("Sales commission added", loggable: $this);
             return true;
