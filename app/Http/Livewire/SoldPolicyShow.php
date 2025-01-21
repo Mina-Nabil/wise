@@ -21,6 +21,7 @@ use App\Models\Payments\CommProfileConf;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use PhpParser\Node\Expr\FuncCall;
@@ -150,7 +151,7 @@ class SoldPolicyShow extends Component
     public $setPaymentCollectedSec;
     public $payment_collected_note;
     public $paymentCollectedDoc;
-
+    
     //for set payment as paid
     public $setPaymentPaidSec;
     public $payment_type;
@@ -249,6 +250,17 @@ class SoldPolicyShow extends Component
     public function openSetPaymentCollectedSec($id)
     {
         $this->setPaymentCollectedSec = $id;
+    }
+
+    public function setClientPaymentAsNew($id)
+    {
+        $clientPayment = ClientPayment::findOrFail($id);
+        try{
+            $clientPayment->setAsNew();
+            $this->alert('success', 'Payment updated!');
+        } catch (Exception $e) {
+            $this->alert('failed', $e->getMessage());
+        }
     }
 
     public function openSetPaymentPaidSec($id)

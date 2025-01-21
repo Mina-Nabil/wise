@@ -222,6 +222,26 @@ class ClientPayment extends Model
         }
     }
 
+    public function setAsNew()
+    {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
+        if ($this->is_collected) {
+            try {
+                AppLog::info("Setting Client Payment as new", loggable: $this);
+                $updates['status'] = self::PYMT_STATE_NEW;
+                return $this->update($updates);
+            } catch (Exception $e) {
+                report($e);
+                AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+            }
+        }
+
+        throw new Exception("Payment can only be set to new if it was previously collected");
+    }
+
     public function setAsPremiumCollected($doc_url = null, string $note = null)
     {
         /** @var User */

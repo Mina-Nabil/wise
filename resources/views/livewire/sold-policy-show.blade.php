@@ -1232,11 +1232,12 @@
                                         <span>
                                             {{ $soldPolicy->total_policy_comm ? number_format($soldPolicy->total_policy_comm, 0, '.', ',') . ' / ' . number_format($soldPolicy->after_tax_comm, 0, '.', ',') : '-' }}
                                         </span>
+                                        @can('updateWiseCommPayments', $soldPolicy)
                                         <button class="action-btn btn-sm" type="button"
                                             wire:click="openEditTotalPolCommSection">
                                             <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
                                         </button>
-
+                                        @endcan
                                     </div>
                                     @if ($soldPolicy->policy_comm_note)
                                         <small class="text-wrap">{{ $soldPolicy->policy_comm_note }}</small>
@@ -1704,6 +1705,13 @@
                                                                     @elseif($payment->is_collected)
                                                                         @can('pay', $payment)
                                                                             <li>
+                                                                                <a wire:click="setClientPaymentAsNew({{ $payment->id }})"
+                                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                    <iconify-icon
+                                                                                        icon="material-symbols:paid"></iconify-icon>
+                                                                                    <span>Set as new</span></a>
+                                                                            </li>
+                                                                            <li>
                                                                                 <a wire:click="openSetPaymentPaidSec({{ $payment->id }})"
                                                                                     class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                                     <iconify-icon
@@ -1760,7 +1768,7 @@
                             Add Target Commission
                         </h4>
                         <div>
-                            @can('updatePayments', $soldPolicy)
+                            @can('create', \App\Models\Payments\SalesComm::class)
                                 <button wire:click="toggleAdjustComm"
                                     class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">
                                     Add Direct Commission
@@ -1826,8 +1834,6 @@
 
                                                 @foreach ($soldPolicy->sales_comms as $comm)
                                                     <tr>
-
-
                                                         <td class="table-td ">
                                                             <div class="">
                                                                 <span class="text-slate-500 dark:text-slate-400">
