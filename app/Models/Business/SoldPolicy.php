@@ -437,7 +437,7 @@ class SoldPolicy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser?->can('updateClientPayments', $this)) return false;
+        if (!$loggedInUser?->can('updateClientPaymentDate', $this)) return false;
         try {
             $this->is_paid = 1;
             $this->client_payment_date = $date->format('Y-m-d H:i');
