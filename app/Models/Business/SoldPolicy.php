@@ -1136,7 +1136,7 @@ class SoldPolicy extends Model
         $k = 1;
         foreach ($policies as $policy) {
             $activeSheet->getCell('A' . $i)->setValue($k++);
-            $activeSheet->getCell('B' . $i)->setValue($policy->client->name);
+            $activeSheet->getCell('B' . $i)->setValue($policy->client->full_name);
             $activeSheet->getCell('C' . $i)->setValue($policy->client->address_city);
             $activeSheet->getCell('D' . $i)->setValue($policy->policy_number);
             $activeSheet->getCell('E' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);

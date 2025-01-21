@@ -628,7 +628,7 @@ class Corporate extends Model
     ///attributes
     public function getFullNameAttribute()
     {
-        return $this->name;
+        return $this->arabic_name ? $this->arabic_name : $this->name;
     }
 
     ///scopes
