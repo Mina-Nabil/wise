@@ -199,11 +199,18 @@ class SalesComm extends Model
                 $from_amount -= $this->sold_policy->sales_out_comm;
             }
         } else if ($valid_conf) {
-            $from =  $valid_conf->from;
+            //update comm info then calc same as direct
             $this->comm_percentage = $valid_conf->percentage;
             $this->from = $valid_conf->from;
             $this->save();
-            $from_amount = $this->sold_policy->getFromAmount($from);
+
+            $from_amount = $this->sold_policy->getFromAmount($this->from);
+            if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
+                $comm_disc = $this->sold_policy->discount;
+            } else {
+                $from_amount -= $this->sold_policy->sales_out_comm;
+            }
+            
         } else {
             $this->sold_policy->calculateTotalPolicyComm();
             $from_amount =  $this->sold_policy->after_tax_comm - $this->sold_policy->total_comm_subtractions;
