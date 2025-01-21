@@ -63,6 +63,9 @@ class CommProfile extends Model
         $auto_override_id = null, //can be linked to user
         $available_for_id = null, //can be linked to user
     ): self|bool {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('create', self::class)) return false;
         assert($user_id !== null || $title != null, "Must include a title or select a user");
         try {
             $formattedTitle = $title;
@@ -142,6 +145,10 @@ class CommProfile extends Model
 
     public function startManualTargetsRun(Carbon $end_date)
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         $this->load('targets');
         /** @var Target */
         foreach ($this->targets as $t) {
@@ -170,6 +177,11 @@ class CommProfile extends Model
         $auto_override_id = null,
         $available_for_id = null,
     ) {
+
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
         try {
             $this->update([
                 "type"          =>  $type,
@@ -259,6 +271,9 @@ class CommProfile extends Model
         Policy|Company $condition = null, //include a policy or a company as a condition
         $line_of_business = null // or select a line of business as the condition - line of business is on of Policy::LINES_OF_BUSINESS
     ) {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
         assert(
             (!$condition && !$line_of_business) ||
                 ($condition && !$line_of_business) ||

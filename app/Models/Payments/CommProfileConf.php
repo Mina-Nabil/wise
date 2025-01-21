@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CommProfileConf extends Model
@@ -71,6 +72,11 @@ class CommProfileConf extends Model
         $from
     ) {
         try {
+
+            /** @var User */
+            $user = Auth::user();
+            if (!$user->can('update', $this->comm_profile)) return false;
+
             AppLog::info("Updating comm profile conf", loggable: $this);
             $this->update([
                 "percentage"    =>  $percentage,
@@ -87,6 +93,11 @@ class CommProfileConf extends Model
     public function moveUp()
     {
         $this->load('comm_profile', 'comm_profile.configurations');
+
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this->comm_profile)) return false;
+
         $sorted_confs = $this->comm_profile->configurations->sortByDesc('order');
         $swap = false;
         foreach ($sorted_confs as $conf) {
@@ -117,6 +128,11 @@ class CommProfileConf extends Model
     public function moveDown()
     {
         $this->load('comm_profile', 'comm_profile.configurations');
+
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this->comm_profile)) return false;
+
         $sorted_confs = $this->comm_profile->configurations->sortBy('order');
         $swap = false;
         foreach ($sorted_confs as $conf) {
@@ -146,6 +162,11 @@ class CommProfileConf extends Model
 
     public function deleteConfiguration()
     {
+
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this->comm_profile)) return false;
+
         try {
             $this->delete();
             AppLog::info('Comm Profile configuration deleted', loggable: $this);
