@@ -2015,6 +2015,9 @@
                                                     <th scope="col" class=" table-th ">
                                                         Amount
                                                     </th>
+                                                    <th scope="col" class=" table-th ">
+                                                        Edit
+                                                    </th>
 
                                                 </tr>
                                             </thead>
@@ -2036,6 +2039,11 @@
                                                         <td class="table-td ">
                                                             <div class="text-lg text-success-500">
                                                                 {{ number_format($comm->amount, 2, '.', ',') }} EGP
+                                                            </div>
+                                                        </td>
+                                                        <td class="table-td hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-white" wire:click='updateCommAmount({{ $comm->id }})'>
+                                                            <div class="text-lg text-success-500">
+                                                               Edit
                                                             </div>
                                                         </td>
 

@@ -348,6 +348,7 @@ class SoldPolicy extends Model
     public function calculateTotalPolicyComm()
     {
         $tmp = 0;
+        $this->load('comms_details');
         foreach ($this->comms_details as $comm) {
             $tmp += $comm->amount;
         }
