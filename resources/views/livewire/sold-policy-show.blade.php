@@ -2016,7 +2016,7 @@
                                                         Amount
                                                     </th>
                                                     <th scope="col" class=" table-th ">
-                                                        Edit
+                                                        Action
                                                     </th>
 
                                                 </tr>
@@ -2041,10 +2041,11 @@
                                                                 {{ number_format($comm->amount, 2, '.', ',') }} EGP
                                                             </div>
                                                         </td>
-                                                        <td class="table-td hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-white" wire:click='updateCommAmount({{ $comm->id }})'>
-                                                            <div class="text-lg text-success-500">
-                                                               Edit
-                                                            </div>
+                                                        <td class="table-td" >
+                                                            <button class="action-btn btn-sm" type="button"
+                                                            wire:click='updateCommAmount({{ $comm->id }})'>
+                                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                                        </button>
                                                         </td>
 
                                                     </tr>
