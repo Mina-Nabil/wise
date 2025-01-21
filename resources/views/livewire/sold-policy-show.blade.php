@@ -2043,7 +2043,7 @@
                                                         </td>
                                                         <td class="table-td" >
                                                             <button class="action-btn btn-sm" type="button"
-                                                            wire:click='updateCommAmount({{ $comm->id }})'>
+                                                            wire:click='openUpdatePolCom({{ $comm->id }})'>
                                                             <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
                                                         </button>
                                                         </td>
