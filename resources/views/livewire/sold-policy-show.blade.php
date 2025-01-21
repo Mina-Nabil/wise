@@ -278,7 +278,7 @@
                             <div>
                                 <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
                                     Client payment Date
-                                    @can('updateClientPaymentDate', $soldpolicy)
+                                    @can('updateClientPaymentDate', $soldPolicy)
                                     <span class="float-right">
                                         <iconify-icon wire:click="openPaymentDateSec" class="cursor-pointer"
                                             icon="carbon:edit"></iconify-icon>
