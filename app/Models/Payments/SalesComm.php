@@ -201,6 +201,7 @@ class SalesComm extends Model
         } else if ($valid_conf) {
             $from =  $valid_conf->from;
             $this->comm_percentage = $valid_conf->percentage;
+            $this->from = $valid_conf->from;
             $this->save();
             $from_amount = $this->sold_policy->getFromAmount($from);
         } else {
