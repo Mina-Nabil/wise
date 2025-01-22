@@ -142,9 +142,9 @@ class Offer extends Model
         $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
-    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], Carbon $expiry_from = null, Carbon $expiry_to = null)
+    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], Carbon $expiry_from = null, Carbon $expiry_to = null)
     {
-        $offers = self::report($from, $to, $statuses, $creator_id, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText, $is_renewal, $comm_profile_ids, $expiry_from, $expiry_to)->get();
+        $offers = self::report($from, $to, $statuses, $creator_ids, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText, $is_renewal, $comm_profile_ids, $expiry_from, $expiry_to)->get();
         $template = IOFactory::load(resource_path('import/offers_report.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
@@ -1033,7 +1033,7 @@ class Offer extends Model
         return $query->groupBy('offers.id')->orderByDesc('due');
     }
 
-    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_id = null, $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], Carbon $expiry_from = null, Carbon $expiry_to = null)
+    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], Carbon $expiry_from = null, Carbon $expiry_to = null)
     {
         $query->userData($searchText)
             ->when($from, function ($q, $v) {
@@ -1042,8 +1042,8 @@ class Offer extends Model
                 $q->where('offers.due', "<=", $v->format('Y-m-d 23:59:59'));
             })->when(count($statuses) > 0, function ($q, $v) use ($statuses) {
                 $q->byStates($statuses);
-            })->when($creator_id, function ($q, $v) {
-                $q->where('offers.creator_id', "=", $v);
+            })->when(count($creator_ids) > 0, function ($q) use ($creator_ids) {
+                $q->whereIn('offers.creator_id', $creator_ids);
             })->when($assignee_id_or_type, function ($q, $v) {
                 $q->where(function ($qq) use ($v) {
                     $qq->where('assignee_id', "=", $v)->orwhere('assignee_type', "=", $v);

@@ -20,12 +20,10 @@ class OfferReport extends Component
     public $dateSection;
     public $expirySection;
     public $lobSection;
-    public $creatorSection = false;
     public $assigneeSection = false;
     public $valueSection = false;
     public $closerSection = false;
     public $statusesSection = false;
-    public $creatorName;
     public $assigneeName;
     public $closerName;
 
@@ -34,7 +32,6 @@ class OfferReport extends Component
     public $expiryFrom;
     public $expiryTo;
     public $statuses = [];
-    public $creator_id;
     public $assignee_id;
     public $closed_by_id;
     public $line_of_business;
@@ -48,13 +45,17 @@ class OfferReport extends Component
     public $EExpiryfrom;
     public $EExpiryto;
     public $Estatuses = [];
-    public $Ecreator_id;
     public $Eassignee_id;
     public $Eclosed_by_id;
     public $Eline_of_business;
     public $Evalue_from;
     public $Evalue_to;
     public $Eis_renewal;
+
+    public $FilteredCreators = [];
+    public $selectedCreators = [];
+    public $creatorSection = false;
+    public $usersSearchText;
 
     public $commProfilesSection;
     public $Eprofiles = [];
@@ -167,23 +168,33 @@ class OfferReport extends Component
         $this->value_to = null;
     }
 
-    public function toggleCreator()
+    public function openCreatorSection()
     {
-        $this->toggle($this->creatorSection);
-        if ($this->creatorSection) {
-            $this->Ecreator_id = $this->creator_id;
+        if (!empty($this->FilteredCreators)) {
+            $this->selectedCreators = $this->FilteredCreators->pluck('id')->toArray();
         }
+        $this->creatorSection = true;
     }
 
-    public function setCreator()
+    public function closeCreatorSection()
     {
-        $this->creator_id = $this->Ecreator_id;
-        $this->toggle($this->creatorSection);
+        $this->creatorSection = false;
+        $this->selectedCreators = [];
+        $this->usersSearchText = null;
     }
 
-    public function clearCreator()
-    {
-        $this->creator_id = null;
+    public function clearCreator(){
+        $this->FilteredCreators = [];
+    }
+
+    public function setCtreators(){
+        if (empty($this->selectedCreators)) {
+            $this->FilteredCreators = [];
+        } else {
+            $this->FilteredCreators = User::whereIn('id', $this->selectedCreators)->get();
+        }
+        $this->closeCreatorSection();
+        // $this->resetPage();
     }
 
     public function toggleLob()
@@ -259,12 +270,20 @@ class OfferReport extends Component
 
     public function exportReport()
     {
+        if (!empty($this->FilteredCreators)) {
+            $creators_ids = array_map(function($creator) {
+                return $creator['id'];
+            }, $this->FilteredCreators->toArray());
+        } else {
+            $creators_ids = [];
+        }
+
         if (Auth::user()->is_admin) {
             return Offer::exportReport(
                 $this->from,
                 $this->to,
                 $this->statuses,
-                $this->creator_id,
+                $creators_ids,
                 $this->assignee_id,
                 $this->closed_by_id,
                 $this->line_of_business,
@@ -272,6 +291,7 @@ class OfferReport extends Component
                 $this->value_to,
                 $this->search,
                 $this->is_renewal,
+                $this->profiles,
                 $this->expiryFrom,
                 $this->expiryTo,
             );
@@ -289,13 +309,7 @@ class OfferReport extends Component
     {
         $STATUSES = Offer::STATUSES;
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
-        $users = User::all();
         $COMM_PROFILES = CommProfile::select('title', 'id')->get();
-
-        if ($this->creator_id) {
-            $c = User::find($this->creator_id);
-            $this->creatorName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
-        }
 
         if ($this->assignee_id) {
             $c = User::find($this->assignee_id);
@@ -306,11 +320,26 @@ class OfferReport extends Component
             $c = User::find($this->closed_by_id);
             $this->closerName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
         }
+
+        if (!empty($this->FilteredCreators)) {
+            $creators_ids = array_map(function($creator) {
+                return $creator['id'];
+            }, $this->FilteredCreators->toArray());
+        } else {
+            $creators_ids = [];
+        }
+
+        if ($this->creatorSection) {
+            $users = User::search($this->usersSearchText)->take(5)->get();
+        } else {        
+            $users = User::all();
+        }
+
         $offers = Offer::report(
             $this->from,
             $this->to,
             $this->statuses,
-            $this->creator_id,
+            $creators_ids,
             $this->assignee_id,
             $this->closed_by_id,
             $this->line_of_business,
