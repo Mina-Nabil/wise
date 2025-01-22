@@ -121,7 +121,7 @@ class Followup extends Model
         $query->select('followups.*')
             ->join('users', "followups.creator_id", '=', 'users.id');
 
-        if ($loggedInUser->type !== User::TYPE_ADMIN || $loggedInUser->id != 12 || $mineOnly) {
+        if (!$loggedInUser->is_admin || $mineOnly) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('users.id', $loggedInUser->id);
@@ -162,7 +162,7 @@ class Followup extends Model
 
     public function scopeReport($query, Carbon $due_from = null, Carbon $due_to = null, Carbon $action_from = null, Carbon $action_to = null, string $sales_id = null, string $client_type = null, string $client_id = null, bool $is_meeting = null, string $line_of_business = null)
     {
-        $query->userData(mineOnly: true)->when($due_from, function ($q, $v) {
+        $query->userData()->when($due_from, function ($q, $v) {
             $q->where('call_time', ">=", $v->format('Y-m-d'));
         })->when($due_to, function ($q, $v) {
             $q->where('call_time', "<=", $v->format('Y-m-d'));

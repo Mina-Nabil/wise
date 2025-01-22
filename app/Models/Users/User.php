@@ -267,7 +267,7 @@ class User extends Authenticatable
     /////attributes
     public function getChildrenIdsArrayAttribute()
     {
-        $ret = [];
+        $ret = [$this->id];
         /** @var Collection */
         $children = User::where('manager_id', $this->id)->get();
         foreach ($children as $child) {
