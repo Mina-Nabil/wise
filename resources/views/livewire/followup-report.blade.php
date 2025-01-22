@@ -74,14 +74,7 @@
             <div class=" -mx-6">
                 <div class="inline-block min-w-full align-middle">
                     <div class="card">
-                        <header class="card-header cust-card-header noborder">
-                            <iconify-icon wire:loading class="loading-icon text-lg"
-                                icon="line-md:loading-twotone-loop"></iconify-icon>
-                            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                                wire:model="search">
-
-
-                        </header>
+                     
 
                         <header class="card-header cust-card-header noborder" style="display: block;">
 
