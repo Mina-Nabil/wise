@@ -75,43 +75,6 @@ class OfferIndex extends Component
     public $searchedPolicies;
     public $selectedPolicy;
 
-    //creator filter
-    public $FilteredCreators = [];
-    public $selectedCreators = [];
-    public $creatorSection = false;
-    public $usersSearchText;
-
-    public function openCreatorSection()
-    {
-        if (!empty($this->FilteredCreators)) {
-            $this->selectedCreators = $this->FilteredCreators->pluck('id')->toArray();
-        }
-        $this->creatorSection = true;
-    }
-
-    public function closeCreatorSection()
-    {
-        $this->creatorSection = false;
-        $this->selectedCreators = [];
-        $this->usersSearchText = null;
-    }
-
-    public function clearCreator()
-    {
-        $this->FilteredCreators = [];
-    }
-
-    public function setCtreators()
-    {
-
-        if (empty($this->selectedCreators)) {
-            $this->FilteredCreators = [];
-        } else {
-            $this->FilteredCreators = User::whereIn('id', $this->selectedCreators)->get();
-        }
-        $this->closeCreatorSection();
-    }
-
     public function updatedsearchPolicyText()
     {
         $this->searchedPolicies = SoldPolicy::userdata($this->searchPolicyText)
@@ -385,21 +348,7 @@ class OfferIndex extends Component
                 $endDate = Carbon::parse($this->endDate);
                 return $query->fromTo($startDate, $endDate);
             })
-            ->when(!empty($this->FilteredCreators), function ($query) {
-                $creatorIds = array_map(function($creator) {
-                    return $creator['id'];
-                }, $this->FilteredCreators->toArray());
-                return $query->byCreators($creatorIds);
-            })
             ->paginate(10);
-
-        if ($this->creatorSection) {
-            $users = User::search($this->usersSearchText)
-                ->take(5)
-                ->get();
-        } else {
-            $users = null;
-        }
 
         return view('livewire.offer-index', [
             'offers' => $offers,
@@ -411,7 +360,6 @@ class OfferIndex extends Component
             'PERSONAL_TYPES' => $PERSONAL_TYPES,
             'CORPORATE_TYPES' => $CORPORATE_TYPES,
             'statuses' => $statuses,
-            'users' => $users,
             'filteredStatus' => $this->filteredStatus,
         ]);
     }
