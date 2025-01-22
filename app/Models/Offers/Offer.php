@@ -1104,6 +1104,11 @@ class Offer extends Model
         return $query->whereIn("offers.status", $states);
     }
 
+    public function scopeByCreators($query, array $creator_ids)
+    {
+        return $query->whereIn('offers.creator_id', $creator_ids);
+    }
+
     public function scopeFromTo($query, Carbon $from, Carbon $to)
     {
         return $query->where(function ($query) use ($from, $to) {
