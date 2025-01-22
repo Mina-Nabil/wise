@@ -8,6 +8,7 @@ use App\models\Insurance\Policy;
 use App\Models\Customers\Customer;
 use App\Models\Corporates\Corporate;
 use App\Models\Offers\OfferOption;
+use App\Models\Users\User;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 use App\Traits\AlertFrontEnd;
@@ -58,6 +59,40 @@ class SoldPolicyIndex extends Component
     public $note = null;
     public $inFavorTo = null;
     public $policyDoc = null;
+
+    //creator filter
+    public $FilteredCreators = [];
+    public $selectedCreators = [];
+    public $creatorSection = false;
+    public $usersSearchText;
+
+    public function openCreatorSection()
+    {
+        if (!empty($this->FilteredCreators)) {
+            $this->selectedCreators = $this->FilteredCreators->pluck('id')->toArray();
+        }
+        $this->creatorSection = true;
+    }
+
+    public function closeCreatorSection()
+    {
+        $this->creatorSection = false;
+        $this->selectedCreators = [];
+        $this->usersSearchText = null;
+    }
+
+    public function clearCreator(){
+        $this->FilteredCreators = [];
+    }
+
+    public function setCtreators(){
+        if (empty($this->selectedCreators)) {
+            $this->FilteredCreators = [];
+        } else {
+            $this->FilteredCreators = User::whereIn('id', $this->selectedCreators)->get();
+        }
+        $this->closeCreatorSection();
+    }
 
     public $newPolicySection = false;
     public $isPaidCB = 'all';
@@ -234,15 +269,29 @@ class SoldPolicyIndex extends Component
                 $startDate = Carbon::parse($this->startDate);
                 $endDate = Carbon::parse($this->endDate);
                 return $query->fromTo($startDate, $endDate);
-            })->paginate(20);
+            })
+            ->when(!empty($this->FilteredCreators), function ($query) {
+                $creatorIds = array_map(function($creator) {
+                    return $creator['id'];
+                }, $this->FilteredCreators->toArray());
+                return $query->byCreators($creatorIds);
+            })
+            ->paginate(20);
             
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
+
+        if ($this->creatorSection) {
+            $users = User::search($this->usersSearchText)->take(5)->get();
+        } else {        
+            $users = null;
+        }
 
         return view(
             'livewire.sold-policy-index',
             [
                 'soldPolicies' => $soldPolicies,
                 'PAYMENT_FREQS' => $PAYMENT_FREQS,
+                'users' => $users
             ]
         );
     }

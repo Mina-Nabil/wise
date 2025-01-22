@@ -1878,6 +1878,11 @@ class SoldPolicy extends Model
         return $query->where('offer_id', $id);
     }
 
+    public function scopeByCreators($query, array $creator_ids)
+    {
+        return $query->whereIn('sold_policies.creator_id', $creator_ids);
+    }
+
     public function scopeByCompany($query, $company_id, $is_paid = null)
     {
         if (!Helpers::joined($query, "policies")) {
