@@ -23,7 +23,6 @@ class SoldPolicyReport extends Component
 
     public $startSection = false;
     public $expirySection = false;
-    public $creatorSection = false;
     public $mainSalesSection = false;
     public $lobSection = false;
     public $valueSection = false;
@@ -32,7 +31,6 @@ class SoldPolicyReport extends Component
     public $companySection = false;
     public $PolicySection = false;
     public $issuedSection = false;
-    public $creatorName;
     public $mainSalesName;
 
     public $brands;
@@ -51,7 +49,6 @@ class SoldPolicyReport extends Component
     public $issued_to;
     public $expiry_from;
     public $expiry_to;
-    public $creator_id;
     public $main_sales_id;
     public $line_of_business;
     public $value_from;
@@ -74,7 +71,6 @@ class SoldPolicyReport extends Component
     public $Eissued_to;
     public $Eexpiry_from;
     public $Eexpiry_to;
-    public $Ecreator_id;
     public $Emain_sales_id;
     public $Eline_of_business;
     public $Evalue_from;
@@ -85,6 +81,12 @@ class SoldPolicyReport extends Component
     public $Ecompany_ids = [];
     public $Epolicy_ids = [];
 
+    public $FilteredCreators = [];
+    public $selectedCreators = [];
+    public $creatorSection = false;
+    public $usersSearchText;
+
+
 
     public $isWelcomedClientId;
     public $isWelcomedClientType;
@@ -94,6 +96,35 @@ class SoldPolicyReport extends Component
     public $commProfilesSection;
     public $Eprofiles = [];
     public $profiles = [];
+
+    public function openCreatorSection()
+    {
+        if (!empty($this->FilteredCreators)) {
+            $this->selectedCreators = $this->FilteredCreators->pluck('id')->toArray();
+        }
+        $this->creatorSection = true;
+    }
+
+    public function closeCreatorSection()
+    {
+        $this->creatorSection = false;
+        $this->selectedCreators = [];
+        $this->usersSearchText = null;
+    }
+
+    public function clearCreator(){
+        $this->FilteredCreators = [];
+    }
+
+    public function setCtreators(){
+        if (empty($this->selectedCreators)) {
+            $this->FilteredCreators = [];
+        } else {
+            $this->FilteredCreators = User::whereIn('id', $this->selectedCreators)->get();
+        }
+        $this->closeCreatorSection();
+        // $this->resetPage();
+    }
 
     public function toggleProfiles()
     {
@@ -382,24 +413,6 @@ class SoldPolicyReport extends Component
         $this->line_of_business = null;
     }
 
-    public function toggleCreator()
-    {
-        $this->toggle($this->creatorSection);
-        if ($this->creatorSection) {
-            $this->Ecreator_id = $this->creator_id;
-        }
-    }
-
-    public function setCreator()
-    {
-        $this->creator_id = $this->Ecreator_id;
-        $this->toggle($this->creatorSection);
-    }
-
-    public function clearCreator()
-    {
-        $this->creator_id = null;
-    }
 
     public function toggleMainSales()
     {
@@ -489,13 +502,21 @@ class SoldPolicyReport extends Component
 
     public function exportReport()
     {
+        if (!empty($this->FilteredCreators)) {
+            $creators_ids = array_map(function($creator) {
+                return $creator['id'];
+            }, $this->FilteredCreators->toArray());
+        } else {
+            $creators_ids = [];
+        }
+
         if (Auth::user()->is_admin) {
             return SoldPolicy::exportReport(
                 $this->start_from,
                 $this->start_to,
                 $this->expiry_from,
                 $this->expiry_to,
-                $this->creator_id,
+                $creators_ids,
                 $this->line_of_business,
                 $this->value_from,
                 $this->value_to,
@@ -567,10 +588,6 @@ class SoldPolicyReport extends Component
 
     public function render()
     {
-        if ($this->creator_id) {
-            $c = User::find($this->creator_id);
-            $this->creatorName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
-        }
         if ($this->main_sales_id) {
             $c = User::find($this->main_sales_id);
             $this->mainSalesName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
@@ -579,13 +596,27 @@ class SoldPolicyReport extends Component
         $COMM_PROFILES = CommProfile::select('title', 'id')->get();
 
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
-        $users = User::all();
+
+        if (!empty($this->FilteredCreators)) {
+            $creators_ids = array_map(function($creator) {
+                return $creator['id'];
+            }, $this->FilteredCreators->toArray());
+        } else {
+            $creators_ids = [];
+        }
+
+        if ($this->creatorSection) {
+            $users = User::search($this->usersSearchText)->take(5)->get();
+        } else {        
+            $users = User::all();
+        }
+
         $policies = SoldPolicy::report(
             $this->start_from,
             $this->start_to,
             $this->expiry_from,
             $this->expiry_to,
-            $this->creator_id,
+            $creators_ids,
             $this->line_of_business,
             $this->value_from,
             $this->value_to,
