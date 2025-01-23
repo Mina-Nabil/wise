@@ -531,9 +531,9 @@
                             </span>
                             <span class="text-lg font-medium text-slate-900 dark:text-white block">
                                 @foreach ($soldPolicy->sales_comms as $comm)
-                                 
+                                    @if ($soldPolicy->main_sales_id && $soldPolicy->main_sales_id != $comm->comm_profile->user_id)
                                         {{ $comm->comm_profile->title }} &nbsp;
-                                
+                                    @endif
                                 @endforeach
                             </span>
                         </div>
