@@ -1802,7 +1802,7 @@
                                                 <tr>
 
                                                     <th scope="col" class=" table-th ">
-                                                        Title
+                                                        Profile
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
@@ -1840,7 +1840,7 @@
                                                             <div class="">
                                                                 <span class="text-slate-500 dark:text-slate-400">
                                                                     <span
-                                                                        class="block text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
+                                                                        class="block text-slate-600 dark:text-slate-300">{{ $comm->comm_profile?->title ($comm->title) }}</span>
                                                                     <span class="block text-slate-500 text-xs">
                                                                         {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
                                                                     </span>
