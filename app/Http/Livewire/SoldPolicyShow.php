@@ -1585,7 +1585,7 @@ class SoldPolicyShow extends Component
 
     public function mount($id)
     {
-        $this->soldPolicy = SoldPolicy::with('company_comm_payments')->find($id);
+        $this->soldPolicy = SoldPolicy::with('company_comm_payments', 'sales_comms')->find($id);
         $this->offer = $this->soldPolicy->offer;
         $this->insured_value = $this->soldPolicy->insured_value;
         $this->net_rate = $this->soldPolicy->net_rate;
