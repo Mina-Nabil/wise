@@ -279,10 +279,10 @@
                                 <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
                                     Client payment Date
                                     @can('updateClientPaymentDate', $soldPolicy)
-                                    <span class="float-right">
-                                        <iconify-icon wire:click="openPaymentDateSec" class="cursor-pointer"
-                                            icon="carbon:edit"></iconify-icon>
-                                    </span>
+                                        <span class="float-right">
+                                            <iconify-icon wire:click="openPaymentDateSec" class="cursor-pointer"
+                                                icon="carbon:edit"></iconify-icon>
+                                        </span>
                                     @endcan
                                 </span>
                                 <span class="text-lg font-medium text-slate-900 dark:text-white block">
@@ -476,7 +476,8 @@
                     <div class="card-body flex flex-col p-6 active justify-center">
                         <div>
                             <p>
-                                <iconify-icon icon="carbon:delivery"></iconify-icon> Delivery Type {{ $soldPolicy->delivery_type ? ': (' . str_replace("_", ' ',  ucfirst($soldPolicy->delivery_type)) . ')' : '' }}
+                                <iconify-icon icon="carbon:delivery"></iconify-icon> Delivery Type
+                                {{ $soldPolicy->delivery_type ? ': (' . str_replace('_', ' ', ucfirst($soldPolicy->delivery_type)) . ')' : '' }}
                                 <span class="float-right cursor-pointer" wire:click="openChangeDeliveryType">
                                     <iconify-icon icon="carbon:edit"></iconify-icon>
                                 </span>
@@ -487,11 +488,12 @@
                             <div class="w-full">
                                 <select wire:model.defer="deliveryType" class="form-control w-full mt-2 py-2">
                                     @foreach ($DEL_TYPES as $type)
-                                        <option value="{{ $type }}">{{ str_replace("_", ' ', ucfirst($type)) }}</option>
+                                        <option value="{{ $type }}">
+                                            {{ str_replace('_', ' ', ucfirst($type)) }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                    <button wire:click="saveDeliveryType"
+                            <button wire:click="saveDeliveryType"
                                 class="btn inline-flex justify-center btn-success mt-3 float-right btn-sm">
                                 <div class="flex items-center">
                                     <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
@@ -505,40 +507,38 @@
                 </div>
 
 
-                @if ($soldPolicy->main_sales)
-                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-                        <div class="card-body flex flex-col p-6 active justify-center">
-                            <div>
-                                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                                    Main sales
-                                    @can('updateMainSales', $soldPolicy)
-                                        <span class="float-right">
-                                            <button wire:click="openSetMainSalesSection" class="action-btn"
-                                                type="button">
-                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                            </button>
-                                        </span>
-                                    @endcan
-                                </span>
-                                <span class="text-lg font-medium text-slate-900 dark:text-white block">
-                                    {{ $soldPolicy->main_sales->full_name }}
-                                </span>
-                            </div>
-                            <div>
-                                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                                    Other Sales Linked
-                                </span>
-                                <span class="text-lg font-medium text-slate-900 dark:text-white block">
-                                    @foreach ($soldPolicy->sales_comms as $comm)
-                                        @if ($soldPolicy->main_sales->id != $comm->comm_profile->user_id)
-                                            {{ $comm->comm_profile->title }} &nbsp;
-                                        @endif
-                                    @endforeach
-                                </span>
-                            </div>
+
+                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                    <div class="card-body flex flex-col p-6 active justify-center">
+                        <div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                Main sales
+                                @can('updateMainSales', $soldPolicy)
+                                    <span class="float-right">
+                                        <button wire:click="openSetMainSalesSection" class="action-btn" type="button">
+                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                        </button>
+                                    </span>
+                                @endcan
+                            </span>
+                            <span class="text-lg font-medium text-slate-900 dark:text-white block">
+                                {{ $soldPolicy->main_sales?->full_name }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                Other Sales Linked
+                            </span>
+                            <span class="text-lg font-medium text-slate-900 dark:text-white block">
+                                @foreach ($soldPolicy->sales_comms as $comm)
+                                    @if ($soldPolicy->main_sales->id != $comm->comm_profile->user_id)
+                                        {{ $comm->comm_profile->title }} &nbsp;
+                                    @endif
+                                @endforeach
+                            </span>
                         </div>
                     </div>
-                @endif
+                </div>
 
 
                 {{-- Files --}}
@@ -1235,10 +1235,10 @@
                                             {{ $soldPolicy->total_policy_comm ? number_format($soldPolicy->total_policy_comm, 0, '.', ',') . ' / ' . number_format($soldPolicy->after_tax_comm, 0, '.', ',') : '-' }}
                                         </span>
                                         @can('updateWiseCommPayments', $soldPolicy)
-                                        <button class="action-btn btn-sm" type="button"
-                                            wire:click="openEditTotalPolCommSection">
-                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                        </button>
+                                            <button class="action-btn btn-sm" type="button"
+                                                wire:click="openEditTotalPolCommSection">
+                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                            </button>
                                         @endcan
                                     </div>
                                     @if ($soldPolicy->policy_comm_note)
@@ -2043,11 +2043,12 @@
                                                                 {{ number_format($comm->amount, 2, '.', ',') }} EGP
                                                             </div>
                                                         </td>
-                                                        <td class="table-td" >
+                                                        <td class="table-td">
                                                             <button class="action-btn btn-sm" type="button"
-                                                            wire:click='openUpdatePolCom({{ $comm->id }})'>
-                                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                                        </button>
+                                                                wire:click='openUpdatePolCom({{ $comm->id }})'>
+                                                                <iconify-icon
+                                                                    icon="heroicons:pencil-square"></iconify-icon>
+                                                            </button>
                                                         </td>
 
                                                     </tr>
@@ -2874,7 +2875,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4021,7 +4022,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4139,7 +4140,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4369,7 +4370,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4502,7 +4503,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4593,7 +4594,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
