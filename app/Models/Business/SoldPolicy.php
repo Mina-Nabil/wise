@@ -1143,7 +1143,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('E' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);
             $activeSheet->getCell('F' . $i)->setValue($policy->policy->company->name);
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('G' . $i)->setValue($policy->total_policy_comm);
+                $activeSheet->getCell('G' . $i)->setValue($policy->total_comp_paid); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $activeSheet->getCell('I' . $i)->setValue(Carbon::parse($policy->created_at)->format('d-m-Y'));
