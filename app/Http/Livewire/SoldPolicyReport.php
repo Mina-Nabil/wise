@@ -542,13 +542,21 @@ class SoldPolicyReport extends Component
 
     public function exportHay2aReport()
     {
+        if (!empty($this->FilteredCreators)) {
+            $creators_ids = array_map(function($creator) {
+                return $creator['id'];
+            }, $this->FilteredCreators->toArray());
+        } else {
+            $creators_ids = [];
+        }
+
         if (Auth::user()->can('viewCommission', SoldPolicy::class)) {
             return SoldPolicy::exportHay2aReport(
                 $this->start_from,
                 $this->start_to,
                 $this->expiry_from,
                 $this->expiry_to,
-                $this->creator_id,
+                $creators_ids,
                 $this->line_of_business,
                 $this->value_from,
                 $this->value_to,
