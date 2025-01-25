@@ -69,6 +69,11 @@ class Policy extends Model
         self::BUSINESS_FIRE_AND_BURGLARY,
     ];
 
+    const MOTOR_LINES = [
+        self::BUSINESS_PERSONAL_MOTOR,
+        self::BUSINESS_CORPORATE_MOTOR,
+    ];
+
     const LINES_OF_BUSINESS = [
         self::BUSINESS_PERSONAL_MOTOR,
         self::BUSINESS_CORPORATE_MOTOR,
@@ -674,7 +679,7 @@ class Policy extends Model
         }
         return $query;
     }
-
+    
     public function scopeWithConditions($query)
     {
         $query->with('conditions');

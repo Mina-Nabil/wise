@@ -133,6 +133,14 @@ class SoldPolicy extends Model
             foreach ($this->sales_comms()->get() as $sc) {
                 $newOffer->addCommProfile($sc->comm_profile_id);
             }
+            $fields = [];
+            foreach ($this->fields()->get() as $f) {
+                $fields[] = [
+                    'field' => $f->field,
+                    'value' => $f->value
+                ];
+            }
+            $newOffer->setLineFields($fields);
             return $newOffer;
         }
     }
@@ -1153,7 +1161,6 @@ class SoldPolicy extends Model
             $activeSheet->getCell('M' . $i)->setValue($policy->insured_value);
             $activeSheet->getCell('N' . $i)->setValue($policy->gross_premium);
             $activeSheet->getCell('O' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
-
             $i++;
         }
 
@@ -2034,5 +2041,10 @@ class SoldPolicy extends Model
     public function renewal_policy(): BelongsTo
     {
         return $this->belongsTo(SoldPolicy::class, 'renewal_policy_id');
+    }
+
+    public function fields(): HasMany
+    {
+        return $this->hasMany(Field::class);
     }
 }

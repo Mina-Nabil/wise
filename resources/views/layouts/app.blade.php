@@ -288,6 +288,16 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ url('/users') }}" class="navItem @yield('users')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
+                                    <span>Users</span>
+                                </span>
+                            </a>
+                        </li>
+                        @endif
+                        @if(Auth::user()->is_admin)
+                        <li>
                             <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
                                 <span class="flex items-center">
                                     <iconify-icon class="nav-icon"
@@ -297,10 +307,11 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ url('/users') }}" class="navItem @yield('users')">
+                            <a href="{{ url('/fields') }}" class="navItem @yield('fields')">
                                 <span class="flex items-center">
-                                    <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
-                                    <span>Users</span>
+                                    <iconify-icon class="nav-icon"
+                                        icon="material-symbols:policy-outline-rounded"></iconify-icon>
+                                    <span>Line Fields</span>
                                 </span>
                             </a>
                         </li>

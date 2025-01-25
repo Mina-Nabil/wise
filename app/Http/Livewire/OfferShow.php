@@ -73,6 +73,7 @@ class OfferShow extends Component
     public $optionIsRenewal = false;
     public $installmentsCount;
     public $fields = [];
+    public $lineFields = [];
     public $files = [];
 
     //discounts
@@ -99,6 +100,8 @@ class OfferShow extends Component
     public $searchedPolicies;
     public $selectedPolicy;
 
+    //fields sec
+    public $showOfferFieldsModal = false;
 
 
     public $editOptionId;
@@ -877,6 +880,7 @@ class OfferShow extends Component
     public function updatedSearchPolicy()
     {
         $this->policiesData = Policy::tableData()
+            ->byType($this->offer->type)
             ->SearchBy($this->searchPolicy)
             ->get()
             ->take(5);
@@ -1046,6 +1050,10 @@ class OfferShow extends Component
         $this->item_value = $this->offer->item_value;
         $this->item_title = $this->offer->item_title;
         $this->item_desc = $this->offer->item_desc;
+        $this->lineFields = [];
+        foreach ($this->offer->fields()->get() as $field) {
+            $this->lineFields[] = ['field' => $field->field, 'value' => $field->value];
+        }
 
         $this->dueDate = Carbon::parse($this->offer->due)->toDateString();
         $this->dueTime = Carbon::parse($this->offer->due)->toTimeString();
@@ -1173,12 +1181,39 @@ class OfferShow extends Component
         }
     }
 
+    public function openOfferFieldsModal()
+    {
+        $this->showOfferFieldsModal = true;
+    }
+
+    public function closeOfferFieldsModal()
+    {
+        $this->showOfferFieldsModal = false;
+    }
+
+    public function setOfferFields()
+    {
+        $this->validate([
+            'lineFields' => 'required|array',
+            'lineFields.*.field' => 'required|string|max:255',
+            'lineFields.*.value' => 'nullable',
+        ]);
+
+        $res = $this->offer->setLineFields($this->lineFields);
+        if ($res) {
+            $this->alert('success', 'Fields updated successfully!');
+            $this->showOfferFieldsModal = false;
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
     public function render()
     {
         $loggedInUser = Auth::user();
-        if($loggedInUser->is_sales){
+        if ($loggedInUser->is_sales) {
             $users = User::operations()->orwhere('id', $loggedInUser->manager_id)->get();
-            
         } else {
             $users = User::active()->get();
         }

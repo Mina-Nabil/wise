@@ -96,6 +96,18 @@ class OfferPolicy
         return true;
     }
 
+    /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Offers\Offer  $offer
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updateLineFields(User $user, Offer $offer)
+    {
+        return true;
+    }
+
       /**
      * Determine whether the user can update the model.
      *

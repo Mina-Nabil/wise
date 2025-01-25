@@ -146,8 +146,7 @@
                         class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
                         <div class="card-text flex flex-col justify-between h-full menu-open">
                             <p class="mb-2">
-                                <b>Offered Item ( Car )</b>
-
+                                <b>Offered Item</b>
                             </p>
                             <div class="card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5"
                                 style="border-color:rgb(224, 224, 224)">
@@ -176,6 +175,10 @@
                                         <h3 class="text-base capitalize py-3">
                                             {{ $offer->item_title }}
                                         </h3>
+                                    @else
+                                        <h3 class="text-base capitalize py-3">
+                                            {{ number_format($offer->item_value, 0, '.', ',') }}EGP
+                                        </h3>
                                     @endif
                                     {{-- @if ($car->payment_frequency)
                                                 <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $car->payment_frequency }} Payment</span>
@@ -198,6 +201,14 @@
                                                 dark:hover:text-white">
                                                             Edit</button>
                                                     </li>
+                                                    @if ($offer->fields->count())
+                                                        <li>
+                                                            <button wire:click="openOfferFieldsModal"
+                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                dark:hover:text-white">
+                                                                Edit Fields</button>
+                                                        </li>
+                                                    @endif
                                                 </ul>
                                             </div>
                                         </div>
@@ -207,19 +218,36 @@
                                 </div>
                                 <hr>
                                 <br>
-                                <div class="grid grid-cols-2 mb-4">
-                                    <div class="ml-5">
-                                        <p class="text-center">
-                                            <span class="text-lg">
-                                                <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b><span
-                                                    class="text-sm">EGP</span>
-                                            </span>
-                                        </p>
+                                <div class="grid grid-cols-2 mb-4 ml-5">
+                                    @if ($offer->fields->count())
+                                        <h3 class="text-base capitalize py-3">
+                                            Application Fields
+                                        </h3>
 
-                                    </div>
-                                    <div class=" border-l pl-2  text-sm text-wrap">
-                                        {{ $offer->item_desc }}
-                                    </div>
+                                        <ul class="m-0 p-0 list-none">
+                                            @foreach ($offer->fields as $field)
+                                                <li class="inline-block relative top-[3px] text-base font-Inter ">
+                                                    {{ $field->field }}:
+                                                    <span class="text-primary-500">
+                                                        {{ is_numeric($field->value) ? number_format($field->value, 0, '.', ',') : $field->value }}
+                                                    </span>
+                                                </li> <br />
+                                                <br />
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                            <p class="text-center">
+                                                <span class="text-lg">
+                                                    <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b><span
+                                                        class="text-sm">EGP</span>
+                                                </span>
+                                            </p>
+
+                                        <div class=" border-l pl-2  text-sm text-wrap">
+                                            {{ $offer->item_desc }}
+                                        </div>
+                                    @endif
+
                                 </div>
                             </div>
                         </div>
@@ -915,7 +943,8 @@
                                     style="border-color: #aeaeae">
                                     <p class="dropzone-para" wire:loading wire:target="uploadedFile"
                                         style="font-size:20px"><iconify-icon
-                                            icon="svg-spinners:tadpole"></iconify-icon></p>
+                                            icon="svg-spinners:tadpole"></iconify-icon>
+                                    </p>
                                     <p class="dropzone-para" wire:loading.remove wire:target="uploadedFile">Choose a
                                         file or drop it here...</p>
                                     <input name="file" id="fileInput" type="file"
@@ -1455,6 +1484,7 @@
                                     @enderror
                                 </div>
                             </div>
+                            @if($offer->is_motor)
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-2">
                                 <div class="from-group">
                                     <label for="car_chassis" class="form-label">Car Chassis</label>
@@ -1484,6 +1514,7 @@
                                     @enderror
                                 </div>
                             </div>
+                            @endif
                             <div class="from-group">
                                 <label for="soldInFavorTo" class="form-label">in Favor To</label>
                                 <input type="text" name="soldInFavorTo" class="form-control mt-2 w-full"
@@ -2724,6 +2755,62 @@
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="changeAsignee" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($showOfferFieldsModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Line Fields
+                            </h3>
+                            <button wire:click="closeOfferFieldsModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            @foreach ($lineFields as $index => $item)
+                                <div class="input-area mb-3">
+                                    <label class="form-label">{{ $item['field'] }}</label>
+                                    <input type="text"
+                                        class="form-control @error('lineFields.{{ $index }}.value') !border-danger-500 @enderror"
+                                        wire:model.defer="lineFields.{{ $index }}.value"
+                                        autocomplete="off" />
+                                    @error('lineFields.{{ $index }}.value')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endforeach
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setOfferFields" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>

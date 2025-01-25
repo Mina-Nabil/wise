@@ -8,6 +8,8 @@ use App\Models\Business\SoldPolicy;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
+use App\Models\Insurance\LineField;
+use App\Models\Insurance\Policy;
 use App\Models\Insurance\PolicyBenefit;
 use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
@@ -127,6 +129,13 @@ class Offer extends Model
                 if ($sales_in)
                     $newOffer->addCommProfile($sales_in->id, true);
                 $newOffer->addComment("Created offer", false);
+                $lineFields = LineField::ByLineOfBusiness($type)->get();
+                foreach ($lineFields as $lf) {
+                    $newOffer->fields()->create([
+                        'field' => $lf->field,
+                        'value' => null,
+                    ]);
+                }
             }
             return $newOffer;
         } catch (Exception $e) {
@@ -238,6 +247,14 @@ class Offer extends Model
                 ]);
                 $commaya->refreshPaymentInfo();
             }
+
+            foreach ($this->fields()->get() as $field) {
+                $soldPolicy->fields()->create([
+                    "field"    =>  $field->field,
+                    "value"        =>  $field->value
+                ]);
+            }
+
             if ($main_sales_id) {
                 $soldPolicy->setMainSales($main_sales_id, false);
             }
@@ -609,6 +626,30 @@ class Offer extends Model
         }
     }
 
+    public function setLineFields($fields)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateLineFields', $this)) return false;
+
+        try {
+            $this->fields()->delete();
+            foreach ($fields as $field) {
+                $this->fields()->create([
+                    'field' => $field['field'],
+                    'value' => $field['value'],
+                ]);
+            }
+            $this->addComment("Line fields updated", false);
+            AppLog::info("Line fields updated", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't update line fields", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
     public function setItemDetails($item_value, Model $item = null, $item_title = null, $item_desc = null)
     {
         /** @var User */
@@ -945,6 +986,11 @@ class Offer extends Model
         return $this->status === self::STATUS_APPROVED;
     }
 
+    public function getIsMotorAttribute()
+    {
+        return in_array($this->type, Policy::MOTOR_LINES);
+    }
+
     public function getSoldPolicyIdAttribute()
     {
         return DB::table('sold_policies')->where('offer_id', $this->id)->first()?->id;
@@ -1144,6 +1190,11 @@ class Offer extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(OfferComment::class)->latest();
+    }
+
+    public function fields(): HasMany
+    {
+        return $this->hasMany(Field::class);
     }
 
     public function discounts(): HasMany
