@@ -3159,7 +3159,7 @@
                                     wire:model="selectedMedicalPolicyCalculation">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select an option...</option>
-                                    @foreach ($medical_policies as $p)
+                                    @foreach ($type_policies as $p)
                                         <option value="{{ $p->id }}"
                                             class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             {{ $p->company->name }} - {{ $p->name }}

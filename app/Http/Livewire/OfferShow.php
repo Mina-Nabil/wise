@@ -1291,9 +1291,8 @@ class OfferShow extends Component
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
         $optionStatuses = OfferOption::STATUSES;
         $brands = Brand::all();
-        if($this->offer->is_medical){
-            $medical_policies = Policy::ByType($this->offer->type)->get();
-        }
+        $type_policies = Policy::ByType($this->offer->type)->get();
+      
         if ($this->offer->item)
             $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, offerValue: $this->offer->item_value);
 
@@ -1304,7 +1303,7 @@ class OfferShow extends Component
             'usersTypes' => $usersTypes,
             'DISCOUNT_TYPES' => $DISCOUNT_TYPES,
             'optionStatuses' => $optionStatuses,
-            'medical_policies' => $medical_policies,
+            'type_policies' => $type_policies,
             'brands' => $brands
         ]);
     }
