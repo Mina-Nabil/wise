@@ -1148,6 +1148,73 @@ class OfferShow extends Component
         }
     }
 
+    /////medical offer section
+    public $showMedicalFileModal = false;
+    public $showDownloadPolicyCalculationModal = false;
+    public $uploadedMedicalFile;
+    public $selectedMedicalPolicyCalculation;
+
+    public function openMedicalFileModal()
+    {
+        $this->showMedicalFileModal = true;
+    }
+
+    public function closeMedicalFileModal()
+    {
+        $this->showMedicalFileModal = false;
+    }
+    public function openPolicyCalculationModal()
+    {
+        $this->showDownloadPolicyCalculationModal = true;
+    }
+
+    public function closePolicyCalculationModal()
+    {
+        $this->showDownloadPolicyCalculationModal = false;
+    }
+
+    public function updatedUploadedMedicalFile()
+    {
+        $this->validate(
+            [
+                'uploadedMedicalFile' => 'nullable|file|mimes:xlsx|max:33000',
+            ],
+            [
+                'uploadedMedicalFile.max' => 'The file must not be greater than 33MB.',
+            ],
+        );
+
+        $url = $this->uploadedMedicalFile->store('tmp', 'local');
+        $this->offer->importMedicalTemplate(storage_path('app/' . $url));
+        unlink(storage_path('app/' . $url));
+
+        $this->alert('success', 'Medical File Uploaded!');
+        $this->uploadedMedicalFile = null;
+        $this->showMedicalFileModal = null;
+
+        $this->mount($this->offer->id);
+    }
+
+
+    public function downloadCalculatedFile()
+    {
+        $this->validate(
+            [
+                'selectedMedicalPolicyCalculation' => 'required',
+            ]
+        );
+
+        $this->alert('success', 'Medical File Uploaded!');
+        $this->showDownloadPolicyCalculationModal = false;
+        return $this->offer->downloadCalculatedMedicalTemplate($this->selectedMedicalPolicyCalculation);
+    }
+
+    public function downloadMedicalTemplate()
+    {
+        return $this->offer->downloadMedicalTemplate();
+    }
+
+
     /////watchers sections
     public $changeWatchers = false;
     public $watchersList = [];
@@ -1224,8 +1291,10 @@ class OfferShow extends Component
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
         $optionStatuses = OfferOption::STATUSES;
         $brands = Brand::all();
+        $type_policies = Policy::ByType($this->offer->type)->get();
+      
         if ($this->offer->item)
-            $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, age: null, offerValue: $this->offer->item_value);
+            $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, offerValue: $this->offer->item_value);
 
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,
@@ -1234,6 +1303,7 @@ class OfferShow extends Component
             'usersTypes' => $usersTypes,
             'DISCOUNT_TYPES' => $DISCOUNT_TYPES,
             'optionStatuses' => $optionStatuses,
+            'type_policies' => $type_policies,
             'brands' => $brands
         ]);
     }

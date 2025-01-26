@@ -436,7 +436,7 @@ class PolicyShow extends Component
             'editedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
             'editedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
             'editedValue' => 'required',
-            'editedRate' => 'required|numeric|between:0,100'
+            'editedRate' => 'required|numeric'
         ], [], [
             'editedScope' => 'Scope',
             'editedOperator' => 'operator',
@@ -462,7 +462,7 @@ class PolicyShow extends Component
             'addedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
             'addedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
             'addedValue' => 'required|numeric',
-            'addedRate' => 'required|numeric|between:0,100'
+            'addedRate' => 'required|numeric'
         ]);
 
         /** @var Policy */
