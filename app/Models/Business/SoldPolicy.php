@@ -1785,7 +1785,7 @@ class SoldPolicy extends Model
         });
     }
 
-    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_ids = [], $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], bool $is_welcomed = null, bool $is_penalized = null, Carbon $paid_from = null, Carbon $paid_to = null)
+    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_ids = [], $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], bool $is_welcomed = null, bool $is_penalized = null, bool $is_cancelled = null, Carbon $paid_from = null, Carbon $paid_to = null)
     {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
@@ -1819,6 +1819,9 @@ class SoldPolicy extends Model
                 $q->where('offers.is_renewal', "=", $is_renewal);
             })->when($is_penalized !== null, function ($q) use ($is_penalized) {
                 $q->where('sold_policies.is_penalized', "=", $is_penalized);
+            })->when($is_cancelled !== null, function ($q) use ($is_cancelled) {
+                if($is_cancelled) $q->whereNotNull('cancellation_time');
+                else $q->whereNull('cancellation_time');
             })->when($is_welcomed !== null, function ($q, $v) use ($is_welcomed) {
                 if (!Helpers::joined($q, 'customers')) {
                     $q->join('customers', function ($qq) {
