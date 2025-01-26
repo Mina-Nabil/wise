@@ -53,6 +53,7 @@ class Offer extends Model
     const STATUS_NEW = 'new';
     const STATUS_PENDING_OPERATIONS = 'pending_operations';
     const STATUS_PENDING_INSUR = 'pending_insurance_companies';
+    const STATUS_PENDING_SALES = 'pending_sales';
     const STATUS_PENDING_CUSTOMER = 'pending_customer';
     const STATUS_DECLINED_INSUR = 'declined_by_insurance';
     const STATUS_DECLINED_CUSTOMER = 'declined_by_customer';
@@ -62,6 +63,7 @@ class Offer extends Model
     const STATUSES = [
         self::STATUS_NEW,
         self::STATUS_PENDING_OPERATIONS,
+        self::STATUS_PENDING_SALES,
         self::STATUS_PENDING_INSUR,
         self::STATUS_PENDING_CUSTOMER,
         self::STATUS_DECLINED_INSUR,
@@ -73,6 +75,7 @@ class Offer extends Model
     const ACTIVE_STATUSES = [
         self::STATUS_NEW,
         self::STATUS_PENDING_OPERATIONS,
+        self::STATUS_PENDING_SALES,
         self::STATUS_PENDING_INSUR,
         self::STATUS_PENDING_CUSTOMER,
     ];
