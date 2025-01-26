@@ -43,6 +43,8 @@ class LineField extends Model
         }
     }
 
+    ///delete() method should be used in the application
+
     public function scopeByLineOfBusiness($query, $line_of_business)
     {
         return $query->where('line_of_business', $line_of_business);

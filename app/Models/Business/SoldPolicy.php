@@ -1313,7 +1313,6 @@ class SoldPolicy extends Model
                 $policy_name = $activeSheet->getCell('B' . $i)->getValue();
 
 
-
                 if (!$activeSheet->getCell('G' . $i)) {
                     Log::warning("Row#$i missed, failed to get issue date");
                     continue;

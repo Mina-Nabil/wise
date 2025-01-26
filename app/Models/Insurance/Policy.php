@@ -74,6 +74,11 @@ class Policy extends Model
         self::BUSINESS_CORPORATE_MOTOR,
     ];
 
+    const MEDICAL_LINES = [
+        self::BUSINESS_PERSONAL_MEDICAL,
+        self::BUSINESS_CORPORATE_MEDICAL,
+    ];
+
     const LINES_OF_BUSINESS = [
         self::BUSINESS_PERSONAL_MOTOR,
         self::BUSINESS_CORPORATE_MOTOR,
@@ -123,7 +128,7 @@ class Policy extends Model
     ];
 
     ///static functions
-    public static function getAvailablePolicies($type, CustomersCar $car = null, $age = null, $offerValue = null): Collection
+    public static function getAvailablePolicies($type, CustomersCar $car = null,  $offerValue = null): Collection
     {
         assert(
             in_array($type, [
@@ -134,15 +139,10 @@ class Policy extends Model
             ]),
             "Can't find options for type outside of motor and medical. Received: $type"
         );
-        assert($car || $age, "All parameters are null");
+        assert($car, "All parameters are null");
 
         if ($car) {
-            assert(!$age, "Must use only one parameter");
             assert(in_array($type, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]), "Must use a motor type if a car is supplied");
-        }
-        if ($age) {
-            assert(!$car, "Must use only one parameter");
-            assert(in_array($type, [self::BUSINESS_PERSONAL_MEDICAL, self::BUSINESS_CORPORATE_MEDICAL]), "Must use a medical type if age is supplied");
         }
 
         $policies = self::byType($type)->withCompany()->withConditions()->get();
@@ -157,8 +157,7 @@ class Policy extends Model
                     $net_value = ($cond->rate / 100) * $offerValue;
                     $gross_value = $pol->calculateGrossValue($net_value);
                 }
-            } else if ($age)
-                $cond = $pol->getConditionByAge($age);
+            } 
 
             if ($cond) {
                 $valid_policies->push([
@@ -494,15 +493,40 @@ class Policy extends Model
         return null;
     }
 
-    public function getConditionByAge($age)
+    public function getConditionValueByAge($age)
     {
         if (!in_array($this->business, [self::BUSINESS_PERSONAL_MEDICAL, self::BUSINESS_CORPORATE_MEDICAL]))
             throw new Exception("Invalid business type. Can't get rate by age");
         foreach ($this->conditions as $cond) {
             switch ($cond->scope) {
                 case PolicyCondition::SCOPE_AGE:
-                    if ($age == $cond->value)
-                        return $cond;
+                    switch ($cond->operator) {
+                        case PolicyCondition::OP_EQUAL:
+                            if ($age == $cond->value)
+                            return $cond->rate;
+                            break;
+
+                        case PolicyCondition::OP_GREATER:
+                            if ($age > $cond->value)
+                            return $cond->rate;
+                            break;
+
+                        case PolicyCondition::OP_GREATER_OR_EQUAL:
+                            if ($age >= $cond->value)
+                            return $cond->rate;
+                            break;
+
+                        case PolicyCondition::OP_LESS:
+                            if ($age < $cond->value)
+                            return $cond->rate;
+                            break;
+
+                        case PolicyCondition::OP_LESS_OR_EQUAL:
+                            if ($age <= $cond->value)
+                                return $cond->rate;
+                            break;
+                    }
+             
             }
         }
         return 0;

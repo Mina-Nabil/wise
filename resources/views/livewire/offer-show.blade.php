@@ -171,6 +171,15 @@
                                                 </li>
                                             </ul>
                                         </h3>
+                                    @elseif($offer->medical_offer_clients->isNotEmpty())
+                                    <h3 class="text-base capitalize py-3">
+                                        Medical Offer Clients (Showing first 20)
+                                    </h3>
+                                    @elseif($offer->medical_offer_clients->isNotEmpty())
+                                    <h3 class="text-base capitalize py-3">
+                                       Application Fields
+                                    </h3>
+
                                     @elseif($offer->item_title)
                                         <h3 class="text-base capitalize py-3">
                                             {{ $offer->item_title }}
@@ -201,7 +210,28 @@
                                                 dark:hover:text-white">
                                                             Edit</button>
                                                     </li>
-                                                    @if ($offer->fields->count())
+                                                    @if ($offer->is_medical)
+                                                        <li>
+                                                            <button wire:click="downloadMedicalTemplate"
+                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                            dark:hover:text-white">
+                                                                Download Template</button>
+                                                        </li>
+                                                        <li>
+                                                            <button wire:click="openMedicalFileModal"
+                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                            dark:hover:text-white">
+                                                                Upload Medical File</button>
+                                                        </li>
+                                                        @if ($offer->medical_offer_clients->isNotEmpty())
+                                                            <li>
+                                                                <button wire:click="openPolicyCalculationModal"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                            dark:hover:text-white">
+                                                                    Download Calculated Medical Template</button>
+                                                            </li>
+                                                        @endif
+                                                    @elseif ($offer->fields->count())
                                                         <li>
                                                             <button wire:click="openOfferFieldsModal"
                                                                 class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
@@ -220,10 +250,6 @@
                                 <br>
                                 <div class="grid grid-cols-2 mb-4 ml-5">
                                     @if ($offer->fields->count())
-                                        <h3 class="text-base capitalize py-3">
-                                            Application Fields
-                                        </h3>
-
                                         <ul class="m-0 p-0 list-none">
                                             @foreach ($offer->fields as $field)
                                                 <li class="inline-block relative top-[3px] text-base font-Inter ">
@@ -235,14 +261,25 @@
                                                 <br />
                                             @endforeach
                                         </ul>
+                                    @elseif($offer->medical_offer_clients->isNotEmpty())
+                                        <ul class="m-0 p-0 ">
+                                            @foreach ($offer->medical_offer_clients->take(20) as $c)
+                                                <li class="inline-block relative top-[3px] text-base font-Inter ">
+                                                    {{ $c->name }} - Age:
+                                                    <span class="text-primary-500">
+                                                        {{ \Carbon\Carbon::parse($c->birth_date)->diffInYears(\Carbon\Carbon::now()) }}
+                                                    </span>
+                                                </li> <br />
+                                                <br />
+                                            @endforeach
+                                        </ul>
                                     @else
-                                            <p class="text-center">
-                                                <span class="text-lg">
-                                                    <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b><span
-                                                        class="text-sm">EGP</span>
-                                                </span>
-                                            </p>
-
+                                        <p class="text-center">
+                                            <span class="text-lg">
+                                                <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b><span
+                                                    class="text-sm">EGP</span>
+                                            </span>
+                                        </p>
                                         <div class=" border-l pl-2  text-sm text-wrap">
                                             {{ $offer->item_desc }}
                                         </div>
@@ -1484,36 +1521,36 @@
                                     @enderror
                                 </div>
                             </div>
-                            @if($offer->is_motor)
-                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-2">
-                                <div class="from-group">
-                                    <label for="car_chassis" class="form-label">Car Chassis</label>
-                                    <input type="text" name="car_chassis" class="form-control mt-2 w-full"
-                                        wire:model.defer="car_chassis">
-                                    @error('car_chassis')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
+                            @if ($offer->is_motor)
+                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-2">
+                                    <div class="from-group">
+                                        <label for="car_chassis" class="form-label">Car Chassis</label>
+                                        <input type="text" name="car_chassis" class="form-control mt-2 w-full"
+                                            wire:model.defer="car_chassis">
+                                        @error('car_chassis')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="from-group">
+                                        <label for="car_plate_no" class="form-label">Car Plate No.</label>
+                                        <input type="text" name="car_plate_no" class="form-control mt-2 w-full"
+                                            wire:model.defer="car_plate_no">
+                                        @error('car_plate_no')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="from-group">
+                                        <label for="car_engine" class="form-label">Car Engine</label>
+                                        <input type="text" name="car_engine" class="form-control mt-2 w-full"
+                                            wire:model.defer="car_engine">
+                                        @error('car_engine')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
-                                <div class="from-group">
-                                    <label for="car_plate_no" class="form-label">Car Plate No.</label>
-                                    <input type="text" name="car_plate_no" class="form-control mt-2 w-full"
-                                        wire:model.defer="car_plate_no">
-                                    @error('car_plate_no')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="from-group">
-                                    <label for="car_engine" class="form-label">Car Engine</label>
-                                    <input type="text" name="car_engine" class="form-control mt-2 w-full"
-                                        wire:model.defer="car_engine">
-                                    @error('car_engine')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
                             @endif
                             <div class="from-group">
                                 <label for="soldInFavorTo" class="form-label">in Favor To</label>
@@ -3024,6 +3061,128 @@
                             <button wire:click="submitWhastappMsg" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($showMedicalFileModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Upload Medical File
+                            </h3>
+                            <button wire:click="closeMedicalFileModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <p class="text-lg mt-3"><b>Upload Clients</b></p>
+                            <div class="input-area mt-3">
+                                <input wire:model="uploadedMedicalFile" type="file"
+                                    class="form-control w-full " name="basic" />
+                                @error('uploadedMedicalFile')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setIsRenewal" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading
+                                    wire:target="setIsRenewal" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove wire:target="setIsRenewal">Submit</span>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($showDownloadPolicyCalculationModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Download Policy Calculated File
+                            </h3>
+                            <button wire:click="closePolicyCalculationModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Medical Policy</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
+                                    wire:model="selectedMedicalPolicyCalculation">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        Select an option...</option>
+                                    @foreach ($medical_policies as $p)
+                                        <option value="{{ $p->id }}"
+                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $p->company->name }} - {{ $p->name }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                                @error('selectedMedicalPolicyCalculation')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="downloadCalculatedFile" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <iconify-icon class="text-xl spin-slow rtl:ml-2 relative top-[1px]" wire:loading
+                                    wire:target="downloadCalculatedFile"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove wire:target="downloadCalculatedFile">Download</span>
+
                             </button>
                         </div>
                     </div>

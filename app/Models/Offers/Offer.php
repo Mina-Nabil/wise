@@ -377,26 +377,6 @@ class Offer extends Model
         return $whatsapp_url . "?text=" . urlencode("Please find the offer comparison url: " . $exportFileUrl);
     }
 
-    // public function setCommProfiles(array $profiles_ids = [])
-    // {
-    //     /** @var User */
-    //     $loggedInUser = Auth::user();
-    //     if (!$loggedInUser->can('updateCommission', $this)) return false;
-
-    //     try {
-    //         $this->comm_profiles()->sync($profiles_ids);
-    //         if ($this->selected_option_id)
-    //             $this->generateSalesCommissions();
-    //         $this->addComment("Changed commission profiles", false);
-    //         return true;
-    //     } catch (Exception $e) {
-    //         report($e);
-    //         AppLog::error("Can't Set commission profiles", $e->getMessage(), $this);
-    //         return false;
-    //     }
-    // }
-
-
     public function addCommProfile(int $profile_id, bool $skipCheck = false)
     {
         if (!$skipCheck) {
@@ -768,6 +748,102 @@ class Offer extends Model
         }
     }
 
+    public function downloadMedicalTemplate() {
+
+        $template = IOFactory::load(resource_path('import/medical_template.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "medical_template.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+
+    }
+
+    public function addMedicalClient($name, Carbon $birth_date)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('update', $this)) return false;
+
+        try {
+            $this->medical_offer_clients()->firstOrCreate([
+                "name"          =>  $name,
+            ],[
+                "birth_date"    =>  $birth_date->format('Y-m-d')
+            ]);
+            AppLog::info("Medical client added", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add medical client", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+    public function importMedicalTemplate($file)
+    {
+        $spreadsheet = IOFactory::load($file);
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+
+        for ($i = 6; $i <= $highestRow; $i++) {
+            try {
+                $name       = $activeSheet->getCell('A' . $i)->getValue();
+                $birth_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('B' . $i)->getValue());
+                if(!$name) continue;
+                $this->addMedicalClient($name, Carbon::parse($birth_date));
+            } catch (Exception $e) {
+                report($e);
+                AppLog::error("Can't import medical template", $e->getMessage(), $this);
+                return false;
+            }
+        }
+    }
+
+    public function downloadCalculatedMedicalTemplate($policy_id) {
+        /** @var Policy */
+        $policy = Policy::findOrFail($policy_id);
+        $template = IOFactory::load(resource_path('import/medical_template.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $i = 6;
+        $totalPrem = 0;
+        $totalGross = 0;
+        foreach ($this->medical_offer_clients as $client) {
+            $activeSheet->getCell('A' . $i)->setValue($client->name);
+            $birth_date = Carbon::parse($client->birth_date);
+            $activeSheet->getCell('B' . $i)->setValue($birth_date->format('Y-m-d'));
+            $age = Carbon::now()->diffInYears($birth_date);
+            $cond = $policy->getConditionValueByAge($age);
+            $activeSheet->getCell('C' . $i)->setValue($cond);
+            $totalPrem += $cond;
+            $gross = $policy->calculateGrossValue($cond);
+            $totalGross += $gross;
+            $activeSheet->getCell('D' . $i)->setValue($gross);
+            $i++;
+        }
+
+        $activeSheet->getCell('B1')->setValue($policy->company->name . ' - ' . $policy->name);
+        $activeSheet->getCell('B2')->setCellValueExplicit($totalPrem);
+        $activeSheet->getCell('C2')->setValue($totalGross);
+
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "calculated_medical_template.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
 
     public function addDiscount($type, $value, $note = null): OfferDiscount|false
     {
@@ -989,6 +1065,11 @@ class Offer extends Model
     public function getIsMotorAttribute()
     {
         return in_array($this->type, Policy::MOTOR_LINES);
+    }
+
+    public function getIsMedicalAttribute()
+    {
+        return in_array($this->type, Policy::MEDICAL_LINES);
     }
 
     public function getSoldPolicyIdAttribute()
@@ -1225,6 +1306,11 @@ class Offer extends Model
     public function watcher_ids(): HasMany
     {
         return $this->hasMany(OfferWatcher::class);
+    }
+
+    public function medical_offer_clients(): HasMany
+    {
+        return $this->hasMany(MedicalOfferClient::class);
     }
 
     public function sales_comms(): HasMany

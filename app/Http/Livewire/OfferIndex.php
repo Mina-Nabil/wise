@@ -273,7 +273,7 @@ class OfferIndex extends Component
                     'relatives.*.relation' => 'required|in:' . implode(',', Relative::RELATIONS),
                     'relatives.*.gender' => 'nullable|in:' . implode(',', Customer::GENDERS),
                     'relatives.*.phone' => 'nullable|string|max:255',
-                    'relatives.*.birth_date' => 'nullable|date',
+                    'relatives.*.birth_date' => 'required|date',
                 ]);
                 $this->owner->setRelatives($this->relatives);
             }
@@ -294,6 +294,11 @@ class OfferIndex extends Component
 
         $res = Offer::newOffer($this->owner, $this->type, $this->item_value, $this->item_title, $this->item_desc, $this->note, $combinedDateTime, $item, $this->isRenewal, $this->inFavorTo, $renewal_soldPolicy?->policy_number, $renewal_soldPolicy?->id);
         if ($res) {
+            if($res->is_medical && $this->relatives && count($this->relatives)){
+                foreach ($this->relatives as $r) {
+                    $res->addMedicalClient($r['name'], Carbon::parse($r['birth_date']));
+                }
+            }
             return redirect(route('offers.show', $res->id));
         } else {
             $this->alert('failed', 'Server error');
