@@ -1127,7 +1127,9 @@ class SoldPolicy extends Model
 
     public static function exportHay2aReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null, $is_penalized = null, Carbon $paid_from = null, Carbon $paid_to = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, $paid_from, $paid_to)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, false, $paid_from, $paid_to)->get();
+
+        $cancelledPolicies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, true, $is_penalized, $paid_from, $paid_to)->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_hay2a_report.xlsx'));
         if (!$template) {
@@ -1162,6 +1164,31 @@ class SoldPolicy extends Model
             $activeSheet->getCell('N' . $i)->setValue($policy->gross_premium);
             $activeSheet->getCell('O' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $i++;
+        }
+
+        $activeSheet = $newFile->getSheet(2);
+
+        $i = 4;
+        /** @var User */
+        $user = Auth::user();
+        $activeSheet->getCell('D1')->setValue("سجل الوثائق والعمولات  للربع الرابع عن عام {$issued_from->format('Y')}");
+        $activeSheet->getCell('D2')->setValue("  الفترة من {$issued_from->format('d / m / Y')} حتى {$issued_to->format('d / m / Y')}   ");
+
+        $k = 1;
+        foreach ($cancelledPolicies as $policy) {
+            $activeSheet->getCell('A' . $i)->setValue($k++);
+            $activeSheet->getCell('B' . $i)->setValue($policy->policy_number);
+            $activeSheet->getCell('C' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);
+            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
+            $activeSheet->getCell('E' . $i)->setValue($policy->policy->company->name);
+            $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
+            $activeSheet->getCell('G' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
+            $activeSheet->getCell('H' . $i)->setValue($policy->client->full_name);
+            if ($user->can('viewCommission', self::class)) {
+                $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid); //total_policy_comm
+                // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
+            }
+
         }
 
         $writer = new Xlsx($newFile);
