@@ -834,7 +834,7 @@ class Offer extends Model
         }
 
         $activeSheet->getCell('B1')->setValue($policy->company->name . ' - ' . $policy->name);
-        $activeSheet->getCell('B2')->setCellValueExplicit($totalPrem);
+        $activeSheet->getCell('B2')->setValueExplicit($totalPrem);
         $activeSheet->getCell('C2')->setValue($totalGross);
 
         $writer = new Xlsx($newFile);
