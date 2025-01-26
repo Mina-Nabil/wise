@@ -502,10 +502,13 @@
                                                                         POLICY
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        START DATE
+                                                                        START 
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        END DATE
+                                                                        END 
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        PYMT 
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
                                                                         POLICY NUMBER
@@ -559,6 +562,10 @@
                                                                         <td class="table-td">
                                                                             <span
                                                                                 class="block date-text">{{ \Carbon\Carbon::parse($policy->expiry)->format('d-m-Y') }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ \Carbon\Carbon::parse($policy->client_payment_date)->format('d-m-Y') }}</span>
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <a href="{{ route('sold.policy.show', $policy->id) }}"
