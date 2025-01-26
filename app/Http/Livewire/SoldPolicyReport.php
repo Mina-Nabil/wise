@@ -30,6 +30,7 @@ class SoldPolicyReport extends Component
     public $brandSection = false;
     public $companySection = false;
     public $PolicySection = false;
+    public $paidSection = false;
     public $issuedSection = false;
     public $mainSalesName;
 
@@ -49,6 +50,8 @@ class SoldPolicyReport extends Component
     public $issued_to;
     public $expiry_from;
     public $expiry_to;
+    public $paid_from;
+    public $paid_to;
     public $main_sales_id;
     public $line_of_business;
     public $value_from;
@@ -71,6 +74,8 @@ class SoldPolicyReport extends Component
     public $Eissued_to;
     public $Eexpiry_from;
     public $Eexpiry_to;
+    public $Epaid_from;
+    public $Epaid_to;
     public $Emain_sales_id;
     public $Eline_of_business;
     public $Evalue_from;
@@ -455,6 +460,28 @@ class SoldPolicyReport extends Component
         $this->expiry_to = null;
     }
 
+    public function togglePaidDate()
+    {
+        $this->toggle($this->paidSection);
+        if ($this->paidSection) {
+            $this->Epaid_from = Carbon::parse($this->paid_from)->toDateString();
+            $this->Epaid_to = Carbon::parse($this->paid_to)->toDateString();
+        }
+    }
+
+    public function setPaidDates()
+    {
+        $this->paid_from = Carbon::parse($this->Epaid_from);
+        $this->paid_to = Carbon::parse($this->Epaid_to);
+        $this->toggle($this->paidSection);
+    }
+
+    public function clearPaidDates()
+    {
+        $this->paid_from = null;
+        $this->paid_to = null;
+    }
+
     public function toggleStartDate()
     {
         $this->toggle($this->startSection);
@@ -536,6 +563,8 @@ class SoldPolicyReport extends Component
                 $this->is_welcomed,
                 $this->is_penalized,
                 $this->is_cancelled,
+                $this->paid_from,
+                $this->paid_to,
             );
         }
     }
@@ -576,6 +605,8 @@ class SoldPolicyReport extends Component
                 $this->is_welcomed,
                 $this->is_penalized,
                 $this->is_cancelled,
+                $this->paid_from,
+                $this->paid_to,
             );
         }
     }
@@ -644,6 +675,8 @@ class SoldPolicyReport extends Component
             $this->is_welcomed,
             $this->is_penalized,
             $this->is_cancelled,
+            $this->paid_from,
+            $this->paid_to,
         )->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
