@@ -15,6 +15,8 @@ class LineField extends Model
         'field',
     ];
 
+    public $timestamps = false;
+
     public static function newLineField($line_of_business, $field)
     {
         try {
@@ -26,7 +28,7 @@ class LineField extends Model
             return $lineField;
         } catch (Exception $e) {
             report($e);
-            return false;
+            return $e->getMessage() ;
         }
     }
 
