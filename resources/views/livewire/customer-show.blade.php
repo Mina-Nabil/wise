@@ -4,7 +4,8 @@
         <div class="max-w-screen-lg">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                    <b>#{{ $customer->id }} - {{ $customer->first_name }} {{ $customer->middle_name }} {{ $customer->last_name }}
+                    <b>#{{ $customer->id }} - {{ $customer->first_name }} {{ $customer->middle_name }}
+                        {{ $customer->last_name }}
                         {{ $customer->arabic_first_name ? '-' : '' }} {{ $customer->arabic_first_name }}
                         {{ $customer->arabic_middle_name }} {{ $customer->arabic_last_name }} </b><iconify-icon
                         class="ml-3" style="position: absolute" wire:loading wire:target="changeSection"
@@ -191,90 +192,27 @@
 
 
                 @if ($section === 'profile')
+                    @if (!$customer->is_data_full)
+                        <div
+                            class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-danger-500 text-white dark:bg-danger-500
+                dark:text-slate-300 col-span-2">
+                            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                <div class="flex-1">
+                                    Customer's data is not full, can't create sold policy for this customer.
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     <div class="md:flex-1 rounded-md overlay max-w-[520px] min-w-\[var\(500px\)\] sm:col-span-2"
                         style="min-width: 400px;">
 
 
-                        {{-- <div class="card-body flex flex-col justify-center  bg-no-repeat bg-center bg-cover card p-4 active">
-                            <div class="card-text flex flex-col justify-between h-full menu-open">
-                                <p class="mb-2">
-                                    <b>Owned Cars ({{ $customer->cars->count() }})</b>
 
-                                </p>
-
-                                @if ($customer->cars->isEmpty())
-                                    <p class="text-center m-5 text-primary">No cars added to this customer.</p>
-                                @else
-                                    @foreach ($customer->cars as $car)
-                                        <div class="card-body flex flex-col justify-between border rounded-lg h-full menu-open p-0 mb-5" style="border-color:rgb(224, 224, 224)">
-                                            <div class="break-words flex items-center my-1 m-4">
-                                                <h3 class="text-base capitalize py-3">
-                                                    <ul class="m-0 p-0 list-none">
-                                                        <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                                            {{ $car->car->car_model->brand->name }}
-                                                            <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
-                                                        </li>
-                                                        <li class="inline-block relative top-[3px] text-base font-Inter ">
-                                                            {{ $car->car->car_model->name }}
-                                                            <iconify-icon icon="heroicons-outline:chevron-right" class="relative text-slate-500 text-sm rtl:rotate-180"></iconify-icon>
-                                                        </li>
-                                                        <li class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white mr-5">
-                                                            {{ $car->car->category }}
-                                                        </li>
-                                                    </ul>
-                                                </h3>
-                                                @if ($car->payment_frequency)
-                                                    <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize rounded-3xl float-right">{{ $car->payment_frequency }} Payment</span>
-                                                @endif
-
-                                                <div class="ml-auto">
-                                                    <div class="relative">
-                                                        <div class="dropdown relative">
-                                                            <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
-                                                            </button>
-                                                            <ul
-                                                                class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
-                                                shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                                <li>
-                                                                    <button wire:click="editThisCar({{ $car->id }})"
-                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                                    dark:hover:text-white">
-                                                                        Edit</button>
-                                                                </li>
-                                                                <li>
-                                                                    <button wire:click="deleteThisCar({{ $car->id }})"
-                                                                        class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                                                    dark:hover:text-white">
-                                                                        Delete</button>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <hr><br>
-                                            <div class="grid grid-cols-2 mb-4">
-                                                <div class="border-r ml-5">
-                                                    <p><b>Sum insured</b></p>
-                                                    <p>{{ number_format($car->sum_insured, 0, '.', ',') }}</p>
-                                                </div>
-                                                <div class="ml-5">
-                                                    <p><b>Insurance payment</b></p>
-                                                    <p>{{ number_format($car->insurance_payment, 0, '.', ',') }}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @endif
-
-                                <button wire:click="toggleAddCar" class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm float-right">Add car</button>
-
-                            </div>
-                        </div> --}}
-
-                        <div class="card-body flex flex-col justify-center bg-cover card p-4 ">
+                        <div 
+                        @class([
+                            "card-body flex flex-col justify-center bg-cover card p-4 " ,
+                            "ring-1 ring-danger-500" => (!$customer->telephone1)
+                        ]) >
                             <div class="card-text flex flex-col justify-between  menu-open">
                                 <p>
                                     <b>Phones</b>
@@ -341,14 +279,18 @@
                                 Phone</button>
                         </div>
 
-                        <div class="card-body flex flex-col justify-center bg-cover card p-4 mt-5">
+                        <div @class([
+                            "card-body flex flex-col justify-center bg-cover card p-4 mt-5",
+                            "ring-1 ring-danger-500" => (!$customer->address_city)
+                        ])
+                        >
                             <div class="card-text flex flex-col justify-between  menu-open">
                                 <p>
                                     <b>Addresses</b>
                                 </p>
                                 <br>
                                 @if ($customer->addresses->isEmpty())
-                                    <p class="text-center m-5 text-primary">No addresses added to this customer.</p>
+                                    <p class="text-center m-5 text-primary">No addresses added to this customer. Please add an address with a city</p>
                                 @else
                                     @foreach ($customer->addresses as $address)
                                         <p><b>Address {{ $loop->index + 1 }}</b>
@@ -444,7 +386,8 @@
                             </div>
                         </div>
 
-                        <button wire:click="ConfirmDeleteCustomer({{ $customer->id }})" class="btn btn-danger mt-2">Delete Customer</button>
+                        <button wire:click="ConfirmDeleteCustomer({{ $customer->id }})"
+                            class="btn btn-danger mt-2">Delete Customer</button>
                     </div>
 
                     <div class="md:flex-1 rounded-md overlay  max-w-[400px] min-w-[310px] sm:col-span-2">
@@ -465,8 +408,13 @@
 
 
 
-                        <div class="card-body  flex flex-col justify-center mt-5 bg-cover card p-4 active">
-                            <div class="card-text flex flex-col justify-between h-full menu-open">
+                        <div  
+                        @class([
+                            "card-body flex flex-col justify-center mt-5 bg-cover card p-4 active",
+                            "ring-1 ring-danger-500" => (!$customer->first_name || !$customer->last_name || !$customer->middle_name || !$customer->arabic_first_name || !$customer->arabic_last_name || !$customer->arabic_middle_name || $customer->id_number || $customer->id_doc)
+                        ])
+                        >
+                            <div class="card-text flex flex-col justify-between h-full menu-open ">
                                 <p>
                                     <b>Customer</b>
                                     <span class="float-right cursor-pointer text-slate-500"
@@ -750,10 +698,10 @@
                                     <div>
                                         <b class="mr-auto">{{ ucfirst($followup->title) }}</b>
                                         @if ($followup->line_of_business)
-                                            <p>{{ ucwords(str_replace('_',' ',$followup->line_of_business)) }}</p>
+                                            <p>{{ ucwords(str_replace('_', ' ', $followup->line_of_business)) }}</p>
                                         @endif
                                     </div>
-                                    
+
                                     <div class="ml-auto">
                                         <div class="relative flex">
                                             @if ($followup->is_meeting)
@@ -1425,19 +1373,19 @@
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">First Name</label>
                                     <input id="firstName" type="text"
-                                        class="form-control @error('firstName') !border-danger-500 @enderror"
+                                        @class(['form-control', '!border-danger-500' => ($errors->has('firstName') || !$customer->first_name)])
                                         wire:model.defer="firstName">
                                 </div>
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Middle Name</label>
                                     <input id="firstName" type="text"
-                                        class="form-control @error('middleName') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('middleName') || !$customer->middle_name)])
                                         wire:model.defer="middleName">
                                 </div>
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Last Name</label>
                                     <input id="firstName" type="text"
-                                        class="form-control @error('lastName') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('lastName') || !$customer->last_name)])
                                         wire:model.defer="lastName">
                                 </div>
                             </div>
@@ -1460,19 +1408,19 @@
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Arabic First Name</label>
                                     <input id="firstName" type="text"
-                                        class="form-control @error('ArabicFirstName') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('ArabicFirstName') || !$customer->arabic_first_name)])
                                         wire:model.defer="ArabicFirstName">
                                 </div>
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Arabic Middle Name</label>
                                     <input id="firstName" type="text"
-                                        class="form-control @error('ArabicMiddleName') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('ArabicMiddleName') || !$customer->arabic_middle_name)])
                                         wire:model.defer="ArabicMiddleName">
                                 </div>
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Arabic Last Name</label>
                                     <input id="firstName" type="text"
-                                        class="form-control @error('ArabicLastName') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('ArabicLastName') || !$customer->arabic_last_name)])
                                         wire:model.defer="ArabicLastName">
                                 </div>
                             </div>
@@ -1563,7 +1511,7 @@
                                 <div class="input-area">
                                     <label for="lastName" class="form-label">ID Number</label>
                                     <input id="lastName" type="text"
-                                        class="form-control @error('idNumber') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('idNumber') || !$customer->id_number)])
                                         wire:model="idNumber">
                                 </div>
                                 <div class="input-area">
@@ -1582,7 +1530,8 @@
                                 <div class="input-area col-span-3">
                                     @if (!$idDoc)
                                         <label for="lastName" class="form-label">ID document</label>
-                                        <input wire:model="idDoc" type="file" class="form-control w-full "
+                                        <input wire:model="idDoc" type="file" 
+                                        @class(['form-control w-full', '!border-danger-500' => (!$customer->id_doc)])
                                             name="basic" />
                                     @else
                                         <span class="block min-w-[140px] text-left">
@@ -1763,51 +1712,51 @@
 
 
 @if ($deleteCustomerId)
-<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-    tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-    style="display: block;">
-    <div class="modal-dialog relative w-auto pointer-events-none">
-        <div
-            class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+        tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
+        style="display: block;">
+        <div class="modal-dialog relative w-auto pointer-events-none">
+            <div
+                class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                         rounded-md outline-none text-current">
-            <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                <!-- Modal header -->
-                <div
-                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
-                    <h3 class="text-base font-medium text-white dark:text-white capitalize">
-                        Delete Customer
-                    </h3>
-                    <button wire:click="DismissDeleteCustomer" type="button"
-                        class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                    <!-- Modal header -->
+                    <div
+                        class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                            Delete Customer
+                        </h3>
+                        <button wire:click="DismissDeleteCustomer" type="button"
+                            class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                     dark:hover:bg-slate-600 dark:hover:text-white"
-                        data-bs-dismiss="modal">
-                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-                <!-- Modal body -->
-                <div class="p-6 space-y-4">
-                    <h6 class="text-base text-slate-900 dark:text-white leading-6">
-                        Are you sure ! Do you want to delete customer ?
-                    </h6>
-                </div>
-                <!-- Modal footer -->
-                <div
-                    class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                    <button wire:click="deleteCustomer" data-bs-dismiss="modal"
-                        class="btn inline-flex justify-center text-white bg-danger-500">Yes,
-                        Delete</button>
+                            data-bs-dismiss="modal">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-4">
+                        <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                            Are you sure ! Do you want to delete customer ?
+                        </h6>
+                    </div>
+                    <!-- Modal footer -->
+                    <div
+                        class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                        <button wire:click="deleteCustomer" data-bs-dismiss="modal"
+                            class="btn inline-flex justify-center text-white bg-danger-500">Yes,
+                            Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endif
 
 
@@ -2312,7 +2261,7 @@
                                 <div class="input-area">
                                     <label for="lastName" class="form-label">City</label>
                                     <input list="cities" type="text"
-                                        class="form-control @error('EditedCity') !border-danger-500 @enderror"
+                                        @class(['form-control', '!border-danger-500' => ($errors->has('EditedCity') || !$customer->address_city)])
                                         wire:model="EditedCity">
                                     <datalist id="cities">
                                         @foreach ($cities as $city)
@@ -2323,7 +2272,7 @@
                                 <div class="input-area">
                                     <label for="lastName" class="form-label">Country</label>
                                     <input list="countries" type="text"
-                                        class="form-control @error('EditedCountry') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('EditedCountry'))])
                                         wire:model="EditedCountry">
                                     <datalist id="countries">
                                         @foreach ($countries as $country)
@@ -3137,10 +3086,10 @@
                         <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                             @if ($is_meeting)
                                 Add Meeting
-                                @else 
+                            @else
                                 Add Follow up
                             @endif
-                            
+
                         </h3>
                         <button wire:click="closeFollowupSection" type="button"
                             class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
@@ -3168,18 +3117,20 @@
                             @enderror
 
                             @if (!$is_meeting)
-                            <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="hidden" name="checkbox"
-                                        wire:model="is_meeting">
-                                    <span
-                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                        <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
-                                            class="h-[10px] w-[10px] block m-auto opacity-0"></span>
-                                    <span
-                                        class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">is Meeting ?</span>
-                                </label>
-                            </div>
+                                <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="hidden" name="checkbox"
+                                            wire:model="is_meeting">
+                                        <span
+                                            class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
+                                                alt=""
+                                                class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                        <span
+                                            class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">is
+                                            Meeting ?</span>
+                                    </label>
+                                </div>
                             @endif
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
@@ -3260,10 +3211,10 @@
                         <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                             @if ($is_meeting)
                                 Edit Meeting
-                                @else 
+                            @else
                                 Edit Follow up
                             @endif
-                            
+
                         </h3>
                         <button wire:click="closeEditFollowup" type="button"
                             class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"

@@ -206,7 +206,7 @@ class Corporate extends Model
                 "number"    =>  $number,
                 "is_default"    =>  $is_default
             ]);
-            if ($is_default) $tmp->setAsDefault();
+            if ($is_default || $this->phones()->get()->count() == 1) $tmp->setAsDefault();
             AppLog::info("Adding corporate phone", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -300,13 +300,12 @@ class Corporate extends Model
     public function setStatus($status, $reason, $note = null): status|false
     {
         try {
-           return $this->status()->updateOrCreate([], [
+            return $this->status()->updateOrCreate([], [
                 "status"    =>  $status,
                 "reason"    =>  $reason,
                 "note"    =>  $note,
                 "user_id"      =>  Auth::id(),
             ]);
-
         } catch (Exception $e) {
             report($e);
             return false;
@@ -467,7 +466,7 @@ class Corporate extends Model
 
                 $lead->editInfo($company_name, $company_arabic_name);
                 $lead->setOwner($user->id);
-                
+
                 if ($company_phone)
                     $lead->addPhone(Phone::TYPE_MOBILE, $company_phone, false, true);
 
@@ -608,27 +607,59 @@ class Corporate extends Model
     }
 
     public function delete()
-{
-    if ($this->offers()->exists() || $this->soldpolicies()->exists()) {
-        throw new Exception("Cannot delete corporate with existing offers or sold policies.");
+    {
+        if ($this->offers()->exists() || $this->soldpolicies()->exists()) {
+            throw new Exception("Cannot delete corporate with existing offers or sold policies.");
+        }
+
+        // Delete related models
+        $this->phones()->delete();
+        $this->addresses()->delete();
+        $this->status()->delete();
+        $this->followups()->delete();
+        $this->contacts()->delete();
+        $this->bank_accounts()->delete();
+        $this->interests()->delete();
+
+        return parent::delete();
     }
-
-    // Delete related models
-    $this->phones()->delete();
-    $this->addresses()->delete();
-    $this->status()->delete();
-    $this->followups()->delete();
-    $this->contacts()->delete();
-    $this->bank_accounts()->delete();
-    $this->interests()->delete();
-
-    return parent::delete();
-}
 
     ///attributes
     public function getFullNameAttribute()
     {
         return $this->arabic_name ? $this->arabic_name : $this->name;
+    }
+
+    public function getTelephone1Attribute()
+    {
+        $this->load('phones');
+        return $this->phones->where('is_default', 1)->first()?->number;
+    }
+
+    public function getContact1Attribute()
+    {
+        $this->load('contacts');
+        return $this->contacts->first();
+    }
+
+    public function getAddressCityAttribute()
+    {
+        $this->load('addresses');
+        return $this->addresses->first()?->city;
+    }
+
+    public function getTelephone2Attribute()
+    {
+        $this->load('phones');
+        return $this->phones->where('is_default', 0)->first()?->number;
+    }
+
+    public function getIsDataFullAttribute()
+    {
+        if (!$this->name || !$this->arabic_name || !$this->contact1?->name || !$this->contact1?->phone || !$this->address_city || !$this->telephone1) return false;
+
+        if (!$this->commercial_record || !$this->commercial_record_doc || !$this->tax_id || !$this->tax_id_doc) return false;
+        return true;
     }
 
     ///scopes
@@ -678,21 +709,6 @@ class Corporate extends Model
         });
         return $query->latest();
     }
-
-    ///attributes
-
-    public function getTelephone1Attribute()
-    {
-        $this->load('phones');
-        return $this->phones->where('is_default', 1)->first()?->number;
-    }
-
-    public function getAddressCityAttribute()
-    {
-        $this->load('addresses');
-        return $this->addresses->where('is_default', 1)->first()?->city;
-    }
-
 
     //scopes
     public function scopeLeads($query)

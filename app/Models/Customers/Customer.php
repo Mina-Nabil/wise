@@ -395,7 +395,7 @@ class Customer extends Model
                 "type"      =>  $type,
                 "number"    =>  $number
             ]);
-            if ($is_default) $tmp->setAsDefault();
+            if ($is_default || $this->phones()->get()->count() == 1) $tmp->setAsDefault();
             AppLog::info("Adding customer phone", loggable: $this);
             return $tmp;
         } catch (Exception $e) {
@@ -852,7 +852,7 @@ class Customer extends Model
     public function getAddressCityAttribute()
     {
         $this->load('addresses');
-        return $this->addresses->where('is_default', 1)->first()?->city;
+        return $this->addresses->first()?->city;
     }
 
     public function getTelephone1Attribute()
@@ -865,6 +865,14 @@ class Customer extends Model
     {
         $this->load('phones');
         return $this->phones->where('is_default', 0)->first()?->number;
+    }
+
+    public function getIsDataFullAttribute()
+    {
+        if(!$this->first_name || !$this->last_name || !$this->middle_name || !$this->arabic_first_name || !$this->arabic_last_name || !$this->arabic_middle_name) return false; 
+
+        if(!$this->telephone1 || $this->address_city || $this->id_number || $this->id_doc) return false;
+        return true;
     }
 
     ///scopes

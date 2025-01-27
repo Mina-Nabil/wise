@@ -1102,12 +1102,17 @@ class OfferShow extends Component
 
     public function changeOptionState($optionId, $status)
     {
-        $res = $this->offer->setOptionState($optionId, $status);
-        if ($res) {
-            $this->mount($this->offer->id);
-            $this->alert('info', $res);
-        } else {
-            $this->alert('failed', 'server error');
+        try{
+
+            $res = $this->offer->setOptionState($optionId, $status);
+            if ($res) {
+                $this->mount($this->offer->id);
+                $this->alert('info', $res);
+            } else {
+                $this->alert('failed', 'server error');
+            }
+        } catch (Exception $e){
+            $this->alert('failed', $e->getMessage());
         }
     }
 

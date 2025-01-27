@@ -969,6 +969,8 @@ class Offer extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateOptions', $this)) return false;
 
+        if($state == OfferOption::STATUS_CLNT_ACPT && !$this->client->is_full_data) throw new Exception("Client data is not complete, please check client's profile", 22);
+
         $option = OfferOption::findOrFail($option_id);
         $option->status = $state;
         try {
@@ -991,6 +993,7 @@ class Offer extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Option accept failed", desc: $e->getMessage(), loggable: $this);
+            if($e->getCode() == 22) throw $e;
             return false;
         }
     }

@@ -64,10 +64,26 @@
                 </div>
 
                 @if ($section === 'profile')
+                    @if (!$corporate->is_data_full)
+                        <div
+                            class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-danger-500 text-white dark:bg-danger-500
+        dark:text-slate-300 col-span-2">
+                            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                                <div class="flex-1">
+                                    Corporate's data is not full, can't create sold policy for this profile.
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     <div class="flex-1 rounded-md overlay max-w-[520px] min-w-\[var\(500px\)\]"
                         style="min-width: 400px;">
+
+
                         {{-- Phones Section --}}
-                        <div class="card-body flex flex-col justify-center bg-cover card p-4">
+                        <div @class([
+                            'card-body flex flex-col justify-center bg-cover card p-4 ',
+                            'ring-1 ring-danger-500' => !$corporate->telephone1,
+                        ])>
                             <div class="card-text flex flex-col justify-between  menu-open">
                                 <p>
                                     <b>Phones</b>
@@ -138,8 +154,11 @@
                         </div>
 
                         {{-- contacts section --}}
-                        <div
-                            class="card-body flex flex-col justify-center mt-5  bg-no-repeat bg-center bg-cover card p-4 active">
+                        <div @class([
+                            'card-body flex flex-col justify-center mt-5  bg-no-repeat bg-center bg-cover card p-4 active',
+                            'ring-1 ring-danger-500' =>
+                                !$corporate->contact1?->name || !$corporate->contact1?->phone,
+                        ])>
                             <div class="card-text flex flex-col justify-between h-full menu-open">
                                 <p class="mb-2">
                                     <b>Contact</b>
@@ -176,7 +195,10 @@
                         </div>
 
                         {{-- addresses section --}}
-                        <div class="card-body flex flex-col justify-center bg-cover card p-4 mt-5">
+                        <div @class([
+                            'card-body flex flex-col justify-center bg-cover card p-4 mt-5',
+                            'ring-1 ring-danger-500' => !$corporate->address_city,
+                        ])>
                             <div class="card-text flex flex-col justify-between  menu-open">
                                 <p>
                                     <b>Addresses</b>
@@ -211,13 +233,20 @@
                             </div>
                         </div>
 
-                        <button wire:click="ConfirmDeleteCorporate({{ $corporate->id }})" class="btn btn-danger mt-2">Delete Corporate</button>
+                        <button wire:click="ConfirmDeleteCorporate({{ $corporate->id }})"
+                            class="btn btn-danger mt-2">Delete Corporate</button>
                     </div>
 
                     <div class="flex-1 rounded-md overlay  max-w-[400px] min-w-[310px]">
 
                         {{-- Corporate info section --}}
-                        <div class="card-body  flex flex-col justify-center bg-cover card p-4 active">
+                        <div 
+                        @class([
+                            'card-body  flex flex-col justify-center bg-cover card p-4 active',
+                            'ring-1 ring-danger-500' => (!$corporate->name || !$corporate->arabic_name || !$corporate->commercial_record || !$corporate->commercial_record_doc || !$corporate->tax_id || !$corporate->tax_id_doc),
+                        ])
+                        
+                        >
                             <div class="card-text flex flex-col justify-between h-full menu-open">
                                 <p>
                                     <b>Corporate</b>
@@ -786,9 +815,8 @@
                             data-bs-dismiss="modal">
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                     clip-rule="evenodd"></path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -814,51 +842,50 @@
 
 
 @if ($deleteCorporateId)
-<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-    tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-    style="display: block;">
-    <div class="modal-dialog relative w-auto pointer-events-none">
-        <div
-            class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+        tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
+        style="display: block;">
+        <div class="modal-dialog relative w-auto pointer-events-none">
+            <div
+                class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                         rounded-md outline-none text-current">
-            <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                <!-- Modal header -->
-                <div
-                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
-                    <h3 class="text-base font-medium text-white dark:text-white capitalize">
-                        Delete Corporate
-                    </h3>
-                    <button wire:click="DismissDeleteCorporate" type="button"
-                        class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                    <!-- Modal header -->
+                    <div
+                        class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                        <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                            Delete Corporate
+                        </h3>
+                        <button wire:click="DismissDeleteCorporate" type="button"
+                            class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                     dark:hover:bg-slate-600 dark:hover:text-white"
-                        data-bs-dismiss="modal">
-                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-                <!-- Modal body -->
-                <div class="p-6 space-y-4">
-                    <h6 class="text-base text-slate-900 dark:text-white leading-6">
-                        Are you sure ! Do you want to delete corporate ?
-                    </h6>
-                </div>
-                <!-- Modal footer -->
-                <div
-                    class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                    <button wire:click="deleteCorporate" data-bs-dismiss="modal"
-                        class="btn inline-flex justify-center text-white bg-danger-500">Yes,
-                        Delete</button>
+                            data-bs-dismiss="modal">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-4">
+                        <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                            Are you sure ! Do you want to delete corporate ?
+                        </h6>
+                    </div>
+                    <!-- Modal footer -->
+                    <div
+                        class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                        <button wire:click="deleteCorporate" data-bs-dismiss="modal"
+                            class="btn inline-flex justify-center text-white bg-danger-500">Yes,
+                            Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endif
 
 @if ($deletePhoneId)
@@ -882,9 +909,8 @@
                             data-bs-dismiss="modal">
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                     clip-rule="evenodd"></path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -929,9 +955,8 @@
                             data-bs-dismiss="modal">
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                     clip-rule="evenodd"></path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -976,9 +1001,8 @@
                             data-bs-dismiss="modal">
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                     clip-rule="evenodd"></path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1023,7 +1047,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1096,7 +1120,7 @@
                                 <div class="input-area">
                                     <label for="lastName" class="form-label">City</label>
                                     <input list="cities" type="text"
-                                        class="form-control @error('city') !border-danger-500 @enderror"
+                                        @class(['form-control', '!border-danger-500' => ($errors->has('city') || !$corporate->address_city)])
                                         wire:model="city">
                                     <datalist id="cities">
                                         @foreach ($cities as $city)
@@ -1169,7 +1193,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1315,7 +1339,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1441,7 +1465,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1566,7 +1590,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1578,7 +1602,7 @@
                             <div class="input-area mt-3">
                                 <label for="firstName" class="form-label">Full Name</label>
                                 <input id="lastName" type="text"
-                                    class="form-control @error('contactName') !border-danger-500 @enderror"
+                                @class(['form-control', '!border-danger-500' => ($errors->has('contactName') || !$corporate->contact1?->name)])
                                     wire:model="contactName">
                             </div>
                             @error('contactName')
@@ -1606,7 +1630,7 @@
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Phone</label>
                                     <input id="lastName" type="text"
-                                        class="form-control @error('contactPhone') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('contactPhone') || !$corporate->contact1?->phone)])
                                         wire:model="contactPhone">
                                 </div>
                             </div>
@@ -1654,7 +1678,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1743,7 +1767,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1818,7 +1842,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1891,7 +1915,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -1905,13 +1929,13 @@
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Name</label>
                                     <input id="lastName" type="text"
-                                        class="form-control @error('name') !border-danger-500 @enderror"
+                                        @class(['form-control', '!border-danger-500' => ($errors->has('name') || !$corporate->name)])
                                         wire:model.defer="name">
                                 </div>
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Arabic Name</label>
                                     <input id="lastName" type="text"
-                                        class="form-control @error('arabicName') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('arabicName') || !$corporate->arabic_name)])
                                         wire:model.defer="arabicName">
                                 </div>
                             </div>
@@ -1939,14 +1963,15 @@
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Commercial Record</label>
                                     <input id="lastName" type="text"
-                                        class="form-control @error('commercialRecord') !border-danger-500 @enderror"
+                                    @class(['form-control', '!border-danger-500' => ($errors->has('commercialRecord') || !$corporate->commercial_record)])
                                         wire:model.defer="commercialRecord">
                                 </div>
                                 <div class="input-area">
                                     <label for="lastName" class="form-label">Commercial record document</label>
                                     @if (!$commercialRecordDoc)
                                         <input wire:model.defer="commercialRecordDoc" type="file"
-                                            class="form-control w-full " name="basic" />
+                                            @class(["form-control w-full", '!border-danger-500' => $errors->has('commercialRecordDoc') || !$corporate->commercial_record_doc])
+                                            name="basic" />
                                     @else
                                         <span class="block min-w-[140px] text-left">
                                             <span class="inline-block text-center text-sm mx-auto py-1">
@@ -1978,14 +2003,15 @@
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Tax ID</label>
                                     <input id="lastName" type="text"
-                                        class="form-control @error('taxId') !border-danger-500 @enderror"
+                                    @class(["form-control",  '!border-danger-500' => $errors->has('taxId') || !$corporate->tax_id])  
                                         wire:model.defer="taxId">
                                 </div>
                                 <div class="input-area">
                                     <label for="lastName" class="form-label">Tax ID document</label>
                                     @if (!$taxIdDoc)
                                         <input wire:model.defer="taxIdDoc" type="file"
-                                            class="form-control w-full " name="basic" />
+                                        @class(["form-control w-full", '!border-danger-500' => $errors->has('taxIdDoc') || !$corporate->tax_id_doc])    
+                                        name="basic" />
                                     @else
                                         <span class="block min-w-[140px] text-left">
                                             <span class="inline-block text-center text-sm mx-auto py-1">
@@ -2527,9 +2553,8 @@
                             data-bs-dismiss="modal">
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                     clip-rule="evenodd"></path>
                             </svg>
                             <span class="sr-only">Close modal</span>
@@ -2573,7 +2598,7 @@
                             <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
                                 </path>
                             </svg>
                             <span class="sr-only">Close modal</span>
