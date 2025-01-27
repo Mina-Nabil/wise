@@ -310,7 +310,7 @@
                             <a href="{{ url('/fields') }}" class="navItem @yield('fields')">
                                 <span class="flex items-center">
                                     <iconify-icon class="nav-icon"
-                                        icon="material-symbols:policy-outline-rounded"></iconify-icon>
+                                        icon="solar:text-field-focus-bold"></iconify-icon>
                                     <span>Line Fields</span>
                                 </span>
                             </a>
