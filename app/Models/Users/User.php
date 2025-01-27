@@ -32,10 +32,13 @@ class User extends Authenticatable
     const FILES_DIRECTORY = 'users/';
     const MORPH_TYPE = 'user';
 
+    const FINANCE_ASTN_PAGES = ['accounts', 'entry-title-index'];
+
     //All User types
     const TYPE_SALES = 'sales';
     const TYPE_OPERATIONS = 'operations';
     const TYPE_FINANCE = 'finance';
+    const TYPE_FINANCE_ASSISTANT = 'finance_assistant';
     const TYPE_COURIER = 'courier';
     const TYPE_MANAGER = 'manager';
     const TYPE_HR = 'hr';
@@ -48,7 +51,8 @@ class User extends Authenticatable
         self::TYPE_FINANCE,
         self::TYPE_OPERATIONS,
         self::TYPE_HR,
-        self::TYPE_MANAGER
+        self::TYPE_MANAGER,
+        self::TYPE_FINANCE_ASSISTANT,
     ];
 
     protected $fillable = [
@@ -251,6 +255,10 @@ class User extends Authenticatable
     {
         return $query->where('type', self::TYPE_FINANCE);
     }
+    public function scopeFinanceAssistant($query)
+    {
+        return $query->where('type', self::TYPE_FINANCE_ASSISTANT);
+    }
     public function scopeSearch($query, $search)
     {
         $splittedText = explode(' ', $search);
@@ -314,6 +322,11 @@ class User extends Authenticatable
     public function getIsFinanceAttribute()
     {
         return $this->type == self::TYPE_FINANCE;
+    }
+
+    public function getIsFinanceAssistantAttribute()
+    {
+        return $this->type == self::TYPE_FINANCE_ASSISTANT;
     }
 
     public function getIsHRAttribute()

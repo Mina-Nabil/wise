@@ -125,8 +125,6 @@ class CreateJournalEntry extends Component
 
     public function save()
     {
-        $this->authorize('create', JournalEntry::class);
-
         if ($this->cash_entry_type) {
             $this->validate([
                 'receiver_name' => 'required|string|max:255',
@@ -153,6 +151,8 @@ class CreateJournalEntry extends Component
                 'notes' => 'nullable|string', // Optional field; if provided, must be a string
             ]
         );
+
+        $this->authorize('createEntry', $this->selectedTitle);
 
         $formattedDebitAccounts = $this->reformatDebitAccounts();
         $formattedCreditAccounts = $this->reformatCreditAccounts();
@@ -183,7 +183,7 @@ class CreateJournalEntry extends Component
         if (is_string($res)) {
             $this->alert('failed', $res);
         } else if ($res) {
-            redirect(url('/entries'));
+            redirect(url('/accounts/entries'));
         } else {
             $this->alert('failed', 'server error');
         }
@@ -198,7 +198,6 @@ class CreateJournalEntry extends Component
 
     public function mount()
     {
-        $this->authorize('create', JournalEntry::class);
         $this->entry_titles = EntryTitle::withCount('accounts')
             ->orderBy('accounts_count', 'desc')
             ->limit(5)

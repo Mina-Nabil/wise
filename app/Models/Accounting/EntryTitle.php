@@ -2,6 +2,7 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Users\User;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -69,6 +70,22 @@ class EntryTitle extends Model
         return true;
     }
 
+    public function setAllowedUsers($user_ids)
+    {
+        /** @var User */
+        $logged_user = auth()->user();
+        if($logged_user->can('manageTitle', JournalEntry::class)){
+            $this->allowed_users()->sync($user_ids);
+            return;
+        }
+
+    }
+
+    public function allowedTo(User $user)
+    {
+        return $this->allowed_users()->get()->pluck('id')->contains($user->id);
+    }
+
     /** 
      * Must show a warning before the edit. That it's going to update title on old journal entries
      * @param $accounts should be an array of 
@@ -110,6 +127,11 @@ class EntryTitle extends Model
     public function entries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
+    }
+
+    public function allowed_users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'titles_users');
     }
 
     public function accounts(): BelongsToMany

@@ -564,9 +564,9 @@
 
                             </div>
 
-                            @if (Auth::user()->is_admin || Auth::user()->is_finance)
+                            @if (Auth::user()->is_admin || Auth::user()->is_finance || Auth::user()->is_finance_assistant)
                             <div class="text-right">
-                                <a href="/entries">
+                                <a href="/accounts/entries">
                                     <button class="btn btn-sm inline-flex justify-center btn-outline-light rounded-[25px]">Accounting APP</button>
                                 </a>
                             </div>

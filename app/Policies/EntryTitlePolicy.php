@@ -3,12 +3,11 @@
 namespace App\Policies;
 
 use App\Models\Accounting\EntryTitle;
-use App\Models\Accounting\JournalEntry;
 use App\Models\Users\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Log;
 
-class JournalEntryPolicy
+class EntryTitlePolicy
 {
     use HandlesAuthorization;
 
@@ -20,17 +19,17 @@ class JournalEntryPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->is_finance || $user->is_admin || $user->is_finance_assistant;
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Accounting\JournalEntry  $journalEntry
+     * @param  \App\Models\Accounting\EntryTitle  $entryTitle
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, JournalEntry $journalEntry)
+    public function view(User $user, EntryTitle $entryTitle)
     {
         return true;
     }
@@ -43,28 +42,6 @@ class JournalEntryPolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin || $user->is_finance;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     *
-     * @param  \App\Models\Users\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function review(User $user)
-    {
-        return true;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     *
-     * @param  \App\Models\Users\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function approve(User $user)
-    {
         return true;
     }
 
@@ -72,35 +49,59 @@ class JournalEntryPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Accounting\JournalEntry  $journalEntry
+     * @param  \App\Models\Accounting\EntryTitle  $entryTitle
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function manageTitle(User $user, JournalEntry $journalEntry = null)
+    public function update(User $user, EntryTitle $entryTitle)
     {
-        return $user->is_admin || $user->is_finance;
+        return true;
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determine whether the user can create title entry
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Accounting\JournalEntry  $journalEntry
+     * @param  \App\Models\Accounting\EntryTitle  $entryTitle
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, JournalEntry $journalEntry)
+    public function createEntry(User $user, EntryTitle $entryTitle)
     {
-        return true;
+        return $user->is_admin || $user->is_finance || $entryTitle->allowedTo($user);
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Accounting\JournalEntry  $journalEntry
+     * @param  \App\Models\Accounting\EntryTitle  $entryTitle
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, JournalEntry $journalEntry)
+    public function delete(User $user, EntryTitle $entryTitle)
     {
-        return true;
+        //
+    }
+
+    /**
+     * Determine whether the user can restore the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Accounting\EntryTitle  $entryTitle
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function restore(User $user, EntryTitle $entryTitle)
+    {
+        //
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Accounting\EntryTitle  $entryTitle
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function forceDelete(User $user, EntryTitle $entryTitle)
+    {
+        //
     }
 }

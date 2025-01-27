@@ -75,7 +75,7 @@
             <div id="bodyOverlay"
                 class="w-screen h-screen fixed top-0 bg-slate-900 bg-opacity-50 backdrop-blur-sm z-10 hidden"></div>
             <div class="logo-segment">
-                <a class="flex items-center" href="{{ url('/entries') }}">
+                <a class="flex items-center" href="{{ url('/accounts/entries') }}">
                     <img src="{{ asset('assets/images/logo/wise-acc-logo-wide.png') }}" class="black_logo" alt="logo">
                     <img src="{{ asset('assets/images/logo/wise-acc-logo-wide.png') }}" class="white_logo"
                         alt="logo">
@@ -125,7 +125,7 @@
                         </a>
                     </li>  
                     <li>
-                        <a href="{{ url('/entries') }}" class="navItem {{ $entries ?? '' }}">
+                        <a href="{{ url('accounts/entries') }}" class="navItem {{ $entries ?? '' }}">
                             <span class="flex items-center">
                                 <iconify-icon class=" nav-icon" icon="vaadin:money-exchange"></iconify-icon>
                                 <span>Journal Entry</span>
@@ -133,7 +133,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('/entries/unapproved') }}" class="navItem {{ $unapproved_entries ?? '' }}">
+                        <a href="{{ url('accounts/entries/unapproved') }}" class="navItem {{ $unapproved_entries ?? '' }}">
                             <span class="flex items-center">
                                 <iconify-icon class=" nav-icon" icon="material-symbols:do-not-touch-rounded"></iconify-icon>
                                 <span>Unapproved Entry</span>
@@ -141,7 +141,7 @@
                         </a>
                     </li> 
                     <li>
-                        <a href="{{ url('/titles') }}" class="navItem {{ $entry_titles ?? '' }}">
+                        <a href="{{ url('accounts/titles') }}" class="navItem {{ $entry_titles ?? '' }}">
                             <span class="flex items-center">
                                 <iconify-icon class=" nav-icon" icon="material-symbols:text-fields"></iconify-icon>
                                 <span>Titles</span>

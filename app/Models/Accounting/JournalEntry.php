@@ -89,9 +89,12 @@ class JournalEntry extends Model
         $is_seeding = false,
         $accounts = [],
     ): self|UnapprovedEntry|string|false {
+
+      /** @var EntryTitle */
+      $entry = EntryTitle::findOrFail($entry_title_id);
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
+        if (!$is_seeding && !$loggedInUser->can('createEntry', $entry)) return false;
         if (!$is_seeding) {
 
             $total_debit = 0;
@@ -106,8 +109,7 @@ class JournalEntry extends Model
         }
 
         //////////////////////////////loading & checking data//////////////////////////////
-        /** @var EntryTitle */
-        $entry = EntryTitle::findOrFail($entry_title_id);
+  
         $day_serial = self::getTodaySerial();
 
         if (!$revert_entry_id && !$approver_id && !$entry->isEntryValid($accounts)) return UnapprovedEntry::newEntry(

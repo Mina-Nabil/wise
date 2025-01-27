@@ -34,7 +34,7 @@
                 </button>
             @endcan
             @can('create', \App\Models\Accounting\Account::class)
-                <a href="{{ url('/entries/new') }}">
+                <a href="{{ url('/accounts/entries/new') }}">
                     <button wire:click="openAddNewModal"
                         class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                         <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
@@ -144,6 +144,9 @@
                                     <th scope="col" class=" table-th !p-1">
                                         #
                                     </th>
+                                    <th scope="col" class=" table-th !p-1">
+                                        User
+                                    </th>
 
                                     <th scope="col" class=" table-th ">
                                         Date
@@ -206,6 +209,7 @@
                                         </td>
 
                                         <td class="table-td"><b>{{ $entry->day_serial }} / #{{ $entry->id }}</b></td>
+                                        <td class="table-td"><b>{{ $entry->creator->username }}</b></td>
 
                                         <td class="table-td ">
                                             {{ \Carbon\Carbon::parse($entry->created_at)->format('Y-m-d H:i') }}</td>
@@ -332,12 +336,12 @@
                                     @if (in_array($entry->id, $showChildAccounts))
                                         @foreach ($entry->accounts as $childAccount)
                                             <tr class="bg-slate-50 dark:bg-slate-700">
-                                              <td class="table-td"></td>
+                                                <td class="table-td"></td>
                                                 <td class="table-td hover:bg-slate-600 " colspan="3"><b
                                                         class="hover:underline"
                                                         wire:click="redirectToAccount({{ $childAccount->id }})">{{ $childAccount->main_account->name }}
                                                         • {{ $childAccount->name }}</b></td>
-
+                                                <td class="table-td"></td>
                                                 <td class="table-td">
                                                     <span
                                                         class="badge bg-black-500 text-white capitalize inline-flex items-center">
@@ -357,12 +361,14 @@
 
                                                 <td class="table-td">
                                                     <b>{{ number_format($childAccount->pivot->amount, 2) }}
-                                                    {{ $childAccount->pivot->currency_amount ? ' (' . number_format($childAccount->pivot->currency_amount, 2) . ')' : '' }}</b>    
-                                                    
-                                                    </td>
+                                                        {{ $childAccount->pivot->currency_amount ? ' (' . number_format($childAccount->pivot->currency_amount, 2) . ')' : '' }}</b>
+
+                                                </td>
                                                 <td class="table-td">
-                                                    {{ number_format($childAccount->pivot->account_balance, 2) }} {{ $childAccount->pivot->account_foreign_balance ? ' (' . number_format($childAccount->pivot->account_foreign_balance, 2) . ')' : ''  }}  </td>
-                                            
+                                                    {{ number_format($childAccount->pivot->account_balance, 2) }}
+                                                    {{ $childAccount->pivot->account_foreign_balance ? ' (' . number_format($childAccount->pivot->account_foreign_balance, 2) . ')' : '' }}
+                                                </td>
+
                                                 <td class="table-td">{{ $childAccount->pivot->currency_rate }}</td>
                                                 <td class="table-td">
                                                     @if ($childAccount->pivot->doc_url)
@@ -424,7 +430,7 @@
                                                             Entries Found!</h2>
                                                         <p class="card-text">Try changing the filters or search terms
                                                             for this view.</p>
-                                                        <a href="{{ url('/entries/new') }}"
+                                                        <a href="{{ url('/accounts/entries/new') }}"
                                                             class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">New
                                                             Entry</a>
                                                     </div>
@@ -474,7 +480,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -602,7 +608,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>

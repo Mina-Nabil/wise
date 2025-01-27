@@ -8,6 +8,7 @@ use Livewire\WithPagination;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Traits\AlertFrontEnd;
 use App\Models\Accounting\Account;
+use App\Models\Users\User;
 
 class EntryTitleIndex extends Component
 {
@@ -152,15 +153,37 @@ class EntryTitleIndex extends Component
         $this->reset(['TitleId', 'name', 'desc', 'isAddNewModalOpen']);
     }
 
+    /////users section
+    public $isAllowedModalOpen;
+    public $selectedEntryId;
+    public $loadedUsers = [];
+
+    public function openEditUsersModel($titleId){
+        $this->isAllowedModalOpen = true;
+        $title = EntryTitle::findOrFail($titleId);
+        $this->selectedEntryId = $title->id;
+        $this->loadedUsers = $title->allowed_users()->get()->pluck('id')->toArray();
+    }
+    public function editTitleUsers(){
+        $title = EntryTitle::findOrFail($this->selectedEntryId);
+        $title->setAllowedUsers($this->loadedUsers);
+        $this->closeUsersModal();
+    }
+    public function closeUsersModal(){
+        $this->reset(['isAllowedModalOpen', 'selectedEntryId', 'loadedUsers']);
+    }
+
     public function render()
     {
         $accounts_list = Account::all();
         $NATURES = Account::NATURES;
         $titles = EntryTitle::paginate(50);
+        $assistants = User::FinanceAssistant()->get();
         return view('livewire.entry-title-index', [
             'titles' => $titles,
             'NATURES' => $NATURES,
             'accounts_list' => $accounts_list,
+            'assistants' => $assistants,
         ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'entry_titles' => 'active']);
     }
 }

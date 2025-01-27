@@ -182,7 +182,7 @@
                                                         <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
                                                         <h2 class="card-title text-slate-900 dark:text-white mb-3">No Entries Found!</h2>
                                                         <p class="card-text">Try changing the filters or search terms for this view.</p>
-                                                        <a href="{{ url('/entries/new') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">New Entry</a>
+                                                        <a href="{{ url('/accounts/entries/new') }}" class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">New Entry</a>
                                                     </div>
                                                 </div>
                                             </div>
