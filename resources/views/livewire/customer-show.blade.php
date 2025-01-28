@@ -411,7 +411,7 @@
                         <div  
                         @class([
                             "card-body flex flex-col justify-center mt-5 bg-cover card p-4 active",
-                            "ring-1 ring-danger-500" => (!$customer->first_name || !$customer->last_name || !$customer->middle_name || !$customer->arabic_first_name || !$customer->arabic_last_name || !$customer->arabic_middle_name || $customer->id_number || $customer->id_doc)
+                            "ring-1 ring-danger-500" => (!$customer->first_name || !$customer->last_name || !$customer->middle_name || !$customer->arabic_first_name || !$customer->arabic_last_name || !$customer->arabic_middle_name || !$customer->id_number || !$customer->id_doc)
                         ])
                         >
                             <div class="card-text flex flex-col justify-between h-full menu-open ">
