@@ -971,7 +971,7 @@ class Offer extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateOptions', $this)) return false;
 
-        if ($state == OfferOption::STATUS_CLNT_ACPT && !$this->client->is_full_data) throw new Exception("Client data is not complete, please check client's profile", 22);
+        if ($state == OfferOption::STATUS_CLNT_ACPT && !$this->client->is_data_full) throw new Exception("Client data is not complete, please check client's profile", 22);
 
         $option = OfferOption::findOrFail($option_id);
         $option->status = $state;
