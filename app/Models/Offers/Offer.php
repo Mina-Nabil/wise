@@ -583,7 +583,8 @@ class Offer extends Model
                     ->get()->count();
                 if (!$approvedCount) return "No offer options approved";
                 break;
-
+            case self::STATUS_PENDING_SALES:
+                break;
             default:
                 return "Invalid status";
         }
@@ -751,7 +752,8 @@ class Offer extends Model
         }
     }
 
-    public function downloadMedicalTemplate() {
+    public function downloadMedicalTemplate()
+    {
 
         $template = IOFactory::load(resource_path('import/medical_template.xlsx'));
         if (!$template) {
@@ -765,7 +767,6 @@ class Offer extends Model
         $writer->save($public_file_path);
 
         return response()->download($public_file_path)->deleteFileAfterSend(true);
-
     }
 
     public function addMedicalClient($name, Carbon $birth_date)
@@ -777,7 +778,7 @@ class Offer extends Model
         try {
             $this->medical_offer_clients()->firstOrCreate([
                 "name"          =>  $name,
-            ],[
+            ], [
                 "birth_date"    =>  $birth_date->format('Y-m-d')
             ]);
             AppLog::info("Medical client added", loggable: $this);
@@ -799,7 +800,7 @@ class Offer extends Model
             try {
                 $name       = $activeSheet->getCell('A' . $i)->getValue();
                 $birth_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('B' . $i)->getValue());
-                if(!$name) continue;
+                if (!$name) continue;
                 $this->addMedicalClient($name, Carbon::parse($birth_date));
             } catch (Exception $e) {
                 report($e);
@@ -809,7 +810,8 @@ class Offer extends Model
         }
     }
 
-    public function downloadCalculatedMedicalTemplate($policy_id) {
+    public function downloadCalculatedMedicalTemplate($policy_id)
+    {
         /** @var Policy */
         $policy = Policy::findOrFail($policy_id);
         $template = IOFactory::load(resource_path('import/medical_template.xlsx'));
@@ -969,7 +971,7 @@ class Offer extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser?->can('updateOptions', $this)) return false;
 
-        if($state == OfferOption::STATUS_CLNT_ACPT && !$this->client->is_full_data) throw new Exception("Client data is not complete, please check client's profile", 22);
+        if ($state == OfferOption::STATUS_CLNT_ACPT && !$this->client->is_full_data) throw new Exception("Client data is not complete, please check client's profile", 22);
 
         $option = OfferOption::findOrFail($option_id);
         $option->status = $state;
@@ -993,7 +995,7 @@ class Offer extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Option accept failed", desc: $e->getMessage(), loggable: $this);
-            if($e->getCode() == 22) throw $e;
+            if ($e->getCode() == 22) throw $e;
             return false;
         }
     }
