@@ -1165,7 +1165,7 @@ class CustomerShow extends Component
         } elseif (!is_null($this->customer->id_doc_2) && (is_null($this->idDoc2))) {
             $idDoc2_url = null;
         } elseif (!is_null($this->customer->id_doc_2) && (!is_null($this->idDoc2))) {
-            if (is_string($this->idDoc)) {
+            if (is_string($this->idDoc2)) {
                 $this->idDoc2 = null;
                 $idDoc2_url = $this->customer->id_doc_2;
             }
