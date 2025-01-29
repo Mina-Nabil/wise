@@ -1165,7 +1165,8 @@ class Offer extends Model
             ]);
         });
 
-        return $query->groupBy('offers.id')->orderByDesc('due');
+        return $query->groupBy('offers.id')->latest();
+        // ->orderByDesc('due');
     }
 
     public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], Carbon $expiry_from = null, Carbon $expiry_to = null)
