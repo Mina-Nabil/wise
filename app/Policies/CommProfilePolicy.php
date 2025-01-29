@@ -65,7 +65,7 @@ class CommProfilePolicy
      */
     public function manage(User $user, CommProfile $commProfil)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**

@@ -119,8 +119,9 @@ class CommProfile extends Model
         $activeSheet = $newFile->getActiveSheet();
 
         $i = 3;
+
         foreach ($comms as $comm) {
-            $activeSheet->getCell('A' . $i)->setValue($comm->sold_policy->is_renewed ? 'تجديد' : 'اصدار');
+            $activeSheet->getCell('A' . $i)->setValue($comm->sold_policy->offer?->is_renewal ? 'تجديد' : 'اصدار');
             $activeSheet->getCell('B' . $i)->setValue($comm->sold_policy->policy_number);
             $activeSheet->getCell('C' . $i)->setValue($comm->sold_policy->client->name);
 
