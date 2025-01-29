@@ -3162,7 +3162,7 @@
                                     @foreach ($type_policies as $p)
                                         <option value="{{ $p->id }}"
                                             class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ $p->company->name }} - {{ $p->name }}
+                                            {{ $p->company?->name }} - {{ $p->name }}
                                         </option>
                                     @endforeach
 
