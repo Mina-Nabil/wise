@@ -1166,7 +1166,7 @@ class SoldPolicy extends Model
             $i++;
         }
 
-        $activeSheet = $newFile->getSheet(2);
+        $activeSheet = $newFile->getSheet(1);
 
         $i = 4;
         /** @var User */
