@@ -871,7 +871,7 @@ class Customer extends Model
     {
         if(!$this->first_name || !$this->last_name || !$this->middle_name || !$this->arabic_first_name || !$this->arabic_last_name || !$this->arabic_middle_name) return false; 
 
-        if(!$this->telephone1 || !$this->address_city || !$this->id_number || !$this->id_doc) return false;
+        if(!$this->telephone1 || !$this->address_city || !$this->id_number) return false;
         return true;
     }
 
