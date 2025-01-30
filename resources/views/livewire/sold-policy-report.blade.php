@@ -537,8 +537,7 @@
                                                                     <th scope="col" class="table-th ">
                                                                         CLIENT NAME
                                                                     </th>
-                                                                    <th scope="col" class="table-th ">
-                                                                    </th>
+                                                             
                                                                     <th scope="col" class="table-th ">
                                                                         NET PREM.
                                                                     </th>
@@ -631,25 +630,7 @@
                                                                                 </div>
                                                                             </div>
                                                                         </td>
-                                                                        <td class="table-td ">
-                                                                            @if ($policy->client->is_welcomed)
-                                                                                <span
-                                                                                    class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize cursor-pointer"
-                                                                                    wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')"><iconify-icon
-                                                                                        icon="fa6-solid:handshake"
-                                                                                        width="1.2em"
-                                                                                        height="1.2em"></iconify-icon>&nbsp;Welcomed</span>
-                                                                            @else
-                                                                                <span
-                                                                                    class="badge bg-danger-500 text-danger-500 bg-opacity-30 capitalize cursor-pointer"
-                                                                                    wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')">
-                                                                                    <iconify-icon
-                                                                                        icon="fa6-solid:handshake-simple-slash"
-                                                                                        width="1.2em"
-                                                                                        height="1.2em"></iconify-icon>
-                                                                                    &nbsp;Not Welcomed</span>
-                                                                            @endif
-                                                                        </td>
+                                                                        
                                                                         <td class="table-td ">
                                                                             <b>{{ number_format($policy->net_premium, 0, '.', ',') }}</b>
                                                                         </td>
@@ -694,6 +675,23 @@
                                                                                     {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y')  }}
                                                                                 </span>
                                                                             @endif
+                                                                            @if ($policy->client->is_welcomed)
+                                                                            <span
+                                                                                class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize cursor-pointer"
+                                                                                wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')"><iconify-icon
+                                                                                    icon="fa6-solid:handshake"
+                                                                                    width="1.2em"
+                                                                                    height="1.2em"></iconify-icon>&nbsp;Welcomed</span>
+                                                                        @else
+                                                                            <span
+                                                                                class="badge bg-danger-500 text-danger-500 bg-opacity-30 capitalize cursor-pointer"
+                                                                                wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')">
+                                                                                <iconify-icon
+                                                                                    icon="fa6-solid:handshake-simple-slash"
+                                                                                    width="1.2em"
+                                                                                    height="1.2em"></iconify-icon>
+                                                                                &nbsp;Not Welcomed</span>
+                                                                        @endif
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
