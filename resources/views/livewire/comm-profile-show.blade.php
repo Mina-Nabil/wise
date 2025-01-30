@@ -1558,7 +1558,7 @@
                         @foreach ($salesComms as $salesComm)
                             <option value="{{ $salesComm->id }}">
                                 {{ $salesComm->sold_policy?->policy_number }} -
-                                {{ $salesComm->sold_policy?->client?->name }} - {{ $salesComm->amount }}
+                                {{ $salesComm->sold_policy?->client?->name }} - {{ $salesComm->amount }} - {{ $salesComm->title }}
                             </option>
                         @endforeach
                     </select>
