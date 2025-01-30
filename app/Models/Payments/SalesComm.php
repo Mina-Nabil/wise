@@ -362,6 +362,10 @@ class SalesComm extends Model
     }
 
     ///attributes
+    public function getIsPaidAttribute()
+    {
+        return $this->status == self::PYMT_STATE_PAID;
+    }
     public function getIsNewAttribute()
     {
         return $this->status == self::PYMT_STATE_NOT_CONFIRMED;

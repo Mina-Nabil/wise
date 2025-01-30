@@ -2001,7 +2001,7 @@ class SoldPolicy extends Model
         $this->loadMissing('sales_comms', 'sales_comms.comm_profile');
         $sum = 0;
         foreach ($this->sales_comms as $s) {
-            if ($s->comm_profile->is_sales_out) {
+            if ($s->comm_profile->is_sales_out && $s->is_paid) {
                 $sum += $s->amount;
             }
         }
