@@ -512,25 +512,36 @@ class ClientPayment extends Model
     //Must use with include due
     public function scopeDueAfter(Builder $query, $days)
     {
-        return $query->whereRaw("
+        if (!Helpers::joined($query, 'sold_policies')) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+
+        $query->whereNull('sold_policies.cancellation_time')
+            ->whereRaw("
             ( DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY) > NOW() 
             AND 
             DATEDIFF( 
                 DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY) ,
                 NOW() 
             ) <= $days+1 ) ");
+        return $query;
     }
 
     //Must use with include due
     public function scopeDuePassed(Builder $query, $days)
     {
-        return $query->whereRaw("
+        if (!Helpers::joined($query, 'sold_policies')) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        $query->whereNull('sold_policies.cancellation_time')
+            ->whereRaw("
             ( DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY) < NOW() 
             AND 
             DATEDIFF( 
               NOW() ,
               DATE_ADD( IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start), INTERVAL policy_comm_conf.due_penalty DAY)  
             ) <= $days+1 ) ");
+        return $query;
     }
 
 
