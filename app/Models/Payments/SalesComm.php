@@ -391,6 +391,11 @@ class SalesComm extends Model
         $query->whereNot('status', self::PYMT_STATE_CANCELLED);
     }
 
+    public function scopeNotPaid(Builder $query)
+    {
+        $query->whereNot('status', self::PYMT_STATE_PAID);
+    }
+
     public function scopeNotPolicyCancelled(Builder $query)
     {
         if(!Helpers::joined($query, 'sold_policies')) {
