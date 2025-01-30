@@ -110,6 +110,8 @@ class CommProfile extends Model
     {
         $comms = $this->sales_comm()->bySoldPoliciesStartEnd($start, $end)
             ->with('sold_policy', 'sold_policy.client')
+            ->notCancelled()
+            ->notPolicyCancelled()
             ->get();
         $template = IOFactory::load(resource_path('import/account_statement.xlsx'));
         if (!$template) {

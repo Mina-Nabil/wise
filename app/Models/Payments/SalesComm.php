@@ -2,6 +2,7 @@
 
 namespace App\Models\Payments;
 
+use App\Helpers\Helpers;
 use App\Models\Business\SoldPolicy;
 use App\Models\Offers\Offer;
 use App\Models\Users\AppLog;
@@ -388,6 +389,14 @@ class SalesComm extends Model
     public function scopeNotCancelled(Builder $query)
     {
         $query->whereNot('status', self::PYMT_STATE_CANCELLED);
+    }
+
+    public function scopeNotPolicyCancelled(Builder $query)
+    {
+        if(!Helpers::joined($query, 'sold_policies')) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id');
+        }
+        $query->whereNull('sold_policies.cancellation_time');
     }
 
     public function scopeNotConfirmed(Builder $query)
