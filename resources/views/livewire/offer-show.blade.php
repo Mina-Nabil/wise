@@ -172,14 +172,13 @@
                                             </ul>
                                         </h3>
                                     @elseif($offer->medical_offer_clients->isNotEmpty())
-                                    <h3 class="text-base capitalize py-3">
-                                        Medical Offer Clients (Showing first 20)
-                                    </h3>
+                                        <h3 class="text-base capitalize py-3">
+                                            Medical Offer Clients (Showing first 20)
+                                        </h3>
                                     @elseif($offer->medical_offer_clients->isNotEmpty())
-                                    <h3 class="text-base capitalize py-3">
-                                       Application Fields
-                                    </h3>
-
+                                        <h3 class="text-base capitalize py-3">
+                                            Application Fields
+                                        </h3>
                                     @elseif($offer->item_title)
                                         <h3 class="text-base capitalize py-3">
                                             {{ $offer->item_title }}
