@@ -536,6 +536,9 @@
                                                 <th scope="col" class=" table-th ">
                                                     Policy
                                                 </th>
+                                                <th scope="col" class=" table-th ">
+                                                    Client
+                                                </th>
 
                                                 <th scope="col" class=" table-th ">
                                                     Amount
@@ -600,6 +603,12 @@
                                                                     {{-- {{ $comm->sales->first_name }} {{ $comm->sales->last_name }} --}}
                                                                 </span>
                                                             </span>
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="table-td ">
+                                                        <div class="text-lg text-success-500">
+                                                            {{ $comm->sold_policy?->client?->name }}
                                                         </div>
                                                     </td>
 
