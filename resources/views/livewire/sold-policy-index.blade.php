@@ -187,10 +187,10 @@
                                                                                 <span
                                                                                     class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Expired</span>
                                                                             @endif
-                                                                            @if ($soldPolicy->is_penalized)
+                                                                            @if ($policy->is_penalized)
                                                                             <span class="badge bg-danger-500 text-white capitalize">Penalty</span>
                                                                         @endif
-                                                                        @if ($soldPolicy->cancellation_time)
+                                                                        @if ($policy->cancellation_time)
                                                                             <span
                                                                                 class="badge bg-danger-500 text-slate-800 
                                                                         text-danger-500 bg-opacity-30 capitalize rounded-3xl">Cancelled
