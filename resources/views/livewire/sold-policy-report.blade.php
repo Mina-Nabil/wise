@@ -532,7 +532,7 @@
                                                                         PYMT 
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        POLICY NUMBER
+                                                                        NUMBER
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
                                                                         CLIENT NAME
