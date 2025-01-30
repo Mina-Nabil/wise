@@ -607,7 +607,7 @@
                                                     </td>
 
                                                     <td class="table-td ">
-                                                        <div class="text-lg text-success-500">
+                                                        <div class="text-lg">
                                                             {{ $comm->sold_policy?->client?->name }}
                                                         </div>
                                                     </td>
