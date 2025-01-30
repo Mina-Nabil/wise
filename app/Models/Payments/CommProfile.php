@@ -112,6 +112,7 @@ class CommProfile extends Model
             ->with('sold_policy', 'sold_policy.client')
             ->notCancelled()
             ->notPolicyCancelled()
+            ->notPolicyExpired()
             ->get();
         $template = IOFactory::load(resource_path('import/account_statement.xlsx'));
         if (!$template) {

@@ -399,6 +399,14 @@ class SalesComm extends Model
         $query->whereNull('sold_policies.cancellation_time');
     }
 
+    public function scopeNotPolicyExpired(Builder $query)
+    {
+        if(!Helpers::joined($query, 'sold_policies')) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id');
+        }
+        $query->where('sold_policies.expiry', '>', Carbon::now()->format('Y-m-d'));
+    }
+
     public function scopeNotConfirmed(Builder $query)
     {
         $query->where('status', self::PYMT_STATE_NOT_CONFIRMED);
