@@ -550,6 +550,9 @@
                                                                             SalesOut Paid
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
+                                                                            SalesOut Paid Date
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
                                                                             Expected
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
@@ -640,6 +643,9 @@
                                                                             </td>
                                                                             <td class="table-td ">
                                                                                 <b>{{ number_format($policy->sales_out_comm_paid, 0, '.', ',') }}</b>
+                                                                            </td>
+                                                                            <td class="table-td ">
+                                                                                <b>{{ $policy->sales_out_comm_paid_date }}</b>
                                                                             </td>
                                                                             <td class="table-td ">
                                                                                 <b>{{ number_format($policy->total_policy_comm, 0, '.', ',') }}</b>
