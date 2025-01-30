@@ -146,7 +146,10 @@ class OfferOption extends Model
         }
     }
     ////scopes
-
+    public function scopeClientSelected()
+    {
+        return $this->where('status', self::STATUS_CLNT_ACPT);
+    }
 
     ////relations
     public function offer(): BelongsTo

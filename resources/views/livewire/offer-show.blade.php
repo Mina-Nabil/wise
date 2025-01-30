@@ -403,7 +403,7 @@
                                     <b>Options ({{ $offer->options->count() }})</b>
 
                                 </p>
-                                @if ($offer->selected_option_id)
+                                @if ($offer->selected_option_id && $offer->options()->clientSelected()->get()->count())
                                     <div>
                                         <button class="btn btn-sm btn-primary float-right"
                                             wire:click="openGenerateSoldPolicy">Generate Sold Policy</button>
