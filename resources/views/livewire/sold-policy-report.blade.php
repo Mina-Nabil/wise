@@ -545,6 +545,9 @@
                                                                     @can('viewCommission',
                                                                         App\Models\Business\SoldPolicy::class)
                                                                         <th scope="col" class="table-th ">
+                                                                            SalesOut
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
                                                                             Expected
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
@@ -648,6 +651,9 @@
                                                                             <b>{{ number_format($policy->net_premium, 0, '.', ',') }}</b>
                                                                         </td>
                                                                         @can('viewCommission', $policy)
+                                                                            <td class="table-td ">
+                                                                                <b>{{ number_format($policy->sales_out_comm, 0, '.', ',') }}</b>
+                                                                            </td>
                                                                             <td class="table-td ">
                                                                                 <b>{{ number_format($policy->total_policy_comm, 0, '.', ',') }}</b>
                                                                             </td>
