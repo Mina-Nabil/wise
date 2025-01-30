@@ -608,18 +608,7 @@
                                                                         <td class="table-td">
                                                                             <div
                                                                                 class="flex space-x-3 items-center text-left rtl:space-x-reverse">
-                                                                                <div class="flex-none">
-                                                                                    <div
-                                                                                        class="h-10 w-10 rounded-full text-sm bg-[#E0EAFF] dark:bg-slate-700 flex flex-col items-center justify-center font-medium -tracking-[1px]">
-                                                                                        @if ($policy->client_type === 'customer')
-                                                                                            <iconify-icon
-                                                                                                icon="raphael:customer"></iconify-icon>
-                                                                                        @elseif($policy->client_type === 'corporate')
-                                                                                            <iconify-icon
-                                                                                                icon="mdi:company"></iconify-icon>
-                                                                                        @endif
-                                                                                    </div>
-                                                                                </div>
+                                                                              
                                                                                 <div
                                                                                     class="flex-1 font-medium text-sm leading-4 whitespace-nowrap">
                                                                                     <a class="hover:underline cursor-pointer"
