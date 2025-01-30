@@ -128,7 +128,7 @@ class CommProfile extends Model
             $activeSheet->getCell('A' . $i)->setValue($comm->sold_policy->offer?->is_renewal ? 'تجديد' : 'اصدار');
             $activeSheet->getCell('B' . $i)->setValue($comm->sold_policy->policy_number);
             $activeSheet->getCell('C' . $i)->setValue($comm->sold_policy->client->full_name);
-            $activeSheet->getCell('D' . $i)->setValue($comm->status);
+            $activeSheet->getCell('D' . $i)->setValue($comm->sold_policy->client_payments->first()->type / $comm->sold_policy->client_payments->first()->status);
 
             $activeSheet->getCell('E' . $i)->setValue((new Carbon($comm->sold_policy->start))->format('d-M-y'));
             $activeSheet->getCell('F' . $i)->setValue($comm->sold_policy->net_premium);
