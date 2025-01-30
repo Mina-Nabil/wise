@@ -1556,10 +1556,13 @@
                         wire:change="updateCommBox({{ $index }})">
                         <option value="">None</option>
                         @foreach ($salesComms as $salesComm)
-                            <option value="{{ $salesComm->id }}">
-                                {{ $salesComm->sold_policy?->policy_number }} -
-                                {{ $salesComm->sold_policy?->client?->name }} - {{ $salesComm->amount }} - {{ $salesComm->title }}
-                            </option>
+                            @if ($salesComm->sold_policy)
+                                <option value="{{ $salesComm->id }}">
+                                    {{ $salesComm->sold_policy?->policy_number }} -
+                                    {{ $salesComm->sold_policy?->client?->name }} - {{ $salesComm->amount }} -
+                                    {{ $salesComm->title }}
+                                </option>
+                            @endif
                         @endforeach
                     </select>
                     <button class="action-btn" wire:click="removeSalesComm({{ $index }})" type="button">
