@@ -77,6 +77,6 @@ class CommProfilePaymentPolicy
      */
     public function approve(User $user, CommProfilePayment $commProfilePayment)
     {
-        return $user->is_admin && ($commProfilePayment->needs_approval && $commProfilePayment->is_new);
+        return $user->is_admin || $user->is_finance;
     }
 }
