@@ -1039,6 +1039,7 @@ class CommProfileShow extends Component
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         $overrides = CommProfile::override()->get();
         $salesComms = SalesComm::NotTotalyPaid($this->profile->id)->with('sold_policy', 'sold_policy.client')
+        ->notCancelled()
             ->only2025()->get();
 
         $payments = $this->profile
