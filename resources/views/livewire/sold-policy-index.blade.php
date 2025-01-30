@@ -195,7 +195,7 @@
                                                                                 class="badge bg-danger-500 text-slate-800 
                                                                         text-danger-500 bg-opacity-30 capitalize rounded-3xl">Cancelled
                                                                                 on:
-                                                                                {{ \Carbon\Carbon::parse($soldPolicy->cancellation_time)->format('D d/m/Y') }}
+                                                                                {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y') }}
                                                                             </span>
                                                                         @endif
                                                                         </td>
