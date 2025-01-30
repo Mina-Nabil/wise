@@ -1996,6 +1996,18 @@ class SoldPolicy extends Model
         return $txt;
     }
 
+    public function getSalesOutCommPaidAttribute()
+    {
+        $this->loadMissing('sales_comms', 'sales_comms.comm_profile');
+        $sum = 0;
+        foreach ($this->sales_comms as $s) {
+            if ($s->comm_profile->is_sales_out) {
+                $sum += $s->amount;
+            }
+        }
+        return $sum;
+    }
+
     ///relations
     public function client(): MorphTo
     {
