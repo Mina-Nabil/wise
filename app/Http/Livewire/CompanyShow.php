@@ -7,6 +7,7 @@ use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Models\Payments\Invoice;
 use App\Traits\AlertFrontEnd;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -50,7 +51,20 @@ class CompanyShow extends Component
     public $last_name;
     public $note;
 
+    public $confirmInvoiceId;
+    public $confirmDate;
+
     public $Emailtypes = CompanyEmail::TYPES;
+
+
+    public function openConfirmInvoice(){
+        $this->confirmInvoiceId = true;
+    }
+
+    public function closeConfirmInvoice(){
+        $this->confirmInvoiceId = false;
+        $this->confirmDate = null;
+    }
 
     public function addEmail()
     {
@@ -74,12 +88,13 @@ class CompanyShow extends Component
         }
     }
 
-    public function confirmInvoice($id)
+    public function confirmInvoice()
     {
-        $res = Invoice::find($id)->confirmInvoice();
+        $res = Invoice::find($this->confirmInvoiceId)->confirmInvoice(Carbon::parse($this->confirmDate));
 
         if ($res) {
             $this->mount($this->company->id, false);
+            $this->closeConfirmInvoice();
             $this->alert('success', 'invoice confirmed');
         } else {
             $this->alert('failed', 'server error');

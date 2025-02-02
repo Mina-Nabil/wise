@@ -86,6 +86,12 @@ class Invoice extends Model
         }
     }
 
+    public function getIsConfirmedAttribute()
+    {
+        return !$this->commissions()->whereNull('payment_date')->exists();
+    }
+
+
     public function printInvoice()
     {
         $this->load('commissions', 'commissions.sold_policy', 'commissions.sold_policy.client');

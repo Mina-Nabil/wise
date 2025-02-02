@@ -180,6 +180,10 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
+                                                        Confirmation
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
                                                         Action
                                                     </th>
 
@@ -197,6 +201,11 @@
                                                         <td class="table-td ">{{ 'EGP ' . number_format($invoice->net_total, 2) }}</td>
                                                         <td class="table-td ">{{ $invoice->creator->full_name }}</td>
                                                         <td class="table-td ">
+                                                            @if($invoice->isconfirmed)
+                                                            <span class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl">Confirmed</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="table-td ">
                                                             <div>
                                                                 <div class="relative">
                                                                     <div class="dropstart relative">
@@ -204,7 +213,7 @@
                                                                             <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                         </button>
                                                                         <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                                            <li wire:click="$emit('showConfirmation', 'Are you sure you want to confirm this invoice?','black','confirmInvoice' , {{ $invoice->id }})">
+                                                                            <li wire:click='openConfirmInvoice({{ $invoice->id }})' wire:click="$emit('showConfirmation', 'Are you sure you want to confirm this invoice?','black','confirmInvoice' , {{ $invoice->id }})">
                                                                                 <a href="#"
                                                                                     class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
                                                                                     <iconify-icon icon="game-icons:confirmed"></iconify-icon>
@@ -509,9 +518,6 @@
 
     @endif
 
-
-
-
     @if ($editInfoSec)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 800px">
@@ -636,6 +642,60 @@
         </div>
     @endif
 
+    @if ($confirmInvoiceId)
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+        tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
+        style="display: block;">
+        <div class="modal-dialog relative w-auto pointer-events-none">
+            <div
+                class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                    <!-- Modal header -->
+                    <div
+                        class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                            Confirm Invoice 
+                        </h3>
+                        <button wire:click="closeConfirmInvoice" type="button"
+                            class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                            data-bs-dismiss="modal">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-4">
+                        <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                            Are you sure you want to confirm this invoice?
+                        </h6>
 
+                        <div class="input-area">
+                            <label for="confirmDate" class="form-label">Date*</label>
+                            <input id="confirmDate" type="date" class="form-control @error('confirmDate') !border-danger-500 @enderror"  wire:model.defer="confirmDate">
+                            @error('confirmDate')
+                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div
+                        class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                        <button wire:click="confirmInvoice" data-bs-dismiss="modal"
+                            class="btn inline-flex justify-center text-white bg-black-500">Yes,
+                            Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
 </div>
