@@ -438,6 +438,10 @@ class CommProfile extends Model
     {
         return $query->where('title', '=', "$text");
     }
+    public function scopeByUserIds($query, array $user_ids)
+    {
+        return $query->whereIn('user_id', $user_ids);
+    }
     public function scopeSearchBy($query, $text)
     {
         return $query->where('title', 'LIKE', "%$text%");

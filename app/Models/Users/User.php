@@ -284,7 +284,7 @@ class User extends Authenticatable
                 $ret[] = $i;
             }
         }
-        Log::info($ret);
+
         return $ret;
     }
 

@@ -69,14 +69,14 @@ class Invoice extends Model
 
 
     ///model functions
-    public function confirmInvoice()
+    public function confirmInvoice(Carbon $date = null)
     {
         try{
 
-            DB::transaction(function () {
+            DB::transaction(function () use ($date) {
                 /** @var CompanyCommPayment */
                 foreach ($this->commissions()->get() as $comm) {
-                    $comm->setAsPaid();
+                    $comm->setAsPaid($date);
                 }
             });
             return true;

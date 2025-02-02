@@ -162,6 +162,23 @@ class ClientPayment extends Model
             AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
+    public function setNote($note = null)
+    {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+
+        try {
+            AppLog::info("Setting Client Payment note", loggable: $this);
+            return $this->update([
+                "note"          =>  $note,
+
+            ]);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Setting Client Payment note failed", desc: $e->getMessage(), loggable: $this);
+        }
+    }
 
     public function setAssignedTo($assigned_to_id)
     {
