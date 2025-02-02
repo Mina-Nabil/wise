@@ -14,6 +14,8 @@
 
     <div class="card">
 
+
+
         <header class=" card-header noborder">
             <div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Start Balance</p>
@@ -34,6 +36,14 @@
             <input type="text" class="form-control w-auto d-inline-block cursor-pointer" style="width:auto"
                 name="datetimes" id="reportrange" />
         </header>
+
+        <header class="card-header noborder">
+            <iconify-icon wire:loading wire:target="searchText" class="loading-icon text-lg"
+                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search..."
+                    wire:model="searchText">
+        </header>
+
         <div class="card-body px-6 pb-6">
             <div class="overflow-x-auto -mx-6">
                 <div class="inline-block min-w-full align-middle">

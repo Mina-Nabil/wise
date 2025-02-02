@@ -12,6 +12,7 @@ class AccountShow extends Component
 {
     use WithPagination ,ToggleSectionLivewire;
     public $page_title = 'Account';
+    public $searchText;
 
     public $account;
     public $accountId;
@@ -39,7 +40,7 @@ class AccountShow extends Component
     {
         $fromDate = Carbon::parse($this->fromDate);
         $toDate = Carbon::parse($this->toDate);
-        $entries = collect(Account::getEntries($this->accountId, Carbon::parse($fromDate), Carbon::parse($toDate)));
+        $entries = collect(Account::getEntries($this->accountId, Carbon::parse($fromDate), Carbon::parse($toDate),$this->searchText));
 
         return view('livewire.Accounting.account-show', ['entries' => $entries])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }

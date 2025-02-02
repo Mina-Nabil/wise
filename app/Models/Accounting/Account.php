@@ -31,28 +31,29 @@ class Account extends Model
         'limit',
         'balance',
         'foreign_balance',
-        'default_currency'
+        'default_currency',
     ];
 
     const NATURE_CREDIT = 'credit';
     const NATURE_DEBIT = 'debit';
-    const NATURES = [
-        self::NATURE_DEBIT,
-        self::NATURE_CREDIT,
-    ];
+    const NATURES = [self::NATURE_DEBIT, self::NATURE_CREDIT];
 
     ////static functions
-    public static function getEntries($account_id, Carbon $from, Carbon $to)
+    public static function getEntries($account_id, Carbon $from, Carbon $to, $search = null)
     {
         return DB::table('journal_entries')
             ->join('entry_accounts', 'entry_accounts.journal_entry_id', '=', 'journal_entries.id')
             ->join('entry_titles', 'entry_titles.id', '=', 'journal_entries.entry_title_id')
             ->join('users', 'users.id', '=', 'journal_entries.user_id')
             ->where('entry_accounts.account_id', $account_id)
-            ->whereBetween('journal_entries.created_at', [
-                $from->format('Y-m-d H:i'),
-                $to->format('Y-m-d H:i'),
-            ])
+            ->whereBetween('journal_entries.created_at', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('journal_entries.id', 'like', "%{$search}%")
+                    ->orWhere('entry_titles.name', 'like', "%{$search}%")
+                    ->orWhere('journal_entries.comment', 'like', "%{$search}%");
+                });
+            })
             ->groupBy('journal_entries.id')
 
             ->select('journal_entries.*', 'account_foreign_balance', 'account_balance', 'currency_rate', 'doc_url', 'users.username', 'entry_titles.name')
@@ -65,25 +66,26 @@ class Account extends Model
 
     public static function newAccount($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $is_seeding = false, $default_currency = JournalEntry::CURRENCY_EGP): self|false
     {
-
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$is_seeding && !$loggedInUser->can('create', self::class)) return false;
+        if (!$is_seeding && !$loggedInUser->can('create', self::class)) {
+            return false;
+        }
 
         $newAccount = new self([
-            "code"      =>  self::getNextCode($main_account_id, $parent_account_id),
-            "name"      =>  $name,
-            "nature"    =>  $nature,
-            "parent_account_id"  =>  $parent_account_id,
-            "main_account_id"  =>  $main_account_id,
-            "desc"      =>  $desc,
-            "balance"   =>  0,
-            "foreign_balance"   =>  0,
-            "default_currency"   =>  $default_currency,
+            'code' => self::getNextCode($main_account_id, $parent_account_id),
+            'name' => $name,
+            'nature' => $nature,
+            'parent_account_id' => $parent_account_id,
+            'main_account_id' => $main_account_id,
+            'desc' => $desc,
+            'balance' => 0,
+            'foreign_balance' => 0,
+            'default_currency' => $default_currency,
         ]);
         try {
             $newAccount->save();
-            AppLog::info("Created account", loggable: $newAccount);
+            AppLog::info('Created account', loggable: $newAccount);
             return $newAccount;
         } catch (Exception $e) {
             report($e);
@@ -98,11 +100,13 @@ class Account extends Model
             DB::transaction(function () use ($file) {
                 DB::statement('SET FOREIGN_KEY_CHECKS=0;');
                 self::query()->update([
-                    'parent_account_id' =>  null
+                    'parent_account_id' => null,
                 ]);
                 $titles = EntryTitle::all();
                 foreach ($titles as $t) {
-                    if ($t->id == 1) continue;
+                    if ($t->id == 1) {
+                        continue;
+                    }
                     $t->accounts()->sync([]);
                     $t->delete();
                 }
@@ -129,9 +133,8 @@ class Account extends Model
                 $found_balances = [];
                 $endLoop = false;
                 for ($i = 2; $i <= $highestRow; $i++) {
-
                     $start_char = 'F';
-                    $account_name     =  $activeSheet->getCell('F' . $i)->getValue();
+                    $account_name = $activeSheet->getCell('F' . $i)->getValue();
 
                     while ($account_name == null) {
                         $start_char = chr(ord($start_char) - 1);
@@ -139,36 +142,46 @@ class Account extends Model
                             $endLoop = true;
                             break;
                         }
-                        $account_name =  $activeSheet->getCell($start_char . $i)->getValue();
+                        $account_name = $activeSheet->getCell($start_char . $i)->getValue();
                     }
-                    if ($endLoop) break;
+                    if ($endLoop) {
+                        break;
+                    }
                     $parent_name = $start_char == 'C' ? null : $activeSheet->getCell(chr(ord($start_char) - 1) . $i)->getValue();
-                    $main_account_name     =  $activeSheet->getCell('B' . $i)->getValue();
-                    $nature =  strtolower($activeSheet->getCell('G' . $i)->getValue());
-                    $desc   =  $activeSheet->getCell('H' . $i)->getValue();
-                    $balance =  $activeSheet->getCell('I' . $i)->getValue();
+                    $main_account_name = $activeSheet->getCell('B' . $i)->getValue();
+                    $nature = strtolower($activeSheet->getCell('G' . $i)->getValue());
+                    $desc = $activeSheet->getCell('H' . $i)->getValue();
+                    $balance = $activeSheet->getCell('I' . $i)->getValue();
 
                     try {
-                        $main_account = MainAccount::firstOrCreate([
-                            "name"  =>  $main_account_name
-                        ], [
-                            "code"  =>  MainAccount::getNextCode(),
-                            "type"  => MainAccount::getTypeByArabicName($main_account_name),
-                            "desc"  =>  $desc
-                        ]);
+                        $main_account = MainAccount::firstOrCreate(
+                            [
+                                'name' => $main_account_name,
+                            ],
+                            [
+                                'code' => MainAccount::getNextCode(),
+                                'type' => MainAccount::getTypeByArabicName($main_account_name),
+                                'desc' => $desc,
+                            ],
+                        );
                     } catch (QueryException $e) {
                         if ($e->getCode() == 23000) {
-                            $main_account = MainAccount::firstOrCreate([
-                                "name"  =>  $main_account_name
-                            ], [
-                                "code"  => MainAccount::getNextCode(),
-                                "type"  => MainAccount::getTypeByArabicName($main_account_name),
-                                "desc"  =>  $desc
-                            ]);
+                            $main_account = MainAccount::firstOrCreate(
+                                [
+                                    'name' => $main_account_name,
+                                ],
+                                [
+                                    'code' => MainAccount::getNextCode(),
+                                    'type' => MainAccount::getTypeByArabicName($main_account_name),
+                                    'desc' => $desc,
+                                ],
+                            );
                         }
                     }
 
-                    if (!$account_name) continue;
+                    if (!$account_name) {
+                        continue;
+                    }
                     $parent_account = null;
                     if ($parent_name) {
                         $parent_account = self::byName($parent_name)->first();
@@ -178,16 +191,20 @@ class Account extends Model
 
                     if ($balance) {
                         $found_balances[$tmpAccount->id] = [
-                            'nature'    => ($balance > 0) ? $nature : (($nature == 'debit') ? 'credit' : 'debit'),
-                            'amount'    =>  abs($balance),
+                            'nature' => $balance > 0 ? $nature : ($nature == 'debit' ? 'credit' : 'debit'),
+                            'amount' => abs($balance),
                             'currency' => 'EGP',
                         ];
                     }
                 }
 
                 $starting_entry = JournalEntry::newJournalEntry(1, is_seeding: true, accounts: $found_balances);
-                if (!$starting_entry) throw new Exception("Import failed please check balances");
-                if (is_string($starting_entry)) throw new Exception($starting_entry);
+                if (!$starting_entry) {
+                    throw new Exception('Import failed please check balances');
+                }
+                if (is_string($starting_entry)) {
+                    throw new Exception($starting_entry);
+                }
             });
         } catch (Exception $e) {
             report($e);
@@ -198,11 +215,7 @@ class Account extends Model
 
     public static function getNextCode($main_account_id, $parent_account_id)
     {
-        return (DB::table("accounts")
-            ->selectRaw("MAX(code) as max_code")
-            ->where('parent_account_id', $parent_account_id)
-            ->where('main_account_id', $main_account_id)
-            ->first()?->max_code ?? 0) + 1;
+        return (DB::table('accounts')->selectRaw('MAX(code) as max_code')->where('parent_account_id', $parent_account_id)->where('main_account_id', $main_account_id)->first()?->max_code ?? 0) + 1;
     }
 
     ////model functions
@@ -218,7 +231,7 @@ class Account extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getSheet(0);
 
-        $activeSheet->getCell('C3')->setValue("تحليلى	" . $this->name);
+        $activeSheet->getCell('C3')->setValue('تحليلى	' . $this->name);
 
         $i = 8;
         foreach ($all_entries as $e) {
@@ -238,7 +251,7 @@ class Account extends Model
         }
 
         $writer = new Xlsx($newFile);
-        $file_path = SoldPolicy::FILES_DIRECTORY . "account_balance.xlsx";
+        $file_path = SoldPolicy::FILES_DIRECTORY . 'account_balance.xlsx';
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
 
@@ -251,9 +264,13 @@ class Account extends Model
         if (!$is_seeding) {
             /** @var User */
             $loggedInUser = Auth::user();
-            if (!$loggedInUser->can('update', $this)) return false;
+            if (!$loggedInUser->can('update', $this)) {
+                return false;
+            }
         }
-        if ($this->nature != $type) $amount = -1 * $amount;
+        if ($this->nature != $type) {
+            $amount = -1 * $amount;
+        }
 
         $this->balance = $this->balance + $amount;
         try {
@@ -270,9 +287,13 @@ class Account extends Model
         if (!$is_seeding) {
             /** @var User */
             $loggedInUser = Auth::user();
-            if (!$loggedInUser->can('update', $this)) return false;
+            if (!$loggedInUser->can('update', $this)) {
+                return false;
+            }
         }
-        if ($this->nature != $type) $amount = -1 * $amount;
+        if ($this->nature != $type) {
+            $amount = -1 * $amount;
+        }
 
         $this->foreign_balance = $this->foreign_balance + $amount;
         try {
@@ -293,19 +314,21 @@ class Account extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
+        if (!$loggedInUser->can('update', $this)) {
+            return false;
+        }
 
         try {
             $this->update([
-                "code"  =>  $code,
-                "name"  =>  $name,
-                "nature"  =>  $nature,
-                "main_account_id"  =>  $main_account_id,
-                "parent_account_id"  =>  $parent_account_id,
-                "desc"  =>  $desc,
-                "default_currency"   =>  $default_currency,
+                'code' => $code,
+                'name' => $name,
+                'nature' => $nature,
+                'main_account_id' => $main_account_id,
+                'parent_account_id' => $parent_account_id,
+                'desc' => $desc,
+                'default_currency' => $default_currency,
             ]);
-            AppLog::info("Updating account", loggable: $this);
+            AppLog::info('Updating account', loggable: $this);
             return $this->save();
         } catch (Exception $e) {
             report($e);
@@ -320,8 +343,11 @@ class Account extends Model
         $this->loadMissing('parent_account');
         $this->loadMissing('main_account');
 
-        if (!$this->parent_account) return $this->main_account->code . '-' . $this->code;
-        else return $this->parent_account->full_code . '-' . $this->code;
+        if (!$this->parent_account) {
+            return $this->main_account->code . '-' . $this->code;
+        } else {
+            return $this->parent_account->full_code . '-' . $this->code;
+        }
     }
 
     public function getTotalBalanceAttribute()
@@ -358,14 +384,14 @@ class Account extends Model
 
     public function scopeByName($query, $text)
     {
-        return $query->where('accounts.name',  "=", "$text");
+        return $query->where('accounts.name', '=', "$text");
     }
 
     public function scopeSearchBy($query, $text)
     {
-        return $query->where('accounts.name',  "LIKE", "%$text%");
+        return $query->where('accounts.name', 'LIKE', "%$text%");
     }
-    
+
     public function scopeByMainAccount($query, $main_account_id)
     {
         return $query->where('main_account_id ', $main_account_id);
@@ -373,10 +399,7 @@ class Account extends Model
 
     public function scopeOrderByCode($query)
     {
-        return $query->select('accounts.*')
-            ->join('main_accounts', 'main_accounts.id', '=', 'accounts.main_account_id')
-            ->orderBy('main_accounts.code')
-            ->orderBy('accounts.code');
+        return $query->select('accounts.*')->join('main_accounts', 'main_accounts.id', '=', 'accounts.main_account_id')->orderBy('main_accounts.code')->orderBy('accounts.code');
     }
 
     public function scopeParentAccounts($query)
