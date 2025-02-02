@@ -5,12 +5,13 @@ namespace App\Http\Livewire;
 use App\Models\Insurance\Company;
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
+use App\Traits\AlertFrontEnd;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 
 class ClientPaymentFinance extends Component
 {
-    use WithPagination;
+    use WithPagination, AlertFrontEnd;
 
     public $filteredStatus = ClientPayment::NOT_PAID_STATES;
     public $selectedCompany = null;
@@ -21,6 +22,28 @@ class ClientPaymentFinance extends Component
 
     public $sortColomn;
     public $sortDirection = 'asc';
+
+    public $noteSection;
+    public $note;
+
+    public function openNoteSection($id){
+        $this->noteSection = ClientPayment::findOrFail($id);
+        $this->note = $this->noteSection->note;
+    }
+
+    public function closeNoteSection(){
+        $this->reset(['noteSection','note']);
+    }
+
+    public function setNote(){
+        $res =$this->noteSection->setNote($this->note);
+        if ($res) {
+            $this->closeNoteSection();
+            $this->alert('success','Note updated!');
+        }else{
+            $this->alert('failed','server error');
+        }
+    }
 
     public function sortByColomn($colomn)
     {
