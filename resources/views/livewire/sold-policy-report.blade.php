@@ -16,14 +16,14 @@
                     </button>
                 @endif
                 @if ($issued_from && $issued_to)
-                @can('viewCommission', App\Models\Business\SoldPolicy::class)
-                    <button wire:click="exportHay2aReport"
-                        class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
-                        <span wire:loading.remove wire:target="exportHay2aReport">Export تقرير الهيئه</span>
-                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                            wire:target="exportHay2aReport" icon="line-md:loading-twotone-loop"></iconify-icon>
-                    </button>
-                @endcan
+                    @can('viewCommission', App\Models\Business\SoldPolicy::class)
+                        <button wire:click="exportHay2aReport"
+                            class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
+                            <span wire:loading.remove wire:target="exportHay2aReport">Export تقرير الهيئه</span>
+                            <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                wire:target="exportHay2aReport" icon="line-md:loading-twotone-loop"></iconify-icon>
+                        </button>
+                    @endcan
                 @endif
                 <div class="dropdown relative ">
                     <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
@@ -263,10 +263,10 @@
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearCreator">
-                                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em" wire:loading.remove
-                                            wire:target="clearCreator"></iconify-icon>
-                                        <iconify-icon class="text-xl spin-slow" icon="line-md:loading-twotone-loop" wire:loading
-                                            wire:target="clearCreator"></iconify-icon>
+                                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"
+                                            wire:loading.remove wire:target="clearCreator"></iconify-icon>
+                                        <iconify-icon class="text-xl spin-slow" icon="line-md:loading-twotone-loop"
+                                            wire:loading wire:target="clearCreator"></iconify-icon>
                                     </span>
                                 </button>
                             @endif
@@ -523,13 +523,13 @@
                                                                         POLICY
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        START 
+                                                                        START
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        END 
+                                                                        END
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        PYMT 
+                                                                        PYMT
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
                                                                         NUMBER
@@ -537,7 +537,7 @@
                                                                     <th scope="col" class="table-th ">
                                                                         CLIENT NAME
                                                                     </th>
-                                                             
+
                                                                     <th scope="col" class="table-th ">
                                                                         NET PREM.
                                                                     </th>
@@ -608,7 +608,7 @@
                                                                         <td class="table-td">
                                                                             <div
                                                                                 class="flex space-x-3 items-center text-left rtl:space-x-reverse">
-                                                                              
+
                                                                                 <div
                                                                                     class="flex-1 font-medium text-sm leading-4 whitespace-nowrap">
                                                                                     <a class="hover:underline cursor-pointer"
@@ -622,7 +622,7 @@
                                                                                 </div>
                                                                             </div>
                                                                         </td>
-                                                                        
+
                                                                         <td class="table-td ">
                                                                             <b>{{ number_format($policy->net_premium, 0, '.', ',') }}</b>
                                                                         </td>
@@ -666,27 +666,28 @@
                                                                             @endif
                                                                             @if ($policy->cancellation_time)
                                                                                 <span
-                                                                                    class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Cancelled on: 
-                                                                                    {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y')  }}
+                                                                                    class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Cancelled
+                                                                                    on:
+                                                                                    {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y') }}
                                                                                 </span>
                                                                             @endif
                                                                             @if ($policy->client->is_welcomed)
-                                                                            <span
-                                                                                class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize cursor-pointer"
-                                                                                wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')"><iconify-icon
-                                                                                    icon="fa6-solid:handshake"
-                                                                                    width="1.2em"
-                                                                                    height="1.2em"></iconify-icon>&nbsp;Welcomed</span>
-                                                                        @else
-                                                                            <span
-                                                                                class="badge bg-danger-500 text-danger-500 bg-opacity-30 capitalize cursor-pointer"
-                                                                                wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')">
-                                                                                <iconify-icon
-                                                                                    icon="fa6-solid:handshake-simple-slash"
-                                                                                    width="1.2em"
-                                                                                    height="1.2em"></iconify-icon>
-                                                                                &nbsp;Not Welcomed</span>
-                                                                        @endif
+                                                                                <span
+                                                                                    class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize cursor-pointer"
+                                                                                    wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')"><iconify-icon
+                                                                                        icon="fa6-solid:handshake"
+                                                                                        width="1.2em"
+                                                                                        height="1.2em"></iconify-icon>&nbsp;Welcomed</span>
+                                                                            @else
+                                                                                <span
+                                                                                    class="badge bg-danger-500 text-danger-500 bg-opacity-30 capitalize cursor-pointer"
+                                                                                    wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')">
+                                                                                    <iconify-icon
+                                                                                        icon="fa6-solid:handshake-simple-slash"
+                                                                                        width="1.2em"
+                                                                                        height="1.2em"></iconify-icon>
+                                                                                    &nbsp;Not Welcomed</span>
+                                                                            @endif
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -1161,17 +1162,47 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-                                <iconify-icon wire:loading wire:target='usersSearchText' class="loading-icon text-lg pt-2"
+                                <iconify-icon wire:loading wire:target='usersSearchText'
+                                    class="loading-icon text-lg pt-2"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                                 <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
                                     wire:model="usersSearchText">
 
                             </div>
 
-                            <div class="text-xs text-gray-500">
-                                Selected: {{ count($selectedCreators) }}
+                            <div class="text-xs text-gray-500 flex justify-between">
+                                <div>Selected: {{ count($selectedCreators) }}</div>
+                                <div>
+                                    <button wire:click='selectChildrens'
+                                        class="btn inline-flex justify-center btn-dark btn-sm">
+                                        <span wire:loading.remove wire:target="selectChildrens">Select all team</span>
+                                        <iconify-icon class="text-md spin-slow relative top-[1px]" wire:loading
+                                            wire:target="selectChildrens"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    </button>
+                                    <button wire:click='clearSelectedCreatorst'
+                                        class="btn inline-flex justify-center btn-light btn-sm">
+                                        <span wire:loading.remove wire:target="clearSelectedCreatorst">Clear</span>
+                                        <iconify-icon class="text-md spin-slow relative top-[1px]" wire:loading
+                                            wire:target="clearSelectedCreatorst"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    </button>
+
+                                    <div class="checkbox-area mt-2">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input wire:model.defer='isAddCommProfiles' type="checkbox"
+                                                class="hidden" name="checkbox">
+                                            <span
+                                                class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
+                                                    class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                            <span class="text-slate-500 dark:text-slate-400 text-sm leading-6">Add
+                                                Commission Profile ?</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            
+
                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 ">
                                 <thead
                                     class="border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">

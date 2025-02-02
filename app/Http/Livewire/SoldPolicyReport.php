@@ -90,8 +90,7 @@ class SoldPolicyReport extends Component
     public $selectedCreators = [];
     public $creatorSection = false;
     public $usersSearchText;
-
-
+    public $isAddCommProfiles = false;
 
     public $isWelcomedClientId;
     public $isWelcomedClientType;
@@ -101,6 +100,19 @@ class SoldPolicyReport extends Component
     public $commProfilesSection;
     public $Eprofiles = [];
     public $profiles = [];
+
+    public function selectChildrens()
+    {
+        $childrenIds = [];
+        foreach ($this->selectedCreators as $creator_id) {
+            $childrenIds = array_merge($childrenIds, User::find($creator_id)->children_ids_array);
+        }
+        $this->selectedCreators = array_unique(array_merge($this->selectedCreators, $childrenIds));
+    }
+
+    public function clearSelectedCreatorst(){
+        $this->reset(['selectedCreators']);
+    }
 
     public function openCreatorSection()
     {
@@ -117,16 +129,31 @@ class SoldPolicyReport extends Component
         $this->usersSearchText = null;
     }
 
-    public function clearCreator(){
+    public function clearCreator()
+    {
         $this->FilteredCreators = [];
     }
 
-    public function setCtreators(){
+    public function setCtreators()
+    {
         if (empty($this->selectedCreators)) {
             $this->FilteredCreators = [];
         } else {
             $this->FilteredCreators = User::whereIn('id', $this->selectedCreators)->get();
         }
+        if($this->isAddCommProfiles){
+            $commProfiles = CommProfile::byUserIds($this->selectedCreators)->get();
+            $this->Eprofiles = [];
+            foreach ($commProfiles as $p) {
+                $this->Eprofiles[] = json_encode([ // Convert array to JSON string
+                    'id' => $p->id,
+                    'title' => $p->title
+                ]);
+            }
+            $this->FilteredCreators = [];
+            $this->profiles = $this->Eprofiles;       
+        }
+
         $this->closeCreatorSection();
         // $this->resetPage();
     }
@@ -207,8 +234,6 @@ class SoldPolicyReport extends Component
         $this->companies = Company::when($this->searchCompany, fn($q) => $q->SearchBy($this->searchCompany))->get()->take(5);
     }
 
-
-
     public function clearpaid()
     {
         $this->is_paid = null;
@@ -279,9 +304,7 @@ class SoldPolicyReport extends Component
 
     public function updatedSearchPolicy()
     {
-        $this->InsurancePolicies = Policy::tableData()->searchBy($this->searchPolicy)
-            ->take(5)
-            ->get();
+        $this->InsurancePolicies = Policy::tableData()->searchBy($this->searchPolicy)->take(5)->get();
     }
 
     public function pushPolicy($id)
@@ -418,7 +441,6 @@ class SoldPolicyReport extends Component
         $this->line_of_business = null;
     }
 
-
     public function toggleMainSales()
     {
         $this->toggle($this->mainSalesSection);
@@ -526,11 +548,10 @@ class SoldPolicyReport extends Component
         $this->issued_to = null;
     }
 
-
     public function exportReport()
     {
         if (!empty($this->FilteredCreators)) {
-            $creators_ids = array_map(function($creator) {
+            $creators_ids = array_map(function ($creator) {
                 return $creator['id'];
             }, $this->FilteredCreators->toArray());
         } else {
@@ -538,41 +559,14 @@ class SoldPolicyReport extends Component
         }
 
         if (Auth::user()->is_admin) {
-            return SoldPolicy::exportReport(
-                $this->start_from,
-                $this->start_to,
-                $this->expiry_from,
-                $this->expiry_to,
-                $creators_ids,
-                $this->line_of_business,
-                $this->value_from,
-                $this->value_to,
-                $this->net_premium_to,
-                $this->net_premium_from,
-                $this->brand_ids,
-                $this->company_ids,
-                $this->policy_ids,
-                $this->is_valid,
-                $this->is_paid,
-                $this->search,
-                $this->is_renewal,
-                $this->main_sales_id,
-                $this->issued_from,
-                $this->issued_to,
-                collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
-                $this->is_welcomed,
-                $this->is_penalized,
-                $this->is_cancelled,
-                $this->paid_from,
-                $this->paid_to,
-            );
+            return SoldPolicy::exportReport($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to);
         }
     }
 
     public function exportHay2aReport()
     {
         if (!empty($this->FilteredCreators)) {
-            $creators_ids = array_map(function($creator) {
+            $creators_ids = array_map(function ($creator) {
                 return $creator['id'];
             }, $this->FilteredCreators->toArray());
         } else {
@@ -580,34 +574,7 @@ class SoldPolicyReport extends Component
         }
 
         if (Auth::user()->can('viewCommission', SoldPolicy::class)) {
-            return SoldPolicy::exportHay2aReport(
-                $this->start_from,
-                $this->start_to,
-                $this->expiry_from,
-                $this->expiry_to,
-                $creators_ids,
-                $this->line_of_business,
-                $this->value_from,
-                $this->value_to,
-                $this->net_premium_to,
-                $this->net_premium_from,
-                $this->brand_ids,
-                $this->company_ids,
-                $this->policy_ids,
-                $this->is_valid,
-                $this->is_paid,
-                $this->search,
-                $this->is_renewal,
-                $this->main_sales_id,
-                $this->issued_from,
-                $this->issued_to,
-                collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
-                $this->is_welcomed,
-                $this->is_penalized,
-                $this->is_cancelled,
-                $this->paid_from,
-                $this->paid_to,
-            );
+            return SoldPolicy::exportHay2aReport($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to);
         }
     }
 
@@ -624,7 +591,6 @@ class SoldPolicyReport extends Component
         $this->resetPage();
     }
 
-
     public function render()
     {
         if ($this->main_sales_id) {
@@ -637,7 +603,7 @@ class SoldPolicyReport extends Component
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
 
         if (!empty($this->FilteredCreators)) {
-            $creators_ids = array_map(function($creator) {
+            $creators_ids = array_map(function ($creator) {
                 return $creator['id'];
             }, $this->FilteredCreators->toArray());
         } else {
@@ -646,38 +612,11 @@ class SoldPolicyReport extends Component
 
         if ($this->creatorSection) {
             $users = User::search($this->usersSearchText)->take(5)->get();
-        } else {        
+        } else {
             $users = User::all();
         }
 
-        $policies = SoldPolicy::report(
-            $this->start_from,
-            $this->start_to,
-            $this->expiry_from,
-            $this->expiry_to,
-            $creators_ids,
-            $this->line_of_business,
-            $this->value_from,
-            $this->value_to,
-            $this->net_premium_to,
-            $this->net_premium_from,
-            $this->brand_ids,
-            $this->company_ids,
-            $this->policy_ids,
-            $this->is_valid,
-            $this->is_paid,
-            $this->search,
-            $this->is_renewal,
-            $this->main_sales_id,
-            $this->issued_from,
-            $this->issued_to,
-            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
-            $this->is_welcomed,
-            $this->is_penalized,
-            $this->is_cancelled,
-            $this->paid_from,
-            $this->paid_to,
-        )->paginate(30);
+        $policies = SoldPolicy::report($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to)->paginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
             'users' => $users,
