@@ -122,9 +122,6 @@
                                 <th scope="col" class=" table-th ">
                                     Policy#
                                 </th>
-                                <th scope="col" class=" table-th ">
-                                    Creator
-                                </th>
 
                                 <th scope="col" class=" table-th ">
                                     Client
@@ -202,9 +199,7 @@
                                                 class="block date-text">{{ $payment->sold_policy->policy_number }}</span>
                                         </a>
                                     </td>
-                                    <td class="table-td">
-                                        {{ $payment->sold_policy->creator->username }}
-                                    </td>
+                           
                                     <td class="table-td">
                                         {{ $payment->sold_policy->client->name }}
                                     </td>
