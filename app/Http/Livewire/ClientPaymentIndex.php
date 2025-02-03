@@ -39,7 +39,7 @@ class ClientPaymentIndex extends Component
     public function openNoteSection($id)
     {
         $this->noteSection = ClientPayment::findOrFail($id);
-        $this->note = $this->noteSection->note;
+        $this->note = $this->noteSection->finance_note;
     }
 
     public function closeNoteSection()
