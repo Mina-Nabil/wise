@@ -166,10 +166,6 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
-                                    Note
-                                </th>
-
-                                <th scope="col" class=" table-th ">
                                     Penalty
                                 </th>
                                 <th scope="col" class=" table-th ">
@@ -221,7 +217,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        {{-- @if ($payment->status === 'new')
+                                        @if ($payment->status === 'new')
                                             <div
                                                 class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
                                                 New
@@ -241,17 +237,8 @@
                                                 class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-danger-500 bg-danger-500 text-xs">
                                                 Cancelled
                                             </div>
-                                        @endif --}}
-                                        {{$payment->status}}
-                                    </td>
-
-                                    <td class="table-td">
-                                        @if ($payment->note)
-                                            <iconify-icon wire:click='openNoteSection({{ $payment->id }})' icon="basil:comment-outline" width="24"
-                                                height="24"></iconify-icon>
-                                        @else
-                                            <span wire:click='openNoteSection({{ $payment->id }})' class="text-xs">Add Note</span>
                                         @endif
+
                                     </td>
 
                                     <td class="table-td">
