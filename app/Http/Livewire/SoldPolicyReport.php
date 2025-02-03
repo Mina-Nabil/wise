@@ -598,7 +598,11 @@ class SoldPolicyReport extends Component
             $this->mainSalesName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
         }
 
-        $COMM_PROFILES = CommProfile::select('title', 'id')->get();
+        if ($this->commProfilesSection) {
+            $COMM_PROFILES = CommProfile::select('title', 'id')->get();
+        }else{
+            $COMM_PROFILES = null;
+        }
 
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
 
