@@ -221,7 +221,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        @if ($payment->status === 'new')
+                                        {{-- @if ($payment->status === 'new')
                                             <div
                                                 class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
                                                 New
@@ -241,7 +241,8 @@
                                                 class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-danger-500 bg-danger-500 text-xs">
                                                 Cancelled
                                             </div>
-                                        @endif
+                                        @endif --}}
+                                        {{$payment->status}}
                                     </td>
 
                                     <td class="table-td">
