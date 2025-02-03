@@ -1171,7 +1171,7 @@
                             </div>
 
                             <div class="text-xs text-gray-500 flex justify-between">
-                                <div>Selected: {{ count($selectedCreators) }}</div>
+                                {{-- <div>Selected: {{ count($selectedCreators) }}</div> --}}
                                 <div>
                                     <button wire:click='selectChildrens'
                                         class="btn inline-flex justify-center btn-dark btn-sm">
@@ -1224,7 +1224,7 @@
                                                 style="position: sticky; left: -25px;  z-index: 10;">
                                                 <div wire:key="{{ $user->id }}" class="checkbox-area">
                                                     <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="checkbox" wire:model="selectedCreators"
+                                                        <input type="checkbox" wire:model.defer="selectedCreators"
                                                             value="{{ $user->id }}" class="hidden">
                                                         <span
                                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
