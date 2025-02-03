@@ -65,6 +65,7 @@ class ClientPayment extends Model
         'type',
         'amount',
         'note',
+        'finance_note',
         'payment_date',
         'doc_url',
         'due',
@@ -162,7 +163,7 @@ class ClientPayment extends Model
             AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
-    public function setNote($note = null)
+    public function setFinanceNote($note = null)
     {
         /** @var User */
         $user = Auth::user();
@@ -171,7 +172,7 @@ class ClientPayment extends Model
         try {
             AppLog::info("Setting Client Payment note", loggable: $this);
             return $this->update([
-                "note"          =>  $note,
+                "finance_note"          =>  $note,
 
             ]);
         } catch (Exception $e) {
