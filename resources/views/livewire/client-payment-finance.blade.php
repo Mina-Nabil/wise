@@ -217,7 +217,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        <p><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
+                                        <p><b>{{ number_format($payment->amount, 0, '.', ',') }}
                                     </td>
 
                                     <td class="table-td">
