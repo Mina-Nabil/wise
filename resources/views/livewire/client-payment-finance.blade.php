@@ -205,11 +205,11 @@
                                     </td>
 
                                     <td class="table-td">
-                                        {{ \Carbon\Carbon::parse($payment->sold_policy->start)->format('D d/m/Y') }}
+                                        {{ \Carbon\Carbon::parse($payment->sold_policy->start)->format('d/m/Y') }}
                                     </td>
 
                                     <td class="table-td">
-                                        {{ $payment->due ? \Carbon\Carbon::parse($payment->due)->format('D d/m/Y') : 'Not set.' }}
+                                        {{ $payment->due ? \Carbon\Carbon::parse($payment->due)->format('d/m/Y') : 'Not set.' }}
                                     </td>
 
                                     <td class="table-td">
@@ -255,7 +255,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0)->format('D d/m/Y') }}
+                                        {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0)->format('d/m/Y') }}
                                     </td>
                                     <td class="table-td">
                                         {{ \Carbon\Carbon::now()->diffInDays(
