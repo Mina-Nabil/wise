@@ -91,6 +91,7 @@ class SoldPolicyReport extends Component
     public $creatorSection = false;
     public $usersSearchText;
     public $isAddCommProfiles = false;
+    public $selectAUser;
 
     public $isWelcomedClientId;
     public $isWelcomedClientType;
@@ -103,23 +104,51 @@ class SoldPolicyReport extends Component
 
     public function selectChildrens()
     {
-        $childrenIds = [];
-        foreach ($this->selectedCreators as $creator_id) {
-            $childrenIds = array_merge($childrenIds, User::find($creator_id)->children_ids_array);
+        $children = [];
+        foreach ($this->selectedCreators as $creator) {
+            $childUsers = User::find($creator['id'])->children_ids_array;
+            $childUsers = array_filter($childUsers, function ($childId) use ($creator) {
+                return $childId !== $creator['id'];
+            });
+            foreach ($childUsers as $childId) {
+                $child = User::find($childId); // Fetch user data
+                $children[$childId] = [
+                    'id' => $childId,
+                    'name' => $child->full_name, // Access the full_name property
+                ];
+            }
         }
-        $this->selectedCreators = array_unique(array_merge($this->selectedCreators, $childrenIds));
+
+        $this->selectedCreators = array_values(array_merge($this->selectedCreators, $children));
     }
 
-    public function clearSelectedCreatorst(){
+    public function clearSelectedCreatorst()
+    {
         $this->reset(['selectedCreators']);
     }
 
     public function openCreatorSection()
     {
         if (!empty($this->FilteredCreators)) {
-            $this->selectedCreators = $this->FilteredCreators->pluck('id')->toArray();
+            $this->selectedCreators = $this->FilteredCreators;
         }
         $this->creatorSection = true;
+    }
+
+    public function updatedSelectAUser($value)
+    {
+        $selectedCreator = User::findOrFail($value);
+
+        $userExists = collect($this->selectedCreators)->contains('id', $selectedCreator->id);
+
+        if (!$userExists) {
+            $this->selectedCreators[] = [
+                'id' => $selectedCreator->id,
+                'name' => $selectedCreator->full_name,
+            ];
+        }
+
+        $this->reset('selectAUser');
     }
 
     public function closeCreatorSection()
@@ -139,23 +168,30 @@ class SoldPolicyReport extends Component
         if (empty($this->selectedCreators)) {
             $this->FilteredCreators = [];
         } else {
-            $this->FilteredCreators = User::whereIn('id', $this->selectedCreators)->get();
-        }
-        if($this->isAddCommProfiles){
-            $commProfiles = CommProfile::byUserIds($this->selectedCreators)->get();
-            $this->Eprofiles = [];
-            foreach ($commProfiles as $p) {
-                $this->Eprofiles[] = json_encode([ // Convert array to JSON string
-                    'id' => $p->id,
-                    'title' => $p->title
-                ]);
-            }
-            $this->FilteredCreators = [];
-            $this->profiles = $this->Eprofiles;       
+            $this->FilteredCreators = $this->selectedCreators;
         }
 
+        if ($this->isAddCommProfiles) {
+            $commProfiles = CommProfile::byUserIds(array_column($this->selectedCreators, 'id'))->get();
+            $this->Eprofiles = [];
+
+            foreach ($commProfiles as $p) {
+                $this->Eprofiles[] = json_encode([
+                    'id' => $p->id,
+                    'title' => $p->title,
+                ]);
+            }
+
+            $this->FilteredCreators = [];
+            $this->profiles = $this->Eprofiles;
+        }
         $this->closeCreatorSection();
-        // $this->resetPage();
+    }
+
+    public function removeCreator($index)
+    {
+        unset($this->selectedCreators[$index]);
+        $this->selectedCreators = array_values($this->selectedCreators);
     }
 
     public function toggleProfiles()
@@ -600,22 +636,20 @@ class SoldPolicyReport extends Component
 
         if ($this->commProfilesSection) {
             $COMM_PROFILES = CommProfile::select('title', 'id')->get();
-        }else{
+        } else {
             $COMM_PROFILES = null;
         }
 
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
 
         if (!empty($this->FilteredCreators)) {
-            $creators_ids = array_map(function ($creator) {
-                return $creator['id'];
-            }, $this->FilteredCreators->toArray());
+            $creators_ids = array_column($this->FilteredCreators, 'id'); // Directly assign the array of ids
         } else {
             $creators_ids = [];
         }
 
         if ($this->creatorSection) {
-            $users = User::search($this->usersSearchText)->take(5)->get();
+            $users = User::search($this->usersSearchText)->get();
         } else {
             $users = User::all();
         }
