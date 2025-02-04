@@ -87,7 +87,7 @@ class ClientPaymentFinance extends Component
 
     public function setNote()
     {
-        $res = $this->noteSection->setNote($this->note);
+        $res = $this->noteSection->setFinanceNote($this->note);
         if ($res) {
             $this->closeNoteSection();
             $this->alert('success', 'Note updated!');
