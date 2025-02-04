@@ -192,16 +192,7 @@
                                         {{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('D d/m/Y') : 'Not set.' }}
                                     </td>
 
-                                    <td class="table-td">
-                                        @if ($payment->finance_note)
-                                            <iconify-icon wire:click='openNoteSection({{ $payment->id }})'
-                                                icon="basil:comment-outline" width="24"
-                                                height="24"></iconify-icon>
-                                        @else
-                                            <span wire:click='openNoteSection({{ $payment->id }})' class="text-xs">Add
-                                                Note</span>
-                                        @endif
-                                    </td>
+                                
 
                                     <td class="table-td">
                                         @if ($payment->closed_by)

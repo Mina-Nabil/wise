@@ -175,6 +175,10 @@
                                 <th scope="col" class=" table-th ">
                                     Penalty
                                 </th>
+                                <th scope="col" class=" table-th ">
+                                    Note
+                                </th>
+                                
 
 
 
@@ -254,6 +258,17 @@
 
                                     <td class="table-td">
                                         {{ number_format(($payment->penalty_percent / 100) * ($payment->calculation_type == '%' ? ($payment->value / 100) * $payment->net_premium : $payment->value), 2) }}
+                                    </td>
+
+                                    <td class="table-td">
+                                        @if ($payment->finance_note)
+                                            <iconify-icon wire:click='openNoteSection({{ $payment->id }})'
+                                                icon="basil:comment-outline" width="24"
+                                                height="24"></iconify-icon>
+                                        @else
+                                            <span wire:click='openNoteSection({{ $payment->id }})' class="text-xs">Add
+                                                Note</span>
+                                        @endif
                                     </td>
 
                                 </tr>
