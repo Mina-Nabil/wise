@@ -256,7 +256,7 @@
                                     <span class="text-slate-300">Creators:</span>&nbsp;
                                     <span wire:click="openCreatorSection">
                                         @foreach ($FilteredCreators as $index => $creator)
-                                            {{ $creator->full_name }}@if (!$loop->last)
+                                            {{ $creator['name'] }}@if (!$loop->last)
                                                 ,
                                             @endif
                                         @endforeach
@@ -1161,18 +1161,36 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
-                            <div class="from-group">
-                                <iconify-icon wire:loading wire:target='usersSearchText'
-                                    class="loading-icon text-lg pt-2"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
-                                <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                                    wire:model="usersSearchText">
 
-                            </div>
+                            <div>
+                                <div class="from-group">
+                                    <label for="selectAUser" class="form-label">User</label>
+                                    <select name="selectAUser" id="selectAUser" class="form-control w-full mt-2"
+                                        wire:model="selectAUser">
+                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
+                                            value="">Select user</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}"
+                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ $user->first_name . ' ' . $user->last_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                            <div class="text-xs text-gray-500 flex justify-between">
-                                {{-- <div>Selected: {{ count($selectedCreators) }}</div> --}}
-                                <div>
+                                <div class="checkbox-area mt-2">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input wire:model.defer='isAddCommProfiles' type="checkbox" class="hidden" name="checkbox">
+                                        <span
+                                            class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
+                                                class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                        <span
+                                            class="text-slate-500 dark:text-slate-400 text-sm leading-6">Select Commission Profiles ?</span>
+                                    </label>
+                                </div>
+
+                                <div class="mt-5">
                                     <button wire:click='selectChildrens'
                                         class="btn inline-flex justify-center btn-dark btn-sm">
                                         <span wire:loading.remove wire:target="selectChildrens">Select all team</span>
@@ -1187,66 +1205,24 @@
                                             wire:target="clearSelectedCreatorst"
                                             icon="line-md:loading-twotone-loop"></iconify-icon>
                                     </button>
-
-                                    <div class="checkbox-area mt-2">
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input wire:model.defer='isAddCommProfiles' type="checkbox"
-                                                class="hidden" name="checkbox">
-                                            <span
-                                                class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                                <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
-                                                    class="h-[10px] w-[10px] block m-auto opacity-0"></span>
-                                            <span class="text-slate-500 dark:text-slate-400 text-sm leading-6">Add
-                                                Commission Profile ?</span>
-                                        </label>
-                                    </div>
                                 </div>
+
+
+
+                            </div>
+                            <div class='mt-5'>
+                                @foreach ($selectedCreators as $index => $creator)
+                                    <span class="badge bg-slate-900 text-white capitalize">
+                                        {{ $creator['name'] }} &nbsp;
+                                        <iconify-icon class="cursor-pointer"
+                                            wire:click="removeCreator({{ $index }})" icon="mdi:remove"
+                                            width="12" height="12"></iconify-icon>
+                                    </span>
+                                @endforeach
                             </div>
 
-                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 ">
-                                <thead
-                                    class="border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
-                                    <tr>
-                                        <th scope="col"
-                                            class="table-th  flex items-center border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700"
-                                            style="position: sticky; left: -25px;  z-index: 10;">
-                                            Name
-                                        </th>
-
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 no-wrap">
-
-                                    @foreach ($users as $user)
-                                        <tr>
-                                            <td class="table-td flex items-center sticky-column bg-white dark:bg-slate-800 colomn-shadow"
-                                                style="position: sticky; left: -25px;  z-index: 10;">
-                                                <div wire:key="{{ $user->id }}" class="checkbox-area">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="checkbox" wire:model.defer="selectedCreators"
-                                                            value="{{ $user->id }}" class="hidden">
-                                                        <span
-                                                            class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                                                alt=""
-                                                                class="h-[10px] w-[10px] block m-auto opacity-0"></span>
-                                                    </label>
-                                                </div>
-                                                <label>
-                                                    <span>
-                                                        <b>
-                                                            {{ $user->full_name }}
-                                                        </b>
-                                                    </span>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-
-                                </tbody>
-                            </table>
                         </div>
+
                         <!-- Modal footer -->
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
