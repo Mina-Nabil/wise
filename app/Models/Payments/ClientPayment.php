@@ -278,7 +278,13 @@ class ClientPayment extends Model
                     $updates['note'] = $note;
                 }
                 $updates['status'] = self::PYMT_STATE_PREM_COLLECTED;
-                return $this->update($updates);
+                if($this->update($updates)){
+                    // $this->load('sold_policy');
+                    // $date = $date ?? new Carbon();
+                    // $this->sold_policy->setClientPaymentDate($date);
+                    // $this->sold_policy->generatePolicyCommissions(true);
+                    // $this->sold_policy->calculateTotalClientPayments();
+                }
             } catch (Exception $e) {
                 report($e);
                 AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
