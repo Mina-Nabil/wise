@@ -144,7 +144,7 @@ class CommProfile extends Model
 
 
         $writer = new Xlsx($newFile);
-        $file_path = SoldPolicy::FILES_DIRECTORY . "profile_balance{$this->id}.xlsx";
+        $file_path = SoldPolicy::FILES_DIRECTORY . "profile_balance_{$this->title}.xlsx";
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
 

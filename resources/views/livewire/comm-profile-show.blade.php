@@ -51,11 +51,11 @@
                                 class="btn inline-flex justify-center btn-outline-light btn-sm"> Refresh Balance</button>
                             <button wire:click="openStartTargetRunSec"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
-                            @if ($profile->is_sales_out)
+
                                 <button wire:click="openDownloadAccountStatement"
                                     class="btn inline-flex justify-center btn-outline-light btn-sm">Download Account
                                     Statement</button>
-                            @endif
+
                         @endcan
                     </div>
                 </div>
