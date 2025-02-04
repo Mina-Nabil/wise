@@ -109,7 +109,7 @@ class CommProfile extends Model
     public function downloadAccountStatement(Carbon $start, Carbon $end)
     {
         $comms = $this->sales_comm()->bySoldPoliciesStartEnd($start, $end)
-            ->with('sold_policy', 'sold_policy.client')
+            ->with('sold_policy', 'sold_policy.client', 'sold_policy.customer_car.car.car_model.brand')
             ->notCancelled()
             ->notPaid()
             ->notPolicyCancelled()
@@ -135,15 +135,17 @@ class CommProfile extends Model
             $activeSheet->getCell('F' . $i)->setValue($comm->sold_policy->net_premium);
             $activeSheet->getCell('G' . $i)->setValue($comm->sold_policy->gross_premium);
             $activeSheet->getCell('H' . $i)->setValue($comm->amount);
-            $activeSheet->getCell('I' . $i)->setValue($comm->sold_policy->offer?->is_renewal ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN));
+            $activeSheet->getCell('I' . $i)->setValue($this->is_sales_out ?
+                ($comm->sold_policy->offer?->is_renewal ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN)) : '-');
             $activeSheet->getCell('J' . $i)->setValue($comm->sold_policy->insured_value);
+            $activeSheet->getCell('L' . $i)->setValue($comm->sold_policy->customer_car?->car?->car_model?->brand?->name . ' - ' . $comm->sold_policy->customer_car?->car?->car_model?->name);
 
             $activeSheet->insertNewRowBefore($i);
         }
 
 
         $writer = new Xlsx($newFile);
-        $file_path = SoldPolicy::FILES_DIRECTORY . "profile_balance{$this->id}.xlsx";
+        $file_path = SoldPolicy::FILES_DIRECTORY . "profile_balance_{$this->title}.xlsx";
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
 
