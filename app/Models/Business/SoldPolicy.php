@@ -135,11 +135,13 @@ class SoldPolicy extends Model
             }
             $fields = [];
             foreach ($this->fields()->get() as $f) {
-                $fields[] = [
+                $fields[$f->id] = [
                     'field' => $f->field,
-                    'value' => $f->value
+                    'value' => $f->value,
+                    'is_mandatory' => $f->is_mandatory,
                 ];
             }
+
             $newOffer->setLineFields($fields);
             return $newOffer;
         }

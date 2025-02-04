@@ -136,7 +136,7 @@ class Offer extends Model
                 foreach ($lineFields as $lf) {
                     $newOffer->fields()->create([
                         'field' => $lf->field,
-                        // 'is_mandotory' => $lf->is_mandotory,
+                        'is_mandatory' => $lf->is_mandatory,
                         'value' => null,
                     ]);
                 }
@@ -255,7 +255,7 @@ class Offer extends Model
             foreach ($this->fields()->get() as $field) {
                 $soldPolicy->fields()->create([
                     "field"    =>  $field->field,
-                    // 'is_mandatory'  =>  $field->is_mandatory,
+                    'is_mandatory'  =>  $field->is_mandatory,
                     "value"        =>  $field->value
                 ]);
             }
@@ -619,13 +619,21 @@ class Offer extends Model
         if (!$loggedInUser?->can('updateLineFields', $this)) return false;
 
         try {
-            // $this->fields()->delete();
-            foreach ($fields as $field) {
-                $this->fields()->create([
-                    'field' => $field['field'],
-                    'value' => $field['value'],
-                ]);
+            foreach ($fields as $id => $fieldData) {
+                foreach ($fieldData as $field => $value) {
+
+                    $f = $this->fields()->find($id);
+
+                    if ($f->is_mandatory && !$value) {
+                        throw new Exception("Required value for mandatory field: {$field}");
+                    }
+    
+                    $f->update([
+                        'value' => $value,
+                    ]);
+                }
             }
+
             $this->addComment("Line fields updated", false);
             AppLog::info("Line fields updated", loggable: $this);
             return true;

@@ -57,7 +57,11 @@
                                                                         class="pl-4" width="15"
                                                                         height="15"></iconify-icon>
                                                                     <b><span
-                                                                            class="text-lg  px-2">{{ $field->field }}</span></b>
+                                                                            class="text-lg  px-2">{{ $field->field }}</span> 
+                                                                            @if ($field->is_mandatory)
+                                                                                &nbsp; <span class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl">Mandatory</span>
+                                                                            @endif
+                                                                        </b>
                                                                 </div>
                                                                 <div class="flex space-x-3 rtl:space-x-reverse">
                                                                     <button
@@ -146,6 +150,18 @@
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+
+                                <div class="checkbox-area mt-2">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" wire:model.defer="fieldIsMandatory" class="hidden" name="checkbox">
+                                        <span
+                                            class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
+                                                class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                        <span
+                                            class="text-slate-500 dark:text-slate-400 text-sm leading-6">Mandatory ?</span>
+                                    </label>
+                                </div>
                             </div>
                             <!-- Modal footer -->
                             <div
@@ -193,11 +209,24 @@
                                 <label for="fieldName" class="form-label">Field</label>
                                 <input name="fieldName"
                                     class="form-control @error('fieldName') !border-danger-500 @enderror"
-                                    id="default-picker" type="text" wire:model.defer="fieldName" autocomplete="off">
+                                    id="default-picker" type="text" wire:model.defer="fieldName"
+                                    autocomplete="off">
                                 @error('fieldName')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+                            </div>
+
+                            <div class="checkbox-area mt-2">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" wire:model.defer="fieldIsMandatory" class="hidden" name="checkbox">
+                                    <span
+                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                        <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
+                                            class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                    <span
+                                        class="text-slate-500 dark:text-slate-400 text-sm leading-6">Mandatory ?</span>
+                                </label>
                             </div>
                             <!-- Modal footer -->
                             <div
@@ -216,7 +245,8 @@
 
     @if ($isConformDelete)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding

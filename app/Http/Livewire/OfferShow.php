@@ -1050,9 +1050,14 @@ class OfferShow extends Component
         $this->item_value = $this->offer->item_value;
         $this->item_title = $this->offer->item_title;
         $this->item_desc = $this->offer->item_desc;
+
         $this->lineFields = [];
-        foreach ($this->offer->fields()->get() as $field) {
-            $this->lineFields[] = ['field' => $field->field, 'value' => $field->value];
+        foreach ($this->offer->fields as $field) {
+            $this->lineFields[$field->id] = [
+                'field' => $field->field,
+                'value' => $field->value,
+                'is_mandatory' => $field->is_mandatory,
+            ];
         }
 
         $this->dueDate = Carbon::parse($this->offer->due)->toDateString();
@@ -1263,26 +1268,40 @@ class OfferShow extends Component
         $this->showOfferFieldsModal = false;
     }
 
+    // File path: app/Http/Livewire/YourComponent.php
+
     public function setOfferFields()
     {
         $this->validate([
             'lineFields' => 'required|array',
-            'lineFields.*.field' => 'required|string|max:255',
-            'lineFields.*.value' => 'nullable',
+            'lineFields.*.value' => 'nullable|string',
         ]);
-        try{
-            $res = $this->offer->setLineFields($this->lineFields);
 
-        } catch (Exception $e){
-            $this->alert('failed', 'Mandatory field missing !');
+        try {
+            $formattedFields = [];
+            
+            foreach ($this->lineFields as $id => $fieldData) {
+                $formattedFields[$id] = [
+                    $fieldData['field'] => $fieldData['value']
+                ];
+                if($fieldData['is_mandatory'] && !$fieldData['value']){
+                    $this->addError("lineFields.{$id}.value", "Field is mandatory.");  
+                    return;             
+                }
+            }
 
-        }
-        if ($res) {
-            $this->alert('success', 'Fields updated successfully!');
-            $this->showOfferFieldsModal = false;
-            $this->mount($this->offer->id);
-        } else {
-            $this->alert('failed', 'Server error');
+            $res = $this->offer->setLineFields($formattedFields);
+
+            if ($res) {
+                $this->alert('success', 'Fields updated successfully!');
+                $this->showOfferFieldsModal = false;
+                $this->mount($this->offer->id);
+            } else {
+                $this->alert('failed', 'Server error');
+            }
+
+        } catch (Exception $e) {
+            $this->alert('failed',$e->getMessage());
         }
     }
 

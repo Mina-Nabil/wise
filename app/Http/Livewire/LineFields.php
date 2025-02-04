@@ -18,6 +18,7 @@ class LineFields extends Component
     public $isOpenAddField= null; //carry the line of business
     public $isOpenEditField= null;
     public $fieldName;
+    public $fieldIsMandatory;
 
 
     public $isConformDelete = null;
@@ -66,20 +67,23 @@ class LineFields extends Component
     {
         $this->isOpenEditField = LineField::findOrFail($id);
         $this->fieldName = $this->isOpenEditField->field;
-
+        $this->fieldIsMandatory = $this->isOpenEditField->is_mandatory;
     }
 
     public function closeEditField()
     {
         $this->isOpenEditField = null;
         $this->fieldName = null;
+        $this->fieldIsMandatory = false;
     }
 
     public function editField(){
         $this->validate([
             'fieldName' => 'required|string',
+            'fieldIsMandatory' => 'boolean',
         ]);
-        $lineField = $this->isOpenEditField->editField($this->fieldName);
+
+        $lineField = $this->isOpenEditField->editField($this->fieldName,$this->fieldIsMandatory);
 
         if ($lineField) {
             $this->fieldName = '';
@@ -99,15 +103,17 @@ class LineFields extends Component
     public function closeAddField()
     {
         $this->isOpenAddField = null;
+        $this->fieldName = null;
+        $this->fieldIsMandatory = false;
     }
 
     public function addField()
     {
         $this->validate([
             'fieldName' => 'required|string',
+            'fieldIsMandatory' => 'boolean',
         ]);
-        $lineField = LineField::newLineField($this->isOpenAddField, $this->fieldName);
-
+        $lineField = LineField::newLineField($this->isOpenAddField, $this->fieldName, $this->fieldIsMandatory);
         if ($lineField) {
             $this->fieldName = '';
             $this->showLineFields = $this->isOpenAddField;

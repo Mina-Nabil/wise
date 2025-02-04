@@ -15,5 +15,6 @@ class Field extends Model
     protected $fillable = [
         'field',
         'value',
+        'is_mandatory'
     ];
 }
