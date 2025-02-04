@@ -135,7 +135,7 @@ class CommProfile extends Model
             $activeSheet->getCell('F' . $i)->setValue($comm->sold_policy->net_premium);
             $activeSheet->getCell('G' . $i)->setValue($comm->sold_policy->gross_premium);
             $activeSheet->getCell('H' . $i)->setValue($comm->amount);
-            $activeSheet->getCell('I' . $i)->setValue($comm->is_sales_out ?
+            $activeSheet->getCell('I' . $i)->setValue($this->is_sales_out ?
                 ($comm->sold_policy->offer?->is_renewal ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN)) : '-');
             $activeSheet->getCell('J' . $i)->setValue($comm->sold_policy->insured_value);
             $activeSheet->getCell('L' . $i)->setValue($comm->sold_policy->customer_car?->car?->car_model?->brand?->name . ' - ' . $comm->sold_policy->customer_car?->car?->car_model?->name);
