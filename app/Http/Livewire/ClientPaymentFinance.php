@@ -70,6 +70,33 @@ class ClientPaymentFinance extends Component
     }
 
 
+    /////edit note section
+    public $noteSection;
+    public $note;
+
+    public function openNoteSection($id)
+    {
+        $this->noteSection = ClientPayment::findOrFail($id);
+        $this->note = $this->noteSection->finance_note;
+    }
+
+    public function closeNoteSection()
+    {
+        $this->reset(['noteSection', 'note']);
+    }
+
+    public function setNote()
+    {
+        $res = $this->noteSection->setNote($this->note);
+        if ($res) {
+            $this->closeNoteSection();
+            $this->alert('success', 'Note updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+
 
     public function render()
     {
