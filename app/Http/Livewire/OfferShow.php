@@ -1270,8 +1270,13 @@ class OfferShow extends Component
             'lineFields.*.field' => 'required|string|max:255',
             'lineFields.*.value' => 'nullable',
         ]);
+        try{
+            $res = $this->offer->setLineFields($this->lineFields);
 
-        $res = $this->offer->setLineFields($this->lineFields);
+        } catch (Exception $e){
+            $this->alert('failed', 'Mandatory field missing !');
+
+        }
         if ($res) {
             $this->alert('success', 'Fields updated successfully!');
             $this->showOfferFieldsModal = false;

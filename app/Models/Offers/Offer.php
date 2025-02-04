@@ -136,6 +136,7 @@ class Offer extends Model
                 foreach ($lineFields as $lf) {
                     $newOffer->fields()->create([
                         'field' => $lf->field,
+                        // 'is_mandotory' => $lf->is_mandotory,
                         'value' => null,
                     ]);
                 }
@@ -254,6 +255,7 @@ class Offer extends Model
             foreach ($this->fields()->get() as $field) {
                 $soldPolicy->fields()->create([
                     "field"    =>  $field->field,
+                    // 'is_mandatory'  =>  $field->is_mandatory,
                     "value"        =>  $field->value
                 ]);
             }
@@ -617,7 +619,7 @@ class Offer extends Model
         if (!$loggedInUser?->can('updateLineFields', $this)) return false;
 
         try {
-            $this->fields()->delete();
+            // $this->fields()->delete();
             foreach ($fields as $field) {
                 $this->fields()->create([
                     'field' => $field['field'],
