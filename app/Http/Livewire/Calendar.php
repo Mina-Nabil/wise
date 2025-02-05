@@ -215,7 +215,7 @@ class Calendar extends Component
             ];
         }
 
-        foreach (ClientPayment::userData(upcoming_only: true, assigned_only: true)->with('sold_policy', 'sold_policy.client')->get() as $t) {
+        foreach (ClientPayment::userData(upcoming_only: true)->with('sold_policy', 'sold_policy.client')->get() as $t) {
             $events[] =  [
                 'id'        =>  "clientpayment" . $t->id,
                 'title'     => "CP. " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
