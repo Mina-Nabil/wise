@@ -524,7 +524,7 @@ class ClientPayment extends Model
             $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
         }
 
-        $query->join('policy_comm_conf', function ($j) {
+        $query->leftjoin('policy_comm_conf', function ($j) {
             $j->on('sold_policies.policy_id', '=', 'policy_comm_conf.policy_id')
                 ->where('is_main_penalty', 1);
         })->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent', 'policy_comm_conf.calculation_type', 'sold_policies.net_premium')
