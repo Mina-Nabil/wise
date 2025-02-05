@@ -197,8 +197,8 @@ class Calendar extends Component
                 'title'     => "T. " . $t->title,
                 'backgroundColor' => 'blue',
                 'allDay'    => true,
-                'start'     => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
-                'end'       => (new Carbon($t->due))->toIso8601String(),
+                'start'     => (new Carbon($t->due))->addHours(2)->subMinutes(15)->toIso8601String(),
+                'end'       => (new Carbon($t->due))->addHours(2)->toIso8601String(),
                 'url'       => url('tasks', $t->id)
             ];
         }
@@ -209,8 +209,8 @@ class Calendar extends Component
                 'title'     => "F. " . $t->title . ' - ' . $t->called?->name,
                 'backgroundColor' => 'dark',
                 'textColor' => 'white',
-                'start'     => (new Carbon($t->call_time))->subMinutes(15)->toIso8601String(),
-                'end'       => (new Carbon($t->call_time))->toIso8601String(),
+                'start'     => (new Carbon($t->call_time))->addHours(2)->subMinutes(15)->toIso8601String(),
+                'end'       => (new Carbon($t->call_time))->addHours(2)->toIso8601String(),
                 'url'       => url($t->called_type . 's', $t->called_id)
             ];
         }
@@ -221,8 +221,8 @@ class Calendar extends Component
                 'title'     => "CP. " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
                 'backgroundColor' => '#75d193', //green
                 'allDay'    => true,
-                'start'     => (new Carbon($t->due))->subMinutes(15)->toIso8601String(),
-                'end'       => (new Carbon($t->due))->toIso8601String(),
+                'start'     => (new Carbon($t->due))->addHours(2)->subMinutes(15)->toIso8601String(),
+                'end'       => (new Carbon($t->due))->addHours(2)->toIso8601String(),
                 'url'       => url('sold-policies', $t->sold_policy->id)
             ];
         }
@@ -234,8 +234,8 @@ class Calendar extends Component
                 'title'     => "OF: " . $t->client->name,
                 'backgroundColor' => '#73c2fb', //blue
                 'allDay'    => true,
-                'start'     => (new Carbon($t->due))->toIso8601String(),
-                'end'       => (new Carbon($t->due))->addMinutes(15)->toIso8601String(),
+                'start'     => (new Carbon($t->due))->addHours(2)->toIso8601String(),
+                'end'       => (new Carbon($t->due))->addHours(2)->addMinutes(15)->toIso8601String(),
                 'url'       => url('offers', $t->id)
             ];
         }
