@@ -175,7 +175,7 @@
                                 Set main sales</a>
                         </li>
                     @endif
-                    @if ($soldPolicy->is_valid)
+                    {{-- @if ($soldPolicy->is_valid)
                         <li>
                             <a wire:click="setInvalid"
                                 class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
@@ -189,7 +189,7 @@
                                 dark:hover:text-white cursor-pointer">
                                 Set as Valid</a>
                         </li>
-                    @endif
+                    @endif --}}
                     {{-- @if ($soldPolicy->is_paid)
                         <li>
                             <a wire:click="setUnpaid"
