@@ -622,17 +622,17 @@
                                                     </td>
 
                                                     <td class="table-td">
-                                                        @if ($payment->pivot->status === 'new')
+                                                        @if ($comm->pivot->status === 'new')
                                                             <span class="badge bg-info-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $payment->pivot->status)) }}
+                                                                {{ ucwords(str_replace('_', ' ', $comm->pivot->status)) }}
                                                             </span>
-                                                        @elseif(str_contains($payment->pivot->status, 'declined') || str_contains($payment->pivot->status, 'cancelled'))
+                                                        @elseif(str_contains($comm->pivot->status, 'declined') || str_contains($comm->pivot->status, 'cancelled'))
                                                             <span class="badge bg-danger-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $payment->pivot->status)) }}
+                                                                {{ ucwords(str_replace('_', ' ', $comm->pivot->status)) }}
                                                             </span>
-                                                        @elseif($payment->pivot->status === 'paid' || ($payment->pivot->status = 'approved'))
+                                                        @elseif($comm->pivot->status === 'paid' || ($comm->pivot->status = 'approved'))
                                                             <span class="badge bg-success-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $payment->pivot->status)) }}
+                                                                {{ ucwords(str_replace('_', ' ', $comm->pivot->status)) }}
                                                             </span>
                                                         @endif
                                                     </td>
