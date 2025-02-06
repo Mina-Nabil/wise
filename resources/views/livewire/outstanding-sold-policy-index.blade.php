@@ -8,7 +8,7 @@
             </div>
         </div>
 
-        <div class="flex justify-between items-center space-x-7 flex-wrap h-[30px]">
+        <div class="flex justify-between items-center space-x-7 flex-wrap mb-5">
             <div class="flex">
                 <div class="secondary-radio">
                     <label class="flex items-center cursor-pointer">
@@ -61,8 +61,6 @@
                 </ul>
             </div>
         </div>
-
-
 
     </div>
 
