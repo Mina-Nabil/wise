@@ -124,9 +124,11 @@
                                 <th scope="col" class=" table-th ">
                                     Closed by
                                 </th>
-                                <th scope="col" class=" table-th ">
-                                    Sales
-                                </th>
+                                @if (user()->is_admin || user()->is_finance)
+                                    <th scope="col" class=" table-th ">
+                                        Sales
+                                    </th>
+                                @endif
 
                             </tr>
                         </thead>
@@ -195,7 +197,7 @@
                                         {{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('D d/m/Y') : 'Not set.' }}
                                     </td>
 
-                                
+
 
                                     <td class="table-td">
                                         @if ($payment->closed_by)
@@ -207,17 +209,19 @@
                                             <b> - </b>
                                         @endif
                                     </td>
-
+                                    @if (user()->is_admin || user()->is_finance)
                                     <td class="table-td">
                                         <ul>
 
                                             @foreach ($payment->sold_policy->active_sales_comms as $sales_comm)
-                                            <li>
-                                                {{$sales_comm->comm_profile->title}}: {{$sales_comm->amount}} {{$sales_comm->status}}
-                                            </li>
+                                                <li>
+                                                    {{ $sales_comm->comm_profile->title }}: {{ $sales_comm->amount }}
+                                                    {{ $sales_comm->status }}
+                                                </li>
                                             @endforeach
                                         </ul>
                                     </td>
+                                    @endif
                                 </tr>
                             @endforeach
 
