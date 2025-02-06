@@ -1808,8 +1808,7 @@ class SoldPolicy extends Model
             if (!Helpers::joined($q, 'company_comm_payments')) {
                 $q->join('company_comm_payments', 'company_comm_payments.sold_policy_id', 'sold_policies.id');
             }
-            $q->selectRaw("SUM(company_comm_payments.amount) as invoice_created");
-            $q->whereRaw("total_comp_paid < invoice_created")->fromOct2024();
+            $q->havingRaw("total_comp_paid < SUM(company_comm_payments.amount)")->fromOct2024();
         });
 
         return $query->orderBy("sold_policies.start");
