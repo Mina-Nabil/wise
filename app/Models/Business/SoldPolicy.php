@@ -1805,10 +1805,10 @@ class SoldPolicy extends Model
         });
 
         $query->when($is_invoice_outstanding, function ($q) {
-            if (!Helpers::joined($q, 'comp_comm_payment')) {
-                $q->join('comp_comm_payment', 'comp_comm_payment.sold_policy_id', 'sold_policies.id');
+            if (!Helpers::joined($q, 'comp_comm_payments')) {
+                $q->join('comp_comm_payments', 'comp_comm_payments.sold_policy_id', 'sold_policies.id');
             }
-            $q->selectRaw("SUM(comp_comm_payment.amount) as invoice_created");
+            $q->selectRaw("SUM(comp_comm_payments.amount) as invoice_created");
             $q->whereRaw("total_comp_paid < invoice_created")->fromOct2024();
         });
 
