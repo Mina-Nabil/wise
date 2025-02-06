@@ -2114,6 +2114,11 @@ class SoldPolicy extends Model
         return $this->hasMany(SalesComm::class);
     }
 
+    public function active_sales_comms(): HasMany
+    {
+        return $this->hasMany(SalesComm::class)->whereNot('sales_comms.status', SalesComm::PYMT_STATE_CANCELLED);
+    }
+
     public function files(): HasMany
     {
         return $this->hasMany(SoldPolicyDoc::class);
