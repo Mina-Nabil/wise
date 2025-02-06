@@ -766,6 +766,10 @@
                                 <div>
                                     <livewire:new-lead />
                                 </div>
+
+                                <div>
+                                    <livewire:new-meeting />
+                                </div>
                                 <!-- END: gray-scale Dropdown -->
 
 
