@@ -52,8 +52,8 @@ class OutstandingSoldPolicyIndex extends Component
     public function render()
     {
         if ($this->outstandingType === 'all') {
-            $client_outstanding = true;
-            $commission_outstanding = true;
+            $client_outstanding = false;
+            $commission_outstanding = false;
         } elseif ($this->outstandingType === 'policy') {
             $client_outstanding = true;
             $commission_outstanding = false;
