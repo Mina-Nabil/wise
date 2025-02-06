@@ -36,7 +36,7 @@ class ClientPaymentIndex extends Component
     {
         $statuses = ClientPayment::PYMT_STATES;
         $payments = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText)
-        ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned', 'sold_policy.active_sales_comms', 'sold_policy.active_sales_comms.comm_profile')->paginate(50);
+        ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned')->paginate(50);
         return view('livewire.client-payment-index', [
             'statuses' => $statuses,
             'payments' => $payments

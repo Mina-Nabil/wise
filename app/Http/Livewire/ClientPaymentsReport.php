@@ -329,7 +329,7 @@ class ClientPaymentsReport extends Component
             $this->sortColomn,
             $this->sortDirection,
             $this->types,
-        );
+        )->with('sold_policy.active_sales_comms', 'sold_policy.active_sales_comms.comm_profile');
         $payments =    $payments->paginate(50);
         return view('livewire.client-payments-report', [
             'STATUSES' => $STATUSES,

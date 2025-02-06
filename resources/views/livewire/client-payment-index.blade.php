@@ -207,19 +207,7 @@
                                             <b> - </b>
                                         @endif
                                     </td>
-                                    @if (auth()->user()->is_admin || auth()->user()->is_finance)
-                                    <td class="table-td">
-                                        <ul>
-
-                                            @foreach ($payment->sold_policy->active_sales_comms as $sales_comm)
-                                                <li>
-                                                    {{ $sales_comm->comm_profile->title }}: {{ $sales_comm->amount }}
-                                                    {{ $sales_comm->status }}
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </td>
-                                    @endif
+                          
                                 </tr>
                             @endforeach
 

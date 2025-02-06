@@ -288,10 +288,11 @@
 
                                 </th>
 
-
+                                @if (auth()->user()->is_admin || auth()->user()->is_finance)
                                 <th scope="col" class="table-th">
-                                    SalesOut
+                                    Sales
                                 </th>
+                                @endif
 
                                 <th scope="col" class="table-th">
                                     Amount
@@ -335,9 +336,19 @@
                                     </td>
 
 
+                                    @if (auth()->user()->is_admin || auth()->user()->is_finance)
                                     <td class="table-td">
-                                        {{ $payment->sold_policy->sales_outs }}
+                                        <ul>
+
+                                            @foreach ($payment->sold_policy->active_sales_comms as $sales_comm)
+                                                <li>
+                                                    {{ $sales_comm->comm_profile->title }}: {{ $sales_comm->amount }}
+                                                    {{ $sales_comm->status }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </td>
+                                    @endif
 
                                     <td class="table-td">
                                         <p><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
