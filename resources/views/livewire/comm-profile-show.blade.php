@@ -543,6 +543,9 @@
                                                 <th scope="col" class=" table-th ">
                                                     Amount
                                                 </th>
+                                                <th scope="col" class=" table-th ">
+                                                    Status
+                                                </th>
 
                                                 <th scope="col" class=" table-th ">
                                                     Issue
@@ -616,6 +619,22 @@
                                                         <div class="text-lg text-success-500">
                                                             {{ number_format($comm->amount, 2, '.', ',') }}
                                                         </div>
+                                                    </td>
+
+                                                    <td class="table-td">
+                                                        @if ($payment->pivot->status === 'new')
+                                                            <span class="badge bg-info-500 h-auto text-white">
+                                                                {{ ucwords(str_replace('_', ' ', $payment->pivot->status)) }}
+                                                            </span>
+                                                        @elseif(str_contains($payment->pivot->status, 'declined') || str_contains($payment->pivot->status, 'cancelled'))
+                                                            <span class="badge bg-danger-500 h-auto text-white">
+                                                                {{ ucwords(str_replace('_', ' ', $payment->pivot->status)) }}
+                                                            </span>
+                                                        @elseif($payment->pivot->status === 'paid' || ($payment->pivot->status = 'approved'))
+                                                            <span class="badge bg-success-500 h-auto text-white">
+                                                                {{ ucwords(str_replace('_', ' ', $payment->pivot->status)) }}
+                                                            </span>
+                                                        @endif
                                                     </td>
 
                                                     <td class="table-td ">

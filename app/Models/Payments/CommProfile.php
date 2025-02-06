@@ -509,7 +509,8 @@ class CommProfile extends Model
     public function sold_policies(): BelongsToMany
     {
         return $this->belongsToMany(SoldPolicy::class, 'sales_comms')
-        ->wherePivotNot('sales_comms.status', SalesComm::PYMT_STATE_CANCELLED);
+            ->withPivot('sales_comms.status')
+            ->wherePivotNot('sales_comms.status', SalesComm::PYMT_STATE_CANCELLED);
     }
 
     public function offers(): BelongsToMany
