@@ -52,10 +52,9 @@
                             <button wire:click="openStartTargetRunSec"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
 
-                                <button wire:click="openDownloadAccountStatement"
-                                    class="btn inline-flex justify-center btn-outline-light btn-sm">Download Account
-                                    Statement</button>
-
+                            <button wire:click="openDownloadAccountStatement"
+                                class="btn inline-flex justify-center btn-outline-light btn-sm">Download Account
+                                Statement</button>
                         @endcan
                     </div>
                 </div>
@@ -623,21 +622,21 @@
 
                                                     <td class="table-td">
                                                         @if (str_contains($comm->status, 'not_confirmed'))
-                                                                <span class="badge bg-warning-500 text-white h-auto">
-                                                                    <iconify-icon
-                                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                                </span>
-                                                            @elseif(str_contains($comm->status, 'cancelled'))
-                                                                <span class="badge bg-danger-500 text-white h-auto">
-                                                                    <iconify-icon
-                                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                                </span>
-                                                            @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
-                                                                <span class="badge bg-success-500 text-white h-auto">
-                                                                    <iconify-icon
-                                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                                </span>
-                                                            @endif
+                                                            <span class="badge bg-warning-500 text-white h-auto">
+                                                                <iconify-icon
+                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                            </span>
+                                                        @elseif(str_contains($comm->status, 'cancelled'))
+                                                            <span class="badge bg-danger-500 text-white h-auto">
+                                                                <iconify-icon
+                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                            </span>
+                                                        @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
+                                                            <span class="badge bg-success-500 text-white h-auto">
+                                                                <iconify-icon
+                                                                    icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                            </span>
+                                                        @endif
                                                     </td>
 
                                                     <td class="table-td ">

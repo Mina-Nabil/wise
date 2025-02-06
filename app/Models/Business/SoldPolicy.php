@@ -679,7 +679,7 @@ class SoldPolicy extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('updatePayments', $this)) return false;
+        if (!$loggedInUser->can('update', $this)) return false;
 
         $this->update([
             'insured_value' => $insured_value,
@@ -1191,7 +1191,6 @@ class SoldPolicy extends Model
                 $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
-
         }
 
         $writer = new Xlsx($newFile);
@@ -1708,7 +1707,7 @@ class SoldPolicy extends Model
     {
         return $query->where("policy_number", 'LIKE', "%$searchText%");
     }
-    
+
     public function scopeNotCancelled($query)
     {
         return $query->whereNull("cancellation_time");
@@ -1723,8 +1722,9 @@ class SoldPolicy extends Model
         $query,
         $searchText = null,
         $is_expiring = false,
-        $is_commission_outstanding = false, //Commission Outstanding
-        $is_client_outstanding = false //Policy Outstanding
+        $is_commission_outstanding = false, //Client Payment Outstanding
+        $is_client_outstanding = false, //Policy Outstanding
+        $is_invoice_outstanding = false, //Invoice Outstanding
     ) {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -1803,6 +1803,17 @@ class SoldPolicy extends Model
         $query->when($is_client_outstanding, function ($q) {
             $q->whereRaw("total_client_paid < gross_premium")->fromOct2024();
         });
+        
+        $query->when($is_invoice_outstanding, function ($q) {
+            if (!Helpers::joined($q, 'comp_comm_payment')) {
+                $q->join('comp_comm_payment', 'comp_comm_payment.sold_policy_id', 'sold_policies.id');
+            }
+            if (!Helpers::joined($q, 'invoices')) {
+                $q->join('invoices', 'invoices.id', 'comp_comm_payment.invoice_id');
+            }
+            $q->selectRaw("SUM() as invoice_paid");
+            $q->whereRaw("total_client_paid < gross_premium")->fromOct2024();
+        });
 
         return $query->orderBy("sold_policies.start");
     }
@@ -1833,15 +1844,15 @@ class SoldPolicy extends Model
             })->when($start_to, function ($q, $v) {
                 $q->where('start', "<=", $v->format('Y-m-d 23:59:59'));
             })->when($issued_from, function ($q, $v) {
-                $q->where(function($qq) use ($v){
+                $q->where(function ($qq) use ($v) {
                     $qq->where('sold_policies.created_at', ">=", $v->format('Y-m-d 00:00:00'))
-                    ->orWhere('sold_policies.cancellation_time', ">=", $v->format('Y-m-d 00:00:00'));
+                        ->orWhere('sold_policies.cancellation_time', ">=", $v->format('Y-m-d 00:00:00'));
                 });
             })->when($issued_to, function ($q, $v) {
-                $q->where(function($qq) use ($v){
+                $q->where(function ($qq) use ($v) {
                     $qq->where('sold_policies.created_at', "<=", $v->format('Y-m-d 23:59:59'))
-                    ->orWhere('sold_policies.cancellation_time', "<=", $v->format('Y-m-d 23:59:59'));
-                }); 
+                        ->orWhere('sold_policies.cancellation_time', "<=", $v->format('Y-m-d 23:59:59'));
+                });
             })->when($expiry_from, function ($q, $v) {
                 $q->where('expiry', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($expiry_to, function ($q, $v) {
@@ -1866,7 +1877,7 @@ class SoldPolicy extends Model
             })->when($is_penalized !== null, function ($q) use ($is_penalized) {
                 $q->where('sold_policies.is_penalized', "=", $is_penalized);
             })->when($is_cancelled !== null, function ($q) use ($is_cancelled) {
-                if($is_cancelled) $q->whereNotNull('cancellation_time');
+                if ($is_cancelled) $q->whereNotNull('cancellation_time');
                 else $q->whereNull('cancellation_time');
             })->when($is_welcomed !== null, function ($q, $v) use ($is_welcomed) {
                 if (!Helpers::joined($q, 'customers')) {
