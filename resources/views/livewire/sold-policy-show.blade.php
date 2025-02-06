@@ -364,10 +364,14 @@
                 <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
                     <div class="card-body flex flex-col p-6 active text-center">
                         <header class=" mb-5 items-center">
+                            @can('update', $post)
+                                
+                         
                             <button wire:click="togglePaymentInfoSection" class="action-btn float-right text-sm"
                                 type="button">
                                 <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
                             </button>
+                            @endcan
                             <div class="flex-1">
                                 <div class="card-title font-Inter text-slate-900 dark:text-white">
                                     {{ number_format($soldPolicy->insured_value, 0, '.', ',') }}</div>
