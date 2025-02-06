@@ -8,58 +8,60 @@
             </div>
         </div>
 
-        <div class="flex items-center space-x-7 flex-wrap h-[30px]">
-            <div class="secondary-radio">
-                <label class="flex items-center cursor-pointer">
-                    <input type="radio" class="hidden" value="all" wire:model="outstandingType">
-                    <span
-                        class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                    <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
-                </label>
+        <div class="flex justify-between items-center space-x-7 flex-wrap h-[30px]">
+            <div>
+                <div class="secondary-radio">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" class="hidden" value="all" wire:model="outstandingType">
+                        <span
+                            class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
+                        <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
+                    </label>
+                </div>
+
+                <div class="secondary-radio">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" class="hidden" value="policy" wire:model="outstandingType">
+                        <span
+                            class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
+                        <span class="text-secondary-500 text-sm leading-6 capitalize">Policy Outstanding</span>
+                    </label>
+                </div>
+
+                <div class="secondary-radio">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" class="hidden" value="commission" wire:model="outstandingType">
+                        <span
+                            class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
+                        <span class="text-secondary-500 text-sm leading-6 capitalize">Commission Outstanding</span>
+                    </label>
+                </div>
             </div>
 
-            <div class="secondary-radio">
-                <label class="flex items-center cursor-pointer">
-                    <input type="radio" class="hidden" value="policy" wire:model="outstandingType">
+            <div class="dropdown relative ">
+                <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
+                    type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add filter
                     <span
-                        class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                    <span class="text-secondary-500 text-sm leading-6 capitalize">Policy Outstanding</span>
-                </label>
-            </div>
+                        class="cursor-pointer absolute ltr:border-l rtl:border-r border-slate-100 h-full ltr:right-0 rtl:left-0 px-2 flex
+                                items-center justify-center leading-none">
+                        <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                    </span>
+                </button>
+                <ul
+                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                    <li wire:click="toggleStartDate">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                            Start date ( From-To )</span>
+                    </li>
 
-            <div class="secondary-radio">
-                <label class="flex items-center cursor-pointer">
-                    <input type="radio" class="hidden" value="commission" wire:model="outstandingType">
-                    <span
-                        class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                    <span class="text-secondary-500 text-sm leading-6 capitalize">Commission Outstanding</span>
-                </label>
+                </ul>
             </div>
-
         </div>
 
-        <div class="dropdown relative ">
-            <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
-                type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                Add filter
-                <span
-                    class="cursor-pointer absolute ltr:border-l rtl:border-r border-slate-100 h-full ltr:right-0 rtl:left-0 px-2 flex
-                            items-center justify-center leading-none">
-                    <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
-                </span>
-            </button>
-            <ul
-                class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
-                    z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                <li wire:click="toggleStartDate">
-                    <span
-                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
-                            dark:hover:text-white cursor-pointer">
-                        Start date ( From-To )</span>
-                </li>
-
-            </ul>
-        </div>
 
 
     </div>
@@ -94,7 +96,7 @@
                                 </button>
                             @endif
                         </header>
-                   
+
                         <div class="tab-content mt-6" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="pills-list" role="tabpanel"
                                 aria-labelledby="pills-list-tab">
