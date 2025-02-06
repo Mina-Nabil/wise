@@ -6,12 +6,13 @@ use Livewire\Component;
 use App\models\Business\SoldPolicy;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
+use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 
 class OutstandingSoldPolicyIndex extends Component
 {
 
-    use WithPagination, AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
 
     public $search;
     public $outstandingType = 'all';
