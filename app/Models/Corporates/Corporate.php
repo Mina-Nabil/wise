@@ -7,6 +7,7 @@ use App\Models\Tasks\Task;
 use App\Models\Offers\Offer;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -716,6 +717,37 @@ class Corporate extends Model
         return $query->where('type', self::TYPE_LEAD);
     }
 
+    /**
+     * @param array $interests = [
+     *      'line_of_business' => 1 or 0
+     * ]
+     */
+    public function scopeInterestReport($query, Carbon $from = null, Carbon $to = null, array $interests = [], $owner_id = null, $is_welcomed = null)
+    {
+        $query->userData()
+            ->when($is_welcomed !== null, function ($q) use ($is_welcomed) {
+                $q->where('is_welcomed', $is_welcomed);
+            })
+            ->when($owner_id !== null, function ($q) use ($owner_id) {
+                $q->where('customers.owner_id', $owner_id);
+            })
+            ->join('corporate_interests', 'customers.id', '=', 'corporate_interests.customer_id')
+            ->select('corporate_interests.business', 'corporate_interests.interested')
+            ->when($from, function ($q, $v) {
+                $q->where('corporate_interests.created_at', '>=', $v->format('Y-m-d'));
+            })
+            ->when($to, function ($q, $v) {
+                $q->where('corporate_interests.created_at', '<=', $v->format('Y-m-d'));
+            })
+            ->when(count($interests), function ($q) use ($interests) {
+                foreach ($interests as $i => $v) {
+                    $q->where(function ($qq) use ($i, $v) {
+                        $qq->where('corporate_interests.business', $i)
+                            ->where('corporate_interests.interested', $v);
+                    });
+                }
+            });
+    }
 
     ///relations
     public function status(): HasOne

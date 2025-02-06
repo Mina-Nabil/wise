@@ -1927,6 +1927,14 @@ class SoldPolicy extends Model
         return $query->where('sold_policies.is_paid', $is_paid);
     }
 
+    public function scopeByCompanyIDs($query, $company_ids)
+    {
+        if (!Helpers::joined($query, 'policies')) {
+            $query->join('policies', 'policies.id', '=', 'sold_policies.policy_id');
+        }
+        return $query->whereIn('policies.company_id', $company_ids);
+    }
+
     public function scopeWithTableRelations($query)
     {
         return $query->with('client', 'policy', 'creator', 'customer_car');

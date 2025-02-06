@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -819,7 +818,7 @@ class Customer extends Model
         if ($this->offers()->exists() || $this->soldpolicies()->exists()) {
             throw new Exception("Cannot delete customer with existing offers or sold policies.");
         }
-    
+
         // Delete related models
         $this->phones()->delete();
         $this->addresses()->delete();
@@ -828,7 +827,7 @@ class Customer extends Model
         $this->cars()->delete();
         $this->relatives()->delete();
         $this->interests()->delete();
-    
+
         return parent::delete();
     }
 
@@ -869,9 +868,9 @@ class Customer extends Model
 
     public function getIsDataFullAttribute()
     {
-        if(!$this->first_name || !$this->last_name || !$this->middle_name || !$this->arabic_first_name || !$this->arabic_last_name || !$this->arabic_middle_name) return false; 
+        if (!$this->first_name || !$this->last_name || !$this->middle_name || !$this->arabic_first_name || !$this->arabic_last_name || !$this->arabic_middle_name) return false;
 
-        if(!$this->telephone1 || !$this->address_city || !$this->id_number) return false;
+        if (!$this->telephone1 || !$this->address_city || !$this->id_number) return false;
         return true;
     }
 
@@ -931,14 +930,30 @@ class Customer extends Model
      *      'line_of_business' => 1 or 0
      * ]
      */
-    public function scopeReport($query, $searchText = null, Carbon $from = null, Carbon $to = null, array $interests = [])
+    public function scopeInterestReport($query, Carbon $from = null, Carbon $to = null, array $interests = [], $owner_id = null, $is_welcomed = null)
     {
-        $query->userData($searchText)
-            ->when($from, function ($q, $v) {
-                $q->where('customers.created_at', '>=', $v->format('Y-m-d'));
+        $query->userData()
+            ->when($is_welcomed !== null, function ($q) use ($is_welcomed) {
+                $q->where('is_welcomed', $is_welcomed);
             })
+            ->when($owner_id !== null, function ($q) use ($owner_id) {
+                $q->where('customers.owner_id', $owner_id);
+            })
+            ->join('customer_interests', 'customers.id', '=', 'customer_interests.customer_id')
+            ->select('customer_interests.business', 'customer_interests.interested')
             ->when($from, function ($q, $v) {
-                $q->where('customers.created_at', '<=', $v->format('Y-m-d'));
+                $q->where('customer_interests.created_at', '>=', $v->format('Y-m-d'));
+            })
+            ->when($to, function ($q, $v) {
+                $q->where('customer_interests.created_at', '<=', $v->format('Y-m-d'));
+            })
+            ->when(count($interests), function ($q) use ($interests) {
+                foreach ($interests as $i => $v) {
+                    $q->where(function ($qq) use ($i, $v) {
+                        $qq->where('customer_interests.business', $i)
+                            ->where('customer_interests.interested', $v);
+                    });
+                }
             });
     }
 

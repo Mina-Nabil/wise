@@ -48,6 +48,35 @@ class OutstandingSoldPolicyIndex extends Component
         $this->start_to = null;
     }
 
+    ///company filter
+    public $companySection = false;
+    public $Ecompany_ids = [];
+    public $company_ids = [];
+
+    public function toggleCompany()
+    {
+        $this->toggle($this->companySection);
+        if ($this->companySection) {
+            $this->Ecompany_ids = $this->company_ids;
+        }
+    }
+
+    public function pushCompany($id)
+    {
+        $this->Ecompany_ids[] = $id;
+    }
+
+    public function setCompany()
+    {
+        $this->company_ids = $this->Ecompany_ids;
+        $this->toggleCompany();
+    }
+
+    public function clearCompany()
+    {
+        $this->company_ids = [];
+    }
+
 
     public function render()
     {
@@ -78,6 +107,7 @@ class OutstandingSoldPolicyIndex extends Component
             ->when($this->start_from && $this->start_to, function ($query) {
                 $query->fromTo($this->start_from, $this->start_to);
             })
+            ->when($this->company_ids, fn($q) => $q->byCompanyIDs($this->company_ids))
             ->with('last_company_comm_payment')
             ->paginate(20);
 
