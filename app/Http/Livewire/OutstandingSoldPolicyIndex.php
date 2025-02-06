@@ -62,7 +62,9 @@ class OutstandingSoldPolicyIndex extends Component
         }
 
         $soldPolicies = SoldPolicy::userData(searchText: $this->search, is_commission_outstanding: $commission_outstanding, is_client_outstanding: $client_outstanding)
-            ->fromTo($this->start_from, $this->start_to)
+            ->when($this->start_from && $this->start_to, function ($query) {
+                $query->fromTo($this->start_from, $this->start_to);
+            })
             ->with('last_company_comm_payment')
             ->paginate(20);
 
