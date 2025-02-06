@@ -622,17 +622,17 @@
                                                     </td>
 
                                                     <td class="table-td">
-                                                        @if ($comm->pivot->status === 'new')
+                                                        @if ($sales_comm->status === 'new')
                                                             <span class="badge bg-info-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $comm->pivot->status)) }}
+                                                                {{ ucwords(str_replace('_', ' ', $sales_comm->status)) }}
                                                             </span>
-                                                        @elseif(str_contains($comm->pivot->status, 'declined') || str_contains($comm->pivot->status, 'cancelled'))
+                                                        @elseif(str_contains($sales_comm->status, 'declined') || str_contains($sales_comm->status, 'cancelled'))
                                                             <span class="badge bg-danger-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $comm->pivot->status)) }}
+                                                                {{ ucwords(str_replace('_', ' ', $sales_comm->status)) }}
                                                             </span>
-                                                        @elseif($comm->pivot->status === 'paid' || ($comm->pivot->status = 'approved'))
+                                                        @elseif($sales_comm->status === 'paid' || ($sales_comm->status = 'approved'))
                                                             <span class="badge bg-success-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $comm->pivot->status)) }}
+                                                                {{ ucwords(str_replace('_', ' ', $sales_comm->status)) }}
                                                             </span>
                                                         @endif
                                                     </td>
