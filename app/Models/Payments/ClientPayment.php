@@ -456,6 +456,11 @@ class ClientPayment extends Model
         return $query->where('client_payments.status', self::PYMT_STATE_PAID);
     }
 
+    public function scopeNotCollected(Builder $query)
+    {
+        return $query->whereIn('client_payments.status', [self::PYMT_STATE_CANCELLED, self::PYMT_STATE_NEW]);
+    }
+
     public function scopeNotPaidOnly(Builder $query)
     {
         return $query->whereNot('client_payments.status', self::PYMT_STATE_PAID);

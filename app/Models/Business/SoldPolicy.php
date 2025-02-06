@@ -945,9 +945,21 @@ class SoldPolicy extends Model
         }
     }
 
-    public function cancelSoldPolicy($client_return = 0)
+    public function cancelSoldPolicy()
     {
-        //TODO bas lsa shwya
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('delete', $this)) return false;
+        DB::transaction(function () {
+            $this->client_payments()->notCollected()->delete();
+            $this->sales_comms()->notPaid()->delete();
+            $this->company_comm_payments()->notPaid()->delete();
+            $this->load('company_comm_payments');
+            if ($this->company_comm_payments->count()) {
+                $this->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, -1 * $this->company_comm_payments->sum('amount'), "Generated automatic after sold policy cancellation");
+            }
+        });
+        return true;
     }
 
     public function deleteSoldPolicy()

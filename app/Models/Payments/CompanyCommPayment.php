@@ -159,6 +159,10 @@ class CompanyCommPayment extends Model
     {
         $query->where('status', self::PYMT_STATE_PAID);
     }
+    public function scopeNotPaid(Builder $query)
+    {
+        $query->whereNot('status', self::PYMT_STATE_PAID);
+    }
 
     ///relations
     public function sold_policy(): BelongsTo
