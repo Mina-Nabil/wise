@@ -72,6 +72,13 @@
                     <div class="card">
                         <header class="card-header cust-card-header noborder">
 
+                            <iconify-icon wire:loading class="loading-icon text-lg"
+                                icon="line-md:loading-twotone-loop"></iconify-icon>
+                            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
+                                wire:model="search">
+                        </header>
+                        <header class="card-header cust-card-header noborder">
+
                             @if ($start_from || $start_to)
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleStartDate">
@@ -86,13 +93,8 @@
                                     </span>
                                 </button>
                             @endif
-
-
-                            <iconify-icon wire:loading class="loading-icon text-lg"
-                                icon="line-md:loading-twotone-loop"></iconify-icon>
-                            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                                wire:model="search">
                         </header>
+                   
                         <div class="tab-content mt-6" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="pills-list" role="tabpanel"
                                 aria-labelledby="pills-list-tab">
