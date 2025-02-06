@@ -117,9 +117,7 @@
                                 <th scope="col" class=" table-th ">
                                     Date
                                 </th>
-                                <th scope="col" class=" table-th ">
-                                    Note
-                                </th>
+                       
 
                                 <th scope="col" class=" table-th ">
                                     Closed by
