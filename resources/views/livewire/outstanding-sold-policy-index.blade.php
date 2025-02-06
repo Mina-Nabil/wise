@@ -9,7 +9,7 @@
         </div>
 
         <div class="flex justify-between items-center space-x-7 flex-wrap mb-5">
-            <div class="flex">
+            <div class="flex gap-5">
                 <div class="secondary-radio">
                     <label class="flex items-center cursor-pointer">
                         <input type="radio" class="hidden" value="all" wire:model="outstandingType">
