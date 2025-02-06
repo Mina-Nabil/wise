@@ -124,7 +124,7 @@
                                 <th scope="col" class=" table-th ">
                                     Closed by
                                 </th>
-                                @if (user()->is_admin || user()->is_finance)
+                                @if (auth()->user()->is_admin || user()->is_finance)
                                     <th scope="col" class=" table-th ">
                                         Sales
                                     </th>
@@ -209,7 +209,7 @@
                                             <b> - </b>
                                         @endif
                                     </td>
-                                    @if (user()->is_admin || user()->is_finance)
+                                    @if (auth()->user()->is_admin || auth()->user()->is_finance)
                                     <td class="table-td">
                                         <ul>
 
