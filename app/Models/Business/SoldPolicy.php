@@ -1803,16 +1803,13 @@ class SoldPolicy extends Model
         $query->when($is_client_outstanding, function ($q) {
             $q->whereRaw("total_client_paid < gross_premium")->fromOct2024();
         });
-        
+
         $query->when($is_invoice_outstanding, function ($q) {
             if (!Helpers::joined($q, 'comp_comm_payment')) {
                 $q->join('comp_comm_payment', 'comp_comm_payment.sold_policy_id', 'sold_policies.id');
             }
-            if (!Helpers::joined($q, 'invoices')) {
-                $q->join('invoices', 'invoices.id', 'comp_comm_payment.invoice_id');
-            }
-            $q->selectRaw("SUM() as invoice_paid");
-            $q->whereRaw("total_client_paid < gross_premium")->fromOct2024();
+            $q->selectRaw("SUM(comp_comm_payment.amount) as invoice_created");
+            $q->whereRaw("total_comp_paid < invoice_created")->fromOct2024();
         });
 
         return $query->orderBy("sold_policies.start");
