@@ -62,16 +62,22 @@
                                                                             POLICY
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
-                                                                            START DATE
+                                                                            START
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
-                                                                            END DATE
+                                                                            END
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
-                                                                            POLICY NUMBER
+                                                                            POLICY#
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
-                                                                            CLIENT NAME
+                                                                            INVOICE
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
+                                                                            INVOICE PYMT
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
+                                                                            CLIENT
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
                                                                             STATUS
@@ -105,6 +111,12 @@
                                                                                         {{ $policy->policy_number }}
                                                                                     </span>
                                                                                 </a>
+                                                                            </td>
+                                                                            <td class="table-td">
+                                                                                <span class="block date-text">{{ $policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A'}}</span>
+                                                                            </td>
+                                                                            <td class="table-td">
+                                                                                <span class="block date-text">{{ $policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A' }}</span>
                                                                             </td>
                                                                             <td class="table-td">
                                                                                 <div class="flex space-x-3 items-center text-left rtl:space-x-reverse">

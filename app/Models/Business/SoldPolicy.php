@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Filesystem\Filesystem;
@@ -2096,6 +2097,11 @@ class SoldPolicy extends Model
     public function company_comm_payments(): HasMany
     {
         return $this->hasMany(CompanyCommPayment::class);
+    }
+
+    public function last_company_comm_payment(): HasOne
+    {
+        return $this->hasOne(CompanyCommPayment::class)->whereNot('status', CompanyCommPayment::PYMT_STATE_CANCELLED)->latestOfMany();
     }
 
     public function client_payments(): HasMany

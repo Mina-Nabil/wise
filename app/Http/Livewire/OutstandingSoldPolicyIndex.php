@@ -30,7 +30,10 @@ class OutstandingSoldPolicyIndex extends Component
             $commission_outstanding = true;
         }
 
-        $soldPolicies = SoldPolicy::userData(searchText:$this->search,is_commission_outstanding:$commission_outstanding , is_client_outstanding:$client_outstanding)->paginate(20);
+        $soldPolicies = SoldPolicy::userData(searchText:$this->search,is_commission_outstanding:$commission_outstanding , is_client_outstanding:$client_outstanding)
+        ->with('last_company_comm_payment')
+        ->paginate(20);
+
         return view('livewire.outstanding-sold-policy-index',[
             'soldPolicies' => $soldPolicies,
             ]);

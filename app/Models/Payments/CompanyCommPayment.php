@@ -169,4 +169,8 @@ class CompanyCommPayment extends Model
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
+    }
 }
