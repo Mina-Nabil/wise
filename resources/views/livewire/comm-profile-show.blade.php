@@ -622,19 +622,22 @@
                                                     </td>
 
                                                     <td class="table-td">
-                                                        @if ($comm->status === 'new')
-                                                            <span class="badge bg-info-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @elseif(str_contains($comm->status, 'declined') || str_contains($comm->status, 'cancelled'))
-                                                            <span class="badge bg-danger-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @elseif($comm->status === 'paid' || ($comm->status = 'approved'))
-                                                            <span class="badge bg-success-500 h-auto text-white">
-                                                                {{ ucwords(str_replace('_', ' ', $comm->status)) }}
-                                                            </span>
-                                                        @endif
+                                                        @if (str_contains($comm->status, 'not_confirmed'))
+                                                                <span class="badge bg-warning-500 text-white h-auto">
+                                                                    <iconify-icon
+                                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                                </span>
+                                                            @elseif(str_contains($comm->status, 'cancelled'))
+                                                                <span class="badge bg-danger-500 text-white h-auto">
+                                                                    <iconify-icon
+                                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                                </span>
+                                                            @elseif($comm->status === 'confirmed' || str_contains($comm->status, 'paid'))
+                                                                <span class="badge bg-success-500 text-white h-auto">
+                                                                    <iconify-icon
+                                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $comm->status)) }}
+                                                                </span>
+                                                            @endif
                                                     </td>
 
                                                     <td class="table-td ">
