@@ -148,7 +148,10 @@
                                             </th>
         
                                             <th scope="col" class=" table-th ">
-                                                Customer Name
+                                                Owner
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Customer
                                             </th>
         
                                             <th scope="col" class=" table-th ">
@@ -179,6 +182,10 @@
                                             <tr>
                                                 <td class="table-td ">
                                                     {{ $customer->id }}
+                                                </td>
+        
+                                                <td class="table-td ">
+                                                    {{ $customer->owner->username }}
                                                 </td>
         
                                                 <td wire:click="redirectToShowPage({{ $customer }})"

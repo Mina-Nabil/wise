@@ -66,8 +66,8 @@
                     <header class="card-header cust-card-header noborder">
                         <iconify-icon wire:loading class="loading-icon text-lg"
                             icon="line-md:loading-twotone-loop"></iconify-icon>
-                        <input class="form-control py-2 w-auto" type="text" wire:model="searchText" style="padding-left: 35px"
-                            placeholder="Search..." />
+                        <input class="form-control py-2 w-auto" type="text" wire:model="searchText"
+                            style="padding-left: 35px" placeholder="Search..." />
                     </header>
 
                     <header class="card-header cust-card-header noborder" style="display: block;">
@@ -136,107 +136,115 @@
                         </div>
                     </header>
 
-                            <div class=" ">
-                                {{-- overflow-hidden --}}
-                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                    <thead
-                                        class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
-                                        <tr>
-        
-                                            <th scope="col" class=" table-th ">
-                                                #
-                                            </th>
-        
-                                            <th scope="col" class=" table-th ">
-                                                Customer Name
-                                            </th>
-        
-                                            <th scope="col" class=" table-th ">
-                                                Type
-                                            </th>
-        
-                                            {{-- <th scope="col" class=" table-th ">
+                    <div class=" ">
+                        {{-- overflow-hidden --}}
+                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                            <thead
+                                class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
+                                <tr>
+
+                                    <th scope="col" class=" table-th ">
+                                        #
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Owner
+                                    </th>
+                                    
+                                    <th scope="col" class=" table-th ">
+                                        Corporate
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Type
+                                    </th>
+
+                                    {{-- <th scope="col" class=" table-th ">
                                                 Phone
                                             </th> --}}
-        
-                                            <th scope="col" class=" table-th ">
-                                                Business
-                                            </th>
-        
-                                            <th scope="col" class=" table-th ">
-                                                Interested?
-                                            </th>
-        
-                                            <th scope="col" class=" table-th ">
-                                                Note
-                                            </th>
-        
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-        
-                                        @foreach ($customers as $customer)
-                                            <tr>
-                                                <td class="table-td ">
-                                                    {{ $customer->id }}
-                                                </td>
-        
-                                                <td wire:click="redirectToShowPage({{ $customer }})"
-                                                    class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
-                                                    <b>{{ $customer->full_name }}</b>
-                                                </td>
-        
-                                                <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
-                                                    wire:click="openStatusSection({{ $customer->id }})">
-                                                    {{ $customer->type }} - {{ $customer->status?->status }}
-                                                </td>
-        
-        
-                                                <td class="table-td ">
-                                                    {{ $customer->business ? ucfirst(str_replace('_', " ", $customer->business))  : 'N/A' }}
-                                                </td>
-        
-                                                <td class="table-td ">
-                                                    {{ $customer->interested ? 'Yes' : "No"}}
-                                                </td>
-        
-                                                <td class="table-td ">
-                                                    <b>{{ $customer->note ?? 'N/A' }}</b>
-                                                </td>
-        
-                                            </tr>
-                                        @endforeach
-        
-                                    </tbody>
-                                </table>
-        
-                                @if ($customers->isEmpty())
-                                    {{-- START: empty filter result --}}
-                                    <div class="card m-5 p-5">
-                                        <div class="card-body rounded-md bg-white dark:bg-slate-800">
-                                            <div class="items-center text-center p-5">
-                                                <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
-                                                <h2 class="card-title text-slate-900 dark:text-white mb-3">No Customers with the
-                                                    applied
-                                                    filters</h2>
-                                                <p class="card-text">Try changing the filters or search terms for this view.
-                                                </p>
-                                                <a href="{{ url('/customers') }}"
-                                                    class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
-                                                    all Customers</a>
-                                            </div>
-                                        </div>
+
+                                    <th scope="col" class=" table-th ">
+                                        Business
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Interested?
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Note
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                @foreach ($customers as $customer)
+                                    <tr>
+                                        <td class="table-td ">
+                                            {{ $customer->id }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            {{ $customer->owner->username }}
+                                        </td>
+
+                                        <td wire:click="redirectToShowPage({{ $customer }})"
+                                            class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                                            <b>{{ $customer->full_name }}</b>
+                                        </td>
+
+                                        <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                            wire:click="openStatusSection({{ $customer->id }})">
+                                            {{ $customer->type }} - {{ $customer->status?->status }}
+                                        </td>
+
+
+                                        <td class="table-td ">
+                                            {{ $customer->business ? ucfirst(str_replace('_', ' ', $customer->business)) : 'N/A' }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            {{ $customer->interested ? 'Yes' : 'No' }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            <b>{{ $customer->note ?? 'N/A' }}</b>
+                                        </td>
+
+                                    </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+
+                        @if ($customers->isEmpty())
+                            {{-- START: empty filter result --}}
+                            <div class="card m-5 p-5">
+                                <div class="card-body rounded-md bg-white dark:bg-slate-800">
+                                    <div class="items-center text-center p-5">
+                                        <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
+                                        <h2 class="card-title text-slate-900 dark:text-white mb-3">No Customers with the
+                                            applied
+                                            filters</h2>
+                                        <p class="card-text">Try changing the filters or search terms for this view.
+                                        </p>
+                                        <a href="{{ url('/customers') }}"
+                                            class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
+                                            all Customers</a>
                                     </div>
-                                    {{-- END: empty filter result --}}
-                                @endif
-        
+                                </div>
                             </div>
-        
-        
-        
-                            {{ $customers->links('vendor.livewire.bootstrap') }}
-        
-                        </div>
+                            {{-- END: empty filter result --}}
+                        @endif
+
+                    </div>
+
+
+
+                    {{ $customers->links('vendor.livewire.bootstrap') }}
+
+                </div>
 
             </div>
         </div>
@@ -246,7 +254,8 @@
 
     @if ($creationSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
