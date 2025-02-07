@@ -742,7 +742,7 @@ class Corporate extends Model
             ->when(count($interests), function ($q) use ($interests) {
                 foreach ($interests as $i => $v) {
                     $q->where(function ($qq) use ($i, $v) {
-                        $qq->where('corporate_interests.business', $i);
+                        $qq->where('corporate_interests.business', $v);
                     });
                 }
             });
