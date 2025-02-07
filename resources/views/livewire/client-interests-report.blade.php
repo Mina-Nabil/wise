@@ -90,7 +90,7 @@
                             @if ($lobs)
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="togglelobs">
-                                        Status:&nbsp;(
+                                        Business:&nbsp;(
                                         @foreach ($lobs as $lob)
                                             {{ ucwords(str_replace('_', ' ', $lob)) }}
                                             @if (!$loop->last)

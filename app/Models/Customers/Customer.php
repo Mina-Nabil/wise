@@ -950,8 +950,7 @@ class Customer extends Model
             ->when(count($interests), function ($q) use ($interests) {
                 foreach ($interests as $i => $v) {
                     $q->where(function ($qq) use ($i, $v) {
-                        $qq->where('customer_interests.business', $i)
-                            ->where('customer_interests.interested', $v);
+                        $qq->where('customer_interests.business', $i);
                     });
                 }
             });
