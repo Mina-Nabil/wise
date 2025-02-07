@@ -102,6 +102,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/reports/client-payment-finance', [ReportController::class, 'clientPaymentsFinance'])->name('reports.offers');
     Route::get('/reports/client-payments', [ReportController::class, 'clientPayments'])->name('reports.offers');
     Route::get('/reports/client-interest', [ReportController::class, 'clientInterests'])->name('reports.interest');
+    Route::get('/reports/corporate-interest', [ReportController::class, 'corporateInterests'])->name('reports.corporate-interest');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);

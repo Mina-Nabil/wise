@@ -708,7 +708,7 @@ class Corporate extends Model
             $q->join('corporate_status', 'corporate_status.corporate_id', '=', 'corporates.id')
                 ->where('corporate_status.status', $filter);
         });
-        return $query->latest();
+        return $query->orderByDesc('corporates.created_at');
     }
 
     //scopes
@@ -731,8 +731,8 @@ class Corporate extends Model
             ->when($owner_id !== null, function ($q) use ($owner_id) {
                 $q->where('customers.owner_id', $owner_id);
             })
-            ->join('corporate_interests', 'customers.id', '=', 'corporate_interests.customer_id')
-            ->select('corporate_interests.business', 'corporate_interests.interested')
+            ->join('corporate_interests', 'corporates.id', '=', 'corporate_interests.corporate_id')
+            ->select('corporates.*', 'corporate_interests.business', 'corporate_interests.interested', 'corporate_interests.note')
             ->when($from, function ($q, $v) {
                 $q->where('corporate_interests.created_at', '>=', $v->format('Y-m-d'));
             })

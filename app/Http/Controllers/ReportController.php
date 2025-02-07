@@ -25,6 +25,11 @@ class ReportController extends Controller
         return view('reports.client-interests');
     }
 
+    public function corporateInterests()
+    {
+        return view('reports.corporate-interests');
+    }
+
     public function clientPaymentsFinance()
     {
         /** @var User */

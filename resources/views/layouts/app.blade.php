@@ -262,7 +262,10 @@
                                 <a href="{{ url('/reports/client-payments') }}" class="@yield('client-payments')">Client Payments</a>
                             </li>
                             <li>
-                                <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Client Interests</a>
+                                <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Customer Interests</a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/reports/corporate-interest') }}" class="@yield('corporate-interests-report')">Corporate Interests</a>
                             </li>
 
                         </ul>

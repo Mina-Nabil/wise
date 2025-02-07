@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
 use App\Models\Insurance\Policy;
 use App\Models\Users\User;
@@ -10,7 +11,7 @@ use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class ClientInterestsReport extends Component
+class CorporateInterestsReport extends Component
 {
     use WithPagination, ToggleSectionLivewire;
     public $searchText;
@@ -69,7 +70,7 @@ class ClientInterestsReport extends Component
     // END: creator filter
     public function redirectToShowPage($id)
     {
-        return redirect(route('customers.show', $id));
+        return redirect(route('corporates.show', $id));
     }
 
     // START: creation date filter
@@ -118,10 +119,10 @@ class ClientInterestsReport extends Component
 
     public function render()
     {
-        $customers = Customer::InterestReport($this->creation_from,$this->creation_to,$this->lobs,$this->creator_id,$this->isWelcomed)->paginate(50);
+        $customers = Corporate::InterestReport($this->creation_from,$this->creation_to,$this->lobs,$this->creator_id,$this->isWelcomed)->paginate(50);
         $users = User::all();
         $all_lobs = Policy::LINES_OF_BUSINESS;
-        return view('livewire.client-interests-report',[
+        return view('livewire.corporate-interests-report',[
             'all_lobs' => $all_lobs,
             'users' => $users,
             'customers' => $customers

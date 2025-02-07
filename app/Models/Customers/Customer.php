@@ -922,7 +922,7 @@ class Customer extends Model
             $q->join('customer_status', 'customer_status.customer_id', '=', 'customers.id')
                 ->where('customer_status.status', $filter);
         });
-        return $query->latest();
+        return $query->orderByDesc('customers.created_at');
     }
 
     /**
@@ -932,7 +932,7 @@ class Customer extends Model
      */
     public function scopeInterestReport($query, Carbon $from = null, Carbon $to = null, array $interests = [], $owner_id = null, $is_welcomed = null)
     {
-        $query->userData()
+        return $query->userData()
             ->when($is_welcomed !== null, function ($q) use ($is_welcomed) {
                 $q->where('is_welcomed', $is_welcomed);
             })
@@ -940,7 +940,7 @@ class Customer extends Model
                 $q->where('customers.owner_id', $owner_id);
             })
             ->join('customer_interests', 'customers.id', '=', 'customer_interests.customer_id')
-            ->select('customer_interests.business', 'customer_interests.interested')
+            ->select('customers.*', 'customer_interests.business', 'customer_interests.interested', 'customer_interests.note')
             ->when($from, function ($q, $v) {
                 $q->where('customer_interests.created_at', '>=', $v->format('Y-m-d'));
             })
