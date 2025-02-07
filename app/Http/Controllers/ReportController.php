@@ -20,6 +20,11 @@ class ReportController extends Controller
         return view('reports.client-payments');
     }
 
+    public function clientInterests()
+    {
+        return view('reports.client-interests');
+    }
+
     public function clientPaymentsFinance()
     {
         /** @var User */
@@ -35,7 +40,8 @@ class ReportController extends Controller
         return view('reports.sold-policy-index');
     }
 
-    public function followupsIndex(){
+    public function followupsIndex()
+    {
         return view('reports.followups-index');
     }
 

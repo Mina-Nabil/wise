@@ -261,6 +261,9 @@
                             <li>
                                 <a href="{{ url('/reports/client-payments') }}" class="@yield('client-payments')">Client Payments</a>
                             </li>
+                            <li>
+                                <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Client Interests</a>
+                            </li>
 
                         </ul>
                     </li>

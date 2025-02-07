@@ -101,6 +101,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/reports/followups', [ReportController::class, 'followupsIndex'])->name('reports.followups');
     Route::get('/reports/client-payment-finance', [ReportController::class, 'clientPaymentsFinance'])->name('reports.offers');
     Route::get('/reports/client-payments', [ReportController::class, 'clientPayments'])->name('reports.offers');
+    Route::get('/reports/client-interest', [ReportController::class, 'clientInterests'])->name('reports.interest');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);
