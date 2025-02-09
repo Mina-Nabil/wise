@@ -2011,7 +2011,7 @@ class SoldPolicy extends Model
     public function getCommissionLeftAttribute()
     {
         $this->load('company_comm_payments');
-        return $this->total_policy_comm - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW))->sum('amount') - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_PAID))->sum('amount');
+        return $this->after_tax_comm - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_NEW))->sum('amount') - ($this->company_comm_payments->where('status', CompanyCommPayment::PYMT_STATE_PAID))->sum('amount');
     }
 
     public function getSalesOutsAttribute()
