@@ -78,6 +78,38 @@ class OutstandingSoldPolicyIndex extends Component
         $this->company_ids = [];
     }
 
+    public function exportReport()
+    {
+        if ($this->outstandingType === 'all') {
+            $client_outstanding = false;
+            $commission_outstanding = false;
+            $invoice_outstanding = false;
+        } elseif ($this->outstandingType === 'policy') {
+            $client_outstanding = true;
+            $commission_outstanding = false;
+            $invoice_outstanding = false;
+        } elseif ($this->outstandingType === 'commission') {
+            $client_outstanding = false;
+            $commission_outstanding = true;
+            $invoice_outstanding = false;
+        } elseif ($this->outstandingType === 'invoice') {
+            $client_outstanding = false;
+            $commission_outstanding = false;
+            $invoice_outstanding = true;
+        }
+
+        return SoldPolicy::exportOutstanding(
+            $this->search,
+            $commission_outstanding,
+            $client_outstanding,
+            $invoice_outstanding,
+            $this->start_from,
+            $this->start_to,
+            $this->company_ids
+        );
+    }
+
+
 
     public function render()
     {
@@ -99,18 +131,15 @@ class OutstandingSoldPolicyIndex extends Component
             $invoice_outstanding = true;
         }
 
-        $soldPolicies = SoldPolicy::userData(
-            searchText: $this->search,
-            is_commission_outstanding: $commission_outstanding,
-            is_client_outstanding: $client_outstanding,
-            is_invoice_outstanding: $invoice_outstanding
-        )
-            ->when($this->start_from && $this->start_to, function ($query) {
-                $query->fromTo($this->start_from, $this->start_to);
-            })
-            ->when($this->company_ids, fn($q) => $q->byCompanyIDs($this->company_ids))
-            ->with('last_company_comm_payment')
-            ->paginate(20);
+        $soldPolicies = SoldPolicy::outstandingPolicies(
+            $this->search,
+            $commission_outstanding,
+            $client_outstanding,
+            $invoice_outstanding,
+            $this->start_from,
+            $this->start_to,
+            $this->company_ids
+        )->paginate(20);
 
         return view('livewire.outstanding-sold-policy-index', [
             'soldPolicies' => $soldPolicies,

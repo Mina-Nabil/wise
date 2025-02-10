@@ -46,7 +46,14 @@
                     </label>
                 </div>
             </div>
-
+            @if (Auth::user()->is_admin)
+                <button wire:click="exportReport"
+                    class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
+                    <span wire:loading.remove wire:target="exportReport">Export</span>
+                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                        wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
+                </button>
+            @endif
             <div class="dropdown relative ">
                 <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
                     type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -109,29 +116,29 @@
                             @endif
 
                             @if ($company_ids)
-                            <button class="btn inline-flex justify-center btn-dark btn-sm">
-                                <span wire:click="toggleCompany">
-                                    Company(
-                                    @foreach ($company_ids as $id)
-                                        @php
-                                            $company = \App\Models\Insurance\Company::find($id)->name;
-                                        @endphp
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleCompany">
+                                        Company(
+                                        @foreach ($company_ids as $id)
+                                            @php
+                                                $company = \App\Models\Insurance\Company::find($id)->name;
+                                            @endphp
 
-                                        {{ $company }}
-                                        @if (!$loop->last)
-                                            ,
-                                        @endif
-                                    @endforeach
+                                            {{ $company }}
+                                            @if (!$loop->last)
+                                                ,
+                                            @endif
+                                        @endforeach
 
-                                    )
-                                    &nbsp;&nbsp;
-                                </span>
-                                <span wire:click="clearCompany">
-                                    <iconify-icon icon="material-symbols:close" width="1.2em"
-                                        height="1.2em"></iconify-icon>
-                                </span>
-                            </button>
-                        @endif
+                                        )
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearCompany">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
                         </header>
 
                         <div class="tab-content mt-6" id="pills-tabContent">
@@ -159,12 +166,15 @@
                                                                     <th scope="col" class="table-th ">
                                                                         POLICY#
                                                                     </th>
-                                                                    <th scope="col" class="table-th ">
-                                                                        INVOICE
-                                                                    </th>
-                                                                    <th scope="col" class="table-th ">
-                                                                        INVOICE PYMT
-                                                                    </th>
+                                                                    @can('viewCommission',
+                                                                        App\Models\Business\SoldPolicy::class)
+                                                                        <th scope="col" class="table-th ">
+                                                                            INVOICE
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
+                                                                            INVOICE PYMT
+                                                                        </th>
+                                                                    @endcan
                                                                     <th scope="col" class="table-th ">
                                                                         CLIENT
                                                                     </th>
@@ -176,7 +186,8 @@
                                                             <tbody
                                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                                 @foreach ($soldPolicies as $policy)
-                                                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                    <tr
+                                                                        class="even:bg-slate-50 dark:even:bg-slate-700">
                                                                         <td class="table-td">
                                                                             <div class="flex-1 text-start">
                                                                                 <h4
@@ -206,14 +217,18 @@
                                                                                 </span>
                                                                             </a>
                                                                         </td>
-                                                                        <td class="table-td">
-                                                                            <span
-                                                                                class="block date-text">{{ $policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A' }}</span>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            <span
-                                                                                class="block date-text">{{ $policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A' }}</span>
-                                                                        </td>
+
+                                                                        @can('viewCommission',
+                                                                            App\Models\Business\SoldPolicy::class)
+                                                                            <td class="table-td">
+                                                                                <span
+                                                                                    class="block date-text">{{ $policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A' }}</span>
+                                                                            </td>
+                                                                            <td class="table-td">
+                                                                                <span
+                                                                                    class="block date-text">{{ $policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A' }}</span>
+                                                                            </td>
+                                                                        @endcan
                                                                         <td class="table-td">
                                                                             <div
                                                                                 class="flex space-x-3 items-center text-left rtl:space-x-reverse">
@@ -360,101 +375,123 @@
                                                 @endif
 
                                                 @if ($companySection)
-                                                <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-                                                    tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-                                                    style="display: block;">
-                                                    <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                                                    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+                                                        tabindex="-1" aria-labelledby="vertically_center"
+                                                        aria-modal="true" role="dialog" style="display: block;">
                                                         <div
-                                                            class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                                                            <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                                                                <!-- Modal header -->
+                                                            class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                                                            <div
+                                                                class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                                                                 <div
-                                                                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                                                                    <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                                                        Insurance Company
-                                                                    </h3>
-                                                                    <button wire:click="toggleCompany" type="button"
-                                                                        class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                                                        data-bs-dismiss="modal">
-                                                                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                                                            xmlns="http://www.w3.org/2000/svg">
-                                                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                                    class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                                                                    <!-- Modal header -->
+                                                                    <div
+                                                                        class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                                                        <h3
+                                                                            class="text-xl font-medium text-white dark:text-white capitalize">
+                                                                            Insurance Company
+                                                                        </h3>
+                                                                        <button wire:click="toggleCompany"
+                                                                            type="button"
+                                                                            class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                                                            data-bs-dismiss="modal">
+                                                                            <svg aria-hidden="true" class="w-5 h-5"
+                                                                                fill="#ffffff" viewBox="0 0 20 20"
+                                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                                <path fill-rule="evenodd"
+                                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                             11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                                clip-rule="evenodd"></path>
-                                                                        </svg>
-                                                                        <span class="sr-only">Close modal</span>
-                                                                    </button>
-                                                                </div>
-                                                                <!-- Modal body -->
-                                                                <div class="p-6 space-y-4">
-                                                                    <div>
-                                                                        @foreach ($Ecompany_ids as $id)
-                                                                            <!-- Fetch brand name based on ID -->
-                                                                            @php
-                                                                                $company = \App\Models\Insurance\Company::find($id)->name;
-                                                                            @endphp
-                                        
-                                                                            <!-- Display brand name -->
-                                                                            <span
-                                                                                class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $company }}</span>
-                                                                        @endforeach
-                                        
+                                                                                    clip-rule="evenodd"></path>
+                                                                            </svg>
+                                                                            <span class="sr-only">Close modal</span>
+                                                                        </button>
                                                                     </div>
-                                                                    <div class="from-group">
-                                                                        <label for="searchCompany" class="form-label">Search Company</label>
-                                                                        <input name="searchCompany" type="text" class="form-control mt-2 w-full"
-                                                                            wire:model="searchCompany">
-                                                                    </div>
-                                                                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                                                        <thead class="bg-slate-200 dark:bg-slate-700">
-                                                                            <tr>
-                                        
-                                                                                <th scope="col" class=" table-th ">
-                                                                                    Name
-                                                                                </th>
-                                        
-                                                                                <th scope="col" class=" table-th ">
-                                                                                    Action
-                                                                                </th>
-                                        
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody
-                                                                            class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                                        
-                                                                            @foreach ($companies as $company)
-                                                                                @if (!in_array($company->id, $Ecompany_ids))
-                                                                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
-                                                                                        <td class="table-td">{{ $company->name }}</td>
-                                                                                        <td class="table-td "><button
-                                                                                                wire:click="pushCompany({{ $company->id }})"
-                                                                                                class="btn inline-flex justify-center btn-success light">Add</button>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                @endif
+                                                                    <!-- Modal body -->
+                                                                    <div class="p-6 space-y-4">
+                                                                        <div>
+                                                                            @foreach ($Ecompany_ids as $id)
+                                                                                <!-- Fetch brand name based on ID -->
+                                                                                @php
+                                                                                    $company = \App\Models\Insurance\Company::find(
+                                                                                        $id,
+                                                                                    )->name;
+                                                                                @endphp
+
+                                                                                <!-- Display brand name -->
+                                                                                <span
+                                                                                    class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $company }}</span>
                                                                             @endforeach
-                                        
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                                <!-- Modal footer -->
-                                                                <div
-                                                                    class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                                                    <button wire:click="setCompany" data-bs-dismiss="modal"
-                                                                        class="btn inline-flex justify-center text-white bg-black-500">
-                                                                        <span wire:loading.remove wire:target="setCompany">Submit</span>
-                                                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                                                            wire:loading wire:target="setCompany"
-                                                                            icon="line-md:loading-twotone-loop"></iconify-icon>
-                                        
-                                                                    </button>
+
+                                                                        </div>
+                                                                        <div class="from-group">
+                                                                            <label for="searchCompany"
+                                                                                class="form-label">Search
+                                                                                Company</label>
+                                                                            <input name="searchCompany" type="text"
+                                                                                class="form-control mt-2 w-full"
+                                                                                wire:model="searchCompany">
+                                                                        </div>
+                                                                        <table
+                                                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                                                            <thead
+                                                                                class="bg-slate-200 dark:bg-slate-700">
+                                                                                <tr>
+
+                                                                                    <th scope="col"
+                                                                                        class=" table-th ">
+                                                                                        Name
+                                                                                    </th>
+
+                                                                                    <th scope="col"
+                                                                                        class=" table-th ">
+                                                                                        Action
+                                                                                    </th>
+
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody
+                                                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+
+                                                                                @foreach ($companies as $company)
+                                                                                    @if (!in_array($company->id, $Ecompany_ids))
+                                                                                        <tr
+                                                                                            class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                                            <td class="table-td">
+                                                                                                {{ $company->name }}
+                                                                                            </td>
+                                                                                            <td class="table-td ">
+                                                                                                <button
+                                                                                                    wire:click="pushCompany({{ $company->id }})"
+                                                                                                    class="btn inline-flex justify-center btn-success light">Add</button>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    @endif
+                                                                                @endforeach
+
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                    <!-- Modal footer -->
+                                                                    <div
+                                                                        class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                                                        <button wire:click="setCompany"
+                                                                            data-bs-dismiss="modal"
+                                                                            class="btn inline-flex justify-center text-white bg-black-500">
+                                                                            <span wire:loading.remove
+                                                                                wire:target="setCompany">Submit</span>
+                                                                            <iconify-icon
+                                                                                class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                                                                wire:loading wire:target="setCompany"
+                                                                                icon="line-md:loading-twotone-loop"></iconify-icon>
+
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @endif
-                                        
+                                                @endif
+
 
                                             </div>
                                             {{ $soldPolicies->links('vendor.livewire.bootstrap') }}
