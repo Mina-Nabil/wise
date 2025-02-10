@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\models\Business\SoldPolicy;
+use App\Models\Insurance\Company;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
@@ -113,6 +114,7 @@ class OutstandingSoldPolicyIndex extends Component
 
         return view('livewire.outstanding-sold-policy-index', [
             'soldPolicies' => $soldPolicies,
+            'companies' =>  Company::all()
         ]);
     }
 }
