@@ -46,40 +46,43 @@
                     </label>
                 </div>
             </div>
-            @if (Auth::user()->is_admin)
-                <button wire:click="exportReport"
-                    class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
-                    <span wire:loading.remove wire:target="exportReport">Export</span>
-                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                        wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
-                </button>
-            @endif
-            <div class="dropdown relative ">
-                <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
-                    type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    Add filter
-                    <span
-                        class="cursor-pointer absolute ltr:border-l rtl:border-r border-slate-100 h-full ltr:right-0 rtl:left-0 px-2 flex
-                                items-center justify-center leading-none">
-                        <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
-                    </span>
-                </button>
-                <ul
-                    class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
-                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                    <li wire:click="toggleStartDate">
+            <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+                @if (Auth::user()->is_admin)
+                    <button wire:click="exportReport"
+                        class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
+                        <span wire:loading.remove wire:target="exportReport">Export</span>
+                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                            wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
+                    </button>
+                @endif
+                <div class="dropdown relative ">
+                    <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
+                        type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Add filter
                         <span
-                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                            class="cursor-pointer absolute ltr:border-l rtl:border-r border-slate-100 h-full ltr:right-0 rtl:left-0 px-2 flex
+                                items-center justify-center leading-none">
+                            <iconify-icon class="leading-none text-xl"
+                                icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                        </span>
+                    </button>
+                    <ul
+                        class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                        <li wire:click="toggleStartDate">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white cursor-pointer">
-                            Start date ( From-To )</span>
-                    </li>
-                    <li wire:click="toggleCompany">
-                        <span href="#"
-                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                Start date ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleCompany">
+                            <span href="#"
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                     dark:hover:text-white cursor-pointer">
-                            Insurance Company</span>
-                    </li>
-                </ul>
+                                Insurance Company</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
