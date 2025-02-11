@@ -22,7 +22,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
         $(function() {
-            var start = moment().subtract(4, 'months');
+            var start = moment().subtract(1, 'months');
             var end = moment().add(1, 'days');
 
             function cb(start, end) {
