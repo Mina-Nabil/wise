@@ -185,11 +185,11 @@ class CompanyShow extends Component
         'sold_policies_entries.*.pymnt_perm' => 'numeric|min:0',
     ];
 
-    public function updatedGrossTotal()
+    public function updatedNetTotal()
     {
-        if ($this->gross_total >= 0) {
+        if ($this->net_total >= 0) {
+            $this->gross_total = round($this->net_total / 0.95, 2);
             $this->tax_total = round($this->gross_total * 0.05, 2);
-            $this->net_total = round($this->gross_total * 0.95, 2);
         } else {
             $this->tax_total = null;
             $this->net_total = null;
@@ -273,11 +273,11 @@ class CompanyShow extends Component
 
     public function updateTotal()
     {
-        $this->gross_total = 0;
+        $this->net_total = 0;
         foreach ($this->sold_policies_entries as $e) {
-            $this->gross_total += is_numeric($e['amount']) ? $e['amount'] : 0;
+            $this->net_total += is_numeric($e['amount']) ? $e['amount'] : 0;
         }
-        $this->updatedGrossTotal();
+        $this->updatedNetTotal();
     }
 
     public function mount($company_id, $updateSerial = true)
