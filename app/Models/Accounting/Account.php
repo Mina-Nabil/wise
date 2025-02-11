@@ -50,8 +50,8 @@ class Account extends Model
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('journal_entries.id', 'like', "%{$search}%")
-                    ->orWhere('entry_titles.name', 'like', "%{$search}%")
-                    ->orWhere('journal_entries.comment', 'like', "%{$search}%");
+                        ->orWhere('entry_titles.name', 'like', "%{$search}%")
+                        ->orWhere('journal_entries.comment', 'like', "%{$search}%");
                 });
             })
             ->groupBy('journal_entries.id')
@@ -294,6 +294,8 @@ class Account extends Model
         if ($this->nature != $type) {
             $amount = -1 * $amount;
         }
+
+        $amount = $amount ? (float) $amount : 0;
 
         $this->foreign_balance = $this->foreign_balance + $amount;
         try {
