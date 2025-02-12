@@ -328,7 +328,8 @@ class ClientPayment extends Model
         /** @var User */
         $user = Auth::user();
         if ($this->is_paid) {
-            if (!$user->can('updateIfCancelled', $this)) return false;
+            if (!$user->can('updateIfCancelled', $this))
+             return false;
         } else {
             if (!$user->can('update', $this)) return false;
         }
@@ -347,9 +348,9 @@ class ClientPayment extends Model
                 $this->load('sold_policy');
                 $this->sold_policy->setClientPaymentDate(null);
                 $this->sold_policy->setClientCancellationDate(null);
-                $this->sold_policy->generatePolicyCommissions(true);
+                // $this->sold_policy->generatePolicyCommissions(true);
                 $this->sold_policy->calculateTotalClientPayments();
-                $this->sold_policy->updateSalesCommsPaymentInfo();
+                // $this->sold_policy->updateSalesCommsPaymentInfo();
             }
         } catch (Exception $e) {
             report($e);

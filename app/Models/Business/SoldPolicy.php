@@ -466,7 +466,7 @@ class SoldPolicy extends Model
         $loggedInUser = Auth::user();
         if ($loggedInUser && !$loggedInUser->can('updateClientPayments', $this)) return false;
         try {
-            $this->is_paid = 1;
+            // $this->is_paid = 1;
             $this->cancellation_time = $date->format('Y-m-d H:i');
             return $this->save();
         } catch (Exception $e) {

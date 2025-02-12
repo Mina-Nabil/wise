@@ -167,6 +167,16 @@
                                 Set client payment date</a>
                         </li>
                     @endif
+                    @can('updatePayments', $soldPolicy)
+                        @if ($soldPolicy->cancellation_time)
+                            <li>
+                                <a wire:click="openCancellationDateSec"
+                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                    Set client cancellation date</a>
+                            </li>
+                        @endif
+                    @endcan
                     @if (!$soldPolicy->main_sales)
                         <li>
                             <a wire:click="openSetMainSalesSection"
@@ -2740,6 +2750,62 @@
         </div>
     @endif
 
+    @if ($clientCancellationDateSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Cancellation date
+                            </h3>
+                            <button wire:click="closeCancellationDateSec" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="clientPaymentDate" class="form-label">Date</label>
+                                <input name="clientPaymentDate" type="date"
+                                    class="form-control mt-2 w-full @error('clientCancellationDate') !border-danger-500 @enderror"
+                                    wire:model.defer="clientCancellationDate">
+                                @error('clientCancellationDate')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="changeCancellationDate" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="changeCancellationDate">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="changeCancellationDate"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
     @if ($paymentNoteSec)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
@@ -2897,7 +2963,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4044,7 +4110,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4162,7 +4228,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4392,7 +4458,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4525,7 +4591,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4616,7 +4682,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>

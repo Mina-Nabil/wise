@@ -125,6 +125,8 @@ class SoldPolicyShow extends Component
     public $paymentNoteSec;
     public $clientPaymentDateSec = false;
     public $clientPaymentDate;
+    public $clientCancellationDateSec = false;
+    public $clientCancellationDate;
     public $editPaymentSec;
 
     public $salesOutSelected;
@@ -356,9 +358,34 @@ class SoldPolicyShow extends Component
         $this->clientPaymentDateSec = false;
     }
 
+    public function openCancellationDateSec()
+    {
+        $this->clientCancellationDateSec = true;
+        if ($this->clientCancellationDate) {
+            $this->clientCancellationDate = Carbon::parse($this->clientCancellationDate)->toDateString();
+        }
+    }
+
+    public function closeCancellationDateSec()
+    {
+        $this->clientCancellationDate = $this->soldPolicy->client_cancellation_time;
+        $this->clientCancellationDateSec = false;
+    }
+
     public function changePaymentDate()
     {
         $res = $this->soldPolicy->setClientPaymentDate(Carbon::parse($this->clientPaymentDate));
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'date updated!');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function changeCancellationDate()
+    {
+        $res = $this->soldPolicy->setClientCancellationDate(Carbon::parse($this->clientCancellationDate));
         if ($res) {
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'date updated!');
