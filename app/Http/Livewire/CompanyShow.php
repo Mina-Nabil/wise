@@ -57,11 +57,13 @@ class CompanyShow extends Component
     public $Emailtypes = CompanyEmail::TYPES;
 
 
-    public function openConfirmInvoice(){
-        $this->confirmInvoiceId = true;
+    public function openConfirmInvoice($id = true)
+    {
+        $this->confirmInvoiceId = $id ?? true;
     }
 
-    public function closeConfirmInvoice(){
+    public function closeConfirmInvoice()
+    {
         $this->confirmInvoiceId = false;
         $this->confirmDate = null;
     }
