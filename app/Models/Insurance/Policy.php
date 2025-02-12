@@ -428,6 +428,11 @@ class Policy extends Model
                         $activeSheet->getCell('A' . $i + 1)->setValue("Conditions");
                         $activeSheet->getCell('B' . $i)->setValue($company->name . ' - ' . $policy->name);
                         $activeSheet->getCell('C' . $i)->setValue($policy->id);
+                        $activeSheet->getCell('D' . $i)->setValue('Leave this row empty');
+                        $activeSheet->getStyle("D$i:H$i")
+                            ->getFill()->setFillType(Fill::FILL_SOLID);
+                        $activeSheet->getStyle("D$i:H$i")
+                            ->getFill()->getStartColor()->setARGB('00FAFAFA');
                         $i++;
 
                         foreach ($policy->conditions as $cond) {
@@ -440,9 +445,9 @@ class Policy extends Model
                             $i++;
                         }
                         $i++;
-                        $activeSheet->getStyle("A$i:G$i")
+                        $activeSheet->getStyle("A$i:H$i")
                             ->getFill()->setFillType(Fill::FILL_SOLID);
-                        $activeSheet->getStyle("A$i:G$i")
+                        $activeSheet->getStyle("A$i:H$i")
                             ->getFill()->getStartColor()->setARGB('00000000');
                         $i++;
                     }
