@@ -57,11 +57,6 @@ class CarModel extends Model
         }
     }
 
-    public function scopeGetBrandModels($query, $brand_id)
-    {
-        return $query->where('brand_id', $brand_id);
-    }
-
     public static function deleteModel($ModelId)
     {
         $model = self::findOrFail($ModelId);
@@ -78,6 +73,17 @@ class CarModel extends Model
             AppLog::error("Error deleting Model with ID {$ModelId}: {$e->getMessage()}");
             return false;
         }
+    }
+    /////scopes
+
+    public function scopeByName($query, $name)
+    {
+        return $query->where('name', $name);
+    }
+
+    public function scopeGetBrandModels($query, $brand_id)
+    {
+        return $query->where('brand_id', $brand_id);
     }
 
 

@@ -34,6 +34,11 @@ class Country extends Model
     }
 
     ///scopes 
+    public function scopeByName(Builder $query, $name)
+    {
+        return $query->where('name', $name);
+    }
+
     public function scopeSortByName(Builder $query)
     {
         return $query->orderBy('name');

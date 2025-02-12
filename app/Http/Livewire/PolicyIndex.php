@@ -65,12 +65,19 @@ class PolicyIndex extends Component
     //Import/Export functions
     public $importFileSection = false;
     public $importConfFileSection = false;
+    public $importCondFileSection = false;
     public $policiesFile;
     public $policiesConfFile;
+    public $policiesCondFile;
 
     public function toggleImportSection()
     {
         $this->importFileSection = !$this->importFileSection;
+    }
+
+    public function toggleImportCondSection()
+    {
+        $this->importCondFileSection = !$this->importCondFileSection;
     }
 
     public function toggleImportConfSection()
@@ -110,6 +117,25 @@ class PolicyIndex extends Component
     public function downloadPoliciesConfExport()
     {
         return  Policy::downloadPoliciesConfFile();
+    }
+
+    ////conditions section
+
+    public function uploadPoliciesConditions()
+    {
+        $this->validate([
+            'policiesCondFile' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+        ]);
+        $importedFile_url = $this->policiesCondFile->store('tmp', 'local');
+        Policy::importPoliciesCond(storage_path('app/' . $importedFile_url));
+        unlink(storage_path('app/' . $importedFile_url));
+        $this->policiesCondFile = null;
+        $this->toggleImportCondSection();
+    }
+
+    public function downloadPoliciesCondFile()
+    {
+        return  Policy::downloadPoliciesCondFile();
     }
 
     public function render()

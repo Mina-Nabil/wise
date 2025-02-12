@@ -85,6 +85,12 @@ class Brand extends Model
         }
     }
 
+    ////scopes
+    public function scopeByName($query, $name)
+    {
+        return $query->where('name', $name);
+    }
+
     /////relations
     public function models(): HasMany
     {

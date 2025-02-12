@@ -27,8 +27,10 @@ class PolicyCondition extends Model
     const OP_EQUAL = 'e';
 
     const OPERATORS = [
-        self::OP_EQUAL, self::OP_GREATER,
-        self::OP_GREATER_OR_EQUAL, self::OP_LESS,
+        self::OP_EQUAL,
+        self::OP_GREATER,
+        self::OP_GREATER_OR_EQUAL,
+        self::OP_LESS,
         self::OP_LESS_OR_EQUAL
     ];
 
@@ -43,8 +45,10 @@ class PolicyCondition extends Model
 
     const SCOPES = [
         self::SCOPE_AGE,
-        self::SCOPE_MODEL, self::SCOPE_BRAND,
-        self::SCOPE_COUNTRY, self::SCOPE_YEAR,
+        self::SCOPE_MODEL,
+        self::SCOPE_BRAND,
+        self::SCOPE_COUNTRY,
+        self::SCOPE_YEAR,
         self::SCOPE_VALUE
     ];
 
@@ -161,6 +165,27 @@ class PolicyCondition extends Model
     }
 
     //mutators
+    public static function getConditionObjectValue($scope, $value)
+    {
+        switch ($scope) {
+            case self::SCOPE_BRAND:
+                $brand = Brand::byName($value)->first();
+                return $brand?->id ?? null;
+
+            case self::SCOPE_COUNTRY:
+                $country = Country::byName($value)->first();
+                return $country?->id ?? null;
+
+            case self::SCOPE_MODEL:
+                $model = CarModel::byName($value)->first();
+                return $model?->id ?? null;
+
+            default:
+                return $value;
+        }
+    }
+
+
     public function getValueNameAttribute()
     {
         switch ($this->scope) {
@@ -175,6 +200,44 @@ class PolicyCondition extends Model
             case self::SCOPE_MODEL:
                 $model = CarModel::find($this->value);
                 return $model?->name ?? 'N/A';
+
+            default:
+                return $this->value;
+        }
+    }
+
+    public static function getOperatorFromSymbol($symbol)
+    {
+        switch ($symbol) {
+            case '=':
+                return self::OP_EQUAL;
+            case '>=':
+                return self::OP_GREATER_OR_EQUAL;
+            case '>':
+                return self::OP_GREATER;
+            case '<=':
+                return self::OP_LESS_OR_EQUAL;
+            case '<':
+                return self::OP_LESS;
+
+            default:
+                return null;
+        }
+    }
+
+    public function getOperatorSymbolAttribute()
+    {
+        switch ($this->operator) {
+            case self::OP_EQUAL:
+                return '=';
+            case self::OP_GREATER_OR_EQUAL:
+                return '>=';
+            case self::OP_GREATER:
+                return '>';
+            case self::OP_LESS_OR_EQUAL:
+                return '<=';
+            case self::OP_LESS:
+                return '<';
 
             default:
                 return $this->value;

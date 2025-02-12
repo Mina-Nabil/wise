@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -100,10 +101,10 @@ class Policy extends Model
     ];
 
     const LINES_OF_BUSINESS_ARBC = [
-        self::BUSINESS_PERSONAL_MOTOR   => 'تامين سيارات' ,
-        self::BUSINESS_CORPORATE_MOTOR  => 'تامين سيارات' ,
-        self::BUSINESS_PERSONAL_MEDICAL     => 'تأمين طبي' ,
-        self::BUSINESS_CORPORATE_MEDICAL    => 'تأمين طبي' ,
+        self::BUSINESS_PERSONAL_MOTOR   => 'تامين سيارات',
+        self::BUSINESS_CORPORATE_MOTOR  => 'تامين سيارات',
+        self::BUSINESS_PERSONAL_MEDICAL     => 'تأمين طبي',
+        self::BUSINESS_CORPORATE_MEDICAL    => 'تأمين طبي',
         self::BUSINESS_ACCIDENT     => 'حوادث عامة',
         self::BUSINESS_HOME     => 'ممتلكات',
         self::BUSINESS_PROPERTY     => 'ممتلكات',
@@ -157,7 +158,7 @@ class Policy extends Model
                     $net_value = ($cond->rate / 100) * $offerValue;
                     $gross_value = $pol->calculateGrossValue($net_value);
                 }
-            } 
+            }
 
             if ($cond) {
                 $valid_policies->push([
@@ -379,27 +380,130 @@ class Policy extends Model
             $policy->clearCommissionConfigurations();
             $i++;
 
-            for ($i = $i; $i <= $highestRow; $i++) { 
+            for ($i = $i; $i <= $highestRow; $i++) {
                 $conf_title         =  $activeSheet->getCell('D' . $i)->getValue();
                 if (!$conf_title) break;
-                
+
                 $conf_type      =  ($activeSheet->getCell('E' . $i)->getValue() == 'PERCENT') ? '%'
-                : ($activeSheet->getCell('E' . $i)->getValue() == 'EQUAL' ?
-                '=' : null);
+                    : ($activeSheet->getCell('E' . $i)->getValue() == 'EQUAL' ?
+                        '=' : null);
                 if (!$conf_type) continue;
-                
+
                 $conf_value         =  $activeSheet->getCell('F' . $i)->getValue();
                 if (!$conf_value) continue;
-                
+
                 $conf_due           =  $activeSheet->getCell('G' . $i)->getValue();
                 $conf_due_percent   =  $activeSheet->getCell('H' . $i)->getValue();
                 $conf_sales_out     =  $activeSheet->getCell('I' . $i)->getValue() == 'Yes' ? true : false;
                 $conf_main_penalty  =  $activeSheet->getCell('J' . $i)->getValue() == 'Yes' ? true : false;
-                
+
                 $policy->addCommConf($conf_title, $conf_type, $conf_value, $conf_due, $conf_due_percent, $conf_sales_out, $conf_main_penalty);
             }
-
         }
+    }
+
+    public static function downloadPoliciesCondFile()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return;
+
+        $template = IOFactory::load(resource_path('import/policies_cond_export.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+        $allPolicies = self::orderBy('company_id')->with('conditions')->get();
+        $companies = Company::all();
+        $i = 4;
+        foreach ($companies as $company) {
+            foreach (self::LINES_OF_BUSINESS as $line) {
+                $policies = $allPolicies->where('company_id', $company->id)->where('business', $line);
+                if ($policies->count()) {
+                    foreach ($policies as $policy) {
+                        $activeSheet->getCell('A' . $i)->setValue("Policy");
+                        $activeSheet->getCell('A' . $i + 1)->setValue("Conditions");
+                        $activeSheet->getCell('B' . $i)->setValue($company->name . ' - ' . $policy->name);
+                        $activeSheet->getCell('C' . $i)->setValue($policy->id);
+                        $i++;
+
+                        foreach ($policy->conditions as $cond) {
+
+                            $activeSheet->getCell('D' . $i)->setValue($cond->scope);
+                            $activeSheet->getCell('E' . $i)->setValue($cond->operator_symbol);
+                            $activeSheet->getCell('F' . $i)->setValue($cond->value_name);
+                            $activeSheet->getCell('G' . $i)->setValue($cond->rate);
+                            $activeSheet->getCell('H' . $i)->setValue($cond->id);
+                            $i++;
+                        }
+                        $i++;
+                        $activeSheet->getStyle("A$i:G$i")
+                            ->getFill()->setFillType(Fill::FILL_SOLID);
+                        $activeSheet->getStyle("A$i:G$i")
+                            ->getFill()->getStartColor()->setARGB('00000000');
+                        $i++;
+                    }
+                }
+            }
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path =  "policies_cond_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    public static function importPoliciesCond($file)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return;
+
+        $spreadsheet = IOFactory::load($file);
+        if (!$spreadsheet) {
+            throw new Exception('Failed to read files content');
+        }
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $highestRow = $activeSheet->getHighestDataRow();
+        DB::transaction(function () use ($highestRow, $activeSheet) {
+            for ($i = 4; $i <= $highestRow; $i++) {
+                $policy_id     =  $activeSheet->getCell('C' . $i)->getValue();
+                if (!$policy_id) continue;
+                /** @var Self */
+                $policy = Policy::find($policy_id);
+                if (!$policy) continue;
+                // $policy->clearConditions();
+                $i++;
+
+
+                for ($i = $i; $i <= $highestRow; $i++) {
+                    $cond_scope         =  $activeSheet->getCell('D' . $i)->getValue();
+                    if (!$cond_scope) break;
+
+                    $cond_op      =  PolicyCondition::getOperatorFromSymbol($activeSheet->getCell('E' . $i)->getValue());
+                    if (!$cond_op) continue;
+
+                    $cond_value         =   PolicyCondition::getConditionObjectValue($cond_scope, $activeSheet->getCell('F' . $i)->getValue());
+                    if (!$cond_value) continue;
+
+                    $cond_rate           =  $activeSheet->getCell('G' . $i)->getValue();
+                    $cond_id           =  $activeSheet->getCell('H' . $i)->getValue();
+                    if ($cond_id) {
+                        /** @var PolicyCondition */
+                        $cond = PolicyCondition::find($cond_id);
+                        if (!$cond) continue;
+                        $cond->editInfo($cond_scope, $cond_op, $cond_value, $cond_rate);
+                    } else {
+                        $policy->addCondition($cond_scope, $cond_op, $cond_value, $cond_rate);
+                    }
+                }
+            }
+        });
     }
 
 
@@ -503,22 +607,22 @@ class Policy extends Model
                     switch ($cond->operator) {
                         case PolicyCondition::OP_EQUAL:
                             if ($age == $cond->value)
-                            return $cond->rate;
+                                return $cond->rate;
                             break;
 
                         case PolicyCondition::OP_GREATER:
                             if ($age > $cond->value)
-                            return $cond->rate;
+                                return $cond->rate;
                             break;
 
                         case PolicyCondition::OP_GREATER_OR_EQUAL:
                             if ($age >= $cond->value)
-                            return $cond->rate;
+                                return $cond->rate;
                             break;
 
                         case PolicyCondition::OP_LESS:
                             if ($age < $cond->value)
-                            return $cond->rate;
+                                return $cond->rate;
                             break;
 
                         case PolicyCondition::OP_LESS_OR_EQUAL:
@@ -526,7 +630,6 @@ class Policy extends Model
                                 return $cond->rate;
                             break;
                     }
-             
             }
         }
         return 0;
@@ -673,9 +776,17 @@ class Policy extends Model
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) return false;
- 
-            return $this->comm_confs()->delete();
-    
+
+        return $this->comm_confs()->delete();
+    }
+
+    private function clearConditions()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
+        return $this->conditions()->delete();
     }
 
 
@@ -704,7 +815,7 @@ class Policy extends Model
         }
         return $query;
     }
-    
+
     public function scopeWithConditions($query)
     {
         $query->with('conditions');
