@@ -1322,7 +1322,7 @@ class OfferShow extends Component
         $type_policies = Policy::ByType($this->offer->type)
             ->when(in_array($this->offer->type, Policy::MEDICAL_LINES), function ($q) {
                 $this->offer->loadCount('medical_offer_clients');
-                $q->MedicalLimits($this->offer->medical_offer_clients_counts);
+                $q->MedicalLimits($this->offer->medical_offer_clients_count);
             })->get();
 
 

@@ -62,7 +62,7 @@ class PolicyIndex extends Component
             'medMinLimit' => 'nullable|integer',
             'medMaxLimit' => 'nullable|integer',
         ]);
-        $p = Policy::newPolicy($this->company, $this->policyName, $this->policyBusiness, $this->note);
+        $p = Policy::newPolicy($this->company, $this->policyName, $this->policyBusiness, $this->note, $this->medMinLimit, $this->medMaxLimit);
 
         if ($p) {
             $this->company = null;

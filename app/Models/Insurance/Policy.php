@@ -843,8 +843,14 @@ class Policy extends Model
     }
     public function scopeMedicalLimits($query, $count)
     {
-        return $query->where('med_min_limit', '>=', $count)
-                     ->where('med_max_limit', '<=', $count);
+        Log::info($count);
+        return $query->where(function ($q) use ($count) {
+            $q->whereNull('med_min_limit')
+                ->orwhere('med_min_limit', '<=', $count ?? 0);
+        })->where(function ($q) use ($count) {
+            $q->whereNull('med_max_limit')
+                ->orwhere('med_max_limit', '>=', $count ?? 0);
+        });
     }
 
     ///relations

@@ -399,6 +399,8 @@ class PolicyShow extends Component
         $this->policyName = $policy->name;
         $this->policyBusiness = $policy->business;
         $this->policyNote = $policy->note;
+        $this->medMinLimit = $policy->med_min_limit;
+        $this->medMaxLimit = $policy->med_max_limit;
         $this->brands = Brand::all();
         $this->models = CarModel::all();
         $this->countries = Country::all();
@@ -512,18 +514,20 @@ class PolicyShow extends Component
         }
     }
 
+    public function updatedPolicyBusiness()
+    {
+        if (in_array($this->policyBusiness, Policy::MEDICAL_LINES)) {
+            $this->limitsSec = true;
+        } else
+            $this->limitsSec = false;
+    }
+
     public function render()
     {
 
         $policy = Policy::find($this->policyId);
-        $policy_name = $policy->name;
-        $policy_business = $policy->business;
-        $policy_note = $policy->note;
+        $this->updatedPolicyBusiness();
         $calcTypes = GrossCalculation::TYPES;
-
-        // $this->addedScope = 'age';
-
-
         $linesOfBusiness = Policy::LINES_OF_BUSINESS;
         $scopes = PolicyCondition::SCOPES;
         $operators = PolicyCondition::OPERATORS;
