@@ -125,7 +125,9 @@ class Policy extends Model
         'company_id',
         'name', //policy as named by the insurance company
         'business', //line of business - enum - motor,cargo..
-        'note' //extra note for users - nullable
+        'note', //extra note for users - nullable
+        'med_min_limit',
+        'med_max_limit',
     ];
 
     ///static functions
@@ -172,7 +174,7 @@ class Policy extends Model
         return $valid_policies;
     }
 
-    public static function newPolicy($company_id, $name, $business, $note = null)
+    public static function newPolicy($company_id, $name, $business, $note = null, $med_min_limit = null, $med_max_limit = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -182,7 +184,9 @@ class Policy extends Model
             "company_id" =>  $company_id,
             "name"      =>  $name,
             "business"  =>  $business,
-            "note"      =>  $note
+            "note"      =>  $note,
+            "med_min_limit"      =>  $med_min_limit,
+            "med_max_limit"      =>  $med_max_limit,
         ]);
         try {
             $newPolicy->save();
@@ -657,7 +661,7 @@ class Policy extends Model
         return $gross_premium;
     }
 
-    public function editInfo($name, $business, $note = null)
+    public function editInfo($name, $business, $note = null, $med_min_limit = null, $med_max_limit = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -666,7 +670,9 @@ class Policy extends Model
         $this->update([
             "name"      =>  $name,
             "business"  =>  $business,
-            "note"      =>  $note
+            "note"      =>  $note,
+            "med_min_limit"      =>  $med_min_limit,
+            "med_max_limit"      =>  $med_max_limit,
         ]);
         try {
             $this->save();
@@ -834,6 +840,11 @@ class Policy extends Model
     public function scopeByType($query, $type)
     {
         return $query->where('business', $type);
+    }
+    public function scopeMedicalLimits($query, $count)
+    {
+        return $query->where('med_min_limit', '>=', $count)
+                     ->where('med_max_limit', '<=', $count);
     }
 
     ///relations

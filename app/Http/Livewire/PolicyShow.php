@@ -29,6 +29,9 @@ class PolicyShow extends Component
     public $policyName;
     public $policyBusiness;
     public $policyNote;
+    public $medMinLimit;
+    public $medMaxLimit;
+    public $limitsSec = false;
 
     public $addedScope;
     public $addedOperator = 'e';
@@ -341,7 +344,9 @@ class PolicyShow extends Component
             [
                 'policyName' => 'required|string',
                 'policyBusiness' =>  'required|in:' . implode(",", Policy::LINES_OF_BUSINESS),
-                'policyNote' => 'nullable|string'
+                'policyNote' => 'nullable|string',
+                'medMinLimit' => 'nullable|integer',
+                'medMaxLimit' => 'nullable|integer',
             ]
         );
         $policy = Policy::find($this->policyId);
@@ -349,7 +354,9 @@ class PolicyShow extends Component
         $p = $policy->editInfo(
             $this->policyName,
             $this->policyBusiness,
-            $this->policyNote
+            $this->policyNote,
+            $this->medMinLimit,
+            $this->medMaxLimit,
         );
 
         if ($p) {

@@ -17,9 +17,12 @@ class PolicyIndex extends Component
     public $deleteThisPolicy;
     public $policyName;
     public $policyBusiness;
+    public $medMinLimit;
+    public $medMaxLimit;
     public $note;
     public $company;
     public $newPolicySec = false;
+    public $limitsSec = false;
 
     public function openPolicySec()
     {
@@ -41,6 +44,14 @@ class PolicyIndex extends Component
         $this->resetPage();
     }
 
+    public function updatedPolicyBusiness()
+    {
+        if (in_array($this->policyBusiness, Policy::MEDICAL_LINES)) {
+            $this->limitsSec = true;
+        } else
+            $this->limitsSec = false;
+    }
+
     public function add()
     {
         $this->validate([
@@ -48,6 +59,8 @@ class PolicyIndex extends Component
             'policyName' => 'required|string|unique:policies,name',
             'policyBusiness' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),
             'note' => 'nullable|string',
+            'medMinLimit' => 'nullable|integer',
+            'medMaxLimit' => 'nullable|integer',
         ]);
         $p = Policy::newPolicy($this->company, $this->policyName, $this->policyBusiness, $this->note);
 

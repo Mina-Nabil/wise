@@ -1107,7 +1107,7 @@ class OfferShow extends Component
 
     public function changeOptionState($optionId, $status)
     {
-        try{
+        try {
 
             $res = $this->offer->setOptionState($optionId, $status);
             if ($res) {
@@ -1116,7 +1116,7 @@ class OfferShow extends Component
             } else {
                 $this->alert('failed', 'server error');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $this->alert('failed', $e->getMessage());
         }
     }
@@ -1279,14 +1279,14 @@ class OfferShow extends Component
 
         try {
             $formattedFields = [];
-            
+
             foreach ($this->lineFields as $id => $fieldData) {
                 $formattedFields[$id] = [
                     $fieldData['field'] => $fieldData['value']
                 ];
-                if($fieldData['is_mandatory'] && !$fieldData['value']){
-                    $this->addError("lineFields.{$id}.value", "Field is mandatory.");  
-                    return;             
+                if ($fieldData['is_mandatory'] && !$fieldData['value']) {
+                    $this->addError("lineFields.{$id}.value", "Field is mandatory.");
+                    return;
                 }
             }
 
@@ -1299,9 +1299,8 @@ class OfferShow extends Component
             } else {
                 $this->alert('failed', 'Server error');
             }
-
         } catch (Exception $e) {
-            $this->alert('failed',$e->getMessage());
+            $this->alert('failed', $e->getMessage());
         }
     }
 
@@ -1320,8 +1319,13 @@ class OfferShow extends Component
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
         $optionStatuses = OfferOption::STATUSES;
         $brands = Brand::all();
-        $type_policies = Policy::ByType($this->offer->type)->get();
-      
+        $type_policies = Policy::ByType($this->offer->type)
+            ->when(in_array($this->offer->type, Policy::MEDICAL_LINES), function ($q) {
+                $this->offer->loadCount('medical_offer_clients');
+                $q->MedicalLimits($this->offer->medical_offer_clients_counts);
+            })->get();
+
+
         if ($this->offer->item)
             $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, offerValue: $this->offer->item_value);
 

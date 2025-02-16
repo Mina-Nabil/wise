@@ -90,7 +90,7 @@
                                             <label for="name" class="form-label">Business</label>
                                             <select name="business"
                                                 class="form-control w-full mt-2  @error('policyBusiness') !border-danger-500 @enderror"
-                                                wire:model.defer="policyBusiness">
+                                                wire:model="policyBusiness">
                                                 <option
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                                     selected>
@@ -130,6 +130,31 @@
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                             @enderror
                                         </div>
+
+                                        @if ($limitsSec)
+                                            <div class="input-area mb-3">
+                                                <label for="name" class="form-label">Medical Min Limit</label>
+                                                <input type="number"
+                                                    class="form-control 
+                                                    @error('medMinLimit') !border-danger-500 @enderror"
+                                                    wire:model.defer="medMinLimit">
+                                                @error('medMinLimit')
+                                                    <span
+                                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                            <div class="input-area mb-3">
+                                                <label for="name" class="form-label">Medical Max Limit</label>
+                                                <input type="number"
+                                                    class="form-control 
+                                                    @error('medMaxLimit') !border-danger-500 @enderror"
+                                                    wire:model.defer="medMaxLimit">
+                                                @error('medMaxLimit')
+                                                    <span
+                                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        @endif
 
                                         <div class="input-area mb-3">
                                             <label for="name" class="form-label">Note</label>
@@ -196,8 +221,7 @@
                                 <!-- Modal footer -->
                                 <div wire:click="uploadPolicies"
                                     class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b white:border-slate-600">
-                                    <button 
-                                        class="btn inline-flex justify-center text-white bg-black-500">
+                                    <button class="btn inline-flex justify-center text-white bg-black-500">
                                         Upload
                                     </button>
                                 </div>
@@ -238,8 +262,8 @@
                                 <div class="p-6 space-y-4">
                                     <div class="from-group">
                                         <label for="lastName" class="form-label">Configurations File</label>
-                                        <input wire:model="policiesConfFile" type="file" class="form-control w-full "
-                                            name="basic" />
+                                        <input wire:model="policiesConfFile" type="file"
+                                            class="form-control w-full " name="basic" />
                                         @error('policiesConfFile')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -249,8 +273,7 @@
                                 <!-- Modal footer -->
                                 <div wire:click="uploadPoliciesConfigurations"
                                     class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b white:border-slate-600">
-                                    <button 
-                                        class="btn inline-flex justify-center text-white bg-black-500">
+                                    <button class="btn inline-flex justify-center text-white bg-black-500">
                                         Upload
                                     </button>
                                 </div>
@@ -291,8 +314,8 @@
                                 <div class="p-6 space-y-4">
                                     <div class="from-group">
                                         <label for="lastName" class="form-label">Conditions File</label>
-                                        <input wire:model="policiesCondFile" type="file" class="form-control w-full "
-                                            name="basic" />
+                                        <input wire:model="policiesCondFile" type="file"
+                                            class="form-control w-full " name="basic" />
                                         @error('policiesCondFile')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -302,8 +325,7 @@
                                 <!-- Modal footer -->
                                 <div wire:click="uploadPoliciesConditions"
                                     class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b white:border-slate-600">
-                                    <button 
-                                        class="btn inline-flex justify-center text-white bg-black-500">
+                                    <button class="btn inline-flex justify-center text-white bg-black-500">
                                         Upload
                                     </button>
                                 </div>
