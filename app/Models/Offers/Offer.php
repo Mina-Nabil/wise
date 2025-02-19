@@ -627,7 +627,7 @@ class Offer extends Model
                     if ($f->is_mandatory && !$value) {
                         throw new Exception("Required value for mandatory field: {$field}");
                     }
-    
+
                     $f->update([
                         'value' => $value,
                     ]);
@@ -749,7 +749,7 @@ class Offer extends Model
 
                 //assign offer to operations team when create a new option 
                 $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
-
+                $this->setStatus(self::STATUS_PENDING_OPERATIONS);
                 return $tmpOption;
             } else {
                 AppLog::error("Can't add offer option", desc: "No stack found", loggable: $this);
