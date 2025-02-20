@@ -323,6 +323,11 @@ class CompanyShow extends Component
             ->orwhere('sold_policies.id', 2195)
             ->orwhere('sold_policies.id', 2366)
             ->orwhere('sold_policies.id', 2419)
+
+            ->orwhere('sold_policies.id', 2800)
+            ->orwhere('sold_policies.id', 2646)
+            ->orwhere('sold_policies.id', 151)
+            ->orwhere('sold_policies.id', 2855)
             ->paginate(8);
 
         return view('livewire.company-show', [
