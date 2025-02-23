@@ -286,12 +286,36 @@ class ClientPaymentsReport extends Component
             $this->issued_to,
             $this->selectedCompany,
             $this->searchText,
-            $this->sales_out_ids,
+            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
             $this->statuses,
             $this->sortColomn,
             $this->sortDirection, 
             $this->types,
         );
+    }
+
+    ////comm profile filter
+    public $commProfilesSection;
+    public $Eprofiles = [];
+    public $profiles = [];
+
+    public function toggleProfiles()
+    {
+        $this->toggle($this->commProfilesSection);
+        if ($this->commProfilesSection) {
+            $this->Eprofiles = $this->profiles;
+        }
+    }
+
+    public function clearProfiles()
+    {
+        $this->profiles = [];
+    }
+
+    public function setProfiles()
+    {
+        $this->profiles = $this->Eprofiles;
+        $this->toggle($this->commProfilesSection);
     }
 
 
@@ -324,15 +348,23 @@ class ClientPaymentsReport extends Component
             $this->issued_to,
             $this->selectedCompany,
             $this->searchText,
-            $this->sales_out_ids,
+            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
             $this->statuses,
             $this->sortColomn,
             $this->sortDirection,
             $this->types,
         )->with('sold_policy.active_sales_comms', 'sold_policy.active_sales_comms.comm_profile');
         $payments =    $payments->paginate(50);
+
+        if ($this->commProfilesSection) {
+            $COMM_PROFILES = CommProfile::select('title', 'id')->get();
+        } else {
+            $COMM_PROFILES = null;
+        }
+
         return view('livewire.client-payments-report', [
             'STATUSES' => $STATUSES,
+            'COMM_PROFILES' => $COMM_PROFILES,
             'Alltypes' => $Alltypes,
             'payments' => $payments
         ]);

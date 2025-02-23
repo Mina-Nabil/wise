@@ -469,6 +469,7 @@ class ClientPayment extends Model
 
     public function scopeBySalesOut(Builder $query, array $ids = [])
     {
+        Log::info($ids);
         if (!Helpers::joined($query, 'sold_policies')) {
             $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
         }
