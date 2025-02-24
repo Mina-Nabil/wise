@@ -71,7 +71,7 @@ class Invoice extends Model
     ///model functions
     public function confirmInvoice(Carbon $date = null)
     {
-        try{
+        try {
 
             DB::transaction(function () use ($date) {
                 /** @var CompanyCommPayment */
@@ -80,7 +80,7 @@ class Invoice extends Model
                 }
             });
             return true;
-        } catch (Exception $e){
+        } catch (Exception $e) {
             report($e);
             return false;
         }
@@ -112,10 +112,9 @@ class Invoice extends Model
             $activeSheet->getCell('G' . $i)->setValue($comm->pymnt_perm);
             $activeSheet->getCell('O' . $i)->setValue('اذن صرف عمولة ' . $comm->pymnt_perm);
             $activeSheet->getCell('I' . $i)->setValue($comm->amount);
-            $activeSheet->getCell('J' . $i)->setValue($comm->amount * .05);
-            $activeSheet->getCell('K' . $i)->setValue($comm->amount * .95);
+            $activeSheet->getCell('J' . $i)->setValue(($comm->amount / .95) * .05);
+            $activeSheet->getCell('K' . $i)->setValue($comm->amount / .95);
             $activeSheet->insertNewRowBefore($i);
-            
         }
         $activeSheet->removeRow(2);
         $activeSheet->removeRow(2);
