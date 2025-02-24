@@ -313,22 +313,8 @@ class CompanyShow extends Component
                 company_id: $this->company->id,
                 is_paid: $this->availableSoldPolicies_isNotPaid === "0" ? null : false
             )
-            ->only2025()
-            ->orwhere('sold_policies.id', 1671)
-            ->orwhere('sold_policies.id', 2668)
-            ->orwhere('sold_policies.id', 2215)
-            ->orwhere('sold_policies.id', 1786)
-            ->orwhere('sold_policies.id', 2003)
-            ->orwhere('sold_policies.id', 2340)
-            ->orwhere('sold_policies.id', 2195)
-            ->orwhere('sold_policies.id', 2366)
-            ->orwhere('sold_policies.id', 2419)
-
-            ->orwhere('sold_policies.id', 2800)
-            ->orwhere('sold_policies.id', 2646)
-            ->orwhere('sold_policies.id', 151)
-            ->orwhere('sold_policies.id', 2855)
-            ->orwhere('sold_policies.id', 2808)
+            // ->only2025()
+            // ->orwhere('sold_policies.id', 1671)
             ->paginate(8);
 
         return view('livewire.company-show', [
