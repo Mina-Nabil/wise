@@ -268,25 +268,15 @@ class JournalEntry extends Model
             return false;
         }
 
-        $this->load('accounts');
+        $oppAccounts = $this->accounts()->wherePivot('nature', $this->cash_entry_type == self::CASH_ENTRY_RECEIVED ? 'debit' : 'credit')->get();
         $activeSheet->getCell('B7')->setValue($number_format);
         $activeSheet->getCell('F5')->setValue(str_pad($this->cash_serial, 5, '0', STR_PAD_LEFT));
         $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('d / m / Y'));
         $activeSheet->getCell('B9')->setValue("/      {$this->receiver_name}");
         $activeSheet->getCell('B11')->setValue("/     {$number_text}       نقدا / شيك رقم : ............................................				");
-        $activeSheet->getCell('B13')->setValue("/    {$this->entry_title->name} - {$this->accounts->implode('name', ',')}				");
+        $activeSheet->getCell('B13')->setValue("/    {$this->entry_title->name} - {$oppAccounts->implode('name', ',')}				");
 
-        // foreach ($leads as $lead) {
-        //     $activeSheet->getCell('A' . $i)->setValue($lead->id);
-        //     $activeSheet->getCell('B' . $i)->setValue($lead->first_name);
-        //     $activeSheet->getCell('C' . $i)->setValue($lead->last_name);
-        //     $activeSheet->getCell('D' . $i)->setValue($lead->arabic_first_name);
-        //     $activeSheet->getCell('E' . $i)->setValue($lead->arabic_last_name);
-        //     $activeSheet->getCell('F' . $i)->setValue($lead->telephone1);
-        //     $activeSheet->getCell('G' . $i)->setValue($lead->telephone2);
-        //     $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
-        //     $i++;
-        // }
+
 
         $writer = new Xlsx($newFile);
         $file_path = SoldPolicy::FILES_DIRECTORY . "cash_receipt.xlsx";
