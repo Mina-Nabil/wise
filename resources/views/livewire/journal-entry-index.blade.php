@@ -168,17 +168,7 @@
                                         Blnc
                                     </th>
 
-                                    {{-- <th scope="col" class=" table-th ">
-                                        $ Blnc
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
-                                        Curr.
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
-                                        Curr. Amnt
-                                    </th> --}}
+                       
 
                                     <th scope="col" class=" table-th ">
                                         Curr. Rate
@@ -620,6 +610,12 @@
                                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comment</p>
                                     <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
                                         {{ $entryInfo->comment ?? 'No comment added.' }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Extra Note</p>
+                                    <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                        {{ $entryInfo->extra_note ?? 'No extra note added.' }}
                                     </div>
                                 </div>
 

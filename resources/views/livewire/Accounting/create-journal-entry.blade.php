@@ -247,6 +247,17 @@
                         </div>
                     </div>
 
+
+                    <div class="from-group mt-5">
+                        <div class="mb-4">
+                            <label for="extra_note" class="block text-gray-700 dark:text-gray-300">Extra Note</label>
+                            <textarea id="extra_note" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('extra_note') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="extra_note" rows="6"></textarea>
+                            @error('extra_note')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
                     <!-- Submit Button -->
                     <div class="flex justify-end mt-6">
                         <button wire:click="save" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500" @disabled($this->selectedTitle == null)>

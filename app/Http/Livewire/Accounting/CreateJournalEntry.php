@@ -20,6 +20,7 @@ class CreateJournalEntry extends Component
     public $selectedTitle;
     public $title;
     public $notes;
+    public $extra_note;
     public $cash_entry_type;
     public $receiver_name;
 
@@ -179,7 +180,7 @@ class CreateJournalEntry extends Component
 
         $accounts = $formattedDebitAccounts + $formattedCreditAccounts;
 
-        $res = JournalEntry::newJournalEntry($this->selectedTitle->id, $this->cash_entry_type, $this->receiver_name, comment: $this->notes, accounts: $accounts);
+        $res = JournalEntry::newJournalEntry($this->selectedTitle->id, $this->cash_entry_type, $this->receiver_name, comment: $this->notes, accounts: $accounts, extra_note: $this->extra_note);
         if (is_string($res)) {
             $this->alert('failed', $res);
         } else if ($res) {

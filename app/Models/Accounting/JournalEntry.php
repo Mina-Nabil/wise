@@ -38,7 +38,8 @@ class JournalEntry extends Model
         'approver_id',
         'approved_at',
         'revert_entry_id',
-        'cash_serial'
+        'cash_serial',
+        'extra_note'
     ];
 
     const CURRENCY_EGP  = 'EGP';
@@ -88,6 +89,7 @@ class JournalEntry extends Model
         $approver_id = null,
         $is_seeding = false,
         $accounts = [],
+        $extra_note = null
     ): self|UnapprovedEntry|string|false {
 
       /** @var EntryTitle */
@@ -117,7 +119,8 @@ class JournalEntry extends Model
             $cash_entry_type,
             $receiver_name,
             $comment,
-            $accounts
+            $accounts, 
+            $extra_note 
         );
 
 
@@ -131,7 +134,8 @@ class JournalEntry extends Model
             "receiver_name"     =>  $receiver_name,
             "approver_id"       =>  $approver_id,
             "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
-            "comment"           =>  $comment
+            "comment"           =>  $comment,
+            "extra_note"           =>  $extra_note,
         ];
         if ($cash_entry_type) {
             $updates['cash_serial'] = self::getCashSerial($cash_entry_type);
@@ -271,7 +275,7 @@ class JournalEntry extends Model
         $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('d / m / Y'));
         $activeSheet->getCell('B9')->setValue("/      {$this->receiver_name}");
         $activeSheet->getCell('B11')->setValue("/     {$number_text}       نقدا / شيك رقم : ............................................				");
-        $activeSheet->getCell('B13')->setValue("/     {$this->comment}				");
+        $activeSheet->getCell('B13')->setValue("/    {$this->entry_title->name} - {$this->comment}				");
 
         // foreach ($leads as $lead) {
         //     $activeSheet->getCell('A' . $i)->setValue($lead->id);

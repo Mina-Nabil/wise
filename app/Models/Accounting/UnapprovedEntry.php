@@ -34,6 +34,7 @@ class UnapprovedEntry extends Model
         'comment',
         'receiver_name',
         'cash_entry_type',
+        'extra_note',
     ];
 
     ////static functions
@@ -43,6 +44,7 @@ class UnapprovedEntry extends Model
         $receiver_name = null,
         $comment = null,
         $accounts = [],
+        $extra_note = null
     ) {
         try {
             $newEntry = new self([
@@ -51,6 +53,7 @@ class UnapprovedEntry extends Model
                 'comment'       => $comment,
                 'receiver_name' => $receiver_name,
                 'cash_entry_type'     => $cash_entry_type,
+                'extra_note'     => $extra_note,
             ]);
             DB::transaction(function () use ($newEntry, $accounts) {
                 $newEntry->save();
@@ -98,6 +101,7 @@ class UnapprovedEntry extends Model
                     receiver_name: $this->receiver_name,
                     cash_entry_type: $this->cash_entry_type,
                     comment: $this->comment,
+                    extra_note: $this->extra_note,
                     approver_id: Auth::id(),
                     approved_at: Carbon::now(),
                     user_id: Auth::id(),
