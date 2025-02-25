@@ -111,9 +111,9 @@ class Invoice extends Model
             $activeSheet->getCell('F' . $i)->setValue((new Carbon($comm->sold_policy->issuing_date))->format('d-M-y'));
             $activeSheet->getCell('G' . $i)->setValue($comm->pymnt_perm);
             $activeSheet->getCell('O' . $i)->setValue('اذن صرف عمولة ' . $comm->pymnt_perm);
-            $activeSheet->getCell('I' . $i)->setValue($comm->amount);
+            $activeSheet->getCell('I' . $i)->setValue($comm->amount / .95);
             $activeSheet->getCell('J' . $i)->setValue(($comm->amount / .95) * .05);
-            $activeSheet->getCell('K' . $i)->setValue($comm->amount / .95);
+            $activeSheet->getCell('K' . $i)->setValue($comm->amount);
             $activeSheet->insertNewRowBefore($i);
         }
         $activeSheet->removeRow(2);

@@ -313,7 +313,7 @@ class CompanyShow extends Component
                 company_id: $this->company->id,
                 is_paid: $this->availableSoldPolicies_isNotPaid === "0" ? null : false
             )
-            // ->only2025()
+            ->only2025()
             // ->orwhere('sold_policies.id', 1671)
             ->paginate(8);
 
