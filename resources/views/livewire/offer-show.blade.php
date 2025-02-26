@@ -2830,7 +2830,8 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             @error('lineFields')
-                                <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-danger-500 bg-opacity-[14%] text-danger-500 mb-2">
+                                <div
+                                    class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-danger-500 bg-opacity-[14%] text-danger-500 mb-2">
                                     <div class="flex items-start space-x-3 rtl:space-x-reverse">
                                         <div class="flex-1">
                                             {{ $message }}
@@ -2838,23 +2839,24 @@
                                     </div>
                                 </div>
                             @enderror
-                        
+
                             @foreach ($lineFields as $index => $item)
                                 <div class="input-area mb-3">
                                     <label class="form-label">
-                                        {{ $item['field'] }} 
+                                        {{ $item['field'] }}
                                         @if ($item['is_mandatory'])
                                             <span class="text-xs text-danger-500">(Mandatory)</span>
                                         @endif
                                     </label>
-                        
+
                                     <input type="text"
                                         class="form-control @error("lineFields.{$index}.value") !border-danger-500 @enderror"
                                         wire:model.defer="lineFields.{{ $index }}.value"
                                         autocomplete="off" />
-                        
+
                                     @error("lineFields.{$index}.value")
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                             @endforeach

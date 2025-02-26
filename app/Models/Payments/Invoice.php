@@ -19,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class Invoice extends Model
 {
     const FILES_DIRECTORY = 'comm_payments/';
-
+    const MORPH_TYPE = 'invoice';
     use HasFactory;
 
     protected $fillable = [

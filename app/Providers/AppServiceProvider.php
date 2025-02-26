@@ -38,6 +38,7 @@ use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
 use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\CompanyCommPayment;
+use App\Models\Payments\Invoice;
 use App\Models\Payments\PolicyComm;
 use App\Models\Payments\PolicyCommConf;
 use App\Models\Payments\SalesComm;
@@ -120,6 +121,7 @@ class AppServiceProvider extends ServiceProvider
             TaskAction::MORPH_TYPE => TaskAction::class,
             Interest::MORPH_TYPE => Interest::class,
             CorporatesInterest::MORPH_TYPE => CorporatesInterest::class,
+            Invoice::MORPH_TYPE => Invoice::class,
 
 
         ]);
