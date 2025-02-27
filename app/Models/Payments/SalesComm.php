@@ -455,7 +455,7 @@ class SalesComm extends Model
     public function scopeBySoldPoliciesStartEnd(Builder $query, Carbon $start, Carbon $end)
     {
         return $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
-            ->whereBetween('sold_policies.created_at', [
+            ->whereBetween('sold_policies.start', [
                 $start->format('Y-m-d'),
                 $end->format('Y-m-d')
             ]);
