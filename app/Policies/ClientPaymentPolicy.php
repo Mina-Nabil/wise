@@ -80,7 +80,8 @@ class ClientPaymentPolicy
      */
     public function pay(User $user, ClientPayment $clientPayment)
     {
-        return $user->is_admin || $user->is_finance || $user->id == 12;
+        return $user->is_admin || $user->is_finance || $user->id == 12 || $user->id == $clientPayment->sold_policy->creator_id
+            || $user->id == $clientPayment->sold_policy->main_sales_id;
     }
 
     /**
