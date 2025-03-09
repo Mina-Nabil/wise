@@ -1332,6 +1332,8 @@ class OfferShow extends Component
             $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, offer: $this->offer);
         }
 
+        dd($this->available_pols);
+
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
