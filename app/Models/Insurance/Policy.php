@@ -178,14 +178,13 @@ class Policy extends Model
                         $gross_value = $pol->calculateGrossValue($cond->rate);
                     }
                 }
-                if ($net_value > 0) {
-                    $valid_policies->push([
-                        "policy"        => $pol,
-                        "cond"          => $cond,
-                        "net_value"     => $net_value,
-                        "gross_value"   => $gross_value,
-                    ]);
-                }
+
+                $valid_policies->push([
+                    "policy"        => $pol,
+                    "cond"          => $cond,
+                    "net_value"     => $net_value,
+                    "gross_value"   => $gross_value,
+                ]);
             }
         }
         return $valid_policies;
