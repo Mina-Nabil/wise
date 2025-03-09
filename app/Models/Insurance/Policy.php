@@ -175,7 +175,7 @@ class Policy extends Model
                 foreach ($offer->medical_offer_clients as $client) {
                     $age = Carbon::now()->diffInYears(Carbon::parse($client->birth_date));
                     Log::info("Age: " . $age);
-                    $cond = $pol->getConditionValueByAge($age);
+                    $cond = $pol->getConditionByAge($age);
                     if ($cond) {
                         $net_value += $cond->rate;
                         $gross_value = $pol->calculateGrossValue($cond->rate);
@@ -625,7 +625,7 @@ class Policy extends Model
         return null;
     }
 
-    public function getConditionValueByAge($age)
+    public function getConditionByAge($age)
     {
         if (!in_array($this->business, [self::BUSINESS_PERSONAL_MEDICAL, self::BUSINESS_CORPORATE_MEDICAL]))
             throw new Exception("Invalid business type. Can't get rate by age");

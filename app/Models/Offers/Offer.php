@@ -839,10 +839,10 @@ class Offer extends Model
             $birth_date = Carbon::parse($client->birth_date);
             $activeSheet->getCell('B' . $i)->setValue($birth_date->format('Y-m-d'));
             $age = Carbon::now()->diffInYears($birth_date);
-            $cond = $policy->getConditionValueByAge($age);
-            $activeSheet->getCell('C' . $i)->setValue($cond);
-            $totalPrem += $cond;
-            $gross = $policy->calculateGrossValue($cond);
+            $cond = $policy->getConditionByAge($age);
+            $activeSheet->getCell('C' . $i)->setValue($cond->rate);
+            $totalPrem += $cond->rate;
+            $gross = $policy->calculateGrossValue($cond->rate);
             $totalGross += $gross;
             $activeSheet->getCell('D' . $i)->setValue($gross);
             $i++;
