@@ -151,7 +151,7 @@ class Policy extends Model
         }
 
         $policies = self::byType($type)->withCompany()->withConditions()->get();
-
+        Log::info("Policies: " . $policies->count());
         $valid_policies = new Collection();
         $net_value = 0;
         $gross_value = 0;
@@ -169,10 +169,12 @@ class Policy extends Model
                     ]);
                 }
             } else if ($offer && in_array($offer->type, [self::MEDICAL_LINES])) {
+                Log::info("Offer: " . $offer->id);
                 $net_value = 0;
                 $gross_value = 0;
                 foreach ($offer->medical_offer_clients as $client) {
                     $age = Carbon::now()->diffInYears(Carbon::parse($client->birth_date));
+                    Log::info("Age: " . $age);
                     $cond = $pol->getConditionValueByAge($age);
                     if ($cond) {
                         $net_value += $cond->rate;
