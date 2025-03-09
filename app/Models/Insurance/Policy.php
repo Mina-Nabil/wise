@@ -635,27 +635,27 @@ class Policy extends Model
                     switch ($cond->operator) {
                         case PolicyCondition::OP_EQUAL:
                             if ($age == $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_GREATER:
                             if ($age > $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_GREATER_OR_EQUAL:
                             if ($age >= $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_LESS:
                             if ($age < $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
 
                         case PolicyCondition::OP_LESS_OR_EQUAL:
                             if ($age <= $cond->value)
-                                return $cond->rate;
+                                return $cond;
                             break;
                     }
             }
