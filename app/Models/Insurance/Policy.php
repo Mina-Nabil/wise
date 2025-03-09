@@ -3,6 +3,7 @@
 namespace App\Models\Insurance;
 
 use App\Models\Customers\Car as CustomersCar;
+use App\Models\Offers\Offer;
 use App\Models\Payments\PolicyCommConf;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -131,7 +132,7 @@ class Policy extends Model
     ];
 
     ///static functions
-    public static function getAvailablePolicies($type, CustomersCar $car = null,  $offerValue = null): Collection
+    public static function getAvailablePolicies($type, ?CustomersCar $car = null,  $offerValue = null, ?Offer $offer = null): Collection
     {
         assert(
             in_array($type, [
@@ -142,7 +143,7 @@ class Policy extends Model
             ]),
             "Can't find options for type outside of motor and medical. Received: $type"
         );
-        assert($car, "All parameters are null");
+        // assert($car, "All parameters are null");
 
         if ($car) {
             assert(in_array($type, [self::BUSINESS_PERSONAL_MOTOR, self::BUSINESS_CORPORATE_MOTOR]), "Must use a motor type if a car is supplied");
@@ -159,16 +160,32 @@ class Policy extends Model
                 if ($cond) {
                     $net_value = ($cond->rate / 100) * $offerValue;
                     $gross_value = $pol->calculateGrossValue($net_value);
+                    $valid_policies->push([
+                        "policy"        => $pol,
+                        "cond"          => $cond,
+                        "net_value"     => $net_value,
+                        "gross_value"   => $gross_value,
+                    ]);
                 }
-            }
-
-            if ($cond) {
-                $valid_policies->push([
-                    "policy"        => $pol,
-                    "cond"          => $cond,
-                    "net_value"     => $net_value,
-                    "gross_value"   => $gross_value,
-                ]);
+            } else if ($offer && in_array($offer->type, [self::MEDICAL_LINES])) {
+                $net_value = 0;
+                $gross_value = 0;
+                foreach ($offer->medical_offer_clients as $client) {
+                    $age = $client->age;
+                    $cond = $pol->getConditionValueByAge($age);
+                    if ($cond) {
+                        $net_value += $cond->rate;
+                        $gross_value = $pol->calculateGrossValue($cond->rate);
+                    }
+                }
+                if ($net_value > 0) {
+                    $valid_policies->push([
+                        "policy"        => $pol,
+                        "cond"          => $cond,
+                        "net_value"     => $net_value,
+                        "gross_value"   => $gross_value,
+                    ]);
+                }
             }
         }
         return $valid_policies;

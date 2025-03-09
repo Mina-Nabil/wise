@@ -1328,6 +1328,9 @@ class OfferShow extends Component
 
         if ($this->offer->item)
             $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, car: $this->offer->item, offerValue: $this->offer->item_value);
+        elseif (in_array($this->offer->type, Policy::MEDICAL_LINES)) {
+            $this->available_pols = Policy::getAvailablePolicies(type: $this->offer->type, offer: $this->offer);
+        }
 
         return view('livewire.offer-show', [
             'STATUSES' => $STATUSES,

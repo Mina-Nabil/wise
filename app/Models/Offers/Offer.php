@@ -104,7 +104,7 @@ class Offer extends Model
 
 
     ////static functions
-    public static function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, string $note = null, Carbon $due = null, Model $item = null, $is_renewal = false, $in_favor_to = null, $renewal_policy = null, $renewal_policy_id = null): self|false
+    public static function newOffer(Customer|Corporate $client, string $type, $item_value = null, $item_title = null, $item_desc = null, ?string $note = null, ?Carbon $due = null, ?Model $item = null, $is_renewal = false, $in_favor_to = null, $renewal_policy = null, $renewal_policy_id = null): self|false
     {
         $newOffer = new self([
             "creator_id"    =>  Auth::id(),
@@ -155,7 +155,7 @@ class Offer extends Model
         $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
-    public static function exportReport(Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], Carbon $expiry_from = null, Carbon $expiry_to = null)
+    public static function exportReport(?Carbon $from = null, ?Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], ?Carbon $expiry_from = null, ?  Carbon $expiry_to = null)
     {
         $offers = self::report($from, $to, $statuses, $creator_ids, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText, $is_renewal, $comm_profile_ids, $expiry_from, $expiry_to)->get();
         $template = IOFactory::load(resource_path('import/offers_report.xlsx'));
@@ -193,7 +193,7 @@ class Offer extends Model
      * Policy number, start and expiry shall be presented as new empty fields
      * Other fields can be populated from the selected option, expect the car details(chassis, engine & plate)
      */
-    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry,  $installements_count, $payment_frequency, $insured_value, $net_rate, $net_premium, $gross_premium, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null, Carbon $issuing_date = null)
+    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry,  $installements_count, $payment_frequency, $insured_value, $net_rate, $net_premium, $gross_premium, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null, ?Carbon $issuing_date = null)
     {
         $foundSoldPolicy = SoldPolicy::byOfferID($this->id)->notCancelled()->notExpired()->first();
         if ($foundSoldPolicy && $foundSoldPolicy->id && !$foundSoldPolicy->is_expired) return $foundSoldPolicy;
@@ -476,7 +476,7 @@ class Offer extends Model
         return $mailto_url . "?subject:" . urlencode("New Offer Comparison") . "?body=" . urlencode("Please find the offer comparison url: " . $exportFileUrl);
     }
 
-    public function setNote(string $in_favor_to = null, string $note = null)
+    public function setNote(?string $in_favor_to = null, ?string $note = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -644,7 +644,7 @@ class Offer extends Model
         }
     }
 
-    public function setItemDetails($item_value, Model $item = null, $item_title = null, $item_desc = null)
+    public function setItemDetails($item_value, ?Model $item = null, ?string $item_title = null, ?string $item_desc = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -1179,7 +1179,7 @@ class Offer extends Model
         // ->orderByDesc('due');
     }
 
-    public function scopeReport($query, Carbon $from = null, Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], Carbon $expiry_from = null, Carbon $expiry_to = null)
+    public function scopeReport($query, ?Carbon $from = null, ?Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], ?Carbon $expiry_from = null, ?  Carbon $expiry_to = null)
     {
         $query->userData($searchText)
             ->when($from, function ($q, $v) {
