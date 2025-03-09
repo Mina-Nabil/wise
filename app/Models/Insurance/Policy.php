@@ -168,7 +168,7 @@ class Policy extends Model
                         "gross_value"   => $gross_value,
                     ]);
                 }
-            } else if ($offer && in_array($offer->type, [self::MEDICAL_LINES])) {
+            } else if ($offer && in_array($offer->type, self::MEDICAL_LINES)) {
                 Log::info("Offer: " . $offer->id);
                 $net_value = 0;
                 $gross_value = 0;
