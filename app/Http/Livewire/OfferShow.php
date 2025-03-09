@@ -897,13 +897,20 @@ class OfferShow extends Component
     {
         $this->conditionId = $id;
         $this->conditionData = PolicyCondition::find($this->conditionId);
-        $this->insured_value = $this->offer->item_value;
+        if ($this->offer->is_medical) {
+            $this->insured_value =  $this->conditionData->rate;
+            $this->netPremium = $this->conditionData->rate;
+            $this->grossPremium = $this->policyData->calculateGrossValue($this->netPremium);
+        } else {
 
-        if ($this->conditionData) {
-            $this->netPremium = round($this->offer->item_value * ($this->conditionData->rate / 100), 2);
-        }
-        if ($this->policyData && $this->netPremium) {
-            $this->grossPremium = round($this->policyData->calculateGrossValue($this->netPremium), 2);
+            $this->insured_value = $this->offer->item_value;
+
+            if ($this->conditionData) {
+                $this->netPremium = round($this->offer->item_value * ($this->conditionData->rate / 100), 2);
+            }
+            if ($this->policyData && $this->netPremium) {
+                $this->grossPremium = round($this->policyData->calculateGrossValue($this->netPremium), 2);
+            }
         }
     }
 

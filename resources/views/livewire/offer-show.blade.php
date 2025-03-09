@@ -351,7 +351,9 @@
                                                             <td class="table-td ">
 
                                                                 <div class=" text-success-500">
+                                                                    @if(!$offer->is_medical)
                                                                     {{ $policy['cond']['rate'] }}%
+                                                                    @endif
                                                                     {{ number_format($policy['net_value']) }}EGP
                                                                 </div>
 
