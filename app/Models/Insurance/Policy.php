@@ -7,6 +7,7 @@ use App\Models\Offers\Offer;
 use App\Models\Payments\PolicyCommConf;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -171,7 +172,7 @@ class Policy extends Model
                 $net_value = 0;
                 $gross_value = 0;
                 foreach ($offer->medical_offer_clients as $client) {
-                    $age = $client->age;
+                    $age = Carbon::now()->diffInYears(Carbon::parse($client->birth_date));
                     $cond = $pol->getConditionValueByAge($age);
                     if ($cond) {
                         $net_value += $cond->rate;

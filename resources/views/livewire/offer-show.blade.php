@@ -307,7 +307,6 @@
                                         <table
                                             class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                             @if (!empty($available_pols))
-                                            {{$available_pols}}
                                                 <thead class=" border-t border-slate-100 dark:border-slate-800">
                                                     <tr>
 
