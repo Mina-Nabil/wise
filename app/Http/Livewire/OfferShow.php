@@ -1370,6 +1370,7 @@ class OfferShow extends Component
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
         $DISCOUNT_TYPES = OfferDiscount::TYPES;
         $optionStatuses = OfferOption::STATUSES;
+        $RELATIONS = Relative::RELATIONS;
         $brands = Brand::all();
         $type_policies = Policy::ByType($this->offer->type)
             ->when(in_array($this->offer->type, Policy::MEDICAL_LINES), function ($q) {
@@ -1392,6 +1393,7 @@ class OfferShow extends Component
             'DISCOUNT_TYPES' => $DISCOUNT_TYPES,
             'optionStatuses' => $optionStatuses,
             'type_policies' => $type_policies,
+            'RELATIONS' => $RELATIONS,
             'brands' => $brands
         ]);
     }
