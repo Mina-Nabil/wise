@@ -895,6 +895,7 @@ class OfferShow extends Component
             $this->relatives = [];
             if ($res) {
                 $this->alert('success', 'Item updated');
+                $this->mount($this->offer->id);
                 $this->toggleEditItem();
             } else {
                 $this->alert('failed', 'server error');
@@ -911,6 +912,7 @@ class OfferShow extends Component
 
         if ($res) {
             $this->alert('success', 'Item updated');
+            $this->mount($this->offer->id);
             $this->toggleEditItem();
         } else {
             $this->alert('failed', 'server error');
