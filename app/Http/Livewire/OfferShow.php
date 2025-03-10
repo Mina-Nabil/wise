@@ -884,8 +884,15 @@ class OfferShow extends Component
                 'relatives.*.name' => 'required|string|max:255',
                 'relatives.*.birth_date' => 'required|date',
             ]);
-            $this->offer->setMedicalClients($this->relatives);
+            $res = $this->offer->setMedicalClients($this->relatives);
             $this->relatives = [];
+            if ($res) {
+                $this->alert('success', 'Item updated');
+                $this->toggleEditItem();
+            } else {
+                $this->alert('failed', 'server error');
+            }
+            return;
         } elseif ($this->carId) {
             $item = CustomerCar::find($this->carId);
         } elseif ($this->selectedCarPriceArray && $this->CarCategory) {

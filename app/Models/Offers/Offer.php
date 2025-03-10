@@ -785,6 +785,7 @@ class Offer extends Model
         foreach ($clients as $client) {
             $this->addMedicalClient($client['name'], Carbon::parse($client['birth_date']));
         }
+        return true;
     }
 
     public function addMedicalClient($name, Carbon $birth_date)
