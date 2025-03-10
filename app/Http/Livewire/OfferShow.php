@@ -183,8 +183,8 @@ class OfferShow extends Component
     public function addAnotherRelative()
     {
         $this->relatives[] = [
-            'name' => '', 
-            'relation' => Relative::RELATION_MAIN, 
+            'name' => '',
+            'relation' => Relative::RELATION_MAIN,
             'birth_date' => ''
         ];
     }
@@ -947,10 +947,19 @@ class OfferShow extends Component
     {
         $this->conditionId = $id;
         $this->conditionData = PolicyCondition::find($this->conditionId);
+
+
+
+
         if ($this->offer->is_medical) {
-            $this->insured_value =  $this->conditionData->rate;
-            $this->netPremium = $this->conditionData->rate;
-            $this->grossPremium = $this->policyData->calculateGrossValue($this->netPremium);
+            foreach ($this->available_pols as $pol) {
+                if ($pol['cond']->id == $this->conditionId) {
+                    $this->insured_value =  $pol['cond'];
+                    $this->netPremium = $pol['net_value'];
+                    $this->grossPremium = $pol['gross_value'];
+                    break;
+                }
+            }
         } else {
 
             $this->insured_value = $this->offer->item_value;
