@@ -537,20 +537,20 @@
                                             <div
                                                 class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
                                                 <div
-                                                    class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
-                                                    <div class="input-area col-span-4">
+                                                    class="grid grid-cols-12 md:grid-cols-12 lg:grid-cols-12 gap-2 items-center">
+                                                    <div class="input-area col-span-3">
                                                         <input
                                                             class="form-control w-full mt-2  @error('relatives.' . $index . '.name') !border-danger-500 @enderror"
                                                             wire:model="relatives.{{ $index }}.name"
                                                             type="text" placeholder="Relative name">
                                                     </div>
-                                                    <div class="input-area col-span-4">
+                                                    <div class="input-area col-span-3">
                                                         <input
                                                             class="form-control w-full mt-2  @error('relatives.' . $index . '.phone') !border-danger-500 @enderror"
                                                             wire:model="relatives.{{ $index }}.phone"
                                                             type="number" placeholder="Relative phone">
                                                     </div>
-                                                    <div class="input-area col-span-3">
+                                                    <div class="input-area col-span-2">
                                                         <select name="basicSelect"
                                                             class="form-control w-full mt-2  @error('relatives.' . $index . '.relation') !border-danger-500 @enderror"
                                                             wire:model="relatives.{{ $index }}.relation">
@@ -578,8 +578,7 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-
-                                                    <div class="input-area col-span-3">
+                                                    <div class="input-area col-span-1">
                                                         <input
                                                             class="form-control w-full mt-2   @error('relatives.' . $index . '.birth_date') !border-danger-500 @enderror"
                                                             wire:model="relatives.{{ $index }}.birth_date"

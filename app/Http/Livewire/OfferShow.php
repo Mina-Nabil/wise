@@ -31,6 +31,7 @@ use App\Models\Payments\SalesComm;
 use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Customers\Relative;
 
 class OfferShow extends Component
 {
@@ -178,7 +179,11 @@ class OfferShow extends Component
 
     public function addAnotherRelative()
     {
-        $this->relatives[] = ['name' => '', 'relation' => '', 'gender' => '', 'phone' => '', 'birth_date' => ''];
+        $this->relatives[] = [
+            'name' => '', 
+            'relation' => Relative::RELATION_MAIN, 
+            'birth_date' => ''
+        ];
     }
 
     public function updatedCommSearch()
@@ -862,6 +867,7 @@ class OfferShow extends Component
                     $this->relatives[] = [
                         'name' => $client->name,
                         'birth_date' => $client->birth_date,
+                        'relation' => $client->relation ?? Relative::RELATION_MAIN,
                     ];
                 }
             } elseif ($this->offer->is_motor) {
@@ -883,6 +889,7 @@ class OfferShow extends Component
             $this->validate([
                 'relatives.*.name' => 'required|string|max:255',
                 'relatives.*.birth_date' => 'required|date',
+                'relatives.*.relation' => 'required|in:' . implode(',', Relative::RELATIONS),
             ]);
             $res = $this->offer->setMedicalClients($this->relatives);
             $this->relatives = [];

@@ -296,7 +296,11 @@ class OfferIndex extends Component
         if ($res) {
             if($res->is_medical && $this->relatives && count($this->relatives)){
                 foreach ($this->relatives as $r) {
-                    $res->addMedicalClient($r['name'], Carbon::parse($r['birth_date']));
+                    $res->addMedicalClient(
+                        $r['name'], 
+                        Carbon::parse($r['birth_date']), 
+                        $r['relation'] ?? Relative::RELATION_MAIN
+                    );
                 }
             }
             return redirect(route('offers.show', $res->id));

@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\Customers\Relative;
 
 class Offer extends Model
 {
@@ -783,12 +784,16 @@ class Offer extends Model
     {
         $this->medical_offer_clients()->delete();
         foreach ($clients as $client) {
-            $this->addMedicalClient($client['name'], Carbon::parse($client['birth_date']));
+            $this->addMedicalClient(
+                $client['name'], 
+                Carbon::parse($client['birth_date']), 
+                $client['relation'] ?? Relative::RELATION_MAIN
+            );
         }
         return true;
     }
 
-    public function addMedicalClient($name, Carbon $birth_date)
+    public function addMedicalClient($name, Carbon $birth_date, $relation = Relative::RELATION_MAIN)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -798,7 +803,8 @@ class Offer extends Model
             $this->medical_offer_clients()->firstOrCreate([
                 "name"          =>  $name,
             ], [
-                "birth_date"    =>  $birth_date->format('Y-m-d')
+                "birth_date"    =>  $birth_date->format('Y-m-d'),
+                "relation"      =>  $relation
             ]);
             AppLog::info("Medical client added", loggable: $this);
             return true;
@@ -818,9 +824,17 @@ class Offer extends Model
         for ($i = 6; $i <= $highestRow; $i++) {
             try {
                 $name       = $activeSheet->getCell('A' . $i)->getValue();
-                $birth_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('B' . $i)->getValue());
+                $birth_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('B' . $i)->getValue());
+                $relation   = $activeSheet->getCell('C' . $i)->getValue() ?: Relative::RELATION_MAIN;
+                
                 if (!$name) continue;
-                $this->addMedicalClient($name, Carbon::parse($birth_date));
+                
+                // Validate relation
+                if (!in_array($relation, Relative::RELATIONS)) {
+                    $relation = Relative::RELATION_MAIN;
+                }
+                
+                $this->addMedicalClient($name, Carbon::parse($birth_date), $relation);
             } catch (Exception $e) {
                 report($e);
                 AppLog::error("Can't import medical template", $e->getMessage(), $this);
@@ -847,13 +861,14 @@ class Offer extends Model
             $activeSheet->getCell('A' . $i)->setValue($client->name);
             $birth_date = Carbon::parse($client->birth_date);
             $activeSheet->getCell('B' . $i)->setValue($birth_date->format('Y-m-d'));
+            $activeSheet->getCell('C' . $i)->setValue($client->relation);
             $age = Carbon::now()->diffInYears($birth_date);
             $cond = $policy->getConditionByAge($age);
-            $activeSheet->getCell('C' . $i)->setValue($cond->rate);
+            $activeSheet->getCell('D' . $i)->setValue($cond->rate);
             $totalPrem += $cond->rate;
             $gross = $policy->calculateGrossValue($cond->rate);
             $totalGross += $gross;
-            $activeSheet->getCell('D' . $i)->setValue($gross);
+            $activeSheet->getCell('E' . $i)->setValue($gross);
             $i++;
         }
 

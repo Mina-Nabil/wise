@@ -12,6 +12,6 @@ class MedicalOfferClient extends Model
 
     public $timestamps = false;
     protected $fillable = [
-        'name', 'birth_date'
+        'name', 'birth_date', 'relation'
     ];
 }

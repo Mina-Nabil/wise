@@ -247,7 +247,7 @@ class Customer extends Model
         }
     }
 
-    public function addCar($car_id, $model_year, $sum_insured = null, $insurance_payment = null, $payment_frequency = null, $insurance_company_id = null, Carbon $renewal_date = null, $wise_insured = false): Car|false
+    public function addCar($car_id, $model_year, $sum_insured = null, $insurance_payment = null, $payment_frequency = null, $insurance_company_id = null, ?Carbon $renewal_date = null, $wise_insured = false): Car|false
     {
         try {
             $tmp = $this->cars()->updateOrCreate(
@@ -351,7 +351,7 @@ class Customer extends Model
         }
     }
 
-    public function setIsWelcomed(bool $status, string $note = null): bool
+    public function setIsWelcomed(bool $status, ?string $note = null): bool
     {
         try {
             $this->is_welcomed = $status;
@@ -410,6 +410,8 @@ class Customer extends Model
             DB::transaction(function () use ($relatives) {
                 $this->relatives()->delete();
                 foreach ($relatives as $rel) {
+                    if ($rel["relation"] == Relative::RELATION_MAIN) continue;
+
                     $this->addRelative($rel["name"], $rel["relation"] ?? null, $rel["gender"] ?? null, $rel["phone"] ?? null, $rel["birth_date"] ?? null);
                 }
             });

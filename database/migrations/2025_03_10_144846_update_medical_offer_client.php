@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Customers\Relative;
-use App\Models\Offers\Offer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,11 +14,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('medical_offer_clients', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(Offer::class)->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->date('birth_date');
+        Schema::table('medical_offer_clients', function (Blueprint $table) {
+            $table->enum('relation', Relative::RELATIONS)->default(Relative::RELATION_MAIN);
         });
     }
 
@@ -30,6 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('medical_offer_clients');
+        Schema::table('medical_offer_clients', function (Blueprint $table) {
+            $table->dropColumn('relation');
+        });
     }
 };
