@@ -177,7 +177,7 @@ class Policy extends Model
                     $cond = $pol->getConditionByAge($age);
                     if ($cond) {
                         $net_value += $cond->rate;
-                        $gross_value = $pol->calculateGrossValue($cond->rate);
+                        $gross_value += $pol->calculateGrossValue($cond->rate);
                     }
                 }
                 if ($cond) {
