@@ -171,6 +171,9 @@ class OfferShow extends Component
 
     public $relatives = [];
 
+    public $showPolicyNoteModal = false;
+    public $currentPolicyNote = '';
+
     public function removeRelative($index)
     {
         unset($this->relatives[$index]);
@@ -1356,6 +1359,18 @@ class OfferShow extends Component
         } catch (Exception $e) {
             $this->alert('failed', $e->getMessage());
         }
+    }
+
+    public function showPolicyNote($note)
+    {
+        $this->currentPolicyNote = $note;
+        $this->showPolicyNoteModal = true;
+    }
+
+    public function hidePolicyNote()
+    {
+        $this->showPolicyNoteModal = false;
+        $this->currentPolicyNote = '';
     }
 
     public function render()
