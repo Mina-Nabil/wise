@@ -366,6 +366,19 @@
 
                                                             </td>
                                                             <td class="table-td ">
+                                                                @if($policy['policy']['note'])
+                                                                    <button 
+                                                                        x-data
+                                                                        x-on:click="$dispatch('notify', {
+                                                                            text: '{{ $policy['policy']['note'] }}',
+                                                                            type: 'info',
+                                                                            timeout: 6000
+                                                                        })"
+                                                                        class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm me-2"
+                                                                    >
+                                                                        <iconify-icon icon="heroicons:information-circle" class="text-slate-600"></iconify-icon>
+                                                                    </button>
+                                                                @endif
                                                                 <button
                                                                     wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['cond']['id'] }})"
                                                                     class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon
