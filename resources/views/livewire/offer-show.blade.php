@@ -366,7 +366,7 @@
 
                                                             </td>
                                                             <td class="table-td ">
-                                                                <div class="flex items-center">
+                                                                <div class="flex items-center gap-2">
                                                                 @if($policy['policy']['note'])
                                                                     <button 
                                                                         wire:click="showPolicyNote('{{ addslashes($policy['policy']['note']) }}')"
