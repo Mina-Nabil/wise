@@ -379,7 +379,7 @@
                                                                     class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon
                                                                         icon="bi:stars"
                                                                         class="text-primary-600"></iconify-icon>&nbsp;
-                                                                    Generate Option</button>
+                                                                    Generate</button>
                                                             </td>
                                                         </tr>
                                                     @endforeach
