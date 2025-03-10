@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OfferOption extends Model
 {
@@ -145,6 +146,29 @@ class OfferOption extends Model
             return true;
         }
     }
+
+    public function deleteOption()
+    {
+        /** @var User $loggedInUser */
+        $loggedInUser = Auth::user(); 
+        if(!$loggedInUser->can('delete', $this)) {
+            return false;
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->fields()->delete();
+            $this->docs()->delete();
+            $this->delete();
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            report($e);
+            return false;
+        }
+    }
+
     ////scopes
     public function scopeClientSelected()
     {
