@@ -169,7 +169,6 @@ class Policy extends Model
                     ]);
                 }
             } else if ($offer && in_array($offer->type, self::MEDICAL_LINES)) {
-                Log::info("Offer: " . $offer->id);
                 $net_value = 0;
                 $gross_value = 0;
                 foreach ($offer->medical_offer_clients as $client) {
@@ -179,13 +178,15 @@ class Policy extends Model
                     if ($cond) {
                         $net_value += $cond->rate;
                         $gross_value = $pol->calculateGrossValue($cond->rate);
-                        $valid_policies->push([
-                            "policy"        => $pol,
-                            "cond"          => $cond,
-                            "net_value"     => $net_value,
-                            "gross_value"   => $gross_value,
-                        ]);
                     }
+                }
+                if ($cond) {
+                    $valid_policies->push([
+                        "policy"        => $pol,
+                        "cond"          => $cond,
+                        "net_value"     => $net_value,
+                        "gross_value"   => $gross_value,
+                    ]);
                 }
             }
         }
