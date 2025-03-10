@@ -351,8 +351,8 @@
                                                             <td class="table-td ">
 
                                                                 <div class=" text-success-500">
-                                                                    @if(!$offer->is_medical)
-                                                                    {{ $policy['cond']['rate'] }}%
+                                                                    @if (!$offer->is_medical)
+                                                                        {{ $policy['cond']['rate'] }}%
                                                                     @endif
                                                                     {{ number_format($policy['net_value']) }}EGP
                                                                 </div>
@@ -1856,122 +1856,173 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <div class="p-6 space-y-4">
-                            @if ($offer->client->cars)
+                        @if ($offer->is_medical)
+                            <div class="p-6 space-y-4">
                                 <div class="from-group">
-                                    <label for="lastName" class="form-label">Car</label>
-                                    @if ($offer->client->cars->isEmpty())
-
-
-
-                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                                            style="margin: 0">
+                                    @if (!empty($relatives))
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                             <div class="input-area">
-                                                <label for="firstName" class="form-label">Car Brand</label>
-                                                <select name="basicSelect" class="form-control w-full mt-2"
-                                                    wire:model="carBrand">
-                                                    <option value=''>Select an Option</option>
-                                                    @foreach ($brands as $brand)
-                                                        <option value="{{ $brand->id }}"
-                                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                            {{ $brand->name }}</option>
-                                                    @endforeach
-                                                </select>
+                                                <label for="time-date-picker" class="form-label"
+                                                    style="margin: 0">Relative Info</label>
                                             </div>
-                                            @if ($carBrand && $carBrand !== '')
-                                                <div class="input-area">
-                                                    <label for="lastName" class="form-label">Car Model</label>
-
-                                                    <select name="basicSelect" class="form-control w-full mt-2"
-                                                        wire:model="carModel">
-                                                        <option value=''>Select an Option</option>
-                                                        @foreach ($models as $model)
-                                                            <option value="{{ $model->id }}"
-                                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                                {{ $model->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            @endif
-
-                                            @if ($carModel && $carModel !== '' && $carBrand && $carBrand !== '')
-                                                <div class="input-area">
-                                                    <label for="lastName" class="form-label">Car Category</label>
-                                                    <select name="basicSelect"
-                                                        class="form-control w-full mt-2 @error('CarCategory') !border-danger-500 @enderror"
-                                                        wire:model="CarCategory">
-                                                        <option selected>Select an Option</option>
-                                                        @foreach ($cars as $car)
-                                                            <option value="{{ $car->id }}"
-                                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                                {{ $car->category }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            @endif
                                         </div>
-                                        @error('CarCategory')
-                                            <span
-                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                        @enderror
-
-
-
-                                        @if ($CarCategory || $item)
-                                            <div class="input-area">
-                                                <label for="lastName" class="form-label">Model Year</label>
-                                                <select name="basicSelect"
-                                                    class="form-control w-full mt-2 @error('carPrice') !border-danger-500 @enderror text-dark"
-                                                    wire:model="carPrice">
-                                                    <option value="" selected>Select an Option</option>
-                                                    @foreach ($CarPrices as $price)
-                                                        <option value="{{ $price }}" class="">
-                                                            {{ $price->model_year }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endif
-                                    @else
-                                        <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                            wire:model="carId">
-                                            @foreach ($offer->client->cars as $car)
-                                                <option value="{{ $car->id }}"
-                                                    class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                    {{ $car->car->category }}
-                                                </option>
-                                            @endforeach
-                                        </select>
                                     @endif
+                                    @foreach ($relatives as $index => $relative)
+                                        <div
+                                            class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
+                                            <div
+                                                class="grid grid-cols-8 md:grid-cols-8 lg:grid-cols-8 gap-2 items-center">
+                                                <div class="input-area col-span-4">
+                                                    <input
+                                                        class="form-control w-full mt-2  @error('relatives.' . $index . '.name') !border-danger-500 @enderror"
+                                                        wire:model="relatives.{{ $index }}.name"
+                                                        type="text" placeholder="Relative name">
+                                                </div>
+
+                                                <div class="input-area col-span-3">
+                                                    <input
+                                                        class="form-control w-full mt-2   @error('relatives.' . $index . '.birth_date') !border-danger-500 @enderror"
+                                                        wire:model="relatives.{{ $index }}.birth_date"
+                                                        type="date" placeholder="birth_date">
+                                                </div>
+                                                <div class="col-span-1 flex items-center">
+                                                    <button class="action-btn"
+                                                        wire:click="removeRelative({{ $index }})"
+                                                        type="button">
+                                                        <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                    <button wire:click="addAnotherRelative"
+                                        class="btn btn-sm mt-2 inline-flex justify-center btn-dark">Add
+                                        Relative</button>
 
 
                                 </div>
-                            @endif
+                            </div>
+                        @elseif ($offer->is_motor)
+                            <div class="p-6 space-y-4">
+                                @if ($offer->client->cars)
+                                    <div class="from-group">
+                                        <label for="lastName" class="form-label">Car</label>
+                                        @if ($offer->client->cars->isEmpty())
 
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Item title</label>
-                                <input type="text" class="form-control mt-2 w-full" wire:model.defer="item_title">
-                                @error('item_title')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
+
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                                                style="margin: 0">
+                                                <div class="input-area">
+                                                    <label for="firstName" class="form-label">Car Brand</label>
+                                                    <select name="basicSelect" class="form-control w-full mt-2"
+                                                        wire:model="carBrand">
+                                                        <option value=''>Select an Option</option>
+                                                        @foreach ($brands as $brand)
+                                                            <option value="{{ $brand->id }}"
+                                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                {{ $brand->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                @if ($carBrand && $carBrand !== '')
+                                                    <div class="input-area">
+                                                        <label for="lastName" class="form-label">Car Model</label>
+
+                                                        <select name="basicSelect" class="form-control w-full mt-2"
+                                                            wire:model="carModel">
+                                                            <option value=''>Select an Option</option>
+                                                            @foreach ($models as $model)
+                                                                <option value="{{ $model->id }}"
+                                                                    class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                    {{ $model->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                @endif
+
+                                                @if ($carModel && $carModel !== '' && $carBrand && $carBrand !== '')
+                                                    <div class="input-area">
+                                                        <label for="lastName" class="form-label">Car Category</label>
+                                                        <select name="basicSelect"
+                                                            class="form-control w-full mt-2 @error('CarCategory') !border-danger-500 @enderror"
+                                                            wire:model="CarCategory">
+                                                            <option selected>Select an Option</option>
+                                                            @foreach ($cars as $car)
+                                                                <option value="{{ $car->id }}"
+                                                                    class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                                    {{ $car->category }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            @error('CarCategory')
+                                                <span
+                                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                            @enderror
+
+
+
+                                            @if ($CarCategory || $item)
+                                                <div class="input-area">
+                                                    <label for="lastName" class="form-label">Model Year</label>
+                                                    <select name="basicSelect"
+                                                        class="form-control w-full mt-2 @error('carPrice') !border-danger-500 @enderror text-dark"
+                                                        wire:model="carPrice">
+                                                        <option value="" selected>Select an Option</option>
+                                                        @foreach ($CarPrices as $price)
+                                                            <option value="{{ $price }}" class="">
+                                                                {{ $price->model_year }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <select name="basicSelect" id="basicSelect"
+                                                class="form-control w-full mt-2" wire:model="carId">
+                                                @foreach ($offer->client->cars as $car)
+                                                    <option value="{{ $car->id }}"
+                                                        class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                        {{ $car->car->category }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @endif
+
+
+                                    </div>
+                                @endif
+
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Item title</label>
+                                    <input type="text" class="form-control mt-2 w-full"
+                                        wire:model.defer="item_title">
+                                    @error('item_title')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Item value</label>
+                                    <input type="number" class="form-control mt-2 w-full"
+                                        wire:model.defer="item_value">
+                                    @error('item_value')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="from-group">
+                                    <label for="lastName" class="form-label">Item Description</label>
+                                    <textarea class="form-control mt-2 w-full" wire:model.defer="item_desc"></textarea>
+                                    @error('item_desc')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Item value</label>
-                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="item_value">
-                                @error('item_value')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="from-group">
-                                <label for="lastName" class="form-label">Item Description</label>
-                                <textarea class="form-control mt-2 w-full" wire:model.defer="item_desc"></textarea>
-                                @error('item_desc')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
+                        @endif
                         <!-- Modal footer -->
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">

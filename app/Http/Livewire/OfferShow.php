@@ -168,6 +168,19 @@ class OfferShow extends Component
     public $subStatusOfferStatus;
     public $subStatus;
 
+    public $relatives = [];
+
+    public function removeRelative($index)
+    {
+        unset($this->relatives[$index]);
+        $this->relatives = array_values($this->relatives);
+    }
+
+    public function addAnotherRelative()
+    {
+        $this->relatives[] = ['name' => '', 'relation' => '', 'gender' => '', 'phone' => '', 'birth_date' => ''];
+    }
+
     public function updatedCommSearch()
     {
         if (!empty($this->commSearch)) {
@@ -843,7 +856,17 @@ class OfferShow extends Component
     {
         $this->toggle($this->editItemSection);
         if ($this->editItemSection) {
-            $this->carId = $this->offer->item_id;
+            if ($this->offer->is_medical) {
+                $this->relatives = [];
+                foreach ($this->offer->medical_offer_clients as $client) {
+                    $this->relatives[] = [
+                        'name' => $client->name,
+                        'birth_date' => $client->birth_date,
+                    ];
+                }
+            } elseif ($this->offer->is_motor) {
+                $this->carId = $this->offer->item_id;
+            }
         }
     }
 
@@ -855,7 +878,15 @@ class OfferShow extends Component
             'item_desc' => 'nullable|string',
         ]);
         $item = null;
-        if ($this->carId) {
+        if ($this->offer->is_medical) {
+            $item = $this->offer->medical_offer_clients;
+            $this->validate([
+                'relatives.*.name' => 'required|string|max:255',
+                'relatives.*.birth_date' => 'required|date',
+            ]);
+            $this->offer->setMedicalClients($this->relatives);
+            $this->relatives = [];
+        } elseif ($this->carId) {
             $item = CustomerCar::find($this->carId);
         } elseif ($this->selectedCarPriceArray && $this->CarCategory) {
             $item = $this->offer->client->addCar(car_id: $this->CarCategory, model_year: $this->selectedCarPriceArray['model_year']);

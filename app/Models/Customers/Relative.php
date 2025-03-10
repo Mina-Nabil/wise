@@ -21,6 +21,8 @@ class Relative extends Model
 
     protected $fillable = ['customer_id', 'name', 'relation', 'gender', 'phone', 'birth_date'];
 
+    const RELATION_MAIN = 'main';
+    const RELATION_WIFE = 'wife';
     const RELATION_MOTHER = 'mother';
     const RELATION_FATHER = 'father';
     const RELATION_BROTHER = 'brother';
@@ -29,6 +31,8 @@ class Relative extends Model
     const RELATION_OTHER = 'other';
 
     const RELATIONS = [
+        self::RELATION_MAIN,
+        self::RELATION_WIFE,
         self::RELATION_MOTHER,
         self::RELATION_FATHER,
         self::RELATION_BROTHER,

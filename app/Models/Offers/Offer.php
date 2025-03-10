@@ -779,6 +779,14 @@ class Offer extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
+    public function setMedicalClients($clients)
+    {
+        $this->medical_offer_clients()->delete();
+        foreach ($clients as $client) {
+            $this->addMedicalClient($client['name'], Carbon::parse($client['birth_date']));
+        }
+    }
+
     public function addMedicalClient($name, Carbon $birth_date)
     {
         /** @var User */
