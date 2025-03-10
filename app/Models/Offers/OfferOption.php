@@ -151,7 +151,7 @@ class OfferOption extends Model
     {
         /** @var User $loggedInUser */
         $loggedInUser = Auth::user(); 
-        if(!$loggedInUser->can('delete', $this)) {
+        if(!$loggedInUser->can('deleteOption', $this->offer)) {
             return false;
         }
 
