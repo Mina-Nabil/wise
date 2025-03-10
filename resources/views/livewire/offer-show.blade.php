@@ -366,6 +366,7 @@
 
                                                             </td>
                                                             <td class="table-td ">
+                                                                <div class="flex items-center">
                                                                 @if($policy['policy']['note'])
                                                                     <button 
                                                                         wire:click="showPolicyNote('{{ addslashes($policy['policy']['note']) }}')"
@@ -380,6 +381,7 @@
                                                                         icon="bi:stars"
                                                                         class="text-primary-600"></iconify-icon>&nbsp;
                                                                     Generate</button>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     @endforeach
