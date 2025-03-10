@@ -954,7 +954,7 @@ class OfferShow extends Component
         if ($this->offer->is_medical) {
             foreach ($this->available_pols as $pol) {
                 if ($pol['cond']['id'] == $this->conditionId) {
-                    $this->insured_value =  $pol['cond']['rate'];
+                    $this->insured_value =  $pol['gross_value'];
                     $this->netPremium = $pol['net_value'];
                     $this->grossPremium = $pol['gross_value'];
                     break;
