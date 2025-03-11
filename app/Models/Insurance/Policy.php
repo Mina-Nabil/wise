@@ -180,7 +180,7 @@ class Policy extends Model
                         $gross_value += $pol->calculateGrossValue($cond->rate);
                     }
                 }
-                if ($cond) {
+                if (isset($cond) && $cond) {
                     $valid_policies->push([
                         "policy"        => $pol,
                         "cond"          => $cond,
