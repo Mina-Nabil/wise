@@ -95,24 +95,18 @@
                                 Invoice Payment ( From-To )</span>
                         </li>
                         <li wire:click="toggleHasInvoice(true)">
-                            <div class="px-4 py-2">
-                                <div class="flex flex-col space-y-2">
-                                    <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white cursor-pointer">
-                                        Has Invoice?
-                                    </span>
-                                </div>
-                            </div>
+                                Has Invoice?
+                            </span>
                         </li>
                         <li wire:click="toggleInvoicePaymentDate">
-                            <div class="px-4 py-2">
-                                <div class="flex flex-col space-y-2">
-                                    <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white cursor-pointer">
-                                        Invoice Paid?
-                                    </span>
-                                </div>
-                            </div>
+                                Invoice Paid?
+                            </span>
                         </li>
                     </ul>
                 </div>
@@ -218,7 +212,8 @@
                             @endif
 
                             @if ($invoicePaidFilter !== null)
-                                <button class="btn inline-flex justify-center btn-dark btn-sm" wire:click="toggleInvoicePaid">
+                                <button class="btn inline-flex justify-center btn-dark btn-sm"
+                                    wire:click="toggleInvoicePaid">
                                     <span>Invoice: {{ $invoicePaidFilter ? 'Paid' : 'Unpaid' }}</span>
                                     <span wire:click="clearInvoicePaid">
                                         <iconify-icon icon="material-symbols:close" width="1.2em"
