@@ -131,7 +131,7 @@
                         <header class="card-header cust-card-header noborder">
 
                             @if ($start_from || $start_to)
-                                <button class="btn btn-dark btn-sm">
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleStartDate">
                                         {{ $start_from ? 'Start From: ' . \Carbon\Carbon::parse($start_from)->format('l d/m/Y') : '' }}
                                         {{ $start_from && $start_to ? '-' : '' }}
@@ -146,7 +146,7 @@
                             @endif
 
                             @if ($company_ids)
-                                <button class="btn btn-dark btn-sm">
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleCompany">
                                         Company(
                                         @foreach ($company_ids as $id)
@@ -171,7 +171,7 @@
                             @endif
 
                             @if ($payment_from || $payment_to)
-                                <button class="btn btn-dark btn-sm">
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="togglePaymentDate">
                                         {{ $payment_from ? 'Payment From: ' . \Carbon\Carbon::parse($payment_from)->format('l d/m/Y') : '' }}
                                         {{ $payment_from && $payment_to ? '-' : '' }}
@@ -186,7 +186,7 @@
                             @endif
 
                             @if ($invoice_payment_from || $invoice_payment_to)
-                                <button class="btn btn-dark btn-sm">
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleInvoicePaymentDate">
                                         {{ $invoice_payment_from ? 'Invoice Payment From: ' . \Carbon\Carbon::parse($invoice_payment_from)->format('l d/m/Y') : '' }}
                                         {{ $invoice_payment_from && $invoice_payment_to ? '-' : '' }}
@@ -201,7 +201,7 @@
                             @endif
 
                             @if ($hasInvoiceFilter !== null)
-                                <button class="btn btn-dark btn-sm"
+                                <button class="btn inline-flex justify-center btn-dark btn-sm"
                                     wire:click="toggleHasInvoice">
                                     <span>Has Invoice: {{ $hasInvoiceFilter ? 'Yes' : 'No' }}</span>
                                     <span wire:click="clearHasInvoice">
@@ -212,7 +212,7 @@
                             @endif
 
                             @if ($invoicePaidFilter !== null)
-                                <button class="btn btn-dark btn-sm"
+                                <button class="btn inline-flex justify-center btn-dark btn-sm"
                                     wire:click="toggleInvoicePaid">
                                     <span>Invoice: {{ $invoicePaidFilter ? 'Paid' : 'Unpaid' }}</span>
                                     <span wire:click="clearInvoicePaid">
