@@ -32,6 +32,8 @@ class OutstandingSoldPolicyIndex extends Component
     public $Epayment_from;
     public $Epayment_to;
 
+    public $hasInvoiceFilter = null;
+
     public function toggleStartDate()
     {
         $this->toggle($this->startSection);
@@ -105,6 +107,16 @@ class OutstandingSoldPolicyIndex extends Component
         $this->payment_to = null;
     }
 
+    public function toggleHasInvoice()
+    {
+        $this->hasInvoiceFilter = !$this->hasInvoiceFilter;
+    }
+
+    public function clearHasInvoice()
+    {
+        $this->hasInvoiceFilter = null;
+    }
+
     public function exportReport()
     {
         if ($this->outstandingType === 'all') {
@@ -134,7 +146,8 @@ class OutstandingSoldPolicyIndex extends Component
             $this->start_to,
             $this->company_ids,
             $this->payment_from,
-            $this->payment_to
+            $this->payment_to,
+            $this->hasInvoiceFilter
         );
     }
 
@@ -169,7 +182,8 @@ class OutstandingSoldPolicyIndex extends Component
             $this->start_to,
             $this->company_ids,
             $this->payment_from,
-            $this->payment_to
+            $this->payment_to,
+            $this->hasInvoiceFilter
         )->paginate(20);
 
         return view('livewire.outstanding-sold-policy-index', [

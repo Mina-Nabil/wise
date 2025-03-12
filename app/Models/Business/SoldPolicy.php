@@ -1878,7 +1878,8 @@ class SoldPolicy extends Model
         $start_to = null,
         $company_ids = [],
         $payment_from = null,
-        $payment_to = null
+        $payment_to = null,
+        $has_invoice = null
     ) {
         return $query->userData(
             searchText: $search,
@@ -1895,6 +1896,9 @@ class SoldPolicy extends Model
                       $payment_from->format('Y-m-d 00:00:00'),
                       $payment_to->format('Y-m-d 23:59:59')
                   ]);
+            })
+            ->when(!is_null($has_invoice), function($q) use ($has_invoice) {
+                $q->hasInvoice($has_invoice);
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
             ->with('last_company_comm_payment');
@@ -2215,5 +2219,18 @@ class SoldPolicy extends Model
     public function fields(): HasMany
     {
         return $this->hasMany(Field::class);
+    }
+
+    public function scopeHasInvoice($query, $hasInvoice = true)
+    {
+        if ($hasInvoice) {
+            return $query->whereHas('company_comm_payments', function($q) {
+                $q->whereNotNull('invoice_id');
+            });
+        } else {
+            return $query->whereDoesntHave('company_comm_payments', function($q) {
+                $q->whereNotNull('invoice_id');
+            });
+        }
     }
 }

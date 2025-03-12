@@ -88,6 +88,29 @@
                                 dark:hover:text-white cursor-pointer">
                                 Payment Date ( From-To )</span>
                         </li>
+                        <li>
+                            <div class="px-4 py-2">
+                                <div class="flex flex-col space-y-2">
+                                    <span class="text-slate-600 dark:text-white font-Inter font-normal">
+                                        Has Invoice
+                                    </span>
+                                    <div class="flex space-x-4">
+                                        <button 
+                                            wire:click="toggleHasInvoice(true)"
+                                            class="btn btn-sm {{ $hasInvoiceFilter === true ? 'btn-dark' : 'btn-outline-dark' }}"
+                                        >
+                                            Yes
+                                        </button>
+                                        <button 
+                                            wire:click="toggleHasInvoice(false)"
+                                            class="btn btn-sm {{ $hasInvoiceFilter === false ? 'btn-dark' : 'btn-outline-dark' }}"
+                                        >
+                                            No
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -149,6 +172,31 @@
                                     </span>
                                 </button>
                             @endif
+
+                            @if ($payment_from || $payment_to)
+                            <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                <span wire:click="togglePaymentDate">
+                                    {{ $payment_from ? 'Payment From: ' . \Carbon\Carbon::parse($payment_from)->format('l d/m/Y') : '' }}
+                                    {{ $start_from && $start_to ? '-' : '' }}
+                                    {{ $start_to ? 'Start To: ' . \Carbon\Carbon::parse($start_to)->format('l d/m/Y') : '' }}
+                                    &nbsp;&nbsp;
+                                </span>
+                                <span wire:click="clearPaymentDates">
+                                    <iconify-icon icon="material-symbols:close" width="1.2em"
+                                        height="1.2em"></iconify-icon>
+                                </span>
+                            </button>
+                        @endif
+
+                        @if ($hasInvoiceFilter)
+                            <button class="btn inline-flex justify-center btn-dark btn-sm" wire:click="toggleHasInvoice">
+                                <span>Has Invoice: {{ $hasInvoiceFilter ? 'Yes' : 'No' }}</span>
+                                <span wire:click="clearHasInvoice">
+                                    <iconify-icon icon="material-symbols:close" width="1.2em"
+                                        height="1.2em"></iconify-icon>
+                                </span>
+                            </button>
+                        @endif
                         </header>
 
                         <div class="tab-content mt-6" id="pills-tabContent">
@@ -580,4 +628,16 @@
         </div>
     </div>
     <div class="modal-backdrop fade show"></div>
+@endif
+
+<!-- Add this in the active filters section if you have one -->
+@if(!is_null($hasInvoiceFilter))
+    <div class="filter-tag">
+        <span class="text-slate-600 dark:text-white">
+            Has Invoice: {{ $hasInvoiceFilter ? 'Yes' : 'No' }}
+        </span>
+        <button wire:click="$set('hasInvoiceFilter', null)" class="ml-2">
+            <iconify-icon icon="heroicons:x-mark"></iconify-icon>
+        </button>
+    </div>
 @endif
