@@ -184,7 +184,7 @@ class OutstandingSoldPolicyIndex extends Component
             $this->payment_from,
             $this->payment_to,
             $this->hasInvoiceFilter
-        )->paginate(20);
+        )->paginate(10);
 
         return view('livewire.outstanding-sold-policy-index', [
             'soldPolicies' => $soldPolicies,
