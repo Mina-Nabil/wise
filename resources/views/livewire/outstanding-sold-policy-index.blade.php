@@ -91,23 +91,10 @@
                         <li>
                             <div class="px-4 py-2">
                                 <div class="flex flex-col space-y-2">
-                                    <span class="text-slate-600 dark:text-white font-Inter font-normal">
+                                    <span class="text-slate-600 dark:text-white font-Inter font-normal" wire:click="toggleHasInvoice(true)">
                                         Has Invoice
                                     </span>
-                                    <div class="flex space-x-4">
-                                        <button 
-                                            wire:click="toggleHasInvoice(true)"
-                                            class="btn btn-sm {{ $hasInvoiceFilter === true ? 'btn-dark' : 'btn-outline-dark' }}"
-                                        >
-                                            Yes
-                                        </button>
-                                        <button 
-                                            wire:click="toggleHasInvoice(false)"
-                                            class="btn btn-sm {{ $hasInvoiceFilter === false ? 'btn-dark' : 'btn-outline-dark' }}"
-                                        >
-                                            No
-                                        </button>
-                                    </div>
+                                
                                 </div>
                             </div>
                         </li>
@@ -188,7 +175,7 @@
                             </button>
                         @endif
 
-                        @if ($hasInvoiceFilter)
+                        @if ($hasInvoiceFilter !== null)
                             <button class="btn inline-flex justify-center btn-dark btn-sm" wire:click="toggleHasInvoice">
                                 <span>Has Invoice: {{ $hasInvoiceFilter ? 'Yes' : 'No' }}</span>
                                 <span wire:click="clearHasInvoice">
