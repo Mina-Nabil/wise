@@ -112,7 +112,7 @@ class InvoicesReport extends Component
 
     public function render()
     {
-        $invoices = Invoice::with(['creator', 'commissions'])
+        $invoices = Invoice::with(['creator', 'commissions', 'company'])
             ->when($this->created_from, function($query) {
                 $query->whereDate('created_at', '>=', $this->created_from);
             })

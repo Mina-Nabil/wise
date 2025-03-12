@@ -256,19 +256,24 @@
                                     Policies</a>
                             </li>
                             <li>
-                                <a href="{{ url('/reports/client-payment-finance') }}" class="@yield('client-payment-finance')">Payments Due</a>
+                                <a href="{{ url('/reports/client-payment-finance') }}"
+                                    class="@yield('client-payment-finance')">Payments Due</a>
                             </li>
                             <li>
-                                <a href="{{ url('/reports/client-payments') }}" class="@yield('client-payments')">Client Payments</a>
+                                <a href="{{ url('/reports/client-payments') }}" class="@yield('client-payments')">Client
+                                    Payments</a>
                             </li>
                             <li>
-                                <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Customer Interests</a>
+                                <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Customer
+                                    Interests</a>
                             </li>
-                                <li>
-                                    <a href="{{ url('/reports/corporate-interest') }}" class="@yield('corporate-interests-report')">Corporate Interests</a>
-                                </li>
                             <li>
-                                <a href="{{ url('/reports/invoices-report') }}" class="@yield('invoices-report')">Invoices Report</a>
+                                <a href="{{ url('/reports/corporate-interest') }}"
+                                    class="@yield('corporate-interests-report')">Corporate Interests</a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/reports/invoices-report') }}" class="@yield('invoices-report')">Invoices
+                                    Report</a>
                             </li>
                         </ul>
                     </li>
@@ -285,46 +290,46 @@
                                 </a>
                             </li>
                         @endif
-                        @if (Auth::user()->is_admin || Auth::user()->is_hr )
-                        <li>
-                            <a href="{{ url('/contacts') }}" class="navItem @yield('contacts')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon"
-                                        icon="material-symbols:corporate-fare"></iconify-icon>
-                                    <span>Contacts</span>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url('/users') }}" class="navItem @yield('users')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
-                                    <span>Users</span>
-                                </span>
-                            </a>
-                        </li>
+                        @if (Auth::user()->is_admin || Auth::user()->is_hr)
+                            <li>
+                                <a href="{{ url('/contacts') }}" class="navItem @yield('contacts')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon"
+                                            icon="material-symbols:corporate-fare"></iconify-icon>
+                                        <span>Contacts</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/users') }}" class="navItem @yield('users')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon" icon="raphael:users"></iconify-icon>
+                                        <span>Users</span>
+                                    </span>
+                                </a>
+                            </li>
                         @endif
-                        @if(Auth::user()->is_admin)
-                        <li>
-                            <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon"
-                                        icon="material-symbols:policy-outline-rounded"></iconify-icon>
-                                    <span>Policies</span>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url('/fields') }}" class="navItem @yield('fields')">
-                                <span class="flex items-center">
-                                    <iconify-icon class="nav-icon"
-                                        icon="solar:text-field-focus-bold"></iconify-icon>
-                                    <span>Line Fields</span>
-                                </span>
-                            </a>
-                        </li>
+                        @if (Auth::user()->is_admin)
+                            <li>
+                                <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon"
+                                            icon="material-symbols:policy-outline-rounded"></iconify-icon>
+                                        <span>Policies</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url('/fields') }}" class="navItem @yield('fields')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon"
+                                            icon="solar:text-field-focus-bold"></iconify-icon>
+                                        <span>Line Fields</span>
+                                    </span>
+                                </a>
+                            </li>
                         @endif
-                        @if (Auth::user()->is_admin || Auth::user()->is_operations )
+                        @if (Auth::user()->is_admin || Auth::user()->is_operations)
                             <li>
                                 <a href="{{ url('/cars') }}" class="navItem @yield('cars')">
                                     <span class="flex items-center">
@@ -573,11 +578,13 @@
                             </div>
 
                             @if (Auth::user()->is_admin || Auth::user()->is_finance || Auth::user()->is_finance_assistant)
-                            <div class="text-right">
-                                <a href="/accounts/entries">
-                                    <button class="btn btn-sm inline-flex justify-center btn-outline-light rounded-[25px]">Accounting APP</button>
-                                </a>
-                            </div>
+                                <div class="text-right">
+                                    <a href="/accounts/entries">
+                                        <button
+                                            class="btn btn-sm inline-flex justify-center btn-outline-light rounded-[25px]">Accounting
+                                            APP</button>
+                                    </a>
+                                </div>
                             @endif
 
                             <!-- end vertcial -->
