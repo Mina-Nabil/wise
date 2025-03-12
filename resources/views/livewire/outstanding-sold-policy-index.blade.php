@@ -165,8 +165,8 @@
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="togglePaymentDate">
                                         {{ $payment_from ? 'Payment From: ' . \Carbon\Carbon::parse($payment_from)->format('l d/m/Y') : '' }}
-                                        {{ $start_from && $start_to ? '-' : '' }}
-                                        {{ $start_to ? 'Start To: ' . \Carbon\Carbon::parse($start_to)->format('l d/m/Y') : '' }}
+                                        {{ $payment_from && $payment_to ? '-' : '' }}
+                                        {{ $payment_to ? 'Payment To: ' . \Carbon\Carbon::parse($payment_to)->format('l d/m/Y') : '' }}
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearPaymentDates">
