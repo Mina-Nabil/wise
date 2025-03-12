@@ -217,7 +217,7 @@
                             @endif
 
                             @if ($invoicePaidFilter !== null)
-                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                <button class="btn inline-flex justify-center btn-dark btn-sm" wire:click="toggleInvoicePaid">
                                     <span>Invoice: {{ $invoicePaidFilter ? 'Paid' : 'Unpaid' }}</span>
                                     <span wire:click="clearInvoicePaid">
                                         <iconify-icon icon="material-symbols:close" width="1.2em"
