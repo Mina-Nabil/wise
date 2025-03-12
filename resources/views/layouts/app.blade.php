@@ -264,10 +264,12 @@
                             <li>
                                 <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Customer Interests</a>
                             </li>
+                                <li>
+                                    <a href="{{ url('/reports/corporate-interest') }}" class="@yield('corporate-interests-report')">Corporate Interests</a>
+                                </li>
                             <li>
-                                <a href="{{ url('/reports/corporate-interest') }}" class="@yield('corporate-interests-report')">Corporate Interests</a>
+                                <a href="{{ url('/reports/invoices-report') }}" class="@yield('invoices-report')">Invoices Report</a>
                             </li>
-
                         </ul>
                     </li>
                     @if (Auth::user()->is_admin || Auth::user()->is_hr || Auth::user()->is_finance || Auth::user()->is_operations)
