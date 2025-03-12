@@ -150,7 +150,7 @@ class Invoice extends Model
     public function getPaymentDateAttribute()
     {
         if($this->commissions()->exists()){
-            return Carbon::parse($this->commissions()->first()->payment_date)->format('d-M-y');
+            return $this->commissions()->first()->payment_date ? Carbon::parse($this->commissions()->first()->payment_date)->format('d-M-y') : null;
         }
         return null;
     }
