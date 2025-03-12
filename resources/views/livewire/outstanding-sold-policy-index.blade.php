@@ -168,6 +168,9 @@
                                                                         END
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
+                                                                        PYMT
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
                                                                         POLICY#
                                                                     </th>
                                                                     @can('viewCommission',
@@ -211,6 +214,10 @@
                                                                         <td class="table-td">
                                                                             <span
                                                                                 class="block date-text">{{ \Carbon\Carbon::parse($policy->expiry)->format('d-m-Y') }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ $policy->client_payment_date ? \Carbon\Carbon::parse($policy->client_payment_date)->format('d-m-Y') : 'N/A' }}</span>
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <a href="{{ route('sold.policy.show', $policy->id) }}"
