@@ -1879,7 +1879,9 @@ class SoldPolicy extends Model
         $company_ids = [],
         $payment_from = null,
         $payment_to = null,
-        $has_invoice = null
+        $has_invoice = null,
+        $invoice_payment_from = null,
+        $invoice_payment_to = null
     ) {
         return $query->userData(
             searchText: $search,
@@ -1896,6 +1898,15 @@ class SoldPolicy extends Model
                       $payment_from->format('Y-m-d 00:00:00'),
                       $payment_to->format('Y-m-d 23:59:59')
                   ]);
+            })
+            ->when($invoice_payment_from && $invoice_payment_to, function ($q) use ($invoice_payment_from, $invoice_payment_to) {
+                $q->whereHas('company_comm_payments', function($query) use ($invoice_payment_from, $invoice_payment_to) {
+                    $query->whereNotNull('payment_date')
+                          ->whereBetween('payment_date', [
+                              $invoice_payment_from->format('Y-m-d 00:00:00'),
+                              $invoice_payment_to->format('Y-m-d 23:59:59')
+                          ]);
+                });
             })
             ->when(!is_null($has_invoice), function($q) use ($has_invoice) {
                 $q->hasInvoice($has_invoice);

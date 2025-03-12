@@ -34,6 +34,13 @@ class OutstandingSoldPolicyIndex extends Component
 
     public $hasInvoiceFilter = null;
 
+    // Add invoice payment date filter properties
+    public $invoicePaymentSection = false;
+    public $invoice_payment_from;
+    public $invoice_payment_to;
+    public $Einvoice_payment_from;
+    public $Einvoice_payment_to;
+
     public function toggleStartDate()
     {
         $this->toggle($this->startSection);
@@ -117,6 +124,28 @@ class OutstandingSoldPolicyIndex extends Component
         $this->hasInvoiceFilter = null;
     }
 
+    public function toggleInvoicePaymentDate()
+    {
+        $this->toggle($this->invoicePaymentSection);
+        if ($this->invoicePaymentSection) {
+            $this->Einvoice_payment_from = Carbon::parse($this->invoice_payment_from)->toDateString();
+            $this->Einvoice_payment_to = Carbon::parse($this->invoice_payment_to)->toDateString();
+        }
+    }
+
+    public function setInvoicePaymentDates()
+    {
+        $this->invoice_payment_from = Carbon::parse($this->Einvoice_payment_from);
+        $this->invoice_payment_to = Carbon::parse($this->Einvoice_payment_to);
+        $this->toggle($this->invoicePaymentSection);
+    }
+
+    public function clearInvoicePaymentDates()
+    {
+        $this->invoice_payment_from = null;
+        $this->invoice_payment_to = null;
+    }
+
     public function exportReport()
     {
         if ($this->outstandingType === 'all') {
@@ -147,7 +176,9 @@ class OutstandingSoldPolicyIndex extends Component
             $this->company_ids,
             $this->payment_from,
             $this->payment_to,
-            $this->hasInvoiceFilter
+            $this->hasInvoiceFilter,
+            $this->invoice_payment_from,
+            $this->invoice_payment_to
         );
     }
 
@@ -183,7 +214,9 @@ class OutstandingSoldPolicyIndex extends Component
             $this->company_ids,
             $this->payment_from,
             $this->payment_to,
-            $this->hasInvoiceFilter
+            $this->hasInvoiceFilter,
+            $this->invoice_payment_from,
+            $this->invoice_payment_to
         )->simplePaginate(10);
 
         return view('livewire.outstanding-sold-policy-index', [
