@@ -148,13 +148,9 @@ class OutstandingSoldPolicyIndex extends Component
         $this->invoice_payment_to = null;
     }
 
-    public function toggleInvoicePaid($value)
+    public function toggleInvoicePaid()
     {
-        if ($this->invoicePaidFilter === $value) {
-            $this->invoicePaidFilter = null;
-        } else {
-            $this->invoicePaidFilter = $value;
-        }
+        $this->invoicePaidFilter = !$this->invoicePaidFilter;
     }
 
     public function clearInvoicePaid()
