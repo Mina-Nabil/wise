@@ -90,7 +90,7 @@
                                         <td class="table-td">{{ number_format($invoice->tax_total, 2) }}</td>
                                         <td class="table-td">{{ number_format($invoice->net_total, 2) }}</td>
                                         <td class="table-td">
-                                            {{ $invoice->commissions->first()?->payment_date?->format('d/m/Y') ?? 'Not Paid' }}
+                                            {{ $invoice->payment_date ?? 'Not Paid' }}
                                         </td>
                                     </tr>
                                 @endforeach
