@@ -7,13 +7,13 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card p-6">
         <div class="card-body px-6 pb-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <!-- Creation Date Filter -->
                 <div class="filter-group">
-                    <button wire:click="toggleCreatedDate" type="button" class="btn btn-dark w-full justify-between">
-                        <span>
+                    <button wire:click="toggleCreatedDate" type="button" class="btn btn-dark flex items-center justify-between w-full">
+                        <span class="truncate">
                             @if($created_from && $created_to)
                                 {{ Carbon\Carbon::parse($created_from)->format('d/m/Y') }} - 
                                 {{ Carbon\Carbon::parse($created_to)->format('d/m/Y') }}
@@ -21,26 +21,26 @@
                                 Creation Date
                             @endif
                         </span>
-                        <iconify-icon class="text-xl" icon="heroicons-outline:calendar"></iconify-icon>
+                        <iconify-icon class="text-xl ml-2" icon="heroicons-outline:calendar"></iconify-icon>
                     </button>
                 </div>
 
                 <!-- Company Filter -->
                 <div class="filter-group">
-                    <button wire:click="toggleCompany" type="button" class="btn btn-dark w-full justify-between">
-                        <span>
+                    <button wire:click="toggleCompany" type="button" class="btn btn-dark flex items-center justify-between w-full">
+                        <span class="truncate">
                             @if(count($company_ids))
                                 {{ count($company_ids) }} Companies Selected
                             @else
                                 Companies
                             @endif
                         </span>
-                        <iconify-icon class="text-xl" icon="heroicons-outline:office-building"></iconify-icon>
+                        <iconify-icon class="text-xl ml-2" icon="heroicons-outline:office-building"></iconify-icon>
                     </button>
                 </div>
 
                 <!-- Search -->
-                <div class="filter-group">
+                <div class="filter-group col-span-2">
                     <input type="text" class="form-control" placeholder="Search by serial or creator..." wire:model="searchText">
                 </div>
             </div>
