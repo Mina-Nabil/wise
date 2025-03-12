@@ -1104,53 +1104,22 @@ class SoldPolicy extends Model
         $invoice_outstanding = false,
         Carbon $start_from = null,
         Carbon $start_to = null,
-        $company_ids = []
+        $company_ids = [],
+        $payment_from = null,
+        $payment_to = null
     ) {
-        $policies = self::outstandingPolicies(
+        return self::outstandingPolicies(
             $search,
             $commission_outstanding,
             $client_outstanding,
             $invoice_outstanding,
             $start_from,
             $start_to,
-            $company_ids
+            $company_ids,
+            $payment_from,
+            $payment_to
         )->get();
-
-        $template = IOFactory::load(resource_path('import/sold_policies_outstanding_report.xlsx'));
-        if (!$template) {
-            throw new Exception('Failed to read template file');
-        }
-        $newFile = $template->copy();
-        $activeSheet = $newFile->getActiveSheet();
-
-        $i = 2;
-        /** @var User */
-        $user = Auth::user();
-        foreach ($policies as $policy) {
-            $activeSheet->getCell('A' . $i)->setValue($policy->policy->company->name);
-            $activeSheet->getCell('B' . $i)->setValue($policy->policy->name);
-            $activeSheet->getCell('C' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
-            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
-            $activeSheet->getCell('E' . $i)->setValue($policy->policy_number);
-            $activeSheet->getCell('H' . $i)->setValue($policy->client->name);
-            // $activeSheet->getCell('I' . $i)->setValue($policy->is_valid ? "Valid" : '');
-            $activeSheet->getCell('I' . $i)->setValue($policy->is_paid ? 'Paid' : '');
-            if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('F' . $i)->setValue($policy->last_company_comm_payment ? Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A');
-                $activeSheet->getCell('G' . $i)->setValue($policy->last_company_comm_payment?->payment_date ? Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A');
-            }
-
-            $i++;
-        }
-
-        $writer = new Xlsx($newFile);
-        $file_path = self::FILES_DIRECTORY . "outstanding_policies_export.xlsx";
-        $public_file_path = storage_path($file_path);
-        $writer->save($public_file_path);
-
-        return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
-
 
     public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_ids = [], $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null, $is_penalized = null, Carbon $paid_from = null, Carbon $paid_to = null)
     {
@@ -1907,7 +1876,9 @@ class SoldPolicy extends Model
         $invoice_outstanding = false,
         $start_from = null,
         $start_to = null,
-        $company_ids = []
+        $company_ids = [],
+        $payment_from = null,
+        $payment_to = null
     ) {
         return $query->userData(
             searchText: $search,
@@ -1917,6 +1888,13 @@ class SoldPolicy extends Model
         )
             ->when($start_from && $start_to, function ($q) use ($start_from, $start_to) {
                 $q->fromTo($start_from, $start_to);
+            })
+            ->when($payment_from && $payment_to, function ($q) use ($payment_from, $payment_to) {
+                $q->whereNotNull('client_payment_date')
+                  ->whereBetween('client_payment_date', [
+                      $payment_from->format('Y-m-d 00:00:00'),
+                      $payment_to->format('Y-m-d 23:59:59')
+                  ]);
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
             ->with('last_company_comm_payment');

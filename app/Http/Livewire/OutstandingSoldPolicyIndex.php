@@ -25,7 +25,12 @@ class OutstandingSoldPolicyIndex extends Component
     public $Estart_from;
     public $Estart_to;
 
-
+    // Add payment date filter properties
+    public $paymentSection = false;
+    public $payment_from;
+    public $payment_to;
+    public $Epayment_from;
+    public $Epayment_to;
 
     public function toggleStartDate()
     {
@@ -78,6 +83,28 @@ class OutstandingSoldPolicyIndex extends Component
         $this->company_ids = [];
     }
 
+    public function togglePaymentDate()
+    {
+        $this->toggle($this->paymentSection);
+        if ($this->paymentSection) {
+            $this->Epayment_from = Carbon::parse($this->payment_from)->toDateString();
+            $this->Epayment_to = Carbon::parse($this->payment_to)->toDateString();
+        }
+    }
+
+    public function setPaymentDates()
+    {
+        $this->payment_from = Carbon::parse($this->Epayment_from);
+        $this->payment_to = Carbon::parse($this->Epayment_to);
+        $this->toggle($this->paymentSection);
+    }
+
+    public function clearPaymentDates()
+    {
+        $this->payment_from = null;
+        $this->payment_to = null;
+    }
+
     public function exportReport()
     {
         if ($this->outstandingType === 'all') {
@@ -105,7 +132,9 @@ class OutstandingSoldPolicyIndex extends Component
             $invoice_outstanding,
             $this->start_from,
             $this->start_to,
-            $this->company_ids
+            $this->company_ids,
+            $this->payment_from,
+            $this->payment_to
         );
     }
 
@@ -138,7 +167,9 @@ class OutstandingSoldPolicyIndex extends Component
             $invoice_outstanding,
             $this->start_from,
             $this->start_to,
-            $this->company_ids
+            $this->company_ids,
+            $this->payment_from,
+            $this->payment_to
         )->paginate(20);
 
         return view('livewire.outstanding-sold-policy-index', [
