@@ -3,6 +3,7 @@
 namespace App\Models\Payments;
 
 use App\Models\Business\SoldPolicy;
+use App\Models\Insurance\Company;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -150,6 +151,11 @@ class Invoice extends Model
     public function commissions(): HasMany
     {
         return $this->hasMany(CompanyCommPayment::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function creator(): BelongsTo
