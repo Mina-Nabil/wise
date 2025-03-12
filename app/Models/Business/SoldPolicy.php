@@ -1881,7 +1881,8 @@ class SoldPolicy extends Model
         $payment_to = null,
         $has_invoice = null,
         $invoice_payment_from = null,
-        $invoice_payment_to = null
+        $invoice_payment_to = null,
+        $invoice_paid = null
     ) {
         return $query->userData(
             searchText: $search,
@@ -1910,6 +1911,9 @@ class SoldPolicy extends Model
             })
             ->when(!is_null($has_invoice), function($q) use ($has_invoice) {
                 $q->hasInvoice($has_invoice);
+            })
+            ->when(!is_null($invoice_paid), function($q) use ($invoice_paid) {
+                $q->invoicePaid($invoice_paid);
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
             ->with('last_company_comm_payment');
@@ -2241,6 +2245,21 @@ class SoldPolicy extends Model
         } else {
             return $query->whereDoesntHave('company_comm_payments', function($q) {
                 $q->whereNotNull('invoice_id');
+            });
+        }
+    }
+
+    public function scopeInvoicePaid($query, $isPaid = true)
+    {
+        if ($isPaid) {
+            return $query->whereHas('company_comm_payments', function($q) {
+                $q->whereNotNull('invoice_id')
+                   ->whereNotNull('payment_date');
+            });
+        } else {
+            return $query->whereHas('company_comm_payments', function($q) {
+                $q->whereNotNull('invoice_id')
+                   ->whereNull('payment_date');
             });
         }
     }

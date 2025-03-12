@@ -101,7 +101,29 @@
                                         wire:click="toggleHasInvoice(true)">
                                         Has Invoice
                                     </span>
-
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="px-4 py-2">
+                                <div class="flex flex-col space-y-2">
+                                    <span class="text-slate-600 dark:text-white font-Inter font-normal">
+                                        Invoice Payment Status
+                                    </span>
+                                    <div class="flex space-x-4">
+                                        <button 
+                                            wire:click="toggleInvoicePaid(true)"
+                                            class="btn btn-sm {{ $invoicePaidFilter === true ? 'btn-dark' : 'btn-outline-dark' }}"
+                                        >
+                                            Paid
+                                        </button>
+                                        <button 
+                                            wire:click="toggleInvoicePaid(false)"
+                                            class="btn btn-sm {{ $invoicePaidFilter === false ? 'btn-dark' : 'btn-outline-dark' }}"
+                                        >
+                                            Unpaid
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </li>
@@ -202,6 +224,16 @@
                                     wire:click="toggleHasInvoice">
                                     <span>Has Invoice: {{ $hasInvoiceFilter ? 'Yes' : 'No' }}</span>
                                     <span wire:click="clearHasInvoice">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($invoicePaidFilter !== null)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span>Invoice: {{ $invoicePaidFilter ? 'Paid' : 'Unpaid' }}</span>
+                                    <span wire:click="clearInvoicePaid">
                                         <iconify-icon icon="material-symbols:close" width="1.2em"
                                             height="1.2em"></iconify-icon>
                                     </span>
