@@ -7,6 +7,7 @@
         </div>
 
 
+
         {{-- <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
             <button wire:click="" data-bs-toggle="modal" data-bs-target="#successModal"
                 class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
@@ -15,6 +16,36 @@
             </button>
         </div> --}}
     </div>
+
+            <!-- Payment Type Tabs -->
+            <div class="card-body flex flex-col col-span-2" wire:ignore>
+                <div class="card-text h-full">
+                    <div>
+                        <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0"
+                            id="tabs-tab" role="tablist">
+                            <li class="nav-item" role="presentation" wire:click="changeSection('all')">
+                                <a href="#tabs-all"
+                                    class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'all') active @endif dark:text-slate-300"
+                                    id="tabs-all-tab" data-bs-toggle="pill" data-bs-target="#tabs-all" role="tab"
+                                    aria-controls="tabs-all" aria-selected="true">
+                                    <iconify-icon class="mr-1" icon="heroicons-outline:collection"></iconify-icon>
+                                    All</a>
+                            </li>
+                            @foreach ($PYMT_TYPES as $PYMT_TYPE)
+                                <li class="nav-item" role="presentation" wire:click="changeSection('{{ $PYMT_TYPE }}')">
+                                    <a href="#tabs-{{ $PYMT_TYPE }}"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === $PYMT_TYPE) active @endif dark:text-slate-300"
+                                        id="tabs-{{ $PYMT_TYPE }}-tab" data-bs-toggle="pill"
+                                        data-bs-target="#tabs-{{ $PYMT_TYPE }}" role="tab"
+                                        aria-controls="tabs-{{ $PYMT_TYPE }}" aria-selected="false">
+                                        <iconify-icon class="mr-1" icon="{{ $this->getTypeIcon($PYMT_TYPE) }}"></iconify-icon>
+                                        {{ ucwords(str_replace('_', ' ', $PYMT_TYPE)) }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
     <div class="flex mb-2">
         <div class="dropdown relative">
