@@ -525,6 +525,17 @@ class ClientPayment extends Model
         return $query->where('policies.company_id', "=", $company_id);
     }
 
+    public function scopeByDateRange(Builder $query, $start_date = null, $end_date = null)
+    {
+        if ($start_date) {
+            $query->whereDate('client_payments.payment_date', '>=', $start_date);
+        }
+        if ($end_date) {
+            $query->whereDate('client_payments.payment_date', '<=', $end_date);
+        }
+        return $query;
+    }
+
     public function scopeIncludeDue(Builder $query)
     {
         if (!Helpers::joined($query, 'sold_policies')) {

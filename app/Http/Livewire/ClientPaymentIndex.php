@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
 use Livewire\WithPagination;
+use Carbon\Carbon;
 
 class ClientPaymentIndex extends Component
 {
@@ -16,8 +17,37 @@ class ClientPaymentIndex extends Component
     public $dateRange;
     public $types = [];
     public $section = 'all';
+    
+    // Add date filter properties
+    public $dateSection = false;
+    public $date_from;
+    public $date_to;
+    public $Edate_from;
+    public $Edate_to;
 
     protected $queryString = ['section'];
+
+    public function toggleDateFilter()
+    {
+        $this->dateSection = !$this->dateSection;
+        if ($this->dateSection) {
+            $this->Edate_from = $this->date_from ? Carbon::parse($this->date_from)->toDateString() : null;
+            $this->Edate_to = $this->date_to ? Carbon::parse($this->date_to)->toDateString() : null;
+        }
+    }
+
+    public function setDateFilter()
+    {
+        $this->date_from = $this->Edate_from ? Carbon::parse($this->Edate_from) : null;
+        $this->date_to = $this->Edate_to ? Carbon::parse($this->Edate_to) : null;
+        $this->dateSection = false;
+    }
+
+    public function clearDateFilter()
+    {
+        $this->date_from = null;
+        $this->date_to = null;
+    }
 
     public function getTypeIcon($type)
     {
@@ -71,6 +101,7 @@ class ClientPaymentIndex extends Component
         
         $payments = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText)
             ->when(count($this->types), fn($q) => $q->byTypes($this->types))
+            ->when($this->date_from || $this->date_to, fn($q) => $q->byDateRange($this->date_from, $this->date_to))
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned')
             ->paginate(50);
 
