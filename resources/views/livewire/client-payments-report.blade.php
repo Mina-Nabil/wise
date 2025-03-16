@@ -73,6 +73,12 @@
                                     dark:hover:text-white cursor-pointer">
                             Issued date ( From-To )</span>
                     </li>
+                    <li wire:click="toggleDateFilter">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                            dark:hover:text-white cursor-pointer">
+                            Payment date ( From-To )</span>
+                    </li>
 
 
                     <li wire:click="toggleCompany">
@@ -150,12 +156,26 @@
                             </button>
                         @endif
 
+                        @if ($date_from || $date_to)
+                            <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                <span wire:click="toggleDateFilter">
+                                    {{ $date_from ? 'Payment From: ' . \Carbon\Carbon::parse($date_from)->format('l d/m/Y') : '' }}
+                                    {{ $date_from && $date_to ? '-' : '' }}
+                                    {{ $date_to ? 'Payment To: ' . \Carbon\Carbon::parse($date_to)->format('l d/m/Y') : '' }}
+                                    &nbsp;&nbsp;
+                                </span>
+                                <span wire:click="clearDateFilter">
+                                    <iconify-icon icon="material-symbols:close" width="1.2em"
+                                        height="1.2em"></iconify-icon>
+                                </span>
+                            </button>
+                        @endif
+
                         @if ($types)
                             <button class="btn inline-flex justify-center btn-dark btn-sm">
                                 <span wire:click="toggleTypes">
                                     Types(
                                     @foreach ($types as $tt)
-
                                         {{ $tt }}
                                         @if (!$loop->last)
                                             ,
@@ -289,9 +309,9 @@
                                 </th>
 
                                 @if (auth()->user()->is_admin || auth()->user()->is_finance)
-                                <th scope="col" class="table-th">
-                                    Sales
-                                </th>
+                                    <th scope="col" class="table-th">
+                                        Sales
+                                    </th>
                                 @endif
 
                                 <th scope="col" class="table-th">
@@ -337,17 +357,18 @@
 
 
                                     @if (auth()->user()->is_admin || auth()->user()->is_finance)
-                                    <td class="table-td">
-                                        <ul>
+                                        <td class="table-td">
+                                            <ul>
 
-                                            @foreach ($payment->sold_policy->active_sales_comms as $sales_comm)
-                                                <li>
-                                                    {{ $sales_comm->comm_profile->title }}: {{ $sales_comm->amount }}
-                                                    {{ $sales_comm->status }}
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </td>
+                                                @foreach ($payment->sold_policy->active_sales_comms as $sales_comm)
+                                                    <li>
+                                                        {{ $sales_comm->comm_profile->title }}:
+                                                        {{ $sales_comm->amount }}
+                                                        {{ $sales_comm->status }}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </td>
                                     @endif
 
                                     <td class="table-td">
@@ -627,7 +648,7 @@
                 </div>
             </div>
         @endif
-{{-- 
+        {{-- 
         @if ($salesOutSection)
             <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
                 tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
@@ -725,70 +746,70 @@
         @endif --}}
 
         @if ($commProfilesSection)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-            style="display: block;">
-            <div class="modal-dialog relative w-auto pointer-events-none">
-                <div
-                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <!-- Modal header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Commissions Profiles
-                            </h3>
-                            <button wire:click="toggleProfiles" type="button"
-                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                data-bs-dismiss="modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+                tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+                style="display: block;">
+                <div class="modal-dialog relative w-auto pointer-events-none">
+                    <div
+                        class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div
+                                class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Commissions Profiles
+                                </h3>
+                                <button wire:click="toggleProfiles" type="button"
+                                    class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                    data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <!-- Modal body -->
-                        <div class="p-6 space-y-4">
-                            <div class="from-group">
-                                <label for="Eline_of_business" class="form-label">Select Profile</label>
-                                @foreach ($COMM_PROFILES as $COMM_PROFILE)
-                                    <div class="checkbox-area">
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="hidden"
-                                                value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
-                                                name="checkbox" wire:model.defer="Eprofiles">
-                                            <span
-                                                class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                                <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                                    alt=""
-                                                    class="h-[10px] w-[10px] block m-auto opacity-0"></span>
-                                            <span
-                                                class="text-slate-500 dark:text-slate-400 text-sm leading-6">{{ $COMM_PROFILE->title }}</span>
-                                        </label>
-                                    </div>
-                                @endforeach
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
                             </div>
-                        </div>
-                        <!-- Modal footer -->
-                        <div
-                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setProfiles" data-bs-dismiss="modal"
-                                class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="setProfiles">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="setProfiles"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+                                <div class="from-group">
+                                    <label for="Eline_of_business" class="form-label">Select Profile</label>
+                                    @foreach ($COMM_PROFILES as $COMM_PROFILE)
+                                        <div class="checkbox-area">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" class="hidden"
+                                                    value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
+                                                    name="checkbox" wire:model.defer="Eprofiles">
+                                                <span
+                                                    class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
+                                                        alt=""
+                                                        class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                                <span
+                                                    class="text-slate-500 dark:text-slate-400 text-sm leading-6">{{ $COMM_PROFILE->title }}</span>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <!-- Modal footer -->
+                            <div
+                                class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="setProfiles" data-bs-dismiss="modal"
+                                    class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="setProfiles">Submit</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                        wire:loading wire:target="setProfiles"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
 
-                            </button>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
 
         {{-- statusesSection --}}
         @if ($statusesSection)
@@ -892,7 +913,7 @@
                                     @endforeach
 
                                 </div>
-                  
+
                                 <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                     <thead class="bg-slate-200 dark:bg-slate-700">
                                         <tr>
@@ -1037,6 +1058,59 @@
                     </div>
                 </div>
             </div>
+        @endif
+
+        @if ($dateSection)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+                tabindex="-1" aria-labelledby="dateFilterModal" aria-modal="true" role="dialog"
+                style="display: block;">
+                <div class="modal-dialog relative w-auto pointer-events-none">
+                    <div
+                        class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div
+                                class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white">
+                                    Select Payment Date Range
+                                </h3>
+                                <button wire:click="toggleDateFilter" type="button"
+                                    class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="form-label">From Date</label>
+                                        <input type="date" class="form-control" wire:model="Edate_from">
+                                    </div>
+                                    <div>
+                                        <label class="form-label">To Date</label>
+                                        <input type="date" class="form-control" wire:model="Edate_to">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal footer -->
+                            <div
+                                class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="setDateFilter" type="button" class="btn btn-dark">
+                                    <span wire:loading.remove wire:target="setDateFilter">Apply</span>
+                                    <iconify-icon class="text-xl spin-slow" wire:loading wire:target="setDateFilter"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-backdrop fade show"></div>
         @endif
 
     </div>

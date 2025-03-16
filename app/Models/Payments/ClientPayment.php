@@ -90,6 +90,8 @@ class ClientPayment extends Model
         $sortColomn = null,
         $sortDirection = 'asc',
         $types = [],
+        $payment_date_from = null,
+        $payment_date_to = null,
     ) {
         $payments = self::report(
             $is_renewal,
@@ -106,6 +108,8 @@ class ClientPayment extends Model
             $sortColomn,
             $sortDirection,
             $types,
+            $payment_date_from,
+            $payment_date_to,
         )->get();
 
         $template = IOFactory::load(resource_path('import/client_payment_report.xlsx'));
@@ -386,7 +390,7 @@ class ClientPayment extends Model
     }
 
     ///scopes
-    public function scopeReport($query, $is_renewal = null, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc', array $types = [])
+    public function scopeReport($query, $is_renewal = null, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, Carbon $issued_from = null, Carbon $issued_to = null, $selectedCompany = null, $searchText = null, $sales_out_ids = null, $filteredStatus = null, $sortColomn = null, $sortDirection = 'asc', array $types = [], $payment_date_from = null, $payment_date_to = null)
     {
         $query->userData(states: $filteredStatus, searchText: $searchText)
             ->when($is_renewal, function ($q, $v) {
@@ -404,6 +408,10 @@ class ClientPayment extends Model
                 $q->where('sold_policies.expiry', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($expiry_to, function ($q, $v) {
                 $q->where('sold_policies.expiry', "<=", $v->format('Y-m-d 23:59:59'));
+            })->when($payment_date_from, function ($q, $v) {
+                $q->where('client_payments.payment_date', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($payment_date_to, function ($q, $v) {
+                $q->where('client_payments.payment_date', "<=", $v->format('Y-m-d 23:59:59'));
             })
             ->when($selectedCompany, fn($q) => $q->byCompany($selectedCompany->id))
             ->when($sales_out_ids, fn($q) => $q->bySalesOut($sales_out_ids))

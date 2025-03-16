@@ -62,6 +62,36 @@ class ClientPaymentsReport extends Component
     public $sales_out_ids = [];
     public $Esales_out_ids = [];
 
+        // Add date filter properties
+        public $dateSection = false;
+        public $date_from;
+        public $date_to;
+        public $Edate_from;
+        public $Edate_to;
+
+        
+    public function toggleDateFilter()
+    {
+        $this->dateSection = !$this->dateSection;
+        if ($this->dateSection) {
+            $this->Edate_from = $this->date_from ? Carbon::parse($this->date_from)->toDateString() : null;
+            $this->Edate_to = $this->date_to ? Carbon::parse($this->date_to)->toDateString() : null;
+        }
+    }
+
+    public function setDateFilter()
+    {
+        $this->date_from = $this->Edate_from ? Carbon::parse($this->Edate_from) : null;
+        $this->date_to = $this->Edate_to ? Carbon::parse($this->Edate_to) : null;
+        $this->dateSection = false;
+    }
+
+    public function clearDateFilter()
+    {
+        $this->date_from = null;
+        $this->date_to = null;
+    }
+
     public function sortByColomn($colomn)
     {
         $this->sortColomn = $colomn;
@@ -353,7 +383,11 @@ class ClientPaymentsReport extends Component
             $this->sortColomn,
             $this->sortDirection,
             $this->types,
-        )->with('sold_policy.active_sales_comms', 'sold_policy.active_sales_comms.comm_profile');
+            $this->date_from,
+            $this->date_to,
+        )
+        ->when($this->date_from || $this->date_to, fn($q) => $q->byDateRange($this->date_from, $this->date_to))
+        ->with('sold_policy.active_sales_comms', 'sold_policy.active_sales_comms.comm_profile');
         $payments =    $payments->paginate(50);
 
         if ($this->commProfilesSection) {
