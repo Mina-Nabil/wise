@@ -294,7 +294,7 @@ class ClientPaymentsReport extends Component
         $this->sales_out_ids = [];
     }
 
-    public function clearrenwal()
+    public function clearrenewal()
     {
         $this->is_renewal = null;
     }
