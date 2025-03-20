@@ -16,6 +16,7 @@ class OutstandingSoldPolicyIndex extends Component
     use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
 
     public $search;
+    public $searchCompany;
     public $outstandingType = 'all';
 
     //policy start filter
@@ -235,7 +236,9 @@ class OutstandingSoldPolicyIndex extends Component
 
         return view('livewire.outstanding-sold-policy-index', [
             'soldPolicies' => $soldPolicies,
-            'companies' =>  Company::all()
+            'companies' =>  Company::when($this->searchCompany, function ($query) {
+                return $query->where('name', 'like', '%' . $this->searchCompany . '%');
+            })->get()
         ]);
     }
 }
