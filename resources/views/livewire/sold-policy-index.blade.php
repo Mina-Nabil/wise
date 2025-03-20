@@ -120,20 +120,20 @@
                                                                                 <div class="flex flex-col gap-1">
                                                                                     @if ($policy->is_reviewed)
                                                                                         <span
-                                                                                            class="badge bg-success-500 text-white">Reviewed</span>
+                                                                                            class="badge bg-success-500 text-white bg-opacity-30">Reviewed</span>
                                                                                     @else
                                                                                         <span
-                                                                                            class="badge bg-warning-500 text-white">Not
+                                                                                            class="badge bg-warning-500 text-white bg-opacity-30">Not
                                                                                             Reviewed</span>
                                                                                     @endif
 
                                                                                     @if ($policy->is_valid_data)
                                                                                         <span
-                                                                                            class="badge bg-success-500 text-white">Valid
+                                                                                            class="badge bg-success-500 text-white bg-opacity-30">Valid
                                                                                             Data</span>
                                                                                     @else
                                                                                         <span
-                                                                                            class="badge bg-danger-500 text-white">Invalid
+                                                                                            class="badge bg-danger-500 text-white bg-opacity-30">Invalid
                                                                                             Data</span>
                                                                                     @endif
 
@@ -224,10 +224,10 @@
                                                                             </div>
                                                                         </td>
                                                                         <td class="table-td">
-                                                                            @if ($policy->is_valid)
+                                                                            {{-- @if ($policy->is_valid)
                                                                                 <span
                                                                                     class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Validated</span>
-                                                                            @endif
+                                                                            @endif --}}
                                                                             @if ($policy->is_paid)
                                                                                 <span
                                                                                     class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Paid</span>
