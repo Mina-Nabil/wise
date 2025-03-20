@@ -240,6 +240,9 @@
                                                                         POLICY
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
+                                                                        PREM.
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
                                                                         START
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
@@ -253,6 +256,9 @@
                                                                     </th>
                                                                     @can('viewCommission',
                                                                         App\Models\Business\SoldPolicy::class)
+                                                                        <th scope="col" class="table-th ">
+                                                                            COMM.
+                                                                        </th>
                                                                         <th scope="col" class="table-th ">
                                                                             INVOICE
                                                                         </th>
@@ -287,6 +293,10 @@
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <span
+                                                                                class="block date-text">{{ number_format($policy->net_premium, 2) }} / {{ number_format($policy->gross_premium, 2) }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span
                                                                                 class="block date-text">{{ \Carbon\Carbon::parse($policy->start)->format('d-m-Y') }}</span>
                                                                         </td>
                                                                         <td class="table-td">
@@ -309,6 +319,11 @@
 
                                                                         @can('viewCommission',
                                                                             App\Models\Business\SoldPolicy::class)
+                                                                            <td class="table-td">
+                                                                                <span
+                                                                                    class="block date-text">{{ number_format($policy->after_tax_comm, 2) }} / {{ number_format($policy->total_comp_paid, 2) }}</span>
+                                                                            </td>
+
                                                                             <td class="table-td">
                                                                                 <span
                                                                                     class="block date-text">{{ $policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A' }}</span>

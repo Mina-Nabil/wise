@@ -71,7 +71,8 @@ class ClientPayment extends Model
         'due',
         'closed_by_id',
         'assigned_to',
-        'sales_out_id'
+        'sales_out_id',
+        'collected_date'
     ];
 
     ///static functions
@@ -282,12 +283,14 @@ class ClientPayment extends Model
                     $updates['note'] = $note;
                 }
                 $updates['status'] = self::PYMT_STATE_PREM_COLLECTED;
-                if($this->update($updates)){
-                    // $this->load('sold_policy');
-                    // $date = $date ?? new Carbon();
-                    // $this->sold_policy->setClientPaymentDate($date);
-                    // $this->sold_policy->generatePolicyCommissions(true);
-                    // $this->sold_policy->calculateTotalClientPayments();
+                $date = $date ?? new Carbon();
+                $updates['collected_date'] = $date->format('Y-m-d H:i');
+                if ($this->update($updates)) {
+                    $this->load('sold_policy');
+                    $this->sold_policy->setClientPaymentDate($date);
+                    $this->sold_policy->generatePolicyCommissions(true);
+                    $this->sold_policy->calculateTotalClientPayments();
+                    $this->sold_policy->updateSalesCommsPaymentInfo();
                 }
             } catch (Exception $e) {
                 report($e);
@@ -333,7 +336,7 @@ class ClientPayment extends Model
         $user = Auth::user();
         if ($this->is_paid) {
             if (!$user->can('updateIfCancelled', $this))
-             return false;
+                return false;
         } else {
             if (!$user->can('update', $this)) return false;
         }

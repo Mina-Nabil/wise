@@ -195,7 +195,7 @@ class SalesComm extends Model
         if ($this->is_direct) {
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
-                $comm_disc = $this->sold_policy->discount;
+                $comm_disc = $this->sold_policy->discount + $this->sold_policy->penalty_amount;
             } else {
                 $from_amount -= $this->sold_policy->sales_out_comm;
             }

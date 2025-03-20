@@ -63,6 +63,13 @@ class SoldPolicyIndex extends Component
     public $newPolicySection = false;
     public $isPaidCB = 'all';
 
+    // Add review modal properties
+    public $reviewModal = false;
+    public $policyToReview = null;
+    public $reviewStatus = false;
+    public $reviewValidData = false;
+    public $reviewComment = null;
+
     protected $queryString = [
         'startDate' => ['except' => ''],
         'endDate' => ['except' => ''],
@@ -247,5 +254,51 @@ class SoldPolicyIndex extends Component
                 'PAYMENT_FREQS' => $PAYMENT_FREQS,
             ]
         );
+    }
+
+    // Add review modal methods
+    public function openReviewModal($policyId)
+    {
+        $this->policyToReview = SoldPolicy::find($policyId);
+        if ($this->policyToReview) {
+            $this->reviewModal = true;
+            $this->reviewStatus = $this->policyToReview->is_reviewed ?? false;
+            $this->reviewValidData = $this->policyToReview->is_valid_data ?? false;
+            $this->reviewComment = $this->policyToReview->review_comment;
+        }
+    }
+    
+    public function closeReviewModal()
+    {
+        $this->reviewModal = false;
+        $this->policyToReview = null;
+        $this->reviewStatus = false;
+        $this->reviewValidData = false;
+        $this->reviewComment = null;
+    }
+    
+    public function saveReview()
+    {
+        if (!$this->policyToReview) {
+            $this->alert('failed', 'Policy not found');
+            return;
+        }
+        
+        $this->validate([
+            'reviewComment' => 'nullable|string|max:500',
+        ]);
+        
+        $res = $this->policyToReview->setIsReviewed(
+            $this->reviewStatus, 
+            $this->reviewValidData, 
+            $this->reviewComment
+        );
+        
+        if ($res !== false) {
+            $this->closeReviewModal();
+            $this->alert('success', 'Review status updated successfully!');
+        } else {
+            $this->alert('failed', 'You do not have permission to review this policy.');
+        }
     }
 }

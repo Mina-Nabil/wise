@@ -104,7 +104,11 @@ class SoldPolicy extends Model
         'sales_out_comm',
         'renewal_policy_id',
         'is_penalized',
-        'delivery_type'
+        'delivery_type',
+        'is_reviewed',
+        'is_valid_data',
+        'review_comment',
+        'reviewed_at'
     ];
 
 
@@ -171,7 +175,8 @@ class SoldPolicy extends Model
                     $tmp_base_value = $conf->calculation_type == GrossCalculation::TYPE_VALUE ?
                         $conf->value : (($conf->value / 100) * $this->net_premium);
                     if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
-                        $tmp_base_value = $tmp_base_value - (($conf->penalty_percent / 100) * $tmp_base_value);
+                        $this->setClientPaymentDate = $conf->penalty_percent * $tmp_base_value;
+                        $tmp_base_value = $tmp_base_value - $this->penalty_amount;
                         $this->is_penalized = true;
                         $this->save();
                     } else {
@@ -943,6 +948,19 @@ class SoldPolicy extends Model
             AppLog::error("Can't Set watchers", $e->getMessage(), $this);
             return false;
         }
+    }
+
+    public function setIsReviewed($is_reviewed, $is_valid_data, $comment = null)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('review', $this)) return false;
+
+        $this->is_reviewed = $is_reviewed;
+        $this->reviewed_at = Carbon::now()->format('Y-m-d H:i');
+        $this->is_valid_data = $is_valid_data;
+        $this->review_comment = $comment;
+        $this->save();
     }
 
     public function cancelSoldPolicy()
@@ -1895,24 +1913,24 @@ class SoldPolicy extends Model
             })
             ->when($payment_from && $payment_to, function ($q) use ($payment_from, $payment_to) {
                 $q->whereNotNull('client_payment_date')
-                  ->whereBetween('client_payment_date', [
-                      $payment_from->format('Y-m-d 00:00:00'),
-                      $payment_to->format('Y-m-d 23:59:59')
-                  ]);
+                    ->whereBetween('client_payment_date', [
+                        $payment_from->format('Y-m-d 00:00:00'),
+                        $payment_to->format('Y-m-d 23:59:59')
+                    ]);
             })
             ->when($invoice_payment_from && $invoice_payment_to, function ($q) use ($invoice_payment_from, $invoice_payment_to) {
-                $q->whereHas('company_comm_payments', function($query) use ($invoice_payment_from, $invoice_payment_to) {
+                $q->whereHas('company_comm_payments', function ($query) use ($invoice_payment_from, $invoice_payment_to) {
                     $query->whereNotNull('payment_date')
-                          ->whereBetween('payment_date', [
-                              $invoice_payment_from->format('Y-m-d 00:00:00'),
-                              $invoice_payment_to->format('Y-m-d 23:59:59')
-                          ]);
+                        ->whereBetween('payment_date', [
+                            $invoice_payment_from->format('Y-m-d 00:00:00'),
+                            $invoice_payment_to->format('Y-m-d 23:59:59')
+                        ]);
                 });
             })
-            ->when(!is_null($has_invoice), function($q) use ($has_invoice) {
+            ->when(!is_null($has_invoice), function ($q) use ($has_invoice) {
                 $q->hasInvoice($has_invoice);
             })
-            ->when(!is_null($invoice_paid), function($q) use ($invoice_paid) {
+            ->when(!is_null($invoice_paid), function ($q) use ($invoice_paid) {
                 $q->invoicePaid($invoice_paid);
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
@@ -2239,11 +2257,11 @@ class SoldPolicy extends Model
     public function scopeHasInvoice($query, $hasInvoice = true)
     {
         if ($hasInvoice) {
-            return $query->whereHas('company_comm_payments', function($q) {
+            return $query->whereHas('company_comm_payments', function ($q) {
                 $q->whereNotNull('invoice_id');
             });
         } else {
-            return $query->whereDoesntHave('company_comm_payments', function($q) {
+            return $query->whereDoesntHave('company_comm_payments', function ($q) {
                 $q->whereNotNull('invoice_id');
             });
         }
@@ -2252,14 +2270,14 @@ class SoldPolicy extends Model
     public function scopeInvoicePaid($query, $isPaid = true)
     {
         if ($isPaid) {
-            return $query->whereHas('company_comm_payments', function($q) {
+            return $query->whereHas('company_comm_payments', function ($q) {
                 $q->whereNotNull('invoice_id')
-                   ->whereNotNull('payment_date');
+                    ->whereNotNull('payment_date');
             });
         } else {
-            return $query->whereHas('company_comm_payments', function($q) {
+            return $query->whereHas('company_comm_payments', function ($q) {
                 $q->whereNotNull('invoice_id')
-                   ->whereNull('payment_date');
+                    ->whereNull('payment_date');
             });
         }
     }
