@@ -118,14 +118,27 @@
                                                                         @can('review', $policy)
                                                                             <td class="table-td">
                                                                                 <div class="flex flex-col gap-1">
-                                                                                    @if ($policy->is_reviewed)
-                                                                                        <span
-                                                                                            class="badge bg-success-500 text-slate-800 bg-opacity-30 rounded-3xl">Reviewed</span>
-                                                                                    @else
-                                                                                        <span
-                                                                                            class="badge bg-warning-500 text-slate-800 bg-opacity-30 rounded-3xl">Not
-                                                                                            Reviewed</span>
-                                                                                    @endif
+                                                                                    <div class="flex items-center gap-2">
+                                                                                        @if ($policy->is_reviewed)
+                                                                                            <span
+                                                                                                class="badge bg-success-500 text-slate-800 bg-opacity-30 rounded-3xl">Reviewed</span>
+                                                                                        @else
+                                                                                            <span
+                                                                                                class="badge bg-warning-500 text-slate-800 bg-opacity-30 rounded-3xl">Not
+                                                                                                Reviewed</span>
+                                                                                        @endif
+                                                                                        @if ($policy->review_comment)
+                                                                                            <iconify-icon
+                                                                                                id="comment-icon-{{ $policy->id }}"
+                                                                                                icon="mdi:comment-text-outline"
+                                                                                                class="text-base cursor-help"></iconify-icon>
+                                                                                                <script>
+                                                                                                    tippy('#comment-icon-{{ $policy->id }}', {
+                                                                                                        content: '{{ $policy->review_comment }}',
+                                                                                                    });
+                                                                                                </script>
+                                                                                        @endif
+                                                                                    </div>
 
                                                                                     @if ($policy->is_valid_data)
                                                                                         <span
@@ -137,14 +150,7 @@
                                                                                             Data</span>
                                                                                     @endif
 
-                                                                                    @if ($policy->review_comment)
-                                                                                        <span class="tooltip-wrapper"
-                                                                                            data-tippy-content="{{ $policy->review_comment }}">
-                                                                                            <iconify-icon
-                                                                                                icon="mdi:comment-text-outline"
-                                                                                                class="text-base cursor-help"></iconify-icon>
-                                                                                        </span>
-                                                                                    @endif
+
                                                                                 </div>
 
                                                                                 <div class="flex items-center gap-3">

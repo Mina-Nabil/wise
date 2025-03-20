@@ -22,6 +22,8 @@
 
     <!-- End : Theme CSS-->
     <script src="{{ asset('assets/js/settings.js') }}" sync></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     @auth
         {{-- Sweet Alert --}}
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
