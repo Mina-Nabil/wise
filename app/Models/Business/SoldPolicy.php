@@ -1120,13 +1120,17 @@ class SoldPolicy extends Model
         $commission_outstanding = false,
         $client_outstanding = false,
         $invoice_outstanding = false,
-        Carbon $start_from = null,
-        Carbon $start_to = null,
-        $company_ids = [],
-        $payment_from = null,
-        $payment_to = null
+        ?Carbon $start_from = null,
+        ?Carbon $start_to = null,
+        ?array $company_ids = [],
+        ?Carbon $payment_from = null,
+        ?Carbon $payment_to = null
     ) {
-        return self::outstandingPolicies(
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('viewCommission', self::class)) abort(403, 'Unauthorized');
+
+        $data = self::outstandingPolicies(
             $search,
             $commission_outstanding,
             $client_outstanding,
@@ -1137,9 +1141,38 @@ class SoldPolicy extends Model
             $payment_from,
             $payment_to
         )->get();
+
+        $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getActiveSheet();
+
+
+        $i = 2;
+        foreach ($data as $policy) {
+            $activeSheet->getCell('A' . $i)->setValue($policy->policy->company->name . ' - ' . $policy->policy->name);
+            $activeSheet->getCell('B' . $i)->setValue(number_format($policy->net_premium, 2) . ' / ' . number_format($policy->gross_premium, 2));
+            $activeSheet->getCell('C' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
+            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
+            $activeSheet->getCell('E' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
+            $activeSheet->getCell('F' . $i)->setValue($policy->policy_number);
+            $activeSheet->getCell('G' . $i)->setValue(number_format($policy->after_tax_comm, 2) . ' / ' . number_format($policy->total_comp_paid, 2));
+            $activeSheet->getCell('H' . $i)->setValue($policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A');
+            $activeSheet->getCell('I' . $i)->setValue($policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A');
+            $activeSheet->getCell('J' . $i)->setValue($policy->client->name);
+            $i++;
+        }
+        $writer = new Xlsx($newFile);
+        $file_path = self::FILES_DIRECTORY . "policies_outstanding_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function exportReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_ids = [], $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null, $is_penalized = null, Carbon $paid_from = null, Carbon $paid_to = null)
+    public static function exportReport(?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?string $line_of_business = null, ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null)
     {
         $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, $paid_from, $paid_to)->get();
 
