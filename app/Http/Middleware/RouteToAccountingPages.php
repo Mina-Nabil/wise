@@ -25,6 +25,7 @@ class RouteToAccountingPages
             && $loggedInUser->is_finance_assistant 
             && !str_starts_with($request->path(), 'accounts')
             && !str_starts_with($request->path(), 'reports')
+            && !str_starts_with($request->path(), 'outstanding-sold-policies')
             && !str_starts_with($request->path(), 'livewire')
             && !str_starts_with($request->path(), 'logout')
         )
