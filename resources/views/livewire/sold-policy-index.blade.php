@@ -114,55 +114,55 @@
                                                             <tbody
                                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                                 @foreach ($soldPolicies as $policy)
-                                                                    @can('review', $policy)
-                                                                        <td class="table-td">
-                                                                            <div class="flex flex-col gap-1">
-                                                                                @if ($policy->is_reviewed)
-                                                                                    <span
-                                                                                        class="badge bg-success-500 text-white">Reviewed</span>
-                                                                                @else
-                                                                                    <span
-                                                                                        class="badge bg-warning-500 text-white">Not
-                                                                                        Reviewed</span>
-                                                                                @endif
+                                                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                        @can('review', $policy)
+                                                                            <td class="table-td">
+                                                                                <div class="flex flex-col gap-1">
+                                                                                    @if ($policy->is_reviewed)
+                                                                                        <span
+                                                                                            class="badge bg-success-500 text-white">Reviewed</span>
+                                                                                    @else
+                                                                                        <span
+                                                                                            class="badge bg-warning-500 text-white">Not
+                                                                                            Reviewed</span>
+                                                                                    @endif
 
-                                                                                @if ($policy->is_valid_data)
-                                                                                    <span
-                                                                                        class="badge bg-success-500 text-white">Valid
-                                                                                        Data</span>
-                                                                                @else
-                                                                                    <span
-                                                                                        class="badge bg-danger-500 text-white">Invalid
-                                                                                        Data</span>
-                                                                                @endif
+                                                                                    @if ($policy->is_valid_data)
+                                                                                        <span
+                                                                                            class="badge bg-success-500 text-white">Valid
+                                                                                            Data</span>
+                                                                                    @else
+                                                                                        <span
+                                                                                            class="badge bg-danger-500 text-white">Invalid
+                                                                                            Data</span>
+                                                                                    @endif
 
-                                                                                @if ($policy->review_comment)
-                                                                                    <span class="tooltip-wrapper"
-                                                                                        data-tippy-content="{{ $policy->review_comment }}">
+                                                                                    @if ($policy->review_comment)
+                                                                                        <span class="tooltip-wrapper"
+                                                                                            data-tippy-content="{{ $policy->review_comment }}">
+                                                                                            <iconify-icon
+                                                                                                icon="mdi:comment-text-outline"
+                                                                                                class="text-base cursor-help"></iconify-icon>
+                                                                                        </span>
+                                                                                    @endif
+                                                                                </div>
+
+                                                                                <div class="flex items-center gap-3">
+                                                                                    <button
+                                                                                        wire:click="openReviewModal({{ $policy->id }})"
+                                                                                        class="btn btn-sm btn-outline-primary flex items-center"
+                                                                                        title="{{ $policy->is_reviewed ? 'Edit Review' : 'Review Policy' }}">
                                                                                         <iconify-icon
-                                                                                            icon="mdi:comment-text-outline"
-                                                                                            class="text-base cursor-help"></iconify-icon>
-                                                                                    </span>
-                                                                                @endif
-                                                                            </div>
+                                                                                            icon="mdi:clipboard-check-outline"
+                                                                                            class="text-base"></iconify-icon>
+                                                                                        <span
+                                                                                            class="ml-1">{{ $policy->is_reviewed ? 'Edit Review' : 'Review' }}</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </td>
+                                                                        @endcan
 
-                                                                            <div class="flex items-center gap-3">
-                                                                                <button
-                                                                                    wire:click="openReviewModal({{ $policy->id }})"
-                                                                                    class="btn btn-sm btn-outline-primary flex items-center"
-                                                                                    title="{{ $policy->is_reviewed ? 'Edit Review' : 'Review Policy' }}">
-                                                                                    <iconify-icon
-                                                                                        icon="mdi:clipboard-check-outline"
-                                                                                        class="text-base"></iconify-icon>
-                                                                                    <span
-                                                                                        class="ml-1">{{ $policy->is_reviewed ? 'Edit Review' : 'Review' }}</span>
-                                                                                </button>
-                                                                            </div>
-                                                                        </td>
-                                                                    @endcan
 
-                                                                    <tr
-                                                                        class="even:bg-slate-50 dark:even:bg-slate-700">
                                                                         <td class="table-td">
                                                                             <div class="flex-1 text-start">
                                                                                 <h4
@@ -241,16 +241,17 @@
                                                                                     class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Expired</span>
                                                                             @endif
                                                                             @if ($policy->is_penalized)
-                                                                            <span class="badge bg-danger-500 text-white capitalize">Penalty</span>
-                                                                        @endif
-                                                                        @if ($policy->cancellation_time)
-                                                                            <span
-                                                                                class="badge bg-danger-500 text-slate-800 
+                                                                                <span
+                                                                                    class="badge bg-danger-500 text-white capitalize">Penalty</span>
+                                                                            @endif
+                                                                            @if ($policy->cancellation_time)
+                                                                                <span
+                                                                                    class="badge bg-danger-500 text-slate-800 
                                                                         text-danger-500 bg-opacity-30 capitalize rounded-3xl">Cancelled
-                                                                                on:
-                                                                                {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y') }}
-                                                                            </span>
-                                                                        @endif
+                                                                                    on:
+                                                                                    {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y') }}
+                                                                                </span>
+                                                                            @endif
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
