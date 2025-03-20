@@ -1142,7 +1142,7 @@ class SoldPolicy extends Model
             $payment_to
         )->get();
 
-        $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
+        $template = IOFactory::load(resource_path('import/sold_policies_outstanding_report.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
         }
