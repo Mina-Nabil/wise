@@ -1813,6 +1813,7 @@ class SoldPolicy extends Model
         $is_commission_outstanding = false, //Client Payment Outstanding
         $is_client_outstanding = false, //Policy Outstanding
         $is_invoice_outstanding = false, //Invoice Outstanding
+        $group_data = true
     ) {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -1821,7 +1822,9 @@ class SoldPolicy extends Model
             ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id')
             ->leftjoin('offers', 'sold_policies.offer_id', '=', 'offers.id')
             ->leftjoin('client_payments', 'client_payments.sold_policy_id', '=', 'sold_policies.id')
-            ->groupBy('sold_policies.id')
+            ->when($group_data, function ($q) {
+                $q->groupBy('sold_policies.id');
+            })
             ->orderByDesc('sold_policies.created_at');
 
         // if (!($loggedInUser->is_admin
@@ -1935,14 +1938,14 @@ class SoldPolicy extends Model
         $invoice_payment_from = null,
         $invoice_payment_to = null,
         $invoice_paid = null,
-        bool $with_rels = true
+        bool $group_data = true
     ) {
         return $query->userData(
             searchText: $search,
             is_commission_outstanding: $commission_outstanding,
             is_client_outstanding: $client_outstanding,
             is_invoice_outstanding: $invoice_outstanding,
-            with_rels: $with_rels
+            group_data: $group_data
         )
             ->when($start_from && $start_to, function ($q) use ($start_from, $start_to) {
                 $q->fromTo($start_from, $start_to);
@@ -1973,7 +1976,7 @@ class SoldPolicy extends Model
             ->with('last_company_comm_payment');
     }
 
-    public function scopeReport($query, ?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?string $line_of_business = null, ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancelled_from = null, ?Carbon $cancelled_to = null, bool $with_rels = true)
+    public function scopeReport($query, ?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?string $line_of_business = null, ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancelled_from = null, ?Carbon $cancelled_to = null)
     {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
@@ -2047,9 +2050,9 @@ class SoldPolicy extends Model
                 $qq->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
                     ->whereIn('sales_comms.comm_profile_id', $comm_profile_ids);
             });
-        if ($with_rels) {
-            $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
-        }
+
+        $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
+
         return $query;
     }
 
