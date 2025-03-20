@@ -2081,6 +2081,11 @@ class SoldPolicy extends Model
         );
     }
 
+    public function scopeUnpaidSum($query)
+    {
+        return $query->selectRaw('SUM(after_tax_comm - total_comp_paid) as unpaid_sum');
+    }
+
     public function scopeByPolicyNumber($query, $number)
     {
         return $query->where('policy_number', $number);

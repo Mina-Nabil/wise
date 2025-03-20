@@ -248,7 +248,7 @@ class OutstandingSoldPolicyIndex extends Component
             $this->invoice_payment_from,
             $this->invoice_payment_to,
             $this->invoicePaidFilter
-        )->sum('total_policy_comm - total_comp_paid');
+        )->unpaidSum()->first()->unpaid_sum;
 
         $totalUnpaidPolicies = number_format($totalUnpaidPolicies, 2);
 
