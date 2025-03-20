@@ -731,12 +731,12 @@
                                     <div class="flex items-center space-x-4">
                                         <label class="flex items-center cursor-pointer">
                                             <input type="radio" class="form-radio" wire:model="reviewStatus"
-                                                value="1">
+                                                value="1" name="reviewStatus">
                                             <span class="ml-2">Reviewed</span>
                                         </label>
                                         <label class="flex items-center cursor-pointer">
                                             <input type="radio" class="form-radio" wire:model="reviewStatus"
-                                                value="0">
+                                                value="0" name="reviewStatus">
                                             <span class="ml-2">Not Reviewed</span>
                                         </label>
                                     </div>
@@ -747,12 +747,12 @@
                                     <div class="flex items-center space-x-4">
                                         <label class="flex items-center cursor-pointer">
                                             <input type="radio" class="form-radio" wire:model="reviewValidData"
-                                                value="1">
+                                                value="1" name="reviewValidData">
                                             <span class="ml-2">Valid Data</span>
                                         </label>
                                         <label class="flex items-center cursor-pointer">
                                             <input type="radio" class="form-radio" wire:model="reviewValidData"
-                                                value="0">
+                                                value="0" name="reviewValidData">
                                             <span class="ml-2">Invalid Data</span>
                                         </label>
                                     </div>
