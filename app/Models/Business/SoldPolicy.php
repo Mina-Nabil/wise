@@ -1813,7 +1813,6 @@ class SoldPolicy extends Model
         $is_commission_outstanding = false, //Client Payment Outstanding
         $is_client_outstanding = false, //Policy Outstanding
         $is_invoice_outstanding = false, //Invoice Outstanding
-        $group_data = true
     ) {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -1822,9 +1821,7 @@ class SoldPolicy extends Model
             ->leftjoin('policy_watchers', 'policy_watchers.sold_policy_id', '=', 'sold_policies.id')
             ->leftjoin('offers', 'sold_policies.offer_id', '=', 'offers.id')
             ->leftjoin('client_payments', 'client_payments.sold_policy_id', '=', 'sold_policies.id')
-            ->when($group_data, function ($q) {
-                $q->groupBy('sold_policies.id');
-            })
+            ->groupBy('sold_policies.id')
             ->orderByDesc('sold_policies.created_at');
 
         // if (!($loggedInUser->is_admin
@@ -1937,15 +1934,13 @@ class SoldPolicy extends Model
         $has_invoice = null,
         $invoice_payment_from = null,
         $invoice_payment_to = null,
-        $invoice_paid = null,
-        bool $group_data = true
+        $invoice_paid = null
     ) {
         return $query->userData(
             searchText: $search,
             is_commission_outstanding: $commission_outstanding,
             is_client_outstanding: $client_outstanding,
             is_invoice_outstanding: $invoice_outstanding,
-            group_data: $group_data
         )
             ->when($start_from && $start_to, function ($q) use ($start_from, $start_to) {
                 $q->fromTo($start_from, $start_to);
@@ -2090,7 +2085,7 @@ class SoldPolicy extends Model
 
     public function scopeUnpaidSum($query)
     {
-        return $query->selectRaw('SUM(after_tax_comm - total_comp_paid) as unpaid_sum');
+        return $query->selectRaw('SUM(SUM(after_tax_comm - total_comp_paid)) as unpaid_sum');
     }
 
     public function scopeByPolicyNumber($query, $number)
