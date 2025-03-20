@@ -234,8 +234,27 @@ class OutstandingSoldPolicyIndex extends Component
             $this->invoicePaidFilter
         )->simplePaginate(10);
 
+        $totalUnpaidPolicies = SoldPolicy::outstandingPolicies(
+            $this->search,
+            $commission_outstanding,
+            $client_outstanding,
+            $invoice_outstanding,
+            $this->start_from,
+            $this->start_to,
+            $this->company_ids,
+            $this->payment_from,
+            $this->payment_to,
+            $this->hasInvoiceFilter,
+            $this->invoice_payment_from,
+            $this->invoice_payment_to,
+            $this->invoicePaidFilter
+        )->sum('total_policy_comm - total_comp_paid');
+
+        $totalUnpaidPolicies = number_format($totalUnpaidPolicies, 2);
+
         return view('livewire.outstanding-sold-policy-index', [
             'soldPolicies' => $soldPolicies,
+            'totalUnpaidPolicies' => $totalUnpaidPolicies,
             'companies' =>  Company::when($this->searchCompany, function ($query) {
                 return $query->where('name', 'like', '%' . $this->searchCompany . '%');
             })->get()

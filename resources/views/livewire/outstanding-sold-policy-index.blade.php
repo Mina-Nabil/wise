@@ -6,6 +6,11 @@
                     Outstanding Sold Policies
                 </h4>
             </div>
+            <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
+                <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
+                    Total Unpaid Policies: {{ $totalUnpaidPolicies }}
+                </h4>
+            </div>
         </div>
 
         <div class="flex justify-between items-center space-x-7 flex-wrap mb-5">
