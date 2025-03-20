@@ -1934,13 +1934,15 @@ class SoldPolicy extends Model
         $has_invoice = null,
         $invoice_payment_from = null,
         $invoice_payment_to = null,
-        $invoice_paid = null
+        $invoice_paid = null,
+        bool $with_rels = true
     ) {
         return $query->userData(
             searchText: $search,
             is_commission_outstanding: $commission_outstanding,
             is_client_outstanding: $client_outstanding,
-            is_invoice_outstanding: $invoice_outstanding
+            is_invoice_outstanding: $invoice_outstanding,
+            with_rels: $with_rels
         )
             ->when($start_from && $start_to, function ($q) use ($start_from, $start_to) {
                 $q->fromTo($start_from, $start_to);
@@ -1971,7 +1973,7 @@ class SoldPolicy extends Model
             ->with('last_company_comm_payment');
     }
 
-    public function scopeReport($query, Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_ids = [], $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, bool $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], bool $is_welcomed = null, bool $is_penalized = null, bool $is_cancelled = null, Carbon $paid_from = null, Carbon $paid_to = null, Carbon $cancelled_from = null, Carbon $cancelled_to = null)
+    public function scopeReport($query, ?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?string $line_of_business = null, ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancelled_from = null, ?Carbon $cancelled_to = null, bool $with_rels = true)
     {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
@@ -2045,7 +2047,9 @@ class SoldPolicy extends Model
                 $qq->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
                     ->whereIn('sales_comms.comm_profile_id', $comm_profile_ids);
             });
-        $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
+        if ($with_rels) {
+            $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
+        }
         return $query;
     }
 
