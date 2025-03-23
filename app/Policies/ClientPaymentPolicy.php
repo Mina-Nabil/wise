@@ -30,7 +30,7 @@ class ClientPaymentPolicy
      */
     public function view(User $user, ClientPayment $clientPayment)
     {
-        return $user->is_admin || $user->is_finance || $clientPayment->assigned_to == $user->id;
+        return $user->is_admin || $user->is_any_finance || $clientPayment->assigned_to == $user->id;
     }
 
     /**
@@ -54,7 +54,7 @@ class ClientPaymentPolicy
     public function update(User $user, ClientPayment $clientPayment)
     {
         $clientPayment->load('sold_policy');
-        return $user->is_admin || $user->is_finance || $user->id == $clientPayment->sold_policy->creator_id
+        return $user->is_admin || $user->is_any_finance || $user->id == $clientPayment->sold_policy->creator_id
             || $user->id == 12 || $user->id == $clientPayment->sold_policy->main_sales_id || $user->id == 17;
     }
 
@@ -80,7 +80,7 @@ class ClientPaymentPolicy
      */
     public function pay(User $user, ClientPayment $clientPayment)
     {
-        return $user->is_admin || $user->is_finance || $user->id == 12 || $user->id == $clientPayment->sold_policy->creator_id
+        return $user->is_admin || $user->is_any_finance || $user->id == 12 || $user->id == $clientPayment->sold_policy->creator_id
             || $user->id == $clientPayment->sold_policy->main_sales_id;
     }
 
