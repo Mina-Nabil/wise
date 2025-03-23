@@ -45,16 +45,18 @@
                                 wire:click="$emit('showConfirmation', 'Are you sure you want to delete this profile?','danger','deleteProfile')"
                                 class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
                         @endcan
+                        @can('viewAny', $profile)
+                            <button wire:click="openDownloadAccountStatement"
+                                class="btn inline-flex justify-center btn-outline-light btn-sm">Download Account
+                                Statement</button>
+                        @endcan
+
                         @can('manage', $profile)
                             <button
                                 wire:click="$emit('showConfirmation', 'Are you sure you want to refresh the profile balances?','black','refreshBalances')"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm"> Refresh Balance</button>
                             <button wire:click="openStartTargetRunSec"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
-
-                            <button wire:click="openDownloadAccountStatement"
-                                class="btn inline-flex justify-center btn-outline-light btn-sm">Download Account
-                                Statement</button>
                         @endcan
                     </div>
                 </div>
@@ -363,7 +365,7 @@
                                                                     @endif
 
                                                                     {{-- @if (($payment->is_new && !$payment->needs_approval) || $payment->is_approved) --}}
-                                                                    @if (($payment->is_new) || $payment->is_approved)
+                                                                    @if ($payment->is_new || $payment->is_approved)
                                                                         <li>
                                                                             <a wire:click="setPaidSec({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
