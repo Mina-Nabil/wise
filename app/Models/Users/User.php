@@ -329,7 +329,7 @@ class User extends Authenticatable
         return $this->type == self::TYPE_FINANCE_ASSISTANT;
     }
 
-    public function getIsFinanceUserAttribute()
+    public function getIsAnyFinanceAttribute()
     {
         return $this->type == self::TYPE_FINANCE || $this->type == self::TYPE_FINANCE_ASSISTANT;
     }
