@@ -1139,7 +1139,7 @@ class Offer extends Model
             ->leftjoin('comm_profiles', 'comm_profiles.id', '=', 'offer_comm_profiles.comm_profile_id');
 
         if (!(($loggedInUser->is_admin || $loggedInUser->id == 12) ||
-            (($loggedInUser->is_operations || $loggedInUser->is_finance) && $searchText))) {
+            (($loggedInUser->is_operations || $loggedInUser->is_finance_user) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->orwhereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('offers.creator_id', $loggedInUser->id)

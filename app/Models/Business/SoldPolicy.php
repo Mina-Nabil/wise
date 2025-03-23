@@ -1829,7 +1829,7 @@ class SoldPolicy extends Model
 
         // if (!($loggedInUser->is_admin
         //     || (($loggedInUser->is_operations || $loggedInUser->is_finance) && ($searchText || $is_expiring)))) {
-        if (!($loggedInUser->is_admin || $loggedInUser->is_operations || $loggedInUser->is_finance)) {
+        if (!($loggedInUser->is_admin || $loggedInUser->is_operations || $loggedInUser->is_finance_user)) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('users.id', $loggedInUser->id)

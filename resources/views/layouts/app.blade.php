@@ -279,7 +279,7 @@
                             </li>
                         </ul>
                     </li>
-                    @if (Auth::user()->is_admin || Auth::user()->is_hr || Auth::user()->is_finance || Auth::user()->is_operations)
+                    @if (Auth::user()->is_admin || Auth::user()->is_hr || Auth::user()->is_finance_user || Auth::user()->is_operations)
                         <li class="sidebar-menu-title">Settings</li>
                         @if (Auth::user()->is_admin || Auth::user()->is_finance)
                             <li>
