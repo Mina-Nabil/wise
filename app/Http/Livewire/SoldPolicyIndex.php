@@ -243,7 +243,7 @@ class SoldPolicyIndex extends Component
                 $endDate = Carbon::parse($this->endDate);
                 return $query->fromTo($startDate, $endDate);
             })
-            ->cursorPaginate(20);
+            ->simplePaginate(20);
             
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
 
