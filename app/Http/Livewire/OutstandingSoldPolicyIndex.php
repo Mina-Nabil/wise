@@ -198,8 +198,8 @@ class OutstandingSoldPolicyIndex extends Component
 
     public function mount()
     {
-        $this->payment_from = Carbon::now()->subMonth()->startOfMonth();
-        $this->payment_to = Carbon::now()->subMonth()->endOfMonth();
+        $this->payment_from = Carbon::now()->startOfMonth();
+        $this->payment_to = Carbon::now()->endOfMonth();
     }
 
     public function render()
