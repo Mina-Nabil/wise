@@ -62,14 +62,44 @@ class ClientPaymentsReport extends Component
     public $sales_out_ids = [];
     public $Esales_out_ids = [];
 
-        // Add date filter properties
-        public $dateSection = false;
-        public $date_from;
-        public $date_to;
-        public $Edate_from;
-        public $Edate_to;
+    // Add date filter properties
+    public $dateSection = false;
+    public $date_from;
+    public $date_to;
+    public $Edate_from;
+    public $Edate_to;
 
-        
+    // Add date filter properties
+    public $collectionDateSection = false;
+    public $collection_date_from;
+    public $collection_date_to;
+    public $Ecollection_date_from;
+    public $Ecollection_date_to;
+
+
+    public function toggleCollectionDateFilter()
+    {
+        $this->collectionDateSection = !$this->collectionDateSection;
+        if ($this->collectionDateSection) {
+            $this->Ecollection_date_from = $this->collection_date_from ? Carbon::parse($this->collection_date_from)->toDateString() : null;
+            $this->Ecollection_date_to = $this->collection_date_to ? Carbon::parse($this->collection_date_to)->toDateString() : null;
+        }
+    }
+
+    public function setCollectionDateFilter()
+    {
+        $this->collection_date_from = $this->Ecollection_date_from ? Carbon::parse($this->Ecollection_date_from) : null;
+        $this->collection_date_to = $this->Ecollection_date_to ? Carbon::parse($this->Ecollection_date_to) : null;
+        $this->collectionDateSection = false;
+    }
+
+    public function clearCollectionDateFilter()
+    {
+        $this->collection_date_from = null;
+        $this->collection_date_to = null;
+    }
+
+
     public function toggleDateFilter()
     {
         $this->dateSection = !$this->dateSection;
@@ -319,8 +349,12 @@ class ClientPaymentsReport extends Component
             collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
             $this->statuses,
             $this->sortColomn,
-            $this->sortDirection, 
+            $this->sortDirection,
             $this->types,
+            $this->payment_date_from,
+            $this->payment_date_to,
+            $this->collection_date_from,
+            $this->collection_date_to,
         );
     }
 
@@ -386,8 +420,8 @@ class ClientPaymentsReport extends Component
             $this->date_from,
             $this->date_to,
         )
-        ->when($this->date_from || $this->date_to, fn($q) => $q->byDateRange($this->date_from, $this->date_to))
-        ->with('sold_policy.active_sales_comms', 'sold_policy.active_sales_comms.comm_profile');
+            ->when($this->date_from || $this->date_to, fn($q) => $q->byDateRange($this->date_from, $this->date_to))
+            ->with('sold_policy.active_sales_comms', 'sold_policy.active_sales_comms.comm_profile');
         $payments =    $payments->paginate(50);
 
         if ($this->commProfilesSection) {
