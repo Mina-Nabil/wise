@@ -265,7 +265,7 @@ class ClientPayment extends Model
         throw new Exception("Payment can only be set to new if it was previously collected");
     }
 
-    public function setAsPremiumCollected($doc_url = null, string $note = null)
+    public function setAsPremiumCollected($doc_url = null, ?string $note = null)
     {
         /** @var User */
         $user = Auth::user();

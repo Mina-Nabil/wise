@@ -357,6 +357,9 @@
                                                         <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                             #
                                                         </th>
+                                                        <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                                            Issue
+                                                        </th>
 
                                                         <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                             Policy Name
@@ -379,6 +382,7 @@
                                                     @forelse ($available_policies as $policy)
                                                         <tr>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->policy_number }}</td>
+                                                            <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->created_at->format('d/m/Y') }}</td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->policy->name }}</td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">{{ $policy->commission_left }}</td>
                                                             <td class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
