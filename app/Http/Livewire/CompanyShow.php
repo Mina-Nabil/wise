@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
+use App\Models\Insurance\InvoiceExtra;
 use App\Models\Payments\Invoice;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
@@ -41,7 +42,17 @@ class CompanyShow extends Component
     public $companyInfoNote;
     public $editInfoSec;
 
-    protected $listeners = ['deleteInvoice', 'confirmInvoice']; //functions need confirmation
+    // Invoice extras properties
+    public $newExtraSection = false;
+    public $editExtraSection = false;
+    public $extraTitle;
+    public $extraAmount;
+    public $extraNote;
+    public $extraId;
+    public $confirmDeleteExtraId = null;
+    public $selectedExtras = []; // Array to store selected extra IDs
+
+    protected $listeners = ['deleteInvoice', 'confirmInvoice', 'deleteExtra']; //functions need confirmation
 
     public $newEmailSec = false;
     public $type = CompanyEmail::TYPES[0];
@@ -56,6 +67,117 @@ class CompanyShow extends Component
 
     public $Emailtypes = CompanyEmail::TYPES;
 
+    // Invoice Extras functions
+    public function openNewExtraSection()
+    {
+        $this->newExtraSection = true;
+        $this->resetExtraFields();
+    }
+
+    public function closeNewExtraSection()
+    {
+        $this->newExtraSection = false;
+        $this->resetExtraFields();
+    }
+
+    public function resetExtraFields()
+    {
+        $this->extraTitle = '';
+        $this->extraAmount = '';
+        $this->extraNote = '';
+        $this->extraId = null;
+    }
+
+    public function addExtra()
+    {
+        $this->validate([
+            'extraTitle' => 'required|string|max:255',
+            'extraAmount' => 'required|numeric|min:0',
+            'extraNote' => 'nullable|string',
+        ]);
+
+        $res = InvoiceExtra::createNew(
+            $this->company,
+            $this->extraTitle,
+            $this->extraAmount,
+            $this->extraNote
+        );
+
+        if ($res) {
+            $this->closeNewExtraSection();
+            $this->alert('success', 'Extra added successfully');
+        } else {
+            $this->alert('failed', 'Failed to add extra');
+        }
+    }
+
+    public function openEditExtraSection($id)
+    {
+        $extra = InvoiceExtra::find($id);
+        if ($extra) {
+            $this->extraId = $extra->id;
+            $this->extraTitle = $extra->title;
+            $this->extraAmount = $extra->amount;
+            $this->extraNote = $extra->note;
+            $this->editExtraSection = true;
+        }
+    }
+
+    public function closeEditExtraSection()
+    {
+        $this->editExtraSection = false;
+        $this->resetExtraFields();
+    }
+
+    public function updateExtra()
+    {
+        $this->validate([
+            'extraTitle' => 'required|string|max:255',
+            'extraAmount' => 'required|numeric|min:0',
+            'extraNote' => 'nullable|string',
+        ]);
+
+        $extra = InvoiceExtra::find($this->extraId);
+        if ($extra) {
+            $res = $extra->editInfo(
+                $this->extraTitle,
+                $this->extraAmount,
+                $this->extraNote
+            );
+
+            if ($res) {
+                $this->closeEditExtraSection();
+                $this->alert('success', 'Extra updated successfully');
+            } else {
+                $this->alert('failed', 'Failed to update extra');
+            }
+        }
+    }
+
+    public function confirmDeleteExtra($id)
+    {
+        $this->confirmDeleteExtraId = $id;
+    }
+
+    public function cancelDeleteExtra()
+    {
+        $this->confirmDeleteExtraId = null;
+    }
+
+    public function deleteExtra()
+    {
+        $extra = InvoiceExtra::find($this->confirmDeleteExtraId);
+        if ($extra) {
+            $res = $extra->deleteExtra();
+
+            if ($res) {
+                $this->confirmDeleteExtraId = null;
+                $this->alert('success', 'Extra deleted successfully');
+            } else {
+                $this->alert('failed', 'Cannot delete extra that is linked to an invoice');
+            }
+        }
+    }
 
     public function openConfirmInvoice($id = true)
     {
@@ -170,11 +292,13 @@ class CompanyShow extends Component
     public function openNewInvoiceSec()
     {
         $this->newInvoiceSection = true;
+        $this->selectedExtras = []; // Reset selected extras when opening new invoice
     }
 
     public function closeNewInvoiceSec()
     {
         $this->newInvoiceSection = false;
+        $this->selectedExtras = []; // Reset selected extras when closing
     }
 
     protected $rules = [
@@ -216,10 +340,10 @@ class CompanyShow extends Component
             ],
         );
 
-        $res = Invoice::newInvoice($this->company->id, $this->serial, $this->gross_total, $this->sold_policies_entries);
+        $res = Invoice::newInvoice($this->company->id, $this->serial, $this->gross_total, $this->sold_policies_entries, $this->selectedExtras);
 
         if ($res) {
-            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries']);
+            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries', 'selectedExtras']);
             $this->closeNewInvoiceSec();
             $this->alert('success', 'invoice added');
             $this->mount($this->company->id, false);
@@ -273,11 +397,21 @@ class CompanyShow extends Component
         $this->mount($this->company->id, false);
     }
 
+    public function updatedSelectedExtras()
+    {
+        $this->updateTotal();
+    }
+    
+
     public function updateTotal()
     {
         $this->net_total = 0;
         foreach ($this->sold_policies_entries as $e) {
             $this->net_total += is_numeric($e['amount']) ? $e['amount'] : 0;
+        }
+        foreach ($this->selectedExtras as $e) {
+            $extra = InvoiceExtra::find($e);
+            $this->net_total += is_numeric($extra->amount) ? $extra->amount : 0;
         }
         $this->updatedNetTotal();
     }
@@ -305,6 +439,11 @@ class CompanyShow extends Component
         $companyEmails = Company::find($this->company->id)
             ->emails()
             ->paginate(20);
+            
+        $invoiceExtras = Company::find($this->company->id)
+            ->invoiceExtras()
+            ->paginate(20);
+            
         $soldPolicies = []; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
 
 
@@ -324,6 +463,7 @@ class CompanyShow extends Component
             'soldPolicies' => $soldPolicies,
             'companyEmails' => $companyEmails,
             'available_policies' => $this->available_policies,
+            'invoiceExtras' => $invoiceExtras,
         ]);
     }
 }

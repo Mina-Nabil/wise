@@ -4,6 +4,7 @@ namespace App\Models\Payments;
 
 use App\Models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
+use App\Models\Insurance\InvoiceExtra;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -34,7 +35,7 @@ class Invoice extends Model
 
     ///static functions
     /** @param  array $sold_policies_entries should contain an array of associated arrays [ 'id' => ? , 'amount' => ?, 'pymnt_perm' => ? ]  */
-    public static function newInvoice($company_id, $serial, $gross_total, $sold_policies_entries = [])
+    public static function newInvoice($company_id, $serial, $gross_total, $sold_policies_entries = [], $extras_ids = [])
     {
         $newInvoice = new self([
             "company_id"    =>  $company_id,
@@ -46,13 +47,14 @@ class Invoice extends Model
         ]);
         try {
 
-            DB::transaction(function () use ($newInvoice, $sold_policies_entries, $serial) {
+            DB::transaction(function () use ($newInvoice, $sold_policies_entries, $serial, $extras_ids) {
                 $newInvoice->save();
                 foreach ($sold_policies_entries as $sp) {
                     /** @var SoldPolicy */
                     $soldPolicy = SoldPolicy::find($sp['id']);
                     $soldPolicy->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $sp['amount'], "added automatically from invoice#$serial", $newInvoice->id, $sp['pymnt_perm']);
                 }
+                InvoiceExtra::whereIn('id', $extras_ids)->update(['invoice_id' => $newInvoice->id]);
             });
             AppLog::info("Invoice created", loggable: $newInvoice);
             return $newInvoice;
@@ -149,7 +151,7 @@ class Invoice extends Model
 
     public function getPaymentDateAttribute()
     {
-        if($this->commissions()->exists()){
+        if ($this->commissions()->exists()) {
             return $this->commissions()->first()->payment_date ? Carbon::parse($this->commissions()->first()->payment_date)->format('d-M-y') : null;
         }
         return null;
@@ -169,5 +171,10 @@ class Invoice extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function extras(): HasMany
+    {
+        return $this->hasMany(InvoiceExtra::class);
     }
 }

@@ -139,4 +139,8 @@ class Company extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+    public function invoiceExtras(): HasMany
+    {
+        return $this->hasMany(InvoiceExtra::class)->orderBy('id', 'desc');
+    }
 }
