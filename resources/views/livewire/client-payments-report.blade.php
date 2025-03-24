@@ -315,6 +315,10 @@
                                 @endif
 
                                 <th scope="col" class="table-th">
+                                    Collection
+                                </th>
+
+                                <th scope="col" class="table-th">
                                     Amount
                                 </th>
 
@@ -371,6 +375,9 @@
                                         </td>
                                     @endif
 
+                                    <td class="table-td">
+                                        <p><b>{{$payment->collection_date->format('d-m-Y') }} EGP
+                                    </td>
                                     <td class="table-td">
                                         <p><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
                                     </td>

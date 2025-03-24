@@ -75,22 +75,28 @@ class ClientPayment extends Model
         'collected_date'
     ];
 
+
+    protected $casts = [
+        'collected_date' => 'datetime',
+        // 'payment_date' => 'datetime',
+    ];
+
     ///static functions
     public static function exportReport(
-        bool $is_renewal = null,
-        Carbon $start_from = null,
-        Carbon $start_to = null,
-        Carbon $expiry_from = null,
-        Carbon $expiry_to = null,
-        Carbon $issued_from = null,
-        Carbon $issued_to = null,
-        $selectedCompany = null,
-        $searchText = null,
-        $sales_out_ids = null,
-        $filteredStatus = null,
-        $sortColomn = null,
-        $sortDirection = 'asc',
-        $types = [],
+        ?bool $is_renewal = null,
+        ?Carbon $start_from = null,
+        ?Carbon $start_to = null,
+        ?Carbon $expiry_from = null,
+        ?Carbon $expiry_to = null,
+        ?Carbon $issued_from = null,
+        ?Carbon $issued_to = null,
+        ?string $selectedCompany = null,
+        ?string $searchText = null,
+        ?array $sales_out_ids = null,
+        ?array $filteredStatus = null,
+        ?string $sortColomn = null,
+        ?string $sortDirection = 'asc',
+        ?array $types = [],
         $payment_date_from = null,
         $payment_date_to = null,
     ) {
@@ -330,7 +336,7 @@ class ClientPayment extends Model
         }
     }
 
-    public function setAsCancelled(Carbon $date = null)
+    public function setAsCancelled(?Carbon $date = null)
     {
         /** @var User */
         $user = Auth::user();
