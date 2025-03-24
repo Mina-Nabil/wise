@@ -1975,7 +1975,7 @@ class SoldPolicy extends Model
                 $q->invoicePaid($invoice_paid);
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
-            ->with('last_company_comm_payment');
+            ->with('last_company_comm_payment', 'last_company_comm_payment.invoice');
     }
 
     public function scopeReport($query, ?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?string $line_of_business = null, ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancelled_from = null, ?Carbon $cancelled_to = null)

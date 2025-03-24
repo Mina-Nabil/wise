@@ -7,11 +7,11 @@
                 </h4>
             </div>
             @can('viewCommission', App\Models\Business\SoldPolicy::class)
-            <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
-                <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-                    Total Unpaid Policies: {{ $totalUnpaidPolicies }}
-                </h4>
-            </div>
+                <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
+                    <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
+                        Total Unpaid Policies: {{ $totalUnpaidPolicies }}
+                    </h4>
+                </div>
             @endcan
         </div>
 
@@ -247,7 +247,10 @@
                                                                         POLICY
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        PREM.
+                                                                        GROSS
+                                                                    </th>
+                                                                    <th scope="col" class="table-th ">
+                                                                        NET
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
                                                                         START
@@ -267,10 +270,16 @@
                                                                             COMM.
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
+                                                                            PAID
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
                                                                             INVOICE
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
-                                                                            INVOICE PYMT
+                                                                            #
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
+                                                                            PYMT
                                                                         </th>
                                                                     @endcan
                                                                     <th scope="col" class="table-th ">
@@ -300,7 +309,11 @@
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <span
-                                                                                class="block date-text">{{ number_format($policy->net_premium, 2) }} / {{ number_format($policy->gross_premium, 2) }}</span>
+                                                                                class="block date-text">{{ number_format($policy->gross_premium, 2) }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ number_format($policy->net_premium, 2) }}</span>
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <span
@@ -328,12 +341,20 @@
                                                                             App\Models\Business\SoldPolicy::class)
                                                                             <td class="table-td">
                                                                                 <span
-                                                                                    class="block date-text">{{ number_format($policy->after_tax_comm, 2) }} / {{ number_format($policy->total_comp_paid, 2) }}</span>
+                                                                                    class="block date-text">{{ number_format($policy->after_tax_comm, 2) }}</span>
+                                                                            </td>
+                                                                            <td class="table-td">
+                                                                                <span
+                                                                                    class="block date-text">{{ number_format($policy->total_comp_paid, 2) }}</span>
                                                                             </td>
 
                                                                             <td class="table-td">
                                                                                 <span
                                                                                     class="block date-text">{{ $policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A' }}</span>
+                                                                            </td>
+                                                                            <td class="table-td">
+                                                                                <span
+                                                                                    class="block date-text">{{ $policy->last_company_comm_payment?->invoice->serial }}</span>
                                                                             </td>
                                                                             <td class="table-td">
                                                                                 <span
