@@ -237,9 +237,9 @@
                                     <div class="card">
                                         <div class="card-body px-6 rounded pb-3">
                                             <div class="overflow-x-auto -mx-6">
-                                                <div class="inline-block min-w-full align-middle">
+                                                <div class="inline-block min-w-full align-middle px-5">
                                                     <table
-                                                        class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 ">
+                                                        class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                                         <thead class="bg-slate-200 dark:bg-slate-700">
                                                             <tr>
                                                                 <th scope="col" class="table-th ">
