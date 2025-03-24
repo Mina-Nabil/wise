@@ -1541,7 +1541,7 @@
                                     
                                     <!-- Search Bar for Sales Commissions -->
                                     <div class="mb-3">
-                                        <label for="salesCommSearch" class="form-label mb-2">Search by Policy Number or Client Name</label>
+                                        <label for="salesCommSearch" class="form-label mb-2">Search by Policy Number</label>
                                         <div class="relative">
                                             <input type="text" 
                                                 wire:model.debounce.300ms="salesCommSearch" 
