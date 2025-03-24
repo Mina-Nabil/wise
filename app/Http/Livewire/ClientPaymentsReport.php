@@ -419,8 +419,11 @@ class ClientPaymentsReport extends Component
             $this->types,
             $this->date_from,
             $this->date_to,
+            $this->collection_date_from,
+            $this->collection_date_to,
         )
             ->when($this->date_from || $this->date_to, fn($q) => $q->byDateRange($this->date_from, $this->date_to))
+            ->when($this->collection_date_from || $this->collection_date_to, fn($q) => $q->byDateRange($this->collection_date_from, $this->collection_date_to))
             ->with('sold_policy.active_sales_comms', 'sold_policy.active_sales_comms.comm_profile');
         $payments =    $payments->paginate(50);
 
