@@ -643,6 +643,26 @@ class CommProfileShow extends Component
         $this->salesCommSearch = '';
         $this->salesCommSearchResults = [];
     }
+
+
+    public function addToInvoice($id)
+    {
+        $salesComm = SalesComm::find($id);
+        if (!$salesComm) {
+            $this->alert('failed', 'Invalid sales commission selected');
+            return;
+        }
+        
+        // Add the selected commission to the array
+        $this->salesCommArray[] = [
+            'sales_comm_id' => $salesComm->id,
+            'paid_percentage' => 100, // Default to 100%
+            'amount' => $salesComm->amount,
+            'policy_number' => $salesComm->sold_policy->policy_number ?? 'N/A',
+            'client_name' => $salesComm->sold_policy->client->name ?? 'N/A',
+            'gross_premium' => $salesComm->sold_policy->gross_premium ?? 0,
+        ];
+    }
     
     public function searchSalesComm()
     {
