@@ -871,7 +871,7 @@ class SoldPolicyShow extends Component
         $this->authorize('updatePayments', $this->soldPolicy);
 
         $this->validate([
-            'commAmount' => 'required|numeric|min:1',
+            'commAmount' => 'required|numeric',
             'commProfile' => 'nullable|integer|exists:comm_profiles,id',
             'commNote' => 'nullable|string',
             'commFrom' => 'required|in:' . implode(',', CommProfileConf::FROMS),
