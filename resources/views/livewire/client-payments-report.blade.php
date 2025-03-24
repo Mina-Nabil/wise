@@ -397,7 +397,7 @@
                                     @endif
 
                                     <td class="table-td">
-                                        {{ $payment->collection_date?->format('d-m-Y') ?? 'N/A' }}
+                                        {{ $payment->collected_date?->format('d-m-Y') ?? 'N/A' }}
                                     </td>
                                     <td class="table-td">
                                         <p><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP
