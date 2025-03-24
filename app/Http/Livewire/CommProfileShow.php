@@ -621,13 +621,13 @@ class CommProfileShow extends Component
             $this->alert('failed', 'Please select a sales commission first');
             return;
         }
-        
+
         $salesComm = SalesComm::find($this->selectedSalesComm);
         if (!$salesComm) {
             $this->alert('failed', 'Invalid sales commission selected');
             return;
         }
-        
+
         // Add the selected commission to the array
         $this->salesCommArray[] = [
             'sales_comm_id' => $this->selectedSalesComm,
@@ -637,7 +637,7 @@ class CommProfileShow extends Component
             'client_name' => $salesComm->sold_policy->client->name ?? 'N/A',
             'gross_premium' => $salesComm->sold_policy->gross_premium ?? 0,
         ];
-        
+
         // Reset selection
         $this->selectedSalesComm = null;
         $this->salesCommSearch = '';
@@ -652,7 +652,7 @@ class CommProfileShow extends Component
             $this->alert('failed', 'Invalid sales commission selected');
             return;
         }
-        
+
         // Add the selected commission to the array
         $this->salesCommArray[] = [
             'sales_comm_id' => $salesComm->id,
@@ -663,28 +663,25 @@ class CommProfileShow extends Component
             'gross_premium' => $salesComm->sold_policy->gross_premium ?? 0,
         ];
     }
-    
+
     public function searchSalesComm()
     {
         if (strlen($this->salesCommSearch) < 2) {
             $this->salesCommSearchResults = [];
             return;
         }
-        
+
         $this->salesCommSearchResults = SalesComm::NotTotalyPaid($this->profile->id)
             ->with(['sold_policy', 'sold_policy.client', 'sold_policy.policy'])
             ->notCancelled()
             ->only2025()
-            ->whereHas('sold_policy', function($query) {
-                $query->where('policy_number', 'like', '%' . $this->salesCommSearch . '%')
-                    ->orWhereHas('client', function($subQuery) {
-                        $subQuery->where('name', 'like', '%' . $this->salesCommSearch . '%');
-                    });
+            ->whereHas('sold_policy', function ($query) {
+                $query->where('policy_number', 'like', '%' . $this->salesCommSearch . '%');
             })
             ->limit(5)
             ->get();
     }
-    
+
     public function selectSalesComm($id)
     {
         $this->selectedSalesComm = $id;
@@ -1120,7 +1117,7 @@ class CommProfileShow extends Component
         $PYMT_TYPES = CommProfilePayment::PYMT_TYPES;
         $overrides = CommProfile::override()->get();
         $salesComms = SalesComm::NotTotalyPaid($this->profile->id)->with('sold_policy', 'sold_policy.client')
-        ->notCancelled()
+            ->notCancelled()
             ->only2025()->get();
 
         $payments = $this->profile
