@@ -79,6 +79,12 @@
                             dark:hover:text-white cursor-pointer">
                             Payment date ( From-To )</span>
                     </li>
+                    <li wire:click="toggleCollectionDateFilter">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                            dark:hover:text-white cursor-pointer">
+                            Collection date ( From-To )</span>
+                    </li>
 
 
                     <li wire:click="toggleCompany">
@@ -165,6 +171,21 @@
                                     &nbsp;&nbsp;
                                 </span>
                                 <span wire:click="clearDateFilter">
+                                    <iconify-icon icon="material-symbols:close" width="1.2em"
+                                        height="1.2em"></iconify-icon>
+                                </span>
+                            </button>
+                        @endif
+
+                        @if ($collection_date_from || $collection_date_to)
+                            <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                <span wire:click="toggleCollectionDateFilter">
+                                    {{ $collection_date_from ? 'Collection From: ' . \Carbon\Carbon::parse($collection_date_from)->format('l d/m/Y') : '' }}
+                                    {{ $collection_date_from && $collection_date_to ? '-' : '' }}
+                                    {{ $collection_date_to ? 'Collection To: ' . \Carbon\Carbon::parse($collection_date_to)->format('l d/m/Y') : '' }}
+                                    &nbsp;&nbsp;
+                                </span>
+                                <span wire:click="clearCollectionDateFilter">
                                     <iconify-icon icon="material-symbols:close" width="1.2em"
                                         height="1.2em"></iconify-icon>
                                 </span>
