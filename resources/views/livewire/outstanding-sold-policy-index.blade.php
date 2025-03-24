@@ -126,7 +126,7 @@
     <div class="card-body px-6 pb-6">
         <div class=" -mx-6">
             <div class="inline-block min-w-full align-middle">
-                <div class="overflow-hidden ">
+
                     <div class="card">
                         <header class="card-header cust-card-header noborder">
 
@@ -235,7 +235,7 @@
                                 aria-labelledby="pills-list-tab">
                                 <div class="tab-content">
                                     <div class="card">
-                                        <div class="card-body px-6 rounded overflow-x-auto pb-3">
+                                        <div class="card-body px-6 rounded pb-3">
                                             <div class="overflow-x-auto -mx-6">
                                                 <div class="inline-block min-w-full align-middle">
                                                     <table
@@ -775,7 +775,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+
             </div>
         </div>
     </div>
