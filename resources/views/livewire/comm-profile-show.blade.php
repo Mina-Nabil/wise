@@ -1522,7 +1522,7 @@
                             <div class="mb-4">
                                 <div class="from-group">
                                     <label for="pymtType" class="form-label">Payment Type</label>
-                                    <select wire:model.defer="pymtType"
+                                    <select wire:model.live="pymtType"
                                         class="form-control w-full py-2 @error('pymtType') !border-danger-500 @enderror">
                                         <option value="">Select a payment type...</option>
                                         @foreach ($PYMT_TYPES as $PYMT_TYPE)
