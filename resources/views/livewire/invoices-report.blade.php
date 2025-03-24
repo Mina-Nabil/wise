@@ -86,7 +86,9 @@
                                         <td class="table-td">{{ $invoice->created_at->format('d/m/Y') }}</td>
                                         <td class="table-td">{{ $invoice->creator->username }}</td>
                                         <td class="table-td">
-                                            <a href="{{ route('companies.show', $invoice->company->id) }}" class="text-primary-500 hover:text-primary-600">
+                                            <a href="{{ route('companies.show', $invoice->company->id) }}"
+                                                target="_blank"
+                                                class="text-primary-500 hover:text-primary-600">
                                                 {{ $invoice->company->name }}
                                             </a>
                                         </td>
