@@ -362,10 +362,10 @@
                                                         </th>
 
                                                         <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
-                                                            Policy Name
+                                                            Policy
                                                         </th>
                                                         <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
-                                                            Commission
+                                                            Comm.
                                                         </th>
 
                                                         <th scope="col" class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
