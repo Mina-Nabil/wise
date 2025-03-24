@@ -44,6 +44,31 @@ class OutstandingSoldPolicyIndex extends Component
 
     public $invoicePaidFilter = null;
 
+    //company filter
+    public $companySection = false;
+    public $Ecompany_ids = [];
+    public $company_ids = [];
+
+    public function toggleCompany()
+    {
+        $this->toggle($this->companySection);
+        if ($this->companySection) {
+            $this->Ecompany_ids = $this->company_ids;
+        }
+    }
+
+    public function setCompany()
+    {
+        $this->company_ids = $this->Ecompany_ids;
+        $this->toggleCompany();
+    }
+
+    public function clearCompany()
+    {
+        $this->company_ids = [];
+        $this->Ecompany_ids = [];
+    }
+
     public function toggleStartDate()
     {
         $this->toggle($this->startSection);
@@ -64,35 +89,6 @@ class OutstandingSoldPolicyIndex extends Component
     {
         $this->start_from = null;
         $this->start_to = null;
-    }
-
-    ///company filter
-    public $companySection = false;
-    public $Ecompany_ids = [];
-    public $company_ids = [];
-
-    public function toggleCompany()
-    {
-        $this->toggle($this->companySection);
-        if ($this->companySection) {
-            $this->Ecompany_ids = $this->company_ids;
-        }
-    }
-
-    public function pushCompany($id)
-    {
-        $this->Ecompany_ids[] = $id;
-    }
-
-    public function setCompany()
-    {
-        $this->company_ids = $this->Ecompany_ids;
-        $this->toggleCompany();
-    }
-
-    public function clearCompany()
-    {
-        $this->company_ids = [];
     }
 
     public function togglePaymentDate()

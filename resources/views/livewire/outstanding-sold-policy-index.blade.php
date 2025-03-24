@@ -528,19 +528,28 @@
                                                                     <!-- Modal body -->
                                                                     <div class="p-6 space-y-4">
                                                                         <div>
-                                                                            @foreach ($Ecompany_ids as $id)
-                                                                                <!-- Fetch brand name based on ID -->
-                                                                                @php
-                                                                                    $company = \App\Models\Insurance\Company::find(
-                                                                                        $id,
-                                                                                    )->name;
-                                                                                @endphp
-
-                                                                                <!-- Display brand name -->
-                                                                                <span
-                                                                                    class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $company }}</span>
-                                                                            @endforeach
-
+                                                                            @if(count($Ecompany_ids) > 0)
+                                                                                <div class="mb-4">
+                                                                                    <h4 class="text-base font-medium mb-2">Selected Companies:</h4>
+                                                                                    <div class="flex flex-wrap gap-2">
+                                                                                        @foreach ($Ecompany_ids as $id)
+                                                                                            @php
+                                                                                                $company = \App\Models\Insurance\Company::find($id)->name;
+                                                                                            @endphp
+                                                                                            <div class="badge bg-slate-900 text-white capitalize rounded-3xl px-3 py-1 flex items-center">
+                                                                                                <span>{{ $company }}</span>
+                                                                                                <button class="ml-2" wire:click="$set('Ecompany_ids', {{ json_encode(array_values(array_filter($Ecompany_ids, function($item) use ($id) { return $item != $id; }))) }})">
+                                                                                                    <iconify-icon icon="material-symbols:close" width="1em" height="1em"></iconify-icon>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                </div>
+                                                                            @else
+                                                                                <div class="text-center p-2 bg-slate-100 dark:bg-slate-600 rounded mb-4">
+                                                                                    <span class="text-sm">No companies selected</span>
+                                                                                </div>
+                                                                            @endif
                                                                         </div>
                                                                         <div class="from-group">
                                                                             <label for="searchCompany"
@@ -555,36 +564,36 @@
                                                                             <thead
                                                                                 class="bg-slate-200 dark:bg-slate-700">
                                                                                 <tr>
-
-                                                                                    <th scope="col"
-                                                                                        class=" table-th ">
-                                                                                        Name
+                                                                                    <th scope="col" class="table-th" style="width: 50px">
+                                                                                        Select
                                                                                     </th>
-
-                                                                                    <th scope="col"
-                                                                                        class=" table-th ">
-                                                                                        Action
+                                                                                    <th scope="col" class="table-th">
+                                                                                        Company Name
                                                                                     </th>
-
                                                                                 </tr>
                                                                             </thead>
                                                                             <tbody
                                                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                                                                 @foreach ($companies as $company)
-                                                                                    @if (!in_array($company->id, $Ecompany_ids))
-                                                                                        <tr
-                                                                                            class="even:bg-slate-50 dark:even:bg-slate-700">
-                                                                                            <td class="table-td">
-                                                                                                {{ $company->name }}
-                                                                                            </td>
-                                                                                            <td class="table-td ">
-                                                                                                <button
-                                                                                                    wire:click="pushCompany({{ $company->id }})"
-                                                                                                    class="btn inline-flex justify-center btn-success light">Add</button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    @endif
+                                                                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                                        <td class="table-td text-center">
+                                                                                            <div class="checkbox-area">
+                                                                                                <label class="inline-flex items-center cursor-pointer">
+                                                                                                    <input 
+                                                                                                        type="checkbox" 
+                                                                                                        class="hidden" 
+                                                                                                        wire:model="Ecompany_ids" 
+                                                                                                        value="{{ $company->id }}"
+                                                                                                    >
+                                                                                                    <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150"></span>
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                        <td class="table-td">
+                                                                                            {{ $company->name }}
+                                                                                        </td>
+                                                                                    </tr>
                                                                                 @endforeach
 
                                                                             </tbody>
@@ -593,16 +602,18 @@
                                                                     <!-- Modal footer -->
                                                                     <div
                                                                         class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                                                        <button type="button" wire:click="$set('Ecompany_ids', [])" 
+                                                                            class="btn btn-outline-danger">
+                                                                            Clear All
+                                                                        </button>
                                                                         <button wire:click="setCompany"
-                                                                            data-bs-dismiss="modal"
                                                                             class="btn inline-flex justify-center text-white bg-black-500">
                                                                             <span wire:loading.remove
-                                                                                wire:target="setCompany">Submit</span>
+                                                                                wire:target="setCompany">Apply Selection</span>
                                                                             <iconify-icon
                                                                                 class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
                                                                                 wire:loading wire:target="setCompany"
                                                                                 icon="line-md:loading-twotone-loop"></iconify-icon>
-
                                                                         </button>
                                                                     </div>
                                                                 </div>
