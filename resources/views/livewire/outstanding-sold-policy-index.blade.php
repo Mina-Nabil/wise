@@ -135,7 +135,7 @@
                             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
                                 wire:model="search">
                         </header>
-                        <header class="card-header cust-card-header noborder">
+                        <header class="card-header cust-card-header noborder justify-start">
 
                             @if ($start_from || $start_to)
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
