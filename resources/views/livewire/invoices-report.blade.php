@@ -85,7 +85,11 @@
                                         <td class="table-td">{{ $invoice->serial }}</td>
                                         <td class="table-td">{{ $invoice->created_at->format('d/m/Y') }}</td>
                                         <td class="table-td">{{ $invoice->creator->username }}</td>
-                                        <td class="table-td">{{ $invoice->company->name }}</td>
+                                        <td class="table-td">
+                                            <a href="{{ route('companies.show', $invoice->company->id) }}" class="text-primary-500 hover:text-primary-600">
+                                                {{ $invoice->company->name }}
+                                            </a>
+                                        </td>
                                         <td class="table-td">{{ number_format($invoice->gross_total, 2) }}</td>
                                         <td class="table-td">{{ number_format($invoice->tax_total, 2) }}</td>
                                         <td class="table-td">{{ number_format($invoice->net_total, 2) }}</td>
