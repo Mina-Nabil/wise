@@ -279,8 +279,10 @@ class SoldPolicy extends Model
         try {
 
             $from_amount = $this->getFromAmount($from);
+            if ($from_amount == 0) return false;
 
             $comm_percentage = ($amount * 100) / $from_amount;
+
             /** @var SalesComm */
             $tmp = $this->sales_comms()->create([
                 "title"             => "Manual Adjustment",
