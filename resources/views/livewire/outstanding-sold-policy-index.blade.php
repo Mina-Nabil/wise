@@ -124,7 +124,7 @@
 
 
     <div class="card-body px-6 pb-6">
-        <div class="overflow-x-auto -mx-6">
+        <div class=" -mx-6">
             <div class="inline-block min-w-full align-middle">
                 <div class="overflow-hidden ">
                     <div class="card">
@@ -235,159 +235,156 @@
                                 aria-labelledby="pills-list-tab">
                                 <div class="tab-content">
                                     <div class="card">
-                                        <div class="card-body px-6 rounded overflow-hidden pb-3">
+                                        <div class="card-body px-6 rounded overflow-x-auto pb-3">
                                             <div class="overflow-x-auto -mx-6">
                                                 <div class="inline-block min-w-full align-middle">
-                                                    <div class="overflow-hidden ">
-                                                        <table
-                                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 ">
-                                                            <thead class="bg-slate-200 dark:bg-slate-700">
-                                                                <tr>
+                                                    <table
+                                                        class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 ">
+                                                        <thead class="bg-slate-200 dark:bg-slate-700">
+                                                            <tr>
+                                                                <th scope="col" class="table-th ">
+                                                                    POLICY
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
+                                                                    GROSS
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
+                                                                    NET
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
+                                                                    START
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
+                                                                    END
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
+                                                                    PYMT
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
+                                                                    POLICY#
+                                                                </th>
+                                                                @can('viewCommission',
+                                                                    App\Models\Business\SoldPolicy::class)
                                                                     <th scope="col" class="table-th ">
-                                                                        POLICY
+                                                                        COMM.
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        GROSS
+                                                                        PAID
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        NET
+                                                                        INVOICE
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
-                                                                        START
-                                                                    </th>
-                                                                    <th scope="col" class="table-th ">
-                                                                        END
+                                                                        #
                                                                     </th>
                                                                     <th scope="col" class="table-th ">
                                                                         PYMT
                                                                     </th>
-                                                                    <th scope="col" class="table-th ">
-                                                                        POLICY#
-                                                                    </th>
+                                                                @endcan
+                                                                <th scope="col" class="table-th ">
+                                                                    CLIENT
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
+                                                                    STATUS
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody
+                                                            class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                            @foreach ($soldPolicies as $policy)
+                                                                <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                    <td class="table-td">
+                                                                        <div class="flex-1 text-start">
+                                                                            <h4
+                                                                                class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                {{ $policy->policy->company->name }}
+                                                                            </h4>
+                                                                            <div
+                                                                                class="text-xs font-normal text-slate-600 dark:text-slate-400">
+                                                                                {{ $policy->policy->name }}
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        <span
+                                                                            class="block date-text">{{ number_format($policy->gross_premium, 2) }}</span>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        <span
+                                                                            class="block date-text">{{ number_format($policy->net_premium, 2) }}</span>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        <span
+                                                                            class="block date-text">{{ \Carbon\Carbon::parse($policy->start)->format('d-m-Y') }}</span>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        <span
+                                                                            class="block date-text">{{ \Carbon\Carbon::parse($policy->expiry)->format('d-m-Y') }}</span>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        <span
+                                                                            class="block date-text">{{ $policy->client_payment_date ? \Carbon\Carbon::parse($policy->client_payment_date)->format('d-m-Y') : 'N/A' }}</span>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        <a href="{{ route('sold.policy.show', $policy->id) }}"
+                                                                            target="_blank"
+                                                                            class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                            <span class="block date-text">
+                                                                                {{ $policy->policy_number }}
+                                                                            </span>
+                                                                        </a>
+                                                                    </td>
+
                                                                     @can('viewCommission',
                                                                         App\Models\Business\SoldPolicy::class)
-                                                                        <th scope="col" class="table-th ">
-                                                                            COMM.
-                                                                        </th>
-                                                                        <th scope="col" class="table-th ">
-                                                                            PAID
-                                                                        </th>
-                                                                        <th scope="col" class="table-th ">
-                                                                            INVOICE
-                                                                        </th>
-                                                                        <th scope="col" class="table-th ">
-                                                                            #
-                                                                        </th>
-                                                                        <th scope="col" class="table-th ">
-                                                                            PYMT
-                                                                        </th>
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ number_format($policy->after_tax_comm, 2) }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ number_format($policy->total_comp_paid, 2) }}</span>
+                                                                        </td>
+
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ $policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A' }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ $policy->last_company_comm_payment?->invoice->serial }}</span>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span
+                                                                                class="block date-text">{{ $policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A' }}</span>
+                                                                        </td>
                                                                     @endcan
-                                                                    <th scope="col" class="table-th ">
-                                                                        CLIENT
-                                                                    </th>
-                                                                    <th scope="col" class="table-th ">
-                                                                        STATUS
-                                                                    </th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody
-                                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                                                                @foreach ($soldPolicies as $policy)
-                                                                    <tr
-                                                                        class="even:bg-slate-50 dark:even:bg-slate-700">
-                                                                        <td class="table-td">
-                                                                            <div class="flex-1 text-start">
-                                                                                <h4
-                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
-                                                                                    {{ $policy->policy->company->name }}
-                                                                                </h4>
-                                                                                <div
-                                                                                    class="text-xs font-normal text-slate-600 dark:text-slate-400">
-                                                                                    {{ $policy->policy->name }}
-                                                                                </div>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            <span
-                                                                                class="block date-text">{{ number_format($policy->gross_premium, 2) }}</span>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            <span
-                                                                                class="block date-text">{{ number_format($policy->net_premium, 2) }}</span>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            <span
-                                                                                class="block date-text">{{ \Carbon\Carbon::parse($policy->start)->format('d-m-Y') }}</span>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            <span
-                                                                                class="block date-text">{{ \Carbon\Carbon::parse($policy->expiry)->format('d-m-Y') }}</span>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            <span
-                                                                                class="block date-text">{{ $policy->client_payment_date ? \Carbon\Carbon::parse($policy->client_payment_date)->format('d-m-Y') : 'N/A' }}</span>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            <a href="{{ route('sold.policy.show', $policy->id) }}"
-                                                                                target="_blank"
-                                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                <span class="block date-text">
-                                                                                    {{ $policy->policy_number }}
-                                                                                </span>
-                                                                            </a>
-                                                                        </td>
+                                                                    <td class="table-td">
+                                                                        <div
+                                                                            class="flex space-x-3 items-center text-left rtl:space-x-reverse">
 
-                                                                        @can('viewCommission',
-                                                                            App\Models\Business\SoldPolicy::class)
-                                                                            <td class="table-td">
-                                                                                <span
-                                                                                    class="block date-text">{{ number_format($policy->after_tax_comm, 2) }}</span>
-                                                                            </td>
-                                                                            <td class="table-td">
-                                                                                <span
-                                                                                    class="block date-text">{{ number_format($policy->total_comp_paid, 2) }}</span>
-                                                                            </td>
-
-                                                                            <td class="table-td">
-                                                                                <span
-                                                                                    class="block date-text">{{ $policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A' }}</span>
-                                                                            </td>
-                                                                            <td class="table-td">
-                                                                                <span
-                                                                                    class="block date-text">{{ $policy->last_company_comm_payment?->invoice->serial }}</span>
-                                                                            </td>
-                                                                            <td class="table-td">
-                                                                                <span
-                                                                                    class="block date-text">{{ $policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A' }}</span>
-                                                                            </td>
-                                                                        @endcan
-                                                                        <td class="table-td">
                                                                             <div
-                                                                                class="flex space-x-3 items-center text-left rtl:space-x-reverse">
+                                                                                class="flex-1 font-medium text-sm leading-4 whitespace-nowrap">
+                                                                                <a class="hover:underline cursor-pointer"
+                                                                                    href="{{ route($policy->client_type . 's.show', $policy->client_id) }}">
 
-                                                                                <div
-                                                                                    class="flex-1 font-medium text-sm leading-4 whitespace-nowrap">
-                                                                                    <a class="hover:underline cursor-pointer"
-                                                                                        href="{{ route($policy->client_type . 's.show', $policy->client_id) }}">
+                                                                                    {{ $policy->client->name }}
 
-                                                                                        {{ $policy->client->name }}
-
-                                                                                    </a>
-                                                                                </div>
+                                                                                </a>
                                                                             </div>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            @if ($policy->is_valid)
-                                                                                <span
-                                                                                    class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Validated</span>
-                                                                            @endif
-                                                                        </td>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        @if ($policy->is_valid)
+                                                                            <span
+                                                                                class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Validated</span>
+                                                                        @endif
+                                                                    </td>
 
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                                 @if ($soldPolicies->isEmpty())
                                                     {{-- START: empty filter result --}}
@@ -528,26 +525,37 @@
                                                                     <!-- Modal body -->
                                                                     <div class="p-6 space-y-4">
                                                                         <div>
-                                                                            @if(count($Ecompany_ids) > 0)
+                                                                            @if (count($Ecompany_ids) > 0)
                                                                                 <div class="mb-4">
-                                                                                    <h4 class="text-base font-medium mb-2">Selected Companies:</h4>
+                                                                                    <h4
+                                                                                        class="text-base font-medium mb-2">
+                                                                                        Selected Companies:</h4>
                                                                                     <div class="flex flex-wrap gap-2">
                                                                                         @foreach ($Ecompany_ids as $id)
                                                                                             @php
-                                                                                                $company = \App\Models\Insurance\Company::find($id)->name;
+                                                                                                $company = \App\Models\Insurance\Company::find(
+                                                                                                    $id,
+                                                                                                )->name;
                                                                                             @endphp
-                                                                                            <div class="badge bg-slate-900 text-white capitalize rounded-3xl px-3 py-1 flex items-center">
+                                                                                            <div
+                                                                                                class="badge bg-slate-900 text-white capitalize rounded-3xl px-3 py-1 flex items-center">
                                                                                                 <span>{{ $company }}</span>
-                                                                                                <button class="ml-2" wire:click="$set('Ecompany_ids', {{ json_encode(array_values(array_filter($Ecompany_ids, function($item) use ($id) { return $item != $id; }))) }})">
-                                                                                                    <iconify-icon icon="material-symbols:close" width="1em" height="1em"></iconify-icon>
+                                                                                                <button class="ml-2"
+                                                                                                    wire:click="$set('Ecompany_ids', {{ json_encode(array_values(array_filter($Ecompany_ids, function ($item) use ($id) {return $item != $id;}))) }})">
+                                                                                                    <iconify-icon
+                                                                                                        icon="material-symbols:close"
+                                                                                                        width="1em"
+                                                                                                        height="1em"></iconify-icon>
                                                                                                 </button>
                                                                                             </div>
                                                                                         @endforeach
                                                                                     </div>
                                                                                 </div>
                                                                             @else
-                                                                                <div class="text-center p-2 bg-slate-100 dark:bg-slate-600 rounded mb-4">
-                                                                                    <span class="text-sm">No companies selected</span>
+                                                                                <div
+                                                                                    class="text-center p-2 bg-slate-100 dark:bg-slate-600 rounded mb-4">
+                                                                                    <span class="text-sm">No companies
+                                                                                        selected</span>
                                                                                 </div>
                                                                             @endif
                                                                         </div>
@@ -564,10 +572,13 @@
                                                                             <thead
                                                                                 class="bg-slate-200 dark:bg-slate-700">
                                                                                 <tr>
-                                                                                    <th scope="col" class="table-th" style="width: 50px">
+                                                                                    <th scope="col"
+                                                                                        class="table-th"
+                                                                                        style="width: 50px">
                                                                                         Select
                                                                                     </th>
-                                                                                    <th scope="col" class="table-th">
+                                                                                    <th scope="col"
+                                                                                        class="table-th">
                                                                                         Company Name
                                                                                     </th>
                                                                                 </tr>
@@ -576,17 +587,20 @@
                                                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                                                                 @foreach ($companies as $company)
-                                                                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
-                                                                                        <td class="table-td text-center">
+                                                                                    <tr
+                                                                                        class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                                        <td
+                                                                                            class="table-td text-center">
                                                                                             <div class="checkbox-area">
-                                                                                                <label class="inline-flex items-center cursor-pointer">
-                                                                                                    <input 
-                                                                                                        type="checkbox" 
-                                                                                                        class="hidden" 
-                                                                                                        wire:model="Ecompany_ids" 
-                                                                                                        value="{{ $company->id }}"
-                                                                                                    >
-                                                                                                    <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150"></span>
+                                                                                                <label
+                                                                                                    class="inline-flex items-center cursor-pointer">
+                                                                                                    <input
+                                                                                                        type="checkbox"
+                                                                                                        class="hidden"
+                                                                                                        wire:model="Ecompany_ids"
+                                                                                                        value="{{ $company->id }}">
+                                                                                                    <span
+                                                                                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150"></span>
                                                                                                 </label>
                                                                                             </div>
                                                                                         </td>
@@ -602,14 +616,16 @@
                                                                     <!-- Modal footer -->
                                                                     <div
                                                                         class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                                                        <button type="button" wire:click="$set('Ecompany_ids', [])" 
+                                                                        <button type="button"
+                                                                            wire:click="$set('Ecompany_ids', [])"
                                                                             class="btn btn-outline-danger">
                                                                             Clear All
                                                                         </button>
                                                                         <button wire:click="setCompany"
                                                                             class="btn inline-flex justify-center text-white bg-black-500">
                                                                             <span wire:loading.remove
-                                                                                wire:target="setCompany">Apply Selection</span>
+                                                                                wire:target="setCompany">Apply
+                                                                                Selection</span>
                                                                             <iconify-icon
                                                                                 class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
                                                                                 wire:loading wire:target="setCompany"
