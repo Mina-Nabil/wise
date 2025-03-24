@@ -1535,8 +1535,7 @@
                                     @enderror
                                 </div>
                             </div>
-
-                            @if ($pymtType)
+          
                                 <div class="mb-4">
                                     <h4 class="text-base font-medium mb-3">Link Sales Commissions</h4>
                                     
@@ -1577,8 +1576,7 @@
                                     </div>
                                     
                                 
-                                </div>
-                            @endif
+                                </div>             
 
                             <div class="mb-4">
                                 <div class="from-group">
