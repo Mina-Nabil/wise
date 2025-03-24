@@ -124,7 +124,7 @@
 
 
     <div class="card-body px-6 pb-6">
-        <div class=" -mx-6">
+        <div class="overflow-x-auto -mx-6">
             <div class="inline-block min-w-full align-middle">
 
                     <div class="card">
