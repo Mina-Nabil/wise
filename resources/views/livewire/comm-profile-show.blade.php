@@ -1638,7 +1638,6 @@
 </div>
 </div>
 </div>
-</div>
 @endif
 
 @if ($showLinkedSalesComm)

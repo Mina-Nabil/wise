@@ -119,6 +119,11 @@ class CommProfileShow extends Component
 
     public $isSortLatest = true;
 
+    // Add new properties for sales commission search and selection
+    public $salesCommSearch = '';
+    public $salesCommSearchResults = [];
+    public $selectedSalesComm = null;
+
     protected $listeners = ['deleteProfile', 'refreshBalances']; //functions need confirmation
 
     public $section = 'payments';
@@ -612,13 +617,66 @@ class CommProfileShow extends Component
 
     public function addSalesComm()
     {
-        $this->salesCommArray[] = ['sales_comm_id' => '', 'paid_percentage' => '', 'amount' => ''];
+        if (empty($this->selectedSalesComm)) {
+            $this->alert('failed', 'Please select a sales commission first');
+            return;
+        }
+        
+        $salesComm = SalesComm::find($this->selectedSalesComm);
+        if (!$salesComm) {
+            $this->alert('failed', 'Invalid sales commission selected');
+            return;
+        }
+        
+        // Add the selected commission to the array
+        $this->salesCommArray[] = [
+            'sales_comm_id' => $this->selectedSalesComm,
+            'paid_percentage' => 100, // Default to 100%
+            'amount' => $salesComm->amount,
+            'policy_number' => $salesComm->sold_policy->policy_number ?? 'N/A',
+            'client_name' => $salesComm->sold_policy->client->name ?? 'N/A',
+            'gross_premium' => $salesComm->sold_policy->gross_premium ?? 0,
+        ];
+        
+        // Reset selection
+        $this->selectedSalesComm = null;
+        $this->salesCommSearch = '';
+        $this->salesCommSearchResults = [];
+    }
+    
+    public function searchSalesComm()
+    {
+        if (strlen($this->salesCommSearch) < 2) {
+            $this->salesCommSearchResults = [];
+            return;
+        }
+        
+        $this->salesCommSearchResults = SalesComm::NotTotalyPaid($this->profile->id)
+            ->with(['sold_policy', 'sold_policy.client', 'sold_policy.policy'])
+            ->notCancelled()
+            ->only2025()
+            ->whereHas('sold_policy', function($query) {
+                $query->where('policy_number', 'like', '%' . $this->salesCommSearch . '%')
+                    ->orWhereHas('client', function($subQuery) {
+                        $subQuery->where('name', 'like', '%' . $this->salesCommSearch . '%');
+                    });
+            })
+            ->limit(5)
+            ->get();
+    }
+    
+    public function selectSalesComm($id)
+    {
+        $this->selectedSalesComm = $id;
+        $this->salesCommSearchResults = [];
     }
 
     public function removeSalesComm($index)
     {
-        unset($this->salesCommArray[$index]);
-        $this->salesCommArray = array_values($this->salesCommArray); // Re-index the array
+        if (isset($this->salesCommArray[$index])) {
+            unset($this->salesCommArray[$index]);
+            $this->salesCommArray = array_values($this->salesCommArray); // Re-index the array
+        }
     }
 
     public function openNewPymtSection()
@@ -634,6 +692,9 @@ class CommProfileShow extends Component
         $this->pymtDoc = null;
         $this->pymtNote = null;
         $this->salesCommArray = [];
+        $this->salesCommSearch = '';
+        $this->salesCommSearchResults = [];
+        $this->selectedSalesComm = null;
     }
 
     public function closeNewTargetSection()
@@ -1013,7 +1074,7 @@ class CommProfileShow extends Component
 
     public function updateCommBox($i)
     {
-        if (!$this->salesCommArray[$i]) return;
+        if (!isset($this->salesCommArray[$i])) return;
         $salesComm = SalesComm::find($this->salesCommArray[$i]['sales_comm_id']);
         if (!$salesComm) return;
         $this->salesCommArray[$i]['paid_percentage'] = 100;
