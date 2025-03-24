@@ -1159,15 +1159,15 @@ class SoldPolicy extends Model
             $activeSheet->getCell('C' . $i)->setValue($policy->client->name);
             $activeSheet->getCell('D' . $i)->setValue(number_format($policy->gross_premium, 2));
             $activeSheet->getCell('E' . $i)->setValue(number_format($policy->gross_premium, 2));
-            $activeSheet->getCell('E' . $i)->setValue($policy->policy_number);
-            $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
-            $activeSheet->getCell('G' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
-            $activeSheet->getCell('H' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
-            $activeSheet->getCell('I' . $i)->setValue(number_format($policy->after_tax_comm, 2));
-            $activeSheet->getCell('I' . $i)->setValue(number_format($policy->total_comp_paid, 2));
-            $activeSheet->getCell('J' . $i)->setValue($policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A');
-            $activeSheet->getCell('J' . $i)->setValue($policy->last_company_comm_payment?->invoice?->serial);
-            $activeSheet->getCell('K' . $i)->setValue($policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A');
+            $activeSheet->getCell('F' . $i)->setValue($policy->policy_number);
+            $activeSheet->getCell('G' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
+            $activeSheet->getCell('H' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
+            $activeSheet->getCell('I' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
+            $activeSheet->getCell('J' . $i)->setValue(number_format($policy->after_tax_comm, 2));
+            $activeSheet->getCell('K' . $i)->setValue(number_format($policy->total_comp_paid, 2));
+            $activeSheet->getCell('L' . $i)->setValue($policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A');
+            $activeSheet->getCell('M' . $i)->setValue($policy->last_company_comm_payment?->invoice?->serial);
+            $activeSheet->getCell('N' . $i)->setValue($policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A');
             $i++;
         }
         $writer = new Xlsx($newFile);
