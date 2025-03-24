@@ -1579,7 +1579,7 @@
                                     <!-- Selected Commission Preview -->
                                     @if($selectedSalesComm)
                                         @php
-                                            $selected = SalesComm::with(['sold_policy', 'sold_policy.client', 'sold_policy.policy'])->find($selectedSalesComm);
+                                            $selected = \App\Models\Payments\SalesComm::with(['sold_policy', 'sold_policy.client', 'sold_policy.policy'])->find($selectedSalesComm);
                                         @endphp
                                         <div class="mb-3 p-3 bg-slate-50 dark:bg-slate-600 rounded-md border border-slate-200 dark:border-slate-700">
                                             <div class="flex justify-between">
