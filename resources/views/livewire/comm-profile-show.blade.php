@@ -1558,7 +1558,7 @@
                                         @if(count($salesCommSearchResults) > 0)
                                             <div class="mt-1 bg-white dark:bg-slate-600 shadow-lg rounded-md border border-slate-200 dark:border-slate-700 absolute z-50 w-full max-h-60 overflow-y-auto">
                                                 @foreach($salesCommSearchResults as $result)
-                                                    <div wire:click="selectSalesComm({{ $result->id }})" 
+                                                    <div wire:click="addToInvoice({{ $result->id }})" 
                                                         class="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-200 dark:border-slate-700">
                                                         <div class="flex justify-between">
                                                             <div>
@@ -1576,41 +1576,7 @@
                                         @endif
                                     </div>
                                     
-                                    <!-- Selected Commission Preview -->
-                                    @if($selectedSalesComm)
-                                        @php
-                                            $selected = \App\Models\Payments\SalesComm::with(['sold_policy', 'sold_policy.client', 'sold_policy.policy'])->find($selectedSalesComm);
-                                        @endphp
-                                        <div class="mb-3 p-3 bg-slate-50 dark:bg-slate-600 rounded-md border border-slate-200 dark:border-slate-700">
-                                            <div class="flex justify-between">
-                                                <div>
-                                                    <p class="font-medium">Selected: {{ $selected->sold_policy->policy_number }}</p>
-                                                    <p class="text-sm">{{ $selected->sold_policy->client->name }}</p>
-                                                </div>
-                                                <div class="text-right">
-                                                    <p class="font-medium">{{ number_format($selected->amount, 2) }}</p>
-                                                    <button type="button" wire:click="$set('selectedSalesComm', null)" class="text-danger-500">
-                                                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="flex space-x-4 mt-3">
-                                                <div class="w-1/2">
-                                                    <label class="form-label text-xs">Percentage</label>
-                                                    <input type="number" value="100" class="form-control" disabled>
-                                                </div>
-                                                <div class="w-1/2">
-                                                    <label class="form-label text-xs">Amount</label>
-                                                    <input type="number" value="{{ $selected->amount }}" class="form-control" disabled>
-                                                </div>
-                                            </div>
-                                            <div class="mt-3">
-                                                <button type="button" wire:click="addSalesComm" class="btn btn-sm btn-success">
-                                                    Add to Payment
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endif
+                                
                                 </div>
                             @endif
 
