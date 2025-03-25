@@ -53,7 +53,7 @@ class SoldPolicyPolicy
      */
     public function update(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin || $user->is_operations || $user->is_finance;
+        return $user->is_admin || $user->is_operations || $user->is_any_finance;
     }
 
     /**

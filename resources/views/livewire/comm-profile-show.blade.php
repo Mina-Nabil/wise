@@ -344,6 +344,34 @@
                                                                 </button>
                                                                 <ul
                                                                     class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                    @if ($payment->journal_entry_id)
+                                                                        <li>
+                                                                            <a wire:click="openLinkedJournalEntry({{ $payment->id }})"
+                                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon
+                                                                                    icon="hugeicons:view"></iconify-icon>
+                                                                                <span>Show linked journal
+                                                                                    entry</span></a>
+                                                                        </li>
+                                                                    @else
+                                                                        <li>
+                                                                            <a wire:click="openCreateMainJournalEntryModal({{ $payment->id }})"
+                                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon
+                                                                                    icon="material-symbols:add-circle-outline"></iconify-icon>
+                                                                                <span>Create journal entry</span>
+                                                                            </a>
+                                                                        </li>
+                                                                        <li>
+                                                                            <a wire:click="openCreateSalesJournalEntryModal({{ $payment->id }})"
+                                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon
+                                                                                    icon="mdi:account-plus"></iconify-icon>
+                                                                                <span>Create sales journal entry</span>
+                                                                            </a>
+                                                                        </li>
+                                                                    @endif
+
                                                                     @if ($payment->is_new)
                                                                         <li>
                                                                             <a wire:click="editThisPayment({{ $payment->id }})"
@@ -542,6 +570,9 @@
                                                 <th scope="col" class=" table-th ">
                                                     Client
                                                 </th>
+                                                <th scope="col" class=" table-th ">
+                                                    Gross/Net
+                                                </th>
 
                                                 <th scope="col" class=" table-th ">
                                                     Amount
@@ -612,6 +643,12 @@
                                                         </div>
                                                     </td>
 
+                                                    <td class="table-td ">
+                                                        <div class="text-lg">
+                                                            {{ $comm->sold_policy?->gross_premium }} /
+                                                            {{ $comm->sold_policy?->net_premium }}
+                                                        </div>
+                                                    </td>
                                                     <td class="table-td ">
                                                         <div class="text-lg">
                                                             {{ $comm->sold_policy?->client?->name }}
@@ -1298,7 +1335,8 @@
                                                         class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                         @forelse ($runs as $run)
                                                             <tr class="even:bg-slate-50 dark:even:bg-slate-700">
-                                                                <td class="table-td">{{ $run->added_to_balance }}</td>
+                                                                <td class="table-td">{{ $run->added_to_balance }}
+                                                                </td>
                                                                 <td class="table-td">{{ $run->added_to_payments }}
                                                                 </td>
                                                                 <td class="table-td">
@@ -1535,48 +1573,54 @@
                                     @enderror
                                 </div>
                             </div>
-          
-                                <div class="mb-4">
-                                    <h4 class="text-base font-medium mb-3">Link Sales Commissions</h4>
-                                    
-                                    <!-- Search Bar for Sales Commissions -->
-                                    <div class="mb-3">
-                                        <label for="salesCommSearch" class="form-label mb-2">Search by Policy Number</label>
-                                        <div class="relative">
-                                            <input type="text" 
-                                                wire:model.debounce.300ms="salesCommSearch" 
-                                                wire:keyup="searchSalesComm"
-                                                class="form-control w-full" 
-                                                placeholder="Type to search...">
-                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                                <iconify-icon wire:loading wire:target="searchSalesComm" class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-base font-medium mb-3">Link Sales Commissions</h4>
+
+                                <!-- Search Bar for Sales Commissions -->
+                                <div class="mb-3">
+                                    <label for="salesCommSearch" class="form-label mb-2">Search by Policy
+                                        Number</label>
+                                    <div class="relative">
+                                        <input type="text" wire:model.debounce.300ms="salesCommSearch"
+                                            wire:keyup="searchSalesComm" class="form-control w-full"
+                                            placeholder="Type to search...">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <iconify-icon wire:loading wire:target="searchSalesComm"
+                                                class="loading-icon text-lg"
+                                                icon="line-md:loading-twotone-loop"></iconify-icon>
                                         </div>
-                                        
-                                        <!-- Search Results -->
-                                        @if(count($salesCommSearchResults) > 0)
-                                            <div class="mt-1 bg-white dark:bg-slate-600 shadow-lg rounded-md border border-slate-200 dark:border-slate-700 absolute z-50 w-full max-h-60 overflow-y-auto">
-                                                @foreach($salesCommSearchResults as $result)
-                                                    <div wire:click="addToInvoice({{ $result->id }})" 
-                                                        class="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-200 dark:border-slate-700">
-                                                        <div class="flex justify-between">
-                                                            <div>
-                                                                <p class="font-medium">{{ $result->sold_policy->policy_number }}</p>
-                                                                <p class="text-sm text-slate-600 dark:text-slate-400">{{ $result->sold_policy->client->name }}</p>
-                                                            </div>
-                                                            <div class="text-right">
-                                                                <p class="font-medium">{{ number_format($result->amount, 2) }}</p>
-                                                                <p class="text-sm text-slate-600 dark:text-slate-400">{{ $result->sold_policy->policy->company->name }}</p>
-                                                            </div>
+                                    </div>
+
+                                    <!-- Search Results -->
+                                    @if (count($salesCommSearchResults) > 0)
+                                        <div
+                                            class="mt-1 bg-white dark:bg-slate-600 shadow-lg rounded-md border border-slate-200 dark:border-slate-700 absolute z-50 w-full max-h-60 overflow-y-auto">
+                                            @foreach ($salesCommSearchResults as $result)
+                                                <div wire:click="addToInvoice({{ $result->id }})"
+                                                    class="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-200 dark:border-slate-700">
+                                                    <div class="flex justify-between">
+                                                        <div>
+                                                            <p class="font-medium">
+                                                                {{ $result->sold_policy->policy_number }}</p>
+                                                            <p class="text-sm text-slate-600 dark:text-slate-400">
+                                                                {{ $result->sold_policy->client->name }}</p>
+                                                        </div>
+                                                        <div class="text-right">
+                                                            <p class="font-medium">
+                                                                {{ number_format($result->amount, 2) }}</p>
+                                                            <p class="text-sm text-slate-600 dark:text-slate-400">
+                                                                {{ $result->sold_policy->policy->company->name }}</p>
                                                         </div>
                                                     </div>
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </div>
-                                    
-                                
-                                </div>             
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+
+
+                            </div>
 
                             <div class="mb-4">
                                 <div class="from-group">
@@ -1603,15 +1647,20 @@
                             <h4 class="text-base font-medium">Selected Sales Commissions</h4>
                             <div class="space-y-3 mb-4">
                                 @foreach ($salesCommArray as $index => $item)
-                                    <div class="p-3 bg-white dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-700 shadow-sm">
+                                    <div
+                                        class="p-3 bg-white dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-700 shadow-sm">
                                         <div class="flex justify-between">
                                             <div>
                                                 <p class="font-medium">{{ $item['policy_number'] ?? 'N/A' }}</p>
-                                                <p class="text-sm text-slate-600 dark:text-slate-400">{{ $item['client_name'] ?? 'N/A' }}</p>
+                                                <p class="text-sm text-slate-600 dark:text-slate-400">
+                                                    {{ $item['client_name'] ?? 'N/A' }}</p>
                                             </div>
                                             <div class="text-right">
-                                                <button type="button" wire:click="removeSalesComm({{ $index }})" class="text-danger-500">
-                                                    <iconify-icon icon="material-symbols:delete-outline" width="1.2em" height="1.2em"></iconify-icon>
+                                                <button type="button"
+                                                    wire:click="removeSalesComm({{ $index }})"
+                                                    class="text-danger-500">
+                                                    <iconify-icon icon="material-symbols:delete-outline"
+                                                        width="1.2em" height="1.2em"></iconify-icon>
                                                 </button>
                                             </div>
                                         </div>
@@ -1619,26 +1668,30 @@
                                         <div class="flex space-x-4 mt-3">
                                             <div class="w-1/2">
                                                 <label class="form-label text-xs">Percentage</label>
-                                                <input type="number" wire:model.defer="salesCommArray.{{ $index }}.paid_percentage"
+                                                <input type="number"
+                                                    wire:model.defer="salesCommArray.{{ $index }}.paid_percentage"
                                                     placeholder="Percentage"
                                                     class="form-control @error('salesCommArray.' . $index . '.paid_percentage') !border-danger-500 @enderror">
                                                 @error('salesCommArray.' . $index . '.paid_percentage')
-                                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                    <span
+                                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                             <div class="w-1/2">
                                                 <label class="form-label text-xs">Amount</label>
-                                                <input type="number" wire:model.defer="salesCommArray.{{ $index }}.amount"
+                                                <input type="number"
+                                                    wire:model.defer="salesCommArray.{{ $index }}.amount"
                                                     placeholder="Amount"
                                                     class="form-control @error('salesCommArray.' . $index . '.amount') !border-danger-500 @enderror">
                                                 @error('salesCommArray.' . $index . '.amount')
-                                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                                    <span
+                                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
                                     </div>
                                 @endforeach
-                                @if(count($salesCommArray) === 0 && !$selectedSalesComm)
+                                @if (count($salesCommArray) === 0 && !$selectedSalesComm)
                                     <div class="text-center p-4 bg-slate-50 dark:bg-slate-600 rounded-md">
                                         <p class="text-slate-500 dark:text-slate-400">No commissions selected yet</p>
                                     </div>
@@ -1652,8 +1705,9 @@
                             <button wire:click="addPayment" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="addPayment">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="addPayment" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="addPayment"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1711,7 +1765,8 @@
 
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                <tbody
+                                    class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                     @foreach ($linkedSalesComm as $linkedSC)
                                         <tr class="even:bg-slate-50 dark:even:bg-slate-700">
@@ -1736,16 +1791,17 @@
                                 <span wire:loading.remove
                                     wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})">Download Payment
                                     Details</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})"
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="downloadPaymentDetails({{ $showLinkedSalesComm }})"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
 
                             <button wire:click="closeLinkedSalesComm" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500 btn-sm">
                                 <span wire:loading.remove wire:target="closeLinkedSalesComm">close</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="closeLinkedSalesComm" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="closeLinkedSalesComm"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1841,8 +1897,9 @@
                             <button wire:click="editPayment" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="editPayment">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="editPayment" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="editPayment"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1904,8 +1961,9 @@
                             <button wire:click="setPymtPaid" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setPymtPaid">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="setPymtPaid" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="setPymtPaid"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1967,8 +2025,9 @@
                             <button wire:click="setPymtCancelled" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setPymtCancelled">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="setPymtCancelled" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="setPymtCancelled"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -2027,7 +2086,8 @@
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                                        alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                        alt=""
+                                                        class="h-[10px] w-[10px] block m-auto opacity-0">
                                                 </span>
                                             </label>
                                         </div>
@@ -2073,7 +2133,8 @@
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                                        alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                        alt=""
+                                                        class="h-[10px] w-[10px] block m-auto opacity-0">
                                                 </span>
                                             </label>
                                         </div>
@@ -2158,8 +2219,9 @@
                             <button wire:click="addTarget" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="addTarget">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="addTarget" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="addTarget"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -2218,7 +2280,8 @@
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                                        alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                        alt=""
+                                                        class="h-[10px] w-[10px] block m-auto opacity-0">
                                                 </span>
                                             </label>
                                         </div>
@@ -2259,7 +2322,8 @@
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                                        alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                                        alt=""
+                                                        class="h-[10px] w-[10px] block m-auto opacity-0">
                                                 </span>
                                             </label>
                                         </div>
@@ -2350,8 +2414,9 @@
                             <button wire:click="editarget" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="editarget">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="editarget" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="editarget"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -2505,8 +2570,9 @@
                             <button wire:click="addConf" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="addConf">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="addConf" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="addConf"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -2592,8 +2658,9 @@
                             <button wire:click="editConf" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="editConf">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="editConf" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="editConf"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -2658,7 +2725,7 @@
                                                 class="sr-only peer">
                                             <div
                                                 class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500">
-                                                </div>
+                                            </div>
                                         </label>
                                         <span class="text-sm text-slate-600 font-Inter font-normal">Per Policy</span>
 
@@ -2667,11 +2734,11 @@
                                     <div class="flex items-center space-x-2 mt-3">
                                         <label
                                             class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                            <input wire:model="updatedSelectAvailable" type="checkbox" value=""
-                                                class="sr-only peer">
+                                            <input wire:model="updatedSelectAvailable" type="checkbox"
+                                                value="" class="sr-only peer">
                                             <div
                                                 class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500">
-                                                </div>
+                                            </div>
                                         </label>
                                         <span class="text-sm text-slate-600 font-Inter font-normal">Available for
                                             Selection</span>
@@ -2736,7 +2803,9 @@
                                 <div class="from-group mt-3">
                                     <label for="account" class="form-label">Account</label>
                                     @inject('helper', 'App\Helpers\Helpers')
-                                    <select id="account" class="form-control @error('updatedAccountId') !border-danger-500 @enderror" wire:model.defer="updatedAccountId">
+                                    <select id="account"
+                                        class="form-control @error('updatedAccountId') !border-danger-500 @enderror"
+                                        wire:model.defer="updatedAccountId">
                                         <option value="">Select Account</option>
                                         @php
                                             $printed_arr = [];
@@ -2746,7 +2815,8 @@
                                         @endforeach
                                     </select>
                                     @error('updatedAccountId')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
 
@@ -2759,8 +2829,9 @@
                             <button wire:click="updateComm" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="updateComm">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="updateComm" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="updateComm"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -2809,8 +2880,9 @@
                             <button wire:click="deleteConf" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-danger-500">
                                 <span wire:loading.remove wire:target="deleteConf">Yes, Delete</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="deleteConf" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="deleteConf"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
@@ -2860,8 +2932,9 @@
                             <button wire:click="deleteTarget" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-danger-500">
                                 <span wire:loading.remove wire:target="deleteTarget">Yes, Delete</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="deleteTarget" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="deleteTarget"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
@@ -2912,8 +2985,9 @@
                             <button wire:click="deletePymtDoc" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-danger-500">
                                 <span wire:loading.remove wire:target="deletePymtDoc">Yes, Delete</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="deletePymtDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="deletePymtDoc"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
 
                             </button>
                         </div>
@@ -2943,8 +3017,8 @@
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
+                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+                                    </path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -2972,7 +3046,8 @@
                         <div
                             class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                <iconify-icon icon="radix-icons:rocket" width="1.2em" height="1.2em"></iconify-icon>
+                                <iconify-icon icon="radix-icons:rocket" width="1.2em"
+                                    height="1.2em"></iconify-icon>
                                 Start Target Run
                             </h3>
                             <button wire:click="closeStartTargetRunSec" type="button"
@@ -3019,162 +3094,318 @@
                     </div>
                 </div>
             </div>
-        @endif
+    @endif
 
-        @if ($RemoveCommDocId)
-            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-                tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
-                style="display: block;">
-                <div class="modal-dialog relative w-auto pointer-events-none">
-                    <div
-                        class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+    @if ($RemoveCommDocId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
                                 rounded-md outline-none text-current">
-                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                            <!-- Modal header -->
-                            <div
-                                class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
-                                <h3 class="text-base font-medium text-white dark:text-white capitalize">
-                                    Remove Commission Document
-                                </h3>
-                                <button wire:click="DissRemoveCommDoc" type="button"
-                                    class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                Remove Commission Document
+                            </h3>
+                            <button wire:click="DissRemoveCommDoc" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
                                             dark:hover:bg-slate-600 dark:hover:text-white"
-                                    data-bs-dismiss="modal">
-                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                                                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span class="sr-only">Close modal</span>
-                                </button>
-                            </div>
-                            <!-- Modal body -->
-                            <div class="p-6 space-y-4">
-                                <h6 class="text-base text-slate-900 dark:text-white leading-6">
-                                    Are you sure ! you Want to remove commission Document ?
-                                </h6>
-                            </div>
-                            <!-- Modal footer -->
-                            <div
-                                class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                <button wire:click="removeCommDoc" data-bs-dismiss="modal"
-                                    class="btn inline-flex justify-center text-white bg-danger-500">Yes,
-                                    Remove</button>
-                            </div>
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <h6 class="text-base text-slate-900 dark:text-white leading-6">
+                                Are you sure ! you Want to remove commission Document ?
+                            </h6>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="removeCommDoc" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-danger-500">Yes,
+                                Remove</button>
                         </div>
                     </div>
                 </div>
             </div>
-        @endif
-        {{-- addCommSec --}}
-        @if ($addCommSec)
-            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-                tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
-                style="display: block;">
-                <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                    <div
-                        class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                            <!-- Modal header -->
-                            <div
-                                class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
-                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                    Add Sales Commission
-                                </h3>
-                                <button wire:click="toggleAddComm" type="button"
-                                    class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
-                                    data-bs-dismiss="modal">
-                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+        </div>
+    @endif
+    {{-- addCommSec --}}
+    @if ($addCommSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Add Sales Commission
+                            </h3>
+                            <button wire:click="toggleAddComm" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
                     11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                         clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span class="sr-only">Close modal</span>
-                                </button>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+
+                            <div class="from-group">
+                                <label for="commTitle" class="form-label">Title</label>
+                                <input type="text" name="commTitle"
+                                    class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror"
+                                    wire:model.defer="commTitle">
+                                @error('commTitle')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                             </div>
-                            <!-- Modal body -->
-                            <div class="p-6 space-y-4">
 
-                                <div class="from-group">
-                                    <label for="commTitle" class="form-label">Title</label>
-                                    <input type="text" name="commTitle"
-                                        class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror"
-                                        wire:model.defer="commTitle">
-                                    @error('commTitle')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="from-group">
-                                    <label for="commFrom" class="form-label">From</label>
-                                    <select name="commFrom" id="commFrom" class="form-control w-full mt-2"
-                                        wire:model="commFrom">
-                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
-                                            value="">
-                                            Select option</option>
-                                        @foreach ($FROMS as $FROM)
-                                            <option value="{{ $FROM }}"
-                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                {{ ucwords(str_replace('_', ' ', $FROM)) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="from-group">
-                                    <label for="commPer" class="form-label">Percentage</label>
-                                    <input type="number" min="0" max="100" name="commPer"
-                                        class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror"
-                                        wire:model.defer="commPer">
-                                    @error('commPer')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="from-group">
-                                    <label for="lastName" class="form-label">Sales Person</label>
-                                    <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                        wire:model="commUser">
-                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            Select user</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}"
-                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                {{ $user->first_name . ' ' . $user->last_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="from-group">
-                                    <label for="lastName" class="form-label">Note</label>
-                                    <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror"
-                                        wire:model.defer="newcommNote"></textarea>
-                                    @error('newcommNote')
-                                        <span
-                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                            <div class="from-group">
+                                <label for="commFrom" class="form-label">From</label>
+                                <select name="commFrom" id="commFrom" class="form-control w-full mt-2"
+                                    wire:model="commFrom">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
+                                        value="">
+                                        Select option</option>
+                                    @foreach ($FROMS as $FROM)
+                                        <option value="{{ $FROM }}"
+                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ ucwords(str_replace('_', ' ', $FROM)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <!-- Modal footer -->
-                            <div
-                                class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                                <button wire:click="addComm" data-bs-dismiss="modal"
-                                    class="btn inline-flex justify-center text-white bg-black-500">
-                                    Submit
-                                </button>
+
+                            <div class="from-group">
+                                <label for="commPer" class="form-label">Percentage</label>
+                                <input type="number" min="0" max="100" name="commPer"
+                                    class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror"
+                                    wire:model.defer="commPer">
+                                @error('commPer')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                             </div>
+
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Sales Person</label>
+                                <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
+                                    wire:model="commUser">
+                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                        Select user</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                            {{ $user->first_name . ' ' . $user->last_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="from-group">
+                                <label for="lastName" class="form-label">Note</label>
+                                <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror"
+                                    wire:model.defer="newcommNote"></textarea>
+                                @error('newcommNote')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addComm" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        @endif
+        </div>
+    @endif
 
-    </div>
+    <!-- Modal for Creating Main Journal Entry -->
+    @if ($createMainJournalEntryId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white">
+                                Create Main Journal Entry
+                            </h3>
+                            <button wire:click="closeCreateMainJournalEntryModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6">
+                            <p class="mb-4">Select an entry title for this journal entry:</p>
+
+                            <div class="grid gap-4">
+                                <div class="input-area">
+                                    <label for="entryTitleSearch" class="form-label">Search Entry Title</label>
+                                    <input id="entryTitleSearch" type="text"
+                                        wire:model.debounce.300ms="entryTitleSearch" class="form-control"
+                                        placeholder="Search by ID or name">
+                                </div>
+
+                                <div class="input-area">
+                                    <label for="selectedEntryTitleId" class="form-label">Entry Title</label>
+                                    <select id="selectedEntryTitleId" wire:model="selectedEntryTitleId"
+                                        class="form-control">
+                                        <option value="">-- Select Entry Title --</option>
+                                        @foreach ($entryTitles as $entryTitle)
+                                            <option value="{{ $entryTitle->id }}">{{ $entryTitle->id }} -
+                                                {{ $entryTitle->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('selectedEntryTitleId')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeCreateMainJournalEntryModal" type="button"
+                                class="btn btn-outline-secondary">
+                                Cancel
+                            </button>
+                            <button wire:click="createMainJournalEntry" type="button"
+                                class="btn inline-flex justify-center btn-dark">
+                                <span wire:loading.remove wire:target="createMainJournalEntry">Create Journal
+                                    Entry</span>
+                                <span wire:loading wire:target="createMainJournalEntry">
+                                    <iconify-icon class="text-xl spin-slow"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+    @endif
+
+    <!-- Modal for Creating Sales Journal Entry -->
+    @if ($createSalesJournalEntryId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white">
+                                Create Sales Journal Entry
+                            </h3>
+                            <button wire:click="closeCreateSalesJournalEntryModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6">
+                            <p class="mb-4">Select an entry title for this journal entry:</p>
+
+                            <div class="grid gap-4">
+                                <div class="input-area">
+                                    <label for="entryTitleSearchSales" class="form-label">Search Entry Title</label>
+                                    <input id="entryTitleSearchSales" type="text"
+                                        wire:model.debounce.300ms="entryTitleSearch" class="form-control"
+                                        placeholder="Search by ID or name">
+                                </div>
+
+                                <div class="input-area">
+                                    <label for="selectedEntryTitleIdSales" class="form-label">Entry Title</label>
+                                    <select id="selectedEntryTitleIdSales" wire:model="selectedEntryTitleId"
+                                        class="form-control">
+                                        <option value="">-- Select Entry Title --</option>
+                                        @foreach ($entryTitles as $entryTitle)
+                                            <option value="{{ $entryTitle->id }}">{{ $entryTitle->id }} -
+                                                {{ $entryTitle->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('selectedEntryTitleId')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeCreateSalesJournalEntryModal" type="button"
+                                class="btn btn-outline-secondary">
+                                Cancel
+                            </button>
+                            <button wire:click="createSalesJournalEntry" type="button"
+                                class="btn inline-flex justify-center btn-dark">
+                                <span wire:loading.remove wire:target="createSalesJournalEntry">Create Journal
+                                    Entry</span>
+                                <span wire:loading wire:target="createSalesJournalEntry">
+                                    <iconify-icon class="text-xl spin-slow"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+    @endif
+
+</div>
 
 </div>

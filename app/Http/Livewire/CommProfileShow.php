@@ -24,6 +24,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 use App\Models\Accounting\Account;
+use App\Models\Accounting\JournalEntry;
+use App\Models\Accounting\EntryTitle;
 
 use function Clue\StreamFilter\fun;
 
@@ -129,7 +131,14 @@ class CommProfileShow extends Component
     // For account selection
     public $accounts_list = [];
 
-    protected $listeners = ['deleteProfile', 'refreshBalances']; //functions need confirmation
+    // For journal entry creation
+    public $createMainJournalEntryId = null;
+    public $createSalesJournalEntryId = null;
+    public $selectedEntryTitleId = null;
+    public $entryTitleSearch = '';
+    public $entryTitles = [];
+
+    protected $listeners = ['deleteProfile', 'refreshBalances', 'createMainJournalEntry', 'createSalesJournalEntry']; //functions need confirmation
 
     public $section = 'payments';
 
@@ -1175,6 +1184,11 @@ class CommProfileShow extends Component
 
         $SALES_COMM_STATUSES = SalesComm::PYMT_STATES;
 
+        // Default entry titles if not actively searching
+        if (empty($this->entryTitles)) {
+            $this->loadEntryTitles();
+        }
+
         return view('livewire.comm-profile-show', [
             'profileTypes' => $profileTypes,
             'users' => $users,
@@ -1190,5 +1204,148 @@ class CommProfileShow extends Component
             'client_payments' => $client_payments,
             'SALES_COMM_STATUSES' => $SALES_COMM_STATUSES
         ]);
+    }
+
+    /**
+     * Open the modal for creating a main journal entry
+     */
+    public function openCreateMainJournalEntryModal($id)
+    {
+        $this->createMainJournalEntryId = $id;
+        $this->selectedEntryTitleId = null;
+        $this->entryTitleSearch = '';
+        $this->loadEntryTitles();
+    }
+
+    /**
+     * Open the modal for creating a sales journal entry
+     */
+    public function openCreateSalesJournalEntryModal($id)
+    {
+        $this->createSalesJournalEntryId = $id;
+        $this->selectedEntryTitleId = null;
+        $this->entryTitleSearch = '';
+        $this->loadEntryTitles();
+    }
+
+    /**
+     * Load entry titles for dropdown based on search criteria
+     */
+    public function loadEntryTitles()
+    {
+        $query = EntryTitle::query();
+        
+        if (!empty($this->entryTitleSearch)) {
+            $query->where(function($q) {
+                $q->where('name', 'like', '%' . $this->entryTitleSearch . '%')
+                  ->orWhere('id', 'like', '%' . $this->entryTitleSearch . '%');
+            });
+        }
+        
+        $this->entryTitles = $query->orderBy('id')->limit(20)->get();
+    }
+
+    /**
+     * Watch for changes in entry title search and update results
+     */
+    public function updatedEntryTitleSearch()
+    {
+        $this->loadEntryTitles();
+    }
+
+    /**
+     * Close the main journal entry modal
+     */
+    public function closeCreateMainJournalEntryModal()
+    {
+        $this->createMainJournalEntryId = null;
+        $this->selectedEntryTitleId = null;
+        $this->entryTitleSearch = '';
+        $this->entryTitles = [];
+    }
+
+    /**
+     * Close the sales journal entry modal
+     */
+    public function closeCreateSalesJournalEntryModal()
+    {
+        $this->createSalesJournalEntryId = null;
+        $this->selectedEntryTitleId = null;
+        $this->entryTitleSearch = '';
+        $this->entryTitles = [];
+    }
+
+    /**
+     * Create a main journal entry for the payment
+     */
+    public function createMainJournalEntry()
+    {
+        $this->validate([
+            'selectedEntryTitleId' => 'required|exists:entry_titles,id',
+        ]);
+        
+        try {
+            $payment = CommProfilePayment::find($this->createMainJournalEntryId);
+            
+            if (!$payment) {
+                $this->alert('failed', 'Payment not found');
+                return;
+            }
+            
+            if ($payment->journal_entry_id) {
+                $this->alert('failed', 'Journal entry already exists for this payment');
+                return;
+            }
+
+            $result = $payment->createMainJournalEntry($this->selectedEntryTitleId);
+            
+            if ($result) {
+                $this->closeCreateMainJournalEntryModal();
+                $this->mount($this->profile->id);
+                $this->alert('success', 'Main journal entry created successfully');
+            } else {
+                $this->alert('failed', 'Failed to create journal entry');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error creating main journal entry: ' . $e->getMessage());
+            $this->alert('failed', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Create a sales journal entry for the payment
+     */
+    public function createSalesJournalEntry()
+    {
+        $this->validate([
+            'selectedEntryTitleId' => 'required|exists:entry_titles,id',
+        ]);
+        
+        try {
+            $payment = CommProfilePayment::find($this->createSalesJournalEntryId);
+            
+            if (!$payment) {
+                $this->alert('failed', 'Payment not found');
+                return;
+            }
+            
+            if ($payment->journal_entry_id) {
+                $this->alert('failed', 'Journal entry already exists for this payment');
+                return;
+            }
+
+            $result = $payment->createSalesJournalEntry($this->selectedEntryTitleId);
+            
+            if ($result) {
+                $this->closeCreateSalesJournalEntryModal();
+                $this->mount($this->profile->id);
+                $this->alert('success', 'Sales journal entry created successfully');
+            } else {
+                $this->alert('failed', 'Failed to create journal entry');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error creating sales journal entry: ' . $e->getMessage());
+            $this->alert('failed', 'Error: ' . $e->getMessage());
+        }
     }
 }
