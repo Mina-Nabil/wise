@@ -59,10 +59,10 @@ class EntryTitle extends Model
         $entry_accounts_ids = $this->accounts->pluck('id')->toArray();
         foreach ($accounts as $account_id => $entry_arr) {
             $tmpAccount = Account::with('parent_account')->findOrFail($account_id);
-            Log::info("tmpAccount", ['tmpAccount' => $tmpAccount]);
             while (!in_array($tmpAccount->id, $entry_accounts_ids)) {
                 $tmpAccount = $tmpAccount->parent_account;
             }
+            
             $entryAccount = $this->accounts->firstWhere('id', $tmpAccount->id);
 
             if ($entryAccount->pivot->limit && $entryAccount->pivot->nature == $entry_arr['nature'] && $entryAccount->pivot->limit < $entry_arr['amount']) {
