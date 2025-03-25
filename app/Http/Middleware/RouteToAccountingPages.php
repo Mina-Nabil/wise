@@ -28,6 +28,7 @@ class RouteToAccountingPages
             && !str_starts_with($request->path(), 'commissions')
             && !str_starts_with($request->path(), 'payments')
             && !str_starts_with($request->path(), 'customers')
+            && !str_starts_with($request->path(), 'tasks')
             && $request->path() != '/'
             && !str_starts_with($request->path(), 'reports')
             && !str_starts_with($request->path(), 'outstanding-sold-policies')

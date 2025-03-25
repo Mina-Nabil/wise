@@ -80,6 +80,9 @@ class TaskAction extends Model
             if ($this->column_name == 'cancellation_time') {
                 $this->task->taskable->cancelSoldPolicy();
             }
+            // if($this->column_name == 'gross_premium'){
+            //     $this->task->taskable->refreshPaymentInfo();
+            // }
             $new_val = $this->value ?? 'NULL';
             AppLog::info("Tast Action done", desc: "Changed column {$this->column_name} - {$this->value} to $new_val", loggable: $this);
             return true;
