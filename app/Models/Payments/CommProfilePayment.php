@@ -25,6 +25,8 @@ class CommProfilePayment extends Model
 {
     use HasFactory;
 
+    const MORPH_TYPE = 'comm_profile_payment';
+
     const FILES_DIRECTORY = 'sold_policies/comm_prof_pymt_docs/';
 
     const PYMT_TYPE_CASH = 'cash';

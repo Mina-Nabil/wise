@@ -37,6 +37,7 @@ use App\Models\Offers\OfferOption;
 use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
 use App\Models\Payments\CommProfileConf;
+use App\Models\Payments\CommProfilePayment;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\Invoice;
 use App\Models\Payments\PolicyComm;
@@ -122,7 +123,7 @@ class AppServiceProvider extends ServiceProvider
             Interest::MORPH_TYPE => Interest::class,
             CorporatesInterest::MORPH_TYPE => CorporatesInterest::class,
             Invoice::MORPH_TYPE => Invoice::class,
-
+            CommProfilePayment::MORPH_TYPE => CommProfilePayment::class,
 
         ]);
     }
