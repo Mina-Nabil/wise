@@ -24,6 +24,9 @@ class Account extends Model
     const TRANS_FEES_ACCOUNT_ID = 3101;
     const BANK_ACCOUNT_PARENT_ID = 2878;
 
+    const OHDA_ACCOUNT_ID = 2877;
+    const OTHER_DEBIT_ACCOUNT_ID = 3197;
+
     protected $table = 'accounts';
     protected $fillable = [
         'code',

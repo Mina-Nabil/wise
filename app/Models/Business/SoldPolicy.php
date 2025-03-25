@@ -466,6 +466,21 @@ class SoldPolicy extends Model
         }
     }
 
+    public function unsetClientPaymentDate()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateClientPayments', $this)) return false;
+        try {
+            $this->is_paid = 0;
+            $this->client_payment_date = null;
+            return $this->save();
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     /** Use only when client who paid in the past cancelled his payment. */
     public function setClientCancellationDate(Carbon $date)
     {

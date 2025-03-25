@@ -77,7 +77,7 @@ class SoldPolicyPolicy
      */
     public function viewCommission(User $user, SoldPolicy $soldPolicy=null)
     {
-        return $user->is_admin ||  $user->is_finance ;
+        return $user->is_admin ||  $user->is_user_finance ;
     }
 
     /**
@@ -89,7 +89,7 @@ class SoldPolicyPolicy
      */
     public function updatePayments(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin ||  $user->is_finance || $user->id == 12 || $user->id == $soldPolicy->main_sales_id;
+        return $user->is_admin ||  $user->id == 12 || $user->id == $soldPolicy->main_sales_id;
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace App\Models\Payments;
 
+use App\Models\Accounting\Account;
+use App\Models\Accounting\JournalEntry;
 use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -59,6 +61,80 @@ class CommProfilePayment extends Model
     ];
 
     ///model functions
+    public function createMainJournalEntry($entry_title_id)
+    {
+        $this->load('comm_profile');
+        if (!$this->comm_profile->account_id) throw new Exception("Comm Profile has no account");
+        if ($this->journal_entry_id) throw new Exception("Journal Entry already created");
+        try {
+
+            DB::transaction(function () use ($entry_title_id) {
+                $this->load('sales_commissions', 'sales_commissions.sold_policy');
+                $total_gross = $this->sales_commissions->sum('sold_policy.gross_amount');
+                $total_comm = $this->amount;
+                $diff = $total_gross - $total_comm;
+
+                $journalEntry = JournalEntry::newJournalEntry($entry_title_id, skip_auth: true, accounts: [
+                    $this->comm_profile->account_id =>  [
+                        'nature' => Account::NATURE_DEBIT,
+                        'amount' => $total_comm,
+                        'currency' => JournalEntry::CURRENCY_EGP,
+                    ],
+                    Account::OHDA_ACCOUNT_ID => [
+                        'nature' => Account::NATURE_DEBIT,
+                        'amount' => $diff,
+                        'currency' => JournalEntry::CURRENCY_EGP,
+                    ],
+                    Account::OTHER_DEBIT_ACCOUNT_ID => [
+                        'nature' => Account::NATURE_CREDIT,
+                        'amount' => $total_gross,
+                        'currency' => JournalEntry::CURRENCY_EGP,
+                    ],
+                ]);
+                $this->journal_entry_id = $journalEntry->id;
+                $this->save();
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Creating Journal Entry failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    public function createSalesJournalEntry($entry_title_id)
+    {
+        $this->load('comm_profile');
+        if (!$this->comm_profile->account_id) throw new Exception("Comm Profile has no account");
+        if ($this->journal_entry_id) throw new Exception("Journal Entry already created");
+        try {
+
+            DB::transaction(function () use ($entry_title_id) {
+
+                $journalEntry = JournalEntry::newJournalEntry($entry_title_id, skip_auth: true, accounts: [
+                    $this->comm_profile->account_id =>  [
+                        'nature' => Account::NATURE_DEBIT,
+                        'amount' => $this->amount,
+                        'currency' => JournalEntry::CURRENCY_EGP,
+                    ],
+                    Account::OHDA_ACCOUNT_ID => [
+                        'nature' => Account::NATURE_CREDIT,
+                        'amount' => $this->amount,
+                        'currency' => JournalEntry::CURRENCY_EGP,
+                    ]
+                ]);
+                $this->journal_entry_id = $journalEntry->id;
+                $this->save();
+            });
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Creating Journal Entry failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+
     public function setInfo($amount, $type, $note = null)
     {
         assert($this->status == self::PYMT_STATE_NEW, "Payment is not new, can't be updated");
@@ -190,7 +266,6 @@ class CommProfilePayment extends Model
                     "status"  =>  self::PYMT_STATE_CANCELLED,
                 ]);
             });
-      
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Profile Payment info failed", desc: $e->getMessage(), loggable: $this);

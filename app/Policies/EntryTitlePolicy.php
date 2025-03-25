@@ -57,6 +57,11 @@ class EntryTitlePolicy
         return true;
     }
 
+    public function updateAllowedUsers(User $user, EntryTitle $entryTitle)
+    {
+        return $user->is_admin;
+    }
+
     /**
      * Determine whether the user can create title entry
      *

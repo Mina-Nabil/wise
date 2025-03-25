@@ -302,6 +302,7 @@ class ClientPayment extends Model
                     $this->sold_policy->generatePolicyCommissions(true);
                     $this->sold_policy->calculateTotalClientPayments();
                     $this->sold_policy->updateSalesCommsPaymentInfo();
+                    $this->sold_policy->unsetClientPaymentDate();
                 }
             } catch (Exception $e) {
                 report($e);

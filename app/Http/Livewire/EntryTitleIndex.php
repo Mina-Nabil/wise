@@ -173,6 +173,12 @@ class EntryTitleIndex extends Component
         $this->reset(['isAllowedModalOpen', 'selectedEntryId', 'loadedUsers']);
     }
 
+    public function clearAllowedUsers(){
+        $title = EntryTitle::findOrFail($this->selectedEntryId);
+        $title->clearAllowedUsers();
+        $this->closeUsersModal();
+    }
+
     public function render()
     {
         $accounts_list = Account::all();

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -53,7 +54,7 @@ class EntryTitle extends Model
     /////////model functions
     public function isEntryValid($accounts)
     {
-        if($this->id == 1) return true;
+        if ($this->id == 1) return true;
         $this->load('accounts');
         $entry_accounts_ids = $this->accounts->pluck('id')->toArray();
         foreach ($accounts as $account_id => $entry_arr) {
@@ -73,18 +74,31 @@ class EntryTitle extends Model
     public function setAllowedUsers($user_ids)
     {
         /** @var User */
-        $logged_user = auth()->user();
-        if($logged_user->can('manageTitle', JournalEntry::class)){
-            $this->allowed_users()->sync($user_ids);
-            return;
+        $logged_user = Auth::user();
+        if (!$logged_user->can('updateAllowedUsers', $this)) {
+            return false;
         }
+        $this->allowed_users()->sync($user_ids);
+        return true;
+    }
 
+    public function clearAllowedUsers()
+    {
+        /** @var User */
+        $logged_user = Auth::user();
+        if (!$logged_user->can('updateAllowedUsers', $this)) {
+            return false;
+        }
+        $this->allowed_users()->sync([]);
+        return true;
     }
 
     public function allowedTo(User $user)
     {
+
         return $this->allowed_users()->get()->pluck('id')->contains($user->id);
     }
+
 
     /** 
      * Must show a warning before the edit. That it's going to update title on old journal entries
