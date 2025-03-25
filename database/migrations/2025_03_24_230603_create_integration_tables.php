@@ -15,7 +15,6 @@ return new class extends Migration
      */
     public function up()
     {
-        self::down();
         Schema::table('comm_profiles', function (Blueprint $table) {
             $table->foreignIdFor(Account::class)->nullable()->constrained('accounts')->onDelete('set null');
         });
