@@ -25,6 +25,9 @@ class JournalEntry extends Model
     const MORPH_TYPE = 'journal_entry';
     const FILES_DIRECTORY = 'journal_entries/';
 
+    const INVOICE_CREATED_ID = 7;
+    const INVOICE_PAID_ID = 8;
+
     use HasFactory;
     protected $table = 'journal_entries';
     protected $fillable = [
@@ -87,31 +90,31 @@ class JournalEntry extends Model
         $comment = null,
         $user_id = null,
         $approver_id = null,
-        $is_seeding = false,
+        $skip_auth = false,
         $accounts = [],
         $extra_note = null
     ): self|UnapprovedEntry|string|false {
 
-      /** @var EntryTitle */
-      $entry = EntryTitle::findOrFail($entry_title_id);
+        /** @var EntryTitle */
+        $entry = EntryTitle::findOrFail($entry_title_id);
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$is_seeding && !$loggedInUser->can('createEntry', $entry)) return false;
-        if (!$is_seeding) {
+        if (!$skip_auth && !$loggedInUser->can('createEntry', $entry)) return false;
 
-            $total_debit = 0;
-            $total_credit = 0;
 
-            foreach ($accounts as $ac) {
-                if ($ac['nature'] == 'debit') $total_debit += round($ac['amount'], 2);
-                else $total_credit += round($ac['amount'], 2);
-            }
+        $total_debit = 0;
+        $total_credit = 0;
 
-            if (round($total_credit - $total_debit) != 0) return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
+        foreach ($accounts as $ac) {
+            if ($ac['nature'] == 'debit') $total_debit += round($ac['amount'], 2);
+            else $total_credit += round($ac['amount'], 2);
         }
 
+        if (round($total_credit - $total_debit) != 0) return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
+
+
         //////////////////////////////loading & checking data//////////////////////////////
-  
+
         $day_serial = self::getTodaySerial();
 
         if (!$revert_entry_id && !$approver_id && !$entry->isEntryValid($accounts)) return UnapprovedEntry::newEntry(
@@ -119,8 +122,8 @@ class JournalEntry extends Model
             $cash_entry_type,
             $receiver_name,
             $comment,
-            $accounts, 
-            $extra_note 
+            $accounts,
+            $extra_note
         );
 
 
@@ -144,15 +147,15 @@ class JournalEntry extends Model
 
         try {
             ///////////////////////////////saving entry
-            DB::transaction(function () use ($newEntry, $accounts, $is_seeding) {
+            DB::transaction(function () use ($newEntry, $accounts, $skip_auth) {
 
                 $newEntry->save();
                 foreach ($accounts as $account_id => $entry_arr) {
                     /** @var Account */
                     $account = Account::findOrFail($account_id);
-                    $entry_arr['account_balance'] =  $account->updateBalance($entry_arr['amount'], $entry_arr['nature'], $is_seeding);
+                    $entry_arr['account_balance'] =  $account->updateBalance($entry_arr['amount'], $entry_arr['nature'], $skip_auth);
                     if ($entry_arr['currency'] && $entry_arr['currency'] != self::CURRENCY_EGP && $entry_arr['currency'] == $account->default_currency) {
-                        $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['currency'], $entry_arr['nature'], $is_seeding);
+                        $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['currency'], $entry_arr['nature'], $skip_auth);
                     }
                     $newEntry->accounts()->attach($account_id, $entry_arr);
                 }

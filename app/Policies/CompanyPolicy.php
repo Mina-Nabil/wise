@@ -42,7 +42,7 @@ class CompanyPolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
@@ -54,7 +54,7 @@ class CompanyPolicy
      */
     public function update(User $user, Company $company)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**

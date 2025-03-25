@@ -23,6 +23,7 @@ use App\Models\Payments\SalesComm;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
+use App\Models\Accounting\Account;
 
 use function Clue\StreamFilter\fun;
 
@@ -42,6 +43,7 @@ class CommProfileShow extends Component
     public $updatedTitle;
     public $updatedDesc;
     public $updatedAvailableForId;
+    public $updatedAccountId;
 
     public $editedRowId;
 
@@ -123,6 +125,9 @@ class CommProfileShow extends Component
     public $salesCommSearch = '';
     public $salesCommSearchResults = [];
     public $selectedSalesComm = null;
+
+    // For account selection
+    public $accounts_list = [];
 
     protected $listeners = ['deleteProfile', 'refreshBalances']; //functions need confirmation
 
@@ -1022,6 +1027,19 @@ class CommProfileShow extends Component
         $this->updatedTitle = $this->profile->title;
         $this->updatedDesc = $this->profile->desc;
         $this->updatedSelectAvailable = $this->profile->select_available;
+        $this->updatedAccountId = $this->profile->account_id;
+        
+        // Load accounts for the dropdown
+        $this->accounts_list = Account::whereNull('parent_account_id')
+            ->with('children_accounts')
+            ->get();
+    }
+
+    public function closeUpdateSec()
+    {
+        $this->updatedCommSec = false;
+        $this->updatedAccountId = null;
+        $this->accounts_list = [];
     }
 
     public function updateComm()
@@ -1042,9 +1060,19 @@ class CommProfileShow extends Component
             'updatedPerPolicy' => 'boolean',
             'updatedSelectAvailable' => 'boolean',
             'updatedDesc' => 'nullable|string',
+            'updatedAccountId' => 'nullable|exists:accounts,id',
         ]);
 
-        $res = $this->profile->editProfile($this->updatedType, $this->updatedPerPolicy, $this->updatedTitle, $this->updatedDesc, $this->updatedSelectAvailable, $this->updatedAutomaticOverrideId, $this->updatedAvailableForId);
+        $res = $this->profile->editProfile(
+            $this->updatedType, 
+            $this->updatedPerPolicy, 
+            $this->updatedTitle, 
+            $this->updatedDesc, 
+            $this->updatedSelectAvailable, 
+            $this->updatedAutomaticOverrideId, 
+            $this->updatedAvailableForId,
+            $this->updatedAccountId
+        );
 
         if ($res) {
             $this->updatedCommSec = false;
@@ -1052,11 +1080,6 @@ class CommProfileShow extends Component
         } else {
             $this->alert('failed', 'server error!');
         }
-    }
-
-    public function closeUpdateSec()
-    {
-        $this->updatedCommSec = false;
     }
 
     public function showPaymentNote($id)

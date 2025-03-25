@@ -7,6 +7,7 @@ use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Models\Insurance\InvoiceExtra;
 use App\Models\Payments\Invoice;
+use App\Models\Accounting\Account;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -40,7 +41,9 @@ class CompanyShow extends Component
 
     public $companyInfoName;
     public $companyInfoNote;
+    public $companyInfoAccountId;
     public $editInfoSec;
+    public $accounts_list;
 
     // Invoice extras properties
     public $newExtraSection = false;
@@ -52,7 +55,14 @@ class CompanyShow extends Component
     public $confirmDeleteExtraId = null;
     public $selectedExtras = []; // Array to store selected extra IDs
 
-    protected $listeners = ['deleteInvoice', 'confirmInvoice', 'deleteExtra']; //functions need confirmation
+    // New properties for invoice journal entries
+    public $createJournalEntryId = null;
+    public $createPaidJournalEntryId = null;
+    public $bankAccountId = null;
+    public $transFees = 0;
+    public $bankAccountsParent = [];
+
+    protected $listeners = ['deleteInvoice', 'confirmInvoice', 'deleteExtra', 'createJournalEntry', 'createPaidJournalEntry']; //functions need confirmation
 
     public $newEmailSec = false;
     public $type = CompanyEmail::TYPES[0];
@@ -66,6 +76,97 @@ class CompanyShow extends Component
     public $confirmDate;
 
     public $Emailtypes = CompanyEmail::TYPES;
+
+    // New methods for invoice journal entries
+    public function openCreateJournalEntryModal($id)
+    {
+        $this->createJournalEntryId = $id;
+    }
+
+    public function closeCreateJournalEntryModal()
+    {
+        $this->createJournalEntryId = null;
+    }
+
+    public function createJournalEntry()
+    {
+        try {
+            /** @var Invoice */
+            $invoice = Invoice::find($this->createJournalEntryId);
+            
+            if (!$invoice) {
+                $this->alert('failed', 'Invoice not found');
+                return;
+            }
+            
+            if ($invoice->created_journal_entry_id) {
+                $this->alert('failed', 'Journal entry already exists for this invoice');
+                return;
+            }
+
+            $result = $invoice->createCreatedJournalEntry();
+            
+            if ($result) {
+                $this->closeCreateJournalEntryModal();
+                $this->mount($this->company->id, false);
+                $this->alert('success', 'Invoice Created journal entry created successfully');
+            } else {
+                $this->alert('failed', 'Failed to create journal entry');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error creating journal entry: ' . $e->getMessage());
+            $this->alert('failed', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    public function openCreatePaidJournalEntryModal($id)
+    {
+        $this->createPaidJournalEntryId = $id;
+        $this->bankAccountId = null;
+        $this->transFees = 0;
+    }
+
+    public function closeCreatePaidJournalEntryModal()
+    {
+        $this->createPaidJournalEntryId = null;
+        $this->bankAccountId = null;
+        $this->transFees = 0;
+    }
+
+    public function createPaidJournalEntry()
+    {
+        $this->validate([
+            'bankAccountId' => 'required|exists:accounts,id',
+            'transFees' => 'required|numeric|min:0',
+        ]);
+        
+        try {
+            $invoice = Invoice::find($this->createPaidJournalEntryId);
+            
+            if (!$invoice) {
+                $this->alert('failed', 'Invoice not found');
+                return;
+            }
+            
+            if ($invoice->paid_journal_entry_id) {
+                $this->alert('failed', 'Paid journal entry already exists for this invoice');
+                return;
+            }
+
+            $result = $invoice->createPaidJournalEntry($this->bankAccountId, $this->transFees);
+            
+            if ($result) {
+                $this->closeCreatePaidJournalEntryModal();
+                $this->mount($this->company->id, false);
+                $this->alert('success', 'Invoice Paid journal entry created successfully');
+            } else {
+                $this->alert('failed', 'Failed to create paid journal entry');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error creating paid journal entry: ' . $e->getMessage());
+            $this->alert('failed', 'Error: ' . $e->getMessage());
+        }
+    }
 
     // Invoice Extras functions
     public function openNewExtraSection()
@@ -239,12 +340,15 @@ class CompanyShow extends Component
     {
         $this->companyInfoName = $this->company->name;
         $this->companyInfoNote = $this->company->note;
+        $this->companyInfoAccountId = $this->company->account_id;
+        // Load accounts list for dropdown
+        $this->accounts_list = Account::whereNull('parent_account_id')->with('children_accounts')->get();
         $this->editInfoSec = true;
     }
 
     public function closeEditInfo()
     {
-        $this->reset(['companyInfoName', 'companyInfoNote', 'editInfoSec']);
+        $this->reset(['companyInfoName', 'companyInfoNote', 'companyInfoAccountId', 'editInfoSec']);
     }
 
     public function saveChanges()
@@ -252,17 +356,19 @@ class CompanyShow extends Component
         $this->validate(
             [
                 'companyInfoName' => 'required|string|max:255',
-                'companyInfoNote' => 'string',
+                'companyInfoNote' => 'nullable|string',
+                'companyInfoAccountId' => 'nullable|exists:accounts,id',
             ],
             [],
             [
                 'companyInfoName' => 'Company Name',
                 'companyInfoNote' => 'Note',
+                'companyInfoAccountId' => 'Account',
             ],
         );
 
         $company = Company::findOrFail($this->company->id);
-        $success = $company->editInfo($this->companyInfoName, $this->companyInfoNote);
+        $success = $company->editInfo($this->companyInfoName, $this->companyInfoNote, $this->companyInfoAccountId);
 
         if ($success) {
             $this->closeEditInfo();
@@ -422,6 +528,8 @@ class CompanyShow extends Component
             $this->serial = Invoice::getNextSerial();
         }
         $this->company = Company::find($company_id);
+        $this->bankAccountsParent = Account::where('id', Account::BANK_ACCOUNT_PARENT_ID)->with('children_accounts')->get();
+
     }
 
     public function updatedSeachAvailablePoliciesText()
@@ -446,17 +554,16 @@ class CompanyShow extends Component
             
         $soldPolicies = []; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
 
+        // Load company with invoices
+        $this->company->load(['invoices' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }]);
 
         $this->available_policies = SoldPolicy::when($this->seachAvailablePoliciesText, fn($q) => $q->searchByPolicyNumber($this->seachAvailablePoliciesText))
             ->byCompany(
                 company_id: $this->company->id,
                 is_paid: $this->availableSoldPolicies_isNotPaid === "0" ? null : false
             )
-            // ->only2025()
-            // ->orwhere('sold_policies.id', 1798)
-            // ->orwhere('sold_policies.id', 2092)
-            // ->orwhere('sold_policies.id', 1015)
-            // ->orwhere('sold_policies.id', 2334)
             ->paginate(8);
 
         return view('livewire.company-show', [

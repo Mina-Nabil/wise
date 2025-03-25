@@ -49,7 +49,8 @@ class CommProfile extends Model
         'unapproved_balance',
         'select_available', //Available for Selection
         'available_for_id',
-        'auto_override_id'
+        'auto_override_id',
+        'account_id'
     ];
 
     ///static functions
@@ -62,6 +63,7 @@ class CommProfile extends Model
         bool $select_available = false, //switch,
         $auto_override_id = null, //can be linked to user
         $available_for_id = null, //can be linked to user
+        $account_id = null, //can be linked to an account
     ): self|bool {
         /** @var User */
         $user = Auth::user();
@@ -82,6 +84,7 @@ class CommProfile extends Model
                 "auto_override_id"  =>  $auto_override_id,
                 "available_for_id"  =>  $available_for_id,
                 "desc"          =>  $desc,
+                "account_id"    =>  $account_id,
             ]);
             AppLog::error("creating new comm profile");
             $newComm->save();
@@ -177,35 +180,35 @@ class CommProfile extends Model
         return false;
     }
 
-    public function editProfile(
-        $type,
-        bool $per_policy,
-        string $title = null,
-        string $desc = null,
-        bool $select_available = false, //switch
-        $auto_override_id = null,
-        $available_for_id = null,
-    ) {
-
-        /** @var User */
-        $user = Auth::user();
-        if (!$user->can('update', $this)) return false;
-
+    public function editProfile($type, $per_policy, $title = null, $desc = null, $select_available = false, $auto_override_id = null, $available_for_id = null, $account_id = null)
+    {
         try {
-            $this->update([
-                "type"          =>  $type,
-                "per_policy"    =>  $per_policy,
-                "select_available"    =>  $select_available,
-                "auto_override_id"  =>  $auto_override_id,
-                "available_for_id"  =>  $available_for_id,
-                "title"         =>  $title,
-                "desc"          =>  $desc,
-            ]);
-            AppLog::info("Edited comm profile",  loggable: $this);
-            return $this->save();
-        } catch (Exception $e) {
-            report($e);
-            AppLog::error("Can't edit comm profile", desc: $e->getMessage(), loggable: $this);
+            if ($this->user_id && !$title) {
+                $title = $this->title;
+            }
+            $this->type = $type;
+            $this->per_policy = $per_policy;
+            $this->title = $title;
+            $this->desc = $desc;
+            $this->select_available = $select_available;
+            $this->auto_override_id = $auto_override_id;
+            $this->available_for_id = $available_for_id;
+            $this->account_id = $account_id;
+            
+            $res = $this->save();
+            if (!$res) {
+                throw new \Exception("Error editing commission profile", 1);
+            }
+            
+            if (env('IS_API')) {
+                Log::write('info', "Profile updated by api");
+            } else {
+                Log::write('info', "Profile {$this->id} updated by " . auth()->user()->email);
+            }
+            
+            return true;
+        } catch (\Exception $e) {
+            Log::write('error', $e->getMessage() . $e->getTraceAsString());
             return false;
         }
     }
@@ -516,5 +519,13 @@ class CommProfile extends Model
     public function offers(): BelongsToMany
     {
         return $this->belongsToMany(Offer::class, "offer_comm_profiles");
+    }
+
+    /**
+     * Get the account associated with the commission profile.
+     */
+    public function account()
+    {
+        return $this->belongsTo(\App\Models\Account::class);
     }
 }

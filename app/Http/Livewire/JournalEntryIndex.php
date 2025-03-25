@@ -280,8 +280,11 @@ class JournalEntryIndex extends Component
         $this->dispatchBrowserEvent('openNewTab', ['url' => route('accounts.show', $id)]);
     }
 
-    public function mount()
+    public function mount($id = null)
     {
+        if ($id) {
+            $this->showThisChildAccount($id);
+        }
         $this->Sentries = JournalEntry::all();
         $this->authorize('viewAny', JournalEntry::class);
         if ($this->AccountId) {

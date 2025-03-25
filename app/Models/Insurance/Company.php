@@ -3,12 +3,14 @@
 namespace App\Models\Insurance;
 
 use App\Exceptions\UnauthorizedException;
+use App\Models\Accounting\Account;
 use App\Models\Payments\Invoice;
 use App\Models\Users\AppLog;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,19 +23,21 @@ class Company extends Model
     protected $table = 'insurance_companies';
     protected $fillable = [
         'name',  //company name
-        'note'  //note about the company (nullable)
+        'note',  //note about the company (nullable)
+        'account_id'  //foreign key to accounts table
     ];
 
     ///static functions
-    public static function newCompany($name, $note = null): self|false
+    public static function newCompany($name, $note = null, $account_id = null): self|false
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('create', self::class)) throw new UnauthorizedException();
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) throw new UnauthorizedException();
 
         $newCompany = new self([
             "name"  =>  $name,
-            "note"  =>  $note
+            "note"  =>  $note,
+            "account_id" => $account_id
         ]);
 
         try {
@@ -48,16 +52,17 @@ class Company extends Model
     }
 
     ///model functions
-    public function editInfo($name, $note = null): bool
+    public function editInfo($name, $note = null, $account_id = null): bool
     {
         /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
 
         try {
             $this->update([
                 "name"  =>  $name,
-                "note"  =>  $note
+                "note"  =>  $note,
+                "account_id" => $account_id
             ]);
 
             AppLog::info('Company data update', "Company $name ($this->id) updated successfully", $this);
@@ -142,5 +147,9 @@ class Company extends Model
     public function invoiceExtras(): HasMany
     {
         return $this->hasMany(InvoiceExtra::class)->orderBy('id', 'desc');
+    }
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 }

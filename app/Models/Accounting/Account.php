@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -19,6 +18,11 @@ class Account extends Model
 {
     use HasFactory;
     const MORPH_TYPE = 'account';
+
+    const SALES_EGP_ACCOUNT_ID = 2896;
+    const TAX_ACCOUNT_ID = 3133;
+    const TRANS_FEES_ACCOUNT_ID = 3101;
+    const BANK_ACCOUNT_PARENT_ID = 2878;
 
     protected $table = 'accounts';
     protected $fillable = [
@@ -198,7 +202,7 @@ class Account extends Model
                     }
                 }
 
-                $starting_entry = JournalEntry::newJournalEntry(1, is_seeding: true, accounts: $found_balances);
+                $starting_entry = JournalEntry::newJournalEntry(1, skip_auth: true, accounts: $found_balances);
                 if (!$starting_entry) {
                     throw new Exception('Import failed please check balances');
                 }
@@ -259,9 +263,9 @@ class Account extends Model
     }
 
     /** returns new balance after update */
-    public function updateBalance($amount, $type, $is_seeding = false)
+    public function updateBalance($amount, $type, $skip_auth = false)
     {
-        if (!$is_seeding) {
+        if (!$skip_auth) {
             /** @var User */
             $loggedInUser = Auth::user();
             if (!$loggedInUser->can('update', $this)) {
@@ -282,9 +286,9 @@ class Account extends Model
         }
     }
 
-    public function updateForeignBalance($amount, $type, $is_seeding = false)
+    public function updateForeignBalance($amount, $type, $skip_auth = false)
     {
-        if (!$is_seeding) {
+        if (!$skip_auth) {
             /** @var User */
             $loggedInUser = Auth::user();
             if (!$loggedInUser->can('update', $this)) {

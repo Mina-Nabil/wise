@@ -260,7 +260,50 @@
                                                                                 icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                         </button>
                                                                         <ul
-                                                                            class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                            class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding    border-none">
+                                                                            @if (!$invoice->paid_journal_entry_id && $invoice->created_journal_entry_id)
+                                                                                <li
+                                                                                    wire:click='openCreatePaidJournalEntryModal({{ $invoice->id }})'>
+                                                                                    <a href="#"
+                                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                        <iconify-icon
+                                                                                            icon="icon-park-outline:journal"></iconify-icon>
+                                                                                        <span>Add Paid Journal
+                                                                                            Entry</span></a>
+                                                                                </li>
+                                                                            @elseif($invoice->paid_journal_entry_id)
+                                                                                <li>
+                                                                                    <a href="{{ route('accounts.entries', $invoice->paid_journal_entry_id) }}"
+                                                                                        target="_blank"
+                                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                        <iconify-icon
+                                                                                            icon="icon-park-outline:journal"></iconify-icon>
+                                                                                        <span>View Paid Journal
+                                                                                            Entry</span></a>
+                                                                                </li>
+                                                                            @endif
+
+                                                                            @if (!$invoice->created_journal_entry_id)
+                                                                                <li
+                                                                                    wire:click='openCreateJournalEntryModal({{ $invoice->id }})'>
+                                                                                    <a href="#"
+                                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                        <iconify-icon
+                                                                                            icon="icon-park-outline:journal"></iconify-icon>
+                                                                                        <span>Add Created Journal
+                                                                                            Entry</span></a>
+                                                                                </li>
+                                                                            @else
+                                                                                <li>
+                                                                                    <a href="{{ route('accounts.entries', $invoice->created_journal_entry_id) }}"
+                                                                                        target="_blank"
+                                                                                        class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                        <iconify-icon
+                                                                                            icon="icon-park-outline:journal"></iconify-icon>
+                                                                                        <span>View Created Journal
+                                                                                            Entry</span></a>
+                                                                                </li>
+                                                                            @endif
                                                                             <li
                                                                                 wire:click='openConfirmInvoice({{ $invoice->id }})'>
                                                                                 <a href="#"
@@ -843,6 +886,27 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
+
+                            <div class="input-area">
+                                <label for="account" class="form-label">Account</label>
+                                @inject('helper', 'App\Helpers\Helpers')
+                                <select id="account"
+                                    class="form-control @error('companyInfoAccountId') !border-danger-500 @enderror"
+                                    wire:model.defer="companyInfoAccountId">
+                                    <option value="">Select Account</option>
+                                    @php
+                                        $printed_arr = [];
+                                    @endphp
+                                    @foreach ($accounts_list as $account)
+                                        {{ $helper->printAccountChildren('', $account, $printed_arr) }}
+                                    @endforeach
+                                </select>
+                                @error('companyInfoAccountId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
                             <button wire:click="saveChanges" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500 btn-sm">Save
                                 Changes</button>
@@ -1202,6 +1266,81 @@
             </div>
         </div>
         <div class="modal-backdrop fade show"></div>
+    @endif
+
+    @if ($createJournalEntryId)
+        <div class="fixed z-40 inset-0 overflow-y-auto flex items-center justify-center">
+            <div class="fixed inset-0 transition-opacity">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-xl p-6 relative mx-auto w-3/4 md:w-1/2 my-8">
+                <h1 class="font-bold text-xl mb-6 text-center">Create Invoice Journal Entry</h1>
+                <p class="mb-4">Are you sure you want to create a journal entry for this invoice?</p>
+                <p class="mb-4 text-sm text-gray-600">This will create accounting entries for the invoice creation.</p>
+
+                <div class="flex justify-between mt-6">
+                    <button type="button" wire:click="closeCreateJournalEntryModal()"
+                        class="px-4 py-2 text-black rounded text-xs font-medium bg-red-400 hover:bg-red-500 focus:outline-none">Cancel</button>
+                    <button type="button" wire:click="createJournalEntry()"
+                        class="px-4 py-2 text-white rounded text-xs font-medium bg-blue-500 hover:bg-blue-700 focus:outline-none">
+                        <span wire:loading.remove wire:target="createJournalEntry">Create Journal Entry</span>
+                        <span wire:loading wire:target="createJournalEntry">Processing...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($createPaidJournalEntryId)
+        <div class="fixed z-40 inset-0 overflow-y-auto flex items-center justify-center">
+            <div class="fixed inset-0 transition-opacity">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-xl p-6 relative mx-auto w-3/4 md:w-1/2 my-8">
+                <h1 class="font-bold text-xl mb-6 text-center">Create Invoice Paid Journal Entry</h1>
+                <p class="mb-4">Please provide the details for the paid journal entry:</p>
+
+                <div class="grid gap-4">
+                    <div>
+                        <label class="font-medium block">Bank Account</label>
+                        @inject('helper', 'App\Helpers\Helpers')
+                        <select id="account"
+                            class="form-control @error('bankAccountId') !border-danger-500 @enderror"
+                            wire:model.defer="bankAccountId">
+                            <option value="">Select Account</option>
+                            @php
+                                $printed_arr = [];
+                            @endphp
+                            @foreach ($bankAccountsParent as $account)
+                                {{ $helper->printAccountChildren('', $account, $printed_arr) }}
+                            @endforeach
+                        </select>
+                        @error('bankAccountId')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="font-medium block">Transaction Fees</label>
+                        <input type="number" step="0.01" wire:model.defer="transFees"
+                            class="block bg-gray-200 w-full h-10 rounded-lg px-4 border border-transparent focus:border-blue-300 focus:ring-0">
+                        @error('transFees')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-6">
+                    <button type="button" wire:click="closeCreatePaidJournalEntryModal()"
+                        class="px-4 py-2 text-black rounded text-xs font-medium bg-red-400 hover:bg-red-500 focus:outline-none">Cancel</button>
+                    <button type="button" wire:click="createPaidJournalEntry()"
+                        class="px-4 py-2 text-white rounded text-xs font-medium bg-blue-500 hover:bg-blue-700 focus:outline-none">
+                        <span wire:loading.remove wire:target="createPaidJournalEntry">Create Paid Journal Entry</span>
+                        <span wire:loading wire:target="createPaidJournalEntry">Processing...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     @endif
 
 </div>

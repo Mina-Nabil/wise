@@ -2,6 +2,9 @@
 
 namespace App\Models\Payments;
 
+use App\Models\Accounting\Account;
+use App\Models\Accounting\JournalEntry;
+use App\Models\Accounting\UnapprovedEntry;
 use App\Models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
 use App\Models\Insurance\InvoiceExtra;
@@ -9,6 +12,7 @@ use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
 use Exception;
+use Http\Client\Common\Plugin\Journal;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,7 +34,9 @@ class Invoice extends Model
         'serial',
         'gross_total',
         'tax_total',
-        'net_total'
+        'net_total',
+        'created_journal_entry_id',
+        'paid_journal_entry_id'
     ];
 
     ///static functions
@@ -71,7 +77,115 @@ class Invoice extends Model
     }
 
 
-    ///model functions
+    ///model functions\
+    public function createCreatedJournalEntry()
+    {
+        if ($this->created_journal_entry_id) {
+            throw new Exception('Created journal entry already exists');
+        }
+
+        try {
+            DB::transaction(function () {
+                $company = Company::find($this->company_id);
+                if ($company->account_id) {
+                    $journalEntry = JournalEntry::newJournalEntry(
+                        entry_title_id: JournalEntry::INVOICE_CREATED_ID,
+                        comment: "فاتوره رقم $this->serial",
+                        skip_auth: true,
+                        accounts: [
+                            $company->account_id =>  [
+                                'nature' => 'debit',
+                                'amount' => $this->net_total,
+                                'currency' => JournalEntry::CURRENCY_EGP
+                            ],
+                            Account::TAX_ACCOUNT_ID =>  [
+                                'nature' => 'debit',
+                                'amount' => $this->tax_total,
+                                'currency' => JournalEntry::CURRENCY_EGP
+                            ],
+                            Account::SALES_EGP_ACCOUNT_ID =>  [
+                                'nature' => 'credit',
+                                'amount' => $this->gross_total,
+                                'currency' => JournalEntry::CURRENCY_EGP
+                            ],
+                        ],
+                    );
+                }
+
+                if (!$company->account_id) {
+                    throw new Exception('Company has no account', 12);
+                }
+                if (!is_a($journalEntry, JournalEntry::class)) {
+                    throw new Exception('Failed to create journal entry', 12);
+                }
+                $this->created_journal_entry_id = $journalEntry->id;
+                $this->save();
+            });
+        } catch (Exception $e) {
+            if ($e->getCode() == 12) {
+                throw $e;
+            }
+            report($e);
+            return false;
+        }
+        return true;
+    }
+
+    public function createPaidJournalEntry($bank_account_id, $trans_fees = 0)
+    {
+        if ($this->paid_journal_entry_id) {
+            throw new Exception('Paid journal entry already exists');
+        }
+
+        try {
+            DB::transaction(function () use ($bank_account_id, $trans_fees) {
+                $company = Company::find($this->company_id);
+                $accounts = [];
+                if ($trans_fees) {
+                    $accounts[Account::TRANS_FEES_ACCOUNT_ID] = [
+                        'nature' => 'debit',
+                        'amount' => $trans_fees,
+                        'currency' => JournalEntry::CURRENCY_EGP
+                    ];
+                }
+                $accounts[$bank_account_id] = [
+                    'nature' => 'debit',
+                    'amount' => $this->net_total,
+                    'currency' => JournalEntry::CURRENCY_EGP
+                ];
+
+                $accounts[$company->account_id] = [
+                    'nature' => 'credit',
+                    'amount' => $this->net_total + $trans_fees,
+                    'currency' => JournalEntry::CURRENCY_EGP
+                ];
+
+                if ($company->account_id) {
+                    $journalEntry = JournalEntry::newJournalEntry(
+                        entry_title_id: JournalEntry::INVOICE_PAID_ID,
+                        comment: "فاتوره رقم $this->serial",
+                        skip_auth: true,
+                        accounts: $accounts
+                    );
+                }
+
+                if (!is_a($journalEntry, JournalEntry::class)) {
+                    throw new Exception('Failed to create journal entry', 12);
+                }
+                $this->paid_journal_entry_id = $journalEntry->id;
+                $this->save();
+            });
+        } catch (Exception $e) {
+            if ($e->getCode() == 12) {
+                throw $e;
+            }
+            report($e);
+            return false;
+        }
+        return true;
+    }
+
+
     public function confirmInvoice(Carbon $date = null)
     {
         try {

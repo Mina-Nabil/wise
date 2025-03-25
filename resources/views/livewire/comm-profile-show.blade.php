@@ -2733,6 +2733,23 @@
                                     @enderror
                                 </div>
 
+                                <div class="from-group mt-3">
+                                    <label for="account" class="form-label">Account</label>
+                                    @inject('helper', 'App\Helpers\Helpers')
+                                    <select id="account" class="form-control @error('updatedAccountId') !border-danger-500 @enderror" wire:model.defer="updatedAccountId">
+                                        <option value="">Select Account</option>
+                                        @php
+                                            $printed_arr = [];
+                                        @endphp
+                                        @foreach ($accounts_list as $account)
+                                            {{ $helper->printAccountChildren('', $account, $printed_arr) }}
+                                        @endforeach
+                                    </select>
+                                    @error('updatedAccountId')
+                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
                             </div>
 
                         </div>
