@@ -1304,7 +1304,7 @@ class CommProfileShow extends Component
                 $this->mount($this->profile->id);
                 $this->alert('success', 'Main journal entry created successfully');
             } else {
-                $this->alert('failed', 'Failed to create journal entry');
+                $this->alert('failed', 'Failed to create journal entry. Check selected entry title');
             }
         } catch (\Exception $e) {
             Log::error('Error creating main journal entry: ' . $e->getMessage());

@@ -72,7 +72,7 @@ class CommProfilePayment extends Model
 
             DB::transaction(function () use ($entry_title_id) {
                 $this->load('sales_commissions', 'sales_commissions.sold_policy');
-                $total_gross = $this->sales_commissions->sum('sold_policy.gross_amount');
+                $total_gross = $this->sales_commissions->sum('sold_policy.gross_premium');
                 $total_comm = $this->amount;
                 $diff = $total_gross - $total_comm;
 
