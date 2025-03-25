@@ -310,7 +310,7 @@ class CommProfileShow extends Component
 
     public function refreshCommAmmount($id)
     {
-        $res = SalesComm::find($id)->refreshPaymentInfo();
+        $res = SalesComm::find($id)->refreshPaymentInfo(false);
         if ($res) {
             $this->mount($this->profile->id);
             $this->alert('success', 'Commission updated');
