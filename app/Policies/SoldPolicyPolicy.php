@@ -77,7 +77,7 @@ class SoldPolicyPolicy
      */
     public function viewCommission(User $user, SoldPolicy $soldPolicy=null)
     {
-        return $user->is_admin ||  $user->is_user_finance ;
+        return $user->is_admin ||  $user->is_any_finance ;
     }
 
     /**
