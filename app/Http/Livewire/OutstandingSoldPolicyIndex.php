@@ -48,12 +48,14 @@ class OutstandingSoldPolicyIndex extends Component
     public $companySection = false;
     public $Ecompany_ids = [];
     public $company_ids = [];
+    public $selectAllCompanies = false;
 
     public function toggleCompany()
     {
         $this->toggle($this->companySection);
         if ($this->companySection) {
             $this->Ecompany_ids = $this->company_ids;
+            $this->checkSelectAllState();
         }
     }
 
@@ -67,6 +69,40 @@ class OutstandingSoldPolicyIndex extends Component
     {
         $this->company_ids = [];
         $this->Ecompany_ids = [];
+        $this->selectAllCompanies = false;
+    }
+
+    public function toggleSelectAllCompanies()
+    {
+        $this->selectAllCompanies = !$this->selectAllCompanies;
+        
+        if ($this->selectAllCompanies) {
+            $this->Ecompany_ids = Company::when($this->searchCompany, function ($query) {
+                return $query->where('name', 'like', '%' . $this->searchCompany . '%');
+            })->pluck('id')->toArray();
+        } else {
+            $this->Ecompany_ids = [];
+        }
+    }
+
+    public function checkSelectAllState()
+    {
+        $allCompanyIds = Company::when($this->searchCompany, function ($query) {
+            return $query->where('name', 'like', '%' . $this->searchCompany . '%');
+        })->pluck('id')->toArray();
+        
+        $this->selectAllCompanies = !empty($allCompanyIds) && 
+            count(array_intersect($allCompanyIds, $this->Ecompany_ids)) === count($allCompanyIds);
+    }
+
+    public function updatedSearchCompany()
+    {
+        $this->checkSelectAllState();
+    }
+
+    public function updatedEcompanyIds()
+    {
+        $this->checkSelectAllState();
     }
 
     public function toggleStartDate()
@@ -234,27 +270,8 @@ class OutstandingSoldPolicyIndex extends Component
             $this->invoicePaidFilter
         )->simplePaginate(10);
 
-        $totalUnpaidPolicies = SoldPolicy::outstandingPolicies(
-            $this->search,
-            $commission_outstanding,
-            $client_outstanding,
-            $invoice_outstanding,
-            $this->start_from,
-            $this->start_to,
-            $this->company_ids,
-            $this->payment_from,
-            $this->payment_to,
-            $this->hasInvoiceFilter,
-            $this->invoice_payment_from,
-            $this->invoice_payment_to,
-            $this->invoicePaidFilter,
-        )->unpaidSum()->first()->unpaid_sum;
-
-        $totalUnpaidPolicies = number_format($totalUnpaidPolicies, 2);
-
         return view('livewire.outstanding-sold-policy-index', [
             'soldPolicies' => $soldPolicies,
-            'totalUnpaidPolicies' => $totalUnpaidPolicies,
             'companies' =>  Company::when($this->searchCompany, function ($query) {
                 return $query->where('name', 'like', '%' . $this->searchCompany . '%');
             })->get()

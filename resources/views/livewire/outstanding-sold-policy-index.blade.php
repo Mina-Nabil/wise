@@ -575,7 +575,9 @@
                                                                                     <th scope="col"
                                                                                         class="table-th"
                                                                                         style="width: 50px">
-                                                                                        Select
+                                                                                        <button wire:click="toggleSelectAllCompanies" class="btn btn-sm btn-outline-primary">
+                                                                                            Select/Deselect All
+                                                                                        </button>
                                                                                     </th>
                                                                                     <th scope="col"
                                                                                         class="table-th">
