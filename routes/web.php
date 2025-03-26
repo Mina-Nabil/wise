@@ -125,10 +125,10 @@ Route::middleware('auth', 'active')->group(function () {
         return response()->redirectTo('/accounts/main');
     });
     Route::get('/accounts/entries', JournalEntryIndex::class);
-    Route::get('/accounts/entries/{id}', JournalEntryIndex::class)->name('accounts.entries');
-    Route::get('/accounts/titles', EntryTitleIndex::class);
     Route::get('/accounts/entries/new', CreateJournalEntry::class);
     Route::get('/accounts/entries/unapproved', UnapprovedEntryIndex::class);
+    Route::get('/accounts/entries/{id}', JournalEntryIndex::class)->name('accounts.entries');
+    Route::get('/accounts/titles', EntryTitleIndex::class);
     Route::get('/accounts/gettree/{id}', function ($id) {
         return response()->json(Account::findOrFail($id)->getTree());
     });
