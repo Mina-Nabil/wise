@@ -81,7 +81,12 @@
                                                             class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 ">
                                                             <thead class="bg-slate-200 dark:bg-slate-700">
                                                                 <tr>
-                                                                 
+                                                                    @can('review',
+                                                                        \App\Models\Business\SoldPolicy::class)
+                                                                        <th scope="col" class="table-th ">
+                                                                            REVIEW
+                                                                        </th>
+                                                                    @endcan
                                                                     <th scope="col" class="table-th ">
                                                                         POLICY
                                                                     </th>
@@ -110,7 +115,58 @@
                                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                                 @foreach ($soldPolicies as $policy)
                                                                     <tr class="even:bg-slate-50 dark:even:bg-slate-700">
-                                                                       
+                                                                        @can('review', $policy)
+                                                                            <td class="table-td">
+                                                                                <div class="flex flex-col gap-1">
+                                                                                    <div class="flex items-center gap-2">
+                                                                                        @if ($policy->is_reviewed)
+                                                                                            <span
+                                                                                                class="badge bg-success-500 text-slate-800 bg-opacity-30 rounded-3xl">Reviewed</span>
+                                                                                        @else
+                                                                                            <span
+                                                                                                class="badge bg-warning-500 text-slate-800 bg-opacity-30 rounded-3xl">Not
+                                                                                                Reviewed</span>
+                                                                                        @endif
+                                                                                        @if ($policy->review_comment)
+                                                                                            <iconify-icon
+                                                                                                id="comment-icon-{{ $policy->id }}"
+                                                                                                icon="mdi:comment-text-outline"
+                                                                                                class="text-base cursor-help"></iconify-icon>
+                                                                                                <script>
+                                                                                                    tippy('#comment-icon-{{ $policy->id }}', {
+                                                                                                        content: '{{ $policy->review_comment }}',
+                                                                                                    });
+                                                                                                </script>
+                                                                                        @endif
+                                                                                    </div>
+
+                                                                                    @if ($policy->is_valid_data)
+                                                                                        <span
+                                                                                            class="badge bg-success-500 text-slate-800 bg-opacity-30 rounded-3xl">Valid
+                                                                                            Data</span>
+                                                                                    @else
+                                                                                        <span
+                                                                                            class="badge bg-danger-500 text-slate-800 bg-opacity-30 rounded-3xl">Invalid
+                                                                                            Data</span>
+                                                                                    @endif
+
+
+                                                                                </div>
+
+                                                                                <div class="flex items-center gap-3">
+                                                                                    <button
+                                                                                        wire:click="openReviewModal({{ $policy->id }})"
+                                                                                        class="btn btn-sm btn-outline-primary flex items-center"
+                                                                                        title="{{ $policy->is_reviewed ? 'Edit Review' : 'Review Policy' }}">
+                                                                                        <iconify-icon
+                                                                                            icon="mdi:clipboard-check-outline"
+                                                                                            class="text-base"></iconify-icon>
+                                                                                        <span
+                                                                                            class="ml-1">{{ $policy->is_reviewed ? 'Edit Review' : 'Review' }}</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </td>
+                                                                        @endcan
 
 
                                                                         <td class="table-td">
@@ -647,6 +703,96 @@
                 </div>
             </div>
         </div>
+    @endif
+
+    <!-- Review Modal -->
+    @if ($reviewModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="reviewModal" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white">
+                                Review Policy: {{ $policyToReview->policy_number ?? '' }}
+                            </h3>
+                            <button wire:click="closeReviewModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="flex flex-col space-y-6">
+                                <div class="flex flex-col space-y-2">
+                                    <label class="form-label font-medium">Review Status:</label>
+                                    <div class="flex items-center space-x-4">
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" class="form-radio" wire:model="reviewStatus"
+                                                value="1" name="reviewStatus">
+                                            <span class="ml-2">Reviewed</span>
+                                        </label>
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" class="form-radio" wire:model="reviewStatus"
+                                                value="0" name="reviewStatus">
+                                            <span class="ml-2">Not Reviewed</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col space-y-2">
+                                    <label class="form-label font-medium">Data Validity:</label>
+                                    <div class="flex items-center space-x-4">
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" class="form-radio" wire:model="reviewValidData"
+                                                value="1" name="reviewValidData">
+                                            <span class="ml-2">Valid Data</span>
+                                        </label>
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" class="form-radio" wire:model="reviewValidData"
+                                                value="0" name="reviewValidData">
+                                            <span class="ml-2">Invalid Data</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col">
+                                    <label for="reviewComment" class="form-label font-medium">Review Comment:</label>
+                                    <textarea id="reviewComment" rows="4" class="form-control" wire:model.defer="reviewComment"
+                                        placeholder="Add your review comments here..."></textarea>
+                                    @error('reviewComment')
+                                        <span class="text-danger-500 text-sm mt-1">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeReviewModal" type="button" class="btn btn-outline-danger">
+                                Cancel
+                            </button>
+                            <button wire:click="saveReview" type="button" class="btn btn-dark">
+                                <span wire:loading.remove wire:target="saveReview">Save Review</span>
+                                <span wire:loading wire:target="saveReview">
+                                    <iconify-icon class="text-xl spin-slow"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
     @endif
 
 </div>
