@@ -519,9 +519,10 @@
                                                             class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 no-wrap">
                                                             <thead class="bg-slate-200 dark:bg-slate-700">
                                                                 <tr>
-                                                                    @can('review', $policy)
+                                                                    @can('review',
+                                                                        \App\Models\Business\SoldPolicy::class)
                                                                         <th scope="col" class="table-th ">
-                                                                            Review
+                                                                            REVIEW
                                                                         </th>
                                                                     @endcan
                                                                     <th scope="col" class="table-th ">
