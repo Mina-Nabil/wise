@@ -49,10 +49,10 @@ class Target extends Model
     ///model functions
     /** Should be called periodically to check target. It will check if target if acheived. 
      * If yes it will update the related sales commissions */
-    public function processTargetPayments(Carbon $end_date = null, $is_manual = false)
+    public function processTargetPayments(?Carbon $end_date = null, $is_manual = false)
     {
         $this->load('comm_profile');
-        $end_date = $end_date ?? Carbon::now();
+        $end_date = $end_date ? $end_date->setTime(0, 0, 1) : Carbon::now()->setTime(0, 0, 1);
         $start_date = $end_date->clone()->subMonths($this->each_month);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
