@@ -597,7 +597,7 @@
                                                                                                 class="text-base cursor-help"></iconify-icon>
                                                                                             <script>
                                                                                                 tippy('#comment-icon-{{ $policy->id }}', {
-                                                                                                    content: "{{ html_encode($policy->review_comment) }}",
+                                                                                                    content: "{{ htmlentities($policy->review_comment) }}",
                                                                                                 });
                                                                                             </script>
                                                                                         @endif
