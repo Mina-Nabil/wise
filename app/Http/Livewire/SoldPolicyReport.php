@@ -553,7 +553,7 @@ class SoldPolicyReport extends Component
     {
         $this->start_from = Carbon::parse($this->Estart_from);
         $this->start_to = Carbon::parse($this->Estart_to);
-        $this->toggle($this->startSection);
+        $this->toggleStartDate();
     }
 
     public function clearStartDates()

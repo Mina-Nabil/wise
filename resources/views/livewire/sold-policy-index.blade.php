@@ -651,44 +651,6 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
-                            {{-- <div class="from-group">
-                            <label for="lastName" class="form-label">Item Description</label>
-                            <textarea class="form-control mt-2 w-full" wire:model.defer="item_desc"></textarea>
-                            @error('item_desc')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="from-group">
-                            <label for="lastName" class="form-label">Note</label>
-                            <textarea class="form-control mt-2 w-full" wire:model.defer="note"></textarea>
-                            @error('note')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="input-area mb-3">
-                            <label for="inFavorTo" class="form-label">In Favor To</label>
-                            <input name="inFavorTo" class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('inFavorTo') !border-danger-500 @enderror" id="default-picker" type="text" wire:model.defer="inFavorTo" autocomplete="off">
-                            @error('inFavorTo')
-                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                            <div class="input-area mb-3">
-                                <label for="time-date-picker" class="form-label">Due Date</label>
-                                <input class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror" id="default-picker" value="" type="date" wire:model.defer="dueDate" autocomplete="off">
-                                @error('dueDate')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="input-area mb-3">
-                                <label for="time-date-picker" class="form-label">Time </label>
-                                <input type="time" class="form-control  @error('dueTime') !border-danger-500 @enderror" id="appt" name="appt" min="09:00" max="18:00" wire:model.defer="dueTime" autocomplete="off" />
-                                @error('dueTime')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-
-                            </div>
-                        </div> --}}
                         </div>
 
                         <!-- Modal footer -->
