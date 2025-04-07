@@ -726,10 +726,10 @@ class Offer extends Model
             if ($tmpOption = $this->options()->firstOrCreate(
                 [
                     "policy_id"             =>  $policy_id,
+                    "insured_value"  =>  $insured_value,
                 ],
                 [
                     "policy_condition_id"   =>  $policy_condition_id,
-                    "insured_value"  =>  $insured_value,
                     "net_premium"  =>  $net_premium,
                     "gross_premium"  =>  $gross_premium,
                     "payment_frequency"  =>  $payment_frequency,
