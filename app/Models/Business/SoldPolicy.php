@@ -175,7 +175,7 @@ class SoldPolicy extends Model
                     $tmp_base_value = $conf->calculation_type == GrossCalculation::TYPE_VALUE ?
                         $conf->value : (($conf->value / 100) * $this->net_premium);
                     if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
-                        $this->setClientPaymentDate = $conf->penalty_percent * $tmp_base_value;
+                        $this->penalty_amount = $conf->penalty_percent * $tmp_base_value;
                         $tmp_base_value = $tmp_base_value - $this->penalty_amount;
                         $this->is_penalized = true;
                         $this->save();
