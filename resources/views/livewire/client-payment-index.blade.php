@@ -148,16 +148,14 @@
                                 <th scope="col" class=" table-th ">
                                     Date
                                 </th>
-                       
 
                                 <th scope="col" class=" table-th ">
                                     Closed by
                                 </th>
-                                @if (auth()->user()->is_admin || auth()->user()->is_finance)
-                                    <th scope="col" class=" table-th ">
-                                        Sales
-                                    </th>
-                                @endif
+
+                                <th scope="col" class=" table-th ">
+                                    Collected
+                                </th>
 
                             </tr>
                         </thead>
@@ -238,7 +236,11 @@
                                             <b> - </b>
                                         @endif
                                     </td>
-                          
+
+                                    <td class="table-td">
+                                        {{ $payment->collected_date ? \Carbon\Carbon::parse($payment->collected_date)->format('D d/m/Y') : 'Not set.' }}
+                                    </td>
+
                                 </tr>
                             @endforeach
 
