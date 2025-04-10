@@ -252,6 +252,9 @@
                                                                     NET
                                                                 </th>
                                                                 <th scope="col" class="table-th ">
+                                                                    LEFT
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
                                                                     START
                                                                 </th>
                                                                 <th scope="col" class="table-th ">
@@ -312,6 +315,10 @@
                                                                     <td class="table-td">
                                                                         <span
                                                                             class="block date-text">{{ number_format($policy->net_premium, 2) }}</span>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        <span
+                                                                            class="block date-text">{{ number_format($policy->left_to_pay, 2) }}</span>
                                                                     </td>
                                                                     <td class="table-td">
                                                                         <span

@@ -2151,6 +2151,11 @@ class SoldPolicy extends Model
         return $this->sales_out_comm + $this->discount;
     }
 
+    public function getLeftToPayAttribute()
+    {
+        return $this->gross_premium - $this->total_client_paid;
+    }
+
     public function getHasSalesOutAttribute()
     {
         $this->load('sales_comms', 'sales_comms.comm_profile');
