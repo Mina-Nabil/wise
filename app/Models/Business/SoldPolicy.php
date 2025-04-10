@@ -1170,7 +1170,7 @@ class SoldPolicy extends Model
 
         $i = 2;
         foreach ($data as $policy) {
-            $activeSheet->getCell('A' . $i)->setValue($policy->policy->name);
+            $activeSheet->getCell('A' . $i)->setValue($policy->policy->company->name . ' - ' . $policy->policy->name);
             $activeSheet->getCell('B' . $i)->setValue(number_format($policy->gross_premium, 2));
             $activeSheet->getCell('C' . $i)->setValue(number_format($policy->gross_premium, 2));
             $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
