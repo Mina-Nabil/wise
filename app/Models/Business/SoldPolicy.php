@@ -1442,48 +1442,48 @@ class SoldPolicy extends Model
         for ($i = 2; $i <= $highestRow; $i++) {
             try {
                 //client data
-                $full_name = $activeSheet->getCell('E' . $i)->getValue();
-                $phone = $activeSheet->getCell('I' . $i)->getValue();
-                $is_renewal = $activeSheet->getCell('C' . $i)->getValue() == "Renewal";
+                $full_name = $activeSheet->getCell('F' . $i)->getValue();
+                $phone = $activeSheet->getCell('J' . $i)->getValue();
 
                 //policy data
                 $company_name = $activeSheet->getCell('A' . $i)->getValue();
                 $policy_name = $activeSheet->getCell('B' . $i)->getValue();
-
+                $is_corporate = $activeSheet->getCell('C' . $i)->getValue() == "Corp";
+                $is_renewal = $activeSheet->getCell('D' . $i)->getValue() == "Renewal";
 
                 if (!$activeSheet->getCell('G' . $i)) {
-                    Log::warning("Row#$i missed, failed to get issue date");
-                    continue;
-                }
-                if (!$activeSheet->getCell('F' . $i)) {
                     Log::warning("Row#$i missed, failed to get start date");
                     continue;
                 }
-                if (!$activeSheet->getCell('J' . $i)) {
+                if (!$activeSheet->getCell('I' . $i)) {
                     Log::warning("Row#$i missed, failed to get end date");
                     continue;
                 }
 
                 //sold policy data
-                $policy_number = $activeSheet->getCell('D' . $i)->getValue();
-                $start_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('F' . $i)->getValue());
-                $issued_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('G' . $i)->getValue());
-                $end_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('H' . $i)->getValue());
+                $policy_number = $activeSheet->getCell('E' . $i)->getValue();
+                $start_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('G' . $i)->getValue());
+                $issued_date =  $start_date;
+                $end_date =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('I' . $i)->getValue());
 
-                $net_premium = $activeSheet->getCell('K' . $i)->getValue();
-                $gross_premium = $activeSheet->getCell('L' . $i)->getValue();
-                $insured_value = $activeSheet->getCell('O' . $i)->getValue();
+                $net_premium = $activeSheet->getCell('M' . $i)->getValue();
+                $gross_premium = $activeSheet->getCell('N' . $i)->getValue();
+                $insured_value = $activeSheet->getCell('U' . $i)->getValue();
 
-                $chassis = $activeSheet->getCell('P' . $i)->getValue();
-                $car = $activeSheet->getCell('R' . $i)->getValue();
-                $year = $activeSheet->getCell('Q' . $i)->getValue();
+                $chassis = $activeSheet->getCell('V' . $i)->getValue();
+                $car = $activeSheet->getCell('X' . $i)->getValue();
+                $year = $activeSheet->getCell('W' . $i)->getValue();
+                $brand = $activeSheet->getCell('Y' . $i)->getValue();
 
-                $sales1 = $activeSheet->getCell('M' . $i)->getValue();
-                $sales2 = $activeSheet->getCell('N' . $i)->getValue();
+                $sales1 = $activeSheet->getCell('R' . $i)->getValue();
+                $sales2 = $activeSheet->getCell('S' . $i)->getValue();
+                $sales3 = $activeSheet->getCell('T' . $i)->getValue();
                 $salesOut1 = null;
                 $salesOut2 = null;
+                $salesOut3 = null;
                 $salesIn1 = null;
                 $salesIn2 = null;
+                $salesIn3 = null;
 
                 /** @var CommProfile */
                 if ($sales1) $salesOut1 = CommProfile::bytitle(trim($sales1))->salesOut()->first();
@@ -1493,10 +1493,14 @@ class SoldPolicy extends Model
                 if ($sales2) $salesOut2 = CommProfile::bytitle(trim($sales2))->salesOut()->first();
                 if (!$salesOut2) $salesIn2 = CommProfile::bytitle(trim($sales2))->first();
 
-                $discount = $activeSheet->getCell('T' . $i)->getValue();
+                /** @var CommProfile */
+                if ($sales3) $salesOut3 = CommProfile::bytitle(trim($sales3))->salesOut()->first();
+                if (!$salesOut3) $salesIn3 = CommProfile::bytitle(trim($sales3))->first();
+
+                $discount = $activeSheet->getCell('AB' . $i)->getValue();
 
                 $tmpClient = null;
-                $client_payment_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) ($activeSheet->getCell('J' . $i)->getValue()));
+                $client_payment_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) ($activeSheet->getCell('L' . $i)->getValue()));
 
                 $name_array = explode(" ", $full_name);
                 $middle_name = "";
@@ -1522,31 +1526,40 @@ class SoldPolicy extends Model
                         $discount,
                         0
                     );
-                    $duplicatePolicy->setPaid(true, new Carbon($client_payment_date));
+                    if ($client_payment_date) $duplicatePolicy->setPaid(true, new Carbon($client_payment_date));
 
-                    if (!$duplicatePolicy->sales_comms()->get()->count()) {
-                        $duplicatePolicy->load('policy');
-                        if ($salesOut1) {
 
-                            $conf = $salesOut1->getValidDirectCommissionConf($duplicatePolicy->policy);
+                    $duplicatePolicy->load('policy');
+                    if ($salesOut1 && $duplicatePolicy->sales_comms()->where('comm_profile_id', $salesOut1->id)->count() == 0) {
 
-                            if ($conf) {
-                                $duplicatePolicy->addSalesCommission($salesOut1->title, $conf->from, $conf->percentage, $salesOut1->id, "Added for direct commission during migration", true);
-                            }
-                        } else if ($salesIn1) {
+                        $conf = $salesOut1->getValidDirectCommissionConf($duplicatePolicy->policy);
 
-                            $duplicatePolicy->addSalesCommission($salesIn1->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn1->id, "Added for target commission during migration", true);
+                        if ($conf) {
+                            $duplicatePolicy->addSalesCommission($salesOut1->title, $conf->from, $conf->percentage, $salesOut1->id, "Added for direct commission during migration", true);
                         }
+                    } else if ($salesIn1 && $duplicatePolicy->sales_comms()->where('comm_profile_id', $salesIn1->id)->count() == 0) {
 
-                        if ($salesOut2) {
-                            $conf = $salesOut2->getValidDirectCommissionConf($duplicatePolicy->policy);
-                            if ($conf) {
-                                $duplicatePolicy->addSalesCommission($salesOut2->title, $conf->from, $conf->percentage, $salesOut2->id, "Added for direct commission during migration", true);
-                            }
-                        } else if ($salesIn2) {
-                            $duplicatePolicy->addSalesCommission($salesIn2->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn2->id, "Added for target commission during migration", true);
-                        }
+                        $duplicatePolicy->addSalesCommission($salesIn1->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn1->id, "Added for target commission during migration", true);
                     }
+
+                    if ($salesOut2 && $duplicatePolicy->sales_comms()->where('comm_profile_id', $salesOut2->id)->count() == 0) {
+                        $conf = $salesOut2->getValidDirectCommissionConf($duplicatePolicy->policy);
+                        if ($conf) {
+                            $duplicatePolicy->addSalesCommission($salesOut2->title, $conf->from, $conf->percentage, $salesOut2->id, "Added for direct commission during migration", true);
+                        }
+                    } else if ($salesIn2 && $duplicatePolicy->sales_comms()->where('comm_profile_id', $salesIn2->id)->count() == 0) {
+                        $duplicatePolicy->addSalesCommission($salesIn2->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn2->id, "Added for target commission during migration", true);
+                    }
+
+                    if ($salesOut3 && $duplicatePolicy->sales_comms()->where('comm_profile_id', $salesOut3->id)->count() == 0) {
+                        $conf = $salesOut3->getValidDirectCommissionConf($duplicatePolicy->policy);
+                        if ($conf) {
+                            $duplicatePolicy->addSalesCommission($salesOut3->title, $conf->from, $conf->percentage, $salesOut3->id, "Added for direct commission during migration", true);
+                        }
+                    } else if ($salesIn3 && $duplicatePolicy->sales_comms()->where('comm_profile_id', $salesIn3->id)->count() == 0) {
+                        $duplicatePolicy->addSalesCommission($salesIn3->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn3->id, "Added for target commission during migration", true);
+                    }
+
                     Log::warning("Row#$i edited");
                 } else {
 
@@ -1558,15 +1571,21 @@ class SoldPolicy extends Model
                         array_push($rows_not_added, [$i, "Row#$i missed, failed to get policy"]);
                         continue;
                     }
-
-                    $tmpClient = Customer::newCustomer(
-                        owner_id: $salesIn1?->user_id ?? 1,
-                        first_name: $name_array[0],
-                        last_name: $name_array[count($name_array) - 1],
-                        middle_name: trim($middle_name),
-                        gender: Customer::GENDER_MALE,
-                        email: "test@mail"
-                    );
+                    if ($is_corporate) {
+                        $tmpClient = Corporate::newCorporate(
+                            owner_id: $salesIn1?->user_id ?? 1,
+                            name: $full_name
+                        );
+                    } else {
+                        $tmpClient = Customer::newCustomer(
+                            owner_id: $salesIn1?->user_id ?? 1,
+                            first_name: $name_array[0],
+                            last_name: $name_array[count($name_array) - 1],
+                            middle_name: trim($middle_name),
+                            gender: Customer::GENDER_MALE,
+                            email: "test@mail"
+                        );
+                    }
                     if ($phone) $tmpClient->addPhone(Phone::TYPE_MOBILE, $phone, true);
 
                     if (is_numeric($net_premium)) {
@@ -1585,7 +1604,7 @@ class SoldPolicy extends Model
                             issuing_date: new Carbon($issued_date),
                             car_chassis: $chassis,
                             discount: $discount ?? 0,
-                            note: $car . ' / ' . $year,
+                            note: $car . ' / ' . $year . ' / ' . $brand,
                             sales_id: $salesIn1?->user_id ?? 1,
                         );
                         if (!$soldP) {
@@ -1613,7 +1632,14 @@ class SoldPolicy extends Model
                         } else if ($salesIn2) {
                             $soldP->addSalesCommission($salesIn2->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn2->id, "Added for target commission during migration", true);
                         }
-
+                        if ($salesOut3) {
+                            $conf = $salesOut3->getValidDirectCommissionConf($soldP->policy);
+                            if ($conf) {
+                                $soldP->addSalesCommission($salesOut3->title, $conf->from, $conf->percentage, $salesOut3->id, "Added for direct commission during migration", true);
+                            }
+                        } else if ($salesIn3) {
+                            $soldP->addSalesCommission($salesIn3->title, CommProfileConf::FROM_NET_COMM, 0, $salesIn3->id, "Added for target commission during migration", true);
+                        }
                         Log::warning("Row#$i added");
                     } else {
                         Log::warning("Invalid insured / net prem on Row#$i");

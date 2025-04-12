@@ -35,7 +35,7 @@ class ImportSoldPolicies extends Command
                 break;
             case 2:
                 # code...
-                SoldPolicy::importData2(resource_path('import/Book1.xlsx'));
+                SoldPolicy::importData2(resource_path('import/sold_policies_report_final.xlsx'));
                 break;
         }
         return Command::SUCCESS;
