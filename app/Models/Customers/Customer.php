@@ -512,7 +512,7 @@ class Customer extends Model
         try {
             AppLog::info("Updating customer status", loggable: $this);
             return $this->status()->updateOrCreate([], [
-                "user_id"      =>  Auth::id(),
+                "user_id"      =>  Auth::id() ?? 1,
                 "status"    =>  $status,
                 "reason"    =>  $reason,
                 "note"    =>  $note,

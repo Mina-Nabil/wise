@@ -305,7 +305,7 @@ class Corporate extends Model
                 "status"    =>  $status,
                 "reason"    =>  $reason,
                 "note"    =>  $note,
-                "user_id"      =>  Auth::id(),
+                "user_id"      =>  Auth::id() ?? 1,
             ]);
         } catch (Exception $e) {
             report($e);
