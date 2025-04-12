@@ -243,9 +243,9 @@ class SoldPolicy extends Model
 
     public function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null, $is_direct = false)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
 
         try {
             /** @var SalesComm */
@@ -521,10 +521,10 @@ class SoldPolicy extends Model
 
     public function editInfo(Carbon $start, Carbon $expiry, $policy_number, $car_chassis = null, $car_plate_no = null, $car_engine = null, $in_favor_to = null, Carbon $issuing_date = null): self|bool
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
-        $updates = [];
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('update', $this)) return false;
+        // $updates = [];
 
         if ($car_chassis) $updates['car_chassis'] = $car_chassis;
         if ($car_plate_no) $updates['car_plate_no'] = $car_plate_no;
@@ -656,9 +656,9 @@ class SoldPolicy extends Model
 
     public function setPaid($is_paid, Carbon $client_payment_date = null)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('updatePayments', $this)) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('updatePayments', $this)) return false;
 
         try {
             $this->update([
@@ -700,9 +700,9 @@ class SoldPolicy extends Model
 
     public function updatePaymentInfo($insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, $discount, $origin_discount)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('update', $this)) return false;
+        // /** @var User */
+        // $loggedInUser = Auth::user();
+        // if (!$loggedInUser->can('update', $this)) return false;
 
         $this->update([
             'insured_value' => $insured_value,

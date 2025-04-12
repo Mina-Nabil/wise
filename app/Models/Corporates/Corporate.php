@@ -590,7 +590,7 @@ class Corporate extends Model
             "contract_doc"  =>  $contract_doc,
             "main_bank_evidence"    =>  $main_bank_evidence,
             "owner_id"      =>  $owner_id ?? Auth::id(),
-            "creator_id"    => Auth::id(),
+            "creator_id"    => Auth::id() ?? 1,
             "note"          =>  $note
         ]);
 
