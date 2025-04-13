@@ -1475,9 +1475,9 @@ class SoldPolicy extends Model
                 $year = $activeSheet->getCell('W' . $i)->getValue();
                 $brand = $activeSheet->getCell('Y' . $i)->getValue();
 
-                $sales1 = $activeSheet->getCell('R' . $i)->getValue();
-                $sales2 = $activeSheet->getCell('S' . $i)->getValue();
-                $sales3 = $activeSheet->getCell('T' . $i)->getValue();
+                $sales1 = str_replace("sales in", "sales_in", $activeSheet->getCell('R' . $i)->getValue());
+                $sales2 = str_replace("sales in", "sales_in", $activeSheet->getCell('S' . $i)->getValue());
+                $sales3 = str_replace("sales in", "sales_in", $activeSheet->getCell('T' . $i)->getValue());
                 $salesOut1 = null;
                 $salesOut2 = null;
                 $salesOut3 = null;
