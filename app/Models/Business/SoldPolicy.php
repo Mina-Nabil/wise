@@ -304,6 +304,15 @@ class SoldPolicy extends Model
         }
     }
 
+    public function createMissingClientPayments()
+    {
+        $total_client_payments = $this->client_payments()->whereNot('status', ClientPayment::PYMT_STATE_CANCELLED)->sum('amount');
+        $total_client_payments_amount = $this->gross_premium - $total_client_payments;
+        if ($total_client_payments_amount > 0) {
+            $this->addClientPayment(ClientPayment::PYMT_TYPE_CASH, $total_client_payments_amount, Carbon::now()->addDays(7), $this->main_sales_id, "Missing client payment");
+        }
+    }
+
 
     public function addClientPayment($type, $amount, Carbon $due, $assigned_to_id = null, $note = null, $sales_out_id = null)
     {
