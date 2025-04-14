@@ -33,6 +33,7 @@ class SoldPolicyReport extends Component
     public $paidSection = false;
     public $issuedSection = false;
     public $cancelTimeSection = false;
+    public $bankPaymentTimeSection = false;
     public $mainSalesName;
 
     public $brands;
