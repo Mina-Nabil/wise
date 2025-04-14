@@ -2132,13 +2132,13 @@ class SoldPolicy extends Model
                 $qq->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
                     ->whereIn('sales_comms.comm_profile_id', $comm_profile_ids);
             })->when($bank_payment_time_from || $bank_payment_time_to, function ($q) use ($bank_payment_time_from, $bank_payment_time_to) {
-                $q->whereHas('company_comm_payments', function ($qq) use ($bank_payment_time_from, $bank_payment_time_to) {
-                    $qq->when($bank_payment_time_from, function ($qqq) use ($bank_payment_time_from) {
-                        $qqq->where('company_comm_payments.company_comm_payments', ">=", $bank_payment_time_from->format('Y-m-d 00:00:00'));
+                $q->join('company_comm_payments', 'company_comm_payments.sold_policy_id', '=', 'sold_policies.id')
+                    ->where('company_comm_payments.status', CompanyCommPayment::PYMT_STATE_NEW)
+                    ->when($bank_payment_time_from, function ($qq) use ($bank_payment_time_from) {
+                        $qq->where('company_comm_payments.payment_date', ">=", $bank_payment_time_from->format('Y-m-d 00:00:00'));
                     })->when($bank_payment_time_to, function ($qq) use ($bank_payment_time_to) {
-                        $qq->where('company_comm_payments.company_comm_payments', "<=", $bank_payment_time_to->format('Y-m-d 23:59:59'));
+                        $qq->where('company_comm_payments.payment_date', "<=", $bank_payment_time_to->format('Y-m-d 23:59:59'));
                     });
-                });
             });
 
         $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
