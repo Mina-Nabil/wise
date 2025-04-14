@@ -2023,8 +2023,39 @@ class SoldPolicy extends Model
             ->with('last_company_comm_payment', 'last_company_comm_payment.invoice');
     }
 
-    public function scopeReport($query, ?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?string $line_of_business = null, ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancel_time_from = null, ?Carbon $cancel_time_to = null)
-    {
+    public function scopeReport(
+        $query,
+        ?Carbon $start_from = null,
+        ?Carbon $start_to = null,
+        ?Carbon $expiry_from = null,
+        ?Carbon $expiry_to = null,
+        ?array $creator_ids = [],
+        ?string $line_of_business = null,
+        ?float $value_from = null,
+        ?float $value_to = null,
+        ?float $net_premium_to = null,
+        ?float $net_premium_from = null,
+        ?array $brand_ids = null,
+        ?array $company_ids = null,
+        ?array $policy_ids = null,
+        ?bool $is_valid = null,
+        ?bool $is_paid = null,
+        ?string $searchText = null,
+        ?bool $is_renewal = null,
+        ?int $main_sales_id = null,
+        ?Carbon $issued_from = null,
+        ?Carbon $issued_to = null,
+        ?array $comm_profile_ids = [],
+        ?bool $is_welcomed = null,
+        ?bool $is_penalized = null,
+        ?bool $is_cancelled = null,
+        ?Carbon $paid_from = null,
+        ?Carbon $paid_to = null,
+        ?Carbon $cancel_time_from = null,
+        ?Carbon $cancel_time_to = null,
+        ?Carbon $bank_payment_time_from = null,
+        ?Carbon $bank_payment_time_to = null
+    ) {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
                 $q->where('start', ">=", $v->format('Y-m-d 00:00:00'));
@@ -2100,6 +2131,14 @@ class SoldPolicy extends Model
             })->when(count($comm_profile_ids), function ($qq) use ($comm_profile_ids) {
                 $qq->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
                     ->whereIn('sales_comms.comm_profile_id', $comm_profile_ids);
+            })->when($bank_payment_time_from || $bank_payment_time_to, function ($q) use ($bank_payment_time_from, $bank_payment_time_to) {
+                $q->whereHas('company_comm_payments', function ($qq) use ($bank_payment_time_from, $bank_payment_time_to) {
+                    $qq->when($bank_payment_time_from, function ($qqq) use ($bank_payment_time_from) {
+                        $qqq->where('company_comm_payments.company_comm_payments', ">=", $bank_payment_time_from->format('Y-m-d 00:00:00'));
+                    })->when($bank_payment_time_to, function ($qq) use ($bank_payment_time_to) {
+                        $qq->where('company_comm_payments.company_comm_payments', "<=", $bank_payment_time_to->format('Y-m-d 23:59:59'));
+                    });
+                });
             });
 
         $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
