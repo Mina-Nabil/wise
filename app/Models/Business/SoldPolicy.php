@@ -2133,7 +2133,6 @@ class SoldPolicy extends Model
                     ->whereIn('sales_comms.comm_profile_id', $comm_profile_ids);
             })->when($bank_payment_time_from || $bank_payment_time_to, function ($q) use ($bank_payment_time_from, $bank_payment_time_to) {
                 $q->join('company_comm_payments', 'company_comm_payments.sold_policy_id', '=', 'sold_policies.id')
-                    ->where('company_comm_payments.status', CompanyCommPayment::PYMT_STATE_NEW)
                     ->when($bank_payment_time_from, function ($qq) use ($bank_payment_time_from) {
                         $qq->where('company_comm_payments.payment_date', ">=", $bank_payment_time_from->format('Y-m-d 00:00:00'));
                     })->when($bank_payment_time_to, function ($qq) use ($bank_payment_time_to) {
