@@ -1260,7 +1260,11 @@ class SoldPolicy extends Model
         });
 
         ///merge policies and editted policies
-        $policies = $policies->merge($edittedPolicies);
+        foreach ($edittedPolicies as $policy) {
+            $policies->push($policy);
+        }
+
+        $policies = $policies->sortByDesc('created_at');
 
         $template = IOFactory::load(resource_path('import/sold_policies_hay2a_report.xlsx'));
         if (!$template) {
