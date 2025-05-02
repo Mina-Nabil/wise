@@ -150,13 +150,13 @@ class Invoice extends Model
                 }
                 $accounts[$bank_account_id] = [
                     'nature' => 'debit',
-                    'amount' => $this->net_total,
+                    'amount' => $this->net_total - $trans_fees,
                     'currency' => JournalEntry::CURRENCY_EGP
                 ];
 
                 $accounts[$company->account_id] = [
                     'nature' => 'credit',
-                    'amount' => $this->net_total + $trans_fees,
+                    'amount' => $this->net_total,
                     'currency' => JournalEntry::CURRENCY_EGP
                 ];
 
