@@ -61,7 +61,7 @@ class TaskAction extends Model
         return DB::table('task_actions')->whereIn('column_name', self::COLUMNS_IN_CHANGE_SOLD)
         ->join('tasks', 'tasks.id', '=', 'task_actions.task_id')
         ->where('task_actions.status', 'done')
-        ->where('tasks.taskable_type', SoldPolicy::class)
+        ->where('tasks.taskable_type', SoldPolicy::MORPH_TYPE)
         ->where('tasks.taskable_id', '!=', null)
         ->where('task_actions.updated_at', '>=', $from)
         ->where('task_actions.updated_at', '<=', $to)
