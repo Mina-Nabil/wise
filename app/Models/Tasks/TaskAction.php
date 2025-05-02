@@ -58,7 +58,7 @@ class TaskAction extends Model
 
     ///static functions
     public static function changedSoldPoliciesIDs(Carbon $from, Carbon $to){
-        return DB::table(self::$table)->whereIn('column_name', self::COLUMNS_IN_CHANGE_SOLD)
+        return DB::table('task_actions')->whereIn('column_name', self::COLUMNS_IN_CHANGE_SOLD)
         ->join('tasks', 'tasks.id', '=', 'task_id')
         ->where('status', 'done')
         ->where('tasks.taskable_type', SoldPolicy::class)
