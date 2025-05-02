@@ -643,7 +643,38 @@ class SoldPolicyReport extends Component
         }
 
         if (Auth::user()->is_admin) {
-            return SoldPolicy::exportReport($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to, $this->cancel_time_from, $this->cancel_time_to);
+            return SoldPolicy::exportReport(
+                $this->start_from,
+                $this->start_to,
+                $this->expiry_from,
+                $this->expiry_to,
+                $creators_ids,
+                $this->line_of_business,
+                $this->value_from,
+                $this->value_to,
+                $this->net_premium_to,
+                $this->net_premium_from,
+                $this->brand_ids,
+                $this->company_ids,
+                $this->policy_ids,
+                $this->is_valid,
+                $this->is_paid,
+                $this->search,
+                $this->is_renewal,
+                $this->main_sales_id,
+                $this->issued_from,
+                $this->issued_to,
+                collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
+                $this->is_welcomed,
+                $this->is_penalized,
+                $this->is_cancelled,
+                $this->paid_from,
+                $this->paid_to,
+                $this->cancel_time_from,
+                $this->cancel_time_to,
+                $this->bank_payment_time_from,
+                $this->bank_payment_time_to
+            );
         }
     }
 
@@ -755,7 +786,38 @@ class SoldPolicyReport extends Component
             $users = User::all();
         }
 
-        $policies = SoldPolicy::report($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to, $this->cancel_time_from, $this->cancel_time_to, $this->bank_payment_time_from, $this->bank_payment_time_to)->simplePaginate(30);
+        $policies = SoldPolicy::report(
+            $this->start_from,
+            $this->start_to,
+            $this->expiry_from,
+            $this->expiry_to,
+            $creators_ids,
+            $this->line_of_business,
+            $this->value_from,
+            $this->value_to,
+            $this->net_premium_to,
+            $this->net_premium_from,
+            $this->brand_ids,
+            $this->company_ids,
+            $this->policy_ids,
+            $this->is_valid,
+            $this->is_paid,
+            $this->search,
+            $this->is_renewal,
+            $this->main_sales_id,
+            $this->issued_from,
+            $this->issued_to,
+            collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
+            $this->is_welcomed,
+            $this->is_penalized,
+            $this->is_cancelled,
+            $this->paid_from,
+            $this->paid_to,
+            $this->cancel_time_from,
+            $this->cancel_time_to,
+            $this->bank_payment_time_from,
+            $this->bank_payment_time_to
+        )->simplePaginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
             'users' => $users,
