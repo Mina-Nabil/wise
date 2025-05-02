@@ -4,11 +4,13 @@ namespace App\Models\Tasks;
 
 use App\Models\Business\SoldPolicy;
 use App\Models\Users\AppLog;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TaskAction extends Model
 {
@@ -51,6 +53,21 @@ class TaskAction extends Model
             'cancellation_time',
         ]
     ];
+
+    const COLUMNS_IN_CHANGE_SOLD = [];
+
+    ///static functions
+    public static function changedSoldPoliciesIDs(Carbon $from, Carbon $to){
+        return DB::table(self::$table)->whereIn('column_name', self::COLUMNS_IN_CHANGE_SOLD)
+        ->join('tasks', 'tasks.id', '=', 'task_id')
+        ->where('status', 'done')
+        ->where('tasks.taskable_type', SoldPolicy::class)
+        ->where('tasks.taskable_id', '!=', null)
+        ->where('task_actions.updated_at', '>=', $from)
+        ->where('task_actions.updated_at', '<=', $to)
+        ->selectRaw('DISTINCT tasks.id')
+        ->get();
+    }
 
     public function confirmAction()
     {

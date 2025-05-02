@@ -22,6 +22,7 @@ use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\PolicyComm;
 use App\Models\Payments\SalesComm;
 use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskField;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -1252,6 +1253,15 @@ class SoldPolicy extends Model
 
         $cancelledPolicies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, true, $paid_from, $paid_to, $issued_from, $issued_to)->get();
 
+        $edittedPoliciesIDs = TaskAction::changedSoldPoliciesIDs($issued_from, $issued_to);
+        $edittedPolicies = self::whereIn('id', $edittedPoliciesIDs)->get();
+        $edittedPolicies->each(function ($policy) {
+            $policy->editted = true;
+        });
+
+        ///merge policies and editted policies
+        $policies = $policies->merge($edittedPolicies);
+
         $template = IOFactory::load(resource_path('import/sold_policies_hay2a_report.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
@@ -1277,6 +1287,7 @@ class SoldPolicy extends Model
                 $activeSheet->getCell('G' . $i)->setValue($policy->total_comp_paid); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
+            $activeSheet->getCell('H' . $i)->setValue($policy->editted ? "ملحق تعديل" : "");
             $activeSheet->getCell('I' . $i)->setValue(Carbon::parse($policy->created_at)->format('d-m-Y'));
             $activeSheet->getCell('J' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             $activeSheet->getCell('K' . $i)->setValue("ريمون حنا بطرس");
