@@ -1264,7 +1264,7 @@ class SoldPolicy extends Model
             $policies->push($policy);
         }
 
-        $policies = $policies->sortByDesc('created_at');
+        $policies = $policies->sortBy([['created_at', 'asc'], ['policy_number', 'asc']]);
 
         $template = IOFactory::load(resource_path('import/sold_policies_hay2a_report.xlsx'));
         if (!$template) {
