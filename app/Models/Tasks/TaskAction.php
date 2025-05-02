@@ -66,7 +66,7 @@ class TaskAction extends Model
         ->where('task_actions.updated_at', '>=', $from)
         ->where('task_actions.updated_at', '<=', $to)
         ->selectRaw('DISTINCT tasks.taskable_id')
-        ->get();
+        ->get()->toArray();
     }
 
     public function confirmAction()
