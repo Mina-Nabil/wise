@@ -54,7 +54,7 @@ class TaskAction extends Model
         ]
     ];
 
-    const COLUMNS_IN_CHANGE_SOLD = [];
+    const COLUMNS_IN_CHANGE_SOLD = ['gross_premium', 'insured_value', 'expiry', 'start', 'net_premium'];
 
     ///static functions
     public static function changedSoldPoliciesIDs(Carbon $from, Carbon $to){
