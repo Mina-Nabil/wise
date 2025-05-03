@@ -1181,15 +1181,15 @@ class SoldPolicy extends Model
         $i = 2;
         foreach ($data as $policy) {
             $activeSheet->getCell('A' . $i)->setValue($policy->policy->company->name . ' - ' . $policy->policy->name);
-            $activeSheet->getCell('B' . $i)->setValue(number_format($policy->gross_premium, 2));
-            $activeSheet->getCell('C' . $i)->setValue(number_format($policy->gross_premium, 2));
+            $activeSheet->getCell('B' . $i)->setValue($policy->gross_premium);
+            $activeSheet->getCell('C' . $i)->setValue($policy->net_premium);
             $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
             $activeSheet->getCell('E' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
             $activeSheet->getCell('G' . $i)->setValue($policy->policy_number);
             $activeSheet->getCell('H' . $i)->setValue($policy->client->name);
-            $activeSheet->getCell('I' . $i)->setValue(number_format($policy->after_tax_comm, 2));
-            $activeSheet->getCell('J' . $i)->setValue(number_format($policy->total_comp_paid, 2));
+            $activeSheet->getCell('I' . $i)->setValue($policy->after_tax_comm);
+            $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             $activeSheet->getCell('K' . $i)->setValue($policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A');
             $activeSheet->getCell('L' . $i)->setValue($policy->last_company_comm_payment?->invoice?->serial);
             $activeSheet->getCell('M' . $i)->setValue($policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A');
