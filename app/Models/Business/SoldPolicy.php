@@ -1276,7 +1276,7 @@ class SoldPolicy extends Model
         $i = 4;
         /** @var User */
         $user = Auth::user();
-        $activeSheet->getCell('D1')->setValue("سجل الوثائق والعمولات  للربع الرابع عن عام {$issued_from->format('Y')}");
+        $activeSheet->getCell('D1')->setValue("سجل الوثائق والعمولات عن عام {$issued_from->format('Y')}");
         $activeSheet->getCell('D2')->setValue("  الفترة من {$issued_from->format('d / m / Y')} حتى {$issued_to->format('d / m / Y')}   ");
 
         $k = 1;
@@ -1302,7 +1302,7 @@ class SoldPolicy extends Model
             $i++;
         }
 
-        $activeSheet = $newFile->getSheet(1);
+        $activeSheet = $newFile->getSheet(2);
 
         $i = 4;
         /** @var User */
