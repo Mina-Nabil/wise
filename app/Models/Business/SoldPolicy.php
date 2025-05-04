@@ -1325,7 +1325,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('K' . $i)->setValue("ريمون حنا بطرس");
             $activeSheet->getCell('L' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
             $activeSheet->getCell('M' . $i)->setValue($policy->insured_value);
-            $activeSheet->getCell('N' . $i)->setValue($policy->gross_premium);
+            $activeSheet->getCell('N' . $i)->setValue($policy->totalClientPaidBetween($issued_from, $issued_to));
             $activeSheet->getCell('O' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $i++;
         }
@@ -1366,6 +1366,14 @@ class SoldPolicy extends Model
     public function totalPaidBetween(Carbon $from, Carbon $to)
     {
         return $this->company_comm_payments()
+            ->whereBetween('payment_date', [$from, $to])
+            ->where('status', 'Paid')
+            ->sum('amount');
+    }
+
+    public function totalClientPaidBetween(Carbon $from, Carbon $to)
+    {
+        return $this->client_payments()
             ->whereBetween('payment_date', [$from, $to])
             ->where('status', 'Paid')
             ->sum('amount');
