@@ -1247,11 +1247,39 @@ class SoldPolicy extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function exportHay2aReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null, $is_penalized = null, $is_cancelled = null, Carbon $paid_from = null, Carbon $paid_to = null, Carbon $cancel_time_from = null, Carbon $cancel_time_to = null)
-    {
+    public static function exportHay2aReport(
+        ?Carbon $start_from = null,
+        ?Carbon $start_to = null,
+        ?Carbon $expiry_from = null,
+        ?Carbon $expiry_to = null,
+        ?int $creator_id = null,
+        ?string $line_of_business = null,
+        ?float $value_from = null,
+        ?float $value_to = null,
+        ?float $net_premium_to = null,
+        ?float $net_premium_from = null,
+        ?array $brand_ids = null,
+        ?array $company_ids = null,
+        ?array $policy_ids = null,
+        ?bool $is_valid = null,
+        ?bool $is_paid = null,
+        ?string $searchText = null,
+        ?bool $is_renewal = null,
+        ?int $main_sales_id = null,
+        ?Carbon $issued_from = null,
+        ?Carbon $issued_to = null,
+        ?array $comm_profile_ids = [],
+        ?bool $is_welcomed = null,
+        ?bool $is_penalized = null,
+        ?bool $is_cancelled = null,
+        ?Carbon $paid_from = null,
+        ?Carbon $paid_to = null,
+        ?Carbon $cancel_time_from = null,
+        ?Carbon $cancel_time_to = null
+    ) {
         $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, false, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to)->get();
 
-        $cancelledPolicies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, true, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to)->get();
+        $cancelledPolicies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, true, $paid_from, $paid_to, $issued_from, $issued_to)->get();
 
         $edittedPoliciesIDs = TaskAction::changedSoldPoliciesIDs($issued_from, $issued_to);
         $edittedPolicies = self::whereIn('id', $edittedPoliciesIDs)->get();
@@ -1302,28 +1330,29 @@ class SoldPolicy extends Model
             $i++;
         }
 
-        $activeSheet = $newFile->getSheet(2);
+        $cancelledSheet = $newFile->getSheet(1);
 
         $i = 4;
         /** @var User */
         $user = Auth::user();
-        $activeSheet->getCell('D1')->setValue("سجل الالغائات عن عام {$issued_from->format('Y')}");
-        $activeSheet->getCell('D2')->setValue("  الفترة من {$issued_from->format('d / m / Y')} حتى {$issued_to->format('d / m / Y')}   ");
+        $cancelledSheet->getCell('D1')->setValue("سجل الالغائات عن عام {$issued_from->format('Y')}");
+        $cancelledSheet->getCell('D2')->setValue("  الفترة من {$issued_from->format('d / m / Y')} حتى {$issued_to->format('d / m / Y')}   ");
 
         $k = 1;
         foreach ($cancelledPolicies as $policy) {
-            $activeSheet->getCell('A' . $i)->setValue($k++);
-            $activeSheet->getCell('B' . $i)->setValue($policy->policy_number);
-            $activeSheet->getCell('C' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);
-            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
-            $activeSheet->getCell('E' . $i)->setValue($policy->policy->company->name);
-            $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
-            $activeSheet->getCell('G' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
-            $activeSheet->getCell('H' . $i)->setValue($policy->client->full_name);
+            $cancelledSheet->getCell('A' . $i)->setValue($k++);
+            $cancelledSheet->getCell('B' . $i)->setValue($policy->policy_number);
+            $cancelledSheet->getCell('C' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);
+            $cancelledSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
+            $cancelledSheet->getCell('E' . $i)->setValue($policy->policy->company->name);
+            $cancelledSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
+            $cancelledSheet->getCell('G' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
+            $cancelledSheet->getCell('H' . $i)->setValue($policy->client->full_name);
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid); //total_policy_comm
+                $cancelledSheet->getCell('J' . $i)->setValue($policy->total_comp_paid); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
+            $k++;
         }
 
         $writer = new Xlsx($newFile);
