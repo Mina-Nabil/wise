@@ -1352,7 +1352,7 @@ class SoldPolicy extends Model
                 $cancelledSheet->getCell('J' . $i)->setValue($policy->total_comp_paid); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
-            $k++;
+            $i++;
         }
 
         $writer = new Xlsx($newFile);
