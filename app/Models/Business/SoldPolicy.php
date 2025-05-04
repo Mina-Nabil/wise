@@ -1249,9 +1249,9 @@ class SoldPolicy extends Model
 
     public static function exportHay2aReport(Carbon $start_from = null, Carbon $start_to = null, Carbon $expiry_from = null, Carbon $expiry_to = null, $creator_id = null, $line_of_business = null, $value_from = null, $value_to = null, $net_premium_to = null, $net_premium_from = null, array $brand_ids = null, array $company_ids = null,  array $policy_ids = null, bool $is_valid = null, bool $is_paid = null, $searchText = null, $is_renewal = null, $main_sales_id = null, Carbon $issued_from = null, Carbon $issued_to = null, array $comm_profile_ids = [], $is_welcomed = null, $is_penalized = null, $is_cancelled = null, Carbon $paid_from = null, Carbon $paid_to = null, Carbon $cancel_time_from = null, Carbon $cancel_time_to = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, $is_cancelled, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, false, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to)->get();
 
-        $cancelledPolicies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, true, $paid_from, $paid_to, $issued_from, $issued_to)->get();
+        $cancelledPolicies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_id, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, true, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to)->get();
 
         $edittedPoliciesIDs = TaskAction::changedSoldPoliciesIDs($issued_from, $issued_to);
         $edittedPolicies = self::whereIn('id', $edittedPoliciesIDs)->get();
@@ -1264,7 +1264,7 @@ class SoldPolicy extends Model
             $policies->push($policy);
         }
 
-        $policies = $policies->sortBy([['created_at', 'asc'], ['policy_number', 'asc']]);
+        $policies = $policies->sortBy([['created_at', 'desc'], ['policy_number', 'asc']]);
 
         $template = IOFactory::load(resource_path('import/sold_policies_hay2a_report.xlsx'));
         if (!$template) {
@@ -1307,7 +1307,7 @@ class SoldPolicy extends Model
         $i = 4;
         /** @var User */
         $user = Auth::user();
-        $activeSheet->getCell('D1')->setValue("سجل الالغائات  للربع الرابع عن عام {$issued_from->format('Y')}");
+        $activeSheet->getCell('D1')->setValue("سجل الالغائات عن عام {$issued_from->format('Y')}");
         $activeSheet->getCell('D2')->setValue("  الفترة من {$issued_from->format('d / m / Y')} حتى {$issued_to->format('d / m / Y')}   ");
 
         $k = 1;
