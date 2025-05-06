@@ -1316,7 +1316,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('E' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);
             $activeSheet->getCell('F' . $i)->setValue($policy->policy->company->name);
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('G' . $i)->setValue($policy->totalPaidBetween($issued_from, $issued_to)); //total_policy_comm
+                $activeSheet->getCell('G' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) / 0.95, 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $activeSheet->getCell('H' . $i)->setValue($policy->editted ? "ملحق تعديل" : "");
@@ -1349,7 +1349,7 @@ class SoldPolicy extends Model
             $cancelledSheet->getCell('G' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $cancelledSheet->getCell('H' . $i)->setValue($policy->client->full_name);
             if ($user->can('viewCommission', self::class)) {
-                $cancelledSheet->getCell('J' . $i)->setValue($policy->totalPaidBetween($issued_from, $issued_to)); //total_policy_comm
+                $cancelledSheet->getCell('J' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) / 0.95, 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $i++;
