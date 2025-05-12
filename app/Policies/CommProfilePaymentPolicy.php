@@ -41,7 +41,7 @@ class CommProfilePaymentPolicy
      */
     public function create(User $user)
     {
-        return $user->is_finance || $user->is_admin;
+        return $user->is_finance || $user->is_admin || $user->is_finance_assistant;
     }
 
     /**
@@ -53,7 +53,7 @@ class CommProfilePaymentPolicy
      */
     public function update(User $user, CommProfilePayment $commProfilePayment)
     {
-        return $user->is_finance || $user->is_admin;
+        return $user->is_finance || $user->is_admin || $user->is_finance_assistant;
     }
 
     /**
@@ -65,7 +65,7 @@ class CommProfilePaymentPolicy
      */
     public function delete(User $user, CommProfilePayment $commProfilePayment)
     {
-        return $user->is_finance || $user->is_admin;
+        return $user->is_finance || $user->is_admin || $user->is_finance_assistant;
     }
 
     /**
@@ -77,6 +77,6 @@ class CommProfilePaymentPolicy
      */
     public function approve(User $user, CommProfilePayment $commProfilePayment)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin || $user->is_finance || $user->is_finance_assistant;
     }
 }
