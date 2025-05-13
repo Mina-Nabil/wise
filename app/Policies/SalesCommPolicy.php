@@ -18,7 +18,7 @@ class SalesCommPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin || $user->is_finance || $user->is_finance_assistant;
     }
 
     /**
@@ -30,7 +30,7 @@ class SalesCommPolicy
      */
     public function view(User $user, SalesComm $salesComm)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin || $user->is_finance || $user->is_finance_assistant;
     }
 
     /**
@@ -53,7 +53,7 @@ class SalesCommPolicy
      */
     public function update(User $user, SalesComm $salesComm)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin || $user->is_finance || $user->is_finance_assistant;
     }
 
     /**
