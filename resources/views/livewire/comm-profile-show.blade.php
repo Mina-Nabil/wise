@@ -108,7 +108,7 @@
                             Unapproved Balance (Direct Conf. Only)
                         </div>
                         <div class="text-slate-900 dark:text-white text-lg font-medium">
-                            {{ number_format($profile->unapproved_balance, 2, '.', ',') }} EGP
+                            {{ number_format($profile->balance, 2, '.', ',') }} EGP
                         </div>
                     </div>
                 </div>
