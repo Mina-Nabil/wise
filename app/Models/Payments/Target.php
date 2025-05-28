@@ -82,9 +82,11 @@ class Target extends Model
                 )) * (
                 $this->add_to_balance / 100);
 
+        $original_payment = (($this->add_as_payment / 100) * $balance_update);
+
         $payment_to_add = max($this->base_payment, (($this->add_as_payment / 100) * $balance_update));
 
-        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmountsPercent, &$linkedComms) {
+        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmountsPercent, &$linkedComms, $original_payment) {
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
 
             /** @var SalesComm */
@@ -101,6 +103,10 @@ class Target extends Model
 
             if ($payment_to_add)
                 $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true, linked_sales_comms: $linkedComms);
+
+            if ($payment_to_add > $original_payment) {
+                $this->comm_profile->addPayment($payment_to_add - $original_payment, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id difference", must_add: true, linked_sales_comms: $linkedComms);
+            }
 
             $this->addRun($balance_update - $payment_to_add, $payment_to_add);
         });
