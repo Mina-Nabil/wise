@@ -105,7 +105,7 @@ class Target extends Model
                 $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true, linked_sales_comms: $linkedComms);
 
             if ($payment_to_add > $original_payment) {
-                $this->comm_profile->addPayment($payment_to_add - $original_payment, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id difference", must_add: true, linked_sales_comms: $linkedComms);
+                $this->comm_profile->addPayment($original_payment - $payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id difference", must_add: true, linked_sales_comms: $linkedComms);
             }
 
             $this->addRun($balance_update - $payment_to_add, $payment_to_add);
