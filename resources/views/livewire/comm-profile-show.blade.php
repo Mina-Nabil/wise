@@ -105,10 +105,10 @@
                     </div>
                     <div class="flex-1">
                         <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                            Unapproved Balance (Direct Conf. Only)
+                            Unapproved Balance
                         </div>
                         <div class="text-slate-900 dark:text-white text-lg font-medium">
-                            {{ number_format($profile->balance, 2, '.', ',') }} EGP
+                            {{ number_format($profile->balance + $profile->unapproved_balance, 2, '.', ',') }} EGP
                         </div>
                     </div>
                 </div>
