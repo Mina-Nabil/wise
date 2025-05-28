@@ -1205,7 +1205,8 @@ class CommProfileShow extends Component
             'targets' => $targets,
             'configurations' => $configurations,
             'client_payments' => $client_payments,
-            'SALES_COMM_STATUSES' => $SALES_COMM_STATUSES
+            'SALES_COMM_STATUSES' => $SALES_COMM_STATUSES,
+            'balance' => $balance
         ]);
     }
 
