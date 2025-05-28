@@ -91,10 +91,10 @@ class Target extends Model
 
             /** @var SalesComm */
             foreach ($salesCommissions as $s) {
-                $s->updatePaymentByTarget($this, $payment_to_add * $paidAmountsPercent[$s->sold_policy_id], $is_manual);
+                $s->updatePaymentByTarget($this, $original_payment * $paidAmountsPercent[$s->sold_policy_id], $is_manual);
                 $linkedComms[$s->id] = [
-                    'paid_percentage'   => (($payment_to_add * $paidAmountsPercent[$s->sold_policy_id]) / $s->amount) * 100,
-                    'amount'            =>  $payment_to_add * $paidAmountsPercent[$s->sold_policy_id]
+                    'paid_percentage'   => (($original_payment * $paidAmountsPercent[$s->sold_policy_id]) / $s->amount) * 100,
+                    'amount'            =>  $original_payment * $paidAmountsPercent[$s->sold_policy_id]
                 ];
             }
 
