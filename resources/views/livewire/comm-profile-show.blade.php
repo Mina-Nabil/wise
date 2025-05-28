@@ -87,7 +87,7 @@
                             Balance
                         </div>
                         <div class="text-slate-900 dark:text-white text-lg font-medium">
-                            <h5>{{ number_format($profile->balance, 2, '.', ',') }} EGP</h5>
+                            <h5>{{ number_format($balance, 2, '.', ',') }} EGP</h5>
                         </div>
                     </div>
                 </div>

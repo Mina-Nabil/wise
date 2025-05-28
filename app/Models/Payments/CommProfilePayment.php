@@ -341,6 +341,10 @@ class CommProfilePayment extends Model
     {
         $query->whereNot('status', self::PYMT_STATE_CANCELLED);
     }
+    public function scopeNew(Builder $query)
+    {
+        $query->where('status', self::PYMT_STATE_NEW);
+    }
 
     ///relations
     public function sales_commissions(): BelongsToMany

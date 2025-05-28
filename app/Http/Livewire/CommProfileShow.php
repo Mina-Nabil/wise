@@ -1159,6 +1159,9 @@ class CommProfileShow extends Component
             })
             ->paginate(10);
 
+            $balance = $this->profile
+            ->payments()->new()->sum('amount');
+
         $sales_comm = $this->profile
             ->sales_comm()->filterByStatus($this->salesCommStatus)
             ->only2025()
