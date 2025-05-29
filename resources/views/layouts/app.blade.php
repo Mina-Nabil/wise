@@ -581,6 +581,14 @@
                                     </a>
                                 </div>
                             @endif
+                            @if (Auth::user()->is_admin)
+                                <div class="text-right">
+                                    <a href="https://hire.wise-ib.com" target="_blank">
+                                        <button
+                                            class="btn btn-sm inline-flex justify-center btn-outline-light rounded-[25px]">HR APP</button>
+                                    </a>
+                                </div>
+                            @endif
 
                             <!-- end vertcial -->
                             <div class="items-center space-x-4 rtl:space-x-reverse horizental-box">
