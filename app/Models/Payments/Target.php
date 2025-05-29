@@ -75,16 +75,15 @@ class Target extends Model
         if ($totalIncome <= $this->min_income_target) return false;
 
         $balance_update = ($this->comm_percentage / 100) *
-            ($this->is_full_amount ? $totalIncome :
+            (($this->is_full_amount ? $totalIncome :
                 min(
                     $totalIncome,
                     ($this->max_income_target ?? $totalIncome)
-                )) * (
-                $this->add_to_balance / 100);
+                )) - $this->min_income_target) *  ($this->add_to_balance / 100);
 
         $original_payment = (($this->add_as_payment / 100) * $balance_update);
 
-        $payment_to_add = max($this->base_payment, (($this->add_as_payment / 100) * $balance_update));
+        $payment_to_add = max($this->base_payment, $original_payment);
 
         DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmountsPercent, &$linkedComms, $original_payment) {
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
