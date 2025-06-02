@@ -1152,7 +1152,12 @@ class SoldPolicy extends Model
         ?Carbon $start_to = null,
         ?array $company_ids = [],
         ?Carbon $payment_from = null,
-        ?Carbon $payment_to = null
+        ?Carbon $payment_to = null,
+        $has_invoice = null,
+        $invoice_payment_from = null,
+        $invoice_payment_to = null,
+        $invoice_paid = null
+
     ) {
         /** @var User */
         $user = Auth::user();
@@ -1167,7 +1172,11 @@ class SoldPolicy extends Model
             $start_to,
             $company_ids,
             $payment_from,
-            $payment_to
+            $payment_to,
+            $has_invoice ,
+            $invoice_payment_from ,
+            $invoice_payment_to ,
+            $invoice_paid ,
         )->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_outstanding_report.xlsx'));
