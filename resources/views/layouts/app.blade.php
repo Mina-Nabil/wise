@@ -273,10 +273,12 @@
                                 <a href="{{ url('/reports/corporate-interest') }}"
                                     class="@yield('corporate-interests-report')">Corporate Interests</a>
                             </li>
+                            @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
                             <li>
                                 <a href="{{ url('/reports/invoices-report') }}" class="@yield('invoices-report')">Invoices
-                                    Report</a>
-                            </li>
+                                        Report</a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                     @if (Auth::user()->is_admin || Auth::user()->is_hr || Auth::user()->is_any_finance || Auth::user()->is_operations)
