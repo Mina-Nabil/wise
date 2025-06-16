@@ -67,6 +67,13 @@ class JournalEntry extends Model
     const CASH_ID = 2874;
     // const CHEQUE_ID = 2920;
 
+    //atr
+    public function getCashTitleAttribute()
+    {
+        $oppAccounts = $this->accounts()->wherePivot('nature', $this->cash_entry_type == self::CASH_ENTRY_RECEIVED ? 'credit' : 'debit')->get();
+        return $this->entry_title->name . " - " . $this->comment . " - " . $oppAccounts->implode('name', ',');
+    }
+
     ////static functions
 
     /** 
@@ -453,9 +460,4 @@ class JournalEntry extends Model
         return $this->belongsTo(User::class, 'approver_id');
     }
 
-    public function getCashTitleAttribute()
-    {
-        $oppAccounts = $this->accounts()->wherePivot('nature', $this->cash_entry_type == self::CASH_ENTRY_RECEIVED ? 'credit' : 'debit')->get();
-        return $this->entry_title->name . " - " . $this->comment . " - " . $oppAccounts->implode('name', ',');
-    }
 }
