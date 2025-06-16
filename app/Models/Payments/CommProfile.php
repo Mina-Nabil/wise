@@ -142,6 +142,7 @@ class CommProfile extends Model
                 ($comm->sold_policy->offer?->is_renewal ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN)) : '-');
             $activeSheet->getCell('J' . $i)->setValue($comm->sold_policy->insured_value);
             $activeSheet->getCell('L' . $i)->setValue($comm->sold_policy->customer_car?->car?->car_model?->brand?->name . ' - ' . $comm->sold_policy->customer_car?->car?->car_model?->name);
+            $activeSheet->getCell('M' . $i)->setValue($comm->status);
 
             $activeSheet->insertNewRowBefore($i);
         }
