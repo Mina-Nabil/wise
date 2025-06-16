@@ -1298,7 +1298,7 @@ class SoldPolicy extends Model
 
         ///merge policies and editted policies
         foreach ($edittedPolicies as $policy) {
-            if (!$policies->contains('id', $policy->id)) {
+            if ($policies->contains('id', $policy->id)) {
                 $policy->is_duplicate = true;
             }
             $policies->push($policy);
