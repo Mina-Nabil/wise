@@ -68,7 +68,8 @@
 
                                 @foreach ($entries as $entry)
                                     <tr>
-                                        <td class="table-td"><b>{{ $entry->id }}</b></td>
+                                        <td class="table-td" 
+                                        ><a href="{{ route('accounts.entries', $entry->id) }}" target="_blank" class="text-blue-500 hover:text-blue-700">{{ $entry->id }}</a></td>
                                         <td class="table-td"><b>{{ $entry->name }}</b></td>
                                         <td class="table-td">{{ number_format($entry->debit_amount, 2) }}</td>
                                         <td class="table-td">{{ number_format($entry->credit_amount, 2) }}</td>
