@@ -376,7 +376,9 @@ class JournalEntry extends Model
 
     public function scopeCashOnly($query)
     {
-        return $query->whereNotNull('cash_entry_type');
+        return $query->whereHas('accounts', function ($query) {
+            $query->where('accounts.id', self::CASH_ID);
+        });
     }
 
     public function scopeByDay($query, Carbon $day)
