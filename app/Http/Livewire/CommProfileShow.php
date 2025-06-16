@@ -658,6 +658,8 @@ class CommProfileShow extends Component
         $this->salesCommSearchResults = [];
         $this->pymtAmount = array_sum(array_column($this->salesCommArray, 'amount'));
 
+        return;
+
     }
 
 
