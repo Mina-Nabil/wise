@@ -53,6 +53,7 @@
                                 <tr>
                                     <th scope="col" class="table-th">#</th>
                                     <th scope="col" class="table-th">Title</th>
+                                    <th scope="col" class="table-th">Comment</th>
                                     <th scope="col" class="table-th">Debit</th>
                                     <th scope="col" class="table-th">Credit</th>
                                     <th scope="col" class="table-th">Balance</th>
@@ -71,6 +72,7 @@
                                         <td class="table-td" 
                                         ><a href="{{ route('accounts.entries', $entry->id) }}" target="_blank" class="text-blue-500 hover:text-blue-700 underline">{{ $entry->id }}</a></td>
                                         <td class="table-td"><b>{{ $entry->name }}</b></td>
+                                        <td class="table-td">{{ $entry->cash_title }}</td>
                                         <td class="table-td">{{ number_format($entry->debit_amount, 2) }}</td>
                                         <td class="table-td">{{ number_format($entry->credit_amount, 2) }}</td>
                                         <td class="table-td">{{ number_format($entry->account_balance, 2) }}</td>

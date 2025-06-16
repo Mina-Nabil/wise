@@ -271,13 +271,12 @@ class JournalEntry extends Model
             return false;
         }
 
-        $oppAccounts = $this->accounts()->wherePivot('nature', $this->cash_entry_type == self::CASH_ENTRY_RECEIVED ? 'credit' : 'debit')->get();
         $activeSheet->getCell('B7')->setValue($number_format);
         $activeSheet->getCell('F5')->setValue(str_pad($this->cash_serial, 5, '0', STR_PAD_LEFT));
         $activeSheet->getCell('F7')->setValue(Carbon::parse($this->created_at)->format('d / m / Y'));
         $activeSheet->getCell('B9')->setValue("/      {$this->receiver_name}");
         $activeSheet->getCell('B11')->setValue("/     {$number_text}       نقدا / شيك رقم : ............................................				");
-        $activeSheet->getCell('B13')->setValue("/    {$this->entry_title->name} - {$this->comment} - {$oppAccounts->implode('name', ',')}				");
+        $activeSheet->getCell('B13')->setValue("/    {$this->cash_title}				");
 
 
 
