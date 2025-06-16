@@ -199,7 +199,7 @@
                         <div class="card-body px-6 pb-6">
                             <div class="overflow-x-auto ">
                                 <div class="inline-block min-w-full align-middle">
-                                    <div class="overflow-hidden " style="height: 500px; overflow-y: auto;">
+                                    <div class="overflow-hidden " style="min-height: 500px; overflow-y: auto;">
                                         <table
                                             class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                             <thead class="">
