@@ -98,7 +98,7 @@ class CompanyCommPayment extends Model
         }
     }
 
-    public function setAsPaid(Carbon $date = null)
+    public function setAsPaid(?Carbon $date = null)
     {
         /** @var User */
         $user = Auth::user();
@@ -114,6 +114,9 @@ class CompanyCommPayment extends Model
                 "status"  =>  self::PYMT_STATE_PAID,
             ])) {
                 $this->load('sold_policy');
+                $this->linked_sales_comms->each(function ($sales_comm) use ($date) {
+                    $sales_comm->setAsPaid($date);
+                });
                 $this->sold_policy->calculateTotalCompanyPayments();
                 $this->sold_policy->updateSalesCommsPaymentInfo();
             }
