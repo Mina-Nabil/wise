@@ -1241,8 +1241,11 @@ class SoldPolicy extends Model
             $activeSheet->getCell('G' . $i)->setValue($policy->is_valid ? "Valid" : '');
             $activeSheet->getCell('H' . $i)->setValue($policy->is_paid ? 'Paid' : '');
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('I' . $i)->setValue($policy->total_policy_comm);
-                $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
+                $activeSheet->getCell('I' . $i)->setValue($policy->after_tax_comm);
+                $activeSheet->getCell('J' . $i)->setValue($policy->total_policy_comm);
+                $activeSheet->getCell('K' . $i)->setValue($policy->total_comp_paid);
+                $activeSheet->getCell('L' . $i)->setValue($policy->total_comp_paid / 0.95);
+                $activeSheet->getCell('M' . $i)->setValue(($policy->after_tax_comm / 0.95) - ($policy->total_comp_paid / 0.95));
             }
 
             $i++;
