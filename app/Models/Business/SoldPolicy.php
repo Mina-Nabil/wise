@@ -1173,10 +1173,10 @@ class SoldPolicy extends Model
             $company_ids,
             $payment_from,
             $payment_to,
-            $has_invoice ,
-            $invoice_payment_from ,
-            $invoice_payment_to ,
-            $invoice_paid ,
+            $has_invoice,
+            $invoice_payment_from,
+            $invoice_payment_to,
+            $invoice_paid,
         )->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_outstanding_report.xlsx'));
@@ -1298,7 +1298,9 @@ class SoldPolicy extends Model
 
         ///merge policies and editted policies
         foreach ($edittedPolicies as $policy) {
-            if ($policies->contains('policy_number', $policy->policy_number)) {
+            if ($policies->contains(function ($p) use ($policy) {
+                return $p->policy_number == $policy->policy_number && $p->id != $policy->id;
+            })) {
                 $policy->is_duplicate = true;
             }
             $policies->push($policy);
@@ -1361,7 +1363,7 @@ class SoldPolicy extends Model
             $cancelledSheet->getCell('G' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $cancelledSheet->getCell('H' . $i)->setValue($policy->client->full_name);
             if ($user->can('viewCommission', self::class)) {
-                $cancelledSheet->getCell('J' . $i)->setValue( $policy->is_duplicate ? 0 : round($policy->totalPaidBetween($issued_from, $issued_to), 2)); //total_policy_comm
+                $cancelledSheet->getCell('J' . $i)->setValue($policy->is_duplicate ? 0 : round($policy->totalPaidBetween($issued_from, $issued_to), 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $i++;
