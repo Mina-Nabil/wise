@@ -310,22 +310,26 @@ class JournalEntry extends Model
         $i = 7;
         /** @var self */
         foreach ($trans as $t) {
-            if ($t->cash_entry_type == self::CASH_ENTRY_DELIVERED) {
-                $activeSheet->getCell('I' . $i)->setValue($t->comment);
-                $activeSheet->getCell('H' . $i)->setValue(
-                    $t->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->amount
-                );
-                // $activeSheet->getCell('G' . $i)->setValue(
-                //     $t->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->amount
-                // );
+            $cash_ac = $t->accounts()->where('accounts.id', self::CASH_ID)->first();
+            if ($cash_ac->pivot->nature == 'credit') {
+                foreach($t->accounts()->wherePivot('nature', 'debit')->get() as $ac){
+                    $activeSheet->getCell('I' . $i)->setValue($ac->name);
+                    $activeSheet->getCell('H' . $i)->setValue(
+                        $ac->pivot->amount
+                    );
+                    $i++;
+                }
                 $activeSheet->getCell('F' . $i)->setValue($t->cash_serial);
             } else {
-                $activeSheet->getCell('E' . $i)->setValue($t->comment);
-                $activeSheet->getCell('D' . $i)->setValue(
-                    $t->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->amount
-                );
-                $activeSheet->getCell('B' . $i)->setValue($t->cash_serial);
+                foreach($t->accounts()->wherePivot('nature', 'credit')->get() as $ac){
+                    $activeSheet->getCell('I' . $i)->setValue($ac->name);
+                    $activeSheet->getCell('H' . $i)->setValue(
+                        $ac->pivot->amount
+                    );
+                    $i++;
+                }
             }
+            $activeSheet->getCell('B' . $i)->setValue($t->cash_serial);
             $i++;
         }
 
