@@ -250,7 +250,7 @@ class SalesComm extends Model
         try {
             $this->load('comm_profile');
             $date = $date ?? new Carbon();
-            AppLog::error("Setting Sales Comm as paid", loggable: $this);
+
             if ($this->update([
                 "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
@@ -287,7 +287,7 @@ class SalesComm extends Model
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
-            AppLog::error("Setting Sales Comm as cancelled", loggable: $this);
+
             $this->update([
                 "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
