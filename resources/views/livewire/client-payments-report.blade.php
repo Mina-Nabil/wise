@@ -329,7 +329,7 @@
 
                                 </th>
 
-                                @if (auth()->user()->is_admin || auth()->user()->is_finance)
+                                @if (auth()->user()->is_admin || auth()->user()->is_finance || auth()->user()->is_finance_assistant)
                                     <th scope="col" class="table-th">
                                         Sales
                                     </th>
@@ -381,7 +381,7 @@
                                     </td>
 
 
-                                    @if (auth()->user()->is_admin || auth()->user()->is_finance)
+                                    @if (auth()->user()->is_admin || auth()->user()->is_finance || auth()->user()->is_finance_assistant)
                                         <td class="table-td">
                                             <ul>
 
