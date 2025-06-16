@@ -312,7 +312,7 @@ class JournalEntry extends Model
         foreach ($trans as $t) {
             $cash_ac = $t->accounts()->where('accounts.id', self::CASH_ID)->first();
             if ($cash_ac->pivot->nature == 'credit') {
-                foreach($t->accounts()->wherePivot('nature', 'debit')->get() as $ac){
+                foreach ($t->accounts()->wherePivot('nature', 'debit')->get() as $ac) {
                     $activeSheet->getCell('I' . $i)->setValue($ac->name);
                     $activeSheet->getCell('H' . $i)->setValue(
                         $ac->pivot->amount
@@ -321,7 +321,7 @@ class JournalEntry extends Model
                 }
                 $activeSheet->getCell('F' . $i)->setValue($t->cash_serial);
             } else {
-                foreach($t->accounts()->wherePivot('nature', 'credit')->get() as $ac){
+                foreach ($t->accounts()->wherePivot('nature', 'credit')->get() as $ac) {
                     $activeSheet->getCell('I' . $i)->setValue($ac->name);
                     $activeSheet->getCell('H' . $i)->setValue(
                         $ac->pivot->amount
@@ -452,5 +452,11 @@ class JournalEntry extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function getCashTitleAttribute()
+    {
+        $oppAccounts = $this->accounts()->wherePivot('nature', $this->cash_entry_type == self::CASH_ENTRY_RECEIVED ? 'credit' : 'debit')->get();
+        return $this->entry_title->name . " - " . $this->comment . " - " . $oppAccounts->implode('name', ',');
     }
 }
