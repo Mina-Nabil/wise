@@ -48,7 +48,7 @@ class Account extends Model
     ////static functions
     public static function getEntries($account_id, Carbon $from, Carbon $to, $search = null)
     {
-        return DB::table('journal_entries')
+        return JournalEntry::query()
             ->join('entry_accounts', 'entry_accounts.journal_entry_id', '=', 'journal_entries.id')
             ->join('entry_titles', 'entry_titles.id', '=', 'journal_entries.entry_title_id')
             ->join('users', 'users.id', '=', 'journal_entries.user_id')
