@@ -656,6 +656,8 @@ class CommProfileShow extends Component
         $this->selectedSalesComm = null;
         $this->salesCommSearch = '';
         $this->salesCommSearchResults = [];
+        $this->pymtAmount = array_sum(array_column($this->salesCommArray, 'amount'));
+
     }
 
 
@@ -700,7 +702,6 @@ class CommProfileShow extends Component
     {
         $this->selectedSalesComm = $id;
         $this->salesCommSearchResults = [];
-        $this->pymtAmount = array_sum(array_column($this->salesCommArray, 'amount'));
     }
 
     public function removeSalesComm($index)
