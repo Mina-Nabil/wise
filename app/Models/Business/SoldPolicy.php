@@ -1361,7 +1361,7 @@ class SoldPolicy extends Model
             $cancelledSheet->getCell('G' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $cancelledSheet->getCell('H' . $i)->setValue($policy->client->full_name);
             if ($user->can('viewCommission', self::class)) {
-                $cancelledSheet->getCell('J' . $i)->setValue( $policy->is_duplicate ? 0 : $round($policy->totalPaidBetween($issued_from, $issued_to), 2)); //total_policy_comm
+                $cancelledSheet->getCell('J' . $i)->setValue( $policy->is_duplicate ? 0 : round($policy->totalPaidBetween($issued_from, $issued_to), 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $i++;
