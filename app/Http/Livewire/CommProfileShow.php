@@ -651,12 +651,12 @@ class CommProfileShow extends Component
             'client_name' => $salesComm->sold_policy->client->name ?? 'N/A',
             'gross_premium' => $salesComm->sold_policy->gross_premium ?? 0,
         ];
+        $this->pymtAmount = array_sum(array_column($this->salesCommArray, 'amount'));
 
         // Reset selection
         $this->selectedSalesComm = null;
         $this->salesCommSearch = '';
         $this->salesCommSearchResults = [];
-        $this->pymtAmount = array_sum(array_column($this->salesCommArray, 'amount'));
 
         return;
 
