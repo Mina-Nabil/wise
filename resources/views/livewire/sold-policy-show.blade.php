@@ -1420,7 +1420,8 @@
 
                                                         <td class="table-td ">
                                                             <div class="text-lg text-success-500">
-                                                                {{ number_format($payment->amount, 2, '.', ',') }} EGP
+                                                                {{ number_format($payment->amount, 2, '.', ',') }} EGP /
+                                                                {{ number_format($payment->amount / 0.95, 2, '.', ',') }} EGP
                                                             </div>
                                                         </td>
 
