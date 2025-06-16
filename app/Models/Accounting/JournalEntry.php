@@ -328,8 +328,8 @@ class JournalEntry extends Model
                 $activeSheet->getCell('F' . $i)->setValue($t->cash_serial);
             } else {
                 foreach ($t->accounts()->wherePivot('nature', 'credit')->get() as $ac) {
-                    $activeSheet->getCell('I' . $i)->setValue($ac->name);
-                    $activeSheet->getCell('H' . $i)->setValue(
+                    $activeSheet->getCell('E' . $i)->setValue($ac->name);
+                    $activeSheet->getCell('D' . $i)->setValue(
                         $ac->pivot->amount
                     );
                     $i++;
