@@ -114,12 +114,7 @@ class CompanyCommPayment extends Model
                 "status"  =>  self::PYMT_STATE_PAID,
             ])) {
                 $this->load('sold_policy');
-                $this->load('linked_sales_comms');
-                $this->linked_sales_comms->update([
-                    "closed_by_id"   =>  Auth::id(),
-                    "payment_date"  => $date->format('Y-m-d H:i'),
-                    "status"  =>  SalesComm::PYMT_STATE_PAID,
-                ]);
+
                 $this->sold_policy->calculateTotalCompanyPayments();
                 $this->sold_policy->updateSalesCommsPaymentInfo();
             }

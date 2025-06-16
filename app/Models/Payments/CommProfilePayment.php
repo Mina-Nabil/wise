@@ -231,6 +231,12 @@ class CommProfilePayment extends Model
         try {
             DB::transaction(function () use ($date) {
 
+                $this->sales_commissions()->update([
+                    "closed_by_id"   =>  Auth::id(),
+                    "payment_date"  => $date->format('Y-m-d H:i'),
+                    "status"  =>  SalesComm::PYMT_STATE_PAID,
+                ]);
+
 
                 $date = $date ?? new Carbon();
                 AppLog::info("Setting Profile Payment as paid", loggable: $this);
