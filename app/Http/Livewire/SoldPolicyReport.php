@@ -300,7 +300,7 @@ class SoldPolicyReport extends Component
         $this->is_penalized = null;
     }
 
-    public function clearrenwal()
+    public function clearrenewal()
     {
         $this->is_renewal = null;
     }
