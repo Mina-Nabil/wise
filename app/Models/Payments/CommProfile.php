@@ -114,7 +114,7 @@ class CommProfile extends Model
         $comms = $this->sales_comm()->bySoldPoliciesStartEnd($start, $end)
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.customer_car.car.car_model.brand')
             ->notCancelled()
-            ->notPaid()
+            // ->notPaid()
             ->notPolicyCancelled()
             ->notPolicyExpired()
             ->get();
