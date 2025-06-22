@@ -1199,6 +1199,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('H' . $i)->setValue($policy->client->name);
             $activeSheet->getCell('I' . $i)->setValue($policy->after_tax_comm);
             $activeSheet->getCell('J' . $i)->setValue($policy->total_policy_comm);
+            $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             $activeSheet->getCell('K' . $i)->setValue($policy->total_comp_paid / 0.95);
             $activeSheet->getCell('L' . $i)->setValue(($policy->after_tax_comm / 0.95) - ($policy->total_comp_paid / 0.95));
             $activeSheet->getCell('K' . $i)->setValue($policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A');
