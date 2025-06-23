@@ -10,10 +10,11 @@ use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
 use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 
 class CarIndex extends Component
 {
-    use WithPagination, AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, WithFileUploads;
 
     public $search = '';
     public $carPriceListId = null;
@@ -39,6 +40,10 @@ class CarIndex extends Component
     public $editBrandName;
     public $editModelField;
     public $editModelName;
+
+    // Import/Export properties
+    public $importFileSection = false;
+    public $carsFile;
 
     public function mount()
     {
@@ -426,6 +431,35 @@ class CarIndex extends Component
         } else {
             $this->car = $p;
         }
+    }
+
+    // Import/Export functions
+    public function toggleImportSection()
+    {
+        $this->importFileSection = !$this->importFileSection;
+    }
+
+    public function uploadCars()
+    {
+        $this->validate([
+            'carsFile' => 'required|file|mimes:xls,xlsx|max:33000',
+        ]);
+        
+        try {
+            $importedFile_url = $this->carsFile->store('tmp', 'local');
+            Car::importData(storage_path('app/' . $importedFile_url));
+            unlink(storage_path('app/' . $importedFile_url));
+            $this->carsFile = null;
+            $this->toggleImportSection();
+            $this->alert('success', 'Cars imported successfully!');
+        } catch (\Exception $e) {
+            $this->alert('failed', 'Import failed: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadCarsExport()
+    {
+        return Car::downloadCarsExport();
     }
 
     public function render()

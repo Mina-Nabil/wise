@@ -117,6 +117,110 @@ class Car extends Model
         }
     }
 
+    public static function exportData($filePath = null)
+    {
+        // Create new spreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $activeSheet = $spreadsheet->getActiveSheet();
+        
+        // Get all cars with their relationships
+        $cars = self::with(['car_model.brand', 'car_prices'])
+            ->orderBy('id')
+            ->get();
+        
+        // Get all unique years from car prices
+        $allYears = CarPrice::select('model_year')
+            ->distinct()
+            ->orderBy('model_year')
+            ->pluck('model_year')
+            ->toArray();
+        
+        // Set up headers
+        $activeSheet->setCellValue('A1', 'ID');
+        $activeSheet->setCellValue('B1', 'Brand');
+        $activeSheet->setCellValue('C1', 'Model');
+        $activeSheet->setCellValue('D1', 'Category');
+        $activeSheet->setCellValue('E1', 'Description');
+        
+        // Set year headers starting from column F
+        $colIndex = 6; // Column F
+        foreach ($allYears as $year) {
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->setCellValue($colLetter . '1', $year);
+            $colIndex++;
+        }
+        
+        // Set year headers in row 2 as well (for compatibility with import format)
+        $colIndex = 6; // Column F
+        foreach ($allYears as $year) {
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->setCellValue($colLetter . '2', $year);
+            $colIndex++;
+        }
+        
+        // Fill data starting from row 3
+        $rowIndex = 3;
+        foreach ($cars as $car) {
+            $activeSheet->setCellValue('A' . $rowIndex, $car->id);
+            $activeSheet->setCellValue('B' . $rowIndex, $car->car_model->brand->name ?? '');
+            $activeSheet->setCellValue('C' . $rowIndex, $car->car_model->name ?? '');
+            $activeSheet->setCellValue('D' . $rowIndex, $car->category);
+            $activeSheet->setCellValue('E' . $rowIndex, $car->desc ?? '');
+            
+            // Create a map of prices by year for quick lookup
+            $pricesByYear = $car->car_prices->keyBy('model_year');
+            
+            // Fill price data for each year
+            $colIndex = 6; // Column F
+            foreach ($allYears as $year) {
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $price = $pricesByYear->get($year);
+                if ($price) {
+                    $activeSheet->setCellValue($colLetter . $rowIndex, $price->price);
+                }
+                $colIndex++;
+            }
+            
+            $rowIndex++;
+        }
+        
+        // Auto-size columns
+        foreach (range('A', $activeSheet->getHighestDataColumn()) as $col) {
+            $activeSheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        
+        // Create writer and save file
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        
+        if ($filePath) {
+            $writer->save($filePath);
+            return $filePath;
+        } else {
+            // Generate default filename with timestamp
+            $filename = 'cars_export_' . (new Carbon())->format('Y-m-d_H-i-s') . '.xlsx';
+            $filePath = storage_path('exports/' . $filename);
+            
+            // Ensure exports directory exists
+            if (!file_exists(dirname($filePath))) {
+                mkdir(dirname($filePath), 0755, true);
+            }
+            
+            $writer->save($filePath);
+            return $filePath;
+        }
+    }
+
+    public static function downloadCarsExport()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('create', self::class)) return;
+
+        $filePath = self::exportData();
+        
+        return response()->download($filePath)->deleteFileAfterSend(true);
+    }
+
     public static function getByBrandAndModel($brand_name, $model_name)
     {
         return self::select("cars.*")
