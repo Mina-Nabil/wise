@@ -54,9 +54,8 @@ class Policy extends Model
         self::BUSINESS_PERSONAL_LIFE,
         self::BUSINESS_ACCIDENT,
         self::BUSINESS_HOME,
-        self::BUSINESS_BUSINESS
     ];
-
+    
     const CORPORATE_TYPES = [
         self::BUSINESS_CORPORATE_MEDICAL,
         self::BUSINESS_CORPORATE_MOTOR,
@@ -70,6 +69,7 @@ class Policy extends Model
         self::BUSINESS_PROPERTY,
         self::BUSINESS_FIRE_ALL,
         self::BUSINESS_FIRE_AND_BURGLARY,
+        self::BUSINESS_BUSINESS
     ];
 
     const MOTOR_LINES = [
