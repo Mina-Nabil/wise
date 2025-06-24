@@ -273,6 +273,10 @@
                                 <tr>
 
                                     <th scope="col" class=" table-th ">
+                                        #
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Client Name
                                     </th>
 
@@ -315,6 +319,10 @@
                                 @foreach ($offers as $offer)
                                     <tr wire:click="redirectToShowPage({{ $offer->id }})"
                                         class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+
+                                        <td class="table-td ">
+                                            {{ $offer->id }}
+                                        </td>
 
                                         <td class="table-td ">
                                             @if ($offer->client_type === 'corporate')
@@ -787,7 +795,8 @@
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
                             <div class="from-group">
-                                <iconify-icon wire:loading wire:target='usersSearchText' class="loading-icon text-lg pt-2"
+                                <iconify-icon wire:loading wire:target='usersSearchText'
+                                    class="loading-icon text-lg pt-2"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                                 <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
                                     wire:model="usersSearchText">
@@ -797,7 +806,7 @@
                             <div class="text-xs text-gray-500">
                                 Selected: {{ count($selectedCreators) }}
                             </div>
-                            
+
                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 ">
                                 <thead
                                     class="border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
