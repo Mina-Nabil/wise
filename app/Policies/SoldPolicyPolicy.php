@@ -93,6 +93,18 @@ class SoldPolicyPolicy
     }
 
     /**
+     * Determine whether the user can update a sold policy penalty info
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Business\SoldPolicy  $soldPolicy
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function updatePenalty(User $user, SoldPolicy $soldPolicy)
+    {
+        return $user->is_admin || $user->is_finance;
+    }
+
+    /**
      * Determine whether the user can review a sold policy
      *
      * @param  \App\Models\Users\User  $user

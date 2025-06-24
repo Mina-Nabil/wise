@@ -162,6 +162,12 @@ class SoldPolicyShow extends Component
     public $setMainSalesSec = false;
     public $updatedMainSaledID;
 
+    // Penalty modal properties
+    public $penaltyModal = false;
+    public $isPenalized = false;
+    public $isManualPenalty = false;
+    public $penaltyAmount = 0;
+
     public $section = 'profile';
 
     protected $queryString = ['section'];
@@ -1610,6 +1616,43 @@ class SoldPolicyShow extends Component
         }
     }
 
+    // Penalty modal methods
+    public function openPenaltyModal()
+    {
+        $this->authorize('updatePenalty', $this->soldPolicy);
+        $this->penaltyModal = true;
+        $this->isPenalized = $this->soldPolicy->is_penalized;
+        $this->penaltyAmount = $this->soldPolicy->penalty_amount ?? 0;
+    }
+
+    public function closePenaltyModal()
+    {
+        $this->penaltyModal = false;
+        $this->isPenalized = false;
+        $this->penaltyAmount = 0;
+    }
+
+    public function updatePenalty()
+    {
+        $this->authorize('updatePenalty', $this->soldPolicy);
+        
+        $this->validate([
+            'isPenalized' => 'required|boolean',
+            'penaltyAmount' => 'required_if:isPenalized,true|numeric|min:0',
+        ], [
+            'penaltyAmount.required_if' => 'Penalty amount is required when penalty is enabled.',
+        ]);
+
+        $res = $this->soldPolicy->setPenaltyInfo($this->isManualPenalty, $this->isPenalized, $this->penaltyAmount);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closePenaltyModal();
+            $this->alert('success', 'Penalty information updated!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
     public function mount($id)
     {
         $this->soldPolicy = SoldPolicy::with('company_comm_payments', 'sales_comms')->find($id);
@@ -1627,6 +1670,10 @@ class SoldPolicyShow extends Component
         $this->fields[] = ['title' => '', 'value' => ''];
         //watchers code
         $this->watchersList = $this->soldPolicy->watcher_ids;
+
+        $this->isManualPenalty = $this->soldPolicy->is_manual_penalty;
+        $this->isPenalized = $this->soldPolicy->is_penalized;
+        $this->penaltyAmount = $this->soldPolicy->penalty_amount ?? 0;
     }
 
     public function render()

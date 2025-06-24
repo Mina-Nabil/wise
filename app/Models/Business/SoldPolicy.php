@@ -110,7 +110,9 @@ class SoldPolicy extends Model
         'is_valid_data',
         'review_comment',
         'reviewed_at',
-        'cancellation_time'
+        'cancellation_time',
+        'is_manual_penalty',
+        'penalty_amount'
     ];
 
 
@@ -154,6 +156,31 @@ class SoldPolicy extends Model
         }
     }
 
+    public function setPenaltyInfo($is_manual_penalty, $is_penalized, $penalty_amount)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updatePenalty', $this)) return false;
+        try {
+            if ($is_manual_penalty) {
+                return $this->update([
+                    'is_manual_penalty' => $is_manual_penalty,
+                    'is_penalized' => $is_penalized,
+                    'penalty_amount' => $penalty_amount,
+                ]);
+            } else {
+                $this->update([
+                    'is_manual_penalty' => false,
+                ]);
+                $this->generatePolicyCommissions();
+                return true;
+            }
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     public function generatePolicyCommissions($skipUserCheck = false)
     {
         /** @var User */
@@ -176,15 +203,19 @@ class SoldPolicy extends Model
 
                     $tmp_base_value = $conf->calculation_type == GrossCalculation::TYPE_VALUE ?
                         $conf->value : (($conf->value / 100) * $this->net_premium);
-                    if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
-                        $this->penalty_amount = (($conf->penalty_percent / 100) * $tmp_base_value);
-                        $tmp_base_value = $tmp_base_value - $this->penalty_amount;
-                        $this->is_penalized = true;
-                        $this->save();
-                    } else {
-                        $this->is_penalized = false;
-                        $this->save();
+
+                    if (!$this->is_manual_penalty) {
+                        if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
+                            $this->penalty_amount = (($conf->penalty_percent / 100) * $tmp_base_value);
+                            $tmp_base_value = $tmp_base_value - $this->penalty_amount;
+                            $this->is_penalized = true;
+                            $this->save();
+                        } else {
+                            $this->is_penalized = false;
+                            $this->save();
+                        }
                     }
+
                     $this->comms_details()->updateOrCreate([
                         "title"     =>  $conf->title
                     ], [

@@ -177,6 +177,14 @@
                             </li>
                         @endif
                     @endcan
+                    @can('updatePenalty', $soldPolicy)
+                        <li>
+                            <a wire:click="openPenaltyModal"
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                Update Penalty</a>
+                        </li>
+                    @endcan
                     @if (!$soldPolicy->main_sales)
                         <li>
                             <a wire:click="openSetMainSalesSection"
@@ -1421,7 +1429,8 @@
                                                         <td class="table-td ">
                                                             <div class="text-lg text-success-500">
                                                                 {{ number_format($payment->amount, 2, '.', ',') }} EGP /
-                                                                {{ number_format($payment->amount / 0.95, 2, '.', ',') }} EGP
+                                                                {{ number_format($payment->amount / 0.95, 2, '.', ',') }}
+                                                                EGP
                                                             </div>
                                                         </td>
 
@@ -2964,7 +2973,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4111,7 +4120,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4229,7 +4238,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4459,7 +4468,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4592,7 +4601,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4683,7 +4692,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4730,5 +4739,110 @@
             </div>
         @endif
     @endcan
+
+    {{-- START: Penalty Modal --}}
+    @if ($penaltyModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="penaltyModalLabel" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Update Penalty Information
+                            </h3>
+                            <button wire:click="closePenaltyModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Apply Penalty</label>
+                                <div class="flex items-center mt-2">
+                                    <div class="flex-col space-y-2">
+                                        <div>
+                                            <input type="checkbox" id="isManualPenalty"
+                                                class="form-checkbox w-4 h-4 text-black-500 bg-transparent border-slate-300 rounded focus:ring-black-500 focus:ring-2 dark:bg-slate-700 dark:border-slate-600 dark:focus:ring-black-500 dark:focus:ring-offset-slate-800"
+                                                wire:model.live="isManualPenalty">
+                                            <label for="isManualPenalty"
+                                                class="ml-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                Enable manual penalty calculation for this policy
+                                            </label>
+                                        </div>
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">
+                                            If disabled, this will trigger a generate commissions process to recalculate
+                                            the penalty.
+                                        </span>
+                                    </div>
+                                </div>
+                                @error('isManualPenalty')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                @if ($isManualPenalty)
+                                    <div class="flex items-center mt-2">
+                                        <input type="checkbox" id="isPenalized"
+                                            class="form-checkbox w-4 h-4 text-black-500 bg-transparent border-slate-300 rounded focus:ring-black-500 focus:ring-2 dark:bg-slate-700 dark:border-slate-600 dark:focus:ring-black-500 dark:focus:ring-offset-slate-800"
+                                            wire:model="isPenalized">
+                                        <label for="isPenalized"
+                                            class="ml-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            Is Sold Policy Penalized?
+                                        </label>
+                                    </div>
+                                    @error('isPenalized')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                @endif
+                            </div>
+                            @if ($isManualPenalty)
+                                <div class="from-group">
+                                    <label for="penaltyAmount" class="form-label">Penalty Amount</label>
+                                    <input type="number" name="penaltyAmount" step="0.01" min="0"
+                                        class="form-control mt-2 w-full @error('penaltyAmount') !border-danger-500 @enderror"
+                                        wire:model.defer="penaltyAmount" placeholder="Enter penalty amount"
+                                        {{ !$isPenalized ? 'disabled' : '' }}>
+                                    @error('penaltyAmount')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closePenaltyModal" type="button"
+                                class="btn inline-flex justify-center btn-white dark:bg-slate-700 dark:text-slate-300">
+                                Cancel
+                            </button>
+                            <button wire:click="updatePenalty" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="updatePenalty">Update Penalty</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="updatePenalty"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+    {{-- END: Penalty Modal --}}
 
 </div>
