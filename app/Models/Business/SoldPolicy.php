@@ -196,6 +196,7 @@ class SoldPolicy extends Model
                 $issueDate = $this->issuing_date ? new Carbon($this->issuing_date) : null;
                 $policyStart = new Carbon($this->start);
                 $refDate = $issueDate ?  ($issueDate->isBefore($policyStart) ? $policyStart : $issueDate) : $policyStart;
+                Log::info("refDate: " . $refDate->format('Y-m-d'));
                 $dueDays = $clientPaymentDate->diffInDays($refDate);
                 $total_comm = 0;
                 foreach ($this->policy->comm_confs as $conf) {
