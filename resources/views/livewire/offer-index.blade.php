@@ -121,6 +121,10 @@
                                 <tr>
 
                                     <th scope="col" class=" table-th ">
+                                        #
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Client Name
                                     </th>
 
@@ -163,6 +167,10 @@
                                 @foreach ($offers as $offer)
                                     <tr wire:click="redirectToShowPage({{ $offer->id }})"
                                         class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+
+                                        <td class="table-td ">
+                                            {{ $offer->id }}
+                                        </td>
 
                                         <td class="table-td ">
                                             @if ($offer->client_type === 'corporate')
