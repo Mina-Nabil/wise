@@ -1183,7 +1183,8 @@ class Offer extends Model
                         ->orwhere('corporates.name', 'LIKE', "%$tmp%")
                         ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
                         ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
-                        ->orwhere('renewal_policy', 'LIKE', "%$tmp%");
+                        ->orwhere('renewal_policy', 'LIKE', "%$tmp%")
+                        ->orwhere('offers.id', '=', $tmp);
                 });
             }
         });
