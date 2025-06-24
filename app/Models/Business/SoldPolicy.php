@@ -193,7 +193,7 @@ class SoldPolicy extends Model
             DB::transaction(function () {
                 $this->comms_details()->automatic()->delete();
                 $clientPaymentDate = new Carbon($this->client_payment_date);
-                $issueDate = $this->issuing_date ? new Carbon($this->issuing_date) : null;
+                $issueDate = $this->created_at ? new Carbon($this->created_at) : null;
                 $policyStart = new Carbon($this->start);
                 $refDate = $issueDate ?  ($issueDate->max($policyStart)) : $policyStart;
                 Log::info("refDate: " . $refDate->format('Y-m-d'));
