@@ -17,7 +17,7 @@
                         {{ ucwords($offer->client_type) }}
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <h5><b><bdi>{{ $offer->client->name }}</bdi> - Offer #{{ $offer->id }}</b>
+                        <h5><b><bdi>{{ $offer->client->name }}</bdi> - #{{ $offer->id }}</b>
                             @if ($offer->status === 'new')
                                 <span class="badge bg-info-500 h-auto">
                                     <iconify-icon
