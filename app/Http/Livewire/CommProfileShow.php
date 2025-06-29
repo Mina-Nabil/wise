@@ -90,6 +90,7 @@ class CommProfileShow extends Component
     public $pymtNote;
     public $pymtPaidId;
     public $pymtPaidDate;
+    public $pymtPaidPartialAmount;
     public $pymtCancelledId;
     public $pymtCancelledDate;
     public $pymtNotePreview;
@@ -542,8 +543,12 @@ class CommProfileShow extends Component
 
     public function setPymtPaid()
     {
+        $this->validate([
+            'pymtPaidPartialAmount' => 'nullable|numeric|gt:0',
+        ]);
+
         try {
-            $res = CommProfilePayment::find($this->pymtPaidId)->setAsPaid(Carbon::parse($this->pymtPaidDate));
+            $res = CommProfilePayment::find($this->pymtPaidId)->setAsPaid(Carbon::parse($this->pymtPaidDate), $this->pymtPaidPartialAmount);
             if ($res) {
                 $this->closeSetPaidSec();
                 $this->mount($this->profile->id);

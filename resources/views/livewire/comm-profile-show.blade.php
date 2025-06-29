@@ -1956,6 +1956,18 @@
                                 @enderror
 
                             </div>
+                            <div class="from-group">
+                                <div class="input-area mt-3">
+                                    <label for="pymtPaidPartialAmount" class="form-label">Partial amount</label>
+                                    <input type="number" name="pymtPaidPartialAmount"
+                                        class="form-control @error('pymtPaidPartialAmount') !border-danger-500 @enderror !pr-32"
+                                        wire:model.defer="pymtPaidPartialAmount">
+                                </div>
+                                @error('pymtPaidPartialAmount')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
 
                         </div>
                         <!-- Modal footer -->

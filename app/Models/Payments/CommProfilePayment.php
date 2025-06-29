@@ -220,7 +220,7 @@ class CommProfilePayment extends Model
         }
     }
 
-    public function setAsPaid(Carbon $date = null, $partial_amount = 0)
+    public function setAsPaid(?Carbon $date = null, $partial_amount = 0)
     {
         /** @var User */
         $user = Auth::user();
