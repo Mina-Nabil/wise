@@ -75,8 +75,8 @@
                 <div class="flex space-x-3 rtl:space-x-reverse">
                     <div class="flex-none">
                         <div
-                            class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFEDE6] dark:bg-slate-900	 text-warning-500">
-                            <iconify-icon icon="mdi:money-off"></iconify-icon>
+                            class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#E5F9FF] dark:bg-slate-900	 text-info-500">
+                            <iconify-icon icon="mdi:cash-multiple"></iconify-icon>
                         </div>
                     </div>
                     <div class="flex-1">
