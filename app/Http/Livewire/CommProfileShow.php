@@ -26,6 +26,7 @@ use Livewire\WithPagination;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\EntryTitle;
+use App\Models\Business\SoldPolicy;
 use App\Models\Payments\PolicyComm;
 use Exception;
 
