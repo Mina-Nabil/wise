@@ -1206,6 +1206,7 @@ class CommProfileShow extends Component
             ->paginate(10);
 
         $totalIncome = SoldPolicy::byProfileId($this->profile->id)->sum('after_tax_comm');
+        $totalSalesIncome = $this->profile->sales_comm()->sum('amount');
 
         $SALES_COMM_STATUSES = SalesComm::PYMT_STATES;
 
@@ -1229,7 +1230,8 @@ class CommProfileShow extends Component
             'client_payments' => $client_payments,
             'SALES_COMM_STATUSES' => $SALES_COMM_STATUSES,
             'totalPaid' => $totalPaid,
-            'totalIncome' => $totalIncome
+            'totalIncome' => $totalIncome,
+            'totalSalesIncome' => $totalSalesIncome
         ]);
     }
 
