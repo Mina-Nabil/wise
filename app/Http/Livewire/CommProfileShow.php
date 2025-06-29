@@ -26,6 +26,7 @@ use Livewire\WithPagination;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\EntryTitle;
+use Exception;
 
 use function Clue\StreamFilter\fun;
 
@@ -541,13 +542,21 @@ class CommProfileShow extends Component
 
     public function setPymtPaid()
     {
-        $res = CommProfilePayment::find($this->pymtPaidId)->setAsPaid(Carbon::parse($this->pymtPaidDate));
-        if ($res) {
-            $this->closeSetPaidSec();
-            $this->mount($this->profile->id);
-            $this->alert('success', 'payment added!');
-        } else {
-            $this->alert('failed', 'server error!');
+        try {
+            $res = CommProfilePayment::find($this->pymtPaidId)->setAsPaid(Carbon::parse($this->pymtPaidDate));
+            if ($res) {
+                $this->closeSetPaidSec();
+                $this->mount($this->profile->id);
+                $this->alert('success', 'payment added!');
+            } else {
+                $this->alert('failed', 'server error!');
+            }
+        } catch (Exception $e) {
+            if ($e->getCode() == 12) {
+                $this->alert('failed', 'Payment not approved');
+            } else {
+                $this->alert('failed', $e->getMessage());
+            }
         }
     }
 
@@ -651,8 +660,6 @@ class CommProfileShow extends Component
             'client_name' => $salesComm->sold_policy->client->name ?? 'N/A',
             'gross_premium' => $salesComm->sold_policy->gross_premium ?? 0,
         ];
-    
-
     }
 
 
@@ -1043,7 +1050,7 @@ class CommProfileShow extends Component
         $this->updatedDesc = $this->profile->desc;
         $this->updatedSelectAvailable = $this->profile->select_available;
         $this->updatedAccountId = $this->profile->account_id;
-        
+
         // Load accounts for the dropdown
         $this->accounts_list = Account::whereNull('parent_account_id')
             ->with('children_accounts')
@@ -1079,12 +1086,12 @@ class CommProfileShow extends Component
         ]);
 
         $res = $this->profile->editProfile(
-            $this->updatedType, 
-            $this->updatedPerPolicy, 
-            $this->updatedTitle, 
-            $this->updatedDesc, 
-            $this->updatedSelectAvailable, 
-            $this->updatedAutomaticOverrideId, 
+            $this->updatedType,
+            $this->updatedPerPolicy,
+            $this->updatedTitle,
+            $this->updatedDesc,
+            $this->updatedSelectAvailable,
+            $this->updatedAutomaticOverrideId,
             $this->updatedAvailableForId,
             $this->updatedAccountId
         );
@@ -1165,7 +1172,7 @@ class CommProfileShow extends Component
             })
             ->paginate(10);
 
-            $balance = $this->profile
+        $balance = $this->profile
             ->payments()->new()->sum('amount');
 
         $sales_comm = $this->profile
@@ -1244,14 +1251,14 @@ class CommProfileShow extends Component
     public function loadEntryTitles()
     {
         $query = EntryTitle::query();
-        
+
         if (!empty($this->entryTitleSearch)) {
-            $query->where(function($q) {
+            $query->where(function ($q) {
                 $q->where('name', 'like', '%' . $this->entryTitleSearch . '%')
-                  ->orWhere('id', 'like', '%' . $this->entryTitleSearch . '%');
+                    ->orWhere('id', 'like', '%' . $this->entryTitleSearch . '%');
             });
         }
-        
+
         $this->entryTitles = $query->orderBy('id')->limit(20)->get();
     }
 
@@ -1293,22 +1300,22 @@ class CommProfileShow extends Component
         $this->validate([
             'selectedEntryTitleId' => 'required|exists:entry_titles,id',
         ]);
-        
+
         try {
             $payment = CommProfilePayment::find($this->createMainJournalEntryId);
-            
+
             if (!$payment) {
                 $this->alert('failed', 'Payment not found');
                 return;
             }
-            
+
             if ($payment->journal_entry_id) {
                 $this->alert('failed', 'Journal entry already exists for this payment');
                 return;
             }
 
             $result = $payment->createMainJournalEntry($this->selectedEntryTitleId);
-            
+
             if ($result) {
                 $this->closeCreateMainJournalEntryModal();
                 $this->mount($this->profile->id);
@@ -1330,22 +1337,22 @@ class CommProfileShow extends Component
         $this->validate([
             'selectedEntryTitleId' => 'required|exists:entry_titles,id',
         ]);
-        
+
         try {
             $payment = CommProfilePayment::find($this->createSalesJournalEntryId);
-            
+
             if (!$payment) {
                 $this->alert('failed', 'Payment not found');
                 return;
             }
-            
+
             if ($payment->journal_entry_id) {
                 $this->alert('failed', 'Journal entry already exists for this payment');
                 return;
             }
 
             $result = $payment->createSalesJournalEntry($this->selectedEntryTitleId);
-            
+
             if ($result) {
                 $this->closeCreateSalesJournalEntryModal();
                 $this->mount($this->profile->id);

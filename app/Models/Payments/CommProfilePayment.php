@@ -221,7 +221,7 @@ class CommProfilePayment extends Model
 
     public function setAsPaid(Carbon $date = null)
     {
-        if ($this->needs_approval && !$this->is_approved) throw new Exception("Payment not approved");
+        if ($this->needs_approval && !$this->is_approved) throw new Exception("Payment not approved", 12);
         /** @var User */
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;

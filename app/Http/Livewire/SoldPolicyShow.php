@@ -153,7 +153,7 @@ class SoldPolicyShow extends Component
     public $setPaymentCollectedSec;
     public $payment_collected_note;
     public $paymentCollectedDoc;
-    
+
     //for set payment as paid
     public $setPaymentPaidSec;
     public $payment_type;
@@ -263,7 +263,7 @@ class SoldPolicyShow extends Component
     public function setClientPaymentAsNew($id)
     {
         $clientPayment = ClientPayment::findOrFail($id);
-        try{
+        try {
             $clientPayment->setAsNew();
             $this->alert('success', 'Payment updated!');
         } catch (Exception $e) {
@@ -525,12 +525,20 @@ class SoldPolicyShow extends Component
 
     public function setCompanyPaymentPaid($id)
     {
-        $res = CompanyCommPayment::find($id)->setAsPaid();
-        if ($res) {
-            $this->mount($this->soldPolicy->id);
-            $this->alert('success', 'Payment updated!');
-        } else {
-            $this->alert('failed', 'server error');
+        try {
+            $res = CompanyCommPayment::find($id)->setAsPaid();
+            if ($res) {
+                $this->mount($this->soldPolicy->id);
+                $this->alert('success', 'Payment updated!');
+            } else {
+                $this->alert('failed', 'server error');
+            }
+        } catch (Exception $e) {
+            if ($e->getCode() == 12) {
+                $this->alert('failed', 'Payment not approved');
+            } else {
+                $this->alert('failed', $e->getMessage());
+            }
         }
     }
 
@@ -1635,7 +1643,7 @@ class SoldPolicyShow extends Component
     public function updatePenalty()
     {
         $this->authorize('updatePenalty', $this->soldPolicy);
-        
+
         $this->validate([
             'isPenalized' => 'required|boolean',
             'penaltyAmount' => 'required_if:isPenalized,true|numeric|min:0',
