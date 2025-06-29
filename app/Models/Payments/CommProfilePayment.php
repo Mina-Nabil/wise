@@ -240,7 +240,7 @@ class CommProfilePayment extends Model
             DB::transaction(function () use ($date) {
 
                 $this->sales_commissions()->update([
-                    "closed_by_id"   =>  Auth::id(),
+                    // "closed_by_id"   =>  Auth::id(),
                     "payment_date"  => $date->format('Y-m-d H:i'),
                     "status"  =>  SalesComm::PYMT_STATE_PAID,
                 ]);
@@ -277,7 +277,7 @@ class CommProfilePayment extends Model
                 );
                 $this->comm_profile->updateBalance($this->amount);
                 $this->update([
-                    "closed_by_id"   =>  Auth::id(),
+                    // "closed_by_id"   =>  Auth::id(),
                     "payment_date"  => $date->format('Y-m-d H:i'),
                     "status"  =>  self::PYMT_STATE_CANCELLED,
                 ]);
