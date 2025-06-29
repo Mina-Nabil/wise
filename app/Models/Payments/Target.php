@@ -72,7 +72,7 @@ class Target extends Model
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions) / $totalIncome;
         }
         //return false if the target is not acheived
-        if ($totalIncome <= $this->min_income_target) return false;
+        if ($totalIncome < $this->min_income_target) return false;
 
         $balance_update = ($this->comm_percentage / 100) *
             (($this->is_full_amount ? $totalIncome :
