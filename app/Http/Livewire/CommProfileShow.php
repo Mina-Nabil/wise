@@ -26,6 +26,7 @@ use Livewire\WithPagination;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\EntryTitle;
+use App\Models\Payments\PolicyComm;
 use Exception;
 
 use function Clue\StreamFilter\fun;
@@ -1177,8 +1178,8 @@ class CommProfileShow extends Component
             })
             ->paginate(10);
 
-        $balance = $this->profile
-            ->payments()->new()->sum('amount');
+        $totalPaid = $this->profile
+            ->payments()->paid()->sum('amount');
 
         $sales_comm = $this->profile
             ->sales_comm()->filterByStatus($this->salesCommStatus)
@@ -1203,6 +1204,9 @@ class CommProfileShow extends Component
             })
             ->paginate(10);
 
+        $totalIncome = PolicyComm::byProfileId($this->profile->id)
+            ->sum('amount');
+
         $SALES_COMM_STATUSES = SalesComm::PYMT_STATES;
 
         // Default entry titles if not actively searching
@@ -1224,7 +1228,8 @@ class CommProfileShow extends Component
             'configurations' => $configurations,
             'client_payments' => $client_payments,
             'SALES_COMM_STATUSES' => $SALES_COMM_STATUSES,
-            'balance' => $balance
+            'totalPaid' => $totalPaid,
+            'totalIncome' => $totalIncome
         ]);
     }
 

@@ -70,24 +70,21 @@
 
     <div class="grid md:grid-cols-2 grid-cols-1 gap-4 mt-5">
 
-        <!-- BEGIN: Group Chart -->
-
-
         <div class="card">
             <div class="card-body pt-4 pb-3 px-4">
                 <div class="flex space-x-3 rtl:space-x-reverse">
                     <div class="flex-none">
                         <div
-                            class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#E5F9FF] dark:bg-slate-900	 text-info-500">
-                            <iconify-icon icon="tdesign:money"></iconify-icon>
+                            class="h-12 w-12 rounded-full flex flex-col items-center justify-center text-2xl bg-[#FFEDE6] dark:bg-slate-900	 text-warning-500">
+                            <iconify-icon icon="mdi:money-off"></iconify-icon>
                         </div>
                     </div>
                     <div class="flex-1">
                         <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                            Balance
+                            Total Paid
                         </div>
                         <div class="text-slate-900 dark:text-white text-lg font-medium">
-                            <h5>{{ number_format($balance, 2, '.', ',') }} EGP</h5>
+                            {{ number_format($totalPaid, 2, '.', ',') }} EGP
                         </div>
                     </div>
                 </div>
@@ -105,10 +102,10 @@
                     </div>
                     <div class="flex-1">
                         <div class="text-slate-600 dark:text-slate-300 text-sm mb-1 font-medium">
-                            Unapproved Balance
+                            Total Income
                         </div>
                         <div class="text-slate-900 dark:text-white text-lg font-medium">
-                            {{ number_format($profile->balance + $profile->unapproved_balance, 2, '.', ',') }} EGP
+                            {{ number_format($totalPaid, 2, '.', ',') }} EGP
                         </div>
                     </div>
                 </div>
