@@ -252,7 +252,7 @@ class SalesComm extends Model
             $date = $date ?? new Carbon();
 
             if ($this->update([
-                "closed_by_id"   =>  Auth::id(),
+                // "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_PAID,
             ])) {
@@ -289,7 +289,7 @@ class SalesComm extends Model
             $date = $date ?? new Carbon();
 
             $this->update([
-                "closed_by_id"   =>  Auth::id(),
+                // "closed_by_id"   =>  Auth::id(),
                 "payment_date"  => $date->format('Y-m-d H:i'),
                 "status"  =>  self::PYMT_STATE_CANCELLED,
             ]);
