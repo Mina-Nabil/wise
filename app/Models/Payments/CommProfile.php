@@ -381,7 +381,8 @@ class CommProfile extends Model
         $doc_url = null,
         $note = null,
         $must_add = false,
-        $linked_sales_comms = []
+        $linked_sales_comms = [],
+        ?Carbon $target_date = null
     ) {
         if ($amount <= $this->balance)
             $needs_approval = false;
@@ -396,7 +397,8 @@ class CommProfile extends Model
                 "type"      =>  $type,
                 "doc_url"   =>  $doc_url,
                 "needs_approval"   =>  $needs_approval,
-                "note"      =>  $note
+                "note"      =>  $note,
+                "target_date" => $target_date->format('Y-m-d')
             ]);
             if ($payment->save()) {
                 $payment->sales_commissions()->sync($linked_sales_comms);

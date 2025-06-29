@@ -85,7 +85,7 @@ class Target extends Model
 
         $payment_to_add = max($this->base_payment, $original_payment);
 
-        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmountsPercent, &$linkedComms, $original_payment) {
+        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmountsPercent, &$linkedComms, $original_payment, $end_date) {
             $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
 
             /** @var SalesComm */
@@ -102,10 +102,10 @@ class Target extends Model
                 $this->comm_profile->refreshBalances();
 
             if ($payment_to_add)
-                $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true, linked_sales_comms: $linkedComms);
+                $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
 
             if ($payment_to_add > $original_payment) {
-                $this->comm_profile->addPayment($original_payment - $payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id difference", must_add: true, linked_sales_comms: $linkedComms);
+                $this->comm_profile->addPayment($original_payment - $payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id difference", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
             }
 
             $this->addRun($balance_update - $payment_to_add, $payment_to_add);

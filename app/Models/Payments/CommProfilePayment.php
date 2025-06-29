@@ -60,6 +60,7 @@ class CommProfilePayment extends Model
         'needs_approval',
         'creator_id',
         'target_date',
+        'partial_paid',
         'approver_id'
     ];
 
@@ -251,6 +252,7 @@ class CommProfilePayment extends Model
                 AppLog::info("Setting Profile Payment as paid", loggable: $this);
                 $this->update([
                     "payment_date"  => $date->format('Y-m-d H:i'),
+                    "partial_paid" => $partial_amount,
                     "status"  =>  self::PYMT_STATE_PAID,
                 ]);
                 if ($partial_amount) {
