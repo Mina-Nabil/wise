@@ -2279,6 +2279,12 @@ class SoldPolicy extends Model
         return $query->whereIn('policies.company_id', $company_ids);
     }
 
+    public function scopeByProfileId($query, $profile_id)
+    {
+        return $query->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
+            ->where('sales_comms.comm_profile_id', $profile_id);
+    }
+
     public function scopeWithTableRelations($query)
     {
         return $query->with('client', 'policy', 'creator', 'customer_car');
