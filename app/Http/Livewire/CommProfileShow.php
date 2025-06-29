@@ -1205,7 +1205,7 @@ class CommProfileShow extends Component
             ->paginate(10);
 
         $totalIncome = PolicyComm::byProfileId($this->profile->id)
-            ->sum('amount');
+            ->sum('policy_comm.amount');
 
         $SALES_COMM_STATUSES = SalesComm::PYMT_STATES;
 
