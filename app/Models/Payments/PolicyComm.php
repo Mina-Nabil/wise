@@ -68,8 +68,8 @@ class PolicyComm extends Model
     public function scopeByProfileId($query, $profile_id)
     {
         return $query->join('sold_policies', 'sold_policy_comms.sold_policy_id', '=', 'sold_policies.id')
-            ->join('comm_profiles', 'comm_profiles.sold_policy_id', '=', 'sold_policies.id')
-            ->where('comm_profiles.id', $profile_id);
+            ->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
+            ->where('sales_comms.comm_profile_id', $profile_id);
     }
 
     public function scopeAutomatic($query)
