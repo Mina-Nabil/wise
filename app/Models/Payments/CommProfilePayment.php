@@ -59,6 +59,7 @@ class CommProfilePayment extends Model
         'doc_url',
         'needs_approval',
         'creator_id',
+        'target_date',
         'approver_id'
     ];
 
@@ -219,7 +220,7 @@ class CommProfilePayment extends Model
         }
     }
 
-    public function setAsPaid(Carbon $date = null)
+    public function setAsPaid(Carbon $date = null, $partial_amount = 0)
     {
         /** @var User */
         $user = Auth::user();
@@ -237,7 +238,7 @@ class CommProfilePayment extends Model
         if (!($this->is_new || $this->is_approved)) return false;
 
         try {
-            DB::transaction(function () use ($date) {
+            DB::transaction(function () use ($date, $partial_amount) {
 
                 $this->sales_commissions()->update([
                     // "closed_by_id"   =>  Auth::id(),
@@ -252,6 +253,9 @@ class CommProfilePayment extends Model
                     "payment_date"  => $date->format('Y-m-d H:i'),
                     "status"  =>  self::PYMT_STATE_PAID,
                 ]);
+                if ($partial_amount) {
+                    $this->comm_profile->addPayment($this->amount - $partial_amount, $this->type, null, "Payment of $partial_amount EGP");
+                }
             });
             return true;
         } catch (Exception $e) {
