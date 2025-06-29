@@ -257,6 +257,10 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
+                                                        Target Date
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
                                                         Payment Date
                                                     </th>
 
@@ -284,6 +288,15 @@
                                                             <p class=" text-lg">
                                                                 <b>{{ number_format($payment->amount, 2, '.', ',') }}
                                                                     EGP
+                                                                </b>
+                                                                @if ($payment->partial_paid)
+                                                                    <span class="text-sm text-slate-500">
+                                                                        ({{ number_format($payment->partial_paid, 2, '.', ',') }}
+                                                                        EGP
+                                                                        partial)
+                                                                    </span>
+                                                                @endif
+                                                            </p>
                                                         </td>
 
                                                         <td class="table-td">
@@ -303,6 +316,14 @@
                                                                 <span class="badge bg-success-500 h-auto text-white">
                                                                     {{ ucwords(str_replace('_', ' ', $payment->status)) }}
                                                                 </span>
+                                                            @endif
+                                                        </td>
+
+                                                        <td class="table-td">
+                                                            @if ($payment->target_date)
+                                                                {{ \Carbon\Carbon::parse($payment->target_date)->format('d/m/Y') }}
+                                                            @else
+                                                                N/A
                                                             @endif
                                                         </td>
 
