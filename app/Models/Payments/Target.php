@@ -77,6 +77,8 @@ class Target extends Model
         //return false if the target is not acheived
         if ($totalIncome < $this->min_income_target) return false;
 
+        $max_income_target = $this->max_income_target > 0 ? $this->max_income_target : null;
+
         $balance_update = ($this->comm_percentage / 100) *
             (($this->is_full_amount ? $totalIncome :
                 min(
@@ -87,6 +89,8 @@ class Target extends Model
         Log::info("Target#$this->id balance update", ["balance_update" => $balance_update]);
 
         $original_payment = (($this->add_as_payment / 100) * $balance_update);
+
+        Log::info("Target#$this->id payment to add", ["original_payment" => $original_payment]);
 
         $payment_to_add = max($this->base_payment, $original_payment);
 
