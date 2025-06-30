@@ -153,7 +153,7 @@ class SalesComm extends Model
             $this->load('comm_target_runs');
 
             $this->update([
-                "comm_percentage"   =>  $this->comm_target_runs->sum('percentage'),
+                "comm_percentage"   =>  $this->comm_target_runs->average('percentage'),
                 "amount"   =>  $this->comm_target_runs->sum('amount'),
             ]);
         } catch (Exception $e) {
