@@ -34,7 +34,15 @@ class CompanyCommPayment extends Model
 
     protected $table = 'company_comm_payments';
     protected $fillable = [
-        'status', 'type', 'amount', 'note', 'payment_date', 'doc_url', 'receiver_id', 'invoice_id', 'pymnt_perm'
+        'status',
+        'type',
+        'amount',
+        'note',
+        'payment_date',
+        'doc_url',
+        'receiver_id',
+        'invoice_id',
+        'pymnt_perm'
     ];
 
     ///model functions
@@ -84,7 +92,7 @@ class CompanyCommPayment extends Model
         if (!$user->can('update', $this)) return false;
 
         try {
-            if ($this->doc_url){
+            if ($this->doc_url) {
                 Storage::delete($this->doc_url);
                 $this->doc_url = null;
                 $this->save();
@@ -125,12 +133,14 @@ class CompanyCommPayment extends Model
         }
     }
 
-    public function setAsCancelled(Carbon $date = null)
+    public function setAsCancelled(Carbon $date = null, $skip_check = false)
     {
-        /** @var User */
-        $user = Auth::user();
-        if (!$user->can('update', $this)) return false;
-
+        if ($skip_check) {
+            /** @var User */
+            $user = Auth::user();
+            if (!$user->can('update', $this)) return false;
+        }
+        
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();

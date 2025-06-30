@@ -278,11 +278,13 @@ class SalesComm extends Model
         }
     }
 
-    public function setAsCancelled(Carbon $date = null)
+    public function setAsCancelled(Carbon $date = null, $skip_check = false)
     {
-        /** @var User */
-        $user = Auth::user();
-        if (!$user->can('update', $this)) return false;
+        if (!$skip_check) {
+            /** @var User */
+            $user = Auth::user();
+            if (!$user->can('update', $this)) return false;
+        }
 
         if (!$this->is_new) return false;
         try {
