@@ -398,7 +398,7 @@ class CommProfile extends Model
                 "doc_url"   =>  $doc_url,
                 "needs_approval"   =>  $needs_approval,
                 "note"      =>  $note,
-                "target_date" => $target_date->format('Y-m-d')
+                "target_date" => $target_date?->format('Y-m-d') ?? null
             ]);
             if ($payment->save()) {
                 $payment->sales_commissions()->sync($linked_sales_comms);
