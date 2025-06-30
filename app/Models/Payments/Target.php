@@ -66,13 +66,13 @@ class Target extends Model
             $tmpAmount = ($sp->after_tax_comm *
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions;
             $totalIncome += $tmpAmount;
-            Log::info("SP#$sp->id total income", $tmpAmount);
+            Log::info("SP#$sp->id total income", ["tmpAmount" => $tmpAmount, "totalIncome" => $totalIncome]);
         }
         foreach ($soldPolicies as $sp) {
             $paidAmountsPercent[$sp->id] = (($sp->after_tax_comm *
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions) / $totalIncome;
         }
-        Log::info("Target#$this->id total income", $totalIncome);
+        Log::info("Target#$this->id total income", ["totalIncome" => $totalIncome]);
 
         //return false if the target is not acheived
         if ($totalIncome < $this->min_income_target) return false;
@@ -84,7 +84,7 @@ class Target extends Model
                     ($this->max_income_target ?? $totalIncome)
                 )) - $this->min_income_target) *  ($this->add_to_balance / 100);
 
-        Log::info("Target#$this->id balance update", $balance_update);
+        Log::info("Target#$this->id balance update", ["balance_update" => $balance_update]);
 
         $original_payment = (($this->add_as_payment / 100) * $balance_update);
 
