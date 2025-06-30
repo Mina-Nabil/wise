@@ -29,6 +29,7 @@ use App\Models\Accounting\EntryTitle;
 use App\Models\Business\SoldPolicy;
 use App\Models\Payments\PolicyComm;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 use function Clue\StreamFilter\fun;
 
@@ -1179,7 +1180,8 @@ class CommProfileShow extends Component
             })
             ->paginate(10);
 
-        $totalPaid = CommProfilePayment::where('comm_profile_id', $this->profile->id)
+        $totalPaid = DB::table('comm_profile_payments')
+            ->where('comm_profile_id', $this->profile->id)
             ->selectRaw('IF(partial_paid IS NULL, amount, partial_paid) as paid_amount')
             ->sum('paid_amount');
 
