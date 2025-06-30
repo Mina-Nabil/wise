@@ -366,6 +366,11 @@ class CommProfilePayment extends Model
         $query->where('status', self::PYMT_STATE_NEW);
     }
 
+    public function getActualPaidAmountAttribute()
+    {
+        return $this->partial_paid ?? $this->amount;
+    }
+
     ///relations
     public function sales_commissions(): BelongsToMany
     {
