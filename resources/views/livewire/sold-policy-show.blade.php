@@ -424,9 +424,13 @@
                                 <h5>{{ $soldPolicy->discount }} EGP</h5>
                                 <p class="text-xs">Comm. Discount</p>
                             </div>
-                            <div class="border-l">
+                            <div class="border-r">
                                 <h5>{{ $soldPolicy->origin_discount }} EGP</h5>
                                 <p class="text-xs">Origin Discount</p>
+                            </div>
+                            <div class="">
+                                <h5>{{ $soldPolicy->penalty_amount }} EGP</h5>
+                                <p class="text-xs">Penalty</p>
                             </div>
                         </div>
                     </div>
