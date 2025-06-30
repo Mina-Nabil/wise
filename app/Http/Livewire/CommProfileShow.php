@@ -1179,8 +1179,9 @@ class CommProfileShow extends Component
             })
             ->paginate(10);
 
-        $totalPaid = $this->profile
-            ->payments()->paid()->sum('amount');
+        $totalPaid = CommProfilePayment::where('comm_profile_id', $this->profile->id)
+            ->selectRaw('IF(partial_paid IS NULL, amount, partial_paid) as paid_amount')
+            ->sum('paid_amount');
 
         $sales_comm = $this->profile
             ->sales_comm()->filterByStatus($this->salesCommStatus)
