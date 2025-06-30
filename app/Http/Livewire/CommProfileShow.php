@@ -1182,6 +1182,7 @@ class CommProfileShow extends Component
 
         $totalPaid = DB::table('comm_profile_payments')
             ->where('comm_profile_id', $this->profile->id)
+            ->where('status', CommProfilePayment::PYMT_STATE_PAID)
             ->selectRaw('SUM(IF(partial_paid IS NULL, amount, partial_paid)) as paid_amount')
             ->first()->paid_amount ?? 0;
 
