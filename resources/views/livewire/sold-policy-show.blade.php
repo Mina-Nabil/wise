@@ -1856,6 +1856,9 @@
                                                     <th scope="col" class=" table-th ">
                                                         From
                                                     </th>
+                                                    <th scope="col" class=" table-th ">
+                                                        &
+                                                    </th>
 
                                                     <th scope="col" class=" table-th ">
                                                         Payment Date
@@ -1902,6 +1905,9 @@
 
                                                         <td class="table-td ">
                                                             {{ ucwords(str_replace('_', ' ', $comm->from)) }}
+                                                        </td>
+                                                        <td class="table-td ">
+                                                            {{ $comm->comm_percentage }}%
                                                         </td>
 
                                                         <td class="table-td ">
