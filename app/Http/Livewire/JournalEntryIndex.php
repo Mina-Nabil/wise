@@ -281,6 +281,12 @@ class JournalEntryIndex extends Component
         $this->dispatchBrowserEvent('openNewTab', ['url' => route('accounts.show', $id)]);
     }
 
+    public function unsetMainSelectedJournalEntry()
+    {
+        $this->mainSelectedJournalEntry = null;
+        $this->mount();
+    }
+
     public function mount($id = null)
     {
         if ($id) {
@@ -299,15 +305,13 @@ class JournalEntryIndex extends Component
         $entries = JournalEntry::when($this->selectedAccount, function ($q) {
             return $q->byAccount($this->selectedAccount->id);
         })->latest()->paginate(20);
-        $offset = 0;
+        $page1 = 1;
+        Log::info('mainSelectedJournalEntry: ' . $this->mainSelectedJournalEntry);
         if ($this->mainSelectedJournalEntry) {
-            while (!array_find($entries->items(), function ($item) {
-                return $item['id'] == $this->mainSelectedJournalEntry;
-            })) {
+            while (!$this->findMainSelectedJournalEntry($entries->items())) {
                 $entries = JournalEntry::when($this->selectedAccount, function ($q) {
                     return $q->byAccount($this->selectedAccount->id);
-                })->latest()->offset($offset)->paginate(20);
-                $offset += 20;
+                })->latest()->paginate(20, ['*'], 'page', $page1++);
             }
         }
 
@@ -321,5 +325,15 @@ class JournalEntryIndex extends Component
             'creditAccounts' => $creditAccounts,
             'debitAccounts' => $debitAccounts,
         ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'entries' => 'active']);
+    }
+
+    private function findMainSelectedJournalEntry($entries)
+    {
+        foreach ($entries as $entry) {
+            if ($entry['id'] == $this->mainSelectedJournalEntry) {
+                return true;
+            }
+        }
+        return false;
     }
 }

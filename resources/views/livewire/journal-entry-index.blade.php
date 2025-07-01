@@ -42,6 +42,13 @@
                     </button>
                 </a>
             @endcan
+            @if ($mainSelectedJournalEntry)
+                <button wire:click="unsetMainSelectedJournalEntry"
+                    class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="material-symbols:close"></iconify-icon>
+                    Showing #{{ $mainSelectedJournalEntry }}, back to all entries
+                </button>
+            @endif
         </div>
 
 
