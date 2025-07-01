@@ -301,7 +301,9 @@ class JournalEntryIndex extends Component
         })->latest()->paginate(20);
         $offset = 0;
         if ($this->mainSelectedJournalEntry) {
-            while (!$entries->items()->contains('id', $this->mainSelectedJournalEntry)) {
+            while (!array_find($entries->items(), function ($item) {
+                return $item['id'] == $this->mainSelectedJournalEntry;
+            })) {
                 $entries = JournalEntry::when($this->selectedAccount, function ($q) {
                     return $q->byAccount($this->selectedAccount->id);
                 })->latest()->offset($offset)->paginate(20);
