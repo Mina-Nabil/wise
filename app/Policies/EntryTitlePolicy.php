@@ -59,7 +59,7 @@ class EntryTitlePolicy
 
     public function updateAllowedUsers(User $user, EntryTitle $entryTitle)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
