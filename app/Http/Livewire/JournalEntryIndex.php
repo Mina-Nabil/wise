@@ -25,6 +25,7 @@ class JournalEntryIndex extends Component
     public $isOpenFilterAccountModal = false;
     public $searchAccountText;
     public $fetched_accounts;
+    public $mainSelectedJournalEntry;
     public $selectedAccount;
 
     public $AccountId;
@@ -283,9 +284,10 @@ class JournalEntryIndex extends Component
     public function mount($id = null)
     {
         if ($id) {
+            $this->mainSelectedJournalEntry = JournalEntry::findOrFail($id)->id;
             $this->showThisChildAccount($id);
         }
-        $this->Sentries = JournalEntry::all();
+        // $this->Sentries = JournalEntry::all();
         $this->authorize('viewAny', JournalEntry::class);
         if ($this->AccountId) {
             $this->selectedAccount = Account::findOrFail($this->AccountId);
@@ -297,6 +299,15 @@ class JournalEntryIndex extends Component
         $entries = JournalEntry::when($this->selectedAccount, function ($q) {
             return $q->byAccount($this->selectedAccount->id);
         })->latest()->paginate(20);
+        $offset = 0;
+        if ($this->mainSelectedJournalEntry) {
+            while (!$entries->items()->contains('id', $this->mainSelectedJournalEntry)) {
+                $entries = JournalEntry::when($this->selectedAccount, function ($q) {
+                    return $q->byAccount($this->selectedAccount->id);
+                })->latest()->offset($offset)->paginate(20);
+                $offset += 20;
+            }
+        }
 
         $this->Sentries = $entries->toArray();
 
