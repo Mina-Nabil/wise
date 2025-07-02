@@ -53,7 +53,7 @@ class AccountPolicy
      */
     public function update(User $user, Account $accountPolicy)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin || $user->is_finance || $user->is_finance_assistant;
     }
 
     /**
