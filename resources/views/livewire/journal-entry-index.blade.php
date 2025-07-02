@@ -1,5 +1,51 @@
 <div>
 
+    {{-- Dashboard Accounts Section --}}
+    @if($dashboardAccounts->count() > 0)
+        <div class="mb-6">
+            <div class="mb-4">
+                <h5 class="font-medium text-lg text-slate-900 dark:text-white">Dashboard Accounts</h5>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                @foreach($dashboardAccounts as $account)
+                    <div class="card bg-white dark:bg-slate-800 shadow-base rounded-lg">
+                        <div class="card-body p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h6 class="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                    {{ $account->name }}
+                                </h6>
+                                <span class="badge {{ $account->nature === 'credit' ? 'bg-success-500' : 'bg-info-500' }} text-white text-xs">
+                                    {{ ucfirst($account->nature) }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                                {{ $account->main_account->name }}
+                            </p>
+                            <div class="text-center">
+                                <div class="text-xl font-bold text-slate-900 dark:text-white">
+                                    {{ number_format($account->balance, 2) }}
+                                </div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">
+                                    Balance ({{ $account->default_currency ?? 'EGP' }})
+                                </div>
+                                @if($account->foreign_balance && $account->foreign_balance != 0)
+                                    <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                        {{ number_format($account->foreign_balance, 2) }} (Foreign)
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="mt-3">
+                                <button wire:click="selectAccount({{ $account->id }})" 
+                                    class="btn btn-sm btn-outline-primary w-full">
+                                    View Entries
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     @if (count($selectedEntries) > 0)
         <div class="grid md:grid-cols-1 select-action-btns-container gap-2">

@@ -319,11 +319,13 @@ class JournalEntryIndex extends Component
 
         $creditAccounts = Account::byNature(Account::NATURE_CREDIT)->get();
         $debitAccounts = Account::byNature(Account::NATURE_DEBIT)->get();
+        $dashboardAccounts = Account::where('is_show_dashboard', true)->with('main_account')->get();
 
         return view('livewire.journal-entry-index', [
             'entries' => $entries,
             'creditAccounts' => $creditAccounts,
             'debitAccounts' => $debitAccounts,
+            'dashboardAccounts' => $dashboardAccounts,
         ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'entries' => 'active']);
     }
 

@@ -217,6 +217,23 @@
                                 @error('defaultCurrency') <span class="text-red-500">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group mb-5">
+                                <div class="checkbox-area">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="hidden" wire:model="is_show_dashboard">
+                                        <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative
+                                        {{ $is_show_dashboard ? 'bg-slate-900 dark:bg-slate-700' : 'bg-slate-100 dark:bg-slate-600' }}">
+                                            @if($is_show_dashboard)
+                                                <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto">
+                                            @endif
+                                        </span>
+                                        <span class="text-slate-500 dark:text-slate-400 text-sm leading-6">Show on Dashboard</span>
+                                    </label>
+                                </div>
+                                @error('is_show_dashboard')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="form-group mb-5">
                                 <label for="acc_desc" class="form-label">Desciption</label>
                                 <input type="number" id="acc_desc" class="form-control mt-2 w-full {{ $errors->has('acc_desc') ? '!border-danger-500' : '' }}" wire:model.defer="acc_desc" step="0.01">
                                 @error('acc_desc')

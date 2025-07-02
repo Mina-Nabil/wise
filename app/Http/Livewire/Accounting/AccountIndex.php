@@ -25,6 +25,7 @@ class AccountIndex extends Component
     public $parent_account_id;
     public $acc_desc;
     public $defaultCurrency = JournalEntry::CURRENCY_EGP;
+    public $is_show_dashboard = false;
 
     private $filteredAccounts;
 
@@ -65,7 +66,7 @@ class AccountIndex extends Component
     // Method to open the modal
     public function openAddNewModal()
     {
-        $this->reset(['acc_code', 'acc_name', 'nature', 'mainAccountId', 'parent_account_id', 'acc_desc']);
+        $this->reset(['acc_code', 'acc_name', 'nature', 'mainAccountId', 'parent_account_id', 'acc_desc', 'is_show_dashboard']);
         $this->isAddNewModalOpen = true;
     }
 
@@ -80,6 +81,7 @@ class AccountIndex extends Component
         $this->parent_account_id = $a->parent_account_id;
         $this->acc_desc = $a->desc;
         $this->defaultCurrency = $a->default_currency;
+        $this->is_show_dashboard = $a->is_show_dashboard;
         $this->filteredAccounts = MainAccount::find($this->mainAccountId)->accounts()->get();
         $this->accountID = $id;
     }
@@ -88,7 +90,7 @@ class AccountIndex extends Component
     public function closeEditModal()
     {
         $this->filteredAccounts = null;
-        $this->reset(['acc_code', 'acc_name', 'acc_desc', 'nature', 'mainAccountId', 'parent_account_id', 'accountID']);
+        $this->reset(['acc_code', 'acc_name', 'acc_desc', 'nature', 'mainAccountId', 'parent_account_id', 'accountID', 'is_show_dashboard']);
     }
 
     // Method to close the modal
@@ -129,7 +131,7 @@ class AccountIndex extends Component
             'defaultCurrency' => 'required|in:' . implode(',', JournalEntry::CURRENCIES)
         ]);
         
-        $res = Account::findOrFail($this->accountID)->editInfo($this->acc_code, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc, default_currency: $this->defaultCurrency);
+        $res = Account::findOrFail($this->accountID)->editInfo($this->acc_code, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc, default_currency: $this->defaultCurrency, is_show_dashboard: $this->is_show_dashboard);
         if ($res) {
             $this->closeEditModal();
             $this->alert('success', 'Account successfully updated');
@@ -149,7 +151,7 @@ class AccountIndex extends Component
             'acc_desc' => 'nullable|string',
         ]);
 
-        $res = Account::newAccount(null, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc, default_currency: $this->defaultCurrency);
+        $res = Account::newAccount(null, $this->acc_name, $this->nature, $this->mainAccountId, $this->parent_account_id, $this->acc_desc, default_currency: $this->defaultCurrency, is_show_dashboard: $this->is_show_dashboard);
 
         if ($res) {
             $this->closeAddNewModal();

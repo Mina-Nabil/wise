@@ -39,6 +39,7 @@ class Account extends Model
         'balance',
         'foreign_balance',
         'default_currency',
+        'is_show_dashboard',
     ];
 
     const NATURE_CREDIT = 'credit';
@@ -71,7 +72,7 @@ class Account extends Model
             ->get();
     }
 
-    public static function newAccount($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $is_seeding = false, $default_currency = JournalEntry::CURRENCY_EGP): self|false
+    public static function newAccount($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $is_seeding = false, $default_currency = JournalEntry::CURRENCY_EGP, $is_show_dashboard = false): self|false
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -89,6 +90,7 @@ class Account extends Model
             'balance' => 0,
             'foreign_balance' => 0,
             'default_currency' => $default_currency,
+            'is_show_dashboard' => $is_show_dashboard,
         ]);
         try {
             $newAccount->save();
@@ -319,7 +321,7 @@ class Account extends Model
         return $this->limit <= $amount;
     }
 
-    public function editInfo($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $default_currency = JournalEntry::CURRENCY_EGP): bool
+    public function editInfo($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $default_currency = JournalEntry::CURRENCY_EGP, $is_show_dashboard = false): bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -336,6 +338,7 @@ class Account extends Model
                 'parent_account_id' => $parent_account_id,
                 'desc' => $desc,
                 'default_currency' => $default_currency,
+                'is_show_dashboard' => $is_show_dashboard,
             ]);
             AppLog::info('Updating account', loggable: $this);
             return $this->save();
