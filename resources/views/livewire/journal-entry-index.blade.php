@@ -79,7 +79,7 @@
                     Download daily Cash Transactions
                 </button>
             @endcan
-            @can('create', \App\Models\Accounting\Account::class)
+            @can('create', \App\Models\Accounting\JournalEntry::class)
                 <a href="{{ url('/accounts/entries/new') }}">
                     <button wire:click="openAddNewModal"
                         class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
