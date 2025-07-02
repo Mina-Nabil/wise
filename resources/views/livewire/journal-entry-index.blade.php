@@ -23,7 +23,7 @@
                             </p>
                             <div class="text-center">
                                 <div class="text-xl font-bold text-slate-900 dark:text-white">
-                                    {{ number_format($account->balance, 2) }}
+                                    {{ number_format($account->total_balance, 2) }}
                                 </div>
                                 <div class="text-xs text-slate-500 dark:text-slate-400">
                                     Balance ({{ $account->default_currency ?? 'EGP' }})
