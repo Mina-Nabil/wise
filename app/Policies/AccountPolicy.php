@@ -18,7 +18,7 @@ class AccountPolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return $user->is_admin || $user->is_finance || $user->is_finance_assistant;
     }
 
     /**
@@ -30,7 +30,7 @@ class AccountPolicy
      */
     public function view(User $user, Account $accountPolicy)
     {
-        return true;
+        return $user->is_admin || $user->is_finance || $user->is_finance_assistant;
     }
 
     /**
@@ -41,7 +41,7 @@ class AccountPolicy
      */
     public function create(User $user)
     {
-        return true;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
@@ -53,7 +53,7 @@ class AccountPolicy
      */
     public function update(User $user, Account $accountPolicy)
     {
-        return true;
+        return $user->is_admin || $user->is_finance;
     }
 
     /**
@@ -65,6 +65,6 @@ class AccountPolicy
      */
     public function delete(User $user, Account $accountPolicy)
     {
-        return true;
+        return $user->is_admin || $user->is_finance;
     }
 }
