@@ -24,6 +24,7 @@ class TaskReport extends Component
     public $due_from;
     public $Edue_to;
     public $due_to;
+    public $search;
 
     public $assigneeSection = false;
     public $assigneeName;
@@ -37,7 +38,7 @@ class TaskReport extends Component
 
     public $isExpired;
 
-    protected $queryString = ['start_from', 'start_to', 'due_from', 'due_to', 'isExpired', 'assignee_id','creator_id'];
+    protected $queryString = ['start_from', 'start_to', 'due_from', 'due_to', 'isExpired', 'assignee_id','creator_id', 'search'];
 
     public function toggleAssignee()
     {
@@ -115,7 +116,7 @@ class TaskReport extends Component
 
     public function exportReport()
     {
-        Task::exportReport($this->start_from, $this->start_to, $this->due_from, $this->due_to, $this->assignee_id,$this->creator_id, $this->isExpired);
+        Task::exportReport($this->start_from, $this->start_to, $this->due_from, $this->due_to, $this->assignee_id,$this->creator_id, $this->isExpired, $this->search);
     }
 
     public function toggleStartDate()
@@ -178,7 +179,7 @@ class TaskReport extends Component
         }
 
         $users = User::all();
-        $tasks = Task::Report($this->start_from, $this->start_to, $this->due_from, $this->due_to, $this->assignee_id, $this->creator_id, $this->isExpired)->paginate(10);
+        $tasks = Task::Report($this->start_from, $this->start_to, $this->due_from, $this->due_to, $this->assignee_id, $this->creator_id, $this->isExpired, $this->search)->paginate(10);
         return view('livewire.task-report', [
             'tasks' => $tasks,
             'users' => $users,

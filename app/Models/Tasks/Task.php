@@ -612,13 +612,14 @@ class Task extends Model
 
     public function scopeReport(
         Builder $query,
-        Carbon $created_from = null,
-        Carbon $created_to = null,
-        Carbon $due_from = null,
-        Carbon $due_to = null,
-        string $assignee_id = null,
-        string $openedBy_id = null,
-        bool $is_expired = null
+        ?Carbon $created_from = null,
+        ?Carbon $created_to = null,
+        ?Carbon $due_from = null,
+        ?Carbon $due_to = null,
+        ?string $assignee_id = null,
+        ?string $openedBy_id = null,
+        ?bool $is_expired = null,
+        ?string $search = null
     ) {
         // Filter by creation date range
         $query->myTasksQuery(false)
@@ -626,6 +627,8 @@ class Task extends Model
                 $q->where('created_at', '>=', $v->startOfDay());
             })->when($created_to, function ($q, $v) {
                 $q->where('created_at', '<=', $v->endOfDay());
+            })->when($search, function ($q, $v) {
+                $q->searchByTitle($v);
             });
 
         // Filter by due date range
