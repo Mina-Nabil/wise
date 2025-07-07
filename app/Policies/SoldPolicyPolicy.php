@@ -75,9 +75,9 @@ class SoldPolicyPolicy
      * @param  \App\Models\Business\SoldPolicy  $soldPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewCommission(User $user, SoldPolicy $soldPolicy=null)
+    public function viewCommission(User $user, SoldPolicy $soldPolicy = null)
     {
-        return $user->is_admin ||  $user->is_any_finance ;
+        return $this->viewFinanceWhileReview($user) && ($user->is_admin ||  $user->is_any_finance);
     }
 
     /**
@@ -111,7 +111,7 @@ class SoldPolicyPolicy
      * @param  \App\Models\Business\SoldPolicy  $soldPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function review(User $user, SoldPolicy $soldPolicy=null)
+    public function review(User $user, SoldPolicy $soldPolicy = null)
     {
         return $user->is_admin || $user->is_operations;
     }
@@ -148,7 +148,7 @@ class SoldPolicyPolicy
      */
     public function updateMainSales(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->id == 1 || $user->id == 10 || $user->id == 11  ; //remon w mina N. w michael 
+        return $user->id == 1 || $user->id == 10 || $user->id == 11; //remon w mina N. w michael 
     }
 
     /**
@@ -173,5 +173,10 @@ class SoldPolicyPolicy
     public function delete(User $user, SoldPolicy $soldPolicy)
     {
         return $user->id == 1 || $user->id == 10;
+    }
+
+    public function viewFinanceWhileReview(User $user, SoldPolicy $soldPolicy = null)
+    {
+        return $user->is_admin;
     }
 }

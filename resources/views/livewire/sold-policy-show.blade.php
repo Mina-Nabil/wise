@@ -79,6 +79,7 @@
                                 <iconify-icon class="mr-1" icon="heroicons-outline:user"></iconify-icon>
                                 Profile</a>
                         </li>
+
                         <li class="nav-item" role="presentation" wire:click="changeSection('payments')">
                             <a href="#tabs-messages-withIcon"
                                 class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300"
@@ -86,8 +87,9 @@
                                 data-bs-target="#tabs-messages-withIcon" role="tab"
                                 aria-controls="tabs-messages-withIcon" aria-selected="false">
                                 <iconify-icon class="mr-1" icon="material-symbols:payments"></iconify-icon>
-                                Payments</a>
-                        </li>
+                                    Payments</a>
+                            </li>
+
                         <li class="nav-item" role="presentation" wire:click="changeSection('cars')">
                             <a href="#tabs-messages-withIcon"
                                 class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'cars') active @endif dark:text-slate-300"
@@ -549,38 +551,39 @@
                 </div>
 
 
-
-                <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
-                    <div class="card-body flex flex-col p-6 active justify-center">
-                        <div>
-                            <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                                Main sales
-                                @can('updateMainSales', $soldPolicy)
-                                    <span class="float-right">
-                                        <button wire:click="openSetMainSalesSection" class="action-btn" type="button">
-                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                        </button>
-                                    </span>
-                                @endcan
-                            </span>
-                            <span class="text-lg font-medium text-slate-900 dark:text-white block">
-                                {{ $soldPolicy->main_sales?->full_name }}
-                            </span>
-                        </div>
-                        <div>
-                            <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                                Other Sales Linked
-                            </span>
-                            <span class="text-lg font-medium text-slate-900 dark:text-white block">
-                                @foreach ($soldPolicy->sales_comms as $comm)
-                                    @if (!$soldPolicy->main_sales_id || $soldPolicy->main_sales_id != $comm->comm_profile->user_id)
-                                        {{ $comm->comm_profile->title }} &nbsp;
-                                    @endif
-                                @endforeach
-                            </span>
+                @can('viewFinanceWhileReview', $soldPolicy)
+                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mb-5">
+                        <div class="card-body flex flex-col p-6 active justify-center">
+                            <div>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                    Main sales
+                                    @can('updateMainSales', $soldPolicy)
+                                        <span class="float-right">
+                                            <button wire:click="openSetMainSalesSection" class="action-btn" type="button">
+                                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                            </button>
+                                        </span>
+                                    @endcan
+                                </span>
+                                <span class="text-lg font-medium text-slate-900 dark:text-white block">
+                                    {{ $soldPolicy->main_sales?->full_name }}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+                                    Other Sales Linked
+                                </span>
+                                <span class="text-lg font-medium text-slate-900 dark:text-white block">
+                                    @foreach ($soldPolicy->sales_comms as $comm)
+                                        @if (!$soldPolicy->main_sales_id || $soldPolicy->main_sales_id != $comm->comm_profile->user_id)
+                                            {{ $comm->comm_profile->title }} &nbsp;
+                                        @endif
+                                    @endforeach
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endcan
 
 
                 {{-- Files --}}
@@ -2983,7 +2986,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4130,7 +4133,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4248,7 +4251,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4478,7 +4481,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4611,7 +4614,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4702,7 +4705,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
