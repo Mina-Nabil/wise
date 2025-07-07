@@ -177,6 +177,6 @@ class SoldPolicyPolicy
 
     public function viewFinanceWhileReview(User $user, SoldPolicy $soldPolicy = null)
     {
-        return $user->is_admin;
+        return true;
     }
 }
