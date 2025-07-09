@@ -1378,19 +1378,19 @@ class SoldPolicy extends Model
             $activeSheet->getCell('C' . $i)->setValue($policy->client->address_city);
             $activeSheet->getCell('D' . $i)->setValue($policy->policy_number);
             $activeSheet->getCell('E' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);
-            $activeSheet->getCell('F' . $i)->setValue($policy->policy->company->name);
+            $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->created_at)->format('d-m-Y'));
+            $activeSheet->getCell('G' . $i)->setValue($policy->policy->company->name);
+            $activeSheet->getCell('H' . $i)->setValue($policy->insured_value);
+            $activeSheet->getCell('I' . $i)->setValue($policy->totalClientPaidBetween($issued_from, $issued_to));
+            $activeSheet->getCell('J' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
+            $activeSheet->getCell('K' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('G' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) / 0.95, 2)); //total_policy_comm
+                $activeSheet->getCell('L' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) / 0.95, 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
-            $activeSheet->getCell('H' . $i)->setValue($policy->editted ? "ملحق تعديل" : "");
-            $activeSheet->getCell('I' . $i)->setValue(Carbon::parse($policy->created_at)->format('d-m-Y'));
-            $activeSheet->getCell('J' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
-            $activeSheet->getCell('K' . $i)->setValue("ريمون حنا بطرس");
-            $activeSheet->getCell('L' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
-            $activeSheet->getCell('M' . $i)->setValue($policy->insured_value);
-            $activeSheet->getCell('N' . $i)->setValue($policy->totalClientPaidBetween($issued_from, $issued_to));
-            $activeSheet->getCell('O' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
+            $activeSheet->getCell('M' . $i)->setValue($policy->editted ? "ملحق تعديل" : "");
+            $activeSheet->getCell('N' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
+            $activeSheet->getCell('O' . $i)->setValue("ريمون حنا بطرس");
             $i++;
         }
 
