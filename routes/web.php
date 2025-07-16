@@ -120,6 +120,9 @@ Route::middleware('auth', 'active')->group(function () {
     //accounting
     Route::get('/accounts/main', MainAccountIndex::class);
     Route::get('/accounts', AccountIndex::class);
+    Route::get('/accounts/export', function () {
+        return Account::exportAllAccountsWithBalances();
+    })->name('accounts.export');
     Route::get('/accounts/importtree', function () {
         Account::importAccounts();
         return response()->redirectTo('/accounts/main');
