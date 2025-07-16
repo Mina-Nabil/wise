@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CompanyCommPayment extends Model
@@ -284,7 +284,7 @@ class CompanyCommPayment extends Model
             ->leftJoin('policies', 'policies.id', '=', 'sold_policies.policy_id')
             ->leftJoin('offers', 'offers.id', '=', 'sold_policies.offer_id')
             ->leftJoin('customers', 'customers.id', '=', 'sold_policies.customer_id')
-            ->leftJoin('companies', 'companies.id', '=', 'policies.company_id')
+            ->leftJoin('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
             ->with('sold_policy.client', 'sold_policy.policy.company', 'sold_policy.creator', 'receiver')
             ->when($is_renewal, function ($q, $v) {
                 $q->where('offers.is_renewal', $v);
