@@ -91,7 +91,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="grid grid-cols-12 gap-5">
-                    <div class="col-span-12 md:col-span-6">
+                    <div class="col-span-12 md:col-span-6 p-4">
                         <div class="input-area">
                             <input id="searchText" type="text" class="form-control" wire:model="searchText"
                                 placeholder="Enter policy number">
