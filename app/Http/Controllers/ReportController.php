@@ -20,6 +20,17 @@ class ReportController extends Controller
         return view('reports.client-payments');
     }
 
+    public function companyCommPayments()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+
+        // Add authorization check if needed
+        // if($loggedInUser->can('viewAny', CompanyCommPayment::class))
+
+        return view('reports.company-comm-payments');
+    }
+
     public function clientInterests()
     {
         return view('reports.client-interests');
