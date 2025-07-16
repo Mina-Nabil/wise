@@ -265,6 +265,12 @@
                                 <a href="{{ url('/reports/client-payments') }}" class="@yield('client-payments')">Client
                                     Payments</a>
                             </li>
+                            @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
+                            <li>
+                                <a href="{{ url('/reports/company-comm-payments') }}" class="@yield('company-comm-payments-report')">Company
+                                    Commission Payments</a>
+                            </li>
+                            @endif
                             <li>
                                 <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Customer
                                     Interests</a>
