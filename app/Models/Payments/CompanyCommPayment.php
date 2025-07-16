@@ -272,7 +272,7 @@ class CompanyCommPayment extends Model
             $activeSheet->getCell('A' . $i)->setValue($payment->payment_date ? Carbon::parse($payment->payment_date)->format('d-m-Y') : '');
             $activeSheet->getCell('B' . $i)->setValue($payment->invoice_id ?? '');
             $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy ? $payment->sold_policy->policy_number : '');
-            $activeSheet->getCell('D' . $i)->setValue($payment->sold_policy && $payment->sold_policy->client ? $payment->sold_policy->client->name : '');
+            $activeSheet->getCell('D' . $i)->setValue($payment->sold_policy && $payment->sold_policy->client ? ($payment->sold_policy->client->full_name ?? $payment->sold_policy->client->name ?? '') : '');
             $activeSheet->getCell('E' . $i)->setValue($payment->sold_policy && $payment->sold_policy->start ? Carbon::parse($payment->sold_policy->start)->format('d-m-Y') : '');
             $activeSheet->getCell('F' . $i)->setValue(isset($payment->pymnt_perm) && $payment->pymnt_perm ? Carbon::parse($payment->pymnt_perm)->format('d-m-Y') : '');
             $activeSheet->getCell('G' . $i)->setValue(0); // T4 Tax placeholder

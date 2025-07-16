@@ -89,14 +89,10 @@
     <!-- Search Input -->
     <div class="space-y-5">
         <div class="card">
-            <header class="card-header noborder">
-                <h4 class="card-title">Search</h4>
-            </header>
             <div class="card-body">
                 <div class="grid grid-cols-12 gap-5">
                     <div class="col-span-12 md:col-span-6">
                         <div class="input-area">
-                            <label for="searchText" class="form-label">Search by Policy Number</label>
                             <input id="searchText" type="text" class="form-control" wire:model="searchText"
                                 placeholder="Enter policy number">
                         </div>
@@ -223,9 +219,9 @@
                                                 </a>
                                             </td>
 
-                                            <td class="table-td">
-                                                {{ $payment->sold_policy->client->name }}
-                                            </td>
+                                                                        <td class="table-td">
+                                {{ $payment->sold_policy->client->full_name ?? $payment->sold_policy->client->name ?? 'N/A' }}
+                            </td>
 
                                             <td class="table-td">
                                                 {{ \Carbon\Carbon::parse($payment->sold_policy->start)->format('d/m/Y') }}
