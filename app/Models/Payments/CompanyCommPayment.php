@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class CompanyCommPayment extends Model
 {
@@ -230,12 +232,39 @@ class CompanyCommPayment extends Model
             $payment_date_to
         )->get();
 
-        $template = IOFactory::load(resource_path('import/company_comm_payment_report.xlsx'));
-        if (!$template) {
-            throw new Exception('Failed to read template file');
+        $spreadsheet = new Spreadsheet();
+        $activeSheet = $spreadsheet->getActiveSheet();
+        
+        // Set worksheet title
+        $activeSheet->setTitle('Company Commission Payments');
+
+        // Set headers
+        $headers = [
+            'A1' => 'Payment Date',
+            'B1' => 'Invoice ID', 
+            'C1' => 'Policy Number',
+            'D1' => 'Client Name',
+            'E1' => 'Policy Start Date',
+            'F1' => 'Payment Permission Date',
+            'G1' => 'T4 Tax',
+            'H1' => 'Gross Amount',
+            'I1' => 'Net Amount',
+            'J1' => 'Insurance Company'
+        ];
+
+        foreach ($headers as $cell => $header) {
+            $activeSheet->setCellValue($cell, $header);
         }
-        $newFile = $template->copy();
-        $activeSheet = $newFile->getActiveSheet();
+
+        // Style headers
+        $activeSheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:J1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:J1')->getFill()->getStartColor()->setARGB('FFD3D3D3');
+        
+        // Auto-size columns
+        foreach (range('A', 'J') as $columnID) {
+            $activeSheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
 
         $i = 2;
         /** @var CompanyCommPayment $payment */
@@ -253,7 +282,12 @@ class CompanyCommPayment extends Model
             $i++;
         }
 
-        $writer = new Xlsx($newFile);
+        // Add borders to data table
+        if ($i > 2) {
+            $activeSheet->getStyle('A1:J' . ($i - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        }
+
+        $writer = new Xlsx($spreadsheet);
         $file_path = 'exports/company_comm_payments_export.xlsx';
         $public_file_path = storage_path('app/' . $file_path);
         $writer->save($public_file_path);
@@ -283,7 +317,14 @@ class CompanyCommPayment extends Model
             ->leftJoin('sold_policies', 'sold_policies.id', '=', 'company_comm_payments.sold_policy_id')
             ->leftJoin('policies', 'policies.id', '=', 'sold_policies.policy_id')
             ->leftJoin('offers', 'offers.id', '=', 'sold_policies.offer_id')
-            ->leftJoin('customers', 'customers.id', '=', 'sold_policies.customer_id')
+            ->leftJoin('corporates', function ($j) {
+                $j->on('sold_policies.client_id', '=', 'corporates.id')
+                    ->where('sold_policies.client_type', '=', \App\Models\Corporates\Corporate::MORPH_TYPE);
+            })
+            ->leftJoin('customers', function ($j) {
+                $j->on('sold_policies.client_id', '=', 'customers.id')
+                    ->where('sold_policies.client_type', '=', \App\Models\Customers\Customer::MORPH_TYPE);
+            })
             ->leftJoin('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
             ->with('sold_policy.client', 'sold_policy.policy.company', 'sold_policy.creator', 'receiver')
             ->when($is_renewal, function ($q, $v) {
@@ -313,7 +354,7 @@ class CompanyCommPayment extends Model
             ->when($payment_date_to, function ($q, $v) {
                 $q->where('company_comm_payments.payment_date', '<=', $v->format('Y-m-d 23:59:59'));
             })
-            ->when($selectedCompany, fn($q) => $q->where('companies.id', $selectedCompany->id))
+            ->when($selectedCompany, fn($q) => $q->where('insurance_companies.id', $selectedCompany->id))
             ->when($searchText, function ($q, $s) {
                 $q->where('sold_policies.policy_number', 'LIKE', "%$s%");
             })
