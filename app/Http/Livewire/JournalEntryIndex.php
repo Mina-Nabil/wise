@@ -191,9 +191,13 @@ class JournalEntryIndex extends Component
 
     public function reviewSelectedEntries()
     {
-        $this->authorize('review', JournalEntry::class);
-        foreach ($this->selectedEntries as $id) {
-            JournalEntry::findOrFail($id)->reviewEntry();
+        $journalEntries = JournalEntry::whereIn('id', $this->selectedEntries)->get();
+        foreach ($journalEntries as $entry) {
+            $this->authorize('review', $entry);
+        }
+
+        foreach ($journalEntries as $entry) {
+            $entry->reviewEntry();
         }
 
         $this->selectedEntries = [];
@@ -203,9 +207,10 @@ class JournalEntryIndex extends Component
 
     public function reviewEntry($id)
     {
-        $this->authorize('review', JournalEntry::class);
+        $entry = JournalEntry::findOrFail($id);
+        $this->authorize('review', $entry);
 
-        $res = JournalEntry::findOrFail($id)->reviewEntry();
+        $res = $entry->reviewEntry();
         if ($res) {
             $this->alert('success', 'Entry Successfuly Reviewed!');
         } else {

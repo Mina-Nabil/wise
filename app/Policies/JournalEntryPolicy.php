@@ -52,9 +52,9 @@ class JournalEntryPolicy
      * @param  \App\Models\Users\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function review(User $user)
+    public function review(User $user, JournalEntry $journalEntry)
     {
-        return true;
+        return $user->id != $journalEntry->user_id;
     }
 
     /**
