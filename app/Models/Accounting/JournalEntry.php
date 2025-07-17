@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -366,11 +367,7 @@ class JournalEntry extends Model
      */
     public static function downloadJournalEntries(Carbon $from, Carbon $to)
     {
-        $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
-        if (!$template) {
-            throw new Exception('Failed to read template file');
-        }
-        $newFile = $template->copy();
+        $newFile = new Spreadsheet();
         $activeSheet = $newFile->getSheet(0);
 
         // Set headers
@@ -474,6 +471,7 @@ class JournalEntry extends Model
         // Build hierarchy from bottom up (only Account objects)
         while ($currentAccount) {
             array_unshift($levels, $currentAccount);
+            if($currentAccount->parent_account?->id == $currentAccount->id) break;
             $currentAccount = $currentAccount->parent_account;
         }
 
