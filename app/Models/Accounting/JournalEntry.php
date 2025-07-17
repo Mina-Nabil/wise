@@ -378,19 +378,20 @@ class JournalEntry extends Model
         $activeSheet->setCellValue('E1', 'Main Account Name');
         $activeSheet->setCellValue('F1', 'GL Account Code');
         $activeSheet->setCellValue('G1', 'GL Account Name');
-        $activeSheet->setCellValue('H1', 'Account');
-        $activeSheet->setCellValue('I1', 'Sub Account');
-        $activeSheet->setCellValue('J1', 'Sub Account');
-        $activeSheet->setCellValue('K1', 'Debit');
-        $activeSheet->setCellValue('L1', 'Credit');
-        $activeSheet->setCellValue('M1', 'Transaction Description');
-        $activeSheet->setCellValue('N1', 'User ID');
-        $activeSheet->setCellValue('O1', 'Approved');
+        $activeSheet->setCellValue('H1', 'Account Code');
+        $activeSheet->setCellValue('I1', 'Account Name');
+        $activeSheet->setCellValue('J1', 'Sub Account Code');
+        $activeSheet->setCellValue('K1', 'Sub Account Name');
+        $activeSheet->setCellValue('L1', 'Debit');
+        $activeSheet->setCellValue('M1', 'Credit');
+        $activeSheet->setCellValue('N1', 'Transaction Description');
+        $activeSheet->setCellValue('O1', 'User ID');
+        $activeSheet->setCellValue('P1', 'Approved');
 
         // Style headers
-        $activeSheet->getStyle('A1:O1')->getFont()->setBold(true);
-        $activeSheet->getStyle('A1:O1')->getFill()->setFillType(Fill::FILL_SOLID);
-        $activeSheet->getStyle('A1:O1')->getFill()->getStartColor()->setARGB('FFFFFF00'); // Yellow background
+        $activeSheet->getStyle('A1:P1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:P1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:P1')->getFill()->getStartColor()->setARGB('FFFFFF00'); // Yellow background
 
         // Get journal entries with accounts
         $entries = self::between($from, $to)
@@ -419,9 +420,10 @@ class JournalEntry extends Model
                 $activeSheet->setCellValue('E' . $row, $hierarchy['main_name'] ?? '');
                 $activeSheet->setCellValue('F' . $row, $hierarchy['gl_code'] ?? '');
                 $activeSheet->setCellValue('G' . $row, $hierarchy['gl_name'] ?? '');
-                $activeSheet->setCellValue('H' . $row, $hierarchy['account_name'] ?? '');
-                $activeSheet->setCellValue('I' . $row, $hierarchy['sub_code'] ?? '');
-                $activeSheet->setCellValue('J' . $row, $hierarchy['sub_name'] ?? '');
+                $activeSheet->setCellValue('H' . $row, $hierarchy['account_code'] ?? '');
+                $activeSheet->setCellValue('I' . $row, $hierarchy['account_name'] ?? '');
+                $activeSheet->setCellValue('J' . $row, $hierarchy['sub_code'] ?? '');
+                $activeSheet->setCellValue('K' . $row, $hierarchy['sub_name'] ?? '');
 
                 // Set debit/credit amounts
                 if ($account->nature == 'debit') {
@@ -456,6 +458,7 @@ class JournalEntry extends Model
             'main_name' => '',
             'gl_code' => '',
             'gl_name' => '',
+            'account_code' => '',
             'account_name' => '',
             'sub_code' => '',
             'sub_name' => ''
@@ -483,35 +486,37 @@ class JournalEntry extends Model
 
         if (count($levels) >= 1) {
             // Account with no parents - it is the main account
-            $hierarchy['main_code'] = $levels[0]->code ?? '';
+            $hierarchy['main_code'] = $levels[0]->full_code ?? '';
             $hierarchy['main_name'] = $levels[0]->name ?? '';
         }
 
         if (count($levels) >= 2) {
             // Account with one parent
-            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
+            $hierarchy['main_code'] = $levels[0]->full_code ?? ''; // First parent is the main account
             $hierarchy['main_name'] = $levels[0]->name ?? '';
-            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Account itself
+            $hierarchy['gl_code'] = $levels[1]->full_code ?? ''; // Account itself
             $hierarchy['gl_name'] = $levels[1]->name ?? '';
         }
 
         if (count($levels) >= 3) {
             // Account with two parents
-            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
+            $hierarchy['main_code'] = $levels[0]->full_code ?? ''; // First parent is the main account
             $hierarchy['main_name'] = $levels[0]->name ?? '';
-            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Second parent
+            $hierarchy['gl_code'] = $levels[1]->full_code ?? ''; // Second parent
             $hierarchy['gl_name'] = $levels[1]->name ?? '';
+            $hierarchy['account_code'] = $levels[2]->full_code ?? ''; // Account itself
             $hierarchy['account_name'] = $levels[2]->name ?? ''; // Account itself
         }
 
         if (count($levels) >= 4) {
             // Account with three or more parents
-            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
+            $hierarchy['main_code'] = $levels[0]->full_code ?? ''; // First parent is the main account
             $hierarchy['main_name'] = $levels[0]->name ?? '';
-            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Second parent
+            $hierarchy['gl_code'] = $levels[1]->full_code ?? ''; // Second parent
             $hierarchy['gl_name'] = $levels[1]->name ?? '';
+            $hierarchy['account_code'] = $levels[2]->full_code ?? ''; // Third parent
             $hierarchy['account_name'] = $levels[2]->name ?? ''; // Third parent
-            $hierarchy['sub_code'] = $levels[3]->code ?? ''; // Account itself
+            $hierarchy['sub_code'] = $levels[3]->full_code ?? ''; // Account itself
             $hierarchy['sub_name'] = $levels[3]->name ?? '';
         }
 
