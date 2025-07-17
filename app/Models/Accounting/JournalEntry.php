@@ -465,8 +465,7 @@ class JournalEntry extends Model
         ];
 
         // Load the account with its relationships
-        $account->append('full_code');
-        $account->load(['parent_account', 'parent_account.parent_account', 'parent_account.parent_account.parent_account']);
+        $account->loadMissing(['parent_account', 'parent_account.parent_account', 'parent_account.parent_account.parent_account']);
 
         // Get the hierarchy levels (only Account objects)
         $levels = [];
