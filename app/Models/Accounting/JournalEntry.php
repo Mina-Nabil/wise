@@ -486,37 +486,37 @@ class JournalEntry extends Model
 
         if (count($levels) >= 1) {
             // Account with no parents - it is the main account
-            $hierarchy['main_code'] = $levels[0]->full_code ?? '';
+            $hierarchy['main_code'] = $levels[0]->code ?? '';
             $hierarchy['main_name'] = $levels[0]->name ?? '';
         }
 
         if (count($levels) >= 2) {
             // Account with one parent
-            $hierarchy['main_code'] = $levels[0]->full_code ?? ''; // First parent is the main account
+            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
             $hierarchy['main_name'] = $levels[0]->name ?? '';
-            $hierarchy['gl_code'] = $levels[1]->full_code ?? ''; // Account itself
+            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Account itself
             $hierarchy['gl_name'] = $levels[1]->name ?? '';
         }
 
         if (count($levels) >= 3) {
             // Account with two parents
-            $hierarchy['main_code'] = $levels[0]->full_code ?? ''; // First parent is the main account
+            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
             $hierarchy['main_name'] = $levels[0]->name ?? '';
-            $hierarchy['gl_code'] = $levels[1]->full_code ?? ''; // Second parent
+            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Second parent
             $hierarchy['gl_name'] = $levels[1]->name ?? '';
-            $hierarchy['account_code'] = $levels[2]->full_code ?? ''; // Account itself
+            $hierarchy['account_code'] = $levels[2]->code ?? ''; // Account itself
             $hierarchy['account_name'] = $levels[2]->name ?? ''; // Account itself
         }
 
         if (count($levels) >= 4) {
             // Account with three or more parents
-            $hierarchy['main_code'] = $levels[0]->full_code ?? ''; // First parent is the main account
+            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
             $hierarchy['main_name'] = $levels[0]->name ?? '';
-            $hierarchy['gl_code'] = $levels[1]->full_code ?? ''; // Second parent
+            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Second parent
             $hierarchy['gl_name'] = $levels[1]->name ?? '';
-            $hierarchy['account_code'] = $levels[2]->full_code ?? ''; // Third parent
+            $hierarchy['account_code'] = $levels[2]->code ?? ''; // Third parent
             $hierarchy['account_name'] = $levels[2]->name ?? ''; // Third parent
-            $hierarchy['sub_code'] = $levels[3]->full_code ?? ''; // Account itself
+            $hierarchy['sub_code'] = $levels[3]->code ?? ''; // Account itself
             $hierarchy['sub_name'] = $levels[3]->name ?? '';
         }
 
