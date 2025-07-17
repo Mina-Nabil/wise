@@ -396,7 +396,7 @@ class JournalEntry extends Model
         // Get journal entries with accounts
         $entries = self::between($from, $to)
             ->with(['accounts.parent_account', 'accounts.parent_account.parent_account', 'accounts.parent_account.parent_account.parent_account', 'creator', 'entry_title'])
-            ->orderBy('created_at')
+            ->orderBy('id', 'desc')
             ->get();
 
         $row = 2;
