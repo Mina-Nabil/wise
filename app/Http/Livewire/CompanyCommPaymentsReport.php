@@ -178,22 +178,28 @@ class CompanyCommPaymentsReport extends Component
 
     public function exportReport()
     {
+        // Handle company filter
+        $selectedCompany = null;
+        if (count($this->company_ids) > 0) {
+            $selectedCompany = Company::find($this->company_ids[0]);
+        }
+
         return CompanyCommPayment::exportReport(
             $this->is_renewal,
-            $this->start_from,
-            $this->start_to,
-            $this->expiry_from,
-            $this->expiry_to,
-            $this->issued_from,
-            $this->issued_to,
-            $this->selectedCompany,
+            $this->start_from ? Carbon::createFromFormat('Y-m-d', $this->start_from) : null,
+            $this->start_to ? Carbon::createFromFormat('Y-m-d', $this->start_to) : null,
+            $this->expiry_from ? Carbon::createFromFormat('Y-m-d', $this->expiry_from) : null,
+            $this->expiry_to ? Carbon::createFromFormat('Y-m-d', $this->expiry_to) : null,
+            $this->issued_from ? Carbon::createFromFormat('Y-m-d', $this->issued_from) : null,
+            $this->issued_to ? Carbon::createFromFormat('Y-m-d', $this->issued_to) : null,
+            $selectedCompany,
             $this->searchText,
             $this->statuses,
             $this->sortColumn,
             $this->sortDirection,
             $this->types,
-            $this->payment_date_from,
-            $this->payment_date_to
+            $this->payment_date_from ? Carbon::createFromFormat('Y-m-d', $this->payment_date_from) : null,
+            $this->payment_date_to ? Carbon::createFromFormat('Y-m-d', $this->payment_date_to) : null
         );
     }
 
@@ -202,22 +208,28 @@ class CompanyCommPaymentsReport extends Component
         $STATUSES = CompanyCommPayment::PYMT_STATES;
         $Alltypes = ['cash', 'cheque', 'bank_transfer', 'visa']; // Basic payment types
 
+        // Handle company filter
+        $selectedCompany = null;
+        if (count($this->company_ids) > 0) {
+            $selectedCompany = Company::find($this->company_ids[0]);
+        }
+
         $payments = CompanyCommPayment::report(
             $this->is_renewal,
-            $this->start_from,
-            $this->start_to,
-            $this->expiry_from,
-            $this->expiry_to,
-            $this->issued_from,
-            $this->issued_to,
-            $this->selectedCompany,
+            $this->start_from ? Carbon::createFromFormat('Y-m-d', $this->start_from) : null,
+            $this->start_to ? Carbon::createFromFormat('Y-m-d', $this->start_to) : null,
+            $this->expiry_from ? Carbon::createFromFormat('Y-m-d', $this->expiry_from) : null,
+            $this->expiry_to ? Carbon::createFromFormat('Y-m-d', $this->expiry_to) : null,
+            $this->issued_from ? Carbon::createFromFormat('Y-m-d', $this->issued_from) : null,
+            $this->issued_to ? Carbon::createFromFormat('Y-m-d', $this->issued_to) : null,
+            $selectedCompany,
             $this->searchText,
             $this->statuses,
             $this->sortColumn,
             $this->sortDirection,
             $this->types,
-            $this->payment_date_from,
-            $this->payment_date_to
+            $this->payment_date_from ? Carbon::createFromFormat('Y-m-d', $this->payment_date_from) : null,
+            $this->payment_date_to ? Carbon::createFromFormat('Y-m-d', $this->payment_date_to) : null
         )->paginate(50);
 
         return view('livewire.company-comm-payments-report', [

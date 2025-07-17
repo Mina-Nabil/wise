@@ -45,6 +45,11 @@ class JournalEntryIndex extends Component
     public $isOpenDailyTrans = false;
     public $tranactionsDay;
 
+    //for download journal entries
+    public $isOpenJournalEntries = false;
+    public $journalEntriesFrom;
+    public $journalEntriesTo;
+
     public function showEntry($id)
     {
         $this->entryId  = $id;
@@ -127,6 +132,29 @@ class JournalEntryIndex extends Component
     public function hideDownloadDailyTransactionsForm()
     {
         $this->isOpenDailyTrans = false;
+    }
+
+    public function downloadJournalEntries()
+    {
+        $from = Carbon::parse($this->journalEntriesFrom);
+        $to = Carbon::parse($this->journalEntriesTo);
+        $res = JournalEntry::downloadJournalEntries($from, $to);
+        if ($res) {
+            $this->alert('success', 'Journal entries downloaded!');
+            return $res;
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function showDownloadJournalEntriesForm()
+    {
+        $this->isOpenJournalEntries = true;
+    }
+
+    public function hideDownloadJournalEntriesForm()
+    {
+        $this->isOpenJournalEntries = false;
     }
 
     public function downloadCashReceipt($id)

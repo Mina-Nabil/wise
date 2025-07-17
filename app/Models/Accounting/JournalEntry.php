@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class JournalEntry extends Model
@@ -355,6 +356,168 @@ class JournalEntry extends Model
             ->limit(1)
             ->first();
         return $latestCashEntry ? $latestCashEntry->accounts()->where('accounts.id', self::CASH_ID)->first()->pivot->account_balance : 0;
+    }
+
+    /**
+     * Download journal entries with account hierarchy
+     * @param Carbon $from Start date
+     * @param Carbon $to End date
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public static function downloadJournalEntries(Carbon $from, Carbon $to)
+    {
+        $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
+        if (!$template) {
+            throw new Exception('Failed to read template file');
+        }
+        $newFile = $template->copy();
+        $activeSheet = $newFile->getSheet(0);
+
+        // Set headers
+        $activeSheet->setCellValue('A1', 'Transaction ID');
+        $activeSheet->setCellValue('B1', 'Date');
+        $activeSheet->setCellValue('C1', 'Time');
+        $activeSheet->setCellValue('D1', 'Main Account Code');
+        $activeSheet->setCellValue('E1', 'Main Account Name');
+        $activeSheet->setCellValue('F1', 'GL Account Code');
+        $activeSheet->setCellValue('G1', 'GL Account Name');
+        $activeSheet->setCellValue('H1', 'Account');
+        $activeSheet->setCellValue('I1', 'Sub Account');
+        $activeSheet->setCellValue('J1', 'Sub Account');
+        $activeSheet->setCellValue('K1', 'Debit');
+        $activeSheet->setCellValue('L1', 'Credit');
+        $activeSheet->setCellValue('M1', 'Transaction Description');
+        $activeSheet->setCellValue('N1', 'User ID');
+        $activeSheet->setCellValue('O1', 'Approved');
+
+        // Style headers
+        $activeSheet->getStyle('A1:O1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:O1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:O1')->getFill()->getStartColor()->setARGB('FFFFFF00'); // Yellow background
+
+        // Get journal entries with accounts
+        $entries = self::between($from, $to)
+            ->with(['accounts.parent_account', 'accounts.parent_account.parent_account', 'accounts.parent_account.parent_account.parent_account', 'creator', 'entry_title'])
+            ->orderBy('created_at')
+            ->get();
+
+        $row = 2;
+        foreach ($entries as $entry) {
+            foreach ($entry->accounts as $accountEntry) {
+                $account = $accountEntry->pivot;
+                
+                // Get account hierarchy
+                $hierarchy = self::getAccountHierarchy($accountEntry);
+                
+                // Set transaction details
+                $activeSheet->setCellValue('A' . $row, $entry->id . ' / #' . $entry->day_serial);
+                $activeSheet->setCellValue('B' . $row, Carbon::parse($entry->created_at)->format('d/m/Y'));
+                $activeSheet->setCellValue('C' . $row, Carbon::parse($entry->created_at)->format('h:i:s A'));
+                $activeSheet->setCellValue('M' . $row, $entry->comment);
+                $activeSheet->setCellValue('N' . $row, $entry->creator->username ?? '');
+                $activeSheet->setCellValue('O' . $row, ucfirst($account->nature));
+
+                // Set account hierarchy columns
+                $activeSheet->setCellValue('D' . $row, $hierarchy['main_code'] ?? '');
+                $activeSheet->setCellValue('E' . $row, $hierarchy['main_name'] ?? '');
+                $activeSheet->setCellValue('F' . $row, $hierarchy['gl_code'] ?? '');
+                $activeSheet->setCellValue('G' . $row, $hierarchy['gl_name'] ?? '');
+                $activeSheet->setCellValue('H' . $row, $hierarchy['account_name'] ?? '');
+                $activeSheet->setCellValue('I' . $row, $hierarchy['sub_code'] ?? '');
+                $activeSheet->setCellValue('J' . $row, $hierarchy['sub_name'] ?? '');
+
+                // Set debit/credit amounts
+                if ($account->nature == 'debit') {
+                    $activeSheet->setCellValue('K' . $row, number_format($account->amount, 2));
+                    $activeSheet->setCellValue('L' . $row, '');
+                } else {
+                    $activeSheet->setCellValue('K' . $row, '');
+                    $activeSheet->setCellValue('L' . $row, number_format($account->amount, 2));
+                }
+
+                $row++;
+            }
+        }
+
+        $writer = new Xlsx($newFile);
+        $file_path = SoldPolicy::FILES_DIRECTORY . "journal_entries.xlsx";
+        $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Get account hierarchy for export
+     * @param Account $account
+     * @return array
+     */
+    private static function getAccountHierarchy($account)
+    {
+        $hierarchy = [
+            'main_code' => '',
+            'main_name' => '',
+            'gl_code' => '',
+            'gl_name' => '',
+            'account_name' => '',
+            'sub_code' => '',
+            'sub_name' => ''
+        ];
+
+        // Load the account with its relationships
+        $account->load(['parent_account', 'parent_account.parent_account', 'parent_account.parent_account.parent_account']);
+
+        // Get the hierarchy levels (only Account objects)
+        $levels = [];
+        $currentAccount = $account;
+
+        // Build hierarchy from bottom up (only Account objects)
+        while ($currentAccount) {
+            array_unshift($levels, $currentAccount);
+            $currentAccount = $currentAccount->parent_account;
+        }
+
+        // Map hierarchy to columns based on the requirements
+        // Column D: Main Account (top-level account in the tree)
+        // Column F: First parent (if exists)
+        // Column H: Second parent (if exists) 
+        // Column J: Final account (if exists)
+
+        if (count($levels) >= 1) {
+            // Account with no parents - it is the main account
+            $hierarchy['main_code'] = $levels[0]->code ?? '';
+            $hierarchy['main_name'] = $levels[0]->name ?? '';
+        }
+
+        if (count($levels) >= 2) {
+            // Account with one parent
+            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
+            $hierarchy['main_name'] = $levels[0]->name ?? '';
+            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Account itself
+            $hierarchy['gl_name'] = $levels[1]->name ?? '';
+        }
+
+        if (count($levels) >= 3) {
+            // Account with two parents
+            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
+            $hierarchy['main_name'] = $levels[0]->name ?? '';
+            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Second parent
+            $hierarchy['gl_name'] = $levels[1]->name ?? '';
+            $hierarchy['account_name'] = $levels[2]->name ?? ''; // Account itself
+        }
+
+        if (count($levels) >= 4) {
+            // Account with three or more parents
+            $hierarchy['main_code'] = $levels[0]->code ?? ''; // First parent is the main account
+            $hierarchy['main_name'] = $levels[0]->name ?? '';
+            $hierarchy['gl_code'] = $levels[1]->code ?? ''; // Second parent
+            $hierarchy['gl_name'] = $levels[1]->name ?? '';
+            $hierarchy['account_name'] = $levels[2]->name ?? ''; // Third parent
+            $hierarchy['sub_code'] = $levels[3]->code ?? ''; // Account itself
+            $hierarchy['sub_name'] = $levels[3]->name ?? '';
+        }
+
+        return $hierarchy;
     }
 
     ///scopes
