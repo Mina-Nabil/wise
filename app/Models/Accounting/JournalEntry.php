@@ -427,11 +427,11 @@ class JournalEntry extends Model
 
                 // Set debit/credit amounts
                 if ($account->nature == 'debit') {
-                    $activeSheet->setCellValue('K' . $row, number_format($account->amount, 2));
-                    $activeSheet->setCellValue('L' . $row, '');
-                } else {
-                    $activeSheet->setCellValue('K' . $row, '');
                     $activeSheet->setCellValue('L' . $row, number_format($account->amount, 2));
+                    $activeSheet->setCellValue('M' . $row, '');
+                } else {
+                    $activeSheet->setCellValue('L' . $row, '');
+                    $activeSheet->setCellValue('M' . $row, number_format($account->amount, 2));
                 }
 
                 $row++;
