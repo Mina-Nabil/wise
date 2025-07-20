@@ -41,7 +41,7 @@ class Account extends Model
         'foreign_balance',
         'default_currency',
         'is_show_dashboard',
-        'full_code',
+        'saved_full_code',
     ];
 
     const NATURE_CREDIT = 'credit';
