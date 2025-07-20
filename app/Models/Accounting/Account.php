@@ -378,7 +378,7 @@ class Account extends Model
         }
 
         // Add account to spreadsheet
-        $activeSheet->setCellValue('A' . $row, $account->getFullCode());
+        $activeSheet->setCellValue('A' . $row, $account->full_code);
         $activeSheet->setCellValue('B' . $row, $accountName);
         $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
         $activeSheet->setCellValue('D' . $row, $debitAmount);
