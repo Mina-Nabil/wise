@@ -119,6 +119,10 @@ class SoldPolicy extends Model
     ///model functions
     public function generateRenewalOffer(Carbon $due, string $in_favor_to = null)
     {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('generateRenewalOffer', $this)) return false;
+
         $newOffer = Offer::newOffer(
             client: $this->client,
             type: $this->policy->business,

@@ -179,4 +179,9 @@ class SoldPolicyPolicy
     {
         return true;
     }
+
+    public function generateRenewalOffer(User $user, SoldPolicy $soldPolicy)
+    {
+        return $user->is_admin || $user->is_operations || $user->id == 12;
+    }
 }

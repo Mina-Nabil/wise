@@ -149,12 +149,14 @@
                                 dark:hover:text-white cursor-pointer">
                             Edit</a>
                     </li>
+                    @can('generateRenewalOffer', $soldPolicy)
                     <li>
                         <a wire:click="toggleGenerateRenewalOfferSec"
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                 dark:hover:text-white cursor-pointer">
                             Generate Renewal Offer</a>
                     </li>
+                    @endcan
                     <li>
                         <a wire:click="generatePolicyCommission"
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
