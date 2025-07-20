@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('accounts', function (Blueprint $table) {
-            $table->string('full_code')->nullable();
+            $table->string('saved_full_code')->nullable();
         });
     }
 

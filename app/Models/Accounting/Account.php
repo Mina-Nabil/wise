@@ -485,14 +485,6 @@ class Account extends Model
     }
 
     ///attributes
-    public function getFullCode($force_calc = false)
-    {
-        if ($this->full_code && !$force_calc) {
-            return $this->full_code;
-        }
-        return $this->getFullCodeAttribute();
-    }
-
     public function getFullCodeAttribute()
     {
         $this->loadMissing('parent_account');
@@ -503,8 +495,8 @@ class Account extends Model
         } else {
             $full_code = $this->parent_account->full_code . '-' . $this->code;
         }
-        if ($this->full_code != $full_code) {
-            $this->update(['full_code' => $full_code]);
+        if ($this->saved_full_code != $full_code) {
+            $this->update(['saved_full_code' => $full_code]);
         }
         return $full_code;
     }
