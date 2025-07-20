@@ -41,6 +41,7 @@ class Account extends Model
         'foreign_balance',
         'default_currency',
         'is_show_dashboard',
+        'full_code',
     ];
 
     const NATURE_CREDIT = 'credit';
@@ -280,7 +281,7 @@ class Account extends Model
             // Create new spreadsheet
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $activeSheet = $spreadsheet->getActiveSheet();
-            
+
             // Set headers
             $activeSheet->setCellValue('A1', 'Account Code');
             $activeSheet->setCellValue('B1', 'Account Name');
@@ -289,68 +290,67 @@ class Account extends Model
             $activeSheet->setCellValue('E1', 'Credit');
             $activeSheet->setCellValue('F1', 'Debit Foreign');
             $activeSheet->setCellValue('G1', 'Credit Foreign');
-            
+
             // Style headers
             $activeSheet->getStyle('A1:G1')->getFont()->setBold(true);
             $activeSheet->getStyle('A1:G1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
             $activeSheet->getStyle('A1:G1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
-            
+
             // Get all accounts with their relationships
             $accounts = self::with(['main_account', 'parent_account', 'children_accounts'])
                 ->orderByCode()
                 ->get();
-            
+
             // Get parent accounts (accounts with no parent)
             $parentAccounts = $accounts->whereNull('parent_account_id');
-            
+
             $row = 2;
             $processedAccounts = [];
-            
+
             // Process each parent account and its children
             foreach ($parentAccounts as $parentAccount) {
                 $row = self::addAccountToExport($activeSheet, $parentAccount, $row, $processedAccounts, $accounts, 0);
             }
-            
+
             // Auto-size columns
             foreach (range('A', 'E') as $col) {
                 $activeSheet->getColumnDimension($col)->setAutoSize(true);
             }
-            
+
             // Create writer and save file
             $writer = new Xlsx($spreadsheet);
             $filename = 'accounts_with_balances_' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx';
             $file_path = SoldPolicy::FILES_DIRECTORY . $filename;
             $public_file_path = storage_path($file_path);
-            
+
             // Ensure directory exists
             if (!file_exists(dirname($public_file_path))) {
                 mkdir(dirname($public_file_path), 0755, true);
             }
-            
+
             $writer->save($public_file_path);
-            
+
             return response()->download($public_file_path)->deleteFileAfterSend(true);
-            
         } catch (Exception $e) {
             report($e);
             return false;
         }
     }
-    
+
     private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0)
     {
         // Skip if already processed
         if (in_array($account->id, $processedAccounts)) {
             return $row;
         }
-        
+
         // Mark as processed
         $processedAccounts[] = $account->id;
-        
+
         // Add indent to account name for visual hierarchy
         $indent = str_repeat('  ', $indentLevel);
         $accountName = $indent . $account->name;
-        
+
         // Calculate balance placement based on nature and sign
         $totalBalance = $account->total_balance;
         $debitAmount = '';
@@ -376,29 +376,29 @@ class Account extends Model
                 }
             }
         }
-        
+
         // Add account to spreadsheet
-        $activeSheet->setCellValue('A' . $row, $account->full_code);
+        $activeSheet->setCellValue('A' . $row, $account->getFullCode());
         $activeSheet->setCellValue('B' . $row, $accountName);
         $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
         $activeSheet->setCellValue('D' . $row, $debitAmount);
         $activeSheet->setCellValue('E' . $row, $creditAmount);
         $activeSheet->setCellValue('F' . $row, $debitForeignAmount);
         $activeSheet->setCellValue('G' . $row, $creditForeignAmount);
-        
+
         // Style parent accounts differently
         if ($indentLevel == 0) {
             $activeSheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
         }
-        
+
         $row++;
-        
+
         // Process children recursively
         $children = $allAccounts->where('parent_account_id', $account->id);
         foreach ($children as $child) {
             $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1);
         }
-        
+
         return $row;
     }
 
@@ -485,16 +485,27 @@ class Account extends Model
     }
 
     ///attributes
+    public function getFullCode($force_calc = false)
+    {
+        if ($this->full_code && !$force_calc) {
+            return $this->full_code;
+        }
+        return $this->getFullCodeAttribute();
+    }
+
     public function getFullCodeAttribute()
     {
         $this->loadMissing('parent_account');
         $this->loadMissing('main_account');
-
         if (!$this->parent_account) {
-            return $this->main_account->code . '-' . $this->code;
+            $full_code = $this->main_account->code . '-' . $this->code;
         } else {
-            return $this->parent_account->full_code . '-' . $this->code;
+            $full_code = $this->parent_account->full_code . '-' . $this->code;
         }
+        if ($this->full_code != $full_code) {
+            $this->update(['full_code' => $full_code]);
+        }
+        return $full_code;
     }
 
     public function getTotalBalanceAttribute()
