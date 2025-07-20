@@ -87,8 +87,8 @@
                                 data-bs-target="#tabs-messages-withIcon" role="tab"
                                 aria-controls="tabs-messages-withIcon" aria-selected="false">
                                 <iconify-icon class="mr-1" icon="material-symbols:payments"></iconify-icon>
-                                    Payments</a>
-                            </li>
+                                Payments</a>
+                        </li>
 
                         <li class="nav-item" role="presentation" wire:click="changeSection('cars')">
                             <a href="#tabs-messages-withIcon"
@@ -1704,18 +1704,19 @@
                                                         @endif
                                                     </td>
 
-                                                    @can('update', $payment)
-                                                        <td class="table-td">
-                                                            <div class="dropstart relative">
-                                                                <button class="inline-flex justify-center items-center"
-                                                                    type="button" data-bs-toggle="dropdown"
-                                                                    aria-expanded="false">
-                                                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
-                                                                        icon="heroicons-outline:dots-vertical"></iconify-icon>
-                                                                </button>
-                                                                <ul
-                                                                    class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
-                                                                    @if ($payment->is_new || is_Null($payment->status))
+
+                                                    <td class="table-td">
+                                                        <div class="dropstart relative">
+                                                            <button class="inline-flex justify-center items-center"
+                                                                type="button" data-bs-toggle="dropdown"
+                                                                aria-expanded="false">
+                                                                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
+                                                                    icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                            </button>
+                                                            <ul
+                                                                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                @if ($payment->is_new || is_Null($payment->status))
+                                                                    @can('update', $payment)
                                                                         <li>
                                                                             <a wire:click="openEditPaymentSec({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
@@ -1723,6 +1724,8 @@
                                                                                     icon="material-symbols:paid"></iconify-icon>
                                                                                 <span>Edit</span></a>
                                                                         </li>
+                                                                    @endcan
+                                                                    @can('collect', $payment)
                                                                         <li>
                                                                             <a wire:click="openSetPaymentCollectedSec({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
@@ -1730,20 +1733,22 @@
                                                                                     icon="material-symbols:check"></iconify-icon>
                                                                                 <span>Set as collected</span></a>
                                                                         </li>
-                                                                        {{-- @can('pay', $payment)
+                                                                    @endcan
+                                                                    {{-- @can('pay', $payment)
                                                                         <li>
                                                                             <a wire:click="openSetPaymentPaidSec({{ $payment->id }})" class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                                 <iconify-icon icon="material-symbols:paid"></iconify-icon>
                                                                                 <span>Set as paid</span></a>
                                                                         </li>
                                                                         @endcan --}}
-                                                                        {{-- <li>
+                                                                    {{-- <li>
                                                                             <a wire:click="setPaymentCancelled({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
                                                                                 <iconify-icon
                                                                                     icon="line-md:cancel"></iconify-icon>
                                                                                 <span>Set as Cancelled</span></a>
                                                                         </li> --}}
+                                                                    @can('update', $payment)
                                                                         <li>
                                                                             <a wire:click="deleteClientPayment({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
@@ -1751,26 +1756,28 @@
                                                                                     icon="line-md:cancel"></iconify-icon>
                                                                                 <span>Delete Payment</span></a>
                                                                         </li>
-                                                                    @elseif($payment->is_collected)
-                                                                        @can('pay', $payment)
-                                                                            <li>
-                                                                                <a wire:click="setClientPaymentAsNew({{ $payment->id }})"
-                                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                    <iconify-icon
-                                                                                        icon="material-symbols:paid"></iconify-icon>
-                                                                                    <span>Set as new</span></a>
-                                                                            </li>
-                                                                            <li>
-                                                                                <a wire:click="openSetPaymentPaidSec({{ $payment->id }})"
-                                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                    <iconify-icon
-                                                                                        icon="material-symbols:paid"></iconify-icon>
-                                                                                    <span>Set as paid</span></a>
-                                                                            </li>
-                                                                        @endcan
-                                                                    @endif
+                                                                    @endcan
+                                                                @elseif($payment->is_collected)
+                                                                    @can('pay', $payment)
+                                                                        <li>
+                                                                            <a wire:click="setClientPaymentAsNew({{ $payment->id }})"
+                                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon
+                                                                                    icon="material-symbols:paid"></iconify-icon>
+                                                                                <span>Set as new</span></a>
+                                                                        </li>
+                                                                        <li>
+                                                                            <a wire:click="openSetPaymentPaidSec({{ $payment->id }})"
+                                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                                <iconify-icon
+                                                                                    icon="material-symbols:paid"></iconify-icon>
+                                                                                <span>Set as paid</span></a>
+                                                                        </li>
+                                                                    @endcan
+                                                                @endif
 
-                                                                    @if ($payment->doc_url)
+                                                                @if ($payment->doc_url)
+                                                                    @can('update', $payment)
                                                                         <li>
                                                                             <a wire:click="ConfirmRemovePaymentDoc({{ $payment->id }})"
                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
@@ -1779,7 +1786,9 @@
                                                                                 <span>Remove document</span>
                                                                             </a>
                                                                         </li>
-                                                                    @else
+                                                                    @endcan
+                                                                @else
+                                                                    @can('update', $payment)
                                                                         <li>
                                                                             <label for="paymentDoc"
                                                                                 wire:click="setPaymentDoc({{ $payment->id }})"
@@ -1791,11 +1800,12 @@
                                                                                 name="paymentDoc" style="display: none;"
                                                                                 wire:model="paymentDoc">
                                                                         </li>
-                                                                    @endif
-                                                                </ul>
-                                                            </div>
-                                                        </td>
-                                                    @endcan
+                                                                    @endcan
+                                                                @endif
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+
                                                 </tr>
                                             @endforeach
 
@@ -2986,7 +2996,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                            11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4133,7 +4143,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4251,7 +4261,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4481,7 +4491,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4614,7 +4624,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>
@@ -4705,7 +4715,7 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
-                                                                                                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <span class="sr-only">Close modal</span>

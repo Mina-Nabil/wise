@@ -280,7 +280,7 @@ class ClientPayment extends Model
     {
         /** @var User */
         $user = Auth::user();
-        if (!$user->can('update', $this)) return false;
+        if (!$user->can('collect', $this)) return false;
 
         if ($this->is_new || is_null($this->status)) {
             try {
