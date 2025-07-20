@@ -497,6 +497,7 @@ class Account extends Model
     {
         $this->loadMissing('parent_account');
         $this->loadMissing('main_account');
+        $full_code = '';
         if (!$this->parent_account) {
             $full_code = $this->main_account->code . '-' . $this->code;
         } else {
