@@ -33,6 +33,9 @@
                                 <tr>
 
                                     <th scope="col" class=" table-th ">
+                                        #
+                                    </th>
+                                    <th scope="col" class=" table-th ">
                                         Name
                                     </th>
 
@@ -71,6 +74,12 @@
 
                                 @foreach ($users as $user)
                                     <tr>
+
+
+                                        <td class="table-td">
+                                            {{ $user->id }}
+                                        </td>
+
 
                                         <td class="table-td flex items-center">
                                             <div class="rounded-full flex-shrink-0 ltr:mr-[10px] rtl:ml-[10px]">
