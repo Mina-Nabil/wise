@@ -6,7 +6,7 @@
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
-            @if (Auth::user()->is_admin)
+            @if (Auth::user()->is_admin || Auth::user()->is_finance)
                 <button wire:click="exportReport" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
                     <span wire:loading.remove wire:target="exportReport">Export</span>
                     <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
