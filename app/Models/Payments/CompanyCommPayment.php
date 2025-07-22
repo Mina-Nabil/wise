@@ -288,7 +288,7 @@ class CompanyCommPayment extends Model
         }
 
         $writer = new Xlsx($spreadsheet);
-        $file_path = 'exports/company_comm_payments_export.xlsx';
+        $file_path = 'company_comm_payments_export.xlsx';
         $public_file_path = storage_path('app/' . $file_path);
         $writer->save($public_file_path);
 
