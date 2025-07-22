@@ -241,6 +241,9 @@
                                         <th scope="col" class="table-th">
                                             Insurance Company
                                         </th>
+                                        <th scope="col" class="table-th">
+                                            Invoice#
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y cursor-pointer divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -267,7 +270,7 @@
                                             </td>
 
                                             <td class="table-td">
-                                                <p><b>{{ number_format($payment->amount, 2, '.', ',') }} EGP</b></p>
+                                                <p><b>{{ number_format($payment->amount / 0.95, 2, '.', ',') }} EGP</b></p>
                                             </td>
 
                                             <td class="table-td">
@@ -297,6 +300,10 @@
 
                                             <td class="table-td">
                                                 {{ $payment->sold_policy->policy->company->name ?? 'N/A' }}
+                                            </td>
+
+                                            <td class="table-td">
+                                                {{ $payment->invoice?->serial ?? 'N/A' }}
                                             </td>
                                         </tr>
                                     @endforeach
