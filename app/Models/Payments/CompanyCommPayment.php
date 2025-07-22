@@ -147,7 +147,7 @@ class CompanyCommPayment extends Model
             $user = Auth::user();
             if (!$user->can('update', $this)) return false;
         }
-        
+
         if (!$this->is_new) return false;
         try {
             $date = $date ?? new Carbon();
@@ -234,14 +234,14 @@ class CompanyCommPayment extends Model
 
         $spreadsheet = new Spreadsheet();
         $activeSheet = $spreadsheet->getActiveSheet();
-        
+
         // Set worksheet title
         $activeSheet->setTitle('Company Commission Payments');
 
         // Set headers
         $headers = [
             'A1' => 'Payment Date',
-            'B1' => 'Invoice ID', 
+            'B1' => 'Invoice ID',
             'C1' => 'Policy Number',
             'D1' => 'Client Name',
             'E1' => 'Policy Start Date',
@@ -260,7 +260,7 @@ class CompanyCommPayment extends Model
         $activeSheet->getStyle('A1:J1')->getFont()->setBold(true);
         $activeSheet->getStyle('A1:J1')->getFill()->setFillType(Fill::FILL_SOLID);
         $activeSheet->getStyle('A1:J1')->getFill()->getStartColor()->setARGB('FFD3D3D3');
-        
+
         // Auto-size columns
         foreach (range('A', 'J') as $columnID) {
             $activeSheet->getColumnDimension($columnID)->setAutoSize(true);
@@ -356,7 +356,12 @@ class CompanyCommPayment extends Model
             })
             ->when($selectedCompany, fn($q) => $q->where('insurance_companies.id', $selectedCompany->id))
             ->when($searchText, function ($q, $s) {
-                $q->where('sold_policies.policy_number', 'LIKE', "%$s%");
+                $q->where(function ($q) use ($s) {
+                    $q->where('sold_policies.policy_number', 'LIKE', "%$s%")
+                        ->orWhereHas('invoice', function ($q) use ($s) {
+                            $q->where('serial', 'LIKE', "%$s%");
+                        });
+                });
             })
             ->when($filteredStatus && count($filteredStatus), function ($q) use ($filteredStatus) {
                 $q->whereIn('company_comm_payments.status', $filteredStatus);
