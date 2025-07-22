@@ -240,16 +240,15 @@ class CompanyCommPayment extends Model
 
         // Set headers
         $headers = [
-            'A1' => 'Payment Date',
-            'B1' => 'Invoice ID',
-            'C1' => 'Policy Number',
-            'D1' => 'Client Name',
-            'E1' => 'Policy Start Date',
-            'F1' => 'Payment Permission Date',
-            'G1' => 'T4 Tax',
-            'H1' => 'Gross Amount',
-            'I1' => 'Net Amount',
-            'J1' => 'Insurance Company'
+            'A1' => 'Policy#',
+            'B1' => 'Client',
+            'C1' => 'Issue Date',
+            'D1' => 'Payment Date',
+            'E1' => 'Amount',
+            'F1' => 'Status',
+            'G1' => 'Type',
+            'H1' => 'Insurance Company',
+            'I1' => 'Invoice#'
         ];
 
         foreach ($headers as $cell => $header) {
@@ -257,34 +256,33 @@ class CompanyCommPayment extends Model
         }
 
         // Style headers
-        $activeSheet->getStyle('A1:J1')->getFont()->setBold(true);
-        $activeSheet->getStyle('A1:J1')->getFill()->setFillType(Fill::FILL_SOLID);
-        $activeSheet->getStyle('A1:J1')->getFill()->getStartColor()->setARGB('FFD3D3D3');
+        $activeSheet->getStyle('A1:I1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:I1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:I1')->getFill()->getStartColor()->setARGB('FFD3D3D3');
 
         // Auto-size columns
-        foreach (range('A', 'J') as $columnID) {
+        foreach (range('A', 'I') as $columnID) {
             $activeSheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
         $i = 2;
         /** @var CompanyCommPayment $payment */
         foreach ($payments as $payment) {
-            $activeSheet->getCell('A' . $i)->setValue($payment->payment_date ? Carbon::parse($payment->payment_date)->format('d-m-Y') : '');
-            $activeSheet->getCell('B' . $i)->setValue($payment->invoice_id ?? '');
-            $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy ? $payment->sold_policy->policy_number : '');
-            $activeSheet->getCell('D' . $i)->setValue($payment->sold_policy && $payment->sold_policy->client ? ($payment->sold_policy->client->full_name ?? $payment->sold_policy->client->name ?? '') : '');
-            $activeSheet->getCell('E' . $i)->setValue($payment->sold_policy && $payment->sold_policy->start ? Carbon::parse($payment->sold_policy->start)->format('d-m-Y') : '');
-            $activeSheet->getCell('F' . $i)->setValue(isset($payment->pymnt_perm) && $payment->pymnt_perm ? Carbon::parse($payment->pymnt_perm)->format('d-m-Y') : '');
-            $activeSheet->getCell('G' . $i)->setValue(0); // T4 Tax placeholder
-            $activeSheet->getCell('H' . $i)->setValue($payment->amount ?? 0);
-            $activeSheet->getCell('I' . $i)->setValue($payment->amount ?? 0); // Net amount (assuming same as amount)
-            $activeSheet->getCell('J' . $i)->setValue($payment->sold_policy && $payment->sold_policy->policy && $payment->sold_policy->policy->company ? $payment->sold_policy->policy->company->name : '');
+            $activeSheet->getCell('A' . $i)->setValue($payment->sold_policy ? $payment->sold_policy->policy_number : '');
+            $activeSheet->getCell('B' . $i)->setValue($payment->sold_policy && $payment->sold_policy->client ? ($payment->sold_policy->client->full_name ?? $payment->sold_policy->client->name ?? 'N/A') : 'N/A');
+            $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy && $payment->sold_policy->created_at ? Carbon::parse($payment->sold_policy->created_at)->format('d/m/Y') : '');
+            $activeSheet->getCell('D' . $i)->setValue($payment->payment_date ? Carbon::parse($payment->payment_date)->format('d/m/Y') : 'N/A');
+            $activeSheet->getCell('E' . $i)->setValue(number_format($payment->amount / 0.95, 2, '.', ',') . ' EGP');
+            $activeSheet->getCell('F' . $i)->setValue(ucfirst($payment->status));
+            $activeSheet->getCell('G' . $i)->setValue(ucwords(str_replace('_', ' ', $payment->type)));
+            $activeSheet->getCell('H' . $i)->setValue($payment->sold_policy && $payment->sold_policy->policy && $payment->sold_policy->policy->company ? $payment->sold_policy->policy->company->name : 'N/A');
+            $activeSheet->getCell('I' . $i)->setValue($payment->invoice && $payment->invoice->serial ? $payment->invoice->serial : 'N/A');
             $i++;
         }
 
         // Add borders to data table
         if ($i > 2) {
-            $activeSheet->getStyle('A1:J' . ($i - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $activeSheet->getStyle('A1:I' . ($i - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
         }
 
         $writer = new Xlsx($spreadsheet);
@@ -326,6 +324,10 @@ class CompanyCommPayment extends Model
                     ->where('sold_policies.client_type', '=', \App\Models\Customers\Customer::MORPH_TYPE);
             })
             ->leftJoin('insurance_companies', 'insurance_companies.id', '=', 'policies.company_id')
+            ->whereNot(function ($q) {
+                $q->where('company_comm_payments.status', '=', self::PYMT_STATE_CANCELLED)
+                    ->where('invoices.serial', '=', null);
+            })
             ->with('sold_policy.client', 'sold_policy.policy.company', 'sold_policy.creator', 'receiver')
             ->when($is_renewal, function ($q, $v) {
                 $q->where('offers.is_renewal', $v);
@@ -370,7 +372,7 @@ class CompanyCommPayment extends Model
                 $q->whereIn('company_comm_payments.type', $types);
             })
             ->when($sortColumn === 'payment_date', fn($q) => $q->orderBy('company_comm_payments.payment_date', $sortDirection))
-            ->when($sortColumn === 'start', fn($q) => $q->orderBy('sold_policies.start', $sortDirection))
+            ->when($sortColumn === 'created_at', fn($q) => $q->orderBy('sold_policies.created_at', $sortDirection))
             ->when($sortColumn === 'amount', fn($q) => $q->orderBy('company_comm_payments.amount', $sortDirection))
             ->groupBy('company_comm_payments.id');
 

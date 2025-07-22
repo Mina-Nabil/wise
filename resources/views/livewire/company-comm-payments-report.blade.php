@@ -195,8 +195,8 @@
                                         </th>
 
                                         <th scope="col" class="table-th cursor-pointer">
-                                            <span wire:click="sortByColumn('start')" class="clickable-header">Start
-                                                @if ($sortColumn === 'start')
+                                            <span wire:click="sortByColumn('created_at')" class="clickable-header">Issue Date
+                                                @if ($sortColumn === 'created_at')
                                                     @if ($sortDirection === 'asc')
                                                         <iconify-icon icon="fluent:arrow-up-12-filled"></iconify-icon>
                                                     @else
@@ -262,7 +262,7 @@
                             </td>
 
                                             <td class="table-td">
-                                                {{ \Carbon\Carbon::parse($payment->sold_policy->start)->format('d/m/Y') }}
+                                                {{ \Carbon\Carbon::parse($payment->sold_policy->created_at)->format('d/m/Y') }}
                                             </td>
 
                                             <td class="table-td">
