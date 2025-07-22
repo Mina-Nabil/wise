@@ -315,6 +315,7 @@ class CompanyCommPayment extends Model
             ->leftJoin('sold_policies', 'sold_policies.id', '=', 'company_comm_payments.sold_policy_id')
             ->leftJoin('policies', 'policies.id', '=', 'sold_policies.policy_id')
             ->leftJoin('offers', 'offers.id', '=', 'sold_policies.offer_id')
+            ->leftJoin('invoices', 'invoices.id', '=', 'company_comm_payments.invoice_id')
             ->leftJoin('corporates', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'corporates.id')
                     ->where('sold_policies.client_type', '=', \App\Models\Corporates\Corporate::MORPH_TYPE);
