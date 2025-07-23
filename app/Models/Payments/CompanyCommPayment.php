@@ -272,7 +272,7 @@ class CompanyCommPayment extends Model
             $activeSheet->getCell('B' . $i)->setValue($payment->sold_policy && $payment->sold_policy->client ? ($payment->sold_policy->client->full_name ?? $payment->sold_policy->client->name ?? 'N/A') : 'N/A');
             $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy && $payment->sold_policy->created_at ? Carbon::parse($payment->sold_policy->created_at)->format('d/m/Y') : '');
             $activeSheet->getCell('D' . $i)->setValue($payment->payment_date ? Carbon::parse($payment->payment_date)->format('d/m/Y') : 'N/A');
-            $activeSheet->getCell('E' . $i)->setValue(number_format($payment->amount / 0.95, 2, '.', ',') . ' EGP');
+            $activeSheet->getCell('E' . $i)->setValue(number_format($payment->amount / 0.95, 2, '.', ','));
             $activeSheet->getCell('F' . $i)->setValue(ucfirst($payment->status));
             $activeSheet->getCell('G' . $i)->setValue(ucwords(str_replace('_', ' ', $payment->type)));
             $activeSheet->getCell('H' . $i)->setValue($payment->sold_policy && $payment->sold_policy->policy && $payment->sold_policy->policy->company ? $payment->sold_policy->policy->company->name : 'N/A');
