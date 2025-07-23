@@ -349,7 +349,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (Auth::user()->is_admin || Auth::user()->is_finance)
+                        @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
                             <li>
                                 <a href="{{ url('/companies') }}" class="navItem @yield('companies')">
                                     <span class="flex items-center">
