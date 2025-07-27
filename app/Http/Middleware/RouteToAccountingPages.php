@@ -34,6 +34,7 @@ class RouteToAccountingPages
             && !str_starts_with($request->path(), 'outstanding-sold-policies')
             && !str_starts_with($request->path(), 'livewire')
             && !str_starts_with($request->path(), 'logout')
+            && !str_starts_with($request->path(), 'companies')
         )
             return redirect('/reports/client-payment-finance');
         return $next($request);
