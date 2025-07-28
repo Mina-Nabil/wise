@@ -58,7 +58,7 @@ class Invoice extends Model
                 foreach ($sold_policies_entries as $sp) {
                     /** @var SoldPolicy */
                     $soldPolicy = SoldPolicy::find($sp['id']);
-                    $soldPolicy->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $sp['amount'], "added automatically from invoice#$serial", $newInvoice->id, $sp['pymnt_perm']);
+                    $soldPolicy->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $sp['amount'], "added automatically from invoice#$serial", $newInvoice->id, $sp['pymnt_perm'], true);
                 }
                 InvoiceExtra::whereIn('id', $extras_ids)->update(['invoice_id' => $newInvoice->id]);
             });
