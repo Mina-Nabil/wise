@@ -380,11 +380,13 @@ class SoldPolicy extends Model
         }
     }
 
-    public function addCompanyPayment($type, $amount, $note = null, $invoice_id = null, $pymnt_perm = null)
+    public function addCompanyPayment($type, $amount, $note = null, $invoice_id = null, $pymnt_perm = null, $skip_user_check = false)
     {
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
+        if (!$skip_user_check) {
+            /** @var User */
+            $loggedInUser = Auth::user();
+            if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
+        }
 
         assert($amount <= ($this->after_tax_comm - $this->total_company_paid), "Amount is more that what the company should pay. Please make sure the amount is less than the total commission after tax plus the company payments total");
 
