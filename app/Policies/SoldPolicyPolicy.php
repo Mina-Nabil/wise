@@ -160,6 +160,7 @@ class SoldPolicyPolicy
      */
     public function updateClientPayments(User $user, SoldPolicy $soldPolicy)
     {
+        $soldPolicy->load('sales_comms');
         return $user->is_admin ||  $user->is_any_finance || $user->is_operations || $user->id == $soldPolicy->creator_id || $user->id == 12 || $user->id == $soldPolicy->main_sales_id || in_array($user->id, $soldPolicy->sales_comms->pluck('comm_profile.user_id')->toArray());
     }
 
