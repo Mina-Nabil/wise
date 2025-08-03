@@ -184,7 +184,8 @@
                     <div class="inline-block min-w-full align-middle">
                         <div class="overflow-hidden">
                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                <thead class="border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
+                                <thead
+                                    class="border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                     <tr>
                                         <th scope="col" class="table-th">
                                             Policy#
@@ -195,7 +196,8 @@
                                         </th>
 
                                         <th scope="col" class="table-th cursor-pointer">
-                                            <span wire:click="sortByColumn('created_at')" class="clickable-header">Issue Date
+                                            <span wire:click="sortByColumn('created_at')" class="clickable-header">Issue
+                                                Date
                                                 @if ($sortColumn === 'created_at')
                                                     @if ($sortDirection === 'asc')
                                                         <iconify-icon icon="fluent:arrow-up-12-filled"></iconify-icon>
@@ -207,7 +209,8 @@
                                         </th>
 
                                         <th scope="col" class="table-th cursor-pointer">
-                                            <span wire:click="sortByColumn('payment_date')" class="clickable-header">Payment Date
+                                            <span wire:click="sortByColumn('payment_date')"
+                                                class="clickable-header">Payment Date
                                                 @if ($sortColumn === 'payment_date')
                                                     @if ($sortDirection === 'asc')
                                                         <iconify-icon icon="fluent:arrow-up-12-filled"></iconify-icon>
@@ -231,6 +234,9 @@
                                         </th>
 
                                         <th scope="col" class="table-th">
+                                            Tax Amount
+                                        </th>
+                                        <th scope="col" class="table-th">
                                             Status
                                         </th>
 
@@ -246,20 +252,22 @@
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y cursor-pointer divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                <tbody
+                                    class="bg-white divide-y cursor-pointer divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                     @foreach ($payments as $payment)
                                         <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
                                             <td class="table-td">
                                                 <a href="{{ route('sold.policy.show', $payment->sold_policy->id) }}"
                                                     target="_blank"
                                                     class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                    <span class="block date-text">{{ $payment->sold_policy->policy_number }}</span>
+                                                    <span
+                                                        class="block date-text">{{ $payment->sold_policy->policy_number }}</span>
                                                 </a>
                                             </td>
 
-                                                                        <td class="table-td">
-                                {{ $payment->sold_policy->client->full_name ?? $payment->sold_policy->client->name ?? 'N/A' }}
-                            </td>
+                                            <td class="table-td">
+                                                {{ $payment->sold_policy->client->full_name ?? ($payment->sold_policy->client->name ?? 'N/A') }}
+                                            </td>
 
                                             <td class="table-td">
                                                 {{ \Carbon\Carbon::parse($payment->sold_policy->created_at)->format('d/m/Y') }}
@@ -270,30 +278,40 @@
                                             </td>
 
                                             <td class="table-td">
-                                                <p><b>{{ number_format($payment->amount / 0.95, 2, '.', ',') }} EGP</b></p>
+                                                <p><b>{{ number_format($payment->amount - $payment->tax_amount, 2, '.', ',') }}
+                                                        EGP</b></p>
+                                            </td>
+                                            <td class="table-td">
+                                                <p><b>{{ number_format($payment->tax_amount, 2, '.', ',') }} EGP</b>
+                                                </p>
                                             </td>
 
                                             <td class="table-td">
                                                 @if ($payment->status === 'new')
-                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
+                                                    <div
+                                                        class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-primary-500 bg-primary-500 text-xs">
                                                         New
                                                     </div>
                                                 @elseif($payment->status === 'paid')
-                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
+                                                    <div
+                                                        class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
                                                         Paid
                                                     </div>
                                                 @elseif($payment->status === 'cancelled')
-                                                    <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-danger-500 bg-danger-500 text-xs">
+                                                    <div
+                                                        class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-danger-500 bg-danger-500 text-xs">
                                                         Cancelled
                                                     </div>
                                                 @endif
                                                 @if ($payment->sold_policy->offer?->is_renewal)
-                                                    <span class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
+                                                    <span
+                                                        class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
                                                 @endif
                                             </td>
 
                                             <td class="table-td">
-                                                <span class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">
+                                                <span
+                                                    class="badge bg-primary-500 text-primary-500 bg-opacity-30 capitalize">
                                                     {{ ucwords(str_replace('_', ' ', $payment->type)) }}
                                                 </span>
                                             </td>
@@ -312,7 +330,8 @@
 
                             @if ($payments->isEmpty())
                                 <div class="text-center py-8">
-                                    <p class="text-slate-500 dark:text-slate-400">No company commission payments found.</p>
+                                    <p class="text-slate-500 dark:text-slate-400">No company commission payments found.
+                                    </p>
                                 </div>
                             @endif
                         </div>
@@ -330,11 +349,14 @@
     <!-- Filter Modals -->
     @if ($startSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Start date
                             </h3>
@@ -342,22 +364,28 @@
                                 class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                             </button>
                         </div>
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Estart_from" class="form-label">Start from</label>
-                                <input name="Estart_from" type="date" class="form-control mt-2 w-full" wire:model.defer="Estart_from">
+                                <input name="Estart_from" type="date" class="form-control mt-2 w-full"
+                                    wire:model.defer="Estart_from">
                             </div>
                             <div class="from-group">
                                 <label for="Estart_to" class="form-label">Start to</label>
-                                <input name="Estart_to" type="date" class="form-control mt-2 w-full" wire:model.defer="Estart_to">
+                                <input name="Estart_to" type="date" class="form-control mt-2 w-full"
+                                    wire:model.defer="Estart_to">
                             </div>
                         </div>
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setStartDates" class="btn inline-flex justify-center text-white bg-black-500">
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setStartDates"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -369,11 +397,14 @@
 
     @if ($paymentDateSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Payment date
                             </h3>
@@ -381,22 +412,28 @@
                                 class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                             </button>
                         </div>
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Epayment_date_from" class="form-label">Payment date from</label>
-                                <input name="Epayment_date_from" type="date" class="form-control mt-2 w-full" wire:model.defer="Epayment_date_from">
+                                <input name="Epayment_date_from" type="date" class="form-control mt-2 w-full"
+                                    wire:model.defer="Epayment_date_from">
                             </div>
                             <div class="from-group">
                                 <label for="Epayment_date_to" class="form-label">Payment date to</label>
-                                <input name="Epayment_date_to" type="date" class="form-control mt-2 w-full" wire:model.defer="Epayment_date_to">
+                                <input name="Epayment_date_to" type="date" class="form-control mt-2 w-full"
+                                    wire:model.defer="Epayment_date_to">
                             </div>
                         </div>
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setPaymentDates" class="btn inline-flex justify-center text-white bg-black-500">
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setPaymentDates"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -408,11 +445,14 @@
 
     @if ($statusesSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Statuses
                             </h3>
@@ -420,7 +460,9 @@
                                 class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                             </button>
                         </div>
@@ -435,8 +477,10 @@
                                 </div>
                             @endforeach
                         </div>
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setStatuses" class="btn inline-flex justify-center text-white bg-black-500">
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setStatuses"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -448,11 +492,14 @@
 
     @if ($typesSection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Payment Types
                             </h3>
@@ -460,7 +507,9 @@
                                 class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                             </button>
                         </div>
@@ -475,8 +524,10 @@
                                 </div>
                             @endforeach
                         </div>
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setTypes" class="btn inline-flex justify-center text-white bg-black-500">
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setTypes"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -488,11 +539,14 @@
 
     @if ($companySection)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 Insurance Company
                             </h3>
@@ -500,7 +554,9 @@
                                 class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
                             </button>
                         </div>
@@ -515,8 +571,10 @@
                                 </div>
                             @endforeach
                         </div>
-                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setCompanies" class="btn inline-flex justify-center text-white bg-black-500">
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setCompanies"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>
                         </div>
@@ -545,7 +603,9 @@
                                 data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd">
                                     </path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
@@ -611,7 +671,9 @@
                                 data-bs-dismiss="modal">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd">
                                     </path>
                                 </svg>
                                 <span class="sr-only">Close modal</span>
@@ -657,4 +719,4 @@
             </div>
         </div>
     @endif
-</div> 
+</div>

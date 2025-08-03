@@ -19,6 +19,7 @@ use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
 use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\CompanyCommPayment;
+use App\Models\Payments\Invoice;
 use App\Models\Payments\PolicyComm;
 use App\Models\Payments\SalesComm;
 use App\Models\Tasks\Task;
@@ -229,7 +230,8 @@ class SoldPolicy extends Model
                     $total_comm += $tmp_base_value;
                 }
                 $this->total_policy_comm = $total_comm;
-                $this->after_tax_comm = $this->total_policy_comm * .95;
+                $this->after_tax_comm = $this->total_policy_comm * (1 - Invoice::TAX_RATE);
+                $this->tax_amount = $this->total_policy_comm * Invoice::TAX_RATE;
                 $this->save();
             });
             return true;
@@ -420,7 +422,8 @@ class SoldPolicy extends Model
             $tmp += $comm->amount;
         }
         $this->total_policy_comm = $tmp;
-        $this->after_tax_comm = $this->total_policy_comm * .95;
+        $this->after_tax_comm = $this->total_policy_comm * (1 - Invoice::TAX_RATE);
+        $this->tax_amount = $this->total_policy_comm * Invoice::TAX_RATE;
 
         try {
             $this->save();
@@ -555,7 +558,8 @@ class SoldPolicy extends Model
 
             $this->update([
                 'total_policy_comm' => $amount,
-                'after_tax_comm' => $amount * .95,
+                'after_tax_comm' => $amount * (1 - Invoice::TAX_RATE),
+                'tax_amount' => $amount * Invoice::TAX_RATE,
                 'policy_comm_note' => $note
             ]);
             AppLog::info("Sold Policy commission edited", loggable: $this);
@@ -1250,8 +1254,8 @@ class SoldPolicy extends Model
             $activeSheet->getCell('I' . $i)->setValue($policy->after_tax_comm);
             $activeSheet->getCell('J' . $i)->setValue($policy->total_policy_comm);
             $activeSheet->getCell('K' . $i)->setValue($policy->total_comp_paid);
-            $activeSheet->getCell('L' . $i)->setValue($policy->total_comp_paid / 0.95);
-            $activeSheet->getCell('M' . $i)->setValue(($policy->after_tax_comm / 0.95) - ($policy->total_comp_paid / 0.95));
+            $activeSheet->getCell('L' . $i)->setValue($policy->total_comp_paid - $policy->tax_amount);
+            $activeSheet->getCell('M' . $i)->setValue(($policy->after_tax_comm - $policy->tax_amount) - ($policy->total_comp_paid - $policy->tax_amount));
             $activeSheet->getCell('N' . $i)->setValue($policy->last_company_comm_payment ? \Carbon\Carbon::parse($policy->last_company_comm_payment?->created_at)->format('d-m-Y') : 'N/A');
             $activeSheet->getCell('O' . $i)->setValue($policy->last_company_comm_payment?->invoice?->serial);
             $activeSheet->getCell('P' . $i)->setValue($policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A');
@@ -1297,8 +1301,8 @@ class SoldPolicy extends Model
                 $activeSheet->getCell('I' . $i)->setValue($policy->after_tax_comm);
                 $activeSheet->getCell('J' . $i)->setValue($policy->total_policy_comm);
                 $activeSheet->getCell('K' . $i)->setValue($policy->total_comp_paid);
-                $activeSheet->getCell('L' . $i)->setValue($policy->total_comp_paid / 0.95);
-                $activeSheet->getCell('M' . $i)->setValue(($policy->after_tax_comm / 0.95) - ($policy->total_comp_paid / 0.95));
+                $activeSheet->getCell('L' . $i)->setValue($policy->total_comp_paid - $policy->tax_amount);
+                $activeSheet->getCell('M' . $i)->setValue(($policy->after_tax_comm - $policy->tax_amount) - ($policy->total_comp_paid - $policy->tax_amount));
             }
 
             $i++;
@@ -1391,7 +1395,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('J' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $activeSheet->getCell('K' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('L' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) / 0.95, 2)); //total_policy_comm
+                $activeSheet->getCell('L' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) - $policy->totalTaxAmountBetween($issued_from, $issued_to), 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $activeSheet->getCell('M' . $i)->setValue($policy->editted ? "ملحق تعديل" : "");
@@ -1419,7 +1423,7 @@ class SoldPolicy extends Model
             $cancelledSheet->getCell('G' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $cancelledSheet->getCell('H' . $i)->setValue($policy->client->full_name);
             if ($user->can('viewCommission', self::class)) {
-                $cancelledSheet->getCell('J' . $i)->setValue($policy->is_duplicate ? 0 : round($policy->totalPaidBetween($issued_from, $issued_to), 2)); //total_policy_comm
+                $cancelledSheet->getCell('J' . $i)->setValue($policy->is_duplicate ? 0 : round($policy->totalPaidBetween($issued_from, $issued_to) - $policy->totalTaxBetween($issued_from, $issued_to), 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $i++;
@@ -1439,6 +1443,14 @@ class SoldPolicy extends Model
             ->whereBetween('payment_date', [$from, $to])
             ->where('status', 'Paid')
             ->sum('amount');
+    }
+
+    public function totalTaxBetween(Carbon $from, Carbon $to)
+    {
+        return $this->company_comm_payments()
+            ->whereBetween('payment_date', [$from, $to])
+            ->where('status', 'Paid')
+            ->sum('tax_amount');
     }
 
     public function totalClientPaidBetween(Carbon $from, Carbon $to)

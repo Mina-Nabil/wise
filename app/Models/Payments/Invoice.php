@@ -26,6 +26,9 @@ class Invoice extends Model
 {
     const FILES_DIRECTORY = 'comm_payments/';
     const MORPH_TYPE = 'invoice';
+
+    const TAX_RATE = 0;
+
     use HasFactory;
 
     protected $fillable = [
@@ -48,8 +51,8 @@ class Invoice extends Model
             "serial"        =>  $serial,
             "created_by"    =>  Auth::id(),
             "gross_total"   =>  $gross_total,
-            "tax_total"     => ($gross_total * .05),
-            "net_total"     => ($gross_total * .95),
+            "tax_total"     => ($gross_total * self::TAX_RATE),
+            "net_total"     => ($gross_total * (1 - self::TAX_RATE)),
         ]);
         try {
 
@@ -58,7 +61,7 @@ class Invoice extends Model
                 foreach ($sold_policies_entries as $sp) {
                     /** @var SoldPolicy */
                     $soldPolicy = SoldPolicy::find($sp['id']);
-                    $soldPolicy->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $sp['amount'], "added automatically from invoice#$serial", $newInvoice->id, $sp['pymnt_perm'], true);
+                    $soldPolicy->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $sp['amount'], "added automatically from invoice#$serial", $newInvoice->id, $sp['pymnt_perm'], true, $sp['amount'] * self::TAX_RATE);
                 }
                 InvoiceExtra::whereIn('id', $extras_ids)->update(['invoice_id' => $newInvoice->id]);
             });
@@ -228,8 +231,8 @@ class Invoice extends Model
             $activeSheet->getCell('F' . $i)->setValue((new Carbon($comm->sold_policy->issuing_date))->format('d-M-y'));
             $activeSheet->getCell('G' . $i)->setValue($comm->pymnt_perm);
             $activeSheet->getCell('O' . $i)->setValue('اذن صرف عمولة ' . $comm->pymnt_perm);
-            $activeSheet->getCell('I' . $i)->setValue($comm->amount / .95);
-            $activeSheet->getCell('J' . $i)->setValue(($comm->amount / .95) * .05);
+            $activeSheet->getCell('I' . $i)->setValue($comm->amount - $comm->tax_amount);
+            $activeSheet->getCell('J' . $i)->setValue($comm->tax_amount);
             $activeSheet->getCell('K' . $i)->setValue($comm->amount);
             $activeSheet->insertNewRowBefore($i);
         }
