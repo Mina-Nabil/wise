@@ -229,7 +229,8 @@ class SoldPolicy extends Model
                     ]);
                     $total_comm += $tmp_base_value;
                 }
-                $this->total_policy_comm = $total_comm;
+                $clientPaidPercent = $this->client_payments()->whereIn('status', [ClientPayment::PYMT_STATE_PAID, ClientPayment::PYMT_STATE_PREM_COLLECTED])->sum('amount') / $this->gross_premium;
+                $this->total_policy_comm = $total_comm * $clientPaidPercent;
                 $this->after_tax_comm = $this->total_policy_comm * (1 - Invoice::TAX_RATE);
                 $this->tax_amount = $this->total_policy_comm * Invoice::TAX_RATE;
                 $this->save();
