@@ -197,7 +197,7 @@ class SoldPolicy extends Model
         try {
             DB::transaction(function () {
                 $this->comms_details()->automatic()->delete();
-                $clientPaymentDate = new Carbon($this->client_payment_date);
+                $clientPaymentDate = $this->first_client_payment_date ?? $this->client_payment_date;
                 $issueDate = $this->created_at ? new Carbon($this->created_at) : null;
                 $policyStart = new Carbon($this->start);
                 $refDate = $issueDate ?  ($issueDate->max($policyStart)) : $policyStart;
@@ -1395,7 +1395,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('J' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $activeSheet->getCell('K' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('L' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) - $policy->totalTaxAmountBetween($issued_from, $issued_to), 2)); //total_policy_comm
+                $activeSheet->getCell('L' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) - $policy->totalTaxBetween($issued_from, $issued_to), 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $activeSheet->getCell('M' . $i)->setValue($policy->editted ? "ملحق تعديل" : "");
@@ -2438,6 +2438,15 @@ class SoldPolicy extends Model
             }
         }
         return "N/A";
+    }
+
+    public function getFirstClientPaymentDateAttribute()
+    {
+        return $this->client_payments()
+            ->where('status', ClientPayment::PYMT_STATE_PAID)
+            ->orderBy('payment_date', 'asc')
+            ->first()
+            ?->payment_date ?? null;
     }
 
     ///relations
