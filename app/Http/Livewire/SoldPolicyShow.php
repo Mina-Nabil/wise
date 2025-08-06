@@ -18,6 +18,7 @@ use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\CommProfileConf;
+use App\Models\Payments\Invoice;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
@@ -1711,6 +1712,7 @@ class SoldPolicyShow extends Component
             'linkedCommProfiles' => $linkedCommProfiles,
             'salesOuts' => $salesOuts,
             'DEL_TYPES' => $DEL_TYPES,
+            'taxRate' => Invoice::TAX_RATE,
         ]);
     }
 }
