@@ -61,7 +61,8 @@ class CommProfilePayment extends Model
         'creator_id',
         'target_date',
         'partial_paid',
-        'approver_id'
+        'approver_id',
+        'journal_entry_id'
     ];
 
     ///model functions

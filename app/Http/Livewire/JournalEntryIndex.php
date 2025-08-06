@@ -264,6 +264,18 @@ class JournalEntryIndex extends Component
         );
     }
 
+    public function downloadCommProfilePayment($id)
+    {
+        $entry = JournalEntry::with('comm_profile_payment')->findOrFail($id);
+        $res = $entry->comm_profile_payment->downloadPaymentDetails();
+        if ($res) {
+            $this->alert('success', 'Comm profile payment downloaded!');
+            return $res;
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
     public function openSelectAccountModel()
     {
         $this->isOpenFilterAccountModal = true;

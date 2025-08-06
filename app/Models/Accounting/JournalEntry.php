@@ -4,6 +4,7 @@ namespace App\Models\Accounting;
 
 use App\Helpers\Helpers;
 use App\Models\Business\SoldPolicy;
+use App\Models\Payments\CommProfilePayment;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use ArPHP\I18N\Arabic;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -624,6 +626,11 @@ class JournalEntry extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function comm_profile_payment(): HasOne
+    {
+        return $this->hasOne(CommProfilePayment::class, 'journal_entry_id');
     }
 
 }
