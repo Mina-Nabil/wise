@@ -152,6 +152,7 @@ class AccountIndex extends Component
             if ($result) {
                 $this->closeExportModal();
                 $this->alert('success', 'Export completed successfully');
+                return $result;
             } else {
                 $this->alert('failed', 'Export failed. Please try again.');
             }
