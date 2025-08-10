@@ -844,7 +844,7 @@ class SoldPolicy extends Model
     public function addEndorsement($due = null, $desc = null, $actions = [])
     {
 
-        $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement - " . $this->client->name, $desc, $due);
+        $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement - " . $this->client?->name, $desc, $due);
         if (!$newEndors) return false;
         $this->sendPolicyNotifications("Policy#$this->id endorsement added", Auth::user()->username . " added a endorsement");
         foreach ($actions as $a) {
@@ -856,7 +856,7 @@ class SoldPolicy extends Model
     public function addClaim($due = null, $desc = null, $fields = [])
     {
 
-        $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim - " . $this->client->name, $desc, $due);
+        $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim - " . $this->client?->name, $desc, $due);
         if (!$newTask) return false;
         $this->sendPolicyNotifications("Policy#$this->id claim added", Auth::user()->username . " added a claim");
 
@@ -1251,7 +1251,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('E' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
             $activeSheet->getCell('G' . $i)->setValue($policy->policy_number);
-            $activeSheet->getCell('H' . $i)->setValue($policy->client->name);
+            $activeSheet->getCell('H' . $i)->setValue($policy->client?->name);
             $activeSheet->getCell('I' . $i)->setValue($policy->after_tax_comm);
             $activeSheet->getCell('J' . $i)->setValue($policy->total_policy_comm);
             $activeSheet->getCell('K' . $i)->setValue($policy->total_comp_paid);
@@ -1295,7 +1295,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('C' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
             $activeSheet->getCell('E' . $i)->setValue($policy->policy_number);
-            $activeSheet->getCell('F' . $i)->setValue($policy->client->name);
+            $activeSheet->getCell('F' . $i)->setValue($policy->client?->name);
             $activeSheet->getCell('G' . $i)->setValue($policy->is_valid ? "Valid" : '');
             $activeSheet->getCell('H' . $i)->setValue($policy->is_paid ? 'Paid' : '');
             if ($user->can('viewCommission', self::class)) {
@@ -1385,8 +1385,8 @@ class SoldPolicy extends Model
         $k = 1;
         foreach ($policies as $policy) {
             $activeSheet->getCell('A' . $i)->setValue($k++);
-            $activeSheet->getCell('B' . $i)->setValue($policy->client->full_name);
-            $activeSheet->getCell('C' . $i)->setValue($policy->client->address_city);
+            $activeSheet->getCell('B' . $i)->setValue($policy->client?->full_name);
+            $activeSheet->getCell('C' . $i)->setValue($policy->client?->address_city);
             $activeSheet->getCell('D' . $i)->setValue($policy->policy_number);
             $activeSheet->getCell('E' . $i)->setValue(Policy::LINES_OF_BUSINESS_ARBC[$policy->policy->business]);
             $activeSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->created_at)->format('d-m-Y'));
@@ -1422,7 +1422,7 @@ class SoldPolicy extends Model
             $cancelledSheet->getCell('E' . $i)->setValue($policy->policy->company->name);
             $cancelledSheet->getCell('F' . $i)->setValue(Carbon::parse($policy->client_payment_date)->format('d-m-Y'));
             $cancelledSheet->getCell('G' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
-            $cancelledSheet->getCell('H' . $i)->setValue($policy->client->full_name);
+            $cancelledSheet->getCell('H' . $i)->setValue($policy->client?->full_name);
             if ($user->can('viewCommission', self::class)) {
                 $cancelledSheet->getCell('J' . $i)->setValue($policy->is_duplicate ? 0 : round($policy->totalPaidBetween($issued_from, $issued_to) - $policy->totalTaxBetween($issued_from, $issued_to), 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
@@ -1545,7 +1545,7 @@ class SoldPolicy extends Model
                         gender: Customer::GENDER_MALE,
                         email: "test@mail"
                     );
-                    if ($tel) $tmpClient->addPhone(Phone::TYPE_MOBILE, $tel, true);
+                    if ($tel) $tmpclient?->addPhone(Phone::TYPE_MOBILE, $tel, true);
                 } else {
                     $name_array = str_split($full_name);
                     $middle_name = "";
@@ -1554,7 +1554,7 @@ class SoldPolicy extends Model
                         owner_id: 10,
                         name: $full_name
                     );
-                    if ($tel) $tmpClient->addPhone(Phone::TYPE_MOBILE, $tel, true);
+                    if ($tel) $tmpclient?->addPhone(Phone::TYPE_MOBILE, $tel, true);
                 }
                 if (is_numeric($net_premium) && is_numeric($insured_value))
                     SoldPolicy::newSoldPolicy(
@@ -1738,7 +1738,7 @@ class SoldPolicy extends Model
                             email: "test@mail"
                         );
                     }
-                    if ($phone) $tmpClient->addPhone(Phone::TYPE_MOBILE, $phone, true);
+                    if ($phone) $tmpclient?->addPhone(Phone::TYPE_MOBILE, $phone, true);
 
                     if (is_numeric($net_premium)) {
                         $soldP = SoldPolicy::newSoldPolicy(
@@ -1882,7 +1882,7 @@ class SoldPolicy extends Model
 
             if ($foundSoldPolicy) {
                 $client = $foundSoldPolicy->client;
-                $car_id = $client->setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year);
+                $car_id = $client?->setDocInfo($full_name, $national_id, $address, $tel1, $tel2, $car, $model_year);
                 $foundSoldPolicy->setDocInfo(
                     $policy->id,
                     $insured_value,
@@ -1913,10 +1913,10 @@ class SoldPolicy extends Model
                             id_number: $national_id,
                             email: "test@mail"
                         );
-                        if ($tel1) $tmpClient->addPhone(Phone::TYPE_MOBILE, $tel1, true);
-                        if ($tel2) $tmpClient->addPhone(Phone::TYPE_HOME, $tel2, false);
-                        if ($address) $tmpClient->addAddress(type: Address::TYPE_HOME, line_1: $address, country: "Egypt");
-                        if ($car) $tmpCar = $tmpClient->setCars([[
+                        if ($tel1) $tmpclient?->addPhone(Phone::TYPE_MOBILE, $tel1, true);
+                        if ($tel2) $tmpclient?->addPhone(Phone::TYPE_HOME, $tel2, false);
+                        if ($address) $tmpclient?->addAddress(type: Address::TYPE_HOME, line_1: $address, country: "Egypt");
+                        if ($car) $tmpCar = $tmpclient?->setCars([[
                             "car_id"        => $car->id,
                             "model_year"    => $model_year
                         ]]);
@@ -1925,9 +1925,9 @@ class SoldPolicy extends Model
                             owner_id: 10,
                             name: $full_name
                         );
-                        if ($tel1) $tmpClient->addPhone(CorporatesPhone::TYPE_WORK, $tel1, true);
-                        if ($tel2) $tmpClient->addPhone(CorporatesPhone::TYPE_WORK, $tel2, false);
-                        if ($address) $tmpClient->addAddress(type: CorporatesAddress::TYPE_HQ, line_1: $address, country: "Egypt");
+                        if ($tel1) $tmpclient?->addPhone(CorporatesPhone::TYPE_WORK, $tel1, true);
+                        if ($tel2) $tmpclient?->addPhone(CorporatesPhone::TYPE_WORK, $tel2, false);
+                        if ($address) $tmpclient?->addAddress(type: CorporatesAddress::TYPE_HQ, line_1: $address, country: "Egypt");
                     }
 
 
