@@ -584,8 +584,8 @@ class Account extends Model
 
     public function scopeTotalEntries($query, Carbon $from, Carbon $to)
     {
-        return $query->join('entry_accounts', 'entry_accounts.account_id', '=', 'accounts.id')
-            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+        return $query->leftJoin('entry_accounts', 'entry_accounts.account_id', '=', 'accounts.id')
+            ->leftJoin('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
             ->whereBetween('journal_entries.created_at', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
             ->select('accounts.*', 'entry_accounts.amount', 'entry_accounts.currency_amount', 'entry_accounts.nature')
             ->selectRaw('IF(entry_accounts.nature = "debit" , entry_accounts.amount , 0 ) as debit_amount')
