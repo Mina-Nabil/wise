@@ -304,7 +304,6 @@ class Account extends Model
                 ->orderByCode()
                 ->when($main_accounts_only, fn($q) => $q->parentAccounts())
                 ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to))
-                ->when(!$show_zero_balances, fn($q) => $q->filterZeroBalances())
                 ->get();
 
             // Get parent accounts (accounts with no parent)
@@ -315,7 +314,7 @@ class Account extends Model
 
             // Process each parent account and its children
             foreach ($parentAccounts as $parentAccount) {
-                $row = self::addAccountToExport($activeSheet, $parentAccount, $row, $processedAccounts, $accounts, 0);
+                $row = self::addAccountToExport($activeSheet, $parentAccount, $row, $processedAccounts, $accounts, 0, $mode, $show_zero_balances);
             }
 
             // Auto-size columns
@@ -343,7 +342,7 @@ class Account extends Model
         }
     }
 
-    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance')
+    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true)
     {
         // Skip if already processed
         if (in_array($account->id, $processedAccounts)) {
@@ -391,25 +390,27 @@ class Account extends Model
         }
 
         // Add account to spreadsheet
-        $activeSheet->setCellValue('A' . $row, $account->full_code);
-        $activeSheet->setCellValue('B' . $row, $accountName);
-        $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
-        $activeSheet->setCellValue('D' . $row, $debitAmount);
-        $activeSheet->setCellValue('E' . $row, $creditAmount);
-        $activeSheet->setCellValue('F' . $row, $debitForeignAmount);
-        $activeSheet->setCellValue('G' . $row, $creditForeignAmount);
+        if ($show_zero || $debitAmount != 0 || $creditAmount != 0 || $debitForeignAmount != 0 || $creditForeignAmount != 0) {
+            $activeSheet->setCellValue('A' . $row, $account->full_code);
+            $activeSheet->setCellValue('B' . $row, $accountName);
+            $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
+            $activeSheet->setCellValue('D' . $row, $debitAmount);
+            $activeSheet->setCellValue('E' . $row, $creditAmount);
+            $activeSheet->setCellValue('F' . $row, $debitForeignAmount);
+            $activeSheet->setCellValue('G' . $row, $creditForeignAmount);
 
-        // Style parent accounts differently
-        if ($indentLevel == 0) {
-            $activeSheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
+            // Style parent accounts differently
+            if ($indentLevel == 0) {
+                $activeSheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
+            }
+
+            $row++;
         }
-
-        $row++;
 
         // Process children recursively
         $children = $allAccounts->where('parent_account_id', $account->id);
         foreach ($children as $child) {
-            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode);
+            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero);
         }
 
         return $row;
@@ -591,13 +592,6 @@ class Account extends Model
             ->selectRaw('IF(entry_accounts.nature = "credit" , entry_accounts.amount , 0 ) as credit_amount')
             ->selectRaw('IF(entry_accounts.nature = "debit" , entry_accounts.currency_amount , 0 ) as debit_foreign_amount')
             ->selectRaw('IF(entry_accounts.nature = "credit" , entry_accounts.currency_amount , 0 ) as credit_foreign_amount');
-    }
-
-    public function scopeFilterZeroBalances($query)
-    {
-        return $query->where(function ($q) {
-            $q->where('balance', '!=', 0)->orWhere('foreign_balance', '!=', 0);
-        });
     }
 
     ////relations
