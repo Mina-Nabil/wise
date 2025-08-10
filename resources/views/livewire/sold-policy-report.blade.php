@@ -773,7 +773,7 @@
                                                                                     {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y') }}
                                                                                 </span>
                                                                             @endif
-                                                                            @if ($policy->client->is_welcomed)
+                                                                            @if ($policy->client?->is_welcomed)
                                                                                 <span
                                                                                     class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize cursor-pointer"
                                                                                     wire:click="openEditIsWelcomed({{ $policy->client_id }}, '{{ $policy->client_type }}')"><iconify-icon
