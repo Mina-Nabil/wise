@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -303,8 +304,11 @@ class Account extends Model
             $accounts = self::with(['main_account', 'parent_account', 'children_accounts'])
                 ->orderByCode()
                 ->when($main_accounts_only, fn($q) => $q->parentAccounts())
-                ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to))
-                ->get();
+                ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to));
+            Log::info($accounts->toSql());
+            $accounts = $accounts->get();
+
+
 
             // Get parent accounts (accounts with no parent)
             $parentAccounts = $accounts->whereNull('parent_account_id');
@@ -344,6 +348,7 @@ class Account extends Model
 
     private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true)
     {
+        Log::info(func_get_args());
         // Skip if already processed
         if (in_array($account->id, $processedAccounts)) {
             return $row;
