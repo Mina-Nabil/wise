@@ -589,14 +589,12 @@ class Account extends Model
 
     public function scopeTotalEntries($query, Carbon $from, Carbon $to)
     {
-        return $query->leftJoin('entry_accounts', 'entry_accounts.account_id', '=', 'accounts.id')
-            ->leftJoin('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
-            ->whereBetween('journal_entries.created_at', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
+        return $query
             ->select('accounts.*')
-            ->selectRaw('SUM(IF(entry_accounts.nature = "debit" , entry_accounts.amount , 0 )) as debit_amount')
-            ->selectRaw('SUM(IF(entry_accounts.nature = "credit" , entry_accounts.amount , 0 )) as credit_amount')
-            ->selectRaw('SUM(IF(entry_accounts.nature = "debit" , entry_accounts.currency_amount , 0 )) as debit_foreign_amount')
-            ->selectRaw('SUM(IF(entry_accounts.nature = "credit" , entry_accounts.currency_amount , 0 )) as credit_foreign_amount')
+            ->selectRaw('(SELECT SUM(IF(entry_accounts.nature = "debit" , entry_accounts.amount , 0 )) FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at BETWEEN ? AND ?) as debit_amount', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
+            ->selectRaw('(SELECT SUM(IF(entry_accounts.nature = "credit" , entry_accounts.amount , 0 )) FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at BETWEEN ? AND ?) as credit_amount', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
+            ->selectRaw('(SELECT SUM(IF(entry_accounts.nature = "debit" , entry_accounts.currency_amount , 0 )) FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at BETWEEN ? AND ?) as debit_foreign_amount', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
+            ->selectRaw('(SELECT SUM(IF(entry_accounts.nature = "credit" , entry_accounts.currency_amount , 0 )) FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at BETWEEN ? AND ?) as credit_foreign_amount', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
             ->groupBy('accounts.id');
     }
 
