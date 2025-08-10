@@ -390,7 +390,7 @@ class Account extends Model
         }
 
         // Add account to spreadsheet
-        if ($show_zero || $debitAmount != 0 || $creditAmount != 0 || $debitForeignAmount != 0 || $creditForeignAmount != 0) {
+        if ($show_zero || $debitAmount || $creditAmount || $debitForeignAmount || $creditForeignAmount) {
             $activeSheet->setCellValue('A' . $row, $account->full_code);
             $activeSheet->setCellValue('B' . $row, $accountName);
             $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
