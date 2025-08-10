@@ -566,8 +566,12 @@ class OfferShow extends Component
 
     public function deleteOffer()
     {
-        $res = Offer::find($this->offer->id)->delete();
+        $offer = Offer::with('renewal_sold_policy')->find($this->offer->id);
+        $res = $offer->delete();
         if ($res) {
+            if ($offer->renewal_sold_policy) {
+                $offer->renewal_sold_policy->update(['is_renewed' => 0]);
+            }
             return redirect(route('offers.index'));
         } else {
             $this->alert('failed', 'Server error');
