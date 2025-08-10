@@ -246,6 +246,6 @@ class AccountIndex extends Component
             'main_accounts' => $main_accounts,
             'CURRENCIES' => $CURRENCIES,
             'filteredAccounts' => $this->filteredAccounts
-        ]);
+        ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }
 }
