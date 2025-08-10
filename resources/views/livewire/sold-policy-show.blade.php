@@ -18,9 +18,9 @@
                         href="{{ route($soldPolicy->client_type . 's.show', $soldPolicy->client_id) }}">
                         @if ($soldPolicy->client_type === 'customer')
                             <iconify-icon icon="raphael:customer"></iconify-icon>
-                            {{ $soldPolicy->client->first_name . ' ' . $soldPolicy->client->middle_name . ' ' . $soldPolicy->client->last_name }}
+                            {{ $soldPolicy->client?->first_name . ' ' . $soldPolicy->client?->middle_name . ' ' . $soldPolicy->client?->last_name }}
                         @elseif($soldPolicy->client_type === 'corporate')
-                            <iconify-icon icon="mdi:company"></iconify-icon> {{ $soldPolicy->client->name }}
+                            <iconify-icon icon="mdi:company"></iconify-icon> {{ $soldPolicy->client?->name }}
                         @endif
                     </a>
                 </span>
