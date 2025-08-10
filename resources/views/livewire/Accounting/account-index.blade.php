@@ -357,7 +357,7 @@
                             <button wire:click="closeExportModal" class="btn inline-flex justify-center btn-outline-dark">
                                 Cancel
                             </button>
-                            <button wire:click="exportAccounts" class="btn inline-flex justify-center text-white bg-green-600">
+                            <button wire:click="exportAccounts" class="btn inline-flex justify-center btn-success dark:bg-green-600 dark:text-white">
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="exportAccounts" icon="line-md:loading-twotone-loop"></iconify-icon>
                                 <span wire:loading.remove="exportAccounts">Export</span>
                             </button>
