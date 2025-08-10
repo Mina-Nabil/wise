@@ -348,7 +348,7 @@ class Account extends Model
 
     private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true)
     {
-        Log::info("Params", ['activeSheet' => $activeSheet, 'account' => $account, 'row' => $row, 'processedAccounts' => $processedAccounts, 'allAccounts' => $allAccounts, 'indentLevel' => $indentLevel, 'mode' => $mode, 'show_zero' => $show_zero]);
+        Log::info("Params", ['indentLevel' => $indentLevel, 'mode' => $mode, 'show_zero' => $show_zero]);
         // Skip if already processed
         if (in_array($account->id, $processedAccounts)) {
             return $row;
