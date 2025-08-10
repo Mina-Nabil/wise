@@ -10,6 +10,7 @@ use Livewire\Component;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AccountIndex extends Component
 {
@@ -17,6 +18,7 @@ class AccountIndex extends Component
 
     public $page_title = 'Accounts';
     public $isAddNewModalOpen = false;
+    public $isExportModalOpen = false;
 
     public $acc_code;
     public $acc_name;
@@ -26,6 +28,13 @@ class AccountIndex extends Component
     public $acc_desc;
     public $defaultCurrency = JournalEntry::CURRENCY_EGP;
     public $is_show_dashboard = false;
+
+    // Export properties
+    public $exportMode = 'balance';
+    public $exportFromDate;
+    public $exportToDate;
+    public $exportMainAccountsOnly = false;
+    public $exportShowZeroBalances = true;
 
     private $filteredAccounts;
 
@@ -70,6 +79,21 @@ class AccountIndex extends Component
         $this->isAddNewModalOpen = true;
     }
 
+    // Method to open export modal
+    public function openExportModal()
+    {
+        $this->exportFromDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $this->exportToDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        $this->isExportModalOpen = true;
+    }
+
+    // Method to close export modal
+    public function closeExportModal()
+    {
+        $this->isExportModalOpen = false;
+        $this->reset(['exportMode', 'exportFromDate', 'exportToDate', 'exportMainAccountsOnly', 'exportShowZeroBalances']);
+    }
+
     // Method to open edit modal
     public function openEditModal($id)
     {
@@ -97,6 +121,44 @@ class AccountIndex extends Component
     public function closeAddNewModal()
     {
         $this->isAddNewModalOpen = false;
+    }
+
+    // Export accounts function
+    public function exportAccounts()
+    {
+        $this->validate([
+            'exportMode' => 'required|in:balance,entries',
+            'exportFromDate' => 'required_if:exportMode,entries|date',
+            'exportToDate' => 'required_if:exportMode,entries|date|after_or_equal:exportFromDate',
+        ]);
+
+        try {
+            $fromDate = null;
+            $toDate = null;
+            
+            if ($this->exportMode === 'entries') {
+                $fromDate = Carbon::parse($this->exportFromDate);
+                $toDate = Carbon::parse($this->exportToDate);
+            }
+
+            $result = Account::exportAllAccountsWithBalances(
+                $this->exportMode,
+                $fromDate,
+                $toDate,
+                $this->exportMainAccountsOnly,
+                $this->exportShowZeroBalances
+            );
+
+            if ($result) {
+                $this->closeExportModal();
+                $this->alert('success', 'Export completed successfully');
+            } else {
+                $this->alert('failed', 'Export failed. Please try again.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Export failed: ' . $e->getMessage());
+            $this->alert('failed', 'Export failed: ' . $e->getMessage());
+        }
     }
 
     // Define variables to hold options
@@ -184,6 +246,6 @@ class AccountIndex extends Component
             'main_accounts' => $main_accounts,
             'CURRENCIES' => $CURRENCIES,
             'filteredAccounts' => $this->filteredAccounts
-        ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
+        ]);
     }
 }

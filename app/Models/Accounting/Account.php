@@ -269,13 +269,16 @@ class Account extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function exportAllAccountsWithBalances()
+    public static function exportAllAccountsWithBalances($mode = 'balance', ?Carbon $from = null, ?Carbon $to = null, $main_accounts_only = false, $show_zero_balances = true)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('viewAny', self::class)) {
             return false;
         }
+
+        assert(in_array($mode, ['balance', 'entries']), 'Invalid mode');
+        assert($mode == 'balance' || ($from && $to), 'From and to dates are required for entries mode');
 
         try {
             // Create new spreadsheet
@@ -299,6 +302,9 @@ class Account extends Model
             // Get all accounts with their relationships
             $accounts = self::with(['main_account', 'parent_account', 'children_accounts'])
                 ->orderByCode()
+                ->when($main_accounts_only, fn($q) => $q->parentAccounts())
+                ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to))
+                ->when(!$show_zero_balances, fn($q) => $q->filterZeroBalances())
                 ->get();
 
             // Get parent accounts (accounts with no parent)
@@ -337,7 +343,7 @@ class Account extends Model
         }
     }
 
-    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0)
+    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance')
     {
         // Skip if already processed
         if (in_array($account->id, $processedAccounts)) {
@@ -357,24 +363,31 @@ class Account extends Model
         $creditAmount = '';
         $debitForeignAmount = '';
         $creditForeignAmount = '';
-        if ($totalBalance != 0) {
-            if ($account->nature == self::NATURE_DEBIT) {
-                if ($totalBalance >= 0) {
-                    $debitAmount = number_format($totalBalance, 2);
-                    $debitForeignAmount = number_format($account->total_currency_balance, 2);
-                } else {
-                    $creditAmount = number_format(abs($totalBalance), 2);
-                    $creditForeignAmount = number_format(abs($account->total_currency_balance), 2);
-                }
-            } else { // NATURE_CREDIT
-                if ($totalBalance >= 0) {
-                    $creditAmount = number_format($totalBalance, 2);
-                    $creditForeignAmount = number_format($account->total_currency_balance, 2);
-                } else {
-                    $debitAmount = number_format(abs($totalBalance), 2);
-                    $debitForeignAmount = number_format(abs($account->total_currency_balance), 2);
+        if ($mode == 'balance') {
+            if ($totalBalance != 0) {
+                if ($account->nature == self::NATURE_DEBIT) {
+                    if ($totalBalance >= 0) {
+                        $debitAmount = number_format($totalBalance, 2);
+                        $debitForeignAmount = number_format($account->total_currency_balance, 2);
+                    } else {
+                        $creditAmount = number_format(abs($totalBalance), 2);
+                        $creditForeignAmount = number_format(abs($account->total_currency_balance), 2);
+                    }
+                } else { // NATURE_CREDIT
+                    if ($totalBalance >= 0) {
+                        $creditAmount = number_format($totalBalance, 2);
+                        $creditForeignAmount = number_format($account->total_currency_balance, 2);
+                    } else {
+                        $debitAmount = number_format(abs($totalBalance), 2);
+                        $debitForeignAmount = number_format(abs($account->total_currency_balance), 2);
+                    }
                 }
             }
+        } else {
+            $debitAmount = number_format($account->debit_amount, 2);
+            $creditAmount = number_format($account->credit_amount, 2);
+            $debitForeignAmount = number_format($account->debit_foreign_amount, 2);
+            $creditForeignAmount = number_format($account->credit_foreign_amount, 2);
         }
 
         // Add account to spreadsheet
@@ -396,7 +409,7 @@ class Account extends Model
         // Process children recursively
         $children = $allAccounts->where('parent_account_id', $account->id);
         foreach ($children as $child) {
-            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1);
+            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode);
         }
 
         return $row;
@@ -566,6 +579,25 @@ class Account extends Model
     public function scopeParentAccounts($query)
     {
         return $query->whereNull('parent_account_id');
+    }
+
+    public function scopeTotalEntries($query, Carbon $from, Carbon $to)
+    {
+        return $query->join('entry_accounts', 'entry_accounts.account_id', '=', 'accounts.id')
+            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->whereBetween('journal_entries.created_at', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
+            ->select('accounts.*', 'entry_accounts.amount', 'entry_accounts.currency_amount', 'entry_accounts.nature')
+            ->selectRaw('IF(entry_accounts.nature = "debit" , entry_accounts.amount , 0 ) as debit_amount')
+            ->selectRaw('IF(entry_accounts.nature = "credit" , entry_accounts.amount , 0 ) as credit_amount')
+            ->selectRaw('IF(entry_accounts.nature = "debit" , entry_accounts.currency_amount , 0 ) as debit_foreign_amount')
+            ->selectRaw('IF(entry_accounts.nature = "credit" , entry_accounts.currency_amount , 0 ) as credit_foreign_amount');
+    }
+
+    public function scopeFilterZeroBalances($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('balance', '!=', 0)->orWhere('foreign_balance', '!=', 0);
+        });
     }
 
     ////relations
