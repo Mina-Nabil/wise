@@ -578,10 +578,10 @@ class ClientPayment extends Model
         $query->leftjoin('policy_comm_conf', function ($j) {
             $j->on('sold_policies.policy_id', '=', 'policy_comm_conf.policy_id')
                 ->where('is_main_penalty', 1);
-        })->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent', 'policy_comm_conf.calculation_type', 'sold_policies.net_premium')
+        })->select('client_payments.*', 'policy_comm_conf.due_penalty', 'policy_comm_conf.value', 'policy_comm_conf.penalty_percent', 'policy_comm_conf.calculation_type', 'sold_policies.net_premium', 'policy_comm_conf.name as penalty_name')
             ->selectRaw('IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start)  policy_payment_due')
             ->selectRaw('DATE_ADD(IF( sold_policies.created_at > sold_policies.start, sold_policies.created_at , sold_policies.start) , INTERVAL `due_penalty` DAY ) as penalty_due')
-            ->groupBy('client_payments.id');
+            ->groupBy('client_payments.id', 'policy_comm_conf.id');
     }
 
     //Must use with include due
