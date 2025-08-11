@@ -227,7 +227,7 @@ class Invoice extends Model
             $activeSheet->getCell('A' . $i)->setValue($this->serial);
             $activeSheet->getCell('B' . $i)->setValue((new Carbon($this->created_at))->format('d-M-y'));
             $activeSheet->getCell('D' . $i)->setValue($comm->sold_policy->policy_number);
-            $activeSheet->getCell('E' . $i)->setValue($comm->sold_policy->client->name);
+            $activeSheet->getCell('E' . $i)->setValue($comm->sold_policy->client?->name);
             $activeSheet->getCell('F' . $i)->setValue((new Carbon($comm->sold_policy->issuing_date))->format('d-M-y'));
             $activeSheet->getCell('G' . $i)->setValue($comm->pymnt_perm);
             $activeSheet->getCell('O' . $i)->setValue('اذن صرف عمولة ' . $comm->pymnt_perm);

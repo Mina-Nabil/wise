@@ -665,7 +665,7 @@ class CommProfileShow extends Component
             'paid_percentage' => 100, // Default to 100%
             'amount' => $salesComm->amount,
             'policy_number' => $salesComm->sold_policy->policy_number ?? 'N/A',
-            'client_name' => $salesComm->sold_policy->client->name ?? 'N/A',
+            'client_name' => $salesComm->sold_policy->client?->name ?? 'N/A',
             'gross_premium' => $salesComm->sold_policy->gross_premium ?? 0,
         ];
     }
@@ -685,7 +685,7 @@ class CommProfileShow extends Component
             'paid_percentage' => 100, // Default to 100%
             'amount' => $salesComm->amount,
             'policy_number' => $salesComm->sold_policy->policy_number ?? 'N/A',
-            'client_name' => $salesComm->sold_policy->client->name ?? 'N/A',
+            'client_name' => $salesComm->sold_policy->client?->name ?? 'N/A',
             'gross_premium' => $salesComm->sold_policy->gross_premium ?? 0,
         ];
         $this->pymtAmount = array_sum(array_column($this->salesCommArray, 'amount'));

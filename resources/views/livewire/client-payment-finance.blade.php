@@ -201,7 +201,7 @@
                                     </td>
 
                                     <td class="table-td">
-                                        {{ $payment->sold_policy->client->name }}
+                                        {{ $payment->sold_policy->client?->name }}
                                     </td>
 
                                     <td class="table-td">

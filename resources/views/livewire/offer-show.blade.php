@@ -2506,7 +2506,7 @@
 
                                     </label>
                                     @if ($selectedPolicy)
-                                        {{ $selectedPolicy->policy_number . ' | ' . $selectedPolicy->client->name }}
+                                        {{ $selectedPolicy->policy_number . ' | ' . $selectedpolicy->client?->name }}
                                         <Span wire:click="clearSelectedPolicy"
                                             class="cursor-pointer text-primary-500">clear</Span></p>
                                     @else
@@ -2526,7 +2526,7 @@
                                     @foreach ($searchedPolicies as $searchedPolicy)
                                         <p><iconify-icon icon="iconoir:privacy-policy"></iconify-icon>
                                             {{ $searchedPolicy->policy_number }} |
-                                            {{ $searchedPolicy->client->name ?? 'N/A' }} | <Span
+                                            {{ $searchedpolicy->client?->name ?? 'N/A' }} | <Span
                                                 wire:click="selectRenewalPolicy({{ $searchedPolicy->id }})"
                                                 class="cursor-pointer text-primary-500">Select Policy</Span></p>
                                     @endforeach

@@ -321,7 +321,7 @@ class CommProfilePayment extends Model
                 Carbon::parse($c->sold_policy?->created_at)->format('D d/m/Y') :
                 'Not set.');
             $activeSheet->getCell('C' . $i)->setValue($c->sold_policy?->policy?->company?->name . '-' . $c->sold_policy?->policy?->name);
-            $activeSheet->getCell('D' . $i)->setValue($c->sold_policy->client->full_name);
+            $activeSheet->getCell('D' . $i)->setValue($c->sold_policy->client?->full_name);
             $activeSheet->getCell('E' . $i)->setValue(number_format($c->pivot->amount));
             $activeSheet->getCell('F' . $i)->setValue(number_format($c->comm_percentage, 2));
             $activeSheet->getCell('G' . $i)->setValue(number_format($c->sold_policy->sales_out_comm));

@@ -266,7 +266,7 @@
                                             </td>
 
                                             <td class="table-td">
-                                                {{ $payment->sold_policy->client->full_name ?? ($payment->sold_policy->client->name ?? 'N/A') }}
+                                                {{ $payment->sold_policy->client?->full_name ?? ($payment->sold_policy->client?->name ?? 'N/A') }}
                                             </td>
 
                                             <td class="table-td">

@@ -1667,7 +1667,7 @@
                                                             <p class="font-medium">
                                                                 {{ $result->sold_policy->policy_number }}</p>
                                                             <p class="text-sm text-slate-600 dark:text-slate-400">
-                                                                {{ $result->sold_policy->client->name }}</p>
+                                                                {{ $result->sold_policy->client?->name }}</p>
                                                         </div>
                                                         <div class="text-right">
                                                             <p class="font-medium">

@@ -177,7 +177,7 @@
                                         {{ $payment->sold_policy->creator->username }}
                                     </td>
                                     <td class="table-td">
-                                        {{ $payment->sold_policy->client->full_name }}
+                                        {{ $payment->sold_policy->client?->full_name }}
                                     </td>
 
                                     <td class="table-td">

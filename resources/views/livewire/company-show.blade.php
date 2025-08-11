@@ -628,9 +628,9 @@
                                                                     <h4
                                                                         class="text-sm font-medium text-slate-600 whitespace-nowrap">
                                                                         @if ($policy->client_type === 'customer')
-                                                                            {{ $policy->client->first_name . ' ' . $policy->client->middle_name . ' ' . $policy->client->last_name }}
+                                                                            {{ $policy->client?->first_name . ' ' . $policy->client?->middle_name . ' ' . $policy->client?->last_name }}
                                                                         @elseif($policy->client_type === 'corporate')
-                                                                            {{ $policy->client->name }}
+                                                                            {{ $policy->client?->name }}
                                                                         @endif
                                                                     </h4>
                                                                 </div>
@@ -698,9 +698,9 @@
                                     <div class="card-body p-6">
                                         <div class="flex-1 items-center">
                                             <div class="card-title mb-5">#{{ $policy->policy_number }} • @if ($policy->client_type === 'customer')
-                                                    {{ $policy->client->first_name . ' ' . $policy->client->middle_name . ' ' . $policy->client->last_name }}
+                                                    {{ $policy->client?->first_name . ' ' . $policy->client?->middle_name . ' ' . $policy->client?->last_name }}
                                                 @elseif($policy->client_type === 'corporate')
-                                                    {{ $policy->client->name }}
+                                                    {{ $policy->client?->name }}
                                                 @endif
 
                                                 <button wire:click="removeEntry({{ $index }})"

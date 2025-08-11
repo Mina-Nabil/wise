@@ -138,7 +138,7 @@ class ClientPayment extends Model
 
             $activeSheet->getCell('A' . $i)->setValue($payment->sold_policy->policy_number);
             $activeSheet->getCell('B' . $i)->setValue($payment->sold_policy->creator->username);
-            $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy->client->name);
+            $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy->client?->name);
             $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($payment->sold_policy->start)->format('d-m-Y'));
             // $activeSheet->getCell('E' . $i)->setValue($payment->assigned->username);
             $activeSheet->getCell('E' . $i)->setValue($payment->sold_policy->sales_outs);

@@ -218,7 +218,7 @@ class Calendar extends Component
         foreach (ClientPayment::userData()->with('sold_policy', 'sold_policy.client')->get() as $t) {
             $events[] =  [
                 'id'        =>  "clientpayment" . $t->id,
-                'title'     => "CP. " . $t->sold_policy->client->name . ' ' . $t->sold_policy->policy_number,
+                'title'     => "CP. " . $t->sold_policy->client?->name . ' ' . $t->sold_policy->policy_number,
                 'backgroundColor' => '#75d193', //green
                 'allDay'    => true,
                 'start'     => (new Carbon($t->due))->addHours(2)->subMinutes(15)->toIso8601String(),

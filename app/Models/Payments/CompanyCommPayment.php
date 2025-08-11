@@ -270,7 +270,7 @@ class CompanyCommPayment extends Model
         /** @var CompanyCommPayment $payment */
         foreach ($payments as $payment) {
             $activeSheet->getCell('A' . $i)->setValue($payment->sold_policy ? $payment->sold_policy->policy_number : '');
-            $activeSheet->getCell('B' . $i)->setValue($payment->sold_policy && $payment->sold_policy->client ? ($payment->sold_policy->client->full_name ?? $payment->sold_policy->client->name ?? 'N/A') : 'N/A');
+            $activeSheet->getCell('B' . $i)->setValue($payment->sold_policy && $payment->sold_policy->client ? ($payment->sold_policy->client?->full_name ?? $payment->sold_policy->client?->name ?? 'N/A') : 'N/A');
             $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy && $payment->sold_policy->created_at ? Carbon::parse($payment->sold_policy->created_at)->format('d/m/Y') : '');
             $activeSheet->getCell('D' . $i)->setValue($payment->payment_date ? Carbon::parse($payment->payment_date)->format('d/m/Y') : 'N/A');
             $activeSheet->getCell('E' . $i)->setValue(number_format($payment->amount - $payment->tax_amount, 2, '.', ','));

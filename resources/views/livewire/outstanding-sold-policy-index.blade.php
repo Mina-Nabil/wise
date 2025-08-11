@@ -399,7 +399,7 @@
                                                                             <a class="hover:underline cursor-pointer"
                                                                                 href="{{ route($policy->client_type . 's.show', $policy->client_id) }}">
 
-                                                                                {{ $policy->client->name }}
+                                                                                {{ $policy->client?->name }}
 
                                                                             </a>
                                                                         </div>
