@@ -1440,8 +1440,8 @@
                                                         <td class="table-td ">
                                                             <div class="text-lg text-success-500">
                                                                 {{ number_format($payment->amount, 2, '.', ',') }} EGP 
-                                                                @if($taxRate)  /
-                                                                {{ number_format($payment->amount / (1 - $taxRate), 2, '.', ',') }}
+                                                                @if($payment->tax_amount)  /
+                                                                {{ number_format($payment->amount - $payment->tax_amount, 2, '.', ',') }}
                                                                 @endif
                                                                 EGP
                                                             </div>
