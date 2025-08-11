@@ -65,7 +65,7 @@
                             <iconify-icon wire:loading wire:target='search' class="loading-icon text-lg"
                                 icon="line-md:loading-twotone-loop"></iconify-icon>
                             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                                wire:model.debounce.300ms="search">
+                                wire:model.debounce.800ms="search">
                         </header>
 
                         <div class="tab-content mt-6" id="pills-tabContent">
