@@ -239,8 +239,8 @@ class ClientPayment extends Model
     {
         /** @var User */
         $user = Auth::user();
-        if (!$user->can('update', $this)) return false;
-
+        if (!$user->can('updateClientPayments', $this->sold_policy)) return false;
+        
         try {
             if ($this->doc_url) {
                 Storage::delete($this->doc_url);
