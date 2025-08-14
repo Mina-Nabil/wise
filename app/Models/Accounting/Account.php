@@ -423,7 +423,7 @@ class Account extends Model
 
     private function sumChildrenEntries($mode = 'debit')
     {
-        if ($this->children_accounts->count() == 0) {
+        if ($this->children_accounts()->count() == 0) {
             switch ($mode) {
                 case 'debit':
                     return $this->debit_amount;
@@ -435,7 +435,7 @@ class Account extends Model
                     return $this->credit_foreign_amount;
             }
         }
-        $children = $this->children_accounts;
+        $children = $this->children_accounts()->get();
         foreach ($children as $child) {
             switch ($mode) {
                 case 'debit':
