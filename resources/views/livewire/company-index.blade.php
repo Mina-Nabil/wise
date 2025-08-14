@@ -325,7 +325,7 @@
                                                                                         <span class="text-primary-500 dark:text-slate-400 text-sm leading-6 capitalize">primary</span>
                                                                                     </label>
                                                                                 </div>
-                                                                                @can('edit', $companyInfo)
+                                                                                @can('addContact', $companyInfo)
                                                                                     <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="saveEmailRow" type="button">
                                                                                         <iconify-icon icon="material-symbols:save"></iconify-icon>
                                                                                     </button>
@@ -380,7 +380,7 @@
                                                                             {{ $email->contact_last_name }}</td>
 
                                                                         <td class="table-td flex">
-                                                                            @can('edit', $companyInfo)
+                                                                            @can('addContact', $companyInfo)
                                                                                 <button class="toolTip onTop action-btn m-1 " data-tippy-content="Edit" wire:click="editEmailRow({{ $email->id }})" type="button">
                                                                                     <iconify-icon icon="iconamoon:edit-bold"></iconify-icon>
                                                                                 </button>
@@ -403,7 +403,7 @@
                                     </div>
                                 </div>
                             @endif
-                            @can('edit', $companyInfo)
+                            @can('addContact', $companyInfo)
                                 <div class="input-area">
                                     <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
 

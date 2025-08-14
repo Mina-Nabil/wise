@@ -83,12 +83,10 @@ class Company extends Model
         $note = null
     ) {
 
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if (
-        //     !($loggedInUser == null && App::isLocal()) && //local seeder code - can remove later
-        //     !$loggedInUser->can('update', $this)
-        // ) throw new UnauthorizedException();
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('addContact', $this)) throw new UnauthorizedException();
+
         try {
             $email = $this->emails()->updateOrCreate([
                 "type"  =>  $type,

@@ -53,7 +53,7 @@ class CompanyEmail extends Model
             /** @var User */
             $loggedInUser = Auth::user();
             $this->load('company');
-            if (!$loggedInUser->can('update', $this->company)) throw new UnauthorizedException();
+            if (!$loggedInUser->can('addContact', $this->company)) throw new UnauthorizedException();
             $this->update([
                 "type"  => $type,
                 "email"  => $email,

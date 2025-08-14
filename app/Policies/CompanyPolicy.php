@@ -58,6 +58,18 @@ class CompanyPolicy
     }
 
     /**
+     * Determine whether the user can add contact to the model.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @param  \App\Models\Insurance\Company  $company
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function addContact(User $user, Company $company)
+    {
+        return $user->is_admin || $user->is_operations;
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\Users\User  $user
