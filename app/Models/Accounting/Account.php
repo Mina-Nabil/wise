@@ -433,8 +433,8 @@ class Account extends Model
 
     private function sumChildrenEntries($mode = 'debit', Carbon $from, Carbon $to)
     {
-        if ($this->children_accounts()->count() == 0) {
-            Log::info("No children", ['account' => $this->name]);
+        $children = $this->children_accounts()->totalEntries($from, $to)->get();
+        if ($children->count() == 0) {
             switch ($mode) {
                 case 'debit':
                     return $this->debit_amount;
@@ -446,8 +446,7 @@ class Account extends Model
                     return $this->credit_foreign_amount;
             }
         }
-        $children = $this->children_accounts()->totalEntries($from, $to)->get();
-        Log::info("Has Children", ['account' => $this->name, 'children' => $children->count()]);
+
         foreach ($children as $child) {
             switch ($mode) {
                 case 'debit':
