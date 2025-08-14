@@ -303,7 +303,7 @@ class Account extends Model
             // Get all accounts with their relationships
             $accounts = self::with(['main_account', 'parent_account', 'children_accounts'])
                 ->orderByCode()
-                ->when($main_accounts_only, fn($q) => $q->parentAccounts())
+                ->when($main_accounts_only && $mode == 'balance', fn($q) => $q->parentAccounts())
                 ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to));
             Log::info($accounts->toSql());
             $accounts = $accounts->get();
@@ -318,7 +318,7 @@ class Account extends Model
 
             // Process each parent account and its children
             foreach ($parentAccounts as $parentAccount) {
-                $row = self::addAccountToExport($activeSheet, $parentAccount, $row, $processedAccounts, $accounts, 0, $mode, $show_zero_balances);
+                $row = self::addAccountToExport($activeSheet, $parentAccount, $row, $processedAccounts, $accounts, 0, $mode, $show_zero_balances, $main_accounts_only);
             }
 
             // Auto-size columns
@@ -346,7 +346,7 @@ class Account extends Model
         }
     }
 
-    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true)
+    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false)
     {
         Log::info("Params", ['indentLevel' => $indentLevel, 'mode' => $mode, 'show_zero' => $show_zero]);
         // Skip if already processed
@@ -388,14 +388,14 @@ class Account extends Model
                 }
             }
         } else {
-            $debitAmount = number_format($account->debit_amount, 2);
-            $creditAmount = number_format($account->credit_amount, 2);
-            $debitForeignAmount = number_format($account->debit_foreign_amount, 2);
-            $creditForeignAmount = number_format($account->credit_foreign_amount, 2);
+            $debitAmount = number_format($account->sumChildrenEntries('debit'), 2);
+            $creditAmount = number_format($account->sumChildrenEntries('credit'), 2);
+            $debitForeignAmount = number_format($account->sumChildrenEntries('foreign_debit'), 2);
+            $creditForeignAmount = number_format($account->sumChildrenEntries('foreign_credit'), 2);
         }
 
         // Add account to spreadsheet
-        if ($show_zero || $debitAmount || $creditAmount || $debitForeignAmount || $creditForeignAmount) {
+        if (($show_zero || $debitAmount || $creditAmount || $debitForeignAmount || $creditForeignAmount) && (!$main_accounts_only || $indentLevel == 0)) {
             $activeSheet->setCellValue('A' . $row, $account->full_code);
             $activeSheet->setCellValue('B' . $row, $accountName);
             $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
@@ -415,10 +415,39 @@ class Account extends Model
         // Process children recursively
         $children = $allAccounts->where('parent_account_id', $account->id);
         foreach ($children as $child) {
-            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero);
+            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero, $main_accounts_only);
         }
 
         return $row;
+    }
+
+    private function sumChildrenEntries($mode = 'debit')
+    {
+        if ($this->children_accounts_count == 0) {
+            switch ($mode) {
+                case 'debit':
+                    return $this->debit_amount;
+                case 'credit':
+                    return $this->credit_amount;
+                case 'foreign_debit':
+                    return $this->debit_foreign_amount;
+                case 'foreign_credit':
+                    return $this->credit_foreign_amount;
+            }
+        }
+        $children = $this->children_accounts;
+        foreach ($children as $child) {
+            switch ($mode) {
+                case 'debit':
+                    return $this->debit_amount + $child->sumChildrenEntries($mode);
+                case 'credit':
+                    return $this->credit_amount + $child->sumChildrenEntries($mode);
+                case 'foreign_debit':
+                    return $this->debit_foreign_amount + $child->sumChildrenEntries($mode);
+                case 'foreign_credit':
+                    return $this->credit_foreign_amount + $child->sumChildrenEntries($mode);
+            }
+        }
     }
 
     /** returns new balance after update */
