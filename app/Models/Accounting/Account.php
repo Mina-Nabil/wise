@@ -318,7 +318,19 @@ class Account extends Model
 
             // Process each parent account and its children
             foreach ($parentAccounts as $parentAccount) {
-                $row = self::addAccountToExport($activeSheet, $parentAccount, $row, $processedAccounts, $accounts, 0, $mode, $show_zero_balances, $main_accounts_only, $from, $to);
+                $row = self::addAccountToExport(
+                    $activeSheet,
+                    $parentAccount,
+                    $row,
+                    $processedAccounts,
+                    $accounts,
+                    0,
+                    $mode,
+                    $show_zero_balances,
+                    $main_accounts_only,
+                    $from,
+                    $to
+                );
             }
 
             // Auto-size columns
