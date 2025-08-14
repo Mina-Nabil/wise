@@ -435,6 +435,7 @@ class Account extends Model
     private function sumChildrenEntries($mode = 'debit', Carbon $from, Carbon $to)
     {
         if ($this->children_accounts()->count() == 0) {
+            Log::info("No children", ['account' => $this->name]);
             switch ($mode) {
                 case 'debit':
                     return $this->debit_amount;
