@@ -22,7 +22,7 @@ class CompanyIndex extends Component
     public $companyInfoName;
     public $companyInfoNote;
 
-    public $newEmailType;
+    public $newEmailType = 'info';
     public $newEmail;
     public $newEmailFname;
     public $newEmailLname;
@@ -205,7 +205,7 @@ class CompanyIndex extends Component
         if ($a) {
             $this->alert('success', 'Email Added Succesfuly!');
             $this->editRow($this->editThisComp);
-            $this->newEmailType = null;
+            $this->newEmailType = 'info';
             $this->newEmail = null;
             $this->newEmailFname = null;
             $this->newEmailLname = null;
