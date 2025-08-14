@@ -359,7 +359,6 @@ class Account extends Model
 
     private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false, Carbon $from = null, Carbon $to = null)
     {
-        Log::info("Params", ['indentLevel' => $indentLevel, 'mode' => $mode, 'show_zero' => $show_zero]);
         // Skip if already processed
         if (in_array($account->id, $processedAccounts)) {
             return $row;
@@ -448,6 +447,7 @@ class Account extends Model
             }
         }
         $children = $this->children_accounts()->totalEntries($from, $to)->get();
+        Log::info("Has Children", ['account' => $this->name, 'children' => $children->count()]);
         foreach ($children as $child) {
             switch ($mode) {
                 case 'debit':
