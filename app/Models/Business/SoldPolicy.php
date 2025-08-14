@@ -283,9 +283,9 @@ class SoldPolicy extends Model
 
     public function addSalesCommission($title, $from, $comm_percentage, $comm_profile_id = null, $note = null, $is_direct = false)
     {
-        // /** @var User */
-        // $loggedInUser = Auth::user();
-        // if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if ($loggedInUser && !$loggedInUser->can('create', SalesComm::class)) return false;
 
         try {
             /** @var SalesComm */
