@@ -447,18 +447,30 @@ class Account extends Model
             }
         }
 
+        $child_total = 0;
+        switch ($mode) {
+            case 'debit':
+                $child_total = $this->debit_amount;
+            case 'credit':
+                $child_total = $this->credit_amount;
+            case 'foreign_debit':
+                $child_total = $this->debit_foreign_amount;
+            case 'foreign_credit':
+                $child_total = $this->credit_foreign_amount;
+        }
         foreach ($children as $child) {
             switch ($mode) {
                 case 'debit':
-                    return $this->debit_amount + $child->sumChildrenEntries($mode, $from, $to);
+                    $child_total += $child->sumChildrenEntries($mode, $from, $to);
                 case 'credit':
-                    return $this->credit_amount + $child->sumChildrenEntries($mode, $from, $to);
+                    $child_total += $child->sumChildrenEntries($mode, $from, $to);
                 case 'foreign_debit':
-                    return $this->debit_foreign_amount + $child->sumChildrenEntries($mode, $from, $to);
+                    $child_total += $child->sumChildrenEntries($mode, $from, $to);
                 case 'foreign_credit':
-                    return $this->credit_foreign_amount + $child->sumChildrenEntries($mode, $from, $to);
+                    $child_total += $child->sumChildrenEntries($mode, $from, $to);
             }
         }
+        return $child_total;
     }
 
     /** returns new balance after update */
