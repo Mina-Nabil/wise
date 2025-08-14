@@ -346,7 +346,7 @@ class Account extends Model
         }
     }
 
-    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false)
+    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false, Carbon $from = null, Carbon $to = null)
     {
         Log::info("Params", ['indentLevel' => $indentLevel, 'mode' => $mode, 'show_zero' => $show_zero]);
         // Skip if already processed
@@ -388,10 +388,10 @@ class Account extends Model
                 }
             }
         } else {
-            $debitAmount = number_format($account->sumChildrenEntries('debit'), 2);
-            $creditAmount = number_format($account->sumChildrenEntries('credit'), 2);
-            $debitForeignAmount = number_format($account->sumChildrenEntries('foreign_debit'), 2);
-            $creditForeignAmount = number_format($account->sumChildrenEntries('foreign_credit'), 2);
+            $debitAmount = number_format($account->sumChildrenEntries('debit', $from, $to), 2);
+            $creditAmount = number_format($account->sumChildrenEntries('credit', $from, $to), 2);
+            $debitForeignAmount = number_format($account->sumChildrenEntries('foreign_debit', $from, $to), 2);
+            $creditForeignAmount = number_format($account->sumChildrenEntries('foreign_credit', $from, $to), 2);
         }
 
         // Add account to spreadsheet
@@ -415,13 +415,13 @@ class Account extends Model
         // Process children recursively
         $children = $allAccounts->where('parent_account_id', $account->id);
         foreach ($children as $child) {
-            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero, $main_accounts_only);
+            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero, $main_accounts_only, $from, $to);
         }
 
         return $row;
     }
 
-    private function sumChildrenEntries($mode = 'debit')
+    private function sumChildrenEntries($mode = 'debit', Carbon $from, Carbon $to)
     {
         if ($this->children_accounts()->count() == 0) {
             switch ($mode) {
@@ -435,7 +435,7 @@ class Account extends Model
                     return $this->credit_foreign_amount;
             }
         }
-        $children = $this->children_accounts()->get();
+        $children = $this->children_accounts()->totalEntries($from, $to)->get();
         foreach ($children as $child) {
             switch ($mode) {
                 case 'debit':
