@@ -451,7 +451,7 @@ class Account extends Model
         switch ($mode) {
             case 'debit':
                 $child_total = $this->debit_amount;
-                break;  
+                break;
             case 'credit':
                 $child_total = $this->credit_amount;
                 break;
@@ -602,7 +602,7 @@ class Account extends Model
 
     public function getIsForeignAttribute()
     {
-        $this->default_currency !== JournalEntry::CURRENCY_EGP;
+        return $this->default_currency !== JournalEntry::CURRENCY_EGP;
     }
 
     public function getHasChildrenAttribute()
