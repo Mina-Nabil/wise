@@ -234,6 +234,7 @@ class SoldPolicy extends Model
                 $this->after_tax_comm = $this->total_policy_comm * (1 - Invoice::TAX_RATE);
                 $this->tax_amount = $this->total_policy_comm * Invoice::TAX_RATE;
                 $this->save();
+                $this->calculateTotalCompanyPayments();
             });
             return true;
         } catch (Exception $e) {
