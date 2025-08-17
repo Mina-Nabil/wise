@@ -451,23 +451,31 @@ class Account extends Model
         switch ($mode) {
             case 'debit':
                 $child_total = $this->debit_amount;
+                break;  
             case 'credit':
                 $child_total = $this->credit_amount;
+                break;
             case 'foreign_debit':
                 $child_total = $this->debit_foreign_amount;
+                break;
             case 'foreign_credit':
                 $child_total = $this->credit_foreign_amount;
+                break;
         }
         foreach ($children as $child) {
             switch ($mode) {
                 case 'debit':
                     $child_total += $child->sumChildrenEntries($mode, $from, $to);
+                    break;
                 case 'credit':
                     $child_total += $child->sumChildrenEntries($mode, $from, $to);
+                    break;
                 case 'foreign_debit':
                     $child_total += $child->sumChildrenEntries($mode, $from, $to);
+                    break;
                 case 'foreign_credit':
                     $child_total += $child->sumChildrenEntries($mode, $from, $to);
+                    break;
             }
         }
         return $child_total;
