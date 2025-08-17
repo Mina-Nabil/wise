@@ -5,9 +5,13 @@
 @endsection
 
 @section('calendar')
-    active
+    {{ $mode === 'all' ? 'active' : false }}
+@endsection
+
+@section('followups-calendar')
+    {{ $mode === 'followups' ? 'active' : false }}
 @endsection
 
 @section('content')
-    <livewire:calendar />  
+    <livewire:calendar mode="{{ $mode }}" />  
 @endsection

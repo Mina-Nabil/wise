@@ -46,6 +46,7 @@ use Illuminate\Http\Request;
 Route::middleware('auth', 'active')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
     Route::get('/calendar', [HomeController::class, 'calendar']);
+    Route::get('/calendar/followups', [HomeController::class, 'calendarFollowups']);
     Route::get('/switch/session/{id}', function (Request $req) {
         User::switchSession($req->id);
     });

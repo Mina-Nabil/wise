@@ -5,7 +5,10 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Corporates\Corporate;
 use App\Models\Corporates\Status;
+use App\Models\Customers\Interest;
+use App\Models\Customers\Followup;
 use App\Models\Users\User;
+use App\Models\Insurance\Policy;
 use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
@@ -47,6 +50,24 @@ class CorporateIndex extends Component
 
     public $leadsImportFile;
     public $downloadUserLeadsID;
+
+    // Interest management properties
+    public $interestManagementModalOpen = false;
+    public $selectedCorporate = null;
+    public $editInteresetSec = false;
+    public $editedLob;
+    public $interested;
+    public $interestNote;
+    public $isCreateFollowup = false;
+
+    // Followup properties
+    public $addFollowupSection = false;
+    public $followupTitle;
+    public $followupCallDate;
+    public $followupCallTime;
+    public $followupDesc;
+    public $FollowupLineOfBussiness = Policy::BUSINESS_CORPORATE_MOTOR;
+    public $is_meeting = false;
 
     public function changeStatus()
     {
@@ -220,17 +241,151 @@ class CorporateIndex extends Component
         $this->toggle($this->addCorporateSection);
     }
 
+    // Interest Management Functions
+    public function openInterestManagement($corporateId)
+    {
+        $this->selectedCorporate = Corporate::with('interests')->findOrFail($corporateId);
+        $this->interestManagementModalOpen = true;
+    }
+
+    public function closeInterestManagement()
+    {
+        $this->interestManagementModalOpen = false;
+        $this->selectedCorporate = null;
+        $this->editInteresetSec = false;
+        $this->editedLob = null;
+        $this->interested = null;
+        $this->interestNote = null;
+        $this->isCreateFollowup = false;
+        // Also close followup section
+        $this->closeFollowupSection();
+    }
+
+    public function removeInterest($id)
+    {
+        $res = Interest::find($id)->delete();
+        if ($res) {
+            // Refresh the selected corporate with updated interests
+            $this->selectedCorporate = Corporate::with('interests')->findOrFail($this->selectedCorporate->id);
+            $this->alert('success', 'Interest removed!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function editThisInterest($status, $lob)
+    {
+        $this->editInteresetSec = true;
+        $this->editedLob = $lob;
+        $this->interested = $status;
+    }
+
+    public function closeEditInterest()
+    {
+        $this->editInteresetSec = false;
+        $this->editedLob = null;
+        $this->interested = null;
+        $this->interestNote = null;
+        $this->isCreateFollowup = false;
+    }
+
+    public function editInterest()
+    {
+        if ($this->interested === 'YES') {
+            $this->interested = true;
+        } else {
+            $this->interested = false;
+        }
+
+        $this->validate([
+            'editedLob' => 'required|in:' . implode(',', Policy::CORPORATE_TYPES),
+            'interested' => 'required|boolean',
+            'interestNote' => 'nullable|string|max:255'
+        ]);
+
+        $res = $this->selectedCorporate->addInterest($this->editedLob, $this->interested, $this->interestNote);
+
+        if ($res) {
+            $this->editInteresetSec = false;
+            $this->editedLob = null;
+            $this->interested = null;
+            $this->interestNote = null;
+            // Refresh the selected corporate with updated interests
+            $this->selectedCorporate = Corporate::with('interests')->findOrFail($this->selectedCorporate->id);
+            $this->alert('success', 'Interest edited!');
+            
+            if ($this->isCreateFollowup) {
+                $this->FollowupLineOfBussiness = $res->business;
+                $this->is_meeting = true;
+                $this->OpenAddFollowupSection();
+            }
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    // Followup Management Functions
+    public function OpenAddFollowupSection()
+    {
+        $this->addFollowupSection = true;
+    }
+
+    public function closeFollowupSection()
+    {
+        $this->followupTitle = null;
+        $this->followupCallDate = null;
+        $this->followupCallTime = null;
+        $this->followupDesc = null;
+        $this->addFollowupSection = false;
+        $this->is_meeting = false;
+        $this->FollowupLineOfBussiness = Policy::BUSINESS_CORPORATE_MOTOR;
+        $this->isCreateFollowup = false;
+    }
+
+    public function addFollowup()
+    {
+        $this->validate([
+            'followupTitle' => 'required|string|max:255',
+            'followupCallDate' => 'nullable|date',
+            'followupCallTime' => 'nullable',
+            'followupDesc' => 'nullable|string|max:255',
+            'FollowupLineOfBussiness' => 'nullable|in:' . implode(',', Policy::CORPORATE_TYPES),
+            'is_meeting' => 'nullable|boolean',
+        ]);
+
+        $combinedDateTimeString = $this->followupCallDate . ' ' . $this->followupCallTime;
+        $combinedDateTime = new \DateTime($combinedDateTimeString);
+
+        $res = $this->selectedCorporate->addFollowup(
+            $this->followupTitle,
+            $combinedDateTime,
+            $this->followupDesc,
+            $this->is_meeting,
+            $this->FollowupLineOfBussiness,
+        );
+
+        if ($res) {
+            $this->alert('success', 'Followup added successfully');
+            $this->closeFollowupSection();
+            // Refresh the selected corporate
+            $this->selectedCorporate = Corporate::with('interests')->findOrFail($this->selectedCorporate->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
 
     public function render()
     {
         $corporates = Corporate::userData($this->search, $this->statusFilter)->paginate(10);
         $users = User::all();
         $customerStatus = Status::STATUSES;
+        $LINES_OF_BUSINESS = Policy::CORPORATE_TYPES;
         
         return view('livewire.corporate-index',[
             'corporates' => $corporates,
             'customerStatus' => $customerStatus,
             'users' => $users,
+            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
         ]);
     }
 }
