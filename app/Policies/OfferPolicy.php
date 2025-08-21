@@ -18,7 +18,7 @@ class OfferPolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return !$user->is_claims;
     }
 
     /**
@@ -30,7 +30,7 @@ class OfferPolicy
      */
     public function view(User $user, Offer $offer)
     {
-        return true;
+        return !$user->is_claims;
     }
 
     /**

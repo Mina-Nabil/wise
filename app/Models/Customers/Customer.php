@@ -877,7 +877,7 @@ class Customer extends Model
     }
 
     ///scopes
-    public function scopeUserData($query, $searchText = null, $mustMatchSearch = true, $statusFilter = null)
+    public function scopeUserData($query, $searchText = null, $statusFilter = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -885,27 +885,21 @@ class Customer extends Model
             ->join('users', 'customers.owner_id', '=', 'users.id');
 
         if (!($loggedInUser->is_admin
-            || ($loggedInUser->is_operations && $searchText))) {
+            || (($loggedInUser->is_operations || $loggedInUser->is_claims) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('users.id', $loggedInUser->id);
             });
         }
 
-        $query->when($searchText, function ($q, $v) use ($loggedInUser, $mustMatchSearch) {
+        $query->when($searchText, function ($q, $v) {
             $q->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')
                 ->groupBy('customers.id');
 
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp, $loggedInUser, $mustMatchSearch) {
-                    // if ($loggedInUser->is_operations && $mustMatchSearch) {
-                    //     $qq->where('customers.email', '=', "$tmp")
-                    //         ->orwhere('customers.first_name', '=', "$tmp")
-                    //         ->orwhere('customers.last_name', '=', "$tmp")
-                    //         ->orwhere('customer_phones.number', '=', "$tmp");
-                    // } else {
+                $q->where(function ($qq) use ($tmp) {
                     $qq->where('customers.first_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.id', '=', "$tmp")
                         ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
@@ -915,7 +909,6 @@ class Customer extends Model
                         ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.email', 'LIKE', "%$tmp%")
                         ->orwhere('customer_phones.number', 'LIKE', "%$tmp%");
-                    // }
                 });
             }
         });

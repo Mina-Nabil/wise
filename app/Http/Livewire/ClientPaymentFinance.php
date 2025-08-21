@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
@@ -100,6 +101,7 @@ class ClientPaymentFinance extends Component
 
     public function render()
     {
+        $this->authorize('viewReports', SoldPolicy::class);
         $statuses = ClientPayment::PYMT_STATES;
         $companies = Company::all();
         $payments = ClientPayment::userData(states: $this->filteredStatus, searchText: $this->searchText)->includeDue()

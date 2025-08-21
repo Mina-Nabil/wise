@@ -15,6 +15,7 @@ class ExpSoldPolicyIndex extends Component
 
     public function render()
     {
+        $this->authorize('viewReports', SoldPolicy::class);
         $soldPolicies = SoldPolicy::userData(searchText:$this->search,is_expiring:true)->paginate(20);
         return view('livewire.exp-sold-policy-index',[
             'soldPolicies' => $soldPolicies,

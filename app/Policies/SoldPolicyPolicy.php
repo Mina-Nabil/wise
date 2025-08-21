@@ -185,4 +185,9 @@ class SoldPolicyPolicy
     {
         return $user->is_admin || $user->is_operations || $user->id == 12;
     }
+
+    public function viewReports(User $user)
+    {
+        return !$user->is_claims;
+    }
 }

@@ -1117,6 +1117,7 @@ class OfferShow extends Component
     public function mount($offerId)
     {
         $this->offer = Offer::with('item')->find($offerId);
+        $this->authorize('view', $this->offer);
         $this->item_value = $this->offer->item_value;
         $this->item_title = $this->offer->item_title;
         $this->item_desc = $this->offer->item_desc;
