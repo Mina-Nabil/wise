@@ -516,6 +516,7 @@ class Task extends Model
                 ->where(function ($q) use ($loggedInUser, $includeWatchers) {
                     $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                         ->orwhere('tasks.assigned_to_type', $loggedInUser->type)
+                        ->when($loggedInUser->is_operations, fn($q) => $q->orwhere('users.type', User::TYPE_CLAIMS))
                         ->orwhere('tasks.assigned_to_id', $loggedInUser->id)
                         ->orwhere('tasks.open_by_id', $loggedInUser->id)
                         ->orwhere(function ($qu) use ($loggedInUser) {

@@ -9,11 +9,12 @@ use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class OutstandingSoldPolicyIndex extends Component
 {
 
-    use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
+    use WithPagination, AlertFrontEnd, ToggleSectionLivewire, AuthorizesRequests;
 
     public $search;
     public $searchCompany;
