@@ -7,12 +7,13 @@ use App\Models\Insurance\Company;
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 
 class ClientPaymentFinance extends Component
 {
-    use WithPagination, AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, AuthorizesRequests;
 
     public $filteredStatus = ClientPayment::NOT_PAID_STATES;
     public $selectedCompany = null;

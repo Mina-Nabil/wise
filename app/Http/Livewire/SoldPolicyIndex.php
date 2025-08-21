@@ -12,12 +12,13 @@ use App\Models\Users\User;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 
 class SoldPolicyIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, WithFileUploads;
+    use WithPagination, AlertFrontEnd, WithFileUploads, AuthorizesRequests;
 
     public $search;
 

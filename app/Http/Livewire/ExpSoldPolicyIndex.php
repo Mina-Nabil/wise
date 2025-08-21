@@ -6,10 +6,11 @@ use Livewire\Component;
 use App\models\Business\SoldPolicy;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ExpSoldPolicyIndex extends Component
 {
-    use WithPagination,AlertFrontEnd;
+    use WithPagination,AlertFrontEnd, AuthorizesRequests;
 
     public $search;
 
