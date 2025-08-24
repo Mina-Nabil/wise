@@ -30,6 +30,11 @@ class PoliciesController extends Controller
         return view('policies.policy_show', compact('policyId'));
     }
 
+    public function campaignIndex()
+    {
+        return view('policies.campaign-index');
+    }
+
     public function soldPolicyShow($id)
     {
         return view('policies.sold-policy_show', compact('id'));

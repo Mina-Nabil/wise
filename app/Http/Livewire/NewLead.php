@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Corporates\Corporate;
+use App\Models\Marketing\Campaign;
 use Livewire\Component;
 use App\Models\Customers\Customer;
 use App\Traits\ToggleSectionLivewire;
@@ -26,6 +27,7 @@ class NewLead extends Component
     public $followupCallDateTime;
     public $leadType = 'customer';
     public $followup_is_meeting = false;
+    public $campaignId;
 
 
     public function toggleAddLead()
@@ -69,7 +71,8 @@ class NewLead extends Component
                 $this->leadArabicLastName,
                 email: $this->LeadEmail,
                 owner_id: auth()->id(),
-                note: $this->note
+                note: $this->note,
+                campaign_id: $this->campaignId
             );
 
             if ($this->followupCallDateTime || $this->followup_is_meeting) {
@@ -90,7 +93,8 @@ class NewLead extends Component
             $res = $corporate->newLead(
                 $this->corporateName,
                 email: $this->LeadEmail,
-                note: $this->note
+                note: $this->note,
+                campaign_id: $this->campaignId
             );
 
             $res->addPhone('home', $this->LeadPhone);
@@ -116,6 +120,9 @@ class NewLead extends Component
 
     public function render()
     {
-        return view('livewire.new-lead');
+        $campaigns = Campaign::all();
+        return view('livewire.new-lead', [
+            'campaigns' => $campaigns,
+        ]);
     }
 }

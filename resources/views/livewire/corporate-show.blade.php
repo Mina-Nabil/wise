@@ -471,6 +471,11 @@
                                     </p>
                                     <p class="text-wrap"><b>{{ $corporate->owner?->first_name }}
                                             {{ $corporate->owner?->last_name }}</b></p>
+                                    @if ($corporate->campaign)
+                                        <br>
+                                        <p><b>Campaign</b></p>
+                                        <p class="text-wrap">{{ $corporate->campaign->name }}</p>
+                                    @endif
                                 </div>
                             </div>
                         @endif
@@ -1959,6 +1964,22 @@
                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                             @enderror
 
+                            <div class="input-area mt-3">
+                                <label for="campaignId" class="form-label">Campaign</label>
+                                <select name="campaignId" id="campaignId"
+                                    class="form-control w-full mt-2 @error('campaignId') !border-danger-500 @enderror"
+                                    wire:model.defer="campaignId">
+                                    <option value="">None</option>
+                                    @foreach ($campaigns as $campaign)
+                                        <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @error('campaignId')
+                                <span
+                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Commercial Record</label>
@@ -2397,6 +2418,22 @@
                             </div>
 
                             <div class="input-area mt-3">
+                                <label for="followupCampaignId" class="form-label">Campaign</label>
+                                <select name="followupCampaignId" id="followupCampaignId"
+                                    class="form-control w-full mt-2 @error('followupCampaignId') !border-danger-500 @enderror"
+                                    wire:model.defer="followupCampaignId">
+                                    <option value="">Use Corporate Campaign ({{ $corporate->campaign?->name ?? 'None' }})</option>
+                                    @foreach ($campaigns as $campaign)
+                                        <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @error('followupCampaignId')
+                                <span
+                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+
+                            <div class="input-area mt-3">
                                 <label for="firstName" class="form-label">Description</label>
                                 <input id="lastName" type="text"
                                     class="form-control @error('followupDesc') !border-danger-500 @enderror"
@@ -2503,6 +2540,22 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div class="input-area mt-3">
+                                <label for="followupCampaignId" class="form-label">Campaign Override</label>
+                                <select name="followupCampaignId" id="followupCampaignId"
+                                    class="form-control w-full mt-2 @error('followupCampaignId') !border-danger-500 @enderror"
+                                    wire:model.defer="followupCampaignId">
+                                    <option value="">Use Corporate Campaign ({{ $corporate->campaign?->name ?? 'None' }})</option>
+                                    @foreach ($campaigns as $campaign)
+                                        <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @error('followupCampaignId')
+                                <span
+                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
 
                             <div class="input-area mt-3">
                                 <label for="firstName" class="form-label">Description</label>

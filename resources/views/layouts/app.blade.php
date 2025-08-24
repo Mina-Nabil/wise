@@ -343,6 +343,16 @@
                                 </a>
                             </li>
                         @endif
+                        @can('viewAny', \App\Models\Marketing\Campaign::class)
+                            <li>
+                                <a href="{{ url('/campaigns') }}" class="navItem @yield('campaigns')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon" icon="heroicons:megaphone"></iconify-icon>
+                                        <span>Campaigns</span>
+                                    </span>
+                                </a>
+                            </li>
+                        @endcan
                         @if (Auth::user()->is_admin)
                             <li>
                                 <a href="{{ url('/policies') }}" class="navItem @yield('policies')">

@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
 use App\Models\Insurance\Policy;
+use App\Models\Marketing\Campaign;
 use App\Models\Users\User;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
@@ -116,15 +117,44 @@ class CorporateInterestsReport extends Component
     }
     // END: welcomed filter
 
+    // START: campaign filter
+    public $campaignSection = false;
+    public $campaignName;
+    public $campaign_id;
+    public $Ecampaign_id;
+    
+    public function toggleCampaign()
+    {
+        $this->toggle($this->campaignSection);
+        if ($this->campaignSection) {
+            $this->Ecampaign_id = $this->campaign_id;
+        }
+    }
+
+    public function setCampaign()
+    {
+        $this->campaign_id = $this->Ecampaign_id;
+        $this->campaignName = Campaign::find($this->campaign_id)->name;
+        $this->toggle($this->campaignSection);
+    }
+
+    public function clearCampaign()
+    {
+        $this->campaign_id = null;
+        $this->campaignName = null;
+    }
+    // END: campaign filter
 
     public function render()
     {
-        $customers = Corporate::InterestReport($this->creation_from,$this->creation_to,$this->lobs,$this->creator_id,$this->isWelcomed)->paginate(50);
+        $customers = Corporate::InterestReport($this->creation_from,$this->creation_to,$this->lobs,$this->creator_id,$this->isWelcomed,$this->campaign_id)->paginate(50);
         $users = User::all();
+        $campaigns = Campaign::all();
         $all_lobs = Policy::LINES_OF_BUSINESS;
         return view('livewire.corporate-interests-report',[
             'all_lobs' => $all_lobs,
             'users' => $users,
+            'campaigns' => $campaigns,
             'customers' => $customers
         ]);
     }

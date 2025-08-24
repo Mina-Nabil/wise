@@ -3,6 +3,7 @@
 namespace App\Models\Customers;
 
 use App\Models\Corporates\Corporate;
+use App\Models\Marketing\Campaign;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -39,20 +40,27 @@ class Followup extends Model
         'caller_note',
         'creator_id',
         'is_meeting',
-        'line_of_business'
+        'line_of_business',
+        'campaign_id'
     ];
 
     ///model functions
-    public function editInfo($title, $call_time = null, $desc = null, $is_meeting = false, $line_of_business = null)
+    public function editInfo($title, $call_time = null, $desc = null, $is_meeting = false, $line_of_business = null, $campaign_id = null)
     {
         try {
-            $res = $this->update([
+            $updateData = [
                 "title"             =>  $title,
                 "call_time"         =>  $call_time,
                 "is_meeting"        =>  $is_meeting,
                 "line_of_business"  =>  $line_of_business,
                 "desc"              =>  $desc
-            ]);
+            ];
+            
+            if ($campaign_id !== null) {
+                $updateData["campaign_id"] = $campaign_id;
+            }
+            
+            $res = $this->update($updateData);
             AppLog::info("Follow-up updated", loggable: $this);
             return $res;
         } catch (Exception $e) {
@@ -225,5 +233,10 @@ class Followup extends Model
     public function called(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function campaign(): BelongsTo
+    {
+        return $this->belongsTo(Campaign::class);
     }
 }

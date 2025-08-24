@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Base\Area;
 use App\Models\Base\City;
 use App\Models\Base\Country;
+use App\Models\Marketing\Campaign;
 use Livewire\Component;
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
@@ -40,6 +41,7 @@ class CorporateShow extends Component
     public $contractDoc;
     public $mainBandEvidence;
     public $editCorporateSection = false;
+    public $campaignId;
 
     //address
     public $type;
@@ -72,6 +74,7 @@ class CorporateShow extends Component
     public $isMeeting;
     public $FollowupLineOfBussiness = Policy::BUSINESS_CORPORATE_MOTOR;
     public $is_meeting = false;
+    public $followupCampaignId;
 
     //contact
     public $contactName;
@@ -173,6 +176,7 @@ class CorporateShow extends Component
         $this->kycDoc = $this->corporate->kyc_doc;
         $this->contractDoc = $this->corporate->contract_doc;
         $this->mainBandEvidence = $this->corporate->main_bank_evidence;
+        $this->campaignId = $this->corporate->campaign_id;
         $this->toggle($this->editCorporateSection);
     }
 
@@ -338,6 +342,7 @@ class CorporateShow extends Component
         $this->addFollowupSection = false;
         $this->is_meeting = false;
         $this->FollowupLineOfBussiness = Policy::BUSINESS_CORPORATE_MOTOR;
+        $this->followupCampaignId = null;
     }
 
     public function OpenAddFollowupSection()
@@ -464,7 +469,8 @@ class CorporateShow extends Component
             $combinedDateTime,
             $this->followupDesc,
             $this->is_meeting,
-            $this->FollowupLineOfBussiness
+            $this->FollowupLineOfBussiness,
+            $this->followupCampaignId
         );
 
         if ($res) {
@@ -565,7 +571,7 @@ class CorporateShow extends Component
 
     public function mount($corporateId)
     {
-        $this->corporate = Corporate::findOrFail($corporateId);
+        $this->corporate = Corporate::with(['campaign', 'owner'])->findOrFail($corporateId);
         $this->name = $this->corporate->name;
         $this->arabicName = $this->corporate->arabic_name;
         $this->email = $this->corporate->email;
@@ -640,7 +646,7 @@ class CorporateShow extends Component
         $mainBandEvidence = $this->generateUrl('main_bank_evidence', 'mainBandEvidence');
 
         $c = Corporate::find($this->corporate->id);
-        $res = $c->editInfo($this->name, $this->arabicName, $this->email, $this->commercialRecord, $commercialRecordDoc, $this->taxId, $taxIdDoc, $this->kyc, $kycDoc, $contractDoc, $mainBandEvidence);
+        $res = $c->editInfo($this->name, $this->arabicName, $this->email, $this->commercialRecord, $commercialRecordDoc, $this->taxId, $taxIdDoc, $this->kyc, $kycDoc, $contractDoc, $mainBandEvidence, null, $this->campaignId);
         if ($res) {
             $this->alert('success', 'Corporate edited successfuly');
             $this->name = null;
@@ -654,6 +660,7 @@ class CorporateShow extends Component
             $this->kycDoc = null;
             $this->contractDoc = null;
             $this->mainBandEvidence = null;
+            $this->campaignId = null;
             $this->editCorporateSection = false;
             $this->mount($this->corporate->id);
         } else {
@@ -922,7 +929,7 @@ class CorporateShow extends Component
         $tasks = $this->corporate->tasks;
         $offers = $this->corporate->offers;
         $LINES_OF_BUSINESS = Policy::CORPORATE_TYPES;
-
+        $campaigns = Campaign::all();
 
         return view('livewire.corporate-show', [
             'addressTypes' => $addressTypes,
@@ -933,7 +940,8 @@ class CorporateShow extends Component
             'cities' => $cities,
             'countries' => $countries,
             'offers' => $offers,
-            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS
+            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
+            'campaigns' => $campaigns
         ]);
     }
 }

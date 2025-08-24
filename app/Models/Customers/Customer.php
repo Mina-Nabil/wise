@@ -3,6 +3,7 @@
 namespace App\Models\Customers;
 
 use App\Models\Base\Country;
+use App\Models\Marketing\Campaign;
 use App\Models\Tasks\Task;
 use App\Models\Offers\Offer;
 use App\Models\Users\AppLog;
@@ -123,11 +124,12 @@ class Customer extends Model
         'id_doc_2',
         'driver_license_doc_2',
         'is_welcomed',
-        'welcome_note'
+        'welcome_note',
+        'campaign_id'
     ];
 
     ///model functions
-    public function addFollowup($title, $call_time, $desc = null, $is_meeting = false, $line_of_business = null): Followup|false
+    public function addFollowup($title, $call_time, $desc = null, $is_meeting = false, $line_of_business = null, $campaign_id = null): Followup|false
     {
         try {
             $res = $this->followups()->create([
@@ -137,6 +139,7 @@ class Customer extends Model
                 "desc"      =>  $desc,
                 "is_meeting"        =>  $is_meeting,
                 "line_of_business"  =>  $line_of_business,
+                "campaign_id"       =>  $campaign_id !== null ? $campaign_id : $this->campaign_id,
             ]);
             AppLog::info("Follow-up created", loggable: $res);
             return $res;
@@ -187,6 +190,7 @@ class Customer extends Model
         $driver_license_doc = null,
         $id_doc_2 = null,
         $driver_license_doc_2 = null,
+        $campaign_id = null,
     ): bool {
         $updates['first_name'] = $first_name;
         $updates['last_name'] = $last_name;
@@ -208,6 +212,7 @@ class Customer extends Model
         if ($driver_license_doc) $updates['driver_license_doc'] = $driver_license_doc;
         if ($id_doc_2) $updates['id_doc_2'] = $id_doc_2;
         if ($driver_license_doc_2) $updates['driver_license_doc_2'] = $driver_license_doc_2;
+        if ($campaign_id) $updates['campaign_id'] = $campaign_id;
 
         $this->update($updates);
 
@@ -593,6 +598,7 @@ class Customer extends Model
         $id_doc = null,
         $driver_license_doc = null,
         $note = null,
+        $campaign_id = null,
     ): self|false {
         $newLead = new self([
             "type"          =>  self::TYPE_LEAD,
@@ -616,7 +622,8 @@ class Customer extends Model
             "id_doc"        =>  $id_doc,
             "driver_license_doc" =>  $driver_license_doc,
             "note"          =>  $note,
-            "creator_id"    => Auth::id() ?? 10
+            "creator_id"    => Auth::id() ?? 10,
+            "campaign_id"   => $campaign_id,
         ]);
 
         try {
@@ -654,7 +661,8 @@ class Customer extends Model
         $driver_license_doc = null,
         $id_doc_2 = null,
         $driver_license_doc_2 = null,
-        $note = null
+        $note = null,
+        $campaign_id = null
     ): self|false {
         $newCustomer = new self([
             "type"          =>  self::TYPE_CLIENT,
@@ -681,6 +689,7 @@ class Customer extends Model
             "driver_license_doc_2"    =>  $driver_license_doc_2,
             "note"          =>  $note,
             "creator_id"    => Auth::id() ?? 1,
+            "campaign_id"   => $campaign_id,
         ]);
 
         try {
@@ -725,6 +734,7 @@ class Customer extends Model
             $activeSheet->getCell('G' . $i)->setValue($lead->telephone2);
             $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
             $activeSheet->getCell('I' . $i)->setValue($lead->note);
+            $activeSheet->getCell('J' . $i)->setValue($lead->campaign?->name);
             $i++;
         }
 
@@ -755,6 +765,8 @@ class Customer extends Model
             $telephone2     =  $activeSheet->getCell('G' . $i)->getValue();
             $username       =  $activeSheet->getCell('H' . $i)->getValue();
             $note           =  $activeSheet->getCell('I' . $i)->getValue();
+            $campaign_name    =  $activeSheet->getCell('J' . $i)->getValue();
+            $campaign_id = $campaign_name ? Campaign::where('name', $campaign_name)->first()?->id : null;
 
             if (!$first_name || !$last_name || !$telephone1) continue;
             $user = User::userExists($username);
@@ -767,7 +779,7 @@ class Customer extends Model
                 $lead = self::find($id);
                 if (!$lead) continue;
 
-                $lead->editCustomer($first_name, $last_name, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name);
+                $lead->editCustomer($first_name, $last_name, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, campaign_id: $campaign_id);
                 $lead->setOwner($user->id);
                 if ($note)
                     $lead->setCustomerNote($note);
@@ -779,12 +791,13 @@ class Customer extends Model
                     $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
             } else {
 
-                $lead = self::newLead($first_name, $last_name, $telephone1, note: $note, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, owner_id: $user->id);
+                $lead = self::newLead($first_name, $last_name, $telephone1, note: $note, arabic_first_name: $first_arabic_name, arabic_last_name: $last_arabic_name, owner_id: $user->id, campaign_id: $campaign_id);
 
                 if ($telephone2)
                     $lead->addPhone(Phone::TYPE_MOBILE, $telephone2, false, true);
                 if ($note)
                     $lead->setCustomerNote($note);
+
             }
         }
 
@@ -894,6 +907,7 @@ class Customer extends Model
 
         $query->when($searchText, function ($q, $v) {
             $q->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')
+                ->leftjoin('campaigns', 'campaigns.id', '=', 'customers.campaign_id')
                 ->groupBy('customers.id');
 
             $splittedText = explode(' ', $v);
@@ -908,7 +922,8 @@ class Customer extends Model
                         ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
                         ->orwhere('customers.email', 'LIKE', "%$tmp%")
-                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%");
+                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                        ->orwhere('campaigns.name', 'LIKE', "%$tmp%");
                 });
             }
         });
@@ -925,7 +940,7 @@ class Customer extends Model
      *      'line_of_business' => 1 or 0
      * ]
      */
-    public function scopeInterestReport($query, Carbon $from = null, Carbon $to = null, array $interests = [], $owner_id = null, $is_welcomed = null)
+    public function scopeInterestReport($query, Carbon $from = null, Carbon $to = null, array $interests = [], $owner_id = null, $is_welcomed = null, $campaign_id = null)
     {
         return $query->userData()
             ->when($is_welcomed !== null, function ($q) use ($is_welcomed) {
@@ -933,6 +948,9 @@ class Customer extends Model
             })
             ->when($owner_id !== null, function ($q) use ($owner_id) {
                 $q->where('customers.owner_id', $owner_id);
+            })
+            ->when($campaign_id !== null, function ($q) use ($campaign_id) {
+                $q->where('customers.campaign_id', $campaign_id);
             })
             ->join('customer_interests', 'customers.id', '=', 'customer_interests.customer_id')
             ->select('customers.*', 'customer_interests.business', 'customer_interests.interested', 'customer_interests.note')
@@ -1035,5 +1053,10 @@ class Customer extends Model
     public function bank_accounts(): HasMany
     {
         return $this->hasMany(BankAccount::class);
+    }
+
+    public function campaign(): BelongsTo
+    {
+        return $this->belongsTo(Campaign::class);
     }
 }

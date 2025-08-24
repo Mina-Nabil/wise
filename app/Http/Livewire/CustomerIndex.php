@@ -9,6 +9,7 @@ use App\Models\Customers\Profession;
 use App\Models\Customers\Interest;
 use App\Models\Customers\Followup;
 use App\Models\Base\Country;
+use App\Models\Marketing\Campaign;
 use App\Models\Users\User;
 use App\Models\Insurance\Policy;
 use App\Traits\AlertFrontEnd;
@@ -49,6 +50,7 @@ class CustomerIndex extends Component
     public $driverLicenseDoc;
     public $driverLicenseDoc2;
     public $followupCallDateTime;
+    public $campaignId;
 
     public $addLeadSection;
     public $leadFirstName;
@@ -59,6 +61,7 @@ class CustomerIndex extends Component
     public $leadArabicLastName;
     public $LeadPhone;
     public $LeadNote;
+    public $leadCampaignId;
 
     public $changeCustStatusId;
     public $changeCustStatusStatus;
@@ -131,7 +134,7 @@ class CustomerIndex extends Component
             'ownerId' => 'nullable|integer|exists:users,id',
         ]);
 
-        $res = Customer::newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note: $this->LeadNote);
+        $res = Customer::newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note: $this->LeadNote, campaign_id: $this->leadCampaignId);
 
 
         if ($this->followupCallDateTime) {
@@ -244,7 +247,8 @@ class CustomerIndex extends Component
             driver_license_doc: $driverLicenseDoc_url,
             id_doc_2: $idDoc2_url,
             driver_license_doc_2: $driverLicenseDoc2_url,
-            note: $this->note
+            note: $this->note,
+            campaign_id: $this->campaignId
         );
 
         if ($this->followupCallDateTime) {
@@ -470,6 +474,8 @@ class CustomerIndex extends Component
         )->latest()->paginate(10);
         $users = User::all();
 
+        $campaigns = Campaign::all();
+
         return view('livewire.customer-index', [
             'customers' => $customers,
             'GENDERS' => $GENDERS,
@@ -482,6 +488,7 @@ class CustomerIndex extends Component
             'countries' => $countries,
             'customerStatus' => $customerStatus,
             'users' => $users,
+            'campaigns' => $campaigns,
         ]);
     }
 }

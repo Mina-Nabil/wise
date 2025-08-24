@@ -682,6 +682,11 @@
                                 </p>
                                 <p class="text-wrap"><b>{{ $customer->owner?->first_name }}
                                         {{ $customer->owner?->last_name }}</b></p>
+                                @if ($customer->campaign)
+                                    <br>
+                                    <p><b>Campaign</b></p>
+                                    <p class="text-wrap">{{ $customer->campaign->name }}</p>
+                                @endif
                             </div>
                         </div>
 
@@ -3200,6 +3205,22 @@
                                 </div>
 
                                 <div class="input-area mt-3">
+                                    <label for="followupCampaignId" class="form-label">Campaign Override</label>
+                                    <select name="followupCampaignId" id="followupCampaignId"
+                                        class="form-control w-full mt-2 @error('followupCampaignId') !border-danger-500 @enderror"
+                                        wire:model.defer="followupCampaignId">
+                                        <option value="">Use Customer Campaign ({{ $customer->campaign?->name ?? 'None' }})</option>
+                                        @foreach ($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('followupCampaignId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
                                     <label for="firstName" class="form-label">Description</label>
                                     <input id="lastName" type="text"
                                         class="form-control @error('followupDesc') !border-danger-500 @enderror"
@@ -3306,6 +3327,22 @@
                                         @endforeach
                                     </select>
                                 </div>
+
+                                <div class="input-area mt-3">
+                                    <label for="followupCampaignId" class="form-label">Campaign Override</label>
+                                    <select name="followupCampaignId" id="followupCampaignId"
+                                        class="form-control w-full mt-2 @error('followupCampaignId') !border-danger-500 @enderror"
+                                        wire:model.defer="followupCampaignId">
+                                        <option value="">Use Customer Campaign ({{ $customer->campaign?->name ?? 'None' }})</option>
+                                        @foreach ($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('followupCampaignId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
 
                                 <div class="input-area mt-3">
                                     <label for="firstName" class="form-label">Description</label>

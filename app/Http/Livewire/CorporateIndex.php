@@ -7,6 +7,7 @@ use App\Models\Corporates\Corporate;
 use App\Models\Corporates\Status;
 use App\Models\Customers\Interest;
 use App\Models\Customers\Followup;
+use App\Models\Marketing\Campaign;
 use App\Models\Users\User;
 use App\Models\Insurance\Policy;
 use App\Traits\AlertFrontEnd;
@@ -47,6 +48,8 @@ class CorporateIndex extends Component
     public $statusNote;
 
     public $LeadName;
+    public $leadCampaignId;
+    public $campaignId;
 
     public $leadsImportFile;
     public $downloadUserLeadsID;
@@ -381,11 +384,14 @@ class CorporateIndex extends Component
         $customerStatus = Status::STATUSES;
         $LINES_OF_BUSINESS = Policy::CORPORATE_TYPES;
         
+        $campaigns = Campaign::all();
+        
         return view('livewire.corporate-index',[
             'corporates' => $corporates,
             'customerStatus' => $customerStatus,
             'users' => $users,
             'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
+            'campaigns' => $campaigns,
         ]);
     }
 }
