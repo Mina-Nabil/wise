@@ -672,34 +672,26 @@ class Corporate extends Model
             ->join('users', "corporates.owner_id", '=', 'users.id');
 
         if (!($loggedInUser->is_admin
-            || ($loggedInUser->is_operations && $searchText))) {
+            || (($loggedInUser->is_operations || $loggedInUser->is_claims) && $searchText))) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('users.id', $loggedInUser->id);
             });
         }
 
-        $query->when($searchText, function ($q, $v) use ($loggedInUser) {
+        $query->when($searchText, function ($q, $v) {
             $q->leftjoin('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id')
                 ->groupBy('corporates.id');
 
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp, $loggedInUser) {
-                    // if ($loggedInUser->is_operations) {
-                    //     $qq->where('corporates.name', '=', "$tmp")
-                    //         ->orwhere('corporates.arabic_name', '=', "$tmp")
-                    //         ->orwhere('corporates.email', '=', "$tmp")
-                    //         ->orwhere('corporate_phones.number', '=', "$tmp")
-                    //         ->orwhere('corporates.arabic_name', '=', "$tmp");
-                    // } else {
+                $q->where(function ($qq) use ($tmp) {
                     $qq->where('corporates.name', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.email', 'LIKE', "%$tmp%")
                         ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%");
-                    // }
                 });
             }
         });

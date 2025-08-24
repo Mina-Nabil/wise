@@ -3,20 +3,14 @@
 namespace App\Models\Business;
 
 use App\Helpers\Helpers;
-use App\Models\Cars\Car as CarsCar;
-use App\Models\Corporates\Address as CorporatesAddress;
 use App\Models\Corporates\Corporate;
-use App\Models\Corporates\Phone as CorporatesPhone;
-use App\Models\Customers\Address;
 use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
-use App\Models\Customers\Phone;
 use App\Models\Insurance\GrossCalculation;
 use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
 use App\Models\Payments\ClientPayment;
-use App\Models\Payments\CommProfile;
 use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\Invoice;
@@ -1527,7 +1521,7 @@ class SoldPolicy extends Model
 
         // if (!($loggedInUser->is_admin
         //     || (($loggedInUser->is_operations || $loggedInUser->is_finance) && ($searchText || $is_expiring)))) {
-        if (!($loggedInUser->is_admin || $loggedInUser->is_operations || $loggedInUser->is_any_finance)) {
+        if (!($loggedInUser->is_admin || $loggedInUser->is_operations || $loggedInUser->is_any_finance || $loggedInUser->is_claims)) {
             $query->where(function ($q) use ($loggedInUser) {
                 $q->whereIn('users.manager_id', $loggedInUser->children_ids_array)
                     ->orwhere('users.id', $loggedInUser->id)
@@ -1537,7 +1531,7 @@ class SoldPolicy extends Model
             });
         }
 
-        $query->when($searchText, function ($q, $v) {
+        $query->when($searchText, function ($q, $v, $loggedInUser) {
             $q->leftjoin('corporates', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'corporates.id')
                     ->where('sold_policies.client_type', Corporate::MORPH_TYPE)
@@ -1551,27 +1545,50 @@ class SoldPolicy extends Model
             $splittedText = explode(' ', $v);
 
             foreach ($splittedText as $tmp) {
-                $q->where(function ($qq) use ($tmp) {
-                    $qq->where('customers.first_name', 'LIKE', "%$tmp%")
-                        //search using customer info
-                        ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
-                        ->orwhere('customers.email', 'LIKE', "%$tmp%")
-                        ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
-                        // ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
-                        //search using customer info
-                        ->orwhere('corporates.name', 'LIKE', "%$tmp%")
-                        ->orwhere('corporates.email', 'LIKE', "%$tmp%")
-                        ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
-                        //search using policy info
-                        ->orwhere('policy_number', 'LIKE', "%$tmp%")
-                        //search using car info
-                        ->orwhere('car_chassis', 'LIKE', "%$tmp%")
-                        ->orwhere('car_engine', 'LIKE', "%$tmp%")
-                        ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
+                $q->where(function ($qq) use ($tmp, $loggedInUser) {
+                    if ($loggedInUser->is_claims) {
+                        $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                            //search using customer info
+                            ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                            ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                            // ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                            //search using customer info
+                            ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                            ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                            ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
+                            //search using policy info
+                            ->orwhere('policy_number', 'LIKE', "%$tmp%")
+                            //search using car info
+                            ->orwhere('car_chassis', 'LIKE', "%$tmp%")
+                            ->orwhere('car_engine', 'LIKE', "%$tmp%")
+                            ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
+                    } else {
+                        $qq->where('customers.first_name', 'LIKE', "%$tmp%")
+                            //search using customer info
+                            ->orwhere('customers.last_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.middle_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_first_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_last_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.arabic_middle_name', 'LIKE', "%$tmp%")
+                            ->orwhere('customers.email', 'LIKE', "%$tmp%")
+                            ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                            // ->orwhere('customer_phones.number', 'LIKE', "%$tmp%")
+                            //search using customer info
+                            ->orwhere('corporates.name', 'LIKE', "%$tmp%")
+                            ->orwhere('corporates.email', 'LIKE', "%$tmp%")
+                            ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
+                            //search using policy info
+                            ->orwhere('policy_number', 'LIKE', "%$tmp%")
+                            //search using car info
+                            ->orwhere('car_chassis', 'LIKE', "%$tmp%")
+                            ->orwhere('car_engine', 'LIKE', "%$tmp%")
+                            ->orwhere('car_plate_no', 'LIKE', "%$tmp%");
+                    }
                     // }
                 });
             }

@@ -2,16 +2,18 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 
 class ClientPaymentFinance extends Component
 {
-    use WithPagination, AlertFrontEnd;
+    use WithPagination, AlertFrontEnd, AuthorizesRequests;
 
     public $filteredStatus = ClientPayment::NOT_PAID_STATES;
     public $selectedCompany = null;
@@ -100,6 +102,7 @@ class ClientPaymentFinance extends Component
 
     public function render()
     {
+        $this->authorize('viewReports', SoldPolicy::class);
         $statuses = ClientPayment::PYMT_STATES;
         $companies = Company::all();
         $payments = ClientPayment::userData(states: $this->filteredStatus, searchText: $this->searchText)->includeDue()

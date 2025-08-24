@@ -57,11 +57,11 @@ class NewMeeting extends Component
     public function updatedSearchClient()
     {
         if ($this->meetingType == 'Customer' && !$this->searchClient == '') {
-            $this->clientNames = Customer::userData($this->searchClient, false)
+            $this->clientNames = Customer::userData($this->searchClient)
                 ->get()
                 ->take(5);
         } elseif ($this->meetingType == 'Corporate' && !$this->searchClient == '') {
-            $this->clientNames = Corporate::userData($this->searchClient, false)
+            $this->clientNames = Corporate::userData($this->searchClient)
                 ->get()
                 ->take(5);
         }

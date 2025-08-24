@@ -37,6 +37,7 @@ class User extends Authenticatable
     //All User types
     const TYPE_SALES = 'sales';
     const TYPE_OPERATIONS = 'operations';
+    const TYPE_CLAIMS = 'claims';
     const TYPE_FINANCE = 'finance';
     const TYPE_FINANCE_ASSISTANT = 'finance_assistant';
     const TYPE_COURIER = 'courier';
@@ -50,6 +51,7 @@ class User extends Authenticatable
         self::TYPE_COURIER,
         self::TYPE_FINANCE,
         self::TYPE_OPERATIONS,
+        self::TYPE_CLAIMS,
         self::TYPE_HR,
         self::TYPE_MANAGER,
         self::TYPE_FINANCE_ASSISTANT,
@@ -312,6 +314,11 @@ class User extends Authenticatable
     public function getIsOperationsAttribute()
     {
         return $this->type == self::TYPE_OPERATIONS;
+    }
+
+    public function getIsClaimsAttribute()
+    {
+        return $this->type == self::TYPE_CLAIMS;
     }
 
     public function getIsSalesAttribute()

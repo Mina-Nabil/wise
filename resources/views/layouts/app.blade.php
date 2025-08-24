@@ -175,7 +175,19 @@
                         </ul>
                     </li>
 
-                    <li class="sidebar-menu-title">Business</li>
+
+                    <!-- Apps Area -->
+                    <li class="sidebar-menu-title">CRM</li>
+                    @can('viewAny', \App\Models\Offers\Offer::class)
+                    <li>
+                        <a href="{{ url('/offers') }}" class="navItem @yield('offers')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="ic:outline-local-offer"></iconify-icon>
+                                <span>Offers</span>
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
                     <li>
                         <a href="{{ url('/sold-policies') }}" class="navItem @yield('sold-policies')">
                             <span class="flex items-center">
@@ -184,6 +196,7 @@
                             </span>
                         </a>
                     </li>
+                    @can('viewReports', \App\Models\SoldPolicy\SoldPolicy::class)
                     <li>
                         <a href="{{ url('/outstanding-sold-policies') }}" class="navItem @yield('outstanding-sold-policies')">
                             <span class="flex items-center">
@@ -192,6 +205,8 @@
                             </span>
                         </a>
                     </li>
+                    @endcan
+                    @can('viewReports', \App\Models\SoldPolicy\SoldPolicy::class)
                     <li>
                         <a href="{{ url('/exp-sold-policies') }}" class="navItem @yield('exp-sold-policies')">
                             <span class="flex items-center">
@@ -200,6 +215,8 @@
                             </span>
                         </a>
                     </li>
+                    @endcan
+                    @can('viewReports', \App\Models\SoldPolicy\SoldPolicy::class)
                     <li>
                         <a href="{{ url('/payments') }}" class="navItem @yield('client-payment-index')">
                             <span class="flex items-center">
@@ -208,7 +225,39 @@
                             </span>
                         </a>
                     </li>
+                    @endcan
+                    @can('viewAny', \App\Models\Customers\Customer::class)
+                    <li>
+                        <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
+                                <span>Customers</span>
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
+                    @can('viewAny', \App\Models\Corporates\Corporate::class)
+                    <li>
+                        <a href="{{ url('/corporates') }}" class="navItem @yield('corporates')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
+                                <span>Corporates</span>
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
+                    @can('viewAny', \App\Models\Customers\Followup::class)
+                    <li>
+                        <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="icon-park-outline:cycle-arrow"></iconify-icon>
+                                <span>Follow Ups</span>
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
 
+                    @can('viewReports', \App\Models\SoldPolicy\SoldPolicy::class)
                     <li class="">
                         <a href="javascript:void(0)" class="navItem">
                             <span class="flex items-center">
@@ -261,47 +310,8 @@
                             @endif
                         </ul>
                     </li>
-
-                    <!-- Apps Area -->
-                    <li class="sidebar-menu-title">CRM</li>
-                    <li>
-                        <a href="{{ url('/offers') }}" class="navItem @yield('offers')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="ic:outline-local-offer"></iconify-icon>
-                                <span>Offers</span>
-                            </span>
-                        </a>
-                    </li>
-                
-                
-                   
-                    <li>
-                        <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
-                                <span>Customers</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url('/corporates') }}" class="navItem @yield('corporates')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
-                                <span>Corporates</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="icon-park-outline:cycle-arrow"></iconify-icon>
-                                <span>Follow Ups</span>
-                            </span>
-                        </a>
-                    </li>
-
-                 
-                    @if (Auth::user()->is_admin || Auth::user()->is_hr || Auth::user()->is_any_finance || Auth::user()->is_operations)
+                    @endcan
+                    @if (Auth::user()->is_admin || Auth::user()->is_hr || Auth::user()->is_any_finance || Auth::user()->is_operations || Auth::user()->is_claims)
                         <li class="sidebar-menu-title">Settings</li>
                         @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
                             <li>
@@ -363,7 +373,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (Auth::user()->is_admin || Auth::user()->is_any_finance || Auth::user()->is_operations)
+                        @if (Auth::user()->is_admin || Auth::user()->is_any_finance || Auth::user()->is_operations || Auth::user()->is_claims)
                             <li>
                                 <a href="{{ url('/companies') }}" class="navItem @yield('companies')">
                                     <span class="flex items-center">

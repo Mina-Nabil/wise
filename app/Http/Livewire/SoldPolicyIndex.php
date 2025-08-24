@@ -12,12 +12,13 @@ use App\Models\Users\User;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 
 class SoldPolicyIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, WithFileUploads;
+    use WithPagination, AlertFrontEnd, WithFileUploads, AuthorizesRequests;
 
     public $search;
 
@@ -199,11 +200,11 @@ class SoldPolicyIndex extends Component
     public function updatedSearchClient()
     {
         if ($this->clientType == 'Customer' && !$this->searchClient == '') {
-            $this->clientNames = Customer::userData($this->searchClient, false)
+            $this->clientNames = Customer::userData($this->searchClient)
                 ->get()
                 ->take(5);
         } elseif ($this->clientType == 'Corporate' && !$this->searchClient == '') {
-            $this->clientNames = Corporate::userData($this->searchClient, false)
+            $this->clientNames = Corporate::userData($this->searchClient)
                 ->get()
                 ->take(5);
         }
@@ -226,6 +227,7 @@ class SoldPolicyIndex extends Component
 
     public function mount()
     {
+        $this->authorize('viewAny', SoldPolicy::class);
         $this->startDate = null;
         $this->endDate = null;
         $this->dateRange = ($this->startDate && $this->endDate) ? $this->startDate . ' to ' . $this->endDate : "N/A";
@@ -243,7 +245,7 @@ class SoldPolicyIndex extends Component
                 $endDate = Carbon::parse($this->endDate);
                 return $query->fromTo($startDate, $endDate);
             })
-            ->simplePaginate(10);
+            ->simplePaginate(4);
             
         $PAYMENT_FREQS = OfferOption::PAYMENT_FREQS;
 

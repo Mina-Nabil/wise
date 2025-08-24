@@ -562,7 +562,14 @@ class TaskShow extends Component
 
         $statuses = Task::STATUSES;
         if ($this->task->assigned_to_type)
-            $users = User::where('type', $this->task->assigned_to_type)->get();
+            $users = User::when($this->task->assigned_to_type === User::TYPE_OPERATIONS, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('type', User::TYPE_OPERATIONS)
+                        ->orWhere('type', User::TYPE_CLAIMS);
+                });
+            })->when($this->task->assigned_to_type !== User::TYPE_OPERATIONS, function ($query) {
+                $query->where('type', $this->task->assigned_to_type);
+            })->get();
         else $users = User::all();
 
         $fieldTitles = TaskField::TITLES;

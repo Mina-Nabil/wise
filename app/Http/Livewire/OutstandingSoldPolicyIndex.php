@@ -9,11 +9,12 @@ use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class OutstandingSoldPolicyIndex extends Component
 {
 
-    use WithPagination, AlertFrontEnd, ToggleSectionLivewire;
+    use WithPagination, AlertFrontEnd, ToggleSectionLivewire, AuthorizesRequests;
 
     public $search;
     public $searchCompany;
@@ -230,6 +231,7 @@ class OutstandingSoldPolicyIndex extends Component
 
     public function mount()
     {
+        $this->authorize('viewReports', SoldPolicy::class);
         $this->payment_from = Carbon::now()->startOfMonth();
         $this->payment_to = Carbon::now()->endOfMonth();
     }
