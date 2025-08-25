@@ -221,6 +221,10 @@
                                             </span>
                                         </th>
 
+                                        <th scope="col" class="table-th">
+                                            Net
+                                        </th>
+
                                         <th scope="col" class="table-th cursor-pointer">
                                             <span wire:click="sortByColumn('amount')" class="clickable-header">Amount
                                                 @if ($sortColumn === 'amount')
@@ -275,6 +279,11 @@
 
                                             <td class="table-td">
                                                 {{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('d/m/Y') : 'N/A' }}
+                                            </td>
+
+                                            <td class="table-td">
+                                                <p><b>{{ number_format($payment->sold_policy->net_premium, 2, '.', ',') }}
+                                                        EGP</b></p>
                                             </td>
 
                                             <td class="table-td">
