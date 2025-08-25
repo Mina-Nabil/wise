@@ -197,7 +197,6 @@
 
                                         <th scope="col" class="table-th cursor-pointer">
                                             <span wire:click="sortByColumn('created_at')" class="clickable-header">Issue
-                                                Date
                                                 @if ($sortColumn === 'created_at')
                                                     @if ($sortDirection === 'asc')
                                                         <iconify-icon icon="fluent:arrow-up-12-filled"></iconify-icon>
@@ -210,7 +209,7 @@
 
                                         <th scope="col" class="table-th cursor-pointer">
                                             <span wire:click="sortByColumn('payment_date')"
-                                                class="clickable-header">Payment Date
+                                                class="clickable-header">Payment
                                                 @if ($sortColumn === 'payment_date')
                                                     @if ($sortDirection === 'asc')
                                                         <iconify-icon icon="fluent:arrow-up-12-filled"></iconify-icon>
@@ -238,7 +237,7 @@
                                         </th>
 
                                         <th scope="col" class="table-th">
-                                            Tax Amount
+                                            Tax
                                         </th>
                                         <th scope="col" class="table-th">
                                             Status
@@ -249,7 +248,7 @@
                                         </th>
 
                                         <th scope="col" class="table-th">
-                                            Insurance Company
+                                            Company
                                         </th>
                                         <th scope="col" class="table-th">
                                             Invoice#
