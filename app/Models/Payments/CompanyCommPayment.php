@@ -244,12 +244,13 @@ class CompanyCommPayment extends Model
             'B1' => 'Client',
             'C1' => 'Issue Date',
             'D1' => 'Payment Date',
-            'E1' => 'Amount',
-            'F1' => 'Tax Amount',
-            'G1' => 'Status',
-            'H1' => 'Type',
-            'I1' => 'Insurance Company',
-            'J1' => 'Invoice#'
+            'E1' => 'Net',
+            'F1' => 'Amount',
+            'G1' => 'Tax Amount',
+            'H1' => 'Status',
+            'I1' => 'Type',
+            'J1' => 'Insurance Company',
+            'K1' => 'Invoice#'
         ];
 
         foreach ($headers as $cell => $header) {
@@ -273,18 +274,19 @@ class CompanyCommPayment extends Model
             $activeSheet->getCell('B' . $i)->setValue($payment->sold_policy && $payment->sold_policy->client ? ($payment->sold_policy->client?->full_name ?? $payment->sold_policy->client?->name ?? 'N/A') : 'N/A');
             $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy && $payment->sold_policy->created_at ? Carbon::parse($payment->sold_policy->created_at)->format('d/m/Y') : '');
             $activeSheet->getCell('D' . $i)->setValue($payment->payment_date ? Carbon::parse($payment->payment_date)->format('d/m/Y') : 'N/A');
-            $activeSheet->getCell('E' . $i)->setValue(number_format($payment->amount - $payment->tax_amount, 2, '.', ','));
-            $activeSheet->getCell('F' . $i)->setValue(number_format($payment->tax_amount, 2, '.', ','));
-            $activeSheet->getCell('F' . $i)->setValue(ucfirst($payment->status));
-            $activeSheet->getCell('G' . $i)->setValue(ucwords(str_replace('_', ' ', $payment->type)));
-            $activeSheet->getCell('H' . $i)->setValue($payment->sold_policy && $payment->sold_policy->policy && $payment->sold_policy->policy->company ? $payment->sold_policy->policy->company->name : 'N/A');
-            $activeSheet->getCell('I' . $i)->setValue($payment->invoice && $payment->invoice->serial ? $payment->invoice->serial : 'N/A');
+            $activeSheet->getCell('E' . $i)->setValue(number_format($payment->sold_policy->net_premium, 2, '.', ','));
+            $activeSheet->getCell('F' . $i)->setValue(number_format($payment->amount - $payment->tax_amount, 2, '.', ','));
+            $activeSheet->getCell('G' . $i)->setValue(number_format($payment->tax_amount, 2, '.', ','));
+            $activeSheet->getCell('H' . $i)->setValue(ucfirst($payment->status));
+            $activeSheet->getCell('I' . $i)->setValue(ucwords(str_replace('_', ' ', $payment->type)));
+            $activeSheet->getCell('J' . $i)->setValue($payment->sold_policy && $payment->sold_policy->policy && $payment->sold_policy->policy->company ? $payment->sold_policy->policy->company->name : 'N/A');
+            $activeSheet->getCell('K' . $i)->setValue($payment->invoice && $payment->invoice->serial ? $payment->invoice->serial : 'N/A');
             $i++;
         }
 
         // Add borders to data table
         if ($i > 2) {
-            $activeSheet->getStyle('A1:J' . ($i - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $activeSheet->getStyle('A1:K' . ($i - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
         }
 
         $writer = new Xlsx($spreadsheet);
