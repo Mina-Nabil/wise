@@ -18,7 +18,7 @@ class CorporatePolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -30,7 +30,7 @@ class CorporatePolicy
      */
     public function view(User $user, Corporate $corporate)
     {
-        //
+        return true;
     }
 
     /**
@@ -41,7 +41,7 @@ class CorporatePolicy
      */
     public function create(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -65,7 +65,7 @@ class CorporatePolicy
      */
     public function update(User $user, Corporate $corporate)
     {
-        //
+        return true;
     }
 
     /**
@@ -77,30 +77,6 @@ class CorporatePolicy
      */
     public function delete(User $user, Corporate $corporate)
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Corporates\Corporate  $corporate
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore(User $user, Corporate $corporate)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\Users\User  $user
-     * @param  \App\Models\Corporates\Corporate  $corporate
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, Corporate $corporate)
-    {
-        //
+        return true;
     }
 }
