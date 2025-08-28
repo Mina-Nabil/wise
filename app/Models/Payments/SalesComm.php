@@ -198,7 +198,7 @@ class SalesComm extends Model
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
                 $comm_disc = $this->sold_policy->discount + $this->sold_policy->penalty_amount;
             } else {
-                if($this->sold_policy->has_sales_out) {
+                if ($this->sold_policy->has_sales_out) {
                     $from_amount -= $this->sold_policy->sales_out_comm;
                 } else {
                     $from_amount -= $this->sold_policy->total_comm_subtractions;
@@ -216,10 +216,9 @@ class SalesComm extends Model
             } else {
                 $from_amount -= $this->sold_policy->sales_out_comm;
             }
-            
         } else {
             $this->sold_policy->calculateTotalPolicyComm();
-            $from_amount =  $this->sold_policy->after_tax_comm - $this->sold_policy->total_comm_subtractions;
+            $from_amount =  ($this->sold_policy->tax_amount ? $this->sold_policy->after_tax_comm : $this->sold_policy->after_tax_comm * .95) - $this->sold_policy->total_comm_subtractions;
         }
 
         $amount = (($this->comm_percentage / 100) * $from_amount) - $comm_disc;
@@ -405,7 +404,7 @@ class SalesComm extends Model
 
     public function scopeNotPolicyCancelled(Builder $query)
     {
-        if(!Helpers::joined($query, 'sold_policies')) {
+        if (!Helpers::joined($query, 'sold_policies')) {
             $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id');
         }
         $query->whereNull('sold_policies.cancellation_time');
@@ -413,7 +412,7 @@ class SalesComm extends Model
 
     public function scopeNotPolicyExpired(Builder $query)
     {
-        if(!Helpers::joined($query, 'sold_policies')) {
+        if (!Helpers::joined($query, 'sold_policies')) {
             $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id');
         }
         $query->where('sold_policies.expiry', '>', Carbon::now()->format('Y-m-d'));
