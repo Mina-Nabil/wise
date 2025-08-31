@@ -160,6 +160,12 @@
                                         dark:hover:text-white cursor-pointer">
                                 is Welcomed</span>
                         </li>
+                        <li wire:click="toggleExpiring">
+                            <span href="#"
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Expiring</span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -514,7 +520,7 @@
 
                             @if (!is_null($is_cancelled))
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
-                                    <span wire:click="togglePenalized">
+                                    <span wire:click="toggleCancelled">
                                         @if ($is_cancelled)
                                             Cancelled:&nbsp;Yes
                                         @else
@@ -540,6 +546,23 @@
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearwelcomed">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_expiring))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleExpiring">
+                                        @if ($is_expiring)
+                                            Expiring:&nbsp;Yes
+                                        @else
+                                            Expiring:&nbsp;No
+                                        @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearexpiring">
                                         <iconify-icon icon="material-symbols:close" width="1.2em"
                                             height="1.2em"></iconify-icon>
                                     </span>

@@ -69,6 +69,7 @@ class SoldPolicyReport extends Component
     public $is_welcomed;
     public $is_penalized;
     public $is_cancelled;
+    public $is_expiring;
     public $cancel_time_from;
     public $cancel_time_to;
     public $bank_payment_time_from;
@@ -310,6 +311,11 @@ class SoldPolicyReport extends Component
         $this->is_welcomed = null;
     }
 
+    public function clearexpiring()
+    {
+        $this->is_expiring = null;
+    }
+
     public function togglePaid()
     {
         $this->toggle($this->is_paid);
@@ -338,6 +344,11 @@ class SoldPolicyReport extends Component
     public function toggleValidated()
     {
         $this->toggle($this->is_valid);
+    }
+
+    public function toggleExpiring()
+    {
+        $this->toggle($this->is_expiring);
     }
 
     public function togglePolicy()
@@ -673,7 +684,8 @@ class SoldPolicyReport extends Component
                 $this->cancel_time_from,
                 $this->cancel_time_to,
                 $this->bank_payment_time_from,
-                $this->bank_payment_time_to
+                $this->bank_payment_time_to,
+                $this->is_expiring
             );
         }
     }
@@ -686,8 +698,10 @@ class SoldPolicyReport extends Component
             $creators_ids = [];
         }
 
-        if (Auth::user()->can('viewCommission', SoldPolicy::class)) {
-            return SoldPolicy::exportHay2aReport($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to, $this->cancel_time_from, $this->cancel_time_to);
+        /** @var User */
+        $user = Auth::user();
+        if ($user->can('viewCommission', SoldPolicy::class)) {
+            return SoldPolicy::exportHay2aReport($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to, $this->cancel_time_from, $this->cancel_time_to, $this->is_expiring);
         }
     }
 
@@ -816,7 +830,8 @@ class SoldPolicyReport extends Component
             $this->cancel_time_from,
             $this->cancel_time_to,
             $this->bank_payment_time_from,
-            $this->bank_payment_time_to
+            $this->bank_payment_time_to,
+            $this->is_expiring
         )->simplePaginate(30);
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
