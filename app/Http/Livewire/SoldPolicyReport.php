@@ -346,7 +346,7 @@ class SoldPolicyReport extends Component
         $this->toggle($this->is_valid);
     }
 
-    public function togglehasoffer()
+    public function toggleHasOffer()
     {
         $this->toggle($this->has_offer);
     }
