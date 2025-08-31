@@ -1266,9 +1266,9 @@ class SoldPolicy extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function exportReport(?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?string $line_of_business = null, ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancel_time_from = null, ?Carbon $cancel_time_to = null, ?Carbon $bank_payment_time_from = null, ?Carbon $bank_payment_time_to = null, ?bool $is_expiring = null)
+    public static function exportReport(?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?string $line_of_business = null, ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancel_time_from = null, ?Carbon $cancel_time_to = null, ?Carbon $bank_payment_time_from = null, ?Carbon $bank_payment_time_to = null, ?bool $has_offer = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, $is_cancelled, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to, $bank_payment_time_from, $bank_payment_time_to, $is_expiring)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, $is_cancelled, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to, $bank_payment_time_from, $bank_payment_time_to, $has_offer)->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
         if (!$template) {
@@ -1626,6 +1626,15 @@ class SoldPolicy extends Model
         return $query->where('sold_policies.created_at', ">=", "2024-10-01 00:00:00");
     }
 
+    public function scopeHasOffer($query, $hasOffer = true)
+    {
+        if ($hasOffer) {
+            return $query->where('is_renewed', 1);
+        } else {
+            return $query->where('is_renewed', 0);
+        }
+    }
+
     public function scopeOnly2025($query)
     {
         return $query->where('sold_policies.created_at', ">=", "2024-12-01 00:00:00");
@@ -1724,9 +1733,9 @@ class SoldPolicy extends Model
         ?Carbon $cancel_time_to = null,
         ?Carbon $bank_payment_time_from = null,
         ?Carbon $bank_payment_time_to = null,
-        ?bool $is_expiring = null
+        ?bool $has_offer = null
     ) {
-        $query->userData($searchText, $is_expiring)
+        $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
                 $q->where('start', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($start_to, function ($q, $v) {
@@ -1781,6 +1790,8 @@ class SoldPolicy extends Model
                 $q->where('customers.is_welcomed', "=", $is_welcomed);
             })->when($is_paid !== null, function ($q, $v) use ($is_paid) {
                 $q->where('is_paid', "=", $is_paid);
+            })->when($has_offer !== null, function ($q, $v) use ($has_offer) {
+                $q->hasOffer($has_offer);
             })->when($value_from, function ($q, $v) {
                 $q->where('insured_value', ">=", $v);
             })->when($value_to, function ($q, $v) {

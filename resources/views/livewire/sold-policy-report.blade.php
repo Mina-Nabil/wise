@@ -160,11 +160,11 @@
                                         dark:hover:text-white cursor-pointer">
                                 is Welcomed</span>
                         </li>
-                        <li wire:click="toggleExpiring">
+                        <li wire:click="toggleHasOffer">
                             <span href="#"
                                 class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                         dark:hover:text-white cursor-pointer">
-                                is Expiring</span>
+                                Has Offer</span>
                         </li>
                     </ul>
                 </div>
@@ -554,15 +554,15 @@
 
                             @if (!is_null($is_expiring))
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
-                                    <span wire:click="toggleExpiring">
+                                    <span wire:click="toggleHasOffer">
                                         @if ($is_expiring)
-                                            Expiring:&nbsp;Yes
+                                            Has Offer:&nbsp;Yes
                                         @else
-                                            Expiring:&nbsp;No
+                                            Has Offer:&nbsp;No
                                         @endif
                                         &nbsp;&nbsp;
                                     </span>
-                                    <span wire:click="clearexpiring">
+                                    <span wire:click="clearhasoffer">
                                         <iconify-icon icon="material-symbols:close" width="1.2em"
                                             height="1.2em"></iconify-icon>
                                     </span>
