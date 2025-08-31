@@ -547,7 +547,7 @@ class CommProfileShow extends Component
     public function setPymtPaid()
     {
         $this->validate([
-            'pymtPaidPartialAmount' => 'nullable|numeric|gt:0',
+            'pymtPaidPartialAmount' => 'nullable|numeric',
         ]);
 
         try {
