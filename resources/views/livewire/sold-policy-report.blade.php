@@ -552,10 +552,10 @@
                                 </button>
                             @endif
 
-                            @if (!is_null($is_expiring))
+                            @if (!is_null($has_offer))
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleHasOffer">
-                                        @if ($is_expiring)
+                                        @if ($has_offer)
                                             Has Offer:&nbsp;Yes
                                         @else
                                             Has Offer:&nbsp;No
