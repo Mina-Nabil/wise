@@ -25,7 +25,7 @@ class Invoice extends Model
     const FILES_DIRECTORY = 'comm_payments/';
     const MORPH_TYPE = 'invoice';
 
-    const TAX_RATE = 0.05;
+    const TAX_RATE = 0.0;
 
     use HasFactory;
 
