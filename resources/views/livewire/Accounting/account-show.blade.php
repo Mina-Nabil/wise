@@ -113,7 +113,7 @@
             <header class=" card-header noborder">
                 <div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">End Balance</p>
-                    <h4 class="card-title">{{ number_format($account->balance, 2) }}
+                    <h4 class="card-title">{{ number_format($entries->last()->account_balance, 2) }}
                     </h4>
                 </div>
             </header>
