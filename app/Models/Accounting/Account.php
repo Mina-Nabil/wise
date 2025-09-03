@@ -357,6 +357,159 @@ class Account extends Model
         }
     }
 
+    /**
+     * Export accounts with their opening balances from the latest entry before a specific year
+     * @param int $year The year to get opening balances for
+     * @param bool $show_zero_balances Whether to include accounts with zero balances
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|false
+     */
+    public static function exportAccountsOpeningBalances(int $year, bool $show_zero_balances = true)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('viewAny', self::class)) {
+            return false;
+        }
+
+        try {
+            // Create new spreadsheet
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $activeSheet = $spreadsheet->getActiveSheet();
+
+            // Set headers
+            $activeSheet->setCellValue('A1', 'Account Code');
+            $activeSheet->setCellValue('B1', 'Account Name');
+            $activeSheet->setCellValue('C1', 'Nature');
+            $activeSheet->setCellValue('D1', 'Balance');
+            $activeSheet->setCellValue('E1', 'Foreign Balance');
+
+            // Style headers
+            $activeSheet->getStyle('A1:E1')->getFont()->setBold(true);
+            $activeSheet->getStyle('A1:E1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+            $activeSheet->getStyle('A1:E1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+
+            // Get cutoff date (start of the specified year)
+            $cutoffDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
+
+            // Get all accounts ordered by code
+            $accounts = self::orderByCode()->get();
+
+            // Get the latest entry for each account before the cutoff date
+            $accountBalances = [];
+            foreach ($accounts as $account) {
+                $latestEntry = DB::table('journal_entries')
+                    ->join('entry_accounts', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+                    ->where('entry_accounts.account_id', $account->id)
+                    ->where('journal_entries.created_at', '<', $cutoffDate->format('Y-m-d H:i:s'))
+                    ->orderBy('journal_entries.created_at', 'desc')
+                    ->orderBy('journal_entries.id', 'desc')
+                    ->select('entry_accounts.account_balance', 'entry_accounts.account_foreign_balance')
+                    ->first();
+
+                if ($latestEntry) {
+                    $accountBalances[$account->id] = [
+                        'balance' => $latestEntry->account_balance ?? 0,
+                        'foreign_balance' => $latestEntry->account_foreign_balance ?? 0
+                    ];
+                } else {
+                    $accountBalances[$account->id] = [
+                        'balance' => 0,
+                        'foreign_balance' => 0
+                    ];
+                }
+            }
+
+            // Get parent accounts (accounts with no parent)
+            $parentAccounts = $accounts->whereNull('parent_account_id');
+
+            $row = 2;
+            $processedAccounts = [];
+
+            // Process each parent account and its children
+            foreach ($parentAccounts as $parentAccount) {
+                $row = self::addAccountToOpeningBalanceExport(
+                    $activeSheet,
+                    $parentAccount,
+                    $row,
+                    $processedAccounts,
+                    $accounts,
+                    $accountBalances,
+                    0,
+                    $show_zero_balances
+                );
+            }
+
+            // Auto-size columns
+            foreach (range('A', 'E') as $col) {
+                $activeSheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            // Create writer and save file
+            $writer = new Xlsx($spreadsheet);
+            $filename = 'accounts_opening_balances_' . $year . '_' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx';
+            $file_path = SoldPolicy::FILES_DIRECTORY . $filename;
+            $public_file_path = storage_path($file_path);
+
+            // Ensure directory exists
+            if (!file_exists(dirname($public_file_path))) {
+                mkdir(dirname($public_file_path), 0755, true);
+            }
+
+            $writer->save($public_file_path);
+
+            return response()->download($public_file_path)->deleteFileAfterSend(true);
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    /**
+     * Add account to opening balance export with hierarchy
+     */
+    private static function addAccountToOpeningBalanceExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $accountBalances, $indentLevel = 0, $show_zero = true)
+    {
+        // Skip if already processed
+        if (in_array($account->id, $processedAccounts)) {
+            return $row;
+        }
+
+        // Mark as processed
+        $processedAccounts[] = $account->id;
+
+        // Add indent to account name for visual hierarchy
+        $indent = str_repeat('  ', $indentLevel);
+        $accountName = $indent . $account->name;
+
+        // Get balance data for this account
+        $balance = $accountBalances[$account->id]['balance'] ?? 0;
+        $foreignBalance = $accountBalances[$account->id]['foreign_balance'] ?? 0;
+
+        // Add account to spreadsheet if it has balance or we're showing zero balances
+        if ($show_zero || $balance != 0 || $foreignBalance != 0) {
+            $activeSheet->setCellValue('A' . $row, $account->full_code);
+            $activeSheet->setCellValue('B' . $row, $accountName);
+            $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
+            $activeSheet->setCellValue('D' . $row, number_format($balance, 2));
+            $activeSheet->setCellValue('E' . $row, number_format($foreignBalance, 2));
+
+            // Style parent accounts differently
+            if ($indentLevel == 0) {
+                $activeSheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
+            }
+
+            $row++;
+        }
+
+        // Process children recursively
+        $children = $allAccounts->where('parent_account_id', $account->id);
+        foreach ($children as $child) {
+            $row = self::addAccountToOpeningBalanceExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $accountBalances, $indentLevel + 1, $show_zero);
+        }
+
+        return $row;
+    }
+
     private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false, Carbon $from = null, Carbon $to = null)
     {
         // Skip if already processed

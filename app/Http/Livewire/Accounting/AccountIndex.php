@@ -19,6 +19,7 @@ class AccountIndex extends Component
     public $page_title = 'Accounts';
     public $isAddNewModalOpen = false;
     public $isExportModalOpen = false;
+    public $isOpeningBalanceExportModalOpen = false;
 
     public $acc_code;
     public $acc_name;
@@ -35,6 +36,10 @@ class AccountIndex extends Component
     public $exportToDate;
     public $exportMainAccountsOnly = false;
     public $exportShowZeroBalances = true;
+
+    // Opening Balance Export properties
+    public $openingBalanceYear;
+    public $openingBalanceShowZero = true;
 
     private $filteredAccounts;
 
@@ -92,6 +97,20 @@ class AccountIndex extends Component
     {
         $this->isExportModalOpen = false;
         $this->reset(['exportMode', 'exportFromDate', 'exportToDate', 'exportMainAccountsOnly', 'exportShowZeroBalances']);
+    }
+
+    // Method to open opening balance export modal
+    public function openOpeningBalanceExportModal()
+    {
+        $this->openingBalanceYear = Carbon::now()->year;
+        $this->isOpeningBalanceExportModalOpen = true;
+    }
+
+    // Method to close opening balance export modal
+    public function closeOpeningBalanceExportModal()
+    {
+        $this->isOpeningBalanceExportModalOpen = false;
+        $this->reset(['openingBalanceYear', 'openingBalanceShowZero']);
     }
 
     // Method to open edit modal
@@ -162,6 +181,32 @@ class AccountIndex extends Component
         }
     }
 
+    // Export opening balances function
+    public function exportOpeningBalances()
+    {
+        $this->validate([
+            'openingBalanceYear' => 'required|integer|min:2000|max:' . (Carbon::now()->year + 10),
+        ]);
+
+        try {
+            $result = Account::exportAccountsOpeningBalances(
+                $this->openingBalanceYear,
+                $this->openingBalanceShowZero
+            );
+
+            if ($result) {
+                $this->closeOpeningBalanceExportModal();
+                $this->alert('success', 'Opening balance export completed successfully');
+                return $result;
+            } else {
+                $this->alert('failed', 'Opening balance export failed. Please try again.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Opening balance export failed: ' . $e->getMessage());
+            $this->alert('failed', 'Opening balance export failed: ' . $e->getMessage());
+        }
+    }
+
     // Define variables to hold options
     public $natures;
 
@@ -179,6 +224,7 @@ class AccountIndex extends Component
     {
         $this->authorize('view', Auth::user(), Account::class);
         $this->natures = Account::NATURES;
+        $this->openingBalanceYear = Carbon::now()->year;
     }
 
     public function saveEdit()
