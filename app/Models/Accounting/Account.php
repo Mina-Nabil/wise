@@ -751,9 +751,9 @@ class Account extends Model
 
     public function getTotalLastEntryBalance(Carbon $date)
     {
-        $this->children_accounts()->includeLastEntryBalance($date)->get();
+        $children = $this->children_accounts()->includeLastEntryBalance($date)->get();
         $blnce = 0;
-        foreach ($this->children_accounts as $ac) {
+        foreach ($children as $ac) {
             $blnce += $ac->getTotalLastEntryBalance($date);
         }
         return $blnce + $this->last_entry_balance;
@@ -771,9 +771,9 @@ class Account extends Model
 
     public function getTotalLastEntryCurrencyBalance(Carbon $date)
     {
-        $this->children_accounts()->includeLastEntryBalance($date)->get();
+        $children = $this->children_accounts()->includeLastEntryBalance($date)->get();
         $blnce = 0;
-        foreach ($this->children_accounts as $ac) {
+        foreach ($children as $ac) {
             $blnce += $ac->getTotalLastEntryCurrencyBalance($date);
         }
         return $blnce + $this->last_entry_currency_balance;
