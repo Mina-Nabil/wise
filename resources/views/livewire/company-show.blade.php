@@ -74,14 +74,14 @@
                 @if ($section === 'emails')
                     <div class="card">
                         <header class="card-header noborder">
-                            <h4 class="card-title">Company Emails
+                            <h4 class="card-title">Company Contacts
                             </h4>
                             <div
                                 class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
                                 <button wire:click="openNewEmail"
                                     class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                                     <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
-                                    Add Email
+                                    Add Contact
                                 </button>
                             </div>
                         </header>

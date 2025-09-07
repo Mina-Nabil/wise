@@ -253,7 +253,7 @@
                                         <div class="py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-info-500 bg-opacity-[14%] text-info-500">
                                             <div class="flex items-start space-x-3 rtl:space-x-reverse">
                                                 <div class="flex-1">
-                                                    No emails found for this Company!
+                                                    No contacts found for this Company!
                                                 </div>
                                             </div>
                                         </div>
@@ -274,7 +274,7 @@
                                                                 </th>
 
                                                                 <th scope="col" class=" table-th ">
-                                                                    Email
+                                                                    Contact
                                                                 </th>
 
                                                                 <th scope="col" class=" table-th ">
