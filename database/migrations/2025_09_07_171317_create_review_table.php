@@ -27,6 +27,15 @@ return new class extends Migration
             $table->text('client_employee_comment')->nullable();
             $table->decimal('company_rating', 10, 1)->default(0);
             $table->text('client_company_comment')->nullable();
+
+            //manager review fields
+            $table->foreignIdFor(User::class, 'manager_reviewed_by_id')->nullable()->constrained('users');
+            $table->boolean('is_manager_reviewed')->default(false);
+            $table->dateTime('manager_reviewed_at')->nullable();
+            $table->decimal('manager_employee_rating', 10, 1)->default(0);
+            $table->text('manager_client_employee_comment')->nullable();
+            $table->decimal('manager_company_rating', 10, 1)->default(0);
+            $table->text('manager_client_company_comment')->nullable();
             $table->timestamps();
         });
     }
@@ -38,6 +47,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('review');
+        Schema::dropIfExists('reviews');
     }
 };

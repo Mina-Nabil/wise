@@ -126,6 +126,7 @@
                                     <th scope="col" class="table-th">Ratings</th>
                                     <th scope="col" class="table-th">Manager Review</th>
                                     <th scope="col" class="table-th">Created</th>
+                                    <th scope="col" class="table-th">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -224,6 +225,72 @@
                                                 {{ $review->created_at->format('H:i') }}
                                             </span>
                                         </td>
+
+                                        <td class="table-td">
+                                            <div class="dropdown relative">
+                                                <button class="btn inline-flex justify-center btn-outline-secondary dropdown-toggle btn-sm" 
+                                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons-outline:dots-horizontal"></iconify-icon>
+                                                    Actions
+                                                </button>
+                                                <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                    
+                                                    <!-- Go To SoldPolicy -->
+                                                    @if ($review->reviewable_type === 'App\Models\Business\SoldPolicy')
+                                                        <li>
+                                                            <a href="{{ route('sold.policy.show', $review->reviewable_id) }}" 
+                                                               target="_blank"
+                                                               class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:eye-20-solid"></iconify-icon>
+                                                                Go To Policy
+                                                            </a>
+                                                        </li>
+                                                    @endif
+
+                                                    <!-- Set Ratings & Comments -->
+                                                    @can('receiveClientComment', $review)
+                                                        @if (!$review->is_reviewed)
+                                                            <li>
+                                                                <button wire:click="openRatingsModal({{ $review->id }})" 
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
+                                                                    <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:star-20-solid"></iconify-icon>
+                                                                    Set Ratings & Comments
+                                                                </button>
+                                                            </li>
+                                                        @endif
+                                                    @endcan
+
+                                                    <!-- Manager Review -->
+                                                    @can('markAsReviewed', $review)
+                                                        @php
+                                                            $needsManagerReview = $review->is_reviewed && 
+                                                                                !$review->is_manager_reviewed && 
+                                                                                ($review->employee_rating < 8 || $review->company_rating < 8);
+                                                        @endphp
+                                                        @if ($needsManagerReview)
+                                                            <li>
+                                                                <button wire:click="openManagerModal({{ $review->id }})" 
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
+                                                                    <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:shield-check-20-solid"></iconify-icon>
+                                                                    Manager Review
+                                                                </button>
+                                                            </li>
+                                                        @endif
+                                                    @endcan
+
+                                                    <!-- No actions available -->
+                                                    @if (!($review->reviewable_type === 'App\Models\Business\SoldPolicy') && 
+                                                         !Auth::user()->can('receiveClientComment', $review) && 
+                                                         !Auth::user()->can('markAsReviewed', $review))
+                                                        <li>
+                                                            <span class="text-slate-400 block font-Inter font-normal px-4 py-2">
+                                                                No actions available
+                                                            </span>
+                                                        </li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -280,6 +347,162 @@
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="setCreatedDates" class="btn inline-flex justify-center text-white bg-black-500">
                                 Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Ratings & Comments Modal -->
+    @if ($showRatingsModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Set Ratings & Comments</h3>
+                            <button wire:click="closeRatingsModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            @if($selectedReview)
+                                <div class="mb-4 p-3 bg-slate-100 rounded-lg">
+                                    <h4 class="font-medium text-slate-700">{{ $selectedReview->title }}</h4>
+                                    <p class="text-sm text-slate-600">{{ $selectedReview->desc }}</p>
+                                </div>
+                            @endif
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="from-group">
+                                    <label for="form_employee_rating" class="form-label">Employee Rating (0-10)</label>
+                                    <input type="number" step="0.1" min="0" max="10" 
+                                           class="form-control mt-2 w-full" 
+                                           wire:model.defer="form_employee_rating"
+                                           placeholder="e.g. 8.5">
+                                </div>
+                                <div class="from-group">
+                                    <label for="form_company_rating" class="form-label">Company Rating (0-10)</label>
+                                    <input type="number" step="0.1" min="0" max="10" 
+                                           class="form-control mt-2 w-full" 
+                                           wire:model.defer="form_company_rating"
+                                           placeholder="e.g. 9.0">
+                                </div>
+                            </div>
+                            
+                            <div class="from-group">
+                                <label for="form_employee_comment" class="form-label">Employee Comment</label>
+                                <textarea class="form-control mt-2 w-full" rows="3" 
+                                          wire:model.defer="form_employee_comment"
+                                          placeholder="Enter feedback about the employee..."></textarea>
+                            </div>
+                            
+                            <div class="from-group">
+                                <label for="form_company_comment" class="form-label">Company Comment</label>
+                                <textarea class="form-control mt-2 w-full" rows="3" 
+                                          wire:model.defer="form_company_comment"
+                                          placeholder="Enter feedback about the company..."></textarea>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeRatingsModal" class="btn inline-flex justify-center btn-outline-secondary">
+                                Cancel
+                            </button>
+                            <button wire:click="setRatingsAndComments" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setRatingsAndComments">Save Ratings</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                    wire:target="setRatingsAndComments" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Manager Review Modal -->
+    @if ($showManagerModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-warning-500">
+                            <h3 class="text-xl font-medium text-white">Manager Review</h3>
+                            <button wire:click="closeManagerModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            @if($selectedReview)
+                                <div class="mb-4 p-3 bg-orange-100 rounded-lg">
+                                    <h4 class="font-medium text-slate-700">{{ $selectedReview->title }}</h4>
+                                    <p class="text-sm text-slate-600">{{ $selectedReview->desc }}</p>
+                                    <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                                        <div>
+                                            <span class="font-medium">Employee Rating:</span> 
+                                            <span class="{{ $selectedReview->employee_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->employee_rating }}/10
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Company Rating:</span> 
+                                            <span class="{{ $selectedReview->company_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->company_rating }}/10
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="from-group">
+                                    <label for="manager_employee_rating" class="form-label">Manager Employee Rating (0-10)</label>
+                                    <input type="number" step="0.1" min="0" max="10" 
+                                           class="form-control mt-2 w-full" 
+                                           wire:model.defer="manager_employee_rating"
+                                           placeholder="e.g. 9.0">
+                                </div>
+                                <div class="from-group">
+                                    <label for="manager_company_rating" class="form-label">Manager Company Rating (0-10)</label>
+                                    <input type="number" step="0.1" min="0" max="10" 
+                                           class="form-control mt-2 w-full" 
+                                           wire:model.defer="manager_company_rating"
+                                           placeholder="e.g. 9.5">
+                                </div>
+                            </div>
+                            
+                            <div class="from-group">
+                                <label for="manager_employee_comment" class="form-label">Manager Employee Comment</label>
+                                <textarea class="form-control mt-2 w-full" rows="3" 
+                                          wire:model.defer="manager_employee_comment"
+                                          placeholder="Manager's feedback about employee performance..."></textarea>
+                            </div>
+                            
+                            <div class="from-group">
+                                <label for="manager_company_comment" class="form-label">Manager Company Comment</label>
+                                <textarea class="form-control mt-2 w-full" rows="3" 
+                                          wire:model.defer="manager_company_comment"
+                                          placeholder="Manager's feedback about company processes..."></textarea>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeManagerModal" class="btn inline-flex justify-center btn-outline-secondary">
+                                Cancel
+                            </button>
+                            <button wire:click="markAsManagerReviewed" class="btn inline-flex justify-center text-white bg-warning-500">
+                                <span wire:loading.remove wire:target="markAsManagerReviewed">Complete Manager Review</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                    wire:target="markAsManagerReviewed" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>

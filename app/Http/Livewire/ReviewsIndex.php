@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class ReviewIndex extends Component
+class ReviewsIndex extends Component
 {
     use WithPagination, ToggleSectionLivewire, AlertFrontEnd;
 
@@ -49,6 +49,24 @@ class ReviewIndex extends Component
 
     // Available reviewable types
     public $reviewableTypes = [];
+
+    // Modal states and form data
+    public $showRatingsModal = false;
+    public $showManagerModal = false;
+    public $selectedReviewId;
+    public $selectedReview;
+    
+    // Ratings modal form data
+    public $form_employee_rating;
+    public $form_employee_comment;
+    public $form_company_rating;
+    public $form_company_comment;
+    
+    // Manager modal form data
+    public $manager_employee_rating;
+    public $manager_employee_comment;
+    public $manager_company_rating;
+    public $manager_company_comment;
 
     public function mount()
     {
@@ -246,6 +264,123 @@ class ReviewIndex extends Component
         $this->resetPage();
     }
 
+    // Modal Methods
+    public function openRatingsModal($reviewId)
+    {
+        $this->selectedReviewId = $reviewId;
+        $this->selectedReview = Review::findOrFail($reviewId);
+        $this->showRatingsModal = true;
+        
+        // Pre-fill with existing data if available
+        $this->form_employee_rating = $this->selectedReview->employee_rating ?? null;
+        $this->form_employee_comment = $this->selectedReview->client_employee_comment ?? '';
+        $this->form_company_rating = $this->selectedReview->company_rating ?? null;
+        $this->form_company_comment = $this->selectedReview->client_company_comment ?? '';
+    }
+
+    public function closeRatingsModal()
+    {
+        $this->showRatingsModal = false;
+        $this->resetRatingsForm();
+    }
+
+    public function openManagerModal($reviewId)
+    {
+        $this->selectedReviewId = $reviewId;
+        $this->selectedReview = Review::findOrFail($reviewId);
+        $this->showManagerModal = true;
+        
+        // Pre-fill with existing manager data if available
+        $this->manager_employee_rating = $this->selectedReview->manager_employee_rating ?? null;
+        $this->manager_employee_comment = $this->selectedReview->manager_client_employee_comment ?? '';
+        $this->manager_company_rating = $this->selectedReview->manager_company_rating ?? null;
+        $this->manager_company_comment = $this->selectedReview->manager_client_company_comment ?? '';
+    }
+
+    public function closeManagerModal()
+    {
+        $this->showManagerModal = false;
+        $this->resetManagerForm();
+    }
+
+    private function resetRatingsForm()
+    {
+        $this->selectedReviewId = null;
+        $this->selectedReview = null;
+        $this->form_employee_rating = null;
+        $this->form_employee_comment = '';
+        $this->form_company_rating = null;
+        $this->form_company_comment = '';
+    }
+
+    private function resetManagerForm()
+    {
+        $this->selectedReviewId = null;
+        $this->selectedReview = null;
+        $this->manager_employee_rating = null;
+        $this->manager_employee_comment = '';
+        $this->manager_company_rating = null;
+        $this->manager_company_comment = '';
+    }
+
+    // Review Action Methods
+    public function setRatingsAndComments()
+    {
+        $this->validate([
+            'form_employee_rating' => 'nullable|numeric|min:0|max:10',
+            'form_company_rating' => 'nullable|numeric|min:0|max:10',
+            'form_employee_comment' => 'nullable|string|max:1000',
+            'form_company_comment' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $review = Review::findOrFail($this->selectedReviewId);
+            
+            if ($review->setRatingsAndComments(
+                $this->form_employee_rating,
+                $this->form_employee_comment,
+                $this->form_company_rating,
+                $this->form_company_comment
+            )) {
+                $this->alert('success', 'Review ratings and comments updated successfully.');
+                $this->closeRatingsModal();
+            } else {
+                $this->alert('failed', 'Failed to update review ratings and comments.');
+            }
+        } catch (\Exception $e) {
+            $this->alert('failed', 'An error occurred while updating the review.');
+        }
+    }
+
+    public function markAsManagerReviewed()
+    {
+        $this->validate([
+            'manager_employee_rating' => 'nullable|numeric|min:0|max:10',
+            'manager_company_rating' => 'nullable|numeric|min:0|max:10',
+            'manager_employee_comment' => 'nullable|string|max:1000',
+            'manager_company_comment' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $review = Review::findOrFail($this->selectedReviewId);
+            
+            if ($review->markAsManagerReviewed(
+                null,
+                $this->manager_employee_rating,
+                $this->manager_employee_comment,
+                $this->manager_company_rating,
+                $this->manager_company_comment
+            )) {
+                $this->alert('success', 'Review marked as manager reviewed successfully.');
+                $this->closeManagerModal();
+            } else {
+                $this->alert('failed', 'Failed to mark review as manager reviewed.');
+            }
+        } catch (\Exception $e) {
+            $this->alert('failed', 'An error occurred while updating the review.');
+        }
+    }
+
     public function render()
     {
         $reviews = Review::with(['reviewable', 'assignee', 'reviewedBy'])
@@ -269,7 +404,7 @@ class ReviewIndex extends Component
             ->orderBy('created_at', 'desc')
             ->paginate(25);
 
-        return view('livewire.review-index', [
+        return view('livewire.reviews-index', [
             'reviews' => $reviews
         ]);
     }

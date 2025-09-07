@@ -82,4 +82,9 @@ class ReportController extends Controller
     {
         return view('reports.campaigns-index');
     }
+
+    public function reviewsIndex()
+    {
+        return view('reports.reviews-index');
+    }
 }
