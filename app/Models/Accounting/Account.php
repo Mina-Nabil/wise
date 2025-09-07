@@ -270,7 +270,7 @@ class Account extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function exportAllAccountsWithBalances($mode = 'balance', ?Carbon $from = null, ?Carbon $to = null, $main_accounts_only = false, $show_zero_balances = true)
+    public static function exportAllAccountsWithBalances($mode = 'balance', ?Carbon $from = null, ?Carbon $to = null, $main_accounts_only = false, $show_zero_balances = true, $included_levels = 999)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -279,7 +279,10 @@ class Account extends Model
         }
 
         assert(in_array($mode, ['balance', 'entries']), 'Invalid mode');
+        assert($to, 'To date is required for this report');
         assert($mode == 'balance' || ($from && $to), 'From and to dates are required for entries mode');
+
+        if(!$included_levels || $mode == 'entries') $included_levels = 999;
 
         try {
             // Create new spreadsheet
@@ -302,9 +305,8 @@ class Account extends Model
 
             // Get all accounts with their relationships
             $accounts = self::orderByCode()
-                ->when($main_accounts_only && $mode == 'balance', fn($q) => $q->parentAccounts())
+                ->when($main_accounts_only && $mode == 'balance', fn($q) => $q->parentAccounts()->includeLastEntryBalance($to))
                 ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to));
-            Log::info($accounts->toSql());
             $accounts = $accounts->get();
 
 
@@ -328,7 +330,8 @@ class Account extends Model
                     $show_zero_balances,
                     $main_accounts_only,
                     $from,
-                    $to
+                    $to,
+                    $included_levels
                 );
             }
 
@@ -510,10 +513,10 @@ class Account extends Model
         return $row;
     }
 
-    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false, Carbon $from = null, Carbon $to = null)
+    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false, Carbon $from = null, Carbon $to = null, $included_levels)
     {
         // Skip if already processed
-        if (in_array($account->id, $processedAccounts)) {
+        if (in_array($account->id, $processedAccounts) || $indentLevel > $included_levels) {
             return $row;
         }
 
@@ -525,7 +528,8 @@ class Account extends Model
         $accountName = $indent . $account->name;
 
         // Calculate balance placement based on nature and sign
-        $totalBalance = $account->total_balance;
+        $totalBalance = $account->last_entry_balance ?? $account->total_balance;
+        $totalCurrencyBalance = $account->last_entry_currency_balance ?? $account->total_currency_balance;
         $debitAmount = '';
         $creditAmount = '';
         $debitForeignAmount = '';
@@ -535,18 +539,18 @@ class Account extends Model
                 if ($account->nature == self::NATURE_DEBIT) {
                     if ($totalBalance >= 0) {
                         $debitAmount = number_format($totalBalance, 2);
-                        $debitForeignAmount = number_format($account->total_currency_balance, 2);
+                        $debitForeignAmount = number_format($totalCurrencyBalance, 2);
                     } else {
                         $creditAmount = number_format(abs($totalBalance), 2);
-                        $creditForeignAmount = number_format(abs($account->total_currency_balance), 2);
+                        $creditForeignAmount = number_format(abs($totalCurrencyBalance), 2);
                     }
                 } else { // NATURE_CREDIT
                     if ($totalBalance >= 0) {
                         $creditAmount = number_format($totalBalance, 2);
-                        $creditForeignAmount = number_format($account->total_currency_balance, 2);
+                        $creditForeignAmount = number_format($totalCurrencyBalance, 2);
                     } else {
                         $debitAmount = number_format(abs($totalBalance), 2);
-                        $debitForeignAmount = number_format(abs($account->total_currency_balance), 2);
+                        $debitForeignAmount = number_format(abs($totalCurrencyBalance), 2);
                     }
                 }
             }
@@ -578,7 +582,7 @@ class Account extends Model
         // Process children recursively
         $children = $allAccounts->where('parent_account_id', $account->id);
         foreach ($children as $child) {
-            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero, $main_accounts_only, $from, $to);
+            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero, $main_accounts_only, $from, $to, $included_levels);
         }
 
         return $row;
@@ -798,6 +802,13 @@ class Account extends Model
     public function scopeParentAccounts($query)
     {
         return $query->whereNull('parent_account_id');
+    }
+
+    public function scopeIncludeLastEntryBalance($query, Carbon $date)
+    {
+        return $query->select('accounts.*')
+            ->selectRaw('(SELECT entry_accounts.balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at <= ? LIMIT 1) as last_entry_balance', [$date->format('Y-m-d H:i')])
+            ->selectRaw('(SELECT entry_accounts.currency_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at <= ? LIMIT 1) as last_entry_currency_balance', [$date->format('Y-m-d H:i')]);
     }
 
     public function scopeTotalEntries($query, Carbon $from, Carbon $to)

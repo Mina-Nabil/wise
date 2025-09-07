@@ -306,11 +306,13 @@
                                 @enderror
                             </div>
 
-                            @if($exportMode === 'entries')
+
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="form-group mb-5">
                                         <label for="exportFromDate" class="form-label">From Date</label>
-                                        <input type="date" id="exportFromDate" class="form-control mt-2 w-full {{ $errors->has('exportFromDate') ? '!border-danger-500' : '' }}" wire:model="exportFromDate">
+                                        <input type="date" id="exportFromDate" class="form-control mt-2 w-full {{ $errors->has('exportFromDate') ? '!border-danger-500' : '' }}" wire:model="exportFromDate" 
+                                        @disabled($exportMode == 'balance')
+                                        >
                                         @error('exportFromDate')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
@@ -323,7 +325,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                            @endif
+
 
                             <div class="form-group mb-5">
                                 <div class="checkbox-area">

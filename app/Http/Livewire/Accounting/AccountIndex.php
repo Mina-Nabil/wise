@@ -36,6 +36,7 @@ class AccountIndex extends Component
     public $exportToDate;
     public $exportMainAccountsOnly = false;
     public $exportShowZeroBalances = true;
+    public $exportIncludedLevels = 999;
 
     // Opening Balance Export properties
     public $openingBalanceYear;
@@ -148,7 +149,8 @@ class AccountIndex extends Component
         $this->validate([
             'exportMode' => 'required|in:balance,entries',
             'exportFromDate' => 'required_if:exportMode,entries|date',
-            'exportToDate' => 'required_if:exportMode,entries|date|after_or_equal:exportFromDate',
+            'exportToDate' => 'required|date|after_or_equal:exportFromDate',
+            'exportIncludedLevels' => 'required|integer|min:0|max:999',
         ]);
 
         try {
@@ -165,7 +167,8 @@ class AccountIndex extends Component
                 $fromDate,
                 $toDate,
                 $this->exportMainAccountsOnly,
-                $this->exportShowZeroBalances
+                $this->exportShowZeroBalances,
+                $this->exportIncludedLevels
             );
 
             if ($result) {
