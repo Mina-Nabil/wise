@@ -154,12 +154,11 @@ class AccountIndex extends Component
         ]);
 
         try {
+            $toDate = Carbon::parse($this->exportToDate);
+
             $fromDate = null;
-            $toDate = null;
-            
             if ($this->exportMode === 'entries') {
                 $fromDate = Carbon::parse($this->exportFromDate);
-                $toDate = Carbon::parse($this->exportToDate);
             }
 
             $result = Account::exportAllAccountsWithBalances(
