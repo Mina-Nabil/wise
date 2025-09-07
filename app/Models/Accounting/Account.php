@@ -530,8 +530,8 @@ class Account extends Model
         $accountName = $indent . $account->name;
 
         // Calculate balance placement based on nature and sign
-        $totalBalance = $account->totalLastEntryBalance($to);
-        $totalCurrencyBalance = $account->totalLastEntryCurrencyBalance($to);
+        $totalBalance = $account->getTotalLastEntryBalance($to);
+        $totalCurrencyBalance = $account->getTotalLastEntryCurrencyBalance($to);
         $debitAmount = '';
         $creditAmount = '';
         $debitForeignAmount = '';
@@ -754,7 +754,7 @@ class Account extends Model
         $this->children_accounts()->includeLastEntryBalance($date)->get();
         $blnce = 0;
         foreach ($this->children_accounts as $ac) {
-            $blnce += $ac->totalLastEntryBalance($date);
+            $blnce += $ac->getTotalLastEntryBalance($date);
         }
         return $blnce + $this->last_entry_balance;
     }
@@ -774,7 +774,7 @@ class Account extends Model
         $this->children_accounts()->includeLastEntryBalance($date)->get();
         $blnce = 0;
         foreach ($this->children_accounts as $ac) {
-            $blnce += $ac->totalLastEntryCurrencyBalance($date);
+            $blnce += $ac->getTotalLastEntryCurrencyBalance($date);
         }
         return $blnce + $this->last_entry_currency_balance;
     }
