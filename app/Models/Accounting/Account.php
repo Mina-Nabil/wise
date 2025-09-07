@@ -829,8 +829,8 @@ class Account extends Model
     public function scopeIncludeLastEntryBalance($query, Carbon $date)
     {
         return $query->select('accounts.*')
-            ->selectRaw('(SELECT entry_accounts.account_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at <= ? LIMIT 1 ORDER BY journal_entries.created_at DESC, journal_entries.id DESC) as last_entry_balance', [$date->format('Y-m-d H:i')])
-            ->selectRaw('(SELECT entry_accounts.account_foreign_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at <= ? LIMIT 1 ORDER BY journal_entries.created_at DESC, journal_entries.id DESC) as last_entry_currency_balance', [$date->format('Y-m-d H:i')]);
+            ->selectRaw('(SELECT entry_accounts.account_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at <= ? ORDER BY journal_entries.created_at DESC, journal_entries.id DESC LIMIT 1 ) as last_entry_balance', [$date->format('Y-m-d H:i')])
+            ->selectRaw('(SELECT entry_accounts.account_foreign_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at <= ? ORDER BY journal_entries.created_at DESC, journal_entries.id DESC LIMIT 1 ) as last_entry_currency_balance', [$date->format('Y-m-d H:i')]);
     }
 
     public function scopeTotalEntries($query, Carbon $from, Carbon $to)
