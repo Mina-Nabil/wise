@@ -751,7 +751,7 @@ class Account extends Model
 
     public function getTotalLastEntryBalanceAttribute()
     {
-        $this->loadMissing('children_accounts');
+        $this->load('children_accounts');
         $blnce = 0;
         foreach ($this->children_accounts as $ac) {
             $blnce += $ac->total_last_entry_balance;
@@ -761,7 +761,7 @@ class Account extends Model
 
     public function getTotalCurrencyBalanceAttribute()
     {
-        $this->loadMissing('children_accounts');
+        $this->load('children_accounts');
         $blnce = 0;
         foreach ($this->children_accounts as $ac) {
             $blnce += $ac->foreign_balance;
