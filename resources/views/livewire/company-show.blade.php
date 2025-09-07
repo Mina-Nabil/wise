@@ -99,7 +99,7 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
-                                                        Email
+                                                        Email/Phone
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">

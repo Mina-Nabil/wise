@@ -295,7 +295,7 @@ class CompanyShow extends Component
     {
         $this->validate([
             'type' => 'required|in:' . implode(',', CompanyEmail::TYPES),
-            'email' => 'required|email',
+            'email' => 'required',
             'is_primary' => 'boolean',
             'first_name' => 'nullable|string',
             'last_name' => 'nullable|string',
