@@ -149,7 +149,7 @@ class AccountIndex extends Component
         $this->validate([
             'exportMode' => 'required|in:balance,entries',
             'exportFromDate' => 'required_if:exportMode,entries|date',
-            'exportToDate' => 'required|date|after_or_equal:exportFromDate',
+            'exportToDate' => 'required|date',
             'exportIncludedLevels' => 'required|integer|min:0|max:999',
         ]);
 
