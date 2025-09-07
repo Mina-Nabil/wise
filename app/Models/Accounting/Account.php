@@ -528,6 +528,8 @@ class Account extends Model
         $accountName = $indent . $account->name;
 
         // Calculate balance placement based on nature and sign
+        Log::info($account->last_entry_balance);
+        Log::info($account->last_entry_currency_balance);
         $totalBalance = $account->last_entry_balance ?? $account->total_balance;
         $totalCurrencyBalance = $account->last_entry_currency_balance ?? $account->total_currency_balance;
         $debitAmount = '';
