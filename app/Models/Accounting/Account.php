@@ -304,6 +304,7 @@ class Account extends Model
             $activeSheet->getStyle('A1:G1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
 
             // Get all accounts with their relationships
+            Log::info($to);
             $accounts = self::orderByCode()->includeLastEntryBalance($to)
                 ->when($main_accounts_only && $mode == 'balance', fn($q) => $q->parentAccounts())
                 ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to));
