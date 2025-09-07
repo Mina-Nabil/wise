@@ -530,10 +530,8 @@ class Account extends Model
         $accountName = $indent . $account->name;
 
         // Calculate balance placement based on nature and sign
-        Log::info($account->last_entry_balance);
-        Log::info($account->last_entry_currency_balance);
-        $totalBalance = $account->last_entry_balance ?? $account->total_balance;
-        $totalCurrencyBalance = $account->last_entry_currency_balance ?? $account->total_currency_balance;
+        $totalBalance = $account->total_last_entry_balance;
+        $totalCurrencyBalance = $account->total_last_entry_currency_balance;
         $debitAmount = '';
         $creditAmount = '';
         $debitForeignAmount = '';
@@ -751,6 +749,16 @@ class Account extends Model
         return $blnce + $this->balance;
     }
 
+    public function getTotalLastEntryBalanceAttribute()
+    {
+        $this->loadMissing('children_accounts');
+        $blnce = 0;
+        foreach ($this->children_accounts as $ac) {
+            $blnce += $ac->total_last_entry_balance;
+        }
+        return $blnce + $this->last_entry_balance;
+    }
+
     public function getTotalCurrencyBalanceAttribute()
     {
         $this->loadMissing('children_accounts');
@@ -759,6 +767,16 @@ class Account extends Model
             $blnce += $ac->foreign_balance;
         }
         return $blnce + $this->foreign_balance;
+    }
+
+    public function getTotalLastEntryCurrencyBalanceAttribute()
+    {
+        $this->loadMissing('children_accounts');
+        $blnce = 0;
+        foreach ($this->children_accounts as $ac) {
+            $blnce += $ac->total_last_entry_currency_balance;
+        }
+        return $blnce + $this->last_entry_currency_balance;
     }
 
     public function getIsForeignAttribute()
