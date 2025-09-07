@@ -749,12 +749,12 @@ class Account extends Model
         return $blnce + $this->balance;
     }
 
-    public function getTotalLastEntryBalanceAttribute()
+    public function getTotalLastEntryBalance(Carbon $date)
     {
-        $this->load('children_accounts');
+        $this->children_accounts()->includeLastEntryBalance($date)->get();
         $blnce = 0;
         foreach ($this->children_accounts as $ac) {
-            $blnce += $ac->total_last_entry_balance;
+            $blnce += $ac->totalLastEntryBalance($date);
         }
         return $blnce + $this->last_entry_balance;
     }
@@ -769,12 +769,12 @@ class Account extends Model
         return $blnce + $this->foreign_balance;
     }
 
-    public function getTotalLastEntryCurrencyBalanceAttribute()
+    public function getTotalLastEntryCurrencyBalance(Carbon $date)
     {
-        $this->loadMissing('children_accounts');
+        $this->children_accounts()->includeLastEntryBalance($date)->get();
         $blnce = 0;
         foreach ($this->children_accounts as $ac) {
-            $blnce += $ac->total_last_entry_currency_balance;
+            $blnce += $ac->totalLastEntryCurrencyBalance($date);
         }
         return $blnce + $this->last_entry_currency_balance;
     }
