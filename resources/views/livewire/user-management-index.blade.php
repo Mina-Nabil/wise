@@ -60,6 +60,10 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Can Review
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Activated
                                     </th>
 
@@ -117,6 +121,16 @@
 
                                         <td class="table-td">
                                             {{ $user->email }}
+                                        </td>
+
+                                        <td class="table-td">
+                                            @if ($user->can_review_reviews)
+                                                <span
+                                                    class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl">Yes</span>
+                                            @else
+                                                <span
+                                                    class="badge bg-slate-500 text-slate-500 bg-opacity-30 capitalize rounded-3xl">No</span>
+                                            @endif
                                         </td>
 
                                         <td class="table-td">
@@ -359,6 +373,15 @@
                                     @enderror
                                 </div>
 
+                                <div class="from-group">
+                                    <label class="form-label">
+                                        <input type="checkbox" wire:model.defer="newCanReviewReviews" 
+                                               class="form-checkbox rounded border-slate-200 text-slate-600 focus:border-slate-200 focus:ring focus:ring-slate-200 focus:ring-opacity-50 dark:border-slate-600 dark:checked:border-slate-600 dark:focus:ring-slate-600 dark:focus:ring-opacity-50 dark:checked:bg-slate-600">
+                                        <span class="text-slate-500 dark:text-slate-400 ml-2">Can Review Reviews</span>
+                                    </label>
+                                    <p class="text-sm text-slate-400 mt-1">Allow this user to review and rate client reviews</p>
+                                </div>
+
 
                             </div>
                             <!-- Modal footer -->
@@ -543,6 +566,15 @@
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
+                                <div class="from-group">
+                                    <label class="form-label">
+                                        <input type="checkbox" wire:model.defer="can_review_reviews" 
+                                               class="form-checkbox rounded border-slate-200 text-slate-600 focus:border-slate-200 focus:ring focus:ring-slate-200 focus:ring-opacity-50 dark:border-slate-600 dark:checked:border-slate-600 dark:focus:ring-slate-600 dark:focus:ring-opacity-50 dark:checked:bg-slate-600">
+                                        <span class="text-slate-500 dark:text-slate-400 ml-2">Can Review Reviews</span>
+                                    </label>
+                                    <p class="text-sm text-slate-400 mt-1">Allow this user to review and rate client reviews</p>
+                                </div>
+
                                 @can('updatePassword', $user)
                                     <div class="from-group">
                                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">

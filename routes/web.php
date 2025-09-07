@@ -27,6 +27,7 @@ use App\Http\Livewire\EntryTitleIndex;
 use App\Http\Livewire\JournalEntryIndex;
 use App\Http\Livewire\TaskReport;
 use App\Http\Livewire\CampaignIndex;
+use App\Http\Livewire\ReviewIndex;
 use App\Models\Accounting\Account;
 use App\Models\Users\User;
 use Illuminate\Http\Request;
@@ -95,6 +96,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
     Route::get('/campaigns', [PoliciesController::class, 'campaignIndex'])->name('campaigns.index');
+    Route::get('/reviews', ReviewIndex::class)->name('reviews.index');
     Route::get('/logs', [AppLogController::class, 'index'])->name('logs.index');
     Route::get('/slarecords', [AppLogController::class, 'slaRecordsIndex'])->name('slarecords.index');
 

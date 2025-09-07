@@ -25,6 +25,7 @@ class UserManagementIndex extends Component
     public $newEmail;
     public $newPhone;
     public $newManagerId;
+    public $newCanReviewReviews;
 
     public $updateUserSec;
     public $username;
@@ -36,6 +37,7 @@ class UserManagementIndex extends Component
     public $phone;
     public $password;
     public $user;
+    public $can_review_reviews;
 
     public function clearImage()
     {
@@ -77,6 +79,7 @@ class UserManagementIndex extends Component
         $this->email = $user->email;
         $this->phone = $user->phone;
         $this->newManagerId = $user->manager_id;
+        $this->can_review_reviews = $user->can_review_reviews;
         if ($user->image) {
             $this->userImage = Storage::disk('s3')->url(str_replace('//', '/', $user->image));
         }
@@ -94,7 +97,7 @@ class UserManagementIndex extends Component
 
     public function closeUpdateThisUser()
     {
-        $this->reset(['updateUserSec', 'username', 'first_name', 'last_name', 'type', 'email', 'phone', 'userImage']);
+        $this->reset(['updateUserSec', 'username', 'first_name', 'last_name', 'type', 'email', 'phone', 'userImage', 'can_review_reviews']);
     }
 
     public function EditUser()
@@ -132,7 +135,7 @@ class UserManagementIndex extends Component
 
         $imageUrl = $this->generateUrl();
 
-        $res = User::find($currentUserId)->editInfo($this->username, $this->first_name, $this->last_name, $this->type, $this->email, $this->phone, $imageUrl, $this->password, $this->newManagerId);
+        $res = User::find($currentUserId)->editInfo($this->username, $this->first_name, $this->last_name, $this->type, $this->email, $this->phone, $imageUrl, $this->password, $this->newManagerId, $this->can_review_reviews);
         if ($res) {
             $this->closeUpdateThisUser();
             $this->alert('success', 'User updated successfuly!');
@@ -144,7 +147,7 @@ class UserManagementIndex extends Component
     public function closeNewUserSec()
     {
         $this->newUserSection = false;
-        $this->reset(['newUsername', 'newFirstName', 'newLastName', 'newType', 'newPassword', 'newPassword_confirmation', 'newEmail', 'newPhone', 'newManagerId']);
+        $this->reset(['newUsername', 'newFirstName', 'newLastName', 'newType', 'newPassword', 'newPassword_confirmation', 'newEmail', 'newPhone', 'newManagerId', 'newCanReviewReviews']);
     }
 
     protected $rules = [
@@ -169,7 +172,7 @@ class UserManagementIndex extends Component
             'newManagerId' => 'nullable|exists:users,id',
         ]);
 
-        $res = User::newUser($this->newUsername, $this->newFirstName, $this->newLastName, $this->newType, $this->newPassword, $this->newEmail, $this->newPhone, $this->newManagerId);
+        $res = User::newUser($this->newUsername, $this->newFirstName, $this->newLastName, $this->newType, $this->newPassword, $this->newEmail, $this->newPhone, $this->newManagerId, null, $this->newCanReviewReviews);
 
         if ($res) {
             $this->closeNewUserSec();

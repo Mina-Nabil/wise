@@ -226,6 +226,16 @@
                         </a>
                     </li>
                     @endcan
+                    @can('viewAny', \App\Models\Marketing\Review::class)
+                    <li>
+                        <a href="{{ url('/reviews') }}" class="navItem @yield('reviews')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="ic:outline-reviews"></iconify-icon>
+                                <span>Reviews</span>
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
                     @can('viewAny', \App\Models\Customers\Customer::class)
                     <li>
                         <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
