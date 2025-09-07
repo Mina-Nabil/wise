@@ -1531,7 +1531,7 @@ class SoldPolicy extends Model
             });
         }
 
-        $query->when($searchText, function ($q, $v, $loggedInUser) {
+        $query->when($searchText, function ($q, $v) use ($loggedInUser) {
             $q->leftjoin('corporates', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'corporates.id')
                     ->where('sold_policies.client_type', Corporate::MORPH_TYPE)
