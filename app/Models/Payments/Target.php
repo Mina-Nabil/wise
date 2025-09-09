@@ -66,13 +66,18 @@ class Target extends Model
             $tmpAmount = (( $sp->tax_amount ? $sp->after_tax_comm : $sp->after_tax_comm * .95) *
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions;
             $totalIncome += $tmpAmount;
-            Log::info("SP#$sp->id total income", ["tmpAmount" => $tmpAmount, "totalIncome" => $totalIncome]);
+            if($sp->id == 4387) {
+                Log::info("SP#$sp->id details", ["tmpAmount" => $tmpAmount, "totalIncome" => $totalIncome, "tax_amount" => $sp->tax_amount, "after_tax_comm" => $sp->after_tax_comm, "client_paid_by_dates" => $sp->client_paid_by_dates, "gross_premium" => $sp->gross_premium, "total_comm_subtractions" => $sp->total_comm_subtractions]);
+            }
         }
         foreach ($soldPolicies as $sp) {
             $paidAmountsPercent[$sp->id] = (($sp->after_tax_comm *
                 ($sp->client_paid_by_dates / $sp->gross_premium)) - $sp->total_comm_subtractions) / $totalIncome;
+            if($sp->id == 4387) {
+                Log::info("SP#$sp->id paidAmountsPercent", ["paidAmountsPercent" => $paidAmountsPercent[$sp->id]]);
+            }
         }
-        Log::info("Target#$this->id total income", ["totalIncome" => $totalIncome]);
+
 
         //return false if the target is not acheived
         if ($totalIncome < $this->min_income_target) return false;
