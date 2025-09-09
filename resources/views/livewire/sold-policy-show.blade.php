@@ -2059,7 +2059,7 @@
                 <div class="card-body flex flex-col p-6 active justify-center">
                     <header class="card-header noborder flex justify-between">
                         <h4 class="card-title">
-                            Policy Commissions (Total: {{ $soldPolicy->comms_details->sum('amount') }})
+                            Policy Commissions (Expected Total: {{ $soldPolicy->comms_details->sum('amount') }})
                         </h4>
                         @can('updateWiseCommPayments', $soldPolicy)
                             <button wire:click="openNewPolCom"
