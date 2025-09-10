@@ -126,7 +126,7 @@ class AppServiceProvider extends ServiceProvider
             Invoice::MORPH_TYPE => Invoice::class,
             CommProfilePayment::MORPH_TYPE => CommProfilePayment::class,
 
-            Review::MORPH_TYPE => Review::class,
+            Review::MORPH_NAME => Review::class,
 
         ]);
     }
