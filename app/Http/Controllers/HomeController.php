@@ -22,7 +22,12 @@ class HomeController extends Controller
 
     public function calendar()
     {
-        return view('home.calendar');
+        return view('home.calendar', ['mode' => 'all']);
+    }
+
+    public function calendarFollowups()
+    {
+        return view('home.calendar', ['mode' => 'followups']);
     }
 
     public function login(Request $request)

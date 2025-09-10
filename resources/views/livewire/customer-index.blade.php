@@ -142,6 +142,13 @@
                                                     </button>
                                                     <ul
                                                         class="dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                        <li class="cursor-pointer"
+                                                            wire:click="openInterestManagement({{ $customer->id }})">
+                                                            <a
+                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                Manage Interests
+                                                            </a>
+                                                        </li>
                                                         @foreach ($customerStatus as $status)
                                                             <li class="cursor-pointer"
                                                                 wire:click="changeThisStatus('{{ $customer->id }}','{{ $status }}')">
@@ -544,6 +551,21 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
+                                <div class="input-area mt-3">
+                                    <label for="campaignId" class="form-label">Campaign</label>
+                                    <select name="campaignId" id="campaignId"
+                                        class="form-control w-full mt-2 @error('campaignId') !border-danger-500 @enderror"
+                                        wire:model.defer="campaignId">
+                                        <option value="">None</option>
+                                        @foreach ($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('campaignId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
 
                                 <hr class="mt-5">
                                 <p class="mt-3 text-lg"><b>Driver License Document</b></p>
@@ -745,6 +767,21 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
+                                <div class="input-area mt-3">
+                                    <label for="leadCampaignId" class="form-label">Campaign</label>
+                                    <select name="leadCampaignId" id="leadCampaignId"
+                                        class="form-control w-full mt-2 @error('leadCampaignId') !border-danger-500 @enderror"
+                                        wire:model.defer="leadCampaignId">
+                                        <option value="">None</option>
+                                        @foreach ($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('leadCampaignId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
 
                             </div>
 
@@ -900,6 +937,332 @@
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="changeStatus" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Interest Management Modal --}}
+    @if ($interestManagementModalOpen && $selectedCustomer)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none" style="max-width: 800px;">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Manage Interests - {{ $selectedCustomer->first_name }} {{ $selectedCustomer->last_name }}
+                            </h3>
+                            <button wire:click="closeInterestManagement" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <div class="card-text flex flex-col justify-between h-full menu-open">
+                                    <p class="mb-2">
+                                        <b>Policy Interests</b>
+                                    </p>
+
+                                    @foreach ($LINES_OF_BUSINESS as $lob)
+                                        @php
+                                            $customerHasInterest = false;
+                                            $interestStatus = 'N/A';
+                                            $interestNote = '';
+                                            $timestamp = null;
+                                            $interestId = null;
+                                        @endphp
+                                        @foreach ($selectedCustomer->interests as $interest)
+                                            @if ($interest->business === $lob)
+                                                @php
+                                                    $customerHasInterest = true;
+                                                    $interestStatus = $interest->interested ? 'YES' : 'NO';
+                                                    $interestNote = $interest->note;
+                                                    $timestamp = $interest->created_at ?? null;
+                                                    $interestId = $interest->id;
+                                                @endphp
+                                                @break
+                                            @endif
+                                        @endforeach
+
+                                        <div class="flex mb-4">
+                                            <span
+                                                class="badge bg-slate-900 text-white capitalize inline-flex items-center mr-3">
+                                                @if ($interestStatus === 'YES')
+                                                    <iconify-icon class="ltr:mr-1 rtl:ml-1 text-info-500"
+                                                        icon="mdi:stars"></iconify-icon>
+                                                @elseif($interestStatus === 'NO')
+                                                    <iconify-icon class="ltr:mr-1 rtl:ml-1 text-danger-500"
+                                                        icon="mdi:stars"></iconify-icon>
+                                                @endif
+                                                {{ ucwords(str_replace('_', ' ', $lob)) }}
+                                            </span>
+
+                                            @if ($interestStatus === 'YES')
+                                                <span
+                                                    class="badge bg-success-500 text-white capitalize inline-flex items-center">YES</span>
+                                            @elseif($interestStatus === 'NO')
+                                                <span
+                                                    class="badge bg-danger-500 text-white capitalize inline-flex items-center">NO</span>
+                                            @else
+                                                <span
+                                                    class="badge bg-slate-300 text-white capitalize inline-flex items-center">N/A</span>
+                                            @endif
+
+                                            <div class="ml-auto">
+                                                <div class="relative">
+                                                    <div class="dropdown relative">
+                                                        <button class="text-xl text-center block w-full " type="button"
+                                                            id="tableDropdownMenuButton1" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <iconify-icon
+                                                                icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                                        </button>
+                                                        <ul
+                                                            class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                            @if ($interestStatus !== 'N/A' && $interestId)
+                                                                <li>
+                                                                    <button
+                                                                        wire:click="removeInterest({{ $interestId }})"
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                        Remove</button>
+                                                                </li>
+                                                            @endif
+                                                            <li>
+                                                                <button
+                                                                    wire:click="editThisInterest('YES','{{ $lob }}')"
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4  w-full text-left py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                                    Yes</button>
+                                                            </li>
+                                                            <li>
+                                                                <button
+                                                                    wire:click="editThisInterest('NO','{{ $lob }}')"
+                                                                    class="text-slate-600 dark:text-white block font-Inter text-left font-normal w-full px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600  dark:hover:text-white">
+                                                                    No</button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @if ($interestNote)
+                                            <p class="text-sm text-gray-600 mb-2">Note: {{ $interestNote }}</p>
+                                        @endif
+                                        @if ($timestamp)
+                                            <p class="text-xs text-gray-500 mb-4">{{ $timestamp }}</p>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Edit Interest Modal --}}
+    @if ($editInteresetSec)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Edit Interest
+                            </h3>
+                            <button wire:click="closeEditInterest" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <div class="input-area col-span-3">
+                                    <label for="interestNote" class="form-label">Leave a Note</label>
+                                    <input id="interestNote" type="text"
+                                        class="form-control @error('interestNote') !border-danger-500 @enderror"
+                                        wire:model.defer="interestNote">
+                                </div>
+                                @error('interestNote')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="hidden" name="checkbox"
+                                        wire:model="isCreateFollowup">
+                                    <span
+                                        class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                        <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
+                                            class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                    <span
+                                        class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">Create
+                                        followup</span>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="editInterest" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Add Followup Modal --}}
+    @if ($addFollowupSection && $selectedCustomer)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                @if ($is_meeting)
+                                    Add Meeting
+                                @else
+                                    Add Follow up
+                                @endif
+                                - {{ $selectedCustomer->first_name }} {{ $selectedCustomer->last_name }}
+                            </h3>
+                            <button wire:click="closeFollowupSection" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <div class="input-area">
+                                    <label for="followupTitle" class="form-label">Title</label>
+                                    <input id="followupTitle" type="text"
+                                        class="form-control @error('followupTitle') !border-danger-500 @enderror"
+                                        wire:model.defer="followupTitle">
+                                </div>
+                                @error('followupTitle')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                @if (!$is_meeting)
+                                    <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="hidden" name="checkbox"
+                                                wire:model="is_meeting">
+                                            <span
+                                                class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
+                                                    alt=""
+                                                    class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                            <span
+                                                class="text-black-500 dark:text-slate-400 text-sm leading-6 capitalize">is
+                                                Meeting ?</span>
+                                        </label>
+                                    </div>
+                                @endif
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
+                                    <div class="input-area">
+                                        <label for="followupCallDate" class="form-label">Call Date</label>
+                                        <input id="followupCallDate" type="date"
+                                            class="form-control @error('followupCallDate') !border-danger-500 @enderror"
+                                            wire:model.defer="followupCallDate">
+                                    </div>
+                                    @error('followupCallDate')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                    <div class="input-area">
+                                        <label for="followupCallTime" class="form-label"> Time</label>
+                                        <input id="followupCallTime" type="time"
+                                            class="form-control @error('followupCallTime') !border-danger-500 @enderror"
+                                            wire:model.defer="followupCallTime">
+                                    </div>
+                                    @error('followupCallTime')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="input-area mt-3">
+                                    <label for="FollowupLineOfBussiness" class="form-label">Line of business</label>
+                                    <select name="FollowupLineOfBussiness"
+                                        class="form-control w-full mt-2 @error('FollowupLineOfBussiness') !border-danger-500 @enderror"
+                                        wire:model="FollowupLineOfBussiness">
+                                        @foreach ($LINES_OF_BUSINESS as $LOB)
+                                            <option value="{{ $LOB }}"
+                                                class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                {{ ucwords(str_replace('_', ' ', $LOB)) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="input-area mt-3">
+                                    <label for="followupDesc" class="form-label">Description</label>
+                                    <input id="followupDesc" type="text"
+                                        class="form-control @error('followupDesc') !border-danger-500 @enderror"
+                                        wire:model.defer="followupDesc">
+                                </div>
+                                @error('followupDesc')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="addFollowup" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
                             </button>

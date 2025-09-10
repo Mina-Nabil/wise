@@ -26,6 +26,8 @@ use App\Http\Livewire\Accounting\UnapprovedEntryIndex;
 use App\Http\Livewire\EntryTitleIndex;
 use App\Http\Livewire\JournalEntryIndex;
 use App\Http\Livewire\TaskReport;
+use App\Http\Livewire\CampaignIndex;
+use App\Http\Livewire\ReviewIndex;
 use App\Models\Accounting\Account;
 use App\Models\Users\User;
 use Illuminate\Http\Request;
@@ -46,6 +48,7 @@ use Illuminate\Http\Request;
 Route::middleware('auth', 'active')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
     Route::get('/calendar', [HomeController::class, 'calendar']);
+    Route::get('/calendar/followups', [HomeController::class, 'calendarFollowups']);
     Route::get('/switch/session/{id}', function (Request $req) {
         User::switchSession($req->id);
     });
@@ -75,7 +78,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/claims', [TaskController::class, 'claimsIndex'])->name('claims.index');
     Route::get('/endorsement', [TaskController::class, 'endorsementIndex'])->name('endorsement.index');
     Route::get('/tasks/temp', [TaskController::class, 'tempTasksIndex'])->name('/temptasks.index');
-    Route::get('/tasks/my', [TaskController::class, 'my'])->name('tasks.show');
+    Route::get('/tasks/my', [TaskController::class, 'my'])->name('tasks.my');
     Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
 
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
@@ -92,6 +95,8 @@ Route::middleware('auth', 'active')->group(function () {
 
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
+    Route::get('/campaigns', [PoliciesController::class, 'campaignIndex'])->name('campaigns.index');
+    Route::get('/reviews',[ReportController::class, 'reviewsIndex'])->name('reviews.index');
     Route::get('/logs', [AppLogController::class, 'index'])->name('logs.index');
     Route::get('/slarecords', [AppLogController::class, 'slaRecordsIndex'])->name('slarecords.index');
 
@@ -99,12 +104,13 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/reports/offers', [ReportController::class, 'offersIndex'])->name('reports.offers');
     Route::get('/reports/tasks', [ReportController::class, 'tasksIndex'])->name('reports.tasks');
     Route::get('/reports/followups', [ReportController::class, 'followupsIndex'])->name('reports.followups');
-    Route::get('/reports/client-payment-finance', [ReportController::class, 'clientPaymentsFinance'])->name('reports.offers');
-    Route::get('/reports/client-payments', [ReportController::class, 'clientPayments'])->name('reports.offers');
+    Route::get('/reports/client-payment-finance', [ReportController::class, 'clientPaymentsFinance'])->name('reports.client-payment-finance');
+    Route::get('/reports/client-payments', [ReportController::class, 'clientPayments'])->name('reports.client-payments');
     Route::get('/reports/company-comm-payments', [ReportController::class, 'companyCommPayments'])->name('reports.company-comm-payments');
     Route::get('/reports/client-interest', [ReportController::class, 'clientInterests'])->name('reports.interest');
     Route::get('/reports/corporate-interest', [ReportController::class, 'corporateInterests'])->name('reports.corporate-interest');
     Route::get('/reports/invoices-report', [ReportController::class, 'invoicesReport'])->name('reports.invoices');
+    Route::get('/reports/campaigns', [ReportController::class, 'campaignsIndex'])->name('reports.campaigns');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);

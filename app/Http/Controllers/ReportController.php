@@ -77,4 +77,14 @@ class ReportController extends Controller
         // if (Auth::user()->is_admin) {
         return view('reports.tasks-index');
     }
+
+    public function campaignsIndex()
+    {
+        return view('reports.campaigns-index');
+    }
+
+    public function reviewsIndex()
+    {
+        return view('reports.reviews-index');
+    }
 }

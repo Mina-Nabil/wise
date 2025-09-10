@@ -3,6 +3,7 @@
 namespace App\Models\Tasks;
 
 use App\Exceptions\NoManagerException;
+use App\Models\Marketing\Review;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -299,6 +300,9 @@ class Task extends Model
                     } else {
                         $a->rejectAction();
                     }
+                }
+                if ($this->type == self::TYPE_CLAIM) {
+                    Review::createReview($this, "Claim Review", "Claim# $this->id completed");
                 }
             }
             if ($comment) {

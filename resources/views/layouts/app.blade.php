@@ -137,6 +137,14 @@
                             </span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ url('/calendar/followups') }}" class="navItem @yield('followups-calendar')">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="heroicons-outline:phone"></iconify-icon>
+                                <span>Followups Calendar</span>
+                            </span>
+                        </a>
+                    </li>
                     {{-- <li>
                         <a href="{{ url('/tasks') }}" class="navItem @yield('tasks')">
                             <span class="flex items-center">
@@ -214,6 +222,16 @@
                             <span class="flex items-center">
                                 <iconify-icon class="nav-icon" icon="material-symbols:payments"></iconify-icon>
                                 <span>Client Payments</span>
+                            </span>
+                        </a>
+                    </li>
+                    @endcan
+                    @can('viewAny', \App\Models\Marketing\Review::class)
+                    <li>
+                        <a href="{{ url('/reviews') }}" class="navItem @yield('reviews')">
+                            <span class="flex items-center">
+                                <iconify-icon class="nav-icon" icon="ic:outline-reviews"></iconify-icon>
+                                <span>Reviews</span>
                             </span>
                         </a>
                     </li>
@@ -335,6 +353,16 @@
                                 </a>
                             </li>
                         @endif
+                        @can('viewAny', \App\Models\Marketing\Campaign::class)
+                            <li>
+                                <a href="{{ url('/campaigns') }}" class="navItem @yield('campaigns')">
+                                    <span class="flex items-center">
+                                        <iconify-icon class="nav-icon" icon="heroicons:megaphone"></iconify-icon>
+                                        <span>Campaigns</span>
+                                    </span>
+                                </a>
+                            </li>
+                        @endcan
                         @if (Auth::user()->is_admin)
                             <li>
                                 <a href="{{ url('/policies') }}" class="navItem @yield('policies')">
@@ -498,6 +526,18 @@
                                                 </iconify-icon>
                                                 <span class="leading-[1]">
                                                     Calendar
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="{{ url('/calendar/followups') }}" class="navItem @yield('followups-calendar')">
+                                            <div class="flex space-x-2 items-start rtl:space-x-reverse ">
+                                                <iconify-icon icon=heroicons:phone class="leading-[1] text-base">
+                                                </iconify-icon>
+                                                <span class="leading-[1]">
+                                                    Followups Calendar
                                                 </span>
                                             </div>
                                         </a>

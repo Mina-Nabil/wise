@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Customers\Followup;
+use App\Models\Marketing\Campaign;
 use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
@@ -22,6 +23,7 @@ class FollowupIndex extends Component
     public $followupDesc;
     public $followupId;
     public $deleteFollowupId;
+    public $campaignId;
 
     public $callerNoteSec = false;
 
@@ -118,7 +120,10 @@ class FollowupIndex extends Component
         $res = $followup->editInfo(
             $this->followupTitle,
             $combinedDateTime,
-            $this->followupDesc
+            $this->followupDesc,
+            false,
+            null,
+            $this->campaignId
         );
 
         if ($res) {
@@ -139,8 +144,10 @@ class FollowupIndex extends Component
     public function render()
     {
         $followups = Followup::userData($this->search)->paginate(10);
+        $campaigns = Campaign::all();
         return view('livewire.followup-index', [
             'followups' => $followups,
+            'campaigns' => $campaigns,
         ]);
     }
 }

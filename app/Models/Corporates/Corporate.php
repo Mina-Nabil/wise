@@ -3,6 +3,7 @@
 namespace App\Models\Corporates;
 
 use App\Models\Customers\Followup;
+use App\Models\Marketing\Campaign;
 use App\Models\Tasks\Task;
 use App\Models\Offers\Offer;
 use App\Models\Users\AppLog;
@@ -52,11 +53,12 @@ class Corporate extends Model
         'owner_id',
         'note',
         'is_welcomed',
-        'welcome_note'
+        'welcome_note',
+        'campaign_id'
     ];
 
     ///model functions
-    public function addFollowup($title, $call_time, $desc = null, $is_meeting = false, $line_of_business = null): Followup|false
+    public function addFollowup($title, $call_time, $desc = null, $is_meeting = false, $line_of_business = null, $campaign_id = null): Followup|false
     {
         try {
             $res = $this->followups()->create([
@@ -65,7 +67,8 @@ class Corporate extends Model
                 "call_time" =>  $call_time,
                 "is_meeting"        =>  $is_meeting,
                 "line_of_business"  =>  $line_of_business,
-                "desc"      =>  $desc
+                "desc"      =>  $desc,
+                "campaign_id"       =>  $campaign_id !== null ? $campaign_id : $this->campaign_id,
             ]);
             AppLog::info("Follow-up created", loggable: $res);
             return $res;
@@ -89,6 +92,7 @@ class Corporate extends Model
         $contract_doc = null,
         $main_bank_evidence = null,
         $note = null,
+        $campaign_id = null,
     ): bool {
         $updates['name'] = $name;
         if ($arabic_name) $updates['arabic_name'] = $arabic_name;
@@ -102,7 +106,7 @@ class Corporate extends Model
         if ($contract_doc) $updates['contract_doc'] = $contract_doc;
         if ($note) $updates['note'] = $note;
         if ($main_bank_evidence) $updates['main_bank_evidence'] = $contract_doc;
-
+        if ($campaign_id) $updates['campaign_id'] = $campaign_id;
         $this->update($updates);
 
         try {
@@ -423,6 +427,7 @@ class Corporate extends Model
             $activeSheet->getCell('G' . $i)->setValue($main_contact?->phone);
             $activeSheet->getCell('H' . $i)->setValue($lead->owner?->username);
             $activeSheet->getCell('I' . $i)->setValue($lead->note);
+            $activeSheet->getCell('J' . $i)->setValue($lead->campaign?->name);
             $i++;
         }
 
@@ -453,7 +458,8 @@ class Corporate extends Model
             $contact_phone     =  $activeSheet->getCell('G' . $i)->getValue();
             $username     =  $activeSheet->getCell('H' . $i)->getValue();
             $note           =  $activeSheet->getCell('I' . $i)->getValue();
-
+            $campaign_name  =  $activeSheet->getCell('J' . $i)->getValue();
+            $campaign_id = $campaign_name ? Campaign::where('name', $campaign_name)->first()?->id : null;
             if (!$company_name || !$contact_name || !$company_phone || !$contact_phone) continue;
             $user = User::userExists($username);
 
@@ -465,7 +471,7 @@ class Corporate extends Model
                 $lead = self::find($id);
                 if (!$lead) continue;
 
-                $lead->editInfo($company_name, $company_arabic_name);
+                $lead->editInfo($company_name, $company_arabic_name, campaign_id: $campaign_id);
                 $lead->setOwner($user->id);
 
                 if ($company_phone)
@@ -477,7 +483,7 @@ class Corporate extends Model
                     $lead->setCorporateNote($note);
             } else {
 
-                $lead = self::newLead($company_name, $company_arabic_name, owner_id: $user->id);
+                $lead = self::newLead($company_name, $company_arabic_name, owner_id: $user->id, campaign_id: $campaign_id);
                 $lead->addContact($contact_name, $contact_title, null, $contact_phone, true);
 
                 if ($company_phone)
@@ -530,7 +536,8 @@ class Corporate extends Model
         $contract_doc = null,
         $main_bank_evidence = null,
         $owner_id = null,
-        $note = null
+        $note = null,
+        $campaign_id = null,
     ): self|false {
         $newLead = new self([
             "type"          =>  self::TYPE_LEAD,
@@ -547,7 +554,8 @@ class Corporate extends Model
             "main_bank_evidence"    =>  $main_bank_evidence,
             "owner_id"      =>  $owner_id ?? Auth::id(),
             "creator_id"    => Auth::id(),
-            "note"          =>  $note
+            "note"          =>  $note,
+            "campaign_id"   => $campaign_id,
         ]);
         try {
             $newLead->save();
@@ -574,7 +582,8 @@ class Corporate extends Model
         $kyc_doc = null,
         $contract_doc = null,
         $main_bank_evidence = null,
-        $note = null
+        $note = null,
+        $campaign_id = null,
     ): self|false {
         $newCorporate = new self([
             "type"          =>  self::TYPE_LEAD,
@@ -591,7 +600,8 @@ class Corporate extends Model
             "main_bank_evidence"    =>  $main_bank_evidence,
             "owner_id"      =>  $owner_id ?? Auth::id(),
             "creator_id"    => Auth::id() ?? 1,
-            "note"          =>  $note
+            "note"          =>  $note,
+            "campaign_id"   => $campaign_id,
         ]);
 
         try {
@@ -681,6 +691,7 @@ class Corporate extends Model
 
         $query->when($searchText, function ($q, $v) {
             $q->leftjoin('corporate_phones', 'corporate_phones.corporate_id', '=', 'corporates.id')
+                ->leftjoin('campaigns', 'campaigns.id', '=', 'corporates.campaign_id')
                 ->groupBy('corporates.id');
 
             $splittedText = explode(' ', $v);
@@ -691,7 +702,7 @@ class Corporate extends Model
                         ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%")
                         ->orwhere('corporates.email', 'LIKE', "%$tmp%")
                         ->orwhere('corporate_phones.number', 'LIKE', "%$tmp%")
-                        ->orwhere('corporates.arabic_name', 'LIKE', "%$tmp%");
+                        ->orwhere('campaigns.name', 'LIKE', "%$tmp%");
                 });
             }
         });
@@ -714,7 +725,7 @@ class Corporate extends Model
      *      'line_of_business' => 1 or 0
      * ]
      */
-    public function scopeInterestReport($query, Carbon $from = null, Carbon $to = null, array $interests = [], $owner_id = null, $is_welcomed = null)
+    public function scopeInterestReport($query, Carbon $from = null, Carbon $to = null, array $interests = [], $owner_id = null, $is_welcomed = null, $campaign_id = null)
     {
         $query->userData()
             ->when($is_welcomed !== null, function ($q) use ($is_welcomed) {
@@ -722,6 +733,9 @@ class Corporate extends Model
             })
             ->when($owner_id !== null, function ($q) use ($owner_id) {
                 $q->where('customers.owner_id', $owner_id);
+            })
+            ->when($campaign_id !== null, function ($q) use ($campaign_id) {
+                $q->where('corporates.campaign_id', $campaign_id);
             })
             ->join('corporate_interests', 'corporates.id', '=', 'corporate_interests.corporate_id')
             ->select('corporates.*', 'corporate_interests.business', 'corporate_interests.interested', 'corporate_interests.note')
@@ -794,5 +808,10 @@ class Corporate extends Model
     public function interests(): HasMany
     {
         return $this->hasMany(Interest::class);
+    }
+
+    public function campaign(): BelongsTo
+    {
+        return $this->belongsTo(Campaign::class);
     }
 }

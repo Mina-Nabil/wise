@@ -8,6 +8,7 @@ use App\Models\Customers\Car;
 use App\Models\Customers\Customer;
 use App\Models\Insurance\GrossCalculation;
 use App\Models\Insurance\Policy;
+use App\Models\Marketing\Review;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
 use App\Models\Payments\ClientPayment;
@@ -1185,6 +1186,7 @@ class SoldPolicy extends Model
         try {
             $newSoldPolicy->save(['timestamps' => false]);
             AppLog::info("New Sold Policy", loggable: $newSoldPolicy);
+            Review::createReview($newSoldPolicy, "New Policy Review", "Policy# $policy_number created");
             return $newSoldPolicy;
         } catch (Exception $e) {
             report($e);

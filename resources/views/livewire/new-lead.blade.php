@@ -94,6 +94,22 @@
                                     @enderror
                                 </div>
 
+                                <div class="input-area mt-3">
+                                    <label for="campaignId" class="form-label">Campaign</label>
+                                    <select name="campaignId" id="campaignId"
+                                        class="form-control w-full mt-2 @error('campaignId') !border-danger-500 @enderror"
+                                        wire:model.defer="campaignId">
+                                        <option value="">None</option>
+                                        @foreach ($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('campaignId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
                                 <hr class="mt-5">
                                 <div class="from-group">
                                     <p class="text-lg mt-3"><b>Followup</b></p>

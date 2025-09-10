@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Corporates\Corporate;
 use App\Models\Customers\Customer;
+use App\Models\Marketing\Campaign;
 use App\Models\Insurance\Policy;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
@@ -26,6 +27,7 @@ class NewMeeting extends Component
     public $followupTitle;
     public $followupDesc;
     public $FollowupLineOfBussiness = Policy::BUSINESS_PERSONAL_MOTOR;
+    public $campaignId;
 
     public function resetClient(){
         $this->reset(['clientNames','selectedClientId','selectedClientName', 'owner']);
@@ -87,7 +89,7 @@ class NewMeeting extends Component
             ]);
 
             if ($this->followupCallDateTime || $this->followup_is_meeting) {
-                $fres = $res->addFollowup($this->followupTitle,$this->followupCallDateTime,$this->followupDesc,true,$this->FollowupLineOfBussiness);
+                $fres = $res->addFollowup($this->followupTitle,$this->followupCallDateTime,$this->followupDesc,true,$this->FollowupLineOfBussiness,$this->campaignId);
             }else{
                 $fres = true;
             }
@@ -100,7 +102,7 @@ class NewMeeting extends Component
             ]);
 
             if ($this->followupCallDateTime) {
-                $fres = $res->addFollowup($this->followupTitle,$this->followupCallDateTime,$this->followupDesc,true,$this->FollowupLineOfBussiness);
+                $fres = $res->addFollowup($this->followupTitle,$this->followupCallDateTime,$this->followupDesc,true,$this->FollowupLineOfBussiness,$this->campaignId);
             }else{
                 $fres = true;
             }
@@ -119,8 +121,10 @@ class NewMeeting extends Component
     public function render()
     {
         $LINES_OF_BUSINESS = Policy::PERSONAL_TYPES;
+        $campaigns = Campaign::all();
         return view('livewire.new-meeting',[
-            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS
+            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
+            'campaigns' => $campaigns
         ]);
     }
 }

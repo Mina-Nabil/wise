@@ -44,6 +44,7 @@ class User extends Authenticatable
     const TYPE_MANAGER = 'manager';
     const TYPE_HR = 'hr';
     const TYPE_ADMIN = 'admin';
+    const TYPE_CRM = 'crm';
 
     const TYPES = [
         self::TYPE_ADMIN,
@@ -55,6 +56,7 @@ class User extends Authenticatable
         self::TYPE_HR,
         self::TYPE_MANAGER,
         self::TYPE_FINANCE_ASSISTANT,
+        self::TYPE_CRM,
     ];
 
     protected $fillable = [
@@ -62,6 +64,7 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'type',
+        'can_review_reviews',
         'password',
         'phone',
         'email'
@@ -71,7 +74,7 @@ class User extends Authenticatable
 
 
     /////////////functions
-    public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null, $image = null, $password = null, $manager_id = null): bool
+    public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null, $image = null, $password = null, $manager_id = null, $can_review_reviews = null): bool
     {
         try {
             $this->first_name   = $first_name;
@@ -81,7 +84,9 @@ class User extends Authenticatable
             $this->username     = $username;
             $this->type         = $type;
             $this->manager_id   = $manager_id;
-            $this->image         = $image;
+            $this->image        = $image;
+            if ($can_review_reviews !== null)
+                $this->can_review_reviews = $can_review_reviews;
             if ($password)
                 $this->password     =   bcrypt($password);
 
@@ -188,21 +193,22 @@ class User extends Authenticatable
 
 
     /////////static functions
-    public static function newUser($username, $first_name, $last_name, $type, $password, $email = null, $phone = null, $manager_id = null, $image = null): self|false
+    public static function newUser($username, $first_name, $last_name, $type, $password, $email = null, $phone = null, $manager_id = null, $image = null, $can_review_reviews = false): self|false
     {
         try {
             $exists = self::userExists($username);
             if ($exists) return $exists;
             $user = new self([
-                "username"      =>  $username,
-                "first_name"    =>  $first_name,
-                "last_name"     =>  $last_name,
-                "email"         =>  $email,
-                "phone"         =>  $phone,
-                "manager_id"    =>  $manager_id,
-                "image"         =>  $image,
-                "type"          =>  $type,
-                "password"      =>  bcrypt($password)
+                "username"              =>  $username,
+                "first_name"            =>  $first_name,
+                "last_name"             =>  $last_name,
+                "email"                 =>  $email,
+                "phone"                 =>  $phone,
+                "manager_id"            =>  $manager_id,
+                "image"                 =>  $image,
+                "type"                  =>  $type,
+                "can_review_reviews"    =>  $can_review_reviews,
+                "password"              =>  bcrypt($password)
             ]);
             $user->save();
             AppLog::info('User created', "User $username created");
@@ -260,6 +266,10 @@ class User extends Authenticatable
     public function scopeFinanceAssistant($query)
     {
         return $query->where('type', self::TYPE_FINANCE_ASSISTANT);
+    }
+    public function scopeCrm($query)
+    {
+        return $query->where('type', self::TYPE_CRM);
     }
     public function scopeSearch($query, $search)
     {
@@ -344,6 +354,16 @@ class User extends Authenticatable
     public function getIsHRAttribute()
     {
         return $this->type == self::TYPE_HR;
+    }
+
+    public function getIsCrmAttribute()
+    {
+        return $this->type == self::TYPE_CRM;
+    }
+
+    public function getCanReviewReviewsAttribute()
+    {
+        return (bool) $this->attributes['can_review_reviews'];
     }
 
     public function getNotfChannelAttribute()

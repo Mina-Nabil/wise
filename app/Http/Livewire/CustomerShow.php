@@ -22,6 +22,7 @@ use App\Models\Cars\CarPrice;
 use App\Models\Customers\Followup;
 use App\Models\Customers\Interest;
 use App\Models\Customers\Phone;
+use App\Models\Marketing\Campaign;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Exception;
@@ -131,6 +132,7 @@ class CustomerShow extends Component
     public $isMeeting;
     public $FollowupLineOfBussiness = Policy::BUSINESS_PERSONAL_MOTOR;
     public $is_meeting = false;
+    public $followupCampaignId;
 
 
     public $deletePhoneId;
@@ -562,6 +564,7 @@ class CustomerShow extends Component
         $this->addFollowupSection = false;
         $this->is_meeting = false;
         $this->FollowupLineOfBussiness = Policy::BUSINESS_PERSONAL_MOTOR;
+        $this->followupCampaignId = null;
     }
 
     public function OpenAddFollowupSection()
@@ -626,7 +629,7 @@ class CustomerShow extends Component
             $this->followupDesc,
             $this->is_meeting,
             $this->FollowupLineOfBussiness,
-
+            $this->followupCampaignId
         );
 
         if ($res) {
@@ -1290,7 +1293,7 @@ class CustomerShow extends Component
 
     public function mount($customerId)
     {
-        $this->customer = Customer::findOrFail($customerId);
+        $this->customer = Customer::with(['campaign', 'owner'])->findOrFail($customerId);
 
         $this->firstName = $this->customer->first_name;
         $this->middleName = $this->customer->middle_name;
@@ -1453,6 +1456,7 @@ class CustomerShow extends Component
         $companies = Company::all();
         // dd($tasks);
         $LINES_OF_BUSINESS = Policy::PERSONAL_TYPES;
+        $campaigns = Campaign::all();
 
         return view('livewire.customer-show', [
             'customer' => $this->customer,
@@ -1475,7 +1479,8 @@ class CustomerShow extends Component
             'offers' => $offers,
             'bankAccTypes' => $bankAccTypes,
             'companies' => $companies,
-            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS
+            'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
+            'campaigns' => $campaigns
         ]);
     }
 }
