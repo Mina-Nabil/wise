@@ -32,6 +32,7 @@ use App\Models\Insurance\Company;
 use App\Models\Insurance\CompanyEmail;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\PolicyCondition;
+use App\Models\Marketing\Review;
 use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
 use App\Models\Payments\ClientPayment;
@@ -124,6 +125,8 @@ class AppServiceProvider extends ServiceProvider
             CorporatesInterest::MORPH_TYPE => CorporatesInterest::class,
             Invoice::MORPH_TYPE => Invoice::class,
             CommProfilePayment::MORPH_TYPE => CommProfilePayment::class,
+
+            Review::MORPH_TYPE => Review::class,
 
         ]);
     }

@@ -18,6 +18,8 @@ class Review extends Model
 {
     use HasFactory;
 
+    const MORPH_NAME = 'review';
+
     protected $fillable = [
         'reviewable_type',
         'reviewable_id',
