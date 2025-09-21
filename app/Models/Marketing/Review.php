@@ -47,6 +47,18 @@ class Review extends Model
         'need_manager_review',
         'manager_comment',
         'reviewed_by_id',
+        // Claim-specific ratings
+        'insurance_company_rating',
+        'insurance_company_comment',
+        'provider_rating',
+        'provider_comment',
+        'claims_specialist_rating',
+        'claims_specialist_comment',
+        'wise_rating',
+        'wise_comment',
+        'need_claim_manager_review',
+        'claim_manager_comment',
+        'is_claim_manager_reviewed',
     ];
 
     protected $casts = [
@@ -61,6 +73,13 @@ class Review extends Model
         'is_referred' => 'boolean',
         'is_manager_reviewed' => 'boolean',
         'need_manager_review' => 'boolean',
+        // Claim-specific ratings
+        'insurance_company_rating' => 'decimal:1',
+        'provider_rating' => 'decimal:1',
+        'claims_specialist_rating' => 'decimal:1',
+        'wise_rating' => 'decimal:1',
+        'need_claim_manager_review' => 'boolean',
+        'is_claim_manager_reviewed' => 'boolean',
     ];
 
     public function reviewable(): MorphTo
@@ -525,5 +544,154 @@ class Review extends Model
         $writer->save($filePath);
 
         return response()->download($filePath)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Check if this review is for a claim (Task with type 'claim')
+     *
+     * @return bool
+     */
+    public function getIsClaimReviewAttribute(): bool
+    {
+        return $this->reviewable_type === 'App\Models\Tasks\Task' 
+            && $this->reviewable 
+            && $this->reviewable->type === 'claim';
+    }
+
+    /**
+     * Set claim-specific ratings and comments
+     *
+     * @param float|null $insuranceCompanyRating
+     * @param string|null $insuranceCompanyComment
+     * @param float|null $providerRating
+     * @param string|null $providerComment
+     * @param float|null $claimsSpecialistRating
+     * @param string|null $claimsSpecialistComment
+     * @param float|null $wiseRating
+     * @param string|null $wiseComment
+     * @param int|null $reviewedById
+     * @return bool
+     */
+    public function setClaimRatingsAndComments(
+        ?float $insuranceCompanyRating = null,
+        ?string $insuranceCompanyComment = null,
+        ?float $providerRating = null,
+        ?string $providerComment = null,
+        ?float $claimsSpecialistRating = null,
+        ?string $claimsSpecialistComment = null,
+        ?float $wiseRating = null,
+        ?string $wiseComment = null,
+        ?int $reviewedById = null
+    ): bool {
+        try {
+            $updates = [];
+
+            if ($insuranceCompanyRating !== null) {
+                $updates['insurance_company_rating'] = max(0, min(10, $insuranceCompanyRating));
+            }
+            
+            if ($insuranceCompanyComment !== null) {
+                $updates['insurance_company_comment'] = $insuranceCompanyComment;
+            }
+            
+            if ($providerRating !== null) {
+                $updates['provider_rating'] = max(0, min(10, $providerRating));
+            }
+            
+            if ($providerComment !== null) {
+                $updates['provider_comment'] = $providerComment;
+            }
+            
+            if ($claimsSpecialistRating !== null) {
+                $updates['claims_specialist_rating'] = max(0, min(10, $claimsSpecialistRating));
+            }
+            
+            if ($claimsSpecialistComment !== null) {
+                $updates['claims_specialist_comment'] = $claimsSpecialistComment;
+            }
+            
+            if ($wiseRating !== null) {
+                $updates['wise_rating'] = max(0, min(10, $wiseRating));
+            }
+            
+            if ($wiseComment !== null) {
+                $updates['wise_comment'] = $wiseComment;
+            }
+
+            // If any ratings or comments are being set, mark as reviewed
+            if (!empty($updates)) {
+                $updates['is_reviewed'] = true;
+                $updates['reviewed_at'] = now();
+                $updates['reviewed_by_id'] = $reviewedById ?? Auth::id();
+                
+                // Check if any rating is less than 8 to set need_claim_manager_review
+                $needClaimManagerReview = false;
+                $claimRatingFields = [
+                    'insurance_company_rating', 'provider_rating', 
+                    'claims_specialist_rating', 'wise_rating'
+                ];
+                
+                foreach ($claimRatingFields as $field) {
+                    if (isset($updates[$field]) && $updates[$field] < 8) {
+                        $needClaimManagerReview = true;
+                        break;
+                    }
+                }
+                
+                $updates['need_claim_manager_review'] = $needClaimManagerReview;
+            }
+
+            $this->update($updates);
+            $result = $this->save();
+            
+            AppLog::info('Claim review ratings and comments updated successfully', loggable: $this);
+            return $result;
+        } catch (Exception $e) {
+            AppLog::error('Failed to update claim review ratings and comments', desc: $e->getMessage(), loggable: $this);
+            report($e);
+            return false;
+        }
+    }
+
+    /**
+     * Mark claim review as claim manager reviewed
+     *
+     * @param int|null $reviewedById User ID who completed the claim manager review
+     * @param string|null $claimManagerComment
+     * @return bool
+     */
+    public function markAsClaimManagerReviewed(?int $reviewedById = null, ?string $claimManagerComment = null): bool
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('markAsReviewed', $this)) {
+            AppLog::error('Unauthorized attempt to mark claim review as claim manager reviewed', desc: 'User does not have permission to mark claim review as claim manager reviewed', loggable: $this);
+            return false;
+        }
+
+        try {
+            $updates = [
+                'is_claim_manager_reviewed' => true,
+                'need_claim_manager_review' => false,
+            ];
+
+            if ($claimManagerComment !== null) {
+                $updates['claim_manager_comment'] = $claimManagerComment;
+            }
+
+            if ($reviewedById !== null) {
+                $updates['reviewed_by_id'] = $reviewedById;
+            }
+
+            $this->update($updates);
+            $result = $this->save();
+            
+            AppLog::info('Claim review marked as claim manager reviewed successfully', loggable: $this);
+            return $result;
+        } catch (Exception $e) {
+            AppLog::error('Failed to mark claim review as claim manager reviewed', desc: $e->getMessage(), loggable: $this);
+            report($e);
+            return false;
+        }
     }
 }

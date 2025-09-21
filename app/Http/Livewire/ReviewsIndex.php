@@ -53,6 +53,7 @@ class ReviewsIndex extends Component
     // Modal states and form data
     public $showRatingsModal = false;
     public $showManagerModal = false;
+    public $showClaimManagerModal = false;
     public $showInfoModal = false;
     public $selectedReviewId;
     public $selectedReview;
@@ -74,8 +75,21 @@ class ReviewsIndex extends Component
     public $form_is_referred;
     public $form_referral_comment;
     
+    // Claim-specific ratings modal form data
+    public $form_insurance_company_rating;
+    public $form_insurance_company_comment;
+    public $form_provider_rating;
+    public $form_provider_comment;
+    public $form_claims_specialist_rating;
+    public $form_claims_specialist_comment;
+    public $form_wise_rating;
+    public $form_wise_comment;
+    
     // Manager modal form data
     public $manager_comment;
+    
+    // Claim manager modal form data
+    public $claim_manager_comment;
     
 
     public function mount()
@@ -289,22 +303,34 @@ class ReviewsIndex extends Component
         $this->selectedReview = Review::findOrFail($reviewId);
         $this->showRatingsModal = true;
         
-        // Pre-fill with existing data if available
-        $this->form_employee_rating = $this->selectedReview->employee_rating ?? null;
-        $this->form_employee_comment = $this->selectedReview->client_employee_comment ?? '';
-        $this->form_policy_conditions_rating = $this->selectedReview->policy_conditions_rating ?? null;
-        $this->form_policy_conditions_comment = $this->selectedReview->policy_conditions_comment ?? '';
-        $this->form_service_quality_rating = $this->selectedReview->service_quality_rating ?? null;
-        $this->form_service_quality_comment = $this->selectedReview->service_quality_comment ?? '';
-        $this->form_pricing_rating = $this->selectedReview->pricing_rating ?? null;
-        $this->form_pricing_comment = $this->selectedReview->pricing_comment ?? '';
-        $this->form_processing_time_rating = $this->selectedReview->processing_time_rating ?? null;
-        $this->form_processing_time_comment = $this->selectedReview->processing_time_comment ?? '';
-        $this->form_collection_channel_rating = $this->selectedReview->collection_channel_rating ?? null;
-        $this->form_collection_channel_comment = $this->selectedReview->collection_channel_comment ?? '';
-        $this->form_suggestions = $this->selectedReview->suggestions ?? '';
-        $this->form_is_referred = $this->selectedReview->is_referred ?? null;
-        $this->form_referral_comment = $this->selectedReview->referral_comment ?? '';
+        if ($this->selectedReview->is_claim_review) {
+            // Pre-fill claim-specific data
+            $this->form_insurance_company_rating = $this->selectedReview->insurance_company_rating ?? null;
+            $this->form_insurance_company_comment = $this->selectedReview->insurance_company_comment ?? '';
+            $this->form_provider_rating = $this->selectedReview->provider_rating ?? null;
+            $this->form_provider_comment = $this->selectedReview->provider_comment ?? '';
+            $this->form_claims_specialist_rating = $this->selectedReview->claims_specialist_rating ?? null;
+            $this->form_claims_specialist_comment = $this->selectedReview->claims_specialist_comment ?? '';
+            $this->form_wise_rating = $this->selectedReview->wise_rating ?? null;
+            $this->form_wise_comment = $this->selectedReview->wise_comment ?? '';
+        } else {
+            // Pre-fill sold policy data
+            $this->form_employee_rating = $this->selectedReview->employee_rating ?? null;
+            $this->form_employee_comment = $this->selectedReview->client_employee_comment ?? '';
+            $this->form_policy_conditions_rating = $this->selectedReview->policy_conditions_rating ?? null;
+            $this->form_policy_conditions_comment = $this->selectedReview->policy_conditions_comment ?? '';
+            $this->form_service_quality_rating = $this->selectedReview->service_quality_rating ?? null;
+            $this->form_service_quality_comment = $this->selectedReview->service_quality_comment ?? '';
+            $this->form_pricing_rating = $this->selectedReview->pricing_rating ?? null;
+            $this->form_pricing_comment = $this->selectedReview->pricing_comment ?? '';
+            $this->form_processing_time_rating = $this->selectedReview->processing_time_rating ?? null;
+            $this->form_processing_time_comment = $this->selectedReview->processing_time_comment ?? '';
+            $this->form_collection_channel_rating = $this->selectedReview->collection_channel_rating ?? null;
+            $this->form_collection_channel_comment = $this->selectedReview->collection_channel_comment ?? '';
+            $this->form_suggestions = $this->selectedReview->suggestions ?? '';
+            $this->form_is_referred = $this->selectedReview->is_referred ?? null;
+            $this->form_referral_comment = $this->selectedReview->referral_comment ?? '';
+        }
     }
 
     public function closeRatingsModal()
@@ -327,6 +353,22 @@ class ReviewsIndex extends Component
     {
         $this->showManagerModal = false;
         $this->resetManagerForm();
+    }
+
+    public function openClaimManagerModal($reviewId)
+    {
+        $this->selectedReviewId = $reviewId;
+        $this->selectedReview = Review::findOrFail($reviewId);
+        $this->showClaimManagerModal = true;
+        
+        // Pre-fill with existing claim manager comment if available
+        $this->claim_manager_comment = $this->selectedReview->claim_manager_comment ?? '';
+    }
+
+    public function closeClaimManagerModal()
+    {
+        $this->showClaimManagerModal = false;
+        $this->resetClaimManagerForm();
     }
 
     public function openInfoModal($reviewId)
@@ -363,6 +405,16 @@ class ReviewsIndex extends Component
         $this->form_suggestions = '';
         $this->form_is_referred = null;
         $this->form_referral_comment = '';
+        
+        // Reset claim-specific fields
+        $this->form_insurance_company_rating = null;
+        $this->form_insurance_company_comment = '';
+        $this->form_provider_rating = null;
+        $this->form_provider_comment = '';
+        $this->form_claims_specialist_rating = null;
+        $this->form_claims_specialist_comment = '';
+        $this->form_wise_rating = null;
+        $this->form_wise_comment = '';
     }
 
     private function resetManagerForm()
@@ -370,6 +422,13 @@ class ReviewsIndex extends Component
         $this->selectedReviewId = null;
         $this->selectedReview = null;
         $this->manager_comment = '';
+    }
+
+    private function resetClaimManagerForm()
+    {
+        $this->selectedReviewId = null;
+        $this->selectedReview = null;
+        $this->claim_manager_comment = '';
     }
 
 
@@ -424,6 +483,42 @@ class ReviewsIndex extends Component
         }
     }
 
+    public function setClaimRatingsAndComments()
+    {
+        $this->validate([
+            'form_insurance_company_rating' => 'nullable|numeric|min:0|max:10',
+            'form_insurance_company_comment' => 'nullable|string|max:1000',
+            'form_provider_rating' => 'nullable|numeric|min:0|max:10',
+            'form_provider_comment' => 'nullable|string|max:1000',
+            'form_claims_specialist_rating' => 'nullable|numeric|min:0|max:10',
+            'form_claims_specialist_comment' => 'nullable|string|max:1000',
+            'form_wise_rating' => 'nullable|numeric|min:0|max:10',
+            'form_wise_comment' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $review = Review::findOrFail($this->selectedReviewId);
+            
+            if ($review->setClaimRatingsAndComments(
+                $this->form_insurance_company_rating,
+                $this->form_insurance_company_comment,
+                $this->form_provider_rating,
+                $this->form_provider_comment,
+                $this->form_claims_specialist_rating,
+                $this->form_claims_specialist_comment,
+                $this->form_wise_rating,
+                $this->form_wise_comment
+            )) {
+                $this->alert('success', 'Claim review ratings and comments updated successfully.');
+                $this->closeRatingsModal();
+            } else {
+                $this->alert('failed', 'Failed to update claim review ratings and comments.');
+            }
+        } catch (\Exception $e) {
+            $this->alert('failed', 'An error occurred while updating the claim review.');
+        }
+    }
+
     public function markAsManagerReviewed()
     {
         $this->validate([
@@ -441,6 +536,26 @@ class ReviewsIndex extends Component
             }
         } catch (\Exception $e) {
             $this->alert('failed', 'An error occurred while updating the review.');
+        }
+    }
+
+    public function markAsClaimManagerReviewed()
+    {
+        $this->validate([
+            'claim_manager_comment' => 'nullable|string|max:2000',
+        ]);
+
+        try {
+            $review = Review::findOrFail($this->selectedReviewId);
+            
+            if ($review->markAsClaimManagerReviewed(null, $this->claim_manager_comment)) {
+                $this->alert('success', 'Claim review marked as claim manager reviewed successfully.');
+                $this->closeClaimManagerModal();
+            } else {
+                $this->alert('failed', 'Failed to mark claim review as claim manager reviewed.');
+            }
+        } catch (\Exception $e) {
+            $this->alert('failed', 'An error occurred while updating the claim review.');
         }
     }
 

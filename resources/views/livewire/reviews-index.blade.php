@@ -207,38 +207,71 @@
 
                                         <td class="table-td">
                                             @if ($review->is_reviewed)
-                                                <div class="flex flex-col gap-1">
-                                                    <div class="flex items-center gap-2">
-                                                        <span class="text-xs text-slate-600">Emp:</span>
-                                                        <span class="text-sm font-medium {{ $review->employee_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                                            {{ $review->employee_rating }}/10
-                                                        </span>
+                                                @if ($review->is_claim_review)
+                                                    <div class="flex flex-col gap-1">
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="text-xs text-slate-600">Ins:</span>
+                                                            <span class="text-sm font-medium {{ $review->insurance_company_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                                {{ $review->insurance_company_rating }}/10
+                                                            </span>
+                                                        </div>
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="text-xs text-slate-600">Prov:</span>
+                                                            <span class="text-sm font-medium {{ $review->provider_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                                {{ $review->provider_rating }}/10
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div class="flex items-center gap-2">
-                                                        <span class="text-xs text-slate-600">Co:</span>
-                                                        <span class="text-sm font-medium {{ $review->company_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                                            {{ $review->company_rating }}/10
-                                                        </span>
+                                                @else
+                                                    <div class="flex flex-col gap-1">
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="text-xs text-slate-600">Emp:</span>
+                                                            <span class="text-sm font-medium {{ $review->employee_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                                {{ $review->employee_rating }}/10
+                                                            </span>
+                                                        </div>
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="text-xs text-slate-600">Co:</span>
+                                                            <span class="text-sm font-medium {{ $review->policy_conditions_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                                {{ $review->policy_conditions_rating }}/10
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @endif
                                             @else
                                                 <span class="text-xs text-slate-400">Not rated</span>
                                             @endif
                                         </td>
 
                                         <td class="table-td">
-                                            @if ($review->need_manager_review)
-                                                <span class="badge bg-warning-500 text-warning-500 bg-opacity-30 rounded-3xl">
-                                                    Required
-                                                </span>
-                                            @elseif ($review->is_manager_reviewed)
-                                                <span class="badge bg-success-500 text-success-500 bg-opacity-30 rounded-3xl">
-                                                    Completed
-                                                </span>
+                                            @if ($review->is_claim_review)
+                                                @if ($review->need_claim_manager_review)
+                                                    <span class="badge bg-warning-500 text-warning-500 bg-opacity-30 rounded-3xl">
+                                                        Claim Manager Required
+                                                    </span>
+                                                @elseif ($review->is_claim_manager_reviewed)
+                                                    <span class="badge bg-success-500 text-success-500 bg-opacity-30 rounded-3xl">
+                                                        Claim Manager Completed
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-slate-500 text-slate-500 bg-opacity-30 rounded-3xl">
+                                                        N/A
+                                                    </span>
+                                                @endif
                                             @else
-                                                <span class="badge bg-slate-500 text-slate-500 bg-opacity-30 rounded-3xl">
-                                                    N/A
-                                                </span>
+                                                @if ($review->need_manager_review)
+                                                    <span class="badge bg-warning-500 text-warning-500 bg-opacity-30 rounded-3xl">
+                                                        Required
+                                                    </span>
+                                                @elseif ($review->is_manager_reviewed)
+                                                    <span class="badge bg-success-500 text-success-500 bg-opacity-30 rounded-3xl">
+                                                        Completed
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-slate-500 text-slate-500 bg-opacity-30 rounded-3xl">
+                                                        N/A
+                                                    </span>
+                                                @endif
                                             @endif
                                         </td>
 
@@ -307,12 +340,25 @@
 
                                                     <!-- Mark as Manager Reviewed -->
                                                     @can('markAsReviewed', $review)
-                                                        @if ($review->need_manager_review && !$review->is_manager_reviewed)
+                                                        @if ($review->need_manager_review && !$review->is_manager_reviewed && !$review->is_claim_review)
                                                             <li>
                                                                 <button wire:click="openManagerModal({{ $review->id }})" 
                                                                         class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
                                                                     <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:shield-check-20-solid"></iconify-icon>
                                                                     Mark as Manager Reviewed
+                                                                </button>
+                                                            </li>
+                                                        @endif
+                                                    @endcan
+
+                                                    <!-- Mark as Claim Manager Reviewed -->
+                                                    @can('markAsReviewed', $review)
+                                                        @if ($review->need_claim_manager_review && !$review->is_claim_manager_reviewed && $review->is_claim_review)
+                                                            <li>
+                                                                <button wire:click="openClaimManagerModal({{ $review->id }})" 
+                                                                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
+                                                                    <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:shield-check-20-solid"></iconify-icon>
+                                                                    Mark as Claim Manager Reviewed
                                                                 </button>
                                                             </li>
                                                         @endif
@@ -418,167 +464,261 @@
                                 </div>
                             @endif
                             
-                            <!-- Employee Rating Section -->
-                            <div class="border-b border-slate-200 pb-4 mb-4">
-                                <h5 class="text-lg font-medium text-slate-700 mb-3">Employee Performance</h5>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="from-group">
-                                        <label for="form_employee_rating" class="form-label">Rating (0-10)</label>
-                                    <input type="number" step="0.1" min="0" max="10" 
-                                           class="form-control mt-2 w-full" 
-                                           wire:model.defer="form_employee_rating"
-                                           placeholder="e.g. 8.5">
-                                </div>
-                                <div class="from-group">
-                                        <label for="form_employee_comment" class="form-label">Comment</label>
-                                        <textarea class="form-control mt-2 w-full" rows="2" 
-                                                  wire:model.defer="form_employee_comment"
-                                                  placeholder="Enter feedback about the employee..."></textarea>
+                            @if($selectedReview && $selectedReview->is_claim_review)
+                                <!-- Claim Review Sections -->
+                                
+                                <!-- Insurance Company Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Insurance Company</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_insurance_company_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_insurance_company_rating"
+                                                   placeholder="e.g. 8.5">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_insurance_company_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_insurance_company_comment"
+                                                      placeholder="Enter feedback about the insurance company..."></textarea>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Policy Conditions Section -->
-                            <div class="border-b border-slate-200 pb-4 mb-4">
-                                <h5 class="text-lg font-medium text-slate-700 mb-3">Policy Conditions</h5>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="from-group">
-                                        <label for="form_policy_conditions_rating" class="form-label">Rating (0-10)</label>
-                                        <input type="number" step="0.1" min="0" max="10" 
-                                               class="form-control mt-2 w-full" 
-                                               wire:model.defer="form_policy_conditions_rating"
-                                               placeholder="e.g. 9.0">
-                                    </div>
-                                    <div class="from-group">
-                                        <label for="form_policy_conditions_comment" class="form-label">Comment</label>
-                                        <textarea class="form-control mt-2 w-full" rows="2" 
-                                                  wire:model.defer="form_policy_conditions_comment"
-                                                  placeholder="Enter feedback about policy conditions..."></textarea>
+                                <!-- Provider Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Provider</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_provider_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_provider_rating"
+                                                   placeholder="e.g. 9.0">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_provider_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_provider_comment"
+                                                      placeholder="Enter feedback about the provider..."></textarea>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Service Quality Section -->
-                            <div class="border-b border-slate-200 pb-4 mb-4">
-                                <h5 class="text-lg font-medium text-slate-700 mb-3">Service Quality</h5>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="from-group">
-                                        <label for="form_service_quality_rating" class="form-label">Rating (0-10)</label>
-                                        <input type="number" step="0.1" min="0" max="10" 
-                                               class="form-control mt-2 w-full" 
-                                               wire:model.defer="form_service_quality_rating"
-                                               placeholder="e.g. 8.0">
-                                    </div>
-                                    <div class="from-group">
-                                        <label for="form_service_quality_comment" class="form-label">Comment</label>
-                                        <textarea class="form-control mt-2 w-full" rows="2" 
-                                                  wire:model.defer="form_service_quality_comment"
-                                                  placeholder="Enter feedback about service quality..."></textarea>
+                                <!-- Claims Specialist Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Claims Specialist</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_claims_specialist_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_claims_specialist_rating"
+                                                   placeholder="e.g. 8.0">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_claims_specialist_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_claims_specialist_comment"
+                                                      placeholder="Enter feedback about the claims specialist..."></textarea>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Pricing Section -->
-                            <div class="border-b border-slate-200 pb-4 mb-4">
-                                <h5 class="text-lg font-medium text-slate-700 mb-3">Pricing</h5>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="from-group">
-                                        <label for="form_pricing_rating" class="form-label">Rating (0-10)</label>
-                                        <input type="number" step="0.1" min="0" max="10" 
-                                               class="form-control mt-2 w-full" 
-                                               wire:model.defer="form_pricing_rating"
-                                               placeholder="e.g. 7.5">
-                                    </div>
-                                    <div class="from-group">
-                                        <label for="form_pricing_comment" class="form-label">Comment</label>
-                                        <textarea class="form-control mt-2 w-full" rows="2" 
-                                                  wire:model.defer="form_pricing_comment"
-                                                  placeholder="Enter feedback about pricing..."></textarea>
+                                <!-- Wise Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Wise</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_wise_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_wise_rating"
+                                                   placeholder="e.g. 7.5">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_wise_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_wise_comment"
+                                                      placeholder="Enter feedback about Wise..."></textarea>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @else
+                                <!-- Sold Policy Review Sections -->
+                                
+                                <!-- Employee Rating Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Employee Performance</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_employee_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_employee_rating"
+                                                   placeholder="e.g. 8.5">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_employee_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_employee_comment"
+                                                      placeholder="Enter feedback about the employee..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <!-- Processing Time Section -->
-                            <div class="border-b border-slate-200 pb-4 mb-4">
-                                <h5 class="text-lg font-medium text-slate-700 mb-3">Processing Time</h5>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="from-group">
-                                        <label for="form_processing_time_rating" class="form-label">Rating (0-10)</label>
-                                        <input type="number" step="0.1" min="0" max="10" 
-                                               class="form-control mt-2 w-full" 
-                                               wire:model.defer="form_processing_time_rating"
-                                               placeholder="e.g. 8.0">
-                                    </div>
-                                    <div class="from-group">
-                                        <label for="form_processing_time_comment" class="form-label">Comment</label>
-                                        <textarea class="form-control mt-2 w-full" rows="2" 
-                                                  wire:model.defer="form_processing_time_comment"
-                                                  placeholder="Enter feedback about processing time..."></textarea>
+                                <!-- Policy Conditions Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Policy Conditions</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_policy_conditions_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_policy_conditions_rating"
+                                                   placeholder="e.g. 9.0">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_policy_conditions_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_policy_conditions_comment"
+                                                      placeholder="Enter feedback about policy conditions..."></textarea>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Collection Channel Effectiveness Section -->
-                            <div class="border-b border-slate-200 pb-4 mb-4">
-                                <h5 class="text-lg font-medium text-slate-700 mb-3">Collection Channel Effectiveness</h5>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="from-group">
-                                        <label for="form_collection_channel_rating" class="form-label">Rating (0-10)</label>
-                                    <input type="number" step="0.1" min="0" max="10" 
-                                           class="form-control mt-2 w-full" 
-                                               wire:model.defer="form_collection_channel_rating"
-                                           placeholder="e.g. 9.0">
-                                    </div>
-                                    <div class="from-group">
-                                        <label for="form_collection_channel_comment" class="form-label">Comment</label>
-                                        <textarea class="form-control mt-2 w-full" rows="2" 
-                                                  wire:model.defer="form_collection_channel_comment"
-                                                  placeholder="Enter feedback about collection channel..."></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Suggestions Section -->
-                            <div class="border-b border-slate-200 pb-4 mb-4">
-                                <h5 class="text-lg font-medium text-slate-700 mb-3">Suggestions</h5>
-                            <div class="from-group">
-                                    <label for="form_suggestions" class="form-label">Suggestions for Improvement</label>
-                                <textarea class="form-control mt-2 w-full" rows="3" 
-                                              wire:model.defer="form_suggestions"
-                                              placeholder="Enter your suggestions for improvement..."></textarea>
-                                </div>
-                            </div>
-                            
-                            <!-- Referral Section -->
-                            <div>
-                                <h5 class="text-lg font-medium text-slate-700 mb-3">Referral</h5>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="from-group">
-                                        <label for="form_is_referred" class="form-label">Would you refer our service?</label>
-                                        <select class="form-control mt-2 w-full" wire:model.defer="form_is_referred">
-                                            <option value="">Select...</option>
-                                            <option value="1">Yes</option>
-                                            <option value="0">No</option>
-                                        </select>
-                                    </div>
-                            <div class="from-group">
-                                        <label for="form_referral_comment" class="form-label">Referral Comment</label>
-                                        <textarea class="form-control mt-2 w-full" rows="2" 
-                                                  wire:model.defer="form_referral_comment">
-                                                </textarea>
+                                <!-- Service Quality Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Service Quality</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_service_quality_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_service_quality_rating"
+                                                   placeholder="e.g. 8.0">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_service_quality_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_service_quality_comment"
+                                                      placeholder="Enter feedback about service quality..."></textarea>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+
+                                <!-- Pricing Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Pricing</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_pricing_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_pricing_rating"
+                                                   placeholder="e.g. 7.5">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_pricing_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_pricing_comment"
+                                                      placeholder="Enter feedback about pricing..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Processing Time Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Processing Time</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_processing_time_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_processing_time_rating"
+                                                   placeholder="e.g. 8.0">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_processing_time_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_processing_time_comment"
+                                                      placeholder="Enter feedback about processing time..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Collection Channel Effectiveness Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Collection Channel Effectiveness</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_collection_channel_rating" class="form-label">Rating (0-10)</label>
+                                            <input type="number" step="0.1" min="0" max="10" 
+                                                   class="form-control mt-2 w-full" 
+                                                   wire:model.defer="form_collection_channel_rating"
+                                                   placeholder="e.g. 9.0">
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_collection_channel_comment" class="form-label">Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_collection_channel_comment"
+                                                      placeholder="Enter feedback about collection channel..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Suggestions Section -->
+                                <div class="border-b border-slate-200 pb-4 mb-4">
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Suggestions</h5>
+                                    <div class="from-group">
+                                        <label for="form_suggestions" class="form-label">Suggestions for Improvement</label>
+                                        <textarea class="form-control mt-2 w-full" rows="3" 
+                                                  wire:model.defer="form_suggestions"
+                                                  placeholder="Enter your suggestions for improvement..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Referral Section -->
+                                <div>
+                                    <h5 class="text-lg font-medium text-slate-700 mb-3">Referral</h5>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="from-group">
+                                            <label for="form_is_referred" class="form-label">Would you refer our service?</label>
+                                            <select class="form-control mt-2 w-full" wire:model.defer="form_is_referred">
+                                                <option value="">Select...</option>
+                                                <option value="1">Yes</option>
+                                                <option value="0">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="from-group">
+                                            <label for="form_referral_comment" class="form-label">Referral Comment</label>
+                                            <textarea class="form-control mt-2 w-full" rows="2" 
+                                                      wire:model.defer="form_referral_comment"
+                                                      placeholder="Enter referral comment..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="closeRatingsModal" class="btn inline-flex justify-center btn-outline-secondary">
                                 Cancel
                             </button>
-                            <button wire:click="setRatingsAndComments" class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="setRatingsAndComments">Save Ratings</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
-                                    wire:target="setRatingsAndComments" icon="line-md:loading-twotone-loop"></iconify-icon>
-                            </button>
+                            @if($selectedReview && $selectedReview->is_claim_review)
+                                <button wire:click="setClaimRatingsAndComments" class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="setClaimRatingsAndComments">Save Claim Ratings</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                        wire:target="setClaimRatingsAndComments" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </button>
+                            @else
+                                <button wire:click="setRatingsAndComments" class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="setRatingsAndComments">Save Ratings</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                        wire:target="setRatingsAndComments" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -647,6 +787,81 @@
                                 <span wire:loading.remove wire:target="markAsManagerReviewed">Mark as Manager Reviewed</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
                                     wire:target="markAsManagerReviewed" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Claim Manager Review Modal -->
+    @if ($showClaimManagerModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-warning-500">
+                            <h3 class="text-xl font-medium text-white">Claim Manager Review</h3>
+                            <button wire:click="closeClaimManagerModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            @if($selectedReview)
+                                <div class="mb-4 p-3 bg-orange-100 rounded-lg">
+                                    <h4 class="font-medium text-slate-700">{{ $selectedReview->title }}</h4>
+                                    <p class="text-sm text-slate-600">{{ $selectedReview->desc }}</p>
+                                    <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                                        <div>
+                                            <span class="font-medium">Insurance Company:</span> 
+                                            <span class="{{ $selectedReview->insurance_company_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->insurance_company_rating }}/10
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Provider:</span> 
+                                            <span class="{{ $selectedReview->provider_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->provider_rating }}/10
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Claims Specialist:</span> 
+                                            <span class="{{ $selectedReview->claims_specialist_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->claims_specialist_rating }}/10
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Wise:</span> 
+                                            <span class="{{ $selectedReview->wise_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->wise_rating }}/10
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            <!-- Claim Manager Comment Section -->
+                            <div class="from-group">
+                                <label for="claim_manager_comment" class="form-label">Claim Manager Comment</label>
+                                <textarea class="form-control mt-2 w-full" rows="4" 
+                                          wire:model.defer="claim_manager_comment"
+                                          placeholder="Enter your claim manager review comment..."></textarea>
+                                <small class="text-slate-500">Optional: Add your review and feedback about this claim review.</small>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeClaimManagerModal" class="btn inline-flex justify-center btn-outline-secondary">
+                                Cancel
+                            </button>
+                            <button wire:click="markAsClaimManagerReviewed" class="btn inline-flex justify-center text-white bg-warning-500">
+                                <span wire:loading.remove wire:target="markAsClaimManagerReviewed">Mark as Claim Manager Reviewed</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                    wire:target="markAsClaimManagerReviewed" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -738,73 +953,121 @@
                             <!-- Ratings Section -->
                             <div>
                                 <h4 class="font-semibold text-slate-700 mb-3">Client Ratings & Comments</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Employee Rating -->
-                                    <div class="border rounded p-3">
-                                        <div class="font-medium text-sm mb-1">Employee Performance</div>
-                                        <div class="text-lg font-bold {{ $selectedReview->employee_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                            {{ $selectedReview->employee_rating }}/10
+                                @if($selectedReview->is_claim_review)
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Insurance Company Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Insurance Company</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->insurance_company_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->insurance_company_rating }}/10
+                                            </div>
+                                            @if($selectedReview->insurance_company_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->insurance_company_comment }}</div>
+                                            @endif
                                         </div>
-                                        @if($selectedReview->client_employee_comment)
-                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->client_employee_comment }}</div>
-                                        @endif
-                                    </div>
 
-                                    <!-- Policy Conditions Rating -->
-                                    <div class="border rounded p-3">
-                                        <div class="font-medium text-sm mb-1">Policy Conditions</div>
-                                        <div class="text-lg font-bold {{ $selectedReview->policy_conditions_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                            {{ $selectedReview->policy_conditions_rating }}/10
+                                        <!-- Provider Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Provider</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->provider_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->provider_rating }}/10
+                                            </div>
+                                            @if($selectedReview->provider_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->provider_comment }}</div>
+                                            @endif
                                         </div>
-                                        @if($selectedReview->policy_conditions_comment)
-                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->policy_conditions_comment }}</div>
-                                        @endif
-                                    </div>
 
-                                    <!-- Service Quality Rating -->
-                                    <div class="border rounded p-3">
-                                        <div class="font-medium text-sm mb-1">Service Quality</div>
-                                        <div class="text-lg font-bold {{ $selectedReview->service_quality_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                            {{ $selectedReview->service_quality_rating }}/10
+                                        <!-- Claims Specialist Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Claims Specialist</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->claims_specialist_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->claims_specialist_rating }}/10
+                                            </div>
+                                            @if($selectedReview->claims_specialist_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->claims_specialist_comment }}</div>
+                                            @endif
                                         </div>
-                                        @if($selectedReview->service_quality_comment)
-                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->service_quality_comment }}</div>
-                                        @endif
-                                    </div>
 
-                                    <!-- Pricing Rating -->
-                                    <div class="border rounded p-3">
-                                        <div class="font-medium text-sm mb-1">Pricing</div>
-                                        <div class="text-lg font-bold {{ $selectedReview->pricing_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                            {{ $selectedReview->pricing_rating }}/10
+                                        <!-- Wise Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Wise</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->wise_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->wise_rating }}/10
+                                            </div>
+                                            @if($selectedReview->wise_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->wise_comment }}</div>
+                                            @endif
                                         </div>
-                                        @if($selectedReview->pricing_comment)
-                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->pricing_comment }}</div>
-                                        @endif
                                     </div>
+                                @else
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Employee Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Employee Performance</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->employee_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->employee_rating }}/10
+                                            </div>
+                                            @if($selectedReview->client_employee_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->client_employee_comment }}</div>
+                                            @endif
+                                        </div>
 
-                                    <!-- Processing Time Rating -->
-                                    <div class="border rounded p-3">
-                                        <div class="font-medium text-sm mb-1">Processing Time</div>
-                                        <div class="text-lg font-bold {{ $selectedReview->processing_time_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                            {{ $selectedReview->processing_time_rating }}/10
+                                        <!-- Policy Conditions Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Policy Conditions</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->policy_conditions_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->policy_conditions_rating }}/10
+                                            </div>
+                                            @if($selectedReview->policy_conditions_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->policy_conditions_comment }}</div>
+                                            @endif
                                         </div>
-                                        @if($selectedReview->processing_time_comment)
-                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->processing_time_comment }}</div>
-                                        @endif
-                                    </div>
 
-                                    <!-- Collection Channel Rating -->
-                                    <div class="border rounded p-3">
-                                        <div class="font-medium text-sm mb-1">Collection Channel</div>
-                                        <div class="text-lg font-bold {{ $selectedReview->collection_channel_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                            {{ $selectedReview->collection_channel_rating }}/10
+                                        <!-- Service Quality Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Service Quality</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->service_quality_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->service_quality_rating }}/10
+                                            </div>
+                                            @if($selectedReview->service_quality_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->service_quality_comment }}</div>
+                                            @endif
                                         </div>
-                                        @if($selectedReview->collection_channel_comment)
-                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->collection_channel_comment }}</div>
-                                        @endif
+
+                                        <!-- Pricing Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Pricing</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->pricing_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->pricing_rating }}/10
+                                            </div>
+                                            @if($selectedReview->pricing_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->pricing_comment }}</div>
+                                            @endif
+                                        </div>
+
+                                        <!-- Processing Time Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Processing Time</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->processing_time_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->processing_time_rating }}/10
+                                            </div>
+                                            @if($selectedReview->processing_time_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->processing_time_comment }}</div>
+                                            @endif
+                                        </div>
+
+                                        <!-- Collection Channel Rating -->
+                                        <div class="border rounded p-3">
+                                            <div class="font-medium text-sm mb-1">Collection Channel</div>
+                                            <div class="text-lg font-bold {{ $selectedReview->collection_channel_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->collection_channel_rating }}/10
+                                            </div>
+                                            @if($selectedReview->collection_channel_comment)
+                                                <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->collection_channel_comment }}</div>
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             </div>
 
                             <!-- Additional Information -->
@@ -831,22 +1094,41 @@
                                 </div>
 
                                 <div>
-                                    <h4 class="font-semibold text-slate-700 mb-2">Manager Review Status</h4>
-                                    <div class="space-y-2 text-sm">
-                                        <div><span class="font-medium">Needs Manager Review:</span> 
-                                            <span class="badge {{ $selectedReview->need_manager_review ? 'bg-warning-500' : 'bg-green-500' }} text-white px-2 py-1 rounded text-xs">
-                                                {{ $selectedReview->need_manager_review ? 'Yes' : 'No' }}
-                                            </span>
+                                    @if($selectedReview->is_claim_review)
+                                        <h4 class="font-semibold text-slate-700 mb-2">Claim Manager Review Status</h4>
+                                        <div class="space-y-2 text-sm">
+                                            <div><span class="font-medium">Needs Claim Manager Review:</span> 
+                                                <span class="badge {{ $selectedReview->need_claim_manager_review ? 'bg-warning-500' : 'bg-green-500' }} text-white px-2 py-1 rounded text-xs">
+                                                    {{ $selectedReview->need_claim_manager_review ? 'Yes' : 'No' }}
+                                                </span>
+                                            </div>
+                                            <div><span class="font-medium">Claim Manager Reviewed:</span> 
+                                                <span class="badge {{ $selectedReview->is_claim_manager_reviewed ? 'bg-green-500' : 'bg-slate-500' }} text-white px-2 py-1 rounded text-xs">
+                                                    {{ $selectedReview->is_claim_manager_reviewed ? 'Yes' : 'No' }}
+                                                </span>
+                                            </div>
+                                            @if($selectedReview->claim_manager_comment)
+                                                <div><span class="font-medium">Claim Manager Comment:</span> {{ $selectedReview->claim_manager_comment }}</div>
+                                            @endif
                                         </div>
-                                        <div><span class="font-medium">Manager Reviewed:</span> 
-                                            <span class="badge {{ $selectedReview->is_manager_reviewed ? 'bg-green-500' : 'bg-slate-500' }} text-white px-2 py-1 rounded text-xs">
-                                                {{ $selectedReview->is_manager_reviewed ? 'Yes' : 'No' }}
-                                            </span>
+                                    @else
+                                        <h4 class="font-semibold text-slate-700 mb-2">Manager Review Status</h4>
+                                        <div class="space-y-2 text-sm">
+                                            <div><span class="font-medium">Needs Manager Review:</span> 
+                                                <span class="badge {{ $selectedReview->need_manager_review ? 'bg-warning-500' : 'bg-green-500' }} text-white px-2 py-1 rounded text-xs">
+                                                    {{ $selectedReview->need_manager_review ? 'Yes' : 'No' }}
+                                                </span>
+                                            </div>
+                                            <div><span class="font-medium">Manager Reviewed:</span> 
+                                                <span class="badge {{ $selectedReview->is_manager_reviewed ? 'bg-green-500' : 'bg-slate-500' }} text-white px-2 py-1 rounded text-xs">
+                                                    {{ $selectedReview->is_manager_reviewed ? 'Yes' : 'No' }}
+                                                </span>
+                                            </div>
+                                            @if($selectedReview->manager_comment)
+                                                <div><span class="font-medium">Manager Comment:</span> {{ $selectedReview->manager_comment }}</div>
+                                            @endif
                                         </div>
-                                        @if($selectedReview->manager_comment)
-                                            <div><span class="font-medium">Manager Comment:</span> {{ $selectedReview->manager_comment }}</div>
-                                        @endif
-                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
