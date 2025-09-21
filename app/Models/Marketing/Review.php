@@ -255,6 +255,7 @@ class Review extends Model
                 $updates['is_reviewed'] = true;
                 $updates['reviewed_at'] = now();
                 $updates['reviewed_by_id'] = $reviewedById ?? Auth::id();
+                $updates['no_answer'] = false; // Set to false when ratings/comments are provided
                 
                 // Check if any rating is less than 8 to set need_manager_review
                 $needManagerReview = false;
@@ -625,6 +626,7 @@ class Review extends Model
                 $updates['is_reviewed'] = true;
                 $updates['reviewed_at'] = now();
                 $updates['reviewed_by_id'] = $reviewedById ?? Auth::id();
+                $updates['no_answer'] = false; // Set to false when ratings/comments are provided
                 
                 // Check if any rating is less than 8 to set need_claim_manager_review
                 $needClaimManagerReview = false;
@@ -700,10 +702,10 @@ class Review extends Model
     /**
      * Set the no answer flag for a review
      *
-     * @param bool $noAnswer
+     * @param bool|null $noAnswer
      * @return bool
      */
-    public function setNoAnswerFlag(bool $noAnswer): bool
+    public function setNoAnswerFlag(?bool $noAnswer): bool
     {
         try {
             $this->no_answer = $noAnswer;
