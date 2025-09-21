@@ -304,7 +304,7 @@ class ClientPayment extends Model
                     $this->sold_policy->calculateTotalClientPayments();
                     $this->sold_policy->updateSalesCommsPaymentInfo();
                     $this->sold_policy->unsetClientPaymentDate();
-                    Review::createReview($this->sold_policy, "New Policy Review", "Policy# $this->sold_policy->policy_number premium collected");
+                    Review::createReview($this->sold_policy, "New Policy Review", "Policy# {$this->sold_policy->policy_number} premium collected");
                 }
             } catch (Exception $e) {
                 report($e);

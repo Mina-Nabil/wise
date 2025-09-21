@@ -175,7 +175,26 @@
                                             @endphp
                                             
                                             @if ($phone)
-                                                <span class="text-sm text-slate-600">{{ $phone }}</span>
+                                                <div class="flex space-x-2">
+                                                    <!-- Phone Icon -->
+                                                    <a href="tel:{{ $phone }}" 
+                                                       class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                                                       title="Call {{ $phone }}">
+                                                        <iconify-icon icon="heroicons:phone-20-solid" class="text-sm"></iconify-icon>
+                                                    </a>
+                                                    
+                                                    <!-- WhatsApp Icon -->
+                                                    @php
+                                                        $whatsappNumber = "2" . preg_replace('/\D/', '', $phone);
+                                                        $whatsappUrl = "https://wa.me/" . $whatsappNumber;
+                                                    @endphp
+                                                    <a href="{{ $whatsappUrl }}" 
+                                                       target="_blank"
+                                                       class="inline-flex items-center justify-center w-8 h-8 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
+                                                       title="WhatsApp {{ $phone }}">
+                                                        <iconify-icon icon="logos:whatsapp-icon" class="text-sm"></iconify-icon>
+                                                    </a>
+                                                </div>
                                             @elseif ($client)
                                                 <span class="text-xs text-slate-400">No phone</span>
                                             @else
