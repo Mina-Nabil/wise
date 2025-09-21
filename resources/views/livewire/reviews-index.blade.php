@@ -122,6 +122,7 @@
                                     <th scope="col" class="table-th">ID</th>
                                     <th scope="col" class="table-th">Title</th>
                                     <th scope="col" class="table-th">Type</th>
+                                    <th scope="col" class="table-th">Client Phone</th>
                                     <th scope="col" class="table-th">Assignee</th>
                                     <th scope="col" class="table-th">Status</th>
                                     <th scope="col" class="table-th">Ratings</th>
@@ -150,6 +151,35 @@
                                             <span class="badge bg-slate-500 text-slate-500 bg-opacity-30 rounded-3xl">
                                                 {{ class_basename($review->reviewable_type) }}
                                             </span>
+                                        </td>
+
+                                        <td class="table-td">
+                                            @php
+                                                $client = null;
+                                                $phone = null;
+                                                
+                                                // Try to get client from direct relationship (SoldPolicy)
+                                                if ($review->reviewable && $review->reviewable->client) {
+                                                    $client = $review->reviewable->client;
+                                                }
+                                                // Try to get client from indirect relationship (Task -> SoldPolicy -> Client)
+                                                elseif ($review->reviewable && $review->reviewable->taskable && $review->reviewable->taskable->client) {
+                                                    $client = $review->reviewable->taskable->client;
+                                                }
+                                                
+                                                // Get the primary phone number using the accessor
+                                                if ($client) {
+                                                    $phone = $client->telephone1;
+                                                }
+                                            @endphp
+                                            
+                                            @if ($phone)
+                                                <span class="text-sm text-slate-600">{{ $phone }}</span>
+                                            @elseif ($client)
+                                                <span class="text-xs text-slate-400">No phone</span>
+                                            @else
+                                                <span class="text-xs text-slate-400">No client</span>
+                                            @endif
                                         </td>
 
                                         <td class="table-td">

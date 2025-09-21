@@ -467,7 +467,12 @@ class ReviewsIndex extends Component
 
     public function render()
     {
-        $reviews = Review::with(['reviewable', 'assignee', 'reviewedBy'])
+        $reviews = Review::with([
+            'reviewable.client.phones', 
+            'reviewable.taskable.client.phones', // For tasks that are related to sold policies
+            'assignee', 
+            'reviewedBy'
+        ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('title', 'like', '%' . $this->search . '%')
