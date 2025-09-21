@@ -127,6 +127,7 @@
                                     <th scope="col" class="table-th">Status</th>
                                     <th scope="col" class="table-th">Ratings</th>
                                     <th scope="col" class="table-th">Need Manager?</th>
+                                    <th scope="col" class="table-th">No Answer?</th>
                                     <th scope="col" class="table-th">Created</th>
                                     <th scope="col" class="table-th">Actions</th>
                                 </tr>
@@ -276,6 +277,18 @@
                                         </td>
 
                                         <td class="table-td">
+                                            @if ($review->no_answer)
+                                                <span class="badge bg-red-500 text-red-500 bg-opacity-30 rounded-3xl">
+                                                    No Answer
+                                                </span>
+                                            @else
+                                                <span class="badge bg-green-500 text-green-500 bg-opacity-30 rounded-3xl">
+                                                    Answered
+                                                </span>
+                                            @endif
+                                        </td>
+
+                                        <td class="table-td">
                                             <span class="block text-xs text-slate-600">
                                                 {{ $review->created_at->format('d/m/Y') }}
                                             </span>
@@ -363,6 +376,15 @@
                                                             </li>
                                                         @endif
                                                     @endcan
+
+                                                    <!-- Mark as No Answer / Mark as Answered -->
+                                                    <li>
+                                                        <button wire:click="openNoAnswerModal({{ $review->id }})" 
+                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
+                                                            <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="{{ $review->no_answer ? 'heroicons:check-circle-20-solid' : 'heroicons:x-circle-20-solid' }}"></iconify-icon>
+                                                            {{ $review->no_answer ? 'Mark as Answered' : 'Mark as No Answer' }}
+                                                        </button>
+                                                    </li>
 
                                                     <!-- No actions available -->
                                                     @if (!($review->reviewable_type === 'App\Models\Business\SoldPolicy') && 
@@ -870,6 +892,60 @@
         </div>
     @endif
 
+    <!-- No Answer Modal -->
+    @if ($showNoAnswerModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-red-500">
+                            <h3 class="text-xl font-medium text-white">Mark as No Answer</h3>
+                            <button wire:click="closeNoAnswerModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            @if($selectedReview)
+                                <div class="mb-4 p-3 bg-red-100 rounded-lg">
+                                    <h4 class="font-medium text-slate-700">{{ $selectedReview->title }}</h4>
+                                    <p class="text-sm text-slate-600">{{ $selectedReview->desc }}</p>
+                                    <div class="mt-2 text-sm">
+                                        <span class="font-medium">Current Status:</span> 
+                                        <span class="{{ $selectedReview->no_answer ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $selectedReview->no_answer ? 'No Answer' : 'Answered' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            <div class="text-center">
+                                <p class="text-slate-600 mb-4">
+                                    Are you sure you want to {{ $selectedReview && $selectedReview->no_answer ? 'remove the no answer flag' : 'mark this review as no answer' }}?
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeNoAnswerModal" class="btn inline-flex justify-center btn-outline-secondary">
+                                Cancel
+                            </button>
+                            <button wire:click="setNoAnswerFlag({{ $selectedReview && $selectedReview->no_answer ? 'false' : 'true' }})" class="btn inline-flex justify-center text-white {{ $selectedReview && $selectedReview->no_answer ? 'bg-green-500' : 'bg-red-500' }}">
+                                <span wire:loading.remove wire:target="setNoAnswerFlag">
+                                    {{ $selectedReview && $selectedReview->no_answer ? 'Mark as Answered' : 'Mark as No Answer' }}
+                                </span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                                    wire:target="setNoAnswerFlag" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Review Info Modal -->
     @if ($showInfoModal && $selectedReview)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
@@ -1090,6 +1166,11 @@
                                         @if($selectedReview->referral_comment)
                                             <div><span class="font-medium">Referral Comment:</span> {{ $selectedReview->referral_comment }}</div>
                                         @endif
+                                        <div><span class="font-medium">No Answer Status:</span> 
+                                            <span class="badge {{ $selectedReview->no_answer ? 'bg-red-500' : 'bg-green-500' }} text-white px-2 py-1 rounded text-xs">
+                                                {{ $selectedReview->no_answer ? 'No Answer' : 'Answered' }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 

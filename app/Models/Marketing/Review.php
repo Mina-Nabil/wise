@@ -59,6 +59,7 @@ class Review extends Model
         'need_claim_manager_review',
         'claim_manager_comment',
         'is_claim_manager_reviewed',
+        'no_answer',
     ];
 
     protected $casts = [
@@ -80,6 +81,7 @@ class Review extends Model
         'wise_rating' => 'decimal:1',
         'need_claim_manager_review' => 'boolean',
         'is_claim_manager_reviewed' => 'boolean',
+        'no_answer' => 'boolean',
     ];
 
     public function reviewable(): MorphTo
@@ -690,6 +692,31 @@ class Review extends Model
             return $result;
         } catch (Exception $e) {
             AppLog::error('Failed to mark claim review as claim manager reviewed', desc: $e->getMessage(), loggable: $this);
+            report($e);
+            return false;
+        }
+    }
+
+    /**
+     * Set the no answer flag for a review
+     *
+     * @param bool $noAnswer
+     * @return bool
+     */
+    public function setNoAnswerFlag(bool $noAnswer): bool
+    {
+        try {
+            $this->no_answer = $noAnswer;
+            $result = $this->save();
+            
+            AppLog::info('Review no answer flag updated successfully', [
+                'no_answer' => $noAnswer,
+                'review_id' => $this->id
+            ], loggable: $this);
+            
+            return $result;
+        } catch (Exception $e) {
+            AppLog::error('Failed to update review no answer flag', desc: $e->getMessage(), loggable: $this);
             report($e);
             return false;
         }

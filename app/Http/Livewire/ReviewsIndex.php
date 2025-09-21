@@ -54,6 +54,7 @@ class ReviewsIndex extends Component
     public $showRatingsModal = false;
     public $showManagerModal = false;
     public $showClaimManagerModal = false;
+    public $showNoAnswerModal = false;
     public $showInfoModal = false;
     public $selectedReviewId;
     public $selectedReview;
@@ -371,6 +372,19 @@ class ReviewsIndex extends Component
         $this->resetClaimManagerForm();
     }
 
+    public function openNoAnswerModal($reviewId)
+    {
+        $this->selectedReviewId = $reviewId;
+        $this->selectedReview = Review::findOrFail($reviewId);
+        $this->showNoAnswerModal = true;
+    }
+
+    public function closeNoAnswerModal()
+    {
+        $this->showNoAnswerModal = false;
+        $this->resetNoAnswerForm();
+    }
+
     public function openInfoModal($reviewId)
     {
         $this->selectedReviewId = $reviewId;
@@ -429,6 +443,12 @@ class ReviewsIndex extends Component
         $this->selectedReviewId = null;
         $this->selectedReview = null;
         $this->claim_manager_comment = '';
+    }
+
+    private function resetNoAnswerForm()
+    {
+        $this->selectedReviewId = null;
+        $this->selectedReview = null;
     }
 
 
@@ -556,6 +576,23 @@ class ReviewsIndex extends Component
             }
         } catch (\Exception $e) {
             $this->alert('failed', 'An error occurred while updating the claim review.');
+        }
+    }
+
+    public function setNoAnswerFlag($noAnswer)
+    {
+        try {
+            $review = Review::findOrFail($this->selectedReviewId);
+            
+            if ($review->setNoAnswerFlag($noAnswer)) {
+                $message = $noAnswer ? 'Review marked as no answer successfully.' : 'Review no answer flag removed successfully.';
+                $this->alert('success', $message);
+                $this->closeNoAnswerModal();
+            } else {
+                $this->alert('failed', 'Failed to update review no answer flag.');
+            }
+        } catch (\Exception $e) {
+            $this->alert('failed', 'An error occurred while updating the review.');
         }
     }
 
