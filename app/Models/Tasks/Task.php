@@ -301,14 +301,14 @@ class Task extends Model
                         $a->rejectAction();
                     }
                 }
-                if ($this->type == self::TYPE_CLAIM) {
-                    Review::createReview($this, "Claim Review", "Claim# $this->id completed");
-                }
             }
             if ($comment) {
                 $this->addComment($comment, false);
             }
             $this->last_action_by()->associate($loggedInUser);
+            if (($status == self::STATUS_COMPLETED || $status == self::STATUS_CLOSED) && $this->type == self::TYPE_CLAIM) {
+                Review::createReview($this, "Claim Review", "Claim# $this->id completed");
+            }
             $this->sendTaskNotifications('Status changed', "Task#$this->id is set to $status");
             return true;
         });
@@ -709,5 +709,10 @@ class Task extends Model
     public function temp_assignee(): HasOne
     {
         return $this->hasOne(TaskTempAssignee::class);
+    }
+
+    public function reviews(): MorphMany
+    {
+        return $this->morphMany(Review::class, 'reviewable');
     }
 }

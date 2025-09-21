@@ -5,6 +5,7 @@ namespace App\Models\Payments;
 use App\Helpers\Helpers;
 use App\Models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
+use App\Models\Marketing\Review;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Carbon\Carbon;
@@ -303,6 +304,7 @@ class ClientPayment extends Model
                     $this->sold_policy->calculateTotalClientPayments();
                     $this->sold_policy->updateSalesCommsPaymentInfo();
                     $this->sold_policy->unsetClientPaymentDate();
+                    Review::createReview($this->sold_policy, "New Policy Review", "Policy# $this->sold_policy->policy_number premium collected");
                 }
             } catch (Exception $e) {
                 report($e);

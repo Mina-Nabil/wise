@@ -58,9 +58,9 @@
                         <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                             Has Company Comment</span>
                     </li>
-                    <li wire:click="toggleManagerReview">
+                    <li wire:click="toggleNeedManagerReview">
                         <span class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
-                            Needs Manager Review</span>
+                            Need Manager Review</span>
                     </li>
                 </ul>
             </div>
@@ -98,16 +98,17 @@
                 </button>
             @endif
 
-            @if ($needs_manager_review)
+            @if ($need_manager_review)
                 <button class="btn inline-flex justify-center btn-warning btn-sm">
-                    <span wire:click="toggleManagerReview">
-                        Needs Manager Review: Yes &nbsp;&nbsp;
+                    <span wire:click="toggleNeedManagerReview">
+                        Need Manager Review: Yes &nbsp;&nbsp;
                     </span>
-                    <span wire:click="clearManagerReview">
+                    <span wire:click="clearNeedManagerReview">
                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                     </span>
                 </button>
             @endif
+
         </header>
 
         <!-- Reviews Table -->
@@ -124,7 +125,7 @@
                                     <th scope="col" class="table-th">Assignee</th>
                                     <th scope="col" class="table-th">Status</th>
                                     <th scope="col" class="table-th">Ratings</th>
-                                    <th scope="col" class="table-th">Manager Review</th>
+                                    <th scope="col" class="table-th">Need Manager?</th>
                                     <th scope="col" class="table-th">Created</th>
                                     <th scope="col" class="table-th">Actions</th>
                                 </tr>
@@ -196,13 +197,7 @@
                                         </td>
 
                                         <td class="table-td">
-                                            @php
-                                                $needsManagerReview = $review->is_reviewed && 
-                                                                    !$review->is_manager_reviewed && 
-                                                                    ($review->employee_rating < 8 || $review->company_rating < 8);
-                                            @endphp
-                                            
-                                            @if ($needsManagerReview)
+                                            @if ($review->need_manager_review)
                                                 <span class="badge bg-warning-500 text-warning-500 bg-opacity-30 rounded-3xl">
                                                     Required
                                                 </span>
@@ -247,6 +242,15 @@
                                                         </li>
                                                     @endif
 
+                                                    <!-- View Info -->
+                                                    <li>
+                                                        <button wire:click="openInfoModal({{ $review->id }})" 
+                                                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
+                                                            <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:information-circle-20-solid"></iconify-icon>
+                                                            View Info
+                                                        </button>
+                                                    </li>
+
                                                     <!-- Set Ratings & Comments -->
                                                     @can('receiveClientComment', $review)
                                                         @if (!$review->is_reviewed)
@@ -260,19 +264,25 @@
                                                         @endif
                                                     @endcan
 
-                                                    <!-- Manager Review -->
+                                                    <!-- Go to Claim -->
+                                                    @if ($review->reviewable_type === 'App\Models\Tasks\Task' && $review->reviewable && $review->reviewable->type === 'claim')
+                                                        <li>
+                                                            <button wire:click="goToClaim({{ $review->id }})" 
+                                                                    class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
+                                                                <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:document-text-20-solid"></iconify-icon>
+                                                                Go to Claim
+                                                            </button>
+                                                        </li>
+                                                    @endif
+
+                                                    <!-- Mark as Manager Reviewed -->
                                                     @can('markAsReviewed', $review)
-                                                        @php
-                                                            $needsManagerReview = $review->is_reviewed && 
-                                                                                !$review->is_manager_reviewed && 
-                                                                                ($review->employee_rating < 8 || $review->company_rating < 8);
-                                                        @endphp
-                                                        @if ($needsManagerReview)
+                                                        @if ($review->need_manager_review && !$review->is_manager_reviewed)
                                                             <li>
                                                                 <button wire:click="openManagerModal({{ $review->id }})" 
                                                                         class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
                                                                     <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:shield-check-20-solid"></iconify-icon>
-                                                                    Manager Review
+                                                                    Mark as Manager Reviewed
                                                                 </button>
                                                             </li>
                                                         @endif
@@ -280,8 +290,7 @@
 
                                                     <!-- No actions available -->
                                                     @if (!($review->reviewable_type === 'App\Models\Business\SoldPolicy') && 
-                                                         !Auth::user()->can('receiveClientComment', $review) && 
-                                                         !Auth::user()->can('markAsReviewed', $review))
+                                                         !Auth::user()->can('receiveClientComment', $review))
                                                         <li>
                                                             <span class="text-slate-400 block font-Inter font-normal px-4 py-2">
                                                                 No actions available
@@ -371,7 +380,7 @@
                                 </svg>
                             </button>
                         </div>
-                        <div class="p-6 space-y-4">
+                        <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
                             @if($selectedReview)
                                 <div class="mb-4 p-3 bg-slate-100 rounded-lg">
                                     <h4 class="font-medium text-slate-700">{{ $selectedReview->title }}</h4>
@@ -379,35 +388,156 @@
                                 </div>
                             @endif
                             
+                            <!-- Employee Rating Section -->
+                            <div class="border-b border-slate-200 pb-4 mb-4">
+                                <h5 class="text-lg font-medium text-slate-700 mb-3">Employee Performance</h5>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="from-group">
-                                    <label for="form_employee_rating" class="form-label">Employee Rating (0-10)</label>
+                                        <label for="form_employee_rating" class="form-label">Rating (0-10)</label>
                                     <input type="number" step="0.1" min="0" max="10" 
                                            class="form-control mt-2 w-full" 
                                            wire:model.defer="form_employee_rating"
                                            placeholder="e.g. 8.5">
                                 </div>
                                 <div class="from-group">
-                                    <label for="form_company_rating" class="form-label">Company Rating (0-10)</label>
+                                        <label for="form_employee_comment" class="form-label">Comment</label>
+                                        <textarea class="form-control mt-2 w-full" rows="2" 
+                                                  wire:model.defer="form_employee_comment"
+                                                  placeholder="Enter feedback about the employee..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Policy Conditions Section -->
+                            <div class="border-b border-slate-200 pb-4 mb-4">
+                                <h5 class="text-lg font-medium text-slate-700 mb-3">Policy Conditions</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="from-group">
+                                        <label for="form_policy_conditions_rating" class="form-label">Rating (0-10)</label>
+                                        <input type="number" step="0.1" min="0" max="10" 
+                                               class="form-control mt-2 w-full" 
+                                               wire:model.defer="form_policy_conditions_rating"
+                                               placeholder="e.g. 9.0">
+                                    </div>
+                                    <div class="from-group">
+                                        <label for="form_policy_conditions_comment" class="form-label">Comment</label>
+                                        <textarea class="form-control mt-2 w-full" rows="2" 
+                                                  wire:model.defer="form_policy_conditions_comment"
+                                                  placeholder="Enter feedback about policy conditions..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Service Quality Section -->
+                            <div class="border-b border-slate-200 pb-4 mb-4">
+                                <h5 class="text-lg font-medium text-slate-700 mb-3">Service Quality</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="from-group">
+                                        <label for="form_service_quality_rating" class="form-label">Rating (0-10)</label>
+                                        <input type="number" step="0.1" min="0" max="10" 
+                                               class="form-control mt-2 w-full" 
+                                               wire:model.defer="form_service_quality_rating"
+                                               placeholder="e.g. 8.0">
+                                    </div>
+                                    <div class="from-group">
+                                        <label for="form_service_quality_comment" class="form-label">Comment</label>
+                                        <textarea class="form-control mt-2 w-full" rows="2" 
+                                                  wire:model.defer="form_service_quality_comment"
+                                                  placeholder="Enter feedback about service quality..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pricing Section -->
+                            <div class="border-b border-slate-200 pb-4 mb-4">
+                                <h5 class="text-lg font-medium text-slate-700 mb-3">Pricing</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="from-group">
+                                        <label for="form_pricing_rating" class="form-label">Rating (0-10)</label>
+                                        <input type="number" step="0.1" min="0" max="10" 
+                                               class="form-control mt-2 w-full" 
+                                               wire:model.defer="form_pricing_rating"
+                                               placeholder="e.g. 7.5">
+                                    </div>
+                                    <div class="from-group">
+                                        <label for="form_pricing_comment" class="form-label">Comment</label>
+                                        <textarea class="form-control mt-2 w-full" rows="2" 
+                                                  wire:model.defer="form_pricing_comment"
+                                                  placeholder="Enter feedback about pricing..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Processing Time Section -->
+                            <div class="border-b border-slate-200 pb-4 mb-4">
+                                <h5 class="text-lg font-medium text-slate-700 mb-3">Processing Time</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="from-group">
+                                        <label for="form_processing_time_rating" class="form-label">Rating (0-10)</label>
+                                        <input type="number" step="0.1" min="0" max="10" 
+                                               class="form-control mt-2 w-full" 
+                                               wire:model.defer="form_processing_time_rating"
+                                               placeholder="e.g. 8.0">
+                                    </div>
+                                    <div class="from-group">
+                                        <label for="form_processing_time_comment" class="form-label">Comment</label>
+                                        <textarea class="form-control mt-2 w-full" rows="2" 
+                                                  wire:model.defer="form_processing_time_comment"
+                                                  placeholder="Enter feedback about processing time..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Collection Channel Effectiveness Section -->
+                            <div class="border-b border-slate-200 pb-4 mb-4">
+                                <h5 class="text-lg font-medium text-slate-700 mb-3">Collection Channel Effectiveness</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="from-group">
+                                        <label for="form_collection_channel_rating" class="form-label">Rating (0-10)</label>
                                     <input type="number" step="0.1" min="0" max="10" 
                                            class="form-control mt-2 w-full" 
-                                           wire:model.defer="form_company_rating"
+                                               wire:model.defer="form_collection_channel_rating"
                                            placeholder="e.g. 9.0">
+                                    </div>
+                                    <div class="from-group">
+                                        <label for="form_collection_channel_comment" class="form-label">Comment</label>
+                                        <textarea class="form-control mt-2 w-full" rows="2" 
+                                                  wire:model.defer="form_collection_channel_comment"
+                                                  placeholder="Enter feedback about collection channel..."></textarea>
+                                    </div>
                                 </div>
                             </div>
                             
+                            <!-- Suggestions Section -->
+                            <div class="border-b border-slate-200 pb-4 mb-4">
+                                <h5 class="text-lg font-medium text-slate-700 mb-3">Suggestions</h5>
                             <div class="from-group">
-                                <label for="form_employee_comment" class="form-label">Employee Comment</label>
+                                    <label for="form_suggestions" class="form-label">Suggestions for Improvement</label>
                                 <textarea class="form-control mt-2 w-full" rows="3" 
-                                          wire:model.defer="form_employee_comment"
-                                          placeholder="Enter feedback about the employee..."></textarea>
+                                              wire:model.defer="form_suggestions"
+                                              placeholder="Enter your suggestions for improvement..."></textarea>
+                                </div>
                             </div>
                             
+                            <!-- Referral Section -->
+                            <div>
+                                <h5 class="text-lg font-medium text-slate-700 mb-3">Referral</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="from-group">
+                                        <label for="form_is_referred" class="form-label">Would you refer our service?</label>
+                                        <select class="form-control mt-2 w-full" wire:model.defer="form_is_referred">
+                                            <option value="">Select...</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
                             <div class="from-group">
-                                <label for="form_company_comment" class="form-label">Company Comment</label>
-                                <textarea class="form-control mt-2 w-full" rows="3" 
-                                          wire:model.defer="form_company_comment"
-                                          placeholder="Enter feedback about the company..."></textarea>
+                                        <label for="form_referral_comment" class="form-label">Referral Comment</label>
+                                        <textarea class="form-control mt-2 w-full" rows="2" 
+                                                  wire:model.defer="form_referral_comment">
+                                                </textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -447,52 +577,36 @@
                                 <div class="mb-4 p-3 bg-orange-100 rounded-lg">
                                     <h4 class="font-medium text-slate-700">{{ $selectedReview->title }}</h4>
                                     <p class="text-sm text-slate-600">{{ $selectedReview->desc }}</p>
-                                    <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                                    <div class="mt-2 grid grid-cols-3 gap-2 text-sm">
                                         <div>
-                                            <span class="font-medium">Employee Rating:</span> 
+                                            <span class="font-medium">Employee:</span> 
                                             <span class="{{ $selectedReview->employee_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
                                                 {{ $selectedReview->employee_rating }}/10
                                             </span>
                                         </div>
                                         <div>
-                                            <span class="font-medium">Company Rating:</span> 
-                                            <span class="{{ $selectedReview->company_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
-                                                {{ $selectedReview->company_rating }}/10
+                                            <span class="font-medium">Policy Conditions:</span> 
+                                            <span class="{{ $selectedReview->policy_conditions_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->policy_conditions_rating }}/10
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Service Quality:</span> 
+                                            <span class="{{ $selectedReview->service_quality_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                {{ $selectedReview->service_quality_rating }}/10
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                             @endif
                             
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="from-group">
-                                    <label for="manager_employee_rating" class="form-label">Manager Employee Rating (0-10)</label>
-                                    <input type="number" step="0.1" min="0" max="10" 
-                                           class="form-control mt-2 w-full" 
-                                           wire:model.defer="manager_employee_rating"
-                                           placeholder="e.g. 9.0">
-                                </div>
-                                <div class="from-group">
-                                    <label for="manager_company_rating" class="form-label">Manager Company Rating (0-10)</label>
-                                    <input type="number" step="0.1" min="0" max="10" 
-                                           class="form-control mt-2 w-full" 
-                                           wire:model.defer="manager_company_rating"
-                                           placeholder="e.g. 9.5">
-                                </div>
-                            </div>
-                            
+                            <!-- Manager Comment Section -->
                             <div class="from-group">
-                                <label for="manager_employee_comment" class="form-label">Manager Employee Comment</label>
-                                <textarea class="form-control mt-2 w-full" rows="3" 
-                                          wire:model.defer="manager_employee_comment"
-                                          placeholder="Manager's feedback about employee performance..."></textarea>
-                            </div>
-                            
-                            <div class="from-group">
-                                <label for="manager_company_comment" class="form-label">Manager Company Comment</label>
-                                <textarea class="form-control mt-2 w-full" rows="3" 
-                                          wire:model.defer="manager_company_comment"
-                                          placeholder="Manager's feedback about company processes..."></textarea>
+                                <label for="manager_comment" class="form-label">Manager Comment</label>
+                                <textarea class="form-control mt-2 w-full" rows="4" 
+                                          wire:model.defer="manager_comment"
+                                          placeholder="Enter your manager review comment..."></textarea>
+                                <small class="text-slate-500">Optional: Add your review and feedback about this review.</small>
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -500,7 +614,7 @@
                                 Cancel
                             </button>
                             <button wire:click="markAsManagerReviewed" class="btn inline-flex justify-center text-white bg-warning-500">
-                                <span wire:loading.remove wire:target="markAsManagerReviewed">Complete Manager Review</span>
+                                <span wire:loading.remove wire:target="markAsManagerReviewed">Mark as Manager Reviewed</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
                                     wire:target="markAsManagerReviewed" icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
@@ -510,4 +624,211 @@
             </div>
         </div>
     @endif
+
+    <!-- Review Info Modal -->
+    @if ($showInfoModal && $selectedReview)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none max-w-4xl">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-slate-500">
+                            <h3 class="text-xl font-medium text-white">Review Information</h3>
+                            <button wire:click="closeInfoModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-6 max-h-96 overflow-y-auto">
+                            <!-- Basic Information -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Basic Information</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><span class="font-medium">ID:</span> {{ $selectedReview->id }}</div>
+                                        <div><span class="font-medium">Title:</span> {{ $selectedReview->title }}</div>
+                                        <div><span class="font-medium">Type:</span> {{ class_basename($selectedReview->reviewable_type) }}</div>
+                                        <div><span class="font-medium">Assignee:</span> {{ $selectedReview->assignee?->full_name ?? 'Not assigned' }}</div>
+                                        <div><span class="font-medium">Status:</span> 
+                                            <span class="badge {{ $selectedReview->is_reviewed ? 'bg-green-500' : 'bg-yellow-500' }} text-white px-2 py-1 rounded">
+                                                {{ $selectedReview->is_reviewed ? 'Reviewed' : 'Not Reviewed' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Timestamps</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><span class="font-medium">Created:</span> {{ $selectedReview->created_at->format('d/m/Y H:i') }}</div>
+                                        <div><span class="font-medium">Updated:</span> {{ $selectedReview->updated_at->format('d/m/Y H:i') }}</div>
+                                        @if($selectedReview->reviewed_at)
+                                            <div><span class="font-medium">Reviewed:</span> {{ $selectedReview->reviewed_at->format('d/m/Y H:i') }}</div>
+                                        @endif
+                                        @if($selectedReview->reviewedBy)
+                                            <div><span class="font-medium">Reviewed By:</span> {{ $selectedReview->reviewedBy->full_name }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <h4 class="font-semibold text-slate-700 mb-2">Description</h4>
+                                <p class="text-sm text-slate-600 bg-slate-50 p-3 rounded">{{ $selectedReview->desc }}</p>
+                            </div>
+
+                            <!-- Claim Information (if applicable) -->
+                            @if($selectedReview->reviewable_type === 'App\Models\Tasks\Task' && $selectedReview->reviewable)
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Claim Information</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <div><span class="font-medium">Claim ID:</span> {{ $selectedReview->reviewable->id }}</div>
+                                            <div><span class="font-medium">Claim Title:</span> {{ $selectedReview->reviewable->title }}</div>
+                                            <div><span class="font-medium">Claim Status:</span> 
+                                                <span class="badge bg-blue-500 text-white px-2 py-1 rounded text-xs">
+                                                    {{ ucfirst(str_replace('_', ' ', $selectedReview->reviewable->status)) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div><span class="font-medium">Opened By:</span> {{ $selectedReview->reviewable->open_by?->full_name ?? 'Unknown' }}</div>
+                                            <div><span class="font-medium">Assigned To:</span> {{ $selectedReview->reviewable->assigned_to?->full_name ?? 'Not assigned' }}</div>
+                                            @if($selectedReview->reviewable->due)
+                                                <div><span class="font-medium">Due Date:</span> {{ \Carbon\Carbon::parse($selectedReview->reviewable->due)->format('d/m/Y H:i') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Ratings Section -->
+                            <div>
+                                <h4 class="font-semibold text-slate-700 mb-3">Client Ratings & Comments</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Employee Rating -->
+                                    <div class="border rounded p-3">
+                                        <div class="font-medium text-sm mb-1">Employee Performance</div>
+                                        <div class="text-lg font-bold {{ $selectedReview->employee_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $selectedReview->employee_rating }}/10
+                                        </div>
+                                        @if($selectedReview->client_employee_comment)
+                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->client_employee_comment }}</div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Policy Conditions Rating -->
+                                    <div class="border rounded p-3">
+                                        <div class="font-medium text-sm mb-1">Policy Conditions</div>
+                                        <div class="text-lg font-bold {{ $selectedReview->policy_conditions_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $selectedReview->policy_conditions_rating }}/10
+                                        </div>
+                                        @if($selectedReview->policy_conditions_comment)
+                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->policy_conditions_comment }}</div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Service Quality Rating -->
+                                    <div class="border rounded p-3">
+                                        <div class="font-medium text-sm mb-1">Service Quality</div>
+                                        <div class="text-lg font-bold {{ $selectedReview->service_quality_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $selectedReview->service_quality_rating }}/10
+                                        </div>
+                                        @if($selectedReview->service_quality_comment)
+                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->service_quality_comment }}</div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Pricing Rating -->
+                                    <div class="border rounded p-3">
+                                        <div class="font-medium text-sm mb-1">Pricing</div>
+                                        <div class="text-lg font-bold {{ $selectedReview->pricing_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $selectedReview->pricing_rating }}/10
+                                        </div>
+                                        @if($selectedReview->pricing_comment)
+                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->pricing_comment }}</div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Processing Time Rating -->
+                                    <div class="border rounded p-3">
+                                        <div class="font-medium text-sm mb-1">Processing Time</div>
+                                        <div class="text-lg font-bold {{ $selectedReview->processing_time_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $selectedReview->processing_time_rating }}/10
+                                        </div>
+                                        @if($selectedReview->processing_time_comment)
+                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->processing_time_comment }}</div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Collection Channel Rating -->
+                                    <div class="border rounded p-3">
+                                        <div class="font-medium text-sm mb-1">Collection Channel</div>
+                                        <div class="text-lg font-bold {{ $selectedReview->collection_channel_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $selectedReview->collection_channel_rating }}/10
+                                        </div>
+                                        @if($selectedReview->collection_channel_comment)
+                                            <div class="text-xs text-slate-600 mt-1">{{ $selectedReview->collection_channel_comment }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Information -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Additional Information</h4>
+                                    <div class="space-y-2 text-sm">
+                                        @if($selectedReview->suggestions)
+                                            <div><span class="font-medium">Suggestions:</span> {{ $selectedReview->suggestions }}</div>
+                                        @endif
+                                        <div><span class="font-medium">Would Refer:</span> 
+                                            @if($selectedReview->is_referred === true)
+                                                <span class="text-green-600">Yes</span>
+                                            @elseif($selectedReview->is_referred === false)
+                                                <span class="text-red-600">No</span>
+                                            @else
+                                                <span class="text-slate-400">Not specified</span>
+                                            @endif
+                                        </div>
+                                        @if($selectedReview->referral_comment)
+                                            <div><span class="font-medium">Referral Comment:</span> {{ $selectedReview->referral_comment }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 mb-2">Manager Review Status</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><span class="font-medium">Needs Manager Review:</span> 
+                                            <span class="badge {{ $selectedReview->need_manager_review ? 'bg-warning-500' : 'bg-green-500' }} text-white px-2 py-1 rounded text-xs">
+                                                {{ $selectedReview->need_manager_review ? 'Yes' : 'No' }}
+                                            </span>
+                                        </div>
+                                        <div><span class="font-medium">Manager Reviewed:</span> 
+                                            <span class="badge {{ $selectedReview->is_manager_reviewed ? 'bg-green-500' : 'bg-slate-500' }} text-white px-2 py-1 rounded text-xs">
+                                                {{ $selectedReview->is_manager_reviewed ? 'Yes' : 'No' }}
+                                            </span>
+                                        </div>
+                                        @if($selectedReview->manager_comment)
+                                            <div><span class="font-medium">Manager Comment:</span> {{ $selectedReview->manager_comment }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeInfoModal" class="btn inline-flex justify-center btn-outline-secondary">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 </div>

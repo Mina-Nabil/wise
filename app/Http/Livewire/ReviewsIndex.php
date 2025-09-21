@@ -35,7 +35,7 @@ class ReviewsIndex extends Component
     public $company_rating_to;
     public $has_employee_comment;
     public $has_company_comment;
-    public $needs_manager_review = false;
+    public $need_manager_review;
 
     // Edit filter values
     public $Ecreated_from;
@@ -53,24 +53,41 @@ class ReviewsIndex extends Component
     // Modal states and form data
     public $showRatingsModal = false;
     public $showManagerModal = false;
+    public $showInfoModal = false;
     public $selectedReviewId;
     public $selectedReview;
     
     // Ratings modal form data
     public $form_employee_rating;
     public $form_employee_comment;
-    public $form_company_rating;
-    public $form_company_comment;
+    public $form_policy_conditions_rating;
+    public $form_policy_conditions_comment;
+    public $form_service_quality_rating;
+    public $form_service_quality_comment;
+    public $form_pricing_rating;
+    public $form_pricing_comment;
+    public $form_processing_time_rating;
+    public $form_processing_time_comment;
+    public $form_collection_channel_rating;
+    public $form_collection_channel_comment;
+    public $form_suggestions;
+    public $form_is_referred;
+    public $form_referral_comment;
     
     // Manager modal form data
-    public $manager_employee_rating;
-    public $manager_employee_comment;
-    public $manager_company_rating;
-    public $manager_company_comment;
+    public $manager_comment;
+    
 
     public function mount()
     {
         $this->is_reviewed = false; // Default to unreviewed only
+        
+        // Set need_manager_review to true by default if user can review reviews
+        if (Auth::user() && Auth::user()->can_review_reviews) {
+            $this->is_reviewed = true;
+            $this->need_manager_review = true;
+        }
+        
         $this->loadReviewableTypes();
     }
 
@@ -145,10 +162,11 @@ class ReviewsIndex extends Component
         $this->toggle($this->has_company_comment);
     }
 
-    public function toggleManagerReview()
+    public function toggleNeedManagerReview()
     {
-        $this->toggle($this->needs_manager_review);
+        $this->toggle($this->need_manager_review);
     }
+
 
     // Set methods for filters
     public function setCreatedDates()
@@ -224,10 +242,11 @@ class ReviewsIndex extends Component
         $this->has_company_comment = null;
     }
 
-    public function clearManagerReview()
+    public function clearNeedManagerReview()
     {
-        $this->needs_manager_review = false;
+        $this->need_manager_review = null;
     }
+
 
     // Export functionality
     public function exportReviews()
@@ -250,8 +269,7 @@ class ReviewsIndex extends Component
                 $this->company_rating_from,
                 $this->company_rating_to,
                 $this->has_employee_comment,
-                $this->has_company_comment,
-                $this->needs_manager_review
+                $this->has_company_comment
             );
         } catch (\Exception $e) {
             $this->alert('failed', 'Export failed. Please try again.');
@@ -274,8 +292,19 @@ class ReviewsIndex extends Component
         // Pre-fill with existing data if available
         $this->form_employee_rating = $this->selectedReview->employee_rating ?? null;
         $this->form_employee_comment = $this->selectedReview->client_employee_comment ?? '';
-        $this->form_company_rating = $this->selectedReview->company_rating ?? null;
-        $this->form_company_comment = $this->selectedReview->client_company_comment ?? '';
+        $this->form_policy_conditions_rating = $this->selectedReview->policy_conditions_rating ?? null;
+        $this->form_policy_conditions_comment = $this->selectedReview->policy_conditions_comment ?? '';
+        $this->form_service_quality_rating = $this->selectedReview->service_quality_rating ?? null;
+        $this->form_service_quality_comment = $this->selectedReview->service_quality_comment ?? '';
+        $this->form_pricing_rating = $this->selectedReview->pricing_rating ?? null;
+        $this->form_pricing_comment = $this->selectedReview->pricing_comment ?? '';
+        $this->form_processing_time_rating = $this->selectedReview->processing_time_rating ?? null;
+        $this->form_processing_time_comment = $this->selectedReview->processing_time_comment ?? '';
+        $this->form_collection_channel_rating = $this->selectedReview->collection_channel_rating ?? null;
+        $this->form_collection_channel_comment = $this->selectedReview->collection_channel_comment ?? '';
+        $this->form_suggestions = $this->selectedReview->suggestions ?? '';
+        $this->form_is_referred = $this->selectedReview->is_referred ?? null;
+        $this->form_referral_comment = $this->selectedReview->referral_comment ?? '';
     }
 
     public function closeRatingsModal()
@@ -290,11 +319,8 @@ class ReviewsIndex extends Component
         $this->selectedReview = Review::findOrFail($reviewId);
         $this->showManagerModal = true;
         
-        // Pre-fill with existing manager data if available
-        $this->manager_employee_rating = $this->selectedReview->manager_employee_rating ?? null;
-        $this->manager_employee_comment = $this->selectedReview->manager_client_employee_comment ?? '';
-        $this->manager_company_rating = $this->selectedReview->manager_company_rating ?? null;
-        $this->manager_company_comment = $this->selectedReview->manager_client_company_comment ?? '';
+        // Pre-fill with existing manager comment if available
+        $this->manager_comment = $this->selectedReview->manager_comment ?? '';
     }
 
     public function closeManagerModal()
@@ -303,34 +329,69 @@ class ReviewsIndex extends Component
         $this->resetManagerForm();
     }
 
+    public function openInfoModal($reviewId)
+    {
+        $this->selectedReviewId = $reviewId;
+        $this->selectedReview = Review::with(['reviewable', 'assignee', 'reviewedBy'])->findOrFail($reviewId);
+        $this->showInfoModal = true;
+    }
+
+    public function closeInfoModal()
+    {
+        $this->showInfoModal = false;
+        $this->selectedReviewId = null;
+        $this->selectedReview = null;
+    }
+
+
     private function resetRatingsForm()
     {
         $this->selectedReviewId = null;
         $this->selectedReview = null;
         $this->form_employee_rating = null;
         $this->form_employee_comment = '';
-        $this->form_company_rating = null;
-        $this->form_company_comment = '';
+        $this->form_policy_conditions_rating = null;
+        $this->form_policy_conditions_comment = '';
+        $this->form_service_quality_rating = null;
+        $this->form_service_quality_comment = '';
+        $this->form_pricing_rating = null;
+        $this->form_pricing_comment = '';
+        $this->form_processing_time_rating = null;
+        $this->form_processing_time_comment = '';
+        $this->form_collection_channel_rating = null;
+        $this->form_collection_channel_comment = '';
+        $this->form_suggestions = '';
+        $this->form_is_referred = null;
+        $this->form_referral_comment = '';
     }
 
     private function resetManagerForm()
     {
         $this->selectedReviewId = null;
         $this->selectedReview = null;
-        $this->manager_employee_rating = null;
-        $this->manager_employee_comment = '';
-        $this->manager_company_rating = null;
-        $this->manager_company_comment = '';
+        $this->manager_comment = '';
     }
+
 
     // Review Action Methods
     public function setRatingsAndComments()
     {
         $this->validate([
             'form_employee_rating' => 'nullable|numeric|min:0|max:10',
-            'form_company_rating' => 'nullable|numeric|min:0|max:10',
             'form_employee_comment' => 'nullable|string|max:1000',
-            'form_company_comment' => 'nullable|string|max:1000',
+            'form_policy_conditions_rating' => 'nullable|numeric|min:0|max:10',
+            'form_policy_conditions_comment' => 'nullable|string|max:1000',
+            'form_service_quality_rating' => 'nullable|numeric|min:0|max:10',
+            'form_service_quality_comment' => 'nullable|string|max:1000',
+            'form_pricing_rating' => 'nullable|numeric|min:0|max:10',
+            'form_pricing_comment' => 'nullable|string|max:1000',
+            'form_processing_time_rating' => 'nullable|numeric|min:0|max:10',
+            'form_processing_time_comment' => 'nullable|string|max:1000',
+            'form_collection_channel_rating' => 'nullable|numeric|min:0|max:10',
+            'form_collection_channel_comment' => 'nullable|string|max:1000',
+            'form_suggestions' => 'nullable|string|max:2000',
+            'form_is_referred' => 'nullable|boolean',
+            'form_referral_comment' => 'nullable|string|max:1000',
         ]);
 
         try {
@@ -339,8 +400,19 @@ class ReviewsIndex extends Component
             if ($review->setRatingsAndComments(
                 $this->form_employee_rating,
                 $this->form_employee_comment,
-                $this->form_company_rating,
-                $this->form_company_comment
+                $this->form_policy_conditions_rating,
+                $this->form_policy_conditions_comment,
+                $this->form_service_quality_rating,
+                $this->form_service_quality_comment,
+                $this->form_pricing_rating,
+                $this->form_pricing_comment,
+                $this->form_processing_time_rating,
+                $this->form_processing_time_comment,
+                $this->form_collection_channel_rating,
+                $this->form_collection_channel_comment,
+                $this->form_suggestions,
+                $this->form_is_referred,
+                $this->form_referral_comment
             )) {
                 $this->alert('success', 'Review ratings and comments updated successfully.');
                 $this->closeRatingsModal();
@@ -355,22 +427,13 @@ class ReviewsIndex extends Component
     public function markAsManagerReviewed()
     {
         $this->validate([
-            'manager_employee_rating' => 'nullable|numeric|min:0|max:10',
-            'manager_company_rating' => 'nullable|numeric|min:0|max:10',
-            'manager_employee_comment' => 'nullable|string|max:1000',
-            'manager_company_comment' => 'nullable|string|max:1000',
+            'manager_comment' => 'nullable|string|max:2000',
         ]);
 
         try {
             $review = Review::findOrFail($this->selectedReviewId);
             
-            if ($review->markAsManagerReviewed(
-                null,
-                $this->manager_employee_rating,
-                $this->manager_employee_comment,
-                $this->manager_company_rating,
-                $this->manager_company_comment
-            )) {
+            if ($review->markAsManagerReviewed(null, $this->manager_comment)) {
                 $this->alert('success', 'Review marked as manager reviewed successfully.');
                 $this->closeManagerModal();
             } else {
@@ -381,6 +444,27 @@ class ReviewsIndex extends Component
         }
     }
 
+    public function goToClaim($reviewId)
+    {
+        try {
+            $review = Review::findOrFail($reviewId);
+            
+            // Check if the reviewable is a claim (Task with type claim)
+            if ($review->reviewable_type === 'App\Models\Tasks\Task' && $review->reviewable) {
+                $task = $review->reviewable;
+                if ($task->type === 'claim') {
+                    // Redirect to the claim/task page
+                    return redirect()->route('tasks.show', $task->id);
+                }
+            }
+            
+            $this->alert('failed', 'This review is not associated with a claim.');
+        } catch (\Exception $e) {
+            $this->alert('failed', 'An error occurred while navigating to the claim.');
+        }
+    }
+
+
     public function render()
     {
         $reviews = Review::with(['reviewable', 'assignee', 'reviewedBy'])
@@ -389,7 +473,7 @@ class ReviewsIndex extends Component
                     $q->where('title', 'like', '%' . $this->search . '%')
                       ->orWhere('desc', 'like', '%' . $this->search . '%')
                       ->orWhere('client_employee_comment', 'like', '%' . $this->search . '%')
-                      ->orWhere('client_company_comment', 'like', '%' . $this->search . '%');
+                      ->orWhere('policy_conditions_comment', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->reviewable_type, fn($q) => $q->byReviewableType($this->reviewable_type))
@@ -397,10 +481,10 @@ class ReviewsIndex extends Component
             ->byReviewStatus($this->is_reviewed)
             ->reviewedBetween($this->reviewed_from, $this->reviewed_to)
             ->employeeRatingBetween($this->employee_rating_from, $this->employee_rating_to)
-            ->companyRatingBetween($this->company_rating_from, $this->company_rating_to)
+            ->policyConditionsRatingBetween($this->company_rating_from, $this->company_rating_to)
             ->hasEmployeeComment($this->has_employee_comment)
-            ->hasCompanyComment($this->has_company_comment)
-            ->when($this->needs_manager_review, fn($q) => $q->needsManagerReview())
+            ->hasPolicyConditionsComment($this->has_company_comment)
+            ->needsManagerReview($this->need_manager_review)
             ->orderBy('created_at', 'desc')
             ->paginate(25);
 

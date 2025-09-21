@@ -1186,7 +1186,6 @@ class SoldPolicy extends Model
         try {
             $newSoldPolicy->save(['timestamps' => false]);
             AppLog::info("New Sold Policy", loggable: $newSoldPolicy);
-            Review::createReview($newSoldPolicy, "New Policy Review", "Policy# $policy_number created");
             return $newSoldPolicy;
         } catch (Exception $e) {
             report($e);
@@ -2090,6 +2089,11 @@ class SoldPolicy extends Model
     public function fields(): HasMany
     {
         return $this->hasMany(Field::class);
+    }
+
+    public function reviews(): MorphMany
+    {
+        return $this->morphMany(Review::class, 'reviewable');
     }
 
     public function scopeHasInvoice($query, $hasInvoice = true)

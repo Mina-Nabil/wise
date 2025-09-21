@@ -30,8 +30,22 @@ class Review extends Model
         'reviewed_at',
         'employee_rating',
         'client_employee_comment',
-        'company_rating',
-        'client_company_comment',
+        'policy_conditions_rating', // renamed from company_rating
+        'policy_conditions_comment', // renamed from client_company_comment
+        'service_quality_rating',
+        'service_quality_comment',
+        'pricing_rating',
+        'pricing_comment',
+        'processing_time_rating',
+        'processing_time_comment',
+        'collection_channel_rating',
+        'collection_channel_comment',
+        'suggestions',
+        'is_referred',
+        'referral_comment',
+        'is_manager_reviewed',
+        'need_manager_review',
+        'manager_comment',
         'reviewed_by_id',
     ];
 
@@ -39,7 +53,14 @@ class Review extends Model
         'is_reviewed' => 'boolean',
         'reviewed_at' => 'datetime',
         'employee_rating' => 'decimal:1',
-        'company_rating' => 'decimal:1',
+        'policy_conditions_rating' => 'decimal:1',
+        'service_quality_rating' => 'decimal:1',
+        'pricing_rating' => 'decimal:1',
+        'processing_time_rating' => 'decimal:1',
+        'collection_channel_rating' => 'decimal:1',
+        'is_referred' => 'boolean',
+        'is_manager_reviewed' => 'boolean',
+        'need_manager_review' => 'boolean',
     ];
 
     public function reviewable(): MorphTo
@@ -74,6 +95,7 @@ class Review extends Model
         //     AppLog::error('Unauthorized attempt to create review', desc: 'User does not have permission to create reviews');
         //     return false;
         // }
+        if($reviewable->reviews()->count() > 0) return false;
 
         try {
             $review = static::create([
@@ -99,16 +121,38 @@ class Review extends Model
      *
      * @param float|null $employeeRating Rating for employee performance (0-10)
      * @param string|null $employeeComment Client comment about employee
-     * @param float|null $companyRating Rating for company (0-10)
-     * @param string|null $companyComment Client comment about company
+     * @param float|null $policyConditionsRating Rating for policy conditions (0-10)
+     * @param string|null $policyConditionsComment Client comment about policy conditions
+     * @param float|null $serviceQualityRating Rating for service quality (0-10)
+     * @param string|null $serviceQualityComment Client comment about service quality
+     * @param float|null $pricingRating Rating for pricing (0-10)
+     * @param string|null $pricingComment Client comment about pricing
+     * @param float|null $processingTimeRating Rating for processing time (0-10)
+     * @param string|null $processingTimeComment Client comment about processing time
+     * @param float|null $collectionChannelRating Rating for collection channel effectiveness (0-10)
+     * @param string|null $collectionChannelComment Client comment about collection channel
+     * @param string|null $suggestions Client suggestions
+     * @param bool|null $isReferred Whether client would refer the service
+     * @param string|null $referralComment Client comment about referral
      * @param int|null $reviewedById User ID who completed the review
      * @return bool
      */
     public function setRatingsAndComments(
         ?float $employeeRating = null,
         ?string $employeeComment = null,
-        ?float $companyRating = null,
-        ?string $companyComment = null,
+        ?float $policyConditionsRating = null,
+        ?string $policyConditionsComment = null,
+        ?float $serviceQualityRating = null,
+        ?string $serviceQualityComment = null,
+        ?float $pricingRating = null,
+        ?string $pricingComment = null,
+        ?float $processingTimeRating = null,
+        ?string $processingTimeComment = null,
+        ?float $collectionChannelRating = null,
+        ?string $collectionChannelComment = null,
+        ?string $suggestions = null,
+        ?bool $isReferred = null,
+        ?string $referralComment = null,
         ?int $reviewedById = null
     ): bool {
         /** @var User */
@@ -129,12 +173,56 @@ class Review extends Model
                 $updates['client_employee_comment'] = $employeeComment;
             }
             
-            if ($companyRating !== null) {
-                $updates['company_rating'] = max(0, min(10, $companyRating)); // Ensure rating is between 0-10
+            if ($policyConditionsRating !== null) {
+                $updates['policy_conditions_rating'] = max(0, min(10, $policyConditionsRating)); // Ensure rating is between 0-10
             }
             
-            if ($companyComment !== null) {
-                $updates['client_company_comment'] = $companyComment;
+            if ($policyConditionsComment !== null) {
+                $updates['policy_conditions_comment'] = $policyConditionsComment;
+            }
+            
+            if ($serviceQualityRating !== null) {
+                $updates['service_quality_rating'] = max(0, min(10, $serviceQualityRating)); // Ensure rating is between 0-10
+            }
+            
+            if ($serviceQualityComment !== null) {
+                $updates['service_quality_comment'] = $serviceQualityComment;
+            }
+            
+            if ($pricingRating !== null) {
+                $updates['pricing_rating'] = max(0, min(10, $pricingRating)); // Ensure rating is between 0-10
+            }
+            
+            if ($pricingComment !== null) {
+                $updates['pricing_comment'] = $pricingComment;
+            }
+            
+            if ($processingTimeRating !== null) {
+                $updates['processing_time_rating'] = max(0, min(10, $processingTimeRating)); // Ensure rating is between 0-10
+            }
+            
+            if ($processingTimeComment !== null) {
+                $updates['processing_time_comment'] = $processingTimeComment;
+            }
+            
+            if ($collectionChannelRating !== null) {
+                $updates['collection_channel_rating'] = max(0, min(10, $collectionChannelRating)); // Ensure rating is between 0-10
+            }
+            
+            if ($collectionChannelComment !== null) {
+                $updates['collection_channel_comment'] = $collectionChannelComment;
+            }
+            
+            if ($suggestions !== null) {
+                $updates['suggestions'] = $suggestions;
+            }
+            
+            if ($isReferred !== null) {
+                $updates['is_referred'] = $isReferred;
+            }
+            
+            if ($referralComment !== null) {
+                $updates['referral_comment'] = $referralComment;
             }
             
             if ($reviewedById !== null) {
@@ -146,6 +234,22 @@ class Review extends Model
                 $updates['is_reviewed'] = true;
                 $updates['reviewed_at'] = now();
                 $updates['reviewed_by_id'] = $reviewedById ?? Auth::id();
+                
+                // Check if any rating is less than 8 to set need_manager_review
+                $needManagerReview = false;
+                $ratingFields = [
+                    'employee_rating', 'policy_conditions_rating', 'service_quality_rating',
+                    'pricing_rating', 'processing_time_rating', 'collection_channel_rating'
+                ];
+                
+                foreach ($ratingFields as $field) {
+                    if (isset($updates[$field]) && $updates[$field] < 8) {
+                        $needManagerReview = true;
+                        break;
+                    }
+                }
+                
+                $updates['need_manager_review'] = $needManagerReview;
             }
 
             $this->update($updates);
@@ -161,40 +265,43 @@ class Review extends Model
     }
 
     /**
-     * Mark review as completed
+     * Mark review as manager reviewed
      *
-     * @param int|null $reviewedById User ID who completed the review
+     * @param int|null $reviewedById User ID who completed the manager review
      * @return bool
      */
-    public function markAsManagerReviewed(?int $reviewedById = null, ?float $employeeRating = null, ?string $employeeComment = null, ?float $companyRating = null, ?string $companyComment = null): bool
+    public function markAsManagerReviewed(?int $reviewedById = null, ?string $managerComment = null): bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('markAsReviewed', $this)) {
-            AppLog::error('Unauthorized attempt to mark review as completed', desc: 'User does not have permission to update review status', loggable: $this);
+            AppLog::error('Unauthorized attempt to mark review as manager reviewed', desc: 'User does not have permission to mark review as manager reviewed', loggable: $this);
             return false;
         }
 
         try {
             $this->update([
                 'is_manager_reviewed' => true,
-                'manager_reviewed_at' => now(),
-                'manager_reviewed_by_id' => $reviewedById ?? Auth::id(),
-                'manager_employee_rating' => $employeeRating,
-                'manager_client_employee_comment' => $employeeComment,
-                'manager_company_rating' => $companyRating,
-                'manager_client_company_comment' => $companyComment,
+                'need_manager_review' => false, // No longer needs manager review
+                'manager_comment' => $managerComment,
             ]);
             
             $result = $this->save();
-            AppLog::info('Manager review marked as completed', loggable: $this);
+            AppLog::info('Review marked as manager reviewed successfully', loggable: $this);
             return $result;
         } catch (Exception $e) {
-            AppLog::error('Failed to mark review as completed', desc: $e->getMessage(), loggable: $this);
+            AppLog::error('Failed to mark review as manager reviewed', desc: $e->getMessage(), loggable: $this);
             report($e);
             return false;
         }
     }
+
+    /**
+     * Mark review as completed
+     *
+     * @param int|null $reviewedById User ID who completed the review
+     * @return bool
+     */
 
     // Scopes for filtering
     public function scopeByReviewableType($query, $type)
@@ -223,10 +330,38 @@ class Review extends Model
         return $query;
     }
 
-    public function scopeCompanyRatingBetween($query, $from, $to)
+    public function scopePolicyConditionsRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('company_rating', '>=', $from);
-        if ($to !== null) $query->where('company_rating', '<=', $to);
+        if ($from !== null) $query->where('policy_conditions_rating', '>=', $from);
+        if ($to !== null) $query->where('policy_conditions_rating', '<=', $to);
+        return $query;
+    }
+
+    public function scopeServiceQualityRatingBetween($query, $from, $to)
+    {
+        if ($from !== null) $query->where('service_quality_rating', '>=', $from);
+        if ($to !== null) $query->where('service_quality_rating', '<=', $to);
+        return $query;
+    }
+
+    public function scopePricingRatingBetween($query, $from, $to)
+    {
+        if ($from !== null) $query->where('pricing_rating', '>=', $from);
+        if ($to !== null) $query->where('pricing_rating', '<=', $to);
+        return $query;
+    }
+
+    public function scopeProcessingTimeRatingBetween($query, $from, $to)
+    {
+        if ($from !== null) $query->where('processing_time_rating', '>=', $from);
+        if ($to !== null) $query->where('processing_time_rating', '<=', $to);
+        return $query;
+    }
+
+    public function scopeCollectionChannelRatingBetween($query, $from, $to)
+    {
+        if ($from !== null) $query->where('collection_channel_rating', '>=', $from);
+        if ($to !== null) $query->where('collection_channel_rating', '<=', $to);
         return $query;
     }
 
@@ -246,36 +381,35 @@ class Review extends Model
         return $query;
     }
 
-    public function scopeHasCompanyComment($query, $hasComment)
+    public function scopeHasPolicyConditionsComment($query, $hasComment)
     {
         if ($hasComment !== null) {
             if ($hasComment) {
-                $query->whereNotNull('client_company_comment')
-                      ->where('client_company_comment', '!=', '');
+                $query->whereNotNull('policy_conditions_comment')
+                      ->where('policy_conditions_comment', '!=', '');
             } else {
                 $query->where(function ($q) {
-                    $q->whereNull('client_company_comment')
-                      ->orWhere('client_company_comment', '=', '');
+                    $q->whereNull('policy_conditions_comment')
+                      ->orWhere('policy_conditions_comment', '=', '');
                 });
             }
         }
         return $query;
     }
 
-    public function scopeNeedsManagerReview($query)
-    {
-        return $query->where('is_reviewed', true)
-                    ->where('is_manager_reviewed', false)
-                    ->where(function ($q) {
-                        $q->where('employee_rating', '<', 8)
-                          ->orWhere('company_rating', '<', 8);
-                    });
-    }
 
     public function scopeByReviewStatus($query, $isReviewed)
     {
         if ($isReviewed !== null) {
             $query->where('is_reviewed', $isReviewed);
+        }
+        return $query;
+    }
+
+    public function scopeNeedsManagerReview($query, $needsManagerReview)
+    {
+        if ($needsManagerReview !== null) {
+            $query->where('need_manager_review', $needsManagerReview);
         }
         return $query;
     }
@@ -292,11 +426,10 @@ class Review extends Model
         $reviewedTo = null,
         $employeeRatingFrom = null,
         $employeeRatingTo = null,
-        $companyRatingFrom = null,
-        $companyRatingTo = null,
+        $policyConditionsRatingFrom = null,
+        $policyConditionsRatingTo = null,
         $hasEmployeeComment = null,
-        $hasCompanyComment = null,
-        $needsManagerReview = false
+        $hasPolicyConditionsComment = null
     ) {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -310,10 +443,9 @@ class Review extends Model
             ->byReviewStatus($isReviewed)
             ->reviewedBetween($reviewedFrom, $reviewedTo)
             ->employeeRatingBetween($employeeRatingFrom, $employeeRatingTo)
-            ->companyRatingBetween($companyRatingFrom, $companyRatingTo)
+            ->policyConditionsRatingBetween($policyConditionsRatingFrom, $policyConditionsRatingTo)
             ->hasEmployeeComment($hasEmployeeComment)
-            ->hasCompanyComment($hasCompanyComment)
-            ->when($needsManagerReview, fn($q) => $q->needsManagerReview())
+            ->hasPolicyConditionsComment($hasPolicyConditionsComment)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -324,8 +456,14 @@ class Review extends Model
         $headers = [
             'ID', 'Reviewable Type', 'Reviewable ID', 'Title', 'Description',
             'Assignee', 'Is Reviewed', 'Reviewed At', 'Reviewed By',
-            'Employee Rating', 'Employee Comment', 'Company Rating', 'Company Comment',
-            'Needs Manager Review', 'Is Manager Reviewed', 'Manager Reviewed At',
+            'Employee Rating', 'Employee Comment', 
+            'Policy Conditions Rating', 'Policy Conditions Comment',
+            'Service Quality Rating', 'Service Quality Comment',
+            'Pricing Rating', 'Pricing Comment',
+            'Processing Time Rating', 'Processing Time Comment',
+            'Collection Channel Rating', 'Collection Channel Comment',
+            'Suggestions', 'Is Referred', 'Referral Comment',
+            'Is Manager Reviewed', 'Need Manager Review', 'Manager Comment',
             'Created At', 'Updated At'
         ];
 
@@ -338,27 +476,40 @@ class Review extends Model
         // Data
         $row = 2;
         foreach ($reviews as $review) {
-            $needsManagerReview = ($review->is_reviewed && !$review->is_manager_reviewed && 
-                                 ($review->employee_rating < 8 || $review->company_rating < 8));
-
-            $activeSheet->setCellValue('A' . $row, $review->id);
-            $activeSheet->setCellValue('B' . $row, class_basename($review->reviewable_type));
-            $activeSheet->setCellValue('C' . $row, $review->reviewable_id);
-            $activeSheet->setCellValue('D' . $row, $review->title);
-            $activeSheet->setCellValue('E' . $row, $review->desc);
-            $activeSheet->setCellValue('F' . $row, $review->assignee?->full_name);
-            $activeSheet->setCellValue('G' . $row, $review->is_reviewed ? 'Yes' : 'No');
-            $activeSheet->setCellValue('H' . $row, $review->reviewed_at?->format('Y-m-d H:i:s'));
-            $activeSheet->setCellValue('I' . $row, $review->reviewedBy?->full_name);
-            $activeSheet->setCellValue('J' . $row, $review->employee_rating);
-            $activeSheet->setCellValue('K' . $row, $review->client_employee_comment);
-            $activeSheet->setCellValue('L' . $row, $review->company_rating);
-            $activeSheet->setCellValue('M' . $row, $review->client_company_comment);
-            $activeSheet->setCellValue('N' . $row, $needsManagerReview ? 'Yes' : 'No');
-            $activeSheet->setCellValue('O' . $row, $review->is_manager_reviewed ? 'Yes' : 'No');
-            $activeSheet->setCellValue('P' . $row, $review->manager_reviewed_at?->format('Y-m-d H:i:s'));
-            $activeSheet->setCellValue('Q' . $row, $review->created_at->format('Y-m-d H:i:s'));
-            $activeSheet->setCellValue('R' . $row, $review->updated_at->format('Y-m-d H:i:s'));
+            $col = 'A';
+            $activeSheet->setCellValue($col++ . $row, $review->id);
+            $activeSheet->setCellValue($col++ . $row, class_basename($review->reviewable_type));
+            $activeSheet->setCellValue($col++ . $row, $review->reviewable_id);
+            $activeSheet->setCellValue($col++ . $row, $review->title);
+            $activeSheet->setCellValue($col++ . $row, $review->desc);
+            $activeSheet->setCellValue($col++ . $row, $review->assignee?->full_name);
+            $activeSheet->setCellValue($col++ . $row, $review->is_reviewed ? 'Yes' : 'No');
+            $activeSheet->setCellValue($col++ . $row, $review->reviewed_at?->format('Y-m-d H:i:s'));
+            $activeSheet->setCellValue($col++ . $row, $review->reviewedBy?->full_name);
+            
+            // Client ratings and comments
+            $activeSheet->setCellValue($col++ . $row, $review->employee_rating);
+            $activeSheet->setCellValue($col++ . $row, $review->client_employee_comment);
+            $activeSheet->setCellValue($col++ . $row, $review->policy_conditions_rating);
+            $activeSheet->setCellValue($col++ . $row, $review->policy_conditions_comment);
+            $activeSheet->setCellValue($col++ . $row, $review->service_quality_rating);
+            $activeSheet->setCellValue($col++ . $row, $review->service_quality_comment);
+            $activeSheet->setCellValue($col++ . $row, $review->pricing_rating);
+            $activeSheet->setCellValue($col++ . $row, $review->pricing_comment);
+            $activeSheet->setCellValue($col++ . $row, $review->processing_time_rating);
+            $activeSheet->setCellValue($col++ . $row, $review->processing_time_comment);
+            $activeSheet->setCellValue($col++ . $row, $review->collection_channel_rating);
+            $activeSheet->setCellValue($col++ . $row, $review->collection_channel_comment);
+            $activeSheet->setCellValue($col++ . $row, $review->suggestions);
+            $activeSheet->setCellValue($col++ . $row, $review->is_referred ? 'Yes' : ($review->is_referred === false ? 'No' : ''));
+            $activeSheet->setCellValue($col++ . $row, $review->referral_comment);
+            $activeSheet->setCellValue($col++ . $row, $review->is_manager_reviewed ? 'Yes' : 'No');
+            $activeSheet->setCellValue($col++ . $row, $review->need_manager_review ? 'Yes' : 'No');
+            $activeSheet->setCellValue($col++ . $row, $review->manager_comment);
+            
+            // Timestamps
+            $activeSheet->setCellValue($col++ . $row, $review->created_at->format('Y-m-d H:i:s'));
+            $activeSheet->setCellValue($col++ . $row, $review->updated_at->format('Y-m-d H:i:s'));
             $row++;
         }
 
