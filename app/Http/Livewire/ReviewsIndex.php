@@ -2,11 +2,13 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Business\SoldPolicy;
 use App\Models\Marketing\Review;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -723,10 +725,15 @@ class ReviewsIndex extends Component
                           });
                       })
                       ->orWhereHas('reviewable', function ($reviewableQuery) {
-                          $reviewableQuery->whereHas('taskable.client', function ($clientQuery) {
-                              $clientQuery->whereHas('phones', function ($phoneQuery) {
-                                  $phoneQuery->where('number', 'like', '%' . $this->search . '%');
-                              });
+                          $reviewableQuery->whereHas('taskable', function ($taskableQuery) {
+                              $taskableQuery->where('taskable_type', SoldPolicy::MORPH_TYPE)
+                                           ->whereExists(function ($query) {
+                                               $query->select(DB::raw(1))
+                                                     ->from('phones')
+                                                     ->whereColumn('phones.client_id', 'sold_policies.client_id')
+                                                     ->whereColumn('phones.client_type', 'sold_policies.client_type')
+                                                     ->where('phones.number', 'like', '%' . $this->search . '%');
+                                           });
                           });
                       });
                 });
