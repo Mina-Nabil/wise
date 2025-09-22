@@ -122,7 +122,7 @@
                                     <th scope="col" class="table-th">ID</th>
                                     <th scope="col" class="table-th">Title</th>
                                     <th scope="col" class="table-th">Type</th>
-                                    <th scope="col" class="table-th">Client Phone</th>
+                                    <th scope="col" class="table-th">Contact</th>
                                     <th scope="col" class="table-th">Assignee</th>
                                     <th scope="col" class="table-th">Status</th>
                                     <th scope="col" class="table-th">Ratings</th>
