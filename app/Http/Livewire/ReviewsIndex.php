@@ -707,14 +707,21 @@ class ReviewsIndex extends Component
     {
         $reviews = Review::with([
             'assignee', 
-            'reviewedBy'
+            'reviewedBy',
+            'reviewable.client.phones'
         ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('title', 'like', '%' . $this->search . '%')
                       ->orWhere('desc', 'like', '%' . $this->search . '%')
                       ->orWhere('client_employee_comment', 'like', '%' . $this->search . '%')
-                      ->orWhere('policy_conditions_comment', 'like', '%' . $this->search . '%');
+                      ->orWhere('policy_conditions_comment', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('reviewable.client.phones', function ($phoneQuery) {
+                          $phoneQuery->where('number', 'like', '%' . $this->search . '%');
+                      })
+                      ->orWhereHas('reviewable.taskable.client.phones', function ($phoneQuery) {
+                          $phoneQuery->where('number', 'like', '%' . $this->search . '%');
+                      });
                 });
             })
             ->when($this->reviewable_type, fn($q) => $q->byReviewableType($this->reviewable_type))
