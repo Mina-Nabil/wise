@@ -11,7 +11,7 @@
                         class="ml-3" style="position: absolute" wire:loading wire:target="changeSection"
                         icon="svg-spinners:180-ring"></iconify-icon>
                 </div>
-                <div class="card-body flex flex-col col-span-2" wire:ignore>
+                <div class="card-body flex flex-col col-span-3" wire:ignore>
                     <div class="card-text h-full">
                         <div>
                             <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0"
