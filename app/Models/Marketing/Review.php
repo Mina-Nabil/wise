@@ -723,4 +723,35 @@ class Review extends Model
             return false;
         }
     }
+
+    /**
+     * Delete a review (admin only)
+     *
+     * @return bool
+     */
+    public function deleteReview(): bool
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->is_admin) {
+            AppLog::error('Unauthorized attempt to delete review', desc: 'User does not have permission to delete reviews', loggable: $this);
+            return false;
+        }
+
+        try {
+            $reviewId = $this->id;
+            $result = $this->delete();
+            
+            AppLog::info('Review deleted successfully', [
+                'review_id' => $reviewId,
+                'deleted_by' => $loggedInUser->id
+            ]);
+            
+            return $result;
+        } catch (Exception $e) {
+            AppLog::error('Failed to delete review', desc: $e->getMessage(), loggable: $this);
+            report($e);
+            return false;
+        }
+    }
 }

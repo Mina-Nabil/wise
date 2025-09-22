@@ -93,6 +93,8 @@ class ReviewsIndex extends Component
     public $claim_manager_comment;
     
 
+    protected $listeners = ['showConfirmation'];
+
     public function mount()
     {
         $this->is_reviewed = false; // Default to unreviewed only
@@ -104,6 +106,14 @@ class ReviewsIndex extends Component
         }
         
         $this->loadReviewableTypes();
+    }
+
+    public function showConfirmation($message, $color, $action, $reviewId = null)
+    {
+        if ($action === 'deleteReview' && $reviewId) {
+            $this->selectedReviewId = $reviewId;
+            $this->deleteReview();
+        }
     }
 
     public function loadReviewableTypes()
@@ -613,6 +623,26 @@ class ReviewsIndex extends Component
             $this->alert('failed', 'This review is not associated with a claim.');
         } catch (\Exception $e) {
             $this->alert('failed', 'An error occurred while navigating to the claim.');
+        }
+    }
+
+    public function deleteReview()
+    {
+        if (!Auth::user()->is_admin) {
+            $this->alert('failed', 'You do not have permission to delete reviews.');
+            return;
+        }
+
+        try {
+            $review = Review::findOrFail($this->selectedReviewId);
+            
+            if ($review->deleteReview()) {
+                $this->alert('success', 'Review deleted successfully.');
+            } else {
+                $this->alert('failed', 'Failed to delete review.');
+            }
+        } catch (\Exception $e) {
+            $this->alert('failed', 'An error occurred while deleting the review.');
         }
     }
 

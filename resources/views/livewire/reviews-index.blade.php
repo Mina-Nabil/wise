@@ -417,9 +417,21 @@
                                                         </button>
                                                     </li>
 
+                                                    <!-- Delete Review (Admin Only) -->
+                                                    @if (Auth::user()->is_admin)
+                                                        <li>
+                                                            <button wire:click="$emit('showConfirmation', 'Are you sure you want to delete this review?', 'red', 'deleteReview', {{ $review->id }})" 
+                                                                    class="text-red-600 dark:text-red-400 block font-Inter font-normal px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900 dark:hover:text-white w-full text-left">
+                                                                <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:trash-20-solid"></iconify-icon>
+                                                                Delete Review
+                                                            </button>
+                                                        </li>
+                                                    @endif
+
                                                     <!-- No actions available -->
                                                     @if (!($review->reviewable_type === 'App\Models\Business\SoldPolicy') && 
-                                                         !Auth::user()->can('receiveClientComment', $review))
+                                                         !Auth::user()->can('receiveClientComment', $review) && 
+                                                         !Auth::user()->is_admin)
                                                         <li>
                                                             <span class="text-slate-400 block font-Inter font-normal px-4 py-2">
                                                                 No actions available
