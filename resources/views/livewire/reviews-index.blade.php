@@ -71,7 +71,7 @@
         <!-- Search Header -->
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading wire:target="search" class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search reviews, comments, or phone numbers..." wire:model="search">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search reviews..." wire:model="search">
         </header>
 
         <!-- Active Filters Display -->

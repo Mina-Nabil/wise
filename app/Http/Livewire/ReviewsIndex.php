@@ -2,13 +2,11 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\Business\SoldPolicy;
 use App\Models\Marketing\Review;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -62,7 +60,7 @@ class ReviewsIndex extends Component
     public $selectedReviewId;
     public $selectedReview;
     public $selectedReviewContacts = [];
-    
+
     // Ratings modal form data
     public $form_employee_rating;
     public $form_employee_comment;
@@ -79,7 +77,7 @@ class ReviewsIndex extends Component
     public $form_suggestions;
     public $form_is_referred;
     public $form_referral_comment;
-    
+
     // Claim-specific ratings modal form data
     public $form_insurance_company_rating;
     public $form_insurance_company_comment;
@@ -89,26 +87,26 @@ class ReviewsIndex extends Component
     public $form_claims_specialist_comment;
     public $form_wise_rating;
     public $form_wise_comment;
-    
+
     // Manager modal form data
     public $manager_comment;
-    
+
     // Claim manager modal form data
     public $claim_manager_comment;
-    
+
 
     protected $listeners = ['showConfirmation'];
 
     public function mount()
     {
         $this->is_reviewed = false; // Default to unreviewed only
-        
+
         // Set need_manager_review to true by default if user can review reviews
         if (Auth::user() && Auth::user()->can_review_reviews) {
             $this->is_reviewed = true;
             $this->need_manager_review = true;
         }
-        
+
         $this->loadReviewableTypes();
     }
 
@@ -317,7 +315,7 @@ class ReviewsIndex extends Component
         $this->selectedReviewId = $reviewId;
         $this->selectedReview = Review::findOrFail($reviewId);
         $this->showRatingsModal = true;
-        
+
         if ($this->selectedReview->is_claim_review) {
             // Pre-fill claim-specific data
             $this->form_insurance_company_rating = $this->selectedReview->insurance_company_rating ?? null;
@@ -359,7 +357,7 @@ class ReviewsIndex extends Component
         $this->selectedReviewId = $reviewId;
         $this->selectedReview = Review::findOrFail($reviewId);
         $this->showManagerModal = true;
-        
+
         // Pre-fill with existing manager comment if available
         $this->manager_comment = $this->selectedReview->manager_comment ?? '';
     }
@@ -375,7 +373,7 @@ class ReviewsIndex extends Component
         $this->selectedReviewId = $reviewId;
         $this->selectedReview = Review::findOrFail($reviewId);
         $this->showClaimManagerModal = true;
-        
+
         // Pre-fill with existing claim manager comment if available
         $this->claim_manager_comment = $this->selectedReview->claim_manager_comment ?? '';
     }
@@ -432,7 +430,7 @@ class ReviewsIndex extends Component
     private function getReviewContacts($review)
     {
         $contacts = [];
-        
+
         if (!$review->reviewable) {
             return $contacts;
         }
@@ -487,7 +485,7 @@ class ReviewsIndex extends Component
         $this->form_suggestions = '';
         $this->form_is_referred = null;
         $this->form_referral_comment = '';
-        
+
         // Reset claim-specific fields
         $this->form_insurance_company_rating = null;
         $this->form_insurance_company_comment = '';
@@ -543,7 +541,7 @@ class ReviewsIndex extends Component
 
         try {
             $review = Review::findOrFail($this->selectedReviewId);
-            
+
             if ($review->setRatingsAndComments(
                 $this->form_employee_rating,
                 $this->form_employee_comment,
@@ -586,7 +584,7 @@ class ReviewsIndex extends Component
 
         try {
             $review = Review::findOrFail($this->selectedReviewId);
-            
+
             if ($review->setClaimRatingsAndComments(
                 $this->form_insurance_company_rating,
                 $this->form_insurance_company_comment,
@@ -615,7 +613,7 @@ class ReviewsIndex extends Component
 
         try {
             $review = Review::findOrFail($this->selectedReviewId);
-            
+
             if ($review->markAsManagerReviewed(null, $this->manager_comment)) {
                 $this->alert('success', 'Review marked as manager reviewed successfully.');
                 $this->closeManagerModal();
@@ -635,7 +633,7 @@ class ReviewsIndex extends Component
 
         try {
             $review = Review::findOrFail($this->selectedReviewId);
-            
+
             if ($review->markAsClaimManagerReviewed(null, $this->claim_manager_comment)) {
                 $this->alert('success', 'Claim review marked as claim manager reviewed successfully.');
                 $this->closeClaimManagerModal();
@@ -651,7 +649,7 @@ class ReviewsIndex extends Component
     {
         try {
             $review = Review::findOrFail($this->selectedReviewId);
-            
+
             if ($review->setNoAnswerFlag($noAnswer)) {
                 $message = $noAnswer ? 'Review marked as no answer successfully.' : 'Review no answer flag removed successfully.';
                 $this->alert('success', $message);
@@ -668,7 +666,7 @@ class ReviewsIndex extends Component
     {
         try {
             $review = Review::findOrFail($reviewId);
-            
+
             // Check if the reviewable is a claim (Task with type claim)
             if ($review->reviewable_type === 'App\Models\Tasks\Task' && $review->reviewable) {
                 $task = $review->reviewable;
@@ -677,7 +675,7 @@ class ReviewsIndex extends Component
                     return redirect()->route('tasks.show', $task->id);
                 }
             }
-            
+
             $this->alert('failed', 'This review is not associated with a claim.');
         } catch (\Exception $e) {
             $this->alert('failed', 'An error occurred while navigating to the claim.');
@@ -693,7 +691,7 @@ class ReviewsIndex extends Component
 
         try {
             $review = Review::findOrFail($this->selectedReviewId);
-            
+
             if ($review->deleteReview()) {
                 $this->alert('success', 'Review deleted successfully.');
             } else {
@@ -708,35 +706,15 @@ class ReviewsIndex extends Component
     public function render()
     {
         $reviews = Review::with([
-            'assignee', 
+            'assignee',
             'reviewedBy'
         ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('title', 'like', '%' . $this->search . '%')
-                      ->orWhere('desc', 'like', '%' . $this->search . '%')
-                      ->orWhere('client_employee_comment', 'like', '%' . $this->search . '%')
-                      ->orWhere('policy_conditions_comment', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('reviewable', function ($reviewableQuery) {
-                          $reviewableQuery->where('reviewable_type', SoldPolicy::class)
-                                         ->whereHas('client', function ($clientQuery) {
-                                             $clientQuery->whereHas('phones', function ($phoneQuery) {
-                                                 $phoneQuery->where('number', 'like', '%' . $this->search . '%');
-                                             });
-                                         });
-                      })
-                      ->orWhereHas('reviewable', function ($reviewableQuery) {
-                          $reviewableQuery->whereHas('taskable', function ($taskableQuery) {
-                              $taskableQuery->where('taskable_type', SoldPolicy::MORPH_TYPE)
-                                           ->whereExists(function ($query) {
-                                               $query->select(DB::raw(1))
-                                                     ->from('phones')
-                                                     ->whereColumn('phones.client_id', 'sold_policies.client_id')
-                                                     ->whereColumn('phones.client_type', 'sold_policies.client_type')
-                                                     ->where('phones.number', 'like', '%' . $this->search . '%');
-                                           });
-                          });
-                      });
+                        ->orWhere('desc', 'like', '%' . $this->search . '%')
+                        ->orWhere('client_employee_comment', 'like', '%' . $this->search . '%')
+                        ->orWhere('policy_conditions_comment', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->reviewable_type, fn($q) => $q->byReviewableType($this->reviewable_type))
