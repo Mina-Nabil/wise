@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::table('reviews', function (Blueprint $table) {
             // Change no_answer from boolean to tinyint
             // null = no call yet, 0 = no answer, 1 = answered, 2 = sent whatsapp
-            $table->tinyInteger('no_answer')->nullable()->change();
+            $table->integer('no_answer')->nullable()->change();
         });
     }
 
