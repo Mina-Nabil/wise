@@ -292,13 +292,17 @@
                                         </td>
 
                                         <td class="table-td">
-                                            @if ($review->no_answer === true)
+                                            @if ($review->no_answer === 0)
                                                 <span class="badge bg-red-500 text-red-500 bg-opacity-30 rounded-3xl">
                                                     No Answer
                                                 </span>
-                                            @elseif ($review->no_answer === false)
+                                            @elseif ($review->no_answer === 1)
                                                 <span class="badge bg-green-500 text-green-500 bg-opacity-30 rounded-3xl">
                                                     Answered
+                                                </span>
+                                            @elseif ($review->no_answer === 2)
+                                                <span class="badge bg-blue-500 text-blue-500 bg-opacity-30 rounded-3xl">
+                                                    Sent WhatsApp
                                                 </span>
                                             @else
                                                 <span class="badge bg-slate-500 text-slate-500 bg-opacity-30 rounded-3xl">
@@ -396,20 +400,12 @@
                                                         @endif
                                                     @endcan
 
-                                                    <!-- Mark as No Answer / Mark as Answered / Mark as Not Called -->
+                                                    <!-- Mark Call Status -->
                                                     <li>
                                                         <button wire:click="openNoAnswerModal({{ $review->id }})" 
                                                                 class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
-                                                            @if ($review->no_answer === true)
-                                                                <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:check-circle-20-solid"></iconify-icon>
-                                                                Mark as Answered
-                                                            @elseif ($review->no_answer === false)
-                                                                <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:x-circle-20-solid"></iconify-icon>
-                                                                Mark as No Answer
-                                                            @else
-                                                                <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:phone-20-solid"></iconify-icon>
-                                                                Mark Call Status
-                                                            @endif
+                                                            <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons:phone-20-solid"></iconify-icon>
+                                                            Mark Call Status
                                                         </button>
                                                     </li>
 
@@ -938,8 +934,8 @@
             <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
                 <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-red-500">
-                            <h3 class="text-xl font-medium text-white">Mark as No Answer</h3>
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-blue-500">
+                            <h3 class="text-xl font-medium text-white">Mark Call Status</h3>
                             <button wire:click="closeNoAnswerModal" type="button"
                                 class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
@@ -954,10 +950,12 @@
                                     <p class="text-sm text-slate-600">{{ $selectedReview->desc }}</p>
                                     <div class="mt-2 text-sm">
                                         <span class="font-medium">Current Status:</span> 
-                                        @if ($selectedReview->no_answer === true)
+                                        @if ($selectedReview->no_answer === 0)
                                             <span class="text-red-600">No Answer</span>
-                                        @elseif ($selectedReview->no_answer === false)
+                                        @elseif ($selectedReview->no_answer === 1)
                                             <span class="text-green-600">Answered</span>
+                                        @elseif ($selectedReview->no_answer === 2)
+                                            <span class="text-blue-600">Sent WhatsApp</span>
                                         @else
                                             <span class="text-slate-500">Not Yet Called</span>
                                         @endif
@@ -969,18 +967,22 @@
                                 <p class="text-slate-600 mb-4">
                                     Choose the call status for this review:
                                 </p>
-                                <div class="grid grid-cols-3 gap-3">
+                                <div class="grid grid-cols-2 gap-3">
                                     <button wire:click="setNoAnswerFlag(null)" 
                                             class="btn {{ $selectedReview && $selectedReview->no_answer === null ? 'bg-slate-500 text-white' : 'btn-outline-secondary' }} text-sm">
                                         Not Yet Called
                                     </button>
-                                    <button wire:click="setNoAnswerFlag(false)" 
-                                            class="btn {{ $selectedReview && $selectedReview->no_answer === false ? 'bg-green-500 text-white' : 'btn-outline-secondary' }} text-sm">
+                                    <button wire:click="setNoAnswerFlag(1)" 
+                                            class="btn {{ $selectedReview && $selectedReview->no_answer === 1 ? 'bg-green-500 text-white' : 'btn-outline-secondary' }} text-sm">
                                         Answered
                                     </button>
-                                    <button wire:click="setNoAnswerFlag(true)" 
-                                            class="btn {{ $selectedReview && $selectedReview->no_answer === true ? 'bg-red-500 text-white' : 'btn-outline-secondary' }} text-sm">
+                                    <button wire:click="setNoAnswerFlag(0)" 
+                                            class="btn {{ $selectedReview && $selectedReview->no_answer === 0 ? 'bg-red-500 text-white' : 'btn-outline-secondary' }} text-sm">
                                         No Answer
+                                    </button>
+                                    <button wire:click="setNoAnswerFlag(2)" 
+                                            class="btn {{ $selectedReview && $selectedReview->no_answer === 2 ? 'bg-blue-500 text-white' : 'btn-outline-secondary' }} text-sm">
+                                        Sent WhatsApp
                                     </button>
                                 </div>
                             </div>
@@ -1216,14 +1218,18 @@
                                         @if($selectedReview->referral_comment)
                                             <div><span class="font-medium">Referral Comment:</span> {{ $selectedReview->referral_comment }}</div>
                                         @endif
-                                        <div><span class="font-medium">No Answer Status:</span> 
-                                            @if ($selectedReview->no_answer === true)
+                                        <div><span class="font-medium">Call Status:</span> 
+                                            @if ($selectedReview->no_answer === 0)
                                                 <span class="badge bg-red-500 text-white px-2 py-1 rounded text-xs">
                                                     No Answer
                                                 </span>
-                                            @elseif ($selectedReview->no_answer === false)
+                                            @elseif ($selectedReview->no_answer === 1)
                                                 <span class="badge bg-green-500 text-white px-2 py-1 rounded text-xs">
                                                     Answered
+                                                </span>
+                                            @elseif ($selectedReview->no_answer === 2)
+                                                <span class="badge bg-blue-500 text-white px-2 py-1 rounded text-xs">
+                                                    Sent WhatsApp
                                                 </span>
                                             @else
                                                 <span class="badge bg-slate-500 text-white px-2 py-1 rounded text-xs">

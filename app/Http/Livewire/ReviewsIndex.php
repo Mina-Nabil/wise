@@ -651,11 +651,17 @@ class ReviewsIndex extends Component
             $review = Review::findOrFail($this->selectedReviewId);
 
             if ($review->setNoAnswerFlag($noAnswer)) {
-                $message = $noAnswer ? 'Review marked as no answer successfully.' : 'Review no answer flag removed successfully.';
+                $message = match($noAnswer) {
+                    null => 'Review marked as not yet called.',
+                    0 => 'Review marked as no answer.',
+                    1 => 'Review marked as answered.',
+                    2 => 'Review marked as sent WhatsApp.',
+                    default => 'Review call status updated successfully.'
+                };
                 $this->alert('success', $message);
                 $this->closeNoAnswerModal();
             } else {
-                $this->alert('failed', 'Failed to update review no answer flag.');
+                $this->alert('failed', 'Failed to update review call status.');
             }
         } catch (\Exception $e) {
             $this->alert('failed', 'An error occurred while updating the review.');

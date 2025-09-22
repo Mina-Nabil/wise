@@ -81,7 +81,7 @@ class Review extends Model
         'wise_rating' => 'decimal:1',
         'need_claim_manager_review' => 'boolean',
         'is_claim_manager_reviewed' => 'boolean',
-        'no_answer' => 'boolean',
+        'no_answer' => 'integer',
     ];
 
     public function reviewable(): MorphTo
@@ -255,7 +255,7 @@ class Review extends Model
                 $updates['is_reviewed'] = true;
                 $updates['reviewed_at'] = now();
                 $updates['reviewed_by_id'] = $reviewedById ?? Auth::id();
-                $updates['no_answer'] = false; // Set to false when ratings/comments are provided
+                $updates['no_answer'] = 1; // Set to 1 (answered) when ratings/comments are provided
                 
                 // Check if any rating is less than 8 to set need_manager_review
                 $needManagerReview = false;
@@ -626,7 +626,7 @@ class Review extends Model
                 $updates['is_reviewed'] = true;
                 $updates['reviewed_at'] = now();
                 $updates['reviewed_by_id'] = $reviewedById ?? Auth::id();
-                $updates['no_answer'] = false; // Set to false when ratings/comments are provided
+                $updates['no_answer'] = 1; // Set to 1 (answered) when ratings/comments are provided
                 
                 // Check if any rating is less than 8 to set need_claim_manager_review
                 $needClaimManagerReview = false;
@@ -702,12 +702,21 @@ class Review extends Model
     /**
      * Set the no answer flag for a review
      *
-     * @param bool|null $noAnswer
+     * @param int|null $noAnswer 0 = no answer, 1 = answered, 2 = sent whatsapp, null = no call yet
      * @return bool
      */
-    public function setNoAnswerFlag(?bool $noAnswer): bool
+    public function setNoAnswerFlag(?int $noAnswer): bool
     {
         try {
+            // Validate the value
+            if ($noAnswer !== null && !in_array($noAnswer, [0, 1, 2])) {
+                AppLog::error('Invalid no_answer value provided', [
+                    'no_answer' => $noAnswer,
+                    'review_id' => $this->id
+                ], loggable: $this);
+                return false;
+            }
+            
             $this->no_answer = $noAnswer;
             $result = $this->save();
             
