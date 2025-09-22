@@ -158,14 +158,17 @@
                                             @php
                                                 $client = null;
                                                 $phone = null;
+                                                $clientType = null;
                                                 
                                                 // Try to get client from direct relationship (SoldPolicy)
                                                 if ($review->reviewable && $review->reviewable->client) {
                                                     $client = $review->reviewable->client;
+                                                    $clientType = 'customer';
                                                 }
                                                 // Try to get client from indirect relationship (Task -> SoldPolicy -> Client)
                                                 elseif ($review->reviewable && $review->reviewable->taskable && $review->reviewable->taskable->client) {
                                                     $client = $review->reviewable->taskable->client;
+                                                    $clientType = 'customer';
                                                 }
                                                 
                                                 // Get the primary phone number using the accessor
@@ -174,17 +177,25 @@
                                                 }
                                             @endphp
                                             
-                                            @if ($phone)
-                                                <button wire:click="openContactsModal({{ $review->id }})" 
-                                                        class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-                                                        title="View Contacts">
-                                                    <iconify-icon icon="heroicons:phone-20-solid" class="text-sm"></iconify-icon>
-                                                </button>
-                                            @elseif ($client)
-                                                <span class="text-xs text-slate-400">No phone</span>
-                                            @else
-                                                <span class="text-xs text-slate-400">No client</span>
-                                            @endif
+                                            <div class="flex items-center space-x-2">
+                                                @if ($client)
+                                                    <div class="flex-1">
+                                                        <a href="{{ $clientType === 'customer' ? route('customers.show', $client->id) : route('corporates.show', $client->id) }}" 
+                                                           class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
+                                                            {{ $client->name }}
+                                                        </a>
+                                                    </div>
+                                                    @if ($phone)
+                                                        <button wire:click="openContactsModal({{ $review->id }})" 
+                                                                class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors flex-shrink-0"
+                                                                title="View All Contacts">
+                                                            <iconify-icon icon="heroicons:phone-20-solid" class="text-sm"></iconify-icon>
+                                                        </button>
+                                                    @endif
+                                                @else
+                                                    <span class="text-xs text-slate-400">No client</span>
+                                                @endif
+                                            </div>
                                         </td>
 
                                         <td class="table-td">
@@ -1294,7 +1305,10 @@
                                 @foreach($selectedReviewContacts as $contact)
                                     <div class="border rounded-lg p-4 bg-slate-50">
                                         <div class="flex items-center justify-between mb-3">
-                                            <h4 class="font-semibold text-slate-700">{{ $contact['name'] }}</h4>
+                                            <a href="{{ $contact['client_type'] === 'customer' ? route('customers.show', $contact['client_id']) : route('corporates.show', $contact['client_id']) }}" 
+                                               class="font-semibold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
+                                                {{ $contact['name'] }}
+                                            </a>
                                             <span class="badge bg-blue-500 text-white px-2 py-1 rounded text-xs">
                                                 {{ $contact['type'] }}
                                             </span>

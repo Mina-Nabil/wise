@@ -440,10 +440,12 @@ class ReviewsIndex extends Component
             $client = $review->reviewable->client;
             $contacts[] = [
                 'type' => 'Client',
-                'name' => $client->full_name ?? 'Unknown',
+                'name' => $client->name ?? 'Unknown',
                 'phone' => $client->telephone1,
                 'phone2' => $client->telephone2,
                 'phone3' => $client->telephone3,
+                'client_type' => 'customer',
+                'client_id' => $client->id,
             ];
         }
         // Try to get client from indirect relationship (Task -> SoldPolicy -> Client)
@@ -451,10 +453,12 @@ class ReviewsIndex extends Component
             $client = $review->reviewable->taskable->client;
             $contacts[] = [
                 'type' => 'Client (via Task)',
-                'name' => $client->full_name ?? 'Unknown',
+                'name' => $client->name ?? 'Unknown',
                 'phone' => $client->telephone1,
                 'phone2' => $client->telephone2,
                 'phone3' => $client->telephone3,
+                'client_type' => 'customer',
+                'client_id' => $client->id,
             ];
         }
 
