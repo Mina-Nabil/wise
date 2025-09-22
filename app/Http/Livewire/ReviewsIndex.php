@@ -723,11 +723,9 @@ class ReviewsIndex extends Component
                           });
                       })
                       ->orWhereHas('reviewable', function ($reviewableQuery) {
-                          $reviewableQuery->whereHas('taskable', function ($taskableQuery) {
-                              $taskableQuery->whereHas('client', function ($clientQuery) {
-                                  $clientQuery->whereHas('phones', function ($phoneQuery) {
-                                      $phoneQuery->where('number', 'like', '%' . $this->search . '%');
-                                  });
+                          $reviewableQuery->whereHas('taskable.client', function ($clientQuery) {
+                              $clientQuery->whereHas('phones', function ($phoneQuery) {
+                                  $phoneQuery->where('number', 'like', '%' . $this->search . '%');
                               });
                           });
                       });
