@@ -126,7 +126,7 @@
                                     <th scope="col" class="table-th">Assignee</th>
                                     <th scope="col" class="table-th">Status</th>
                                     <th scope="col" class="table-th">Ratings</th>
-                                    <th scope="col" class="table-th">Need Manager?</th>
+                                    <th scope="col" class="table-th">Manager?</th>
                                     <th scope="col" class="table-th">No Answer?</th>
                                     <th scope="col" class="table-th">Created</th>
                                     <th scope="col" class="table-th">Actions</th>
