@@ -707,8 +707,7 @@ class ReviewsIndex extends Component
     {
         $reviews = Review::with([
             'assignee', 
-            'reviewedBy',
-            'reviewable.client.phones'
+            'reviewedBy'
         ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
@@ -716,11 +715,21 @@ class ReviewsIndex extends Component
                       ->orWhere('desc', 'like', '%' . $this->search . '%')
                       ->orWhere('client_employee_comment', 'like', '%' . $this->search . '%')
                       ->orWhere('policy_conditions_comment', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('reviewable.client.phones', function ($phoneQuery) {
-                          $phoneQuery->where('number', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('reviewable', function ($reviewableQuery) {
+                          $reviewableQuery->whereHas('client', function ($clientQuery) {
+                              $clientQuery->whereHas('phones', function ($phoneQuery) {
+                                  $phoneQuery->where('number', 'like', '%' . $this->search . '%');
+                              });
+                          });
                       })
-                      ->orWhereHas('reviewable.taskable.client.phones', function ($phoneQuery) {
-                          $phoneQuery->where('number', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('reviewable', function ($reviewableQuery) {
+                          $reviewableQuery->whereHas('taskable', function ($taskableQuery) {
+                              $taskableQuery->whereHas('client', function ($clientQuery) {
+                                  $clientQuery->whereHas('phones', function ($phoneQuery) {
+                                      $phoneQuery->where('number', 'like', '%' . $this->search . '%');
+                                  });
+                              });
+                          });
                       });
                 });
             })
