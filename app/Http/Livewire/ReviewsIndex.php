@@ -56,8 +56,10 @@ class ReviewsIndex extends Component
     public $showClaimManagerModal = false;
     public $showNoAnswerModal = false;
     public $showInfoModal = false;
+    public $showContactsModal = false;
     public $selectedReviewId;
     public $selectedReview;
+    public $selectedReviewContacts = [];
     
     // Ratings modal form data
     public $form_employee_rating;
@@ -407,6 +409,56 @@ class ReviewsIndex extends Component
         $this->showInfoModal = false;
         $this->selectedReviewId = null;
         $this->selectedReview = null;
+    }
+
+    public function openContactsModal($reviewId)
+    {
+        $this->selectedReviewId = $reviewId;
+        $this->selectedReview = Review::with(['reviewable'])->findOrFail($reviewId);
+        $this->selectedReviewContacts = $this->getReviewContacts($this->selectedReview);
+        $this->showContactsModal = true;
+    }
+
+    public function closeContactsModal()
+    {
+        $this->showContactsModal = false;
+        $this->selectedReviewId = null;
+        $this->selectedReview = null;
+        $this->selectedReviewContacts = [];
+    }
+
+    private function getReviewContacts($review)
+    {
+        $contacts = [];
+        
+        if (!$review->reviewable) {
+            return $contacts;
+        }
+
+        // Try to get client from direct relationship (SoldPolicy)
+        if ($review->reviewable->client) {
+            $client = $review->reviewable->client;
+            $contacts[] = [
+                'type' => 'Client',
+                'name' => $client->full_name ?? 'Unknown',
+                'phone' => $client->telephone1,
+                'phone2' => $client->telephone2,
+                'phone3' => $client->telephone3,
+            ];
+        }
+        // Try to get client from indirect relationship (Task -> SoldPolicy -> Client)
+        elseif ($review->reviewable->taskable && $review->reviewable->taskable->client) {
+            $client = $review->reviewable->taskable->client;
+            $contacts[] = [
+                'type' => 'Client (via Task)',
+                'name' => $client->full_name ?? 'Unknown',
+                'phone' => $client->telephone1,
+                'phone2' => $client->telephone2,
+                'phone3' => $client->telephone3,
+            ];
+        }
+
+        return $contacts;
     }
 
 

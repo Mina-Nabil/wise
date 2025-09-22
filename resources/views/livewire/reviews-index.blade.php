@@ -175,26 +175,11 @@
                                             @endphp
                                             
                                             @if ($phone)
-                                                <div class="flex space-x-2">
-                                                    <!-- Phone Icon -->
-                                                    <a href="tel:{{ $phone }}" 
-                                                       class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-                                                       title="Call {{ $phone }}">
-                                                        <iconify-icon icon="heroicons:phone-20-solid" class="text-sm"></iconify-icon>
-                                                    </a>
-                                                    
-                                                    <!-- WhatsApp Icon -->
-                                                    @php
-                                                        $whatsappNumber = "2" . preg_replace('/\D/', '', $phone);
-                                                        $whatsappUrl = "https://wa.me/" . $whatsappNumber;
-                                                    @endphp
-                                                    <a href="{{ $whatsappUrl }}" 
-                                                       target="_blank"
-                                                       class="inline-flex items-center justify-center w-8 h-8 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
-                                                       title="WhatsApp {{ $phone }}">
-                                                        <iconify-icon icon="logos:whatsapp-icon" class="text-sm"></iconify-icon>
-                                                    </a>
-                                                </div>
+                                                <button wire:click="openContactsModal({{ $review->id }})" 
+                                                        class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                                                        title="View Contacts">
+                                                    <iconify-icon icon="heroicons:phone-20-solid" class="text-sm"></iconify-icon>
+                                                </button>
                                             @elseif ($client)
                                                 <span class="text-xs text-slate-400">No phone</span>
                                             @else
@@ -1279,6 +1264,124 @@
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="closeInfoModal" class="btn inline-flex justify-center btn-outline-secondary">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Contacts Modal -->
+    @if ($showContactsModal && $selectedReview)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none max-w-2xl">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-blue-500">
+                            <h3 class="text-xl font-medium text-white">Contact Information</h3>
+                            <button wire:click="closeContactsModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
+                            @if($selectedReviewContacts && count($selectedReviewContacts) > 0)
+                                @foreach($selectedReviewContacts as $contact)
+                                    <div class="border rounded-lg p-4 bg-slate-50">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h4 class="font-semibold text-slate-700">{{ $contact['name'] }}</h4>
+                                            <span class="badge bg-blue-500 text-white px-2 py-1 rounded text-xs">
+                                                {{ $contact['type'] }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="space-y-2">
+                                            @if($contact['phone'])
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm text-slate-600">{{ $contact['phone'] }}</span>
+                                                    <div class="flex space-x-2">
+                                                        <a href="tel:{{ $contact['phone'] }}" 
+                                                           class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                                                           title="Call {{ $contact['phone'] }}">
+                                                            <iconify-icon icon="heroicons:phone-20-solid" class="text-sm"></iconify-icon>
+                                                        </a>
+                                                        @php
+                                                            $whatsappNumber = "2" . preg_replace('/\D/', '', $contact['phone']);
+                                                            $whatsappUrl = "https://wa.me/" . $whatsappNumber;
+                                                        @endphp
+                                                        <a href="{{ $whatsappUrl }}" 
+                                                           target="_blank"
+                                                           class="inline-flex items-center justify-center w-8 h-8 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
+                                                           title="WhatsApp {{ $contact['phone'] }}">
+                                                            <iconify-icon icon="logos:whatsapp-icon" class="text-sm"></iconify-icon>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                            
+                                            @if($contact['phone2'])
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm text-slate-600">{{ $contact['phone2'] }}</span>
+                                                    <div class="flex space-x-2">
+                                                        <a href="tel:{{ $contact['phone2'] }}" 
+                                                           class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                                                           title="Call {{ $contact['phone2'] }}">
+                                                            <iconify-icon icon="heroicons:phone-20-solid" class="text-sm"></iconify-icon>
+                                                        </a>
+                                                        @php
+                                                            $whatsappNumber2 = "2" . preg_replace('/\D/', '', $contact['phone2']);
+                                                            $whatsappUrl2 = "https://wa.me/" . $whatsappNumber2;
+                                                        @endphp
+                                                        <a href="{{ $whatsappUrl2 }}" 
+                                                           target="_blank"
+                                                           class="inline-flex items-center justify-center w-8 h-8 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
+                                                           title="WhatsApp {{ $contact['phone2'] }}">
+                                                            <iconify-icon icon="logos:whatsapp-icon" class="text-sm"></iconify-icon>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                            
+                                            @if($contact['phone3'])
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm text-slate-600">{{ $contact['phone3'] }}</span>
+                                                    <div class="flex space-x-2">
+                                                        <a href="tel:{{ $contact['phone3'] }}" 
+                                                           class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                                                           title="Call {{ $contact['phone3'] }}">
+                                                            <iconify-icon icon="heroicons:phone-20-solid" class="text-sm"></iconify-icon>
+                                                        </a>
+                                                        @php
+                                                            $whatsappNumber3 = "2" . preg_replace('/\D/', '', $contact['phone3']);
+                                                            $whatsappUrl3 = "https://wa.me/" . $whatsappNumber3;
+                                                        @endphp
+                                                        <a href="{{ $whatsappUrl3 }}" 
+                                                           target="_blank"
+                                                           class="inline-flex items-center justify-center w-8 h-8 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
+                                                           title="WhatsApp {{ $contact['phone3'] }}">
+                                                            <iconify-icon icon="logos:whatsapp-icon" class="text-sm"></iconify-icon>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="text-center py-8">
+                                    <iconify-icon icon="heroicons:phone-x-mark-20-solid" class="text-4xl text-slate-400 mb-3"></iconify-icon>
+                                    <h4 class="text-lg font-medium text-slate-600 mb-2">No Contacts Available</h4>
+                                    <p class="text-sm text-slate-500">No contact information found for this review.</p>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeContactsModal" class="btn inline-flex justify-center btn-outline-secondary">
                                 Close
                             </button>
                         </div>
