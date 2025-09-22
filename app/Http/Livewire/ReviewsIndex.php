@@ -718,11 +718,12 @@ class ReviewsIndex extends Component
                       ->orWhere('client_employee_comment', 'like', '%' . $this->search . '%')
                       ->orWhere('policy_conditions_comment', 'like', '%' . $this->search . '%')
                       ->orWhereHas('reviewable', function ($reviewableQuery) {
-                          $reviewableQuery->whereHas('client', function ($clientQuery) {
-                              $clientQuery->whereHas('phones', function ($phoneQuery) {
-                                  $phoneQuery->where('number', 'like', '%' . $this->search . '%');
-                              });
-                          });
+                          $reviewableQuery->where('reviewable_type', SoldPolicy::class)
+                                         ->whereHas('client', function ($clientQuery) {
+                                             $clientQuery->whereHas('phones', function ($phoneQuery) {
+                                                 $phoneQuery->where('number', 'like', '%' . $this->search . '%');
+                                             });
+                                         });
                       })
                       ->orWhereHas('reviewable', function ($reviewableQuery) {
                           $reviewableQuery->whereHas('taskable', function ($taskableQuery) {
