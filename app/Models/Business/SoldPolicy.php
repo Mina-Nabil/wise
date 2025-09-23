@@ -1088,6 +1088,7 @@ class SoldPolicy extends Model
 
     public function getFromAmount($from)
     {
+        Log::info("SoldPolicy#$this->id getFromAmount", ["from" => $from, "tax_amount" => $this->tax_amount]);
         switch ($from) {
             case CommProfileConf::FROM_NET_PREM:
                 return  $this->net_premium;
