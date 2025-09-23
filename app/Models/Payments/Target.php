@@ -63,7 +63,7 @@ class Target extends Model
         foreach ($soldPolicies as $sp) {
             $sp->generatePolicyCommissions();
             $sp->calculateTotalSalesOutComm();
-            $tmpAmount = ($sp->tax_amount ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions;
+            $tmpAmount = (($sp->tax_amount > 0) ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions;
             $totalIncome += $tmpAmount;
             if ($sp->id == 4387) {
                 Log::info("SP#$sp->id details", ["tmpAmount" => $tmpAmount, "tax_amount" => $sp->tax_amount, "after_tax_comm" => $sp->after_tax_comm, "client_paid_by_dates" => $sp->client_paid_by_dates, "gross_premium" => $sp->gross_premium, "total_comm_subtractions" => $sp->total_comm_subtractions]);

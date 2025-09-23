@@ -1094,7 +1094,7 @@ class SoldPolicy extends Model
             case CommProfileConf::FROM_SUM_INSURED:
                 return  $this->insured_value;
             case CommProfileConf::FROM_NET_COMM:
-                return   $this->tax_amount ? $this->after_tax_comm : $this->after_tax_comm * .95;
+                return   ($this->tax_amount > 0) ? $this->after_tax_comm : $this->after_tax_comm * .95;
         }
     }
 
