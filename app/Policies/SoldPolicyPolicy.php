@@ -190,6 +190,6 @@ class SoldPolicyPolicy
 
     public function viewReports(User $user)
     {
-        return !$user->is_claims;
+        return !$user->is_claims && !$user->is_crm;
     }
 }
