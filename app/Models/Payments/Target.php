@@ -54,22 +54,34 @@ class Target extends Model
         $this->load('comm_profile');
         $end_date = $end_date ? $end_date->setTime(0, 0, 1) : Carbon::now()->setTime(0, 0, 1);
         $start_date = $end_date->clone()->subMonths($this->each_month);
+        $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
         $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
+        $paidAmounts = [];
         $paidAmountsPercent = [];
 
         /** @var SoldPolicy */
         foreach ($soldPolicies as $sp) {
             $sp->generatePolicyCommissions();
             $sp->calculateTotalSalesOutComm();
-            $tmpAmount = (($sp->tax_amount > 0) ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions;
-            $totalIncome += $tmpAmount;
+            $totalClientPaidBetween = $sp->getTotalClientPaidBetween($start_date, $end_date);
+            $totalClientPaid = $sp->total_client_paid;
+            if ($totalClientPaidBetween < $totalClientPaid) {
+                $tmpAmount = $sp->calculateCommissionForCertainAmount($totalClientPaidBetween) * .95;
+                $totalIncome += $tmpAmount;
+                $paidAmounts[$sp->id] = $tmpAmount;
+            } else {
 
-            Log::info("SP#$sp->id details", ["tmpAmount" => $tmpAmount, "tax_amount" => $sp->tax_amount, "after_tax_comm" => $sp->after_tax_comm, "client_paid_by_dates" => $sp->client_paid_by_dates, "gross_premium" => $sp->gross_premium, "total_comm_subtractions" => $sp->total_comm_subtractions]);
+                $tmpAmount = (($sp->tax_amount > 0) ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions;
+                $totalIncome += $tmpAmount;
+                $paidAmounts[$sp->id] = $tmpAmount;
+            }
+
+            Log::info("SP#$sp->id details", ["tmpAmount" => $tmpAmount, "tax_amount" => $sp->tax_amount, "after_tax_comm" => $sp->after_tax_comm, "client_paid_by_dates" => $sp->client_paid_by_dates, "gross_premium" => $sp->gross_premium, "total_comm_subtractions" => $sp->total_comm_subtractions, "isInstallements" => ($totalClientPaidBetween < $totalClientPaid)]);
         }
         foreach ($soldPolicies as $sp) {
-            $paidAmountsPercent[$sp->id] = (($sp->tax_amount ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions) / $totalIncome;
+            $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalIncome;
 
             Log::info("SP#$sp->id paidAmountsPercent", ["paidAmountsPercent" => $paidAmountsPercent[$sp->id]]);
         }

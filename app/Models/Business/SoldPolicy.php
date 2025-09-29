@@ -238,6 +238,24 @@ class SoldPolicy extends Model
         }
     }
 
+    public function calculateCommissionForCertainAmount($amount)
+    {
+
+        $this->load('policy');
+        $this->load('policy.comm_confs');
+
+        $total_comm = 0;
+        foreach ($this->policy->comm_confs as $conf) {
+            if ($conf->sales_out_only && !$this->has_sales_out) continue;
+            if ($conf->calculation_type == GrossCalculation::TYPE_VALUE) continue;
+
+            $tmp_base_value = (($conf->value / 100) * $amount);
+            $total_comm += $tmp_base_value;
+        }
+
+        return $total_comm;
+    }
+
     public function addPolicyCommission($title, $amount)
     {
         /** @var User */
@@ -378,6 +396,13 @@ class SoldPolicy extends Model
             return false;
         }
     }
+
+    public function getTotalClientPaidBetween(Carbon $from, Carbon $to)
+    {
+        return $this->client_payments()->whereBetween('payment_date', [$from, $to])->where('status', ClientPayment::PYMT_STATE_PAID)->sum('amount');
+    }
+
+    public function getWiseCommissionForPaid($amount) {}
 
     public function addCompanyPayment($type, $amount, $note = null, $invoice_id = null, $pymnt_perm = null, $skip_user_check = false)
     {
@@ -1094,7 +1119,7 @@ class SoldPolicy extends Model
             case CommProfileConf::FROM_SUM_INSURED:
                 return  $this->insured_value;
             case CommProfileConf::FROM_NET_COMM:
-                return   ($this->tax_amount > 0) ? $this->after_tax_comm : $this->after_tax_comm * .95;
+                return ($this->tax_amount > 0) ? $this->after_tax_comm : $this->after_tax_comm * .95;
         }
     }
 

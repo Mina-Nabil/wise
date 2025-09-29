@@ -57,7 +57,7 @@ class SalesComm extends Model
     ];
 
     ///static functions
-    public static function getBySoldPoliciesIDs($comm_profile_id, $sold_policies_ids, array $states = [self::PYMT_STATE_CONFIRMED, self::PYMT_STATE_NOT_CONFIRMED])
+    public static function getBySoldPoliciesIDs($comm_profile_id, $sold_policies_ids, array $states = [self::PYMT_STATE_CONFIRMED, self::PYMT_STATE_NOT_CONFIRMED, self::PYMT_STATE_PAID])
     {
         return self::whereIn('sold_policy_id', $sold_policies_ids)
             ->where('comm_profile_id', $comm_profile_id)
