@@ -238,22 +238,11 @@ class SoldPolicy extends Model
         }
     }
 
-    public function calculateCommissionForCertainAmount($amount)
+    public function calculateSalesCommissionForCertainAmount($amount)
     {
+        $amountPercent = $amount / $this->gross_premium;
 
-        $this->load('policy');
-        $this->load('policy.comm_confs');
-
-        $total_comm = 0;
-        foreach ($this->policy->comm_confs as $conf) {
-            if ($conf->sales_out_only && !$this->has_sales_out) continue;
-            if ($conf->calculation_type == GrossCalculation::TYPE_VALUE) continue;
-
-            $tmp_base_value = (($conf->value / 100) * $amount);
-            $total_comm += $tmp_base_value;
-        }
-
-        return $total_comm;
+        return $amountPercent * $this->after_tax_comm;
     }
 
     public function addPolicyCommission($title, $amount)
