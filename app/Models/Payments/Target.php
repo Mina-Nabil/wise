@@ -68,7 +68,7 @@ class Target extends Model
             $totalClientPaidBetween = $sp->getTotalClientPaidBetween($start_date, $end_date);
             $totalClientPaid = $sp->total_client_paid;
             if ($totalClientPaidBetween < $totalClientPaid) {
-                $tmpAmount = $sp->calculateCommissionForCertainAmount($totalClientPaidBetween) * .95;
+                $tmpAmount = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
                 $totalIncome += $tmpAmount;
                 $paidAmounts[$sp->id] = $tmpAmount;
             } else {
