@@ -769,7 +769,7 @@
                                                                             </td>
                                                                             <td class="table-td ">
                                                                                 <b>
-                                                                                    {{ number_format($policy->total_comp_paid, 0, '.', ',') }}</b>
+                                                                                    {{ number_format($policy->total_comp_paid + $policy->tax_amount, 0, '.', ',') }}</b>
                                                                             </td>
                                                                         @endcan
                                                                         <td class="table-td">
