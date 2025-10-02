@@ -275,8 +275,10 @@ class CompanyCommPayment extends Model
             $activeSheet->getCell('C' . $i)->setValue($payment->sold_policy && $payment->sold_policy->created_at ? Carbon::parse($payment->sold_policy->created_at)->format('d/m/Y') : '');
             $activeSheet->getCell('D' . $i)->setValue($payment->payment_date ? Carbon::parse($payment->payment_date)->format('d/m/Y') : 'N/A');
             $activeSheet->getCell('E' . $i)->setValue(number_format($payment->sold_policy->net_premium, 2, '.', ','));
-            $activeSheet->getCell('F' . $i)->setValue(number_format($payment->amount - $payment->tax_amount, 2, '.', ','));
-            $activeSheet->getCell('G' . $i)->setValue(number_format($payment->tax_amount, 2, '.', ','));
+            $activeSheet->getCell('F' . $i)->setValue(number_format($payment->amount, 2, '.', ','));
+            $activeSheet->getCell('G' . $i)->setValue(number_format(0, 2, '.', ','));
+            // $activeSheet->getCell('F' . $i)->setValue(number_format($payment->amount - $payment->tax_amount, 2, '.', ','));
+            // $activeSheet->getCell('G' . $i)->setValue(number_format($payment->tax_amount, 2, '.', ','));
             $activeSheet->getCell('H' . $i)->setValue(ucfirst($payment->status));
             $activeSheet->getCell('I' . $i)->setValue(ucwords(str_replace('_', ' ', $payment->type)));
             $activeSheet->getCell('J' . $i)->setValue($payment->sold_policy && $payment->sold_policy->policy && $payment->sold_policy->policy->company ? $payment->sold_policy->policy->company->name : 'N/A');
