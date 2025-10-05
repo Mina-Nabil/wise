@@ -690,6 +690,31 @@ class ReviewsIndex extends Component
         }
     }
 
+    public function goToPolicy($reviewId)
+    {
+        try {
+            $review = Review::findOrFail($reviewId);
+
+            // Check if the reviewable is a sold policy directly
+            if ($review->reviewable_type === 'sold_policy') {
+                return redirect()->route('sold.policy.show', $review->reviewable_id);
+            }
+
+            // Check if the reviewable is a claim (Task with type claim) that has a taskable (sold policy)
+            if ($review->reviewable_type === 'task' && $review->reviewable) {
+                $task = $review->reviewable;
+                if ($task->type === 'claim' && $task->taskable) {
+                    // Redirect to the sold policy page
+                    return redirect()->route('sold.policy.show', $task->taskable->id);
+                }
+            }
+
+            $this->alert('failed', 'This review is not associated with a policy.');
+        } catch (\Exception $e) {
+            $this->alert('failed', 'An error occurred while navigating to the policy.');
+        }
+    }
+
     public function deleteReview()
     {
         if (!Auth::user()->is_admin) {

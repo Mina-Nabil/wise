@@ -369,16 +369,16 @@
                                             <ul
                                                 class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
 
-                                                <!-- Go To SoldPolicy -->
-                                                @if ($review->reviewable_type === 'sold_policy')
+                                                <!-- Go To Policy -->
+                                                @if ($review->reviewable_type === 'sold_policy' || 
+                                                     ($review->reviewable_type === 'task' && $review->reviewable && $review->reviewable->type === 'claim'))
                                                     <li>
-                                                        <a href="{{ route('sold.policy.show', $review->reviewable_id) }}"
-                                                            target="_blank"
-                                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                        <button wire:click="goToPolicy({{ $review->id }})"
+                                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
                                                             <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2"
                                                                 icon="heroicons:eye-20-solid"></iconify-icon>
                                                             Go To Policy
-                                                        </a>
+                                                        </button>
                                                     </li>
                                                 @endif
 
@@ -473,6 +473,7 @@
                                                 <!-- No actions available -->
                                                 @if (
                                                     !($review->reviewable_type === 'sold_policy') &&
+                                                    !($review->reviewable_type === 'task' && $review->reviewable && $review->reviewable->type === 'claim') &&
                                                         !Auth::user()->can('receiveClientComment', $review) &&
                                                         !Auth::user()->is_admin)
                                                     <li>
