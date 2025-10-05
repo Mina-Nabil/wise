@@ -286,7 +286,7 @@
                     <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                         <thead class="bg-slate-200 dark:bg-slate-700">
                             <tr>
-                                <th scope="col" class="table-th">ID</th>
+                                <th scope="col" class="table-th">#</th>
                                 <th scope="col" class="table-th">Title</th>
                                 <th scope="col" class="table-th">Type</th>
                                 <th scope="col" class="table-th">Contact</th>
@@ -294,9 +294,9 @@
                                 <th scope="col" class="table-th">Status</th>
                                 <th scope="col" class="table-th">Ratings</th>
                                 <th scope="col" class="table-th">Manager?</th>
-                                <th scope="col" class="table-th">No Answer?</th>
+                                <th scope="col" class="table-th">Answered?</th>
                                 <th scope="col" class="table-th">Created</th>
-                                <th scope="col" class="table-th">Actions</th>
+                                <th scope="col" class="table-th"></th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -533,7 +533,6 @@
                                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2"
                                                     icon="heroicons-outline:dots-horizontal"></iconify-icon>
-                                                Actions
                                             </button>
                                             <ul
                                                 class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
