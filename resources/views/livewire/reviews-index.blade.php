@@ -327,7 +327,7 @@
                                                     <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="heroicons-outline:dots-horizontal"></iconify-icon>
                                                     Actions
                                                 </button>
-                                                <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                     
                                                     <!-- Go To SoldPolicy -->
                                                     @if ($review->reviewable_type === 'sold_policy')
