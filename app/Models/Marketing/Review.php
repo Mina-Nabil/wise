@@ -588,7 +588,7 @@ class Review extends Model
      */
     public function getIsClaimReviewAttribute(): bool
     {
-        return $this->reviewable_type === 'App\Models\Tasks\Task' 
+        return $this->reviewable_type === 'task' 
             && $this->reviewable 
             && $this->reviewable->type === 'claim';
     }
