@@ -398,19 +398,33 @@
                                     <td class="table-td">
                                         @if ($review->is_reviewed)
                                             @if ($review->is_claim_review)
-                                                <div class="flex flex-col gap-1">
-                                                    <div class="flex items-center gap-2">
+                                                <div class="grid grid-cols-2 gap-1">
+                                                    <div class="flex items-center gap-1">
                                                         <span class="text-xs text-slate-600">Ins:</span>
                                                         <span
                                                             class="text-sm font-medium {{ $review->insurance_company_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
                                                             {{ $review->insurance_company_rating }}/10
                                                         </span>
                                                     </div>
-                                                    <div class="flex items-center gap-2">
+                                                    <div class="flex items-center gap-1">
                                                         <span class="text-xs text-slate-600">Prov:</span>
                                                         <span
                                                             class="text-sm font-medium {{ $review->provider_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
                                                             {{ $review->provider_rating }}/10
+                                                        </span>
+                                                    </div>
+                                                    <div class="flex items-center gap-1">
+                                                        <span class="text-xs text-slate-600">Claim:</span>
+                                                        <span
+                                                            class="text-sm font-medium {{ $review->claims_specialist_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                            {{ $review->claims_specialist_rating }}/10
+                                                        </span>
+                                                    </div>
+                                                    <div class="flex items-center gap-1">
+                                                        <span class="text-xs text-slate-600">Wise:</span>
+                                                        <span
+                                                            class="text-sm font-medium {{ $review->wise_rating < 8 ? 'text-red-600' : 'text-green-600' }}">
+                                                            {{ $review->wise_rating }}/10
                                                         </span>
                                                     </div>
                                                 </div>
