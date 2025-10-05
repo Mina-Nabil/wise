@@ -119,14 +119,14 @@ class Review extends Model
         if($reviewable->reviews()->count() > 0) return false;
 
         try {
-            $review = static::create([
-                'reviewable_type' => get_class($reviewable),
-                'reviewable_id' => $reviewable->id,
+            $review = new self([
                 'title' => $title,
                 'desc' => $description,
                 'assignee_id' => $assigneeId,
                 'is_reviewed' => false,
             ]);
+            $review->reviewable()->associate($reviewable);
+            $review->save();
             
             AppLog::info('Review created successfully', loggable: $review);
             return $review;
