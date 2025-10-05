@@ -1404,6 +1404,9 @@
                                                     <th scope="col" class=" table-th ">
                                                         Amount
                                                     </th>
+                                                    <th scope="col" class=" table-th ">
+                                                        Tax
+                                                    </th>
 
                                                     <th scope="col" class=" table-th ">
                                                         Type
@@ -1440,10 +1443,12 @@
                                                         <td class="table-td ">
                                                             <div class="text-lg text-success-500">
                                                                 {{ number_format($payment->amount, 2, '.', ',') }} EGP 
-                                                                @if($payment->tax_amount)  /
-                                                                {{ number_format($payment->amount - $payment->tax_amount, 2, '.', ',') }}
-                                                                @endif
-                                                                EGP
+                                                            </div>
+                                                        </td>
+                                                        <td class="table-td ">
+                                                            <div class="text-lg text-success-500">
+                                                            
+                                                                {{ number_format($payment->amount + $payment->tax_amount, 2, '.', ',') }}EGP
                                                             </div>
                                                         </td>
 
