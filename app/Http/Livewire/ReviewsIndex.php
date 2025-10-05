@@ -95,10 +95,6 @@ class ReviewsIndex extends Component
     public $showContactsModal = false;
     
     // Filter modal states
-    public $createdDateSection = false;
-    public $reviewDateSection = false;
-    public $employeeRatingSection = false;
-    public $companyRatingSection = false;
     public $serviceQualityRatingSection = false;
     public $pricingRatingSection = false;
     public $processingTimeRatingSection = false;
