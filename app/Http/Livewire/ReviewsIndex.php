@@ -674,7 +674,7 @@ class ReviewsIndex extends Component
             $review = Review::findOrFail($reviewId);
 
             // Check if the reviewable is a claim (Task with type claim)
-            if ($review->reviewable_type === 'App\Models\Tasks\Task' && $review->reviewable) {
+            if ($review->reviewable_type === 'task' && $review->reviewable) {
                 $task = $review->reviewable;
                 if ($task->type === 'claim') {
                     // Redirect to the claim/task page
