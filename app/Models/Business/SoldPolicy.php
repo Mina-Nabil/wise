@@ -553,6 +553,7 @@ class SoldPolicy extends Model
         try {
             // $this->is_paid = 1;
             $this->cancellation_time = $date->format('Y-m-d H:i');
+            Review::createReview($this, "Policy Cancelled", "Policy cancelled on " . $date->format('d/m/Y'));
             return $this->save();
         } catch (Exception $e) {
             report($e);
@@ -1050,6 +1051,7 @@ class SoldPolicy extends Model
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('delete', $this)) return false;
         DB::transaction(function () {
+            Review::createReview($this, "Policy Cancelled", "Policy cancelled on " . Carbon::now()->format('d/m/Y'));
             $this->client_payments()->notCollected()->get()->each(function ($payment) {
                 $payment->setAsCancelled(Carbon::now(), true);
             });

@@ -116,7 +116,11 @@ class Review extends Model
         //     AppLog::error('Unauthorized attempt to create review', desc: 'User does not have permission to create reviews');
         //     return false;
         // }
-        if($reviewable->reviews()->count() > 0) return false;
+        if (
+            $reviewable->reviews()
+            ->where('title', $title)
+            ->count() > 0
+        ) return false;
 
         try {
             $review = new self([
@@ -127,7 +131,7 @@ class Review extends Model
             ]);
             $review->reviewable()->associate($reviewable);
             $review->save();
-            
+
             AppLog::info('Review created successfully', loggable: $review);
             return $review;
         } catch (Exception $e) {
@@ -178,7 +182,7 @@ class Review extends Model
     ): bool {
         /** @var User */
         $loggedInUser = Auth::user();
-        
+
         // Allow admins to edit even if already reviewed, otherwise check normal permission
         if (!$loggedInUser->is_admin) {
             if (!$loggedInUser->can('receiveClientComment', $this)) {
@@ -189,67 +193,67 @@ class Review extends Model
 
         try {
             $updates = [];
-            
+
             if ($employeeRating !== null) {
                 $updates['employee_rating'] = max(0, min(10, $employeeRating)); // Ensure rating is between 0-10
             }
-            
+
             if ($employeeComment !== null) {
                 $updates['client_employee_comment'] = $employeeComment;
             }
-            
+
             if ($policyConditionsRating !== null) {
                 $updates['policy_conditions_rating'] = max(0, min(10, $policyConditionsRating)); // Ensure rating is between 0-10
             }
-            
+
             if ($policyConditionsComment !== null) {
                 $updates['policy_conditions_comment'] = $policyConditionsComment;
             }
-            
+
             if ($serviceQualityRating !== null) {
                 $updates['service_quality_rating'] = max(0, min(10, $serviceQualityRating)); // Ensure rating is between 0-10
             }
-            
+
             if ($serviceQualityComment !== null) {
                 $updates['service_quality_comment'] = $serviceQualityComment;
             }
-            
+
             if ($pricingRating !== null) {
                 $updates['pricing_rating'] = max(0, min(10, $pricingRating)); // Ensure rating is between 0-10
             }
-            
+
             if ($pricingComment !== null) {
                 $updates['pricing_comment'] = $pricingComment;
             }
-            
+
             if ($processingTimeRating !== null) {
                 $updates['processing_time_rating'] = max(0, min(10, $processingTimeRating)); // Ensure rating is between 0-10
             }
-            
+
             if ($processingTimeComment !== null) {
                 $updates['processing_time_comment'] = $processingTimeComment;
             }
-            
+
             if ($collectionChannelRating !== null) {
                 $updates['collection_channel_rating'] = max(0, min(10, $collectionChannelRating)); // Ensure rating is between 0-10
             }
-            
+
             if ($collectionChannelComment !== null) {
                 $updates['collection_channel_comment'] = $collectionChannelComment;
             }
-            
+
             if ($suggestions !== null) {
                 $updates['suggestions'] = $suggestions;
             }
-            
+
             if ($isReferred !== null) {
                 $updates['is_referred'] = $isReferred;
             }
-            
+
             if ($referralComment !== null) {
                 $updates['referral_comment'] = $referralComment;
             }
-            
+
             if ($reviewedById !== null) {
                 $updates['reviewed_by_id'] = $reviewedById;
             }
@@ -260,27 +264,31 @@ class Review extends Model
                 $updates['reviewed_at'] = now();
                 $updates['reviewed_by_id'] = $reviewedById ?? Auth::id();
                 $updates['no_answer'] = 1; // Set to 1 (answered) when ratings/comments are provided
-                
+
                 // Check if any rating is less than 8 to set need_manager_review
                 $needManagerReview = false;
                 $ratingFields = [
-                    'employee_rating', 'policy_conditions_rating', 'service_quality_rating',
-                    'pricing_rating', 'processing_time_rating', 'collection_channel_rating'
+                    'employee_rating',
+                    'policy_conditions_rating',
+                    'service_quality_rating',
+                    'pricing_rating',
+                    'processing_time_rating',
+                    'collection_channel_rating'
                 ];
-                
+
                 foreach ($ratingFields as $field) {
                     if (isset($updates[$field]) && $updates[$field] < 8) {
                         $needManagerReview = true;
                         break;
                     }
                 }
-                
+
                 $updates['need_manager_review'] = $needManagerReview;
             }
 
             $this->update($updates);
             $result = $this->save();
-            
+
             AppLog::info('Review ratings and comments updated successfully', loggable: $this);
             return $result;
         } catch (Exception $e) {
@@ -311,7 +319,7 @@ class Review extends Model
                 'need_manager_review' => false, // No longer needs manager review
                 'manager_comment' => $managerComment,
             ]);
-            
+
             $result = $this->save();
             AppLog::info('Review marked as manager reviewed successfully', loggable: $this);
             return $result;
@@ -424,11 +432,11 @@ class Review extends Model
         if ($hasComment !== null) {
             if ($hasComment) {
                 $query->whereNotNull('client_employee_comment')
-                      ->where('client_employee_comment', '!=', '');
+                    ->where('client_employee_comment', '!=', '');
             } else {
                 $query->where(function ($q) {
                     $q->whereNull('client_employee_comment')
-                      ->orWhere('client_employee_comment', '=', '');
+                        ->orWhere('client_employee_comment', '=', '');
                 });
             }
         }
@@ -440,11 +448,11 @@ class Review extends Model
         if ($hasComment !== null) {
             if ($hasComment) {
                 $query->whereNotNull('policy_conditions_comment')
-                      ->where('policy_conditions_comment', '!=', '');
+                    ->where('policy_conditions_comment', '!=', '');
             } else {
                 $query->where(function ($q) {
                     $q->whereNull('policy_conditions_comment')
-                      ->orWhere('policy_conditions_comment', '=', '');
+                        ->orWhere('policy_conditions_comment', '=', '');
                 });
             }
         }
@@ -508,17 +516,35 @@ class Review extends Model
 
         // Headers
         $headers = [
-            'ID', 'Reviewable Type', 'Reviewable ID', 'Title', 'Description',
-            'Assignee', 'Is Reviewed', 'Reviewed At', 'Reviewed By',
-            'Employee Rating', 'Employee Comment', 
-            'Policy Conditions Rating', 'Policy Conditions Comment',
-            'Service Quality Rating', 'Service Quality Comment',
-            'Pricing Rating', 'Pricing Comment',
-            'Processing Time Rating', 'Processing Time Comment',
-            'Collection Channel Rating', 'Collection Channel Comment',
-            'Suggestions', 'Is Referred', 'Referral Comment',
-            'Is Manager Reviewed', 'Need Manager Review', 'Manager Comment',
-            'Created At', 'Updated At'
+            'ID',
+            'Reviewable Type',
+            'Reviewable ID',
+            'Title',
+            'Description',
+            'Assignee',
+            'Is Reviewed',
+            'Reviewed At',
+            'Reviewed By',
+            'Employee Rating',
+            'Employee Comment',
+            'Policy Conditions Rating',
+            'Policy Conditions Comment',
+            'Service Quality Rating',
+            'Service Quality Comment',
+            'Pricing Rating',
+            'Pricing Comment',
+            'Processing Time Rating',
+            'Processing Time Comment',
+            'Collection Channel Rating',
+            'Collection Channel Comment',
+            'Suggestions',
+            'Is Referred',
+            'Referral Comment',
+            'Is Manager Reviewed',
+            'Need Manager Review',
+            'Manager Comment',
+            'Created At',
+            'Updated At'
         ];
 
         $col = 'A';
@@ -540,7 +566,7 @@ class Review extends Model
             $activeSheet->setCellValue($col++ . $row, $review->is_reviewed ? 'Yes' : 'No');
             $activeSheet->setCellValue($col++ . $row, $review->reviewed_at?->format('Y-m-d H:i:s'));
             $activeSheet->setCellValue($col++ . $row, $review->reviewedBy?->full_name);
-            
+
             // Client ratings and comments
             $activeSheet->setCellValue($col++ . $row, $review->employee_rating);
             $activeSheet->setCellValue($col++ . $row, $review->client_employee_comment);
@@ -560,7 +586,7 @@ class Review extends Model
             $activeSheet->setCellValue($col++ . $row, $review->is_manager_reviewed ? 'Yes' : 'No');
             $activeSheet->setCellValue($col++ . $row, $review->need_manager_review ? 'Yes' : 'No');
             $activeSheet->setCellValue($col++ . $row, $review->manager_comment);
-            
+
             // Timestamps
             $activeSheet->setCellValue($col++ . $row, $review->created_at->format('Y-m-d H:i:s'));
             $activeSheet->setCellValue($col++ . $row, $review->updated_at->format('Y-m-d H:i:s'));
@@ -570,12 +596,12 @@ class Review extends Model
         $writer = new Xlsx($spreadsheet);
         $filename = 'reviews_export_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
         $filePath = storage_path('exports/' . $filename);
-        
+
         // Ensure directory exists
         if (!file_exists(dirname($filePath))) {
             mkdir(dirname($filePath), 0755, true);
         }
-        
+
         $writer->save($filePath);
 
         return response()->download($filePath)->deleteFileAfterSend(true);
@@ -588,8 +614,8 @@ class Review extends Model
      */
     public function getIsClaimReviewAttribute(): bool
     {
-        return $this->reviewable_type === 'task' 
-            && $this->reviewable 
+        return $this->reviewable_type === 'task'
+            && $this->reviewable
             && $this->reviewable->type === 'claim';
     }
 
@@ -620,7 +646,7 @@ class Review extends Model
     ): bool {
         /** @var User */
         $loggedInUser = Auth::user();
-        
+
         // Allow admins to edit even if already reviewed, otherwise check normal permission
         if (!$loggedInUser->is_admin) {
             if (!$loggedInUser->can('receiveClientComment', $this)) {
@@ -635,31 +661,31 @@ class Review extends Model
             if ($insuranceCompanyRating !== null) {
                 $updates['insurance_company_rating'] = max(0, min(10, $insuranceCompanyRating));
             }
-            
+
             if ($insuranceCompanyComment !== null) {
                 $updates['insurance_company_comment'] = $insuranceCompanyComment;
             }
-            
+
             if ($providerRating !== null) {
                 $updates['provider_rating'] = max(0, min(10, $providerRating));
             }
-            
+
             if ($providerComment !== null) {
                 $updates['provider_comment'] = $providerComment;
             }
-            
+
             if ($claimsSpecialistRating !== null) {
                 $updates['claims_specialist_rating'] = max(0, min(10, $claimsSpecialistRating));
             }
-            
+
             if ($claimsSpecialistComment !== null) {
                 $updates['claims_specialist_comment'] = $claimsSpecialistComment;
             }
-            
+
             if ($wiseRating !== null) {
                 $updates['wise_rating'] = max(0, min(10, $wiseRating));
             }
-            
+
             if ($wiseComment !== null) {
                 $updates['wise_comment'] = $wiseComment;
             }
@@ -670,27 +696,29 @@ class Review extends Model
                 $updates['reviewed_at'] = now();
                 $updates['reviewed_by_id'] = $reviewedById ?? Auth::id();
                 $updates['no_answer'] = 1; // Set to 1 (answered) when ratings/comments are provided
-                
+
                 // Check if any rating is less than 8 to set need_claim_manager_review
                 $needClaimManagerReview = false;
                 $claimRatingFields = [
-                    'insurance_company_rating', 'provider_rating', 
-                    'claims_specialist_rating', 'wise_rating'
+                    'insurance_company_rating',
+                    'provider_rating',
+                    'claims_specialist_rating',
+                    'wise_rating'
                 ];
-                
+
                 foreach ($claimRatingFields as $field) {
                     if (isset($updates[$field]) && $updates[$field] < 8) {
                         $needClaimManagerReview = true;
                         break;
                     }
                 }
-                
+
                 $updates['need_claim_manager_review'] = $needClaimManagerReview;
             }
 
             $this->update($updates);
             $result = $this->save();
-            
+
             AppLog::info('Claim review ratings and comments updated successfully', loggable: $this);
             return $result;
         } catch (Exception $e) {
@@ -732,7 +760,7 @@ class Review extends Model
 
             $this->update($updates);
             $result = $this->save();
-            
+
             AppLog::info('Claim review marked as claim manager reviewed successfully', loggable: $this);
             return $result;
         } catch (Exception $e) {
@@ -759,15 +787,15 @@ class Review extends Model
                 ], loggable: $this);
                 return false;
             }
-            
+
             $this->no_answer = $noAnswer;
             $result = $this->save();
-            
+
             AppLog::info('Review no answer flag updated successfully', [
                 'no_answer' => $noAnswer,
                 'review_id' => $this->id
             ], loggable: $this);
-            
+
             return $result;
         } catch (Exception $e) {
             AppLog::error('Failed to update review no answer flag', desc: $e->getMessage(), loggable: $this);
@@ -793,12 +821,12 @@ class Review extends Model
         try {
             $reviewId = $this->id;
             $result = $this->delete();
-            
+
             AppLog::info('Review deleted successfully', [
                 'review_id' => $reviewId,
                 'deleted_by' => $loggedInUser->id
             ]);
-            
+
             return $result;
         } catch (Exception $e) {
             AppLog::error('Failed to delete review', desc: $e->getMessage(), loggable: $this);
