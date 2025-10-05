@@ -52,6 +52,51 @@
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                             Company Rating (From-To)</span>
                     </li>
+                    <li wire:click="toggleServiceQualityRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Service Quality Rating (From-To)</span>
+                    </li>
+                    <li wire:click="togglePricingRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Pricing Rating (From-To)</span>
+                    </li>
+                    <li wire:click="toggleProcessingTimeRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Processing Time Rating (From-To)</span>
+                    </li>
+                    <li wire:click="toggleCollectionChannelRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Collection Channel Rating (From-To)</span>
+                    </li>
+                    <li wire:click="togglePolicyConditionsRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Policy Conditions Rating (From-To)</span>
+                    </li>
+                    <li wire:click="toggleInsuranceCompanyRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Insurance Company Rating (From-To)</span>
+                    </li>
+                    <li wire:click="toggleProviderRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Provider Rating (From-To)</span>
+                    </li>
+                    <li wire:click="toggleClaimsSpecialistRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Claims Specialist Rating (From-To)</span>
+                    </li>
+                    <li wire:click="toggleWiseRating">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Wise Rating (From-To)</span>
+                    </li>
                     <li wire:click="toggleReviewStatus">
                         <span
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
@@ -116,6 +161,116 @@
                         Need Manager Review: Yes &nbsp;&nbsp;
                     </span>
                     <span wire:click="clearNeedManagerReview">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($employee_rating_from || $employee_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleEmployeeRating">
+                        Employee Rating: {{ $employee_rating_from ?? '0' }}-{{ $employee_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearEmployeeRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($service_quality_rating_from || $service_quality_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleServiceQualityRating">
+                        Service Quality Rating: {{ $service_quality_rating_from ?? '0' }}-{{ $service_quality_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearServiceQualityRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($pricing_rating_from || $pricing_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="togglePricingRating">
+                        Pricing Rating: {{ $pricing_rating_from ?? '0' }}-{{ $pricing_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearPricingRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($processing_time_rating_from || $processing_time_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleProcessingTimeRating">
+                        Processing Time Rating: {{ $processing_time_rating_from ?? '0' }}-{{ $processing_time_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearProcessingTimeRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($collection_channel_rating_from || $collection_channel_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleCollectionChannelRating">
+                        Collection Channel Rating: {{ $collection_channel_rating_from ?? '0' }}-{{ $collection_channel_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearCollectionChannelRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($policy_conditions_rating_from || $policy_conditions_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="togglePolicyConditionsRating">
+                        Policy Conditions Rating: {{ $policy_conditions_rating_from ?? '0' }}-{{ $policy_conditions_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearPolicyConditionsRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($insurance_company_rating_from || $insurance_company_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleInsuranceCompanyRating">
+                        Insurance Company Rating: {{ $insurance_company_rating_from ?? '0' }}-{{ $insurance_company_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearInsuranceCompanyRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($provider_rating_from || $provider_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleProviderRating">
+                        Provider Rating: {{ $provider_rating_from ?? '0' }}-{{ $provider_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearProviderRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($claims_specialist_rating_from || $claims_specialist_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleClaimsSpecialistRating">
+                        Claims Specialist Rating: {{ $claims_specialist_rating_from ?? '0' }}-{{ $claims_specialist_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearClaimsSpecialistRating">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($wise_rating_from || $wise_rating_to)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleWiseRating">
+                        Wise Rating: {{ $wise_rating_from ?? '0' }}-{{ $wise_rating_to ?? '10' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearWiseRating">
                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                     </span>
                 </button>
@@ -551,6 +706,384 @@
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 Apply
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Employee Rating Filter Modal -->
+    @if ($employeeRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Employee Rating</h3>
+                            <button wire:click="toggleEmployeeRating" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eemployee_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Eemployee_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
+                                    wire:model.defer="Eemployee_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Eemployee_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Eemployee_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
+                                    wire:model.defer="Eemployee_rating_to">
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setEmployeeRating"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Service Quality Rating Filter Modal -->
+    @if ($serviceQualityRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Service Quality Rating</h3>
+                            <button wire:click="toggleServiceQualityRating" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eservice_quality_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Eservice_quality_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
+                                    wire:model.defer="Eservice_quality_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Eservice_quality_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Eservice_quality_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
+                                    wire:model.defer="Eservice_quality_rating_to">
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setServiceQualityRating"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Pricing Rating Filter Modal -->
+    @if ($pricingRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Pricing Rating</h3>
+                            <button wire:click="togglePricingRating" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Epricing_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Epricing_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
+                                    wire:model.defer="Epricing_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Epricing_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Epricing_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
+                                    wire:model.defer="Epricing_rating_to">
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setPricingRating"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Insurance Company Rating Filter Modal -->
+    @if ($insuranceCompanyRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Insurance Company Rating</h3>
+                            <button wire:click="toggleInsuranceCompanyRating" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Einsurance_company_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Einsurance_company_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
+                                    wire:model.defer="Einsurance_company_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Einsurance_company_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Einsurance_company_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
+                                    wire:model.defer="Einsurance_company_rating_to">
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setInsuranceCompanyRating"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Processing Time Rating Filter Modal -->
+    @if ($processingTimeRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Processing Time Rating</h3>
+                            <button wire:click="toggleProcessingTimeRating" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eprocessing_time_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Eprocessing_time_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eprocessing_time_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Eprocessing_time_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Eprocessing_time_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eprocessing_time_rating_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setProcessingTimeRating" class="btn inline-flex justify-center text-white bg-black-500">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Collection Channel Rating Filter Modal -->
+    @if ($collectionChannelRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Collection Channel Rating</h3>
+                            <button wire:click="toggleCollectionChannelRating" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Ecollection_channel_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Ecollection_channel_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Ecollection_channel_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Ecollection_channel_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Ecollection_channel_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Ecollection_channel_rating_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setCollectionChannelRating" class="btn inline-flex justify-center text-white bg-black-500">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Policy Conditions Rating Filter Modal -->
+    @if ($policyConditionsRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Policy Conditions Rating</h3>
+                            <button wire:click="togglePolicyConditionsRating" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Epolicy_conditions_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Epolicy_conditions_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Epolicy_conditions_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Epolicy_conditions_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Epolicy_conditions_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Epolicy_conditions_rating_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setPolicyConditionsRating" class="btn inline-flex justify-center text-white bg-black-500">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Provider Rating Filter Modal -->
+    @if ($providerRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Provider Rating</h3>
+                            <button wire:click="toggleProviderRating" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eprovider_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Eprovider_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eprovider_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Eprovider_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Eprovider_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eprovider_rating_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setProviderRating" class="btn inline-flex justify-center text-white bg-black-500">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Claims Specialist Rating Filter Modal -->
+    @if ($claimsSpecialistRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Claims Specialist Rating</h3>
+                            <button wire:click="toggleClaimsSpecialistRating" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eclaims_specialist_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Eclaims_specialist_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eclaims_specialist_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Eclaims_specialist_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Eclaims_specialist_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eclaims_specialist_rating_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setClaimsSpecialistRating" class="btn inline-flex justify-center text-white bg-black-500">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Wise Rating Filter Modal -->
+    @if ($wiseRatingSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Wise Rating</h3>
+                            <button wire:click="toggleWiseRating" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Ewise_rating_from" class="form-label">Rating from (0-10)</label>
+                                <input name="Ewise_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Ewise_rating_from">
+                            </div>
+                            <div class="from-group">
+                                <label for="Ewise_rating_to" class="form-label">Rating to (0-10)</label>
+                                <input name="Ewise_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Ewise_rating_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setWiseRating" class="btn inline-flex justify-center text-white bg-black-500">Apply</button>
                         </div>
                     </div>
                 </div>

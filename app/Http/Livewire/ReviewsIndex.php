@@ -33,6 +33,24 @@ class ReviewsIndex extends Component
     public $employee_rating_to;
     public $company_rating_from;
     public $company_rating_to;
+    public $service_quality_rating_from;
+    public $service_quality_rating_to;
+    public $pricing_rating_from;
+    public $pricing_rating_to;
+    public $processing_time_rating_from;
+    public $processing_time_rating_to;
+    public $collection_channel_rating_from;
+    public $collection_channel_rating_to;
+    public $policy_conditions_rating_from;
+    public $policy_conditions_rating_to;
+    public $insurance_company_rating_from;
+    public $insurance_company_rating_to;
+    public $provider_rating_from;
+    public $provider_rating_to;
+    public $claims_specialist_rating_from;
+    public $claims_specialist_rating_to;
+    public $wise_rating_from;
+    public $wise_rating_to;
     public $has_employee_comment;
     public $has_company_comment;
     public $need_manager_review;
@@ -46,6 +64,24 @@ class ReviewsIndex extends Component
     public $Eemployee_rating_to;
     public $Ecompany_rating_from;
     public $Ecompany_rating_to;
+    public $Eservice_quality_rating_from;
+    public $Eservice_quality_rating_to;
+    public $Epricing_rating_from;
+    public $Epricing_rating_to;
+    public $Eprocessing_time_rating_from;
+    public $Eprocessing_time_rating_to;
+    public $Ecollection_channel_rating_from;
+    public $Ecollection_channel_rating_to;
+    public $Epolicy_conditions_rating_from;
+    public $Epolicy_conditions_rating_to;
+    public $Einsurance_company_rating_from;
+    public $Einsurance_company_rating_to;
+    public $Eprovider_rating_from;
+    public $Eprovider_rating_to;
+    public $Eclaims_specialist_rating_from;
+    public $Eclaims_specialist_rating_to;
+    public $Ewise_rating_from;
+    public $Ewise_rating_to;
 
     // Available reviewable types
     public $reviewableTypes = [];
@@ -57,6 +93,21 @@ class ReviewsIndex extends Component
     public $showNoAnswerModal = false;
     public $showInfoModal = false;
     public $showContactsModal = false;
+    
+    // Filter modal states
+    public $createdDateSection = false;
+    public $reviewDateSection = false;
+    public $employeeRatingSection = false;
+    public $companyRatingSection = false;
+    public $serviceQualityRatingSection = false;
+    public $pricingRatingSection = false;
+    public $processingTimeRatingSection = false;
+    public $collectionChannelRatingSection = false;
+    public $policyConditionsRatingSection = false;
+    public $insuranceCompanyRatingSection = false;
+    public $providerRatingSection = false;
+    public $claimsSpecialistRatingSection = false;
+    public $wiseRatingSection = false;
     public $selectedReviewId;
     public $selectedReview;
     public $selectedReviewContacts = [];
@@ -194,6 +245,87 @@ class ReviewsIndex extends Component
         $this->toggle($this->need_manager_review);
     }
 
+    public function toggleServiceQualityRating()
+    {
+        $this->toggle($this->serviceQualityRatingSection);
+        if ($this->serviceQualityRatingSection) {
+            $this->Eservice_quality_rating_from = $this->service_quality_rating_from;
+            $this->Eservice_quality_rating_to = $this->service_quality_rating_to;
+        }
+    }
+
+    public function togglePricingRating()
+    {
+        $this->toggle($this->pricingRatingSection);
+        if ($this->pricingRatingSection) {
+            $this->Epricing_rating_from = $this->pricing_rating_from;
+            $this->Epricing_rating_to = $this->pricing_rating_to;
+        }
+    }
+
+    public function toggleProcessingTimeRating()
+    {
+        $this->toggle($this->processingTimeRatingSection);
+        if ($this->processingTimeRatingSection) {
+            $this->Eprocessing_time_rating_from = $this->processing_time_rating_from;
+            $this->Eprocessing_time_rating_to = $this->processing_time_rating_to;
+        }
+    }
+
+    public function toggleCollectionChannelRating()
+    {
+        $this->toggle($this->collectionChannelRatingSection);
+        if ($this->collectionChannelRatingSection) {
+            $this->Ecollection_channel_rating_from = $this->collection_channel_rating_from;
+            $this->Ecollection_channel_rating_to = $this->collection_channel_rating_to;
+        }
+    }
+
+    public function togglePolicyConditionsRating()
+    {
+        $this->toggle($this->policyConditionsRatingSection);
+        if ($this->policyConditionsRatingSection) {
+            $this->Epolicy_conditions_rating_from = $this->policy_conditions_rating_from;
+            $this->Epolicy_conditions_rating_to = $this->policy_conditions_rating_to;
+        }
+    }
+
+    public function toggleInsuranceCompanyRating()
+    {
+        $this->toggle($this->insuranceCompanyRatingSection);
+        if ($this->insuranceCompanyRatingSection) {
+            $this->Einsurance_company_rating_from = $this->insurance_company_rating_from;
+            $this->Einsurance_company_rating_to = $this->insurance_company_rating_to;
+        }
+    }
+
+    public function toggleProviderRating()
+    {
+        $this->toggle($this->providerRatingSection);
+        if ($this->providerRatingSection) {
+            $this->Eprovider_rating_from = $this->provider_rating_from;
+            $this->Eprovider_rating_to = $this->provider_rating_to;
+        }
+    }
+
+    public function toggleClaimsSpecialistRating()
+    {
+        $this->toggle($this->claimsSpecialistRatingSection);
+        if ($this->claimsSpecialistRatingSection) {
+            $this->Eclaims_specialist_rating_from = $this->claims_specialist_rating_from;
+            $this->Eclaims_specialist_rating_to = $this->claims_specialist_rating_to;
+        }
+    }
+
+    public function toggleWiseRating()
+    {
+        $this->toggle($this->wiseRatingSection);
+        if ($this->wiseRatingSection) {
+            $this->Ewise_rating_from = $this->wise_rating_from;
+            $this->Ewise_rating_to = $this->wise_rating_to;
+        }
+    }
+
 
     // Set methods for filters
     public function setCreatedDates()
@@ -224,6 +356,69 @@ class ReviewsIndex extends Component
         $this->toggle($this->companyRatingSection);
     }
 
+    public function setServiceQualityRating()
+    {
+        $this->service_quality_rating_from = $this->Eservice_quality_rating_from;
+        $this->service_quality_rating_to = $this->Eservice_quality_rating_to;
+        $this->toggle($this->serviceQualityRatingSection);
+    }
+
+    public function setPricingRating()
+    {
+        $this->pricing_rating_from = $this->Epricing_rating_from;
+        $this->pricing_rating_to = $this->Epricing_rating_to;
+        $this->toggle($this->pricingRatingSection);
+    }
+
+    public function setProcessingTimeRating()
+    {
+        $this->processing_time_rating_from = $this->Eprocessing_time_rating_from;
+        $this->processing_time_rating_to = $this->Eprocessing_time_rating_to;
+        $this->toggle($this->processingTimeRatingSection);
+    }
+
+    public function setCollectionChannelRating()
+    {
+        $this->collection_channel_rating_from = $this->Ecollection_channel_rating_from;
+        $this->collection_channel_rating_to = $this->Ecollection_channel_rating_to;
+        $this->toggle($this->collectionChannelRatingSection);
+    }
+
+    public function setPolicyConditionsRating()
+    {
+        $this->policy_conditions_rating_from = $this->Epolicy_conditions_rating_from;
+        $this->policy_conditions_rating_to = $this->Epolicy_conditions_rating_to;
+        $this->toggle($this->policyConditionsRatingSection);
+    }
+
+    public function setInsuranceCompanyRating()
+    {
+        $this->insurance_company_rating_from = $this->Einsurance_company_rating_from;
+        $this->insurance_company_rating_to = $this->Einsurance_company_rating_to;
+        $this->toggle($this->insuranceCompanyRatingSection);
+    }
+
+    public function setProviderRating()
+    {
+        $this->provider_rating_from = $this->Eprovider_rating_from;
+        $this->provider_rating_to = $this->Eprovider_rating_to;
+        $this->toggle($this->providerRatingSection);
+    }
+
+    public function setClaimsSpecialistRating()
+    {
+        $this->claims_specialist_rating_from = $this->Eclaims_specialist_rating_from;
+        $this->claims_specialist_rating_to = $this->Eclaims_specialist_rating_to;
+        $this->toggle($this->claimsSpecialistRatingSection);
+    }
+
+    public function setWiseRating()
+    {
+        $this->wise_rating_from = $this->Ewise_rating_from;
+        $this->wise_rating_to = $this->Ewise_rating_to;
+        $this->toggle($this->wiseRatingSection);
+    }
+
     // Clear methods for filters
     public function clearReviewableType()
     {
@@ -252,6 +447,60 @@ class ReviewsIndex extends Component
     {
         $this->company_rating_from = null;
         $this->company_rating_to = null;
+    }
+
+    public function clearServiceQualityRating()
+    {
+        $this->service_quality_rating_from = null;
+        $this->service_quality_rating_to = null;
+    }
+
+    public function clearPricingRating()
+    {
+        $this->pricing_rating_from = null;
+        $this->pricing_rating_to = null;
+    }
+
+    public function clearProcessingTimeRating()
+    {
+        $this->processing_time_rating_from = null;
+        $this->processing_time_rating_to = null;
+    }
+
+    public function clearCollectionChannelRating()
+    {
+        $this->collection_channel_rating_from = null;
+        $this->collection_channel_rating_to = null;
+    }
+
+    public function clearPolicyConditionsRating()
+    {
+        $this->policy_conditions_rating_from = null;
+        $this->policy_conditions_rating_to = null;
+    }
+
+    public function clearInsuranceCompanyRating()
+    {
+        $this->insurance_company_rating_from = null;
+        $this->insurance_company_rating_to = null;
+    }
+
+    public function clearProviderRating()
+    {
+        $this->provider_rating_from = null;
+        $this->provider_rating_to = null;
+    }
+
+    public function clearClaimsSpecialistRating()
+    {
+        $this->claims_specialist_rating_from = null;
+        $this->claims_specialist_rating_to = null;
+    }
+
+    public function clearWiseRating()
+    {
+        $this->wise_rating_from = null;
+        $this->wise_rating_to = null;
     }
 
     public function clearReviewStatus()
@@ -755,7 +1004,15 @@ class ReviewsIndex extends Component
             ->byReviewStatus($this->is_reviewed)
             ->reviewedBetween($this->reviewed_from, $this->reviewed_to)
             ->employeeRatingBetween($this->employee_rating_from, $this->employee_rating_to)
-            ->policyConditionsRatingBetween($this->company_rating_from, $this->company_rating_to)
+            ->policyConditionsRatingBetween($this->policy_conditions_rating_from, $this->policy_conditions_rating_to)
+            ->serviceQualityRatingBetween($this->service_quality_rating_from, $this->service_quality_rating_to)
+            ->pricingRatingBetween($this->pricing_rating_from, $this->pricing_rating_to)
+            ->processingTimeRatingBetween($this->processing_time_rating_from, $this->processing_time_rating_to)
+            ->collectionChannelRatingBetween($this->collection_channel_rating_from, $this->collection_channel_rating_to)
+            ->insuranceCompanyRatingBetween($this->insurance_company_rating_from, $this->insurance_company_rating_to)
+            ->providerRatingBetween($this->provider_rating_from, $this->provider_rating_to)
+            ->claimsSpecialistRatingBetween($this->claims_specialist_rating_from, $this->claims_specialist_rating_to)
+            ->wiseRatingBetween($this->wise_rating_from, $this->wise_rating_to)
             ->hasEmployeeComment($this->has_employee_comment)
             ->hasPolicyConditionsComment($this->has_company_comment)
             ->needsManagerReview($this->need_manager_review)

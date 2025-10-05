@@ -387,6 +387,34 @@ class Review extends Model
         return $query;
     }
 
+    public function scopeInsuranceCompanyRatingBetween($query, $from, $to)
+    {
+        if ($from !== null) $query->where('insurance_company_rating', '>=', $from);
+        if ($to !== null) $query->where('insurance_company_rating', '<=', $to);
+        return $query;
+    }
+
+    public function scopeProviderRatingBetween($query, $from, $to)
+    {
+        if ($from !== null) $query->where('provider_rating', '>=', $from);
+        if ($to !== null) $query->where('provider_rating', '<=', $to);
+        return $query;
+    }
+
+    public function scopeClaimsSpecialistRatingBetween($query, $from, $to)
+    {
+        if ($from !== null) $query->where('claims_specialist_rating', '>=', $from);
+        if ($to !== null) $query->where('claims_specialist_rating', '<=', $to);
+        return $query;
+    }
+
+    public function scopeWiseRatingBetween($query, $from, $to)
+    {
+        if ($from !== null) $query->where('wise_rating', '>=', $from);
+        if ($to !== null) $query->where('wise_rating', '<=', $to);
+        return $query;
+    }
+
     public function scopeHasEmployeeComment($query, $hasComment)
     {
         if ($hasComment !== null) {
