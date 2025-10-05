@@ -702,14 +702,14 @@ class Review extends Model
     /**
      * Set the no answer flag for a review
      *
-     * @param int|null $noAnswer 0 = no answer, 1 = answered, 2 = sent whatsapp, null = no call yet
+     * @param int|null $noAnswer 0 = no answer, 1 = answered, 2 = sent whatsapp, 3 = wrong number, 4 = callback, null = no call yet
      * @return bool
      */
     public function setNoAnswerFlag(?int $noAnswer): bool
     {
         try {
             // Validate the value
-            if ($noAnswer !== null && !in_array($noAnswer, [0, 1, 2])) {
+            if ($noAnswer !== null && !in_array($noAnswer, [0, 1, 2, 3, 4])) {
                 AppLog::error('Invalid no_answer value provided', [
                     'no_answer' => $noAnswer,
                     'review_id' => $this->id

@@ -333,6 +333,14 @@
                                             <span class="badge bg-blue-500 text-blue-500 bg-opacity-30 rounded-3xl">
                                                 Sent WhatsApp
                                             </span>
+                                        @elseif ($review->no_answer === 3)
+                                            <span class="badge bg-orange-500 text-orange-500 bg-opacity-30 rounded-3xl">
+                                                Wrong Number
+                                            </span>
+                                        @elseif ($review->no_answer === 4)
+                                            <span class="badge bg-purple-500 text-purple-500 bg-opacity-30 rounded-3xl">
+                                                Callback
+                                            </span>
                                         @else
                                             <span class="badge bg-slate-500 text-slate-500 bg-opacity-30 rounded-3xl">
                                                 Not Yet Called
@@ -1047,6 +1055,10 @@
                                             <span class="text-green-600">Answered</span>
                                         @elseif ($selectedReview->no_answer === 2)
                                             <span class="text-blue-600">Sent WhatsApp</span>
+                                        @elseif ($selectedReview->no_answer === 3)
+                                            <span class="text-orange-600">Wrong Number</span>
+                                        @elseif ($selectedReview->no_answer === 4)
+                                            <span class="text-purple-600">Callback</span>
                                         @else
                                             <span class="text-slate-500">Not Yet Called</span>
                                         @endif
@@ -1074,6 +1086,14 @@
                                     <button wire:click="setNoAnswerFlag(2)"
                                         class="btn {{ $selectedReview && $selectedReview->no_answer === 2 ? 'bg-blue-500 text-white' : 'btn-outline-secondary' }} text-sm">
                                         Sent WhatsApp
+                                    </button>
+                                    <button wire:click="setNoAnswerFlag(3)"
+                                        class="btn {{ $selectedReview && $selectedReview->no_answer === 3 ? 'bg-orange-500 text-white' : 'btn-outline-secondary' }} text-sm">
+                                        Wrong Number
+                                    </button>
+                                    <button wire:click="setNoAnswerFlag(4)"
+                                        class="btn {{ $selectedReview && $selectedReview->no_answer === 4 ? 'bg-purple-500 text-white' : 'btn-outline-secondary' }} text-sm">
+                                        Callback
                                     </button>
                                 </div>
                             </div>
@@ -1366,6 +1386,14 @@
                                             @elseif ($selectedReview->no_answer === 2)
                                                 <span class="badge bg-blue-500 text-white px-2 py-1 rounded text-xs">
                                                     Sent WhatsApp
+                                                </span>
+                                            @elseif ($selectedReview->no_answer === 3)
+                                                <span class="badge bg-orange-500 text-white px-2 py-1 rounded text-xs">
+                                                    Wrong Number
+                                                </span>
+                                            @elseif ($selectedReview->no_answer === 4)
+                                                <span class="badge bg-purple-500 text-white px-2 py-1 rounded text-xs">
+                                                    Callback
                                                 </span>
                                             @else
                                                 <span class="badge bg-slate-500 text-white px-2 py-1 rounded text-xs">

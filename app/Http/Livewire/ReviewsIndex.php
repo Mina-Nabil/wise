@@ -656,6 +656,8 @@ class ReviewsIndex extends Component
                     0 => 'Review marked as no answer.',
                     1 => 'Review marked as answered.',
                     2 => 'Review marked as sent WhatsApp.',
+                    3 => 'Review marked as wrong number.',
+                    4 => 'Review marked as callback.',
                     default => 'Review call status updated successfully.'
                 };
                 $this->alert('success', $message);
