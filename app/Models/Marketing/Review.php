@@ -178,9 +178,13 @@ class Review extends Model
     ): bool {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('receiveClientComment', $this)) {
-            AppLog::error('Unauthorized attempt to update review ratings', desc: 'User does not have permission to update review ratings', loggable: $this);
-            return false;
+        
+        // Allow admins to edit even if already reviewed, otherwise check normal permission
+        if (!$loggedInUser->is_admin) {
+            if (!$loggedInUser->can('receiveClientComment', $this)) {
+                AppLog::error('Unauthorized attempt to update review ratings', desc: 'User does not have permission to update review ratings', loggable: $this);
+                return false;
+            }
         }
 
         try {
@@ -614,6 +618,17 @@ class Review extends Model
         ?string $wiseComment = null,
         ?int $reviewedById = null
     ): bool {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        
+        // Allow admins to edit even if already reviewed, otherwise check normal permission
+        if (!$loggedInUser->is_admin) {
+            if (!$loggedInUser->can('receiveClientComment', $this)) {
+                AppLog::error('Unauthorized attempt to update claim review ratings', desc: 'User does not have permission to update claim review ratings', loggable: $this);
+                return false;
+            }
+        }
+
         try {
             $updates = [];
 

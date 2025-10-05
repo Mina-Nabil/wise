@@ -549,13 +549,13 @@
 
                                                 <!-- Set Ratings & Comments -->
                                                 @can('receiveClientComment', $review)
-                                                    @if (!$review->is_reviewed)
+                                                    @if (!$review->is_reviewed || Auth::user()->is_admin)
                                                         <li>
                                                             <button wire:click="openRatingsModal({{ $review->id }})"
                                                                 class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white w-full text-left">
                                                                 <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2"
                                                                     icon="heroicons:star-20-solid"></iconify-icon>
-                                                                Set Ratings & Comments
+                                                                {{ $review->is_reviewed && Auth::user()->is_admin ? 'Edit Ratings & Comments' : 'Set Ratings & Comments' }}
                                                             </button>
                                                         </li>
                                                     @endif
