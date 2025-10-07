@@ -93,7 +93,7 @@ class ReviewsIndex extends Component
     public $showNoAnswerModal = false;
     public $showInfoModal = false;
     public $showContactsModal = false;
-    
+
     // Filter modal states
     public $serviceQualityRatingSection = false;
     public $pricingRatingSection = false;
@@ -896,7 +896,7 @@ class ReviewsIndex extends Component
             $review = Review::findOrFail($this->selectedReviewId);
 
             if ($review->setNoAnswerFlag($noAnswer)) {
-                $message = match($noAnswer) {
+                $message = match ($noAnswer) {
                     null => 'Review marked as not yet called.',
                     0 => 'Review marked as no answer.',
                     1 => 'Review marked as answered.',
@@ -925,7 +925,8 @@ class ReviewsIndex extends Component
                 $task = $review->reviewable;
                 if ($task->type === 'claim') {
                     // Redirect to the claim/task page
-                    return redirect()->route('tasks.show', $task->id);
+                    $this->dispatchBrowserEvent('openNewTab', ['url' => route('tasks.show', ['id' => $task->id])]);
+                    return;
                 }
             }
 
@@ -942,7 +943,8 @@ class ReviewsIndex extends Component
 
             // Check if the reviewable is a sold policy directly
             if ($review->reviewable_type === 'sold_policy') {
-                return redirect()->route('sold.policy.show', $review->reviewable_id);
+                $this->dispatchBrowserEvent('openNewTab', ['url' => route('sold.policy.show', ['id' => $review->reviewable_id])]);
+                return;
             }
 
             // Check if the reviewable is a claim (Task with type claim) that has a taskable (sold policy)
