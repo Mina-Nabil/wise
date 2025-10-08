@@ -286,7 +286,7 @@
                                             </td>
 
                                             <td class="table-td">
-                                                <p><b>{{ number_format($payment->amount + $payment->tax_amount, 2, '.', ',') }}
+                                                <p><b>{{ number_format($payment->amount, 2, '.', ',') }}
                                                         EGP</b></p>
                                             </td>
                                             <td class="table-td">
