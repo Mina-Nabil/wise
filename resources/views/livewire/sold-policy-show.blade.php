@@ -1448,7 +1448,7 @@
                                                         <td class="table-td ">
                                                             <div class="text-lg text-success-500">
                                                             
-                                                                {{ number_format($payment->amount + $payment->tax_amount, 2, '.', ',') }}EGP
+                                                                {{ number_format($payment->tax_amount, 2, '.', ',') }}EGP
                                                             </div>
                                                         </td>
 
