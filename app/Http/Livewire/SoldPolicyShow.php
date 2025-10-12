@@ -719,7 +719,7 @@ class SoldPolicyShow extends Component
 
         $this->validate([
             'policyCommTitle' => 'required|string|max:255',
-            'policyCommAmount' => 'required|numeric|min:1',
+            'policyCommAmount' => 'required|numeric',
         ]);
 
         $res = $this->soldPolicy->addPolicyCommission($this->policyCommTitle, $this->policyCommAmount);

@@ -33,7 +33,8 @@ class Target extends Model
         "add_as_payment",
         "next_run_date",
         "is_end_of_month",
-        "is_full_amount"
+        "is_full_amount",
+        "renewal_percentage" //percentage of the target to be paid for renewal policies only
     ];
     public $timestamps = false;
 
