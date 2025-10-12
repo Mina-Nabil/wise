@@ -1208,7 +1208,7 @@ class CustomerShow extends Component
             'gender' =>  'nullable|in:' . implode(',', Customer::GENDERS),
             'maritalStatus' =>  'nullable|in:' . implode(',', Customer::MARITALSTATUSES),
             'idType' =>  'nullable|in:' . implode(',', Customer::IDTYPES),
-            'idNumber' => 'nullable|string|max:255',
+            'idNumber' => 'nullable|string|max:255|unique:customers,id_number,' . $this->customer->id,
             'nationalId' => 'nullable|integer|exists:countries,id',
             'profession_id' => 'nullable|exists:professions,id',
             'salaryRange' => 'nullable|in:' . implode(',', Customer::SALARY_RANGES),
