@@ -268,6 +268,25 @@ class SoldPolicy extends Model
         }
     }
 
+    public function deletePolicyCommission($soldPolicyCommId)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('updateWiseCommPayments', $this)) return false;
+
+        try {
+            DB::transaction(function () use ($soldPolicyCommId) {
+                $this->comms_details()->manual()->where('id', $soldPolicyCommId)->delete();
+                AppLog::info("Commission deleted", loggable: $this, desc: "Sold Policy commission deleted");
+            });
+            $this->calculateTotalPolicyComm();
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            return false;
+        }
+    }
+
     public function setDeliveryType(string $deliveryType)
     {
         /** @var User */

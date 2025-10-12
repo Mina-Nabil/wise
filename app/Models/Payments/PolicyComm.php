@@ -77,6 +77,11 @@ class PolicyComm extends Model
         return $query->where('is_manual', false);
     }
 
+    public function scopeManual($query)
+    {
+        return $query->where('is_manual', true);
+    }
+
     ///relations
     public function sold_policy(): BelongsTo
     {
