@@ -1112,7 +1112,7 @@
                                                         <td class="table-td ">
                                                             <p class="text-success-600 text-lg">
                                                                 <b>{{ $target->comm_percentage }}%</b>
-                                                                @if($target->renewal_percentage)
+                                                                @if ($target->renewal_percentage)
                                                                     <span class="text-sm text-slate-500">
                                                                         ({{ $target->renewal_percentage }}% renewal)
                                                                     </span>
@@ -1269,8 +1269,12 @@
 
                                                         <td class="table-td ">
                                                             <p class="text-success-500 text-lg">
-                                                                <b>{{ $conf->percentage }}%
-                                                                </b>
+                                                                <b>{{ $conf->percentage }}%</b>
+                                                                @if($conf->renewal_percentage)
+                                                                    <span class="text-sm text-slate-500">
+                                                                        ({{ $conf->renewal_percentage }}% renewal)
+                                                                    </span>
+                                                                @endif
                                                             </p>
                                                         </td>
 
@@ -2237,8 +2241,10 @@
                                         </span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <small class=caption>Percentage to be paid for renewal policies only (optional)</small>
-                                        <small class=caption>Example: 80 (input in field) mean 80% of income is added to the target</small>
+                                        <small class=caption>Percentage to be paid for renewal policies only
+                                            (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% of income is added to
+                                            the target</small>
                                     </div>
                                 </div>
                                 @error('renewalPercentage')
@@ -2449,8 +2455,10 @@
                                         </span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <small class=caption>Percentage of the incometo be paid for renewal policies only (optional)</small>
-                                        <small class=caption>Example: 80 (input in field) mean 80% of income is added to the target</small>
+                                        <small class=caption>Percentage of the incometo be paid for renewal policies
+                                            only (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% of income is added to
+                                            the target</small>
                                     </div>
                                 </div>
                                 @error('renewalPercentage')
@@ -2592,6 +2600,27 @@
                                     {{-- <input id="percentage" type="number" class="form-control @error('percentage') !border-danger-500 @enderror" wire:model.defer="percentage"> --}}
                                 </div>
                                 @error('percentage')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="renewalPercentage" class="form-label">Renewal Percentage</label>
+                                    <div class="relative">
+                                        <input type="number"
+                                            class="form-control @error('renewalPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="renewalPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
+                                    </div>
+                                        <div class="flex flex-col">
+                                            <small class=caption>Percentage to be used only for renewal policies (optional)</small>
+                                            <small class=caption>Example: 80 (input in field) mean 80% multiplied by the selected 'From' value</small>
+                                        </div>
+                                </div>
+                                @error('renewalPercentage')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
@@ -2748,6 +2777,27 @@
                                     {{-- <input id="percentage" type="number" class="form-control @error('percentage') !border-danger-500 @enderror" wire:model.defer="percentage"> --}}
                                 </div>
                                 @error('percentage')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="renewalPercentage" class="form-label">Renewal Percentage</label>
+                                    <div class="relative">
+                                        <input type="number"
+                                            class="form-control @error('renewalPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="renewalPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                    <small class=caption>Percentage of the income to be paid for renewal policies only (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% multiplied by the selected 'From' value</small>
+                                    </div>
+                                </div>
+                                @error('renewalPercentage')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

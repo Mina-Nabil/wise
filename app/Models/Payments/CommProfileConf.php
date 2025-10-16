@@ -29,6 +29,7 @@ class CommProfileConf extends Model
 
     public $fillable = [
         "percentage",
+        "renewal_percentage",
         "from",
         "line_of_business",
         "order"
@@ -69,7 +70,8 @@ class CommProfileConf extends Model
 
     public function editInfo(
         $percentage,
-        $from
+        $from,
+        $renewal_percentage = null
     ) {
         try {
 
@@ -80,6 +82,7 @@ class CommProfileConf extends Model
             AppLog::info("Updating comm profile conf", loggable: $this);
             $this->update([
                 "percentage"    =>  $percentage,
+                "renewal_percentage" =>  $renewal_percentage,
                 "from"          =>  $from
             ]);
             return true;

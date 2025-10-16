@@ -914,6 +914,7 @@ class CommProfileShow extends Component
         $this->editConfId = $id;
         $c = CommProfileConf::find($id);
         $this->percentage = $c->percentage;
+        $this->renewalPercentage = $c->renewal_percentage;
         $this->from = $c->from;
     }
 
@@ -921,6 +922,7 @@ class CommProfileShow extends Component
     {
         $this->editConfId = null;
         $this->percentage = null;
+        $this->renewalPercentage = null;
         $this->from = null;
     }
 
@@ -928,10 +930,11 @@ class CommProfileShow extends Component
     {
         $this->validate([
             'percentage' => 'required|numeric',
+            'renewalPercentage' => 'nullable|numeric|between:0,100',
             'from' => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
 
-        $res = CommProfileConf::find($this->editConfId)->editInfo($this->percentage, $this->from);
+        $res = CommProfileConf::find($this->editConfId)->editInfo($this->percentage, $this->from, $this->renewalPercentage);
 
         if ($res) {
             $this->closeEditConf();
@@ -1012,20 +1015,22 @@ class CommProfileShow extends Component
     {
         $this->validate([
             'percentage' => 'required|numeric',
+            'renewalPercentage' => 'nullable|numeric|between:0,100',
             'from' => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
         if ($this->line_of_business) {
             $this->validate([
                 'line_of_business' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),
             ]);
-            $res = $this->profile->addConfiguration($this->percentage, $this->from, line_of_business: $this->line_of_business);
+            $res = $this->profile->addConfiguration($this->percentage, $this->from, line_of_business: $this->line_of_business, renewal_percentage: $this->renewalPercentage);
         } else {
-            $res = $this->profile->addConfiguration($this->percentage, $this->from, condition: $this->condition);
+            $res = $this->profile->addConfiguration($this->percentage, $this->from, condition: $this->condition, renewal_percentage: $this->renewalPercentage);
         }
 
         if ($res) {
             $this->newConfSec = null;
             $this->percentage = null;
+            $this->renewalPercentage = null;
             $this->from = null;
             $this->condition = null;
             $this->line_of_business = null;
@@ -1051,6 +1056,7 @@ class CommProfileShow extends Component
     public function closeNewConfSection()
     {
         $this->newConfSec = false;
+        $this->renewalPercentage = null;
     }
 
     public function openUpdateSec()

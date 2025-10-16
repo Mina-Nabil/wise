@@ -206,8 +206,10 @@ class SalesComm extends Model
             }
         } else if ($valid_conf) {
             //update comm info then calc same as direct
-            $this->comm_percentage = $valid_conf->percentage;
+            $isRenewal = $this->sold_policy->is_renewal;
+            $this->comm_percentage = $isRenewal && ($valid_conf->renewal_percentage > 0) ? $valid_conf->renewal_percentage : $valid_conf->percentage;
             $this->from = $valid_conf->from;
+
             $this->save();
 
             $from_amount = $this->sold_policy->getFromAmount($this->from);

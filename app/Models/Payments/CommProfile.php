@@ -282,7 +282,8 @@ class CommProfile extends Model
         $percentage, //commission percentage
         $from, //from const FROMS
         Policy|Company $condition = null, //include a policy or a company as a condition
-        $line_of_business = null // or select a line of business as the condition - line of business is on of Policy::LINES_OF_BUSINESS
+        $line_of_business = null, // or select a line of business as the condition - line of business is on of Policy::LINES_OF_BUSINESS
+        $renewal_percentage = null // percentage for renewal policies
     ) {
         /** @var User */
         $user = Auth::user();
@@ -299,6 +300,7 @@ class CommProfile extends Model
             $order = $this->configurations()->count() + 1;
             $conf = $this->configurations()->create([
                 "percentage"    =>  $percentage,
+                "renewal_percentage" =>  $renewal_percentage,
                 "from"          =>  $from,
                 "line_of_business" =>  $line_of_business,
                 "order"         =>  $order
