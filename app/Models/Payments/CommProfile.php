@@ -341,6 +341,7 @@ class CommProfile extends Model
         Carbon $next_run_date = null,
         $is_end_of_month = false,
         $is_full_amount = false,
+        $renewal_percentage = null,
     ) {
         try {
             AppLog::info("Creating comm profile target", loggable: $this);
@@ -350,6 +351,7 @@ class CommProfile extends Model
                 "each_month"        =>  $each_month,
                 "prem_target"       =>  $prem_target,
                 "comm_percentage"   =>  $comm_percentage,
+                "renewal_percentage" =>  $renewal_percentage,
                 "min_income_target" =>  $min_income_target,
                 "add_to_balance"    =>  $add_to_balance,
                 "add_as_payment"    =>  $add_as_payment,

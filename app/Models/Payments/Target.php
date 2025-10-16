@@ -70,13 +70,15 @@ class Target extends Model
             $totalClientPaid = $sp->total_client_paid;
             if ($totalClientPaidBetween < $totalClientPaid) {
                 $tmpAmount = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
-                $totalIncome += $tmpAmount;
-                $paidAmounts[$sp->id] = $tmpAmount;
+                $incomeAmount = ($sp->is_renewal && $this->renewal_percentage > 0) ? ($tmpAmount * ($this->renewal_percentage / 100)) : $tmpAmount;
+                $totalIncome += $incomeAmount;
+                $paidAmounts[$sp->id] = $incomeAmount;
             } else {
 
                 $tmpAmount = (($sp->tax_amount > 0) ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions;
-                $totalIncome += $tmpAmount;
-                $paidAmounts[$sp->id] = $tmpAmount;
+                $incomeAmount = ($sp->is_renewal && $this->renewal_percentage > 0) ? ($tmpAmount * ($this->renewal_percentage / 100)) : $tmpAmount;
+                $totalIncome += $incomeAmount;
+                $paidAmounts[$sp->id] = $incomeAmount;
             }
 
             Log::info("SP#$sp->id details", ["tmpAmount" => $tmpAmount, "tax_amount" => $sp->tax_amount, "after_tax_comm" => $sp->after_tax_comm, "client_paid_by_dates" => $sp->client_paid_by_dates, "gross_premium" => $sp->gross_premium, "total_comm_subtractions" => $sp->total_comm_subtractions, "isInstallements" => ($totalClientPaidBetween < $totalClientPaid)]);
@@ -160,6 +162,7 @@ class Target extends Model
         $next_run_date = null,
         $is_end_of_month = false,
         $is_full_amount = false,
+        $renewal_percentage = null,
     ) {
         try {
             AppLog::info("Updating comm profile target", loggable: $this);
@@ -175,6 +178,7 @@ class Target extends Model
                 "max_income_target"   =>  $max_income_target,
                 "is_end_of_month"   =>  $is_end_of_month,
                 "is_full_amount"   =>  $is_full_amount ?? false,
+                "renewal_percentage"   =>  $renewal_percentage,
             ];
             if ($next_run_date)
                 $updates['next_run_date'] = $next_run_date->format('Y-m-d');

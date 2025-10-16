@@ -74,6 +74,7 @@ class CommProfileShow extends Component
     public $maxIncomeTarget; //
     public $nextRunDate; //
     public $commPercentage; //
+    public $renewalPercentage; //
     public $addToBalance;
     public $addAsPayment;
     public $basePayment;
@@ -759,6 +760,7 @@ class CommProfileShow extends Component
         $this->maxIncomeTarget = null;
         $this->nextRunDate = null;
         $this->commPercentage = null;
+        $this->renewalPercentage = null;
         $this->addToBalance = 100;
         $this->addAsPayment = 100;
         $this->basePayment = null;
@@ -785,6 +787,7 @@ class CommProfileShow extends Component
         $this->maxIncomeTarget = $t->max_income_target;
         // $this->nextRunDate = $t->next_run_date;
         $this->commPercentage = $t->comm_percentage;
+        $this->renewalPercentage = $t->renewal_percentage;
         $this->addToBalance = $t->add_to_balance;
         $this->addAsPayment = $t->add_as_payment;
         $this->basePayment = $t->base_payment;
@@ -800,6 +803,7 @@ class CommProfileShow extends Component
         $this->maxIncomeTarget = null;
         $this->nextRunDate = null;
         $this->commPercentage = null;
+        $this->renewalPercentage = null;
         $this->addToBalance = 100;
         $this->addAsPayment = 100;
         $this->basePayment = null;
@@ -815,6 +819,7 @@ class CommProfileShow extends Component
             'eachMonth' => 'required|numeric',
             'premTarget' => 'required|numeric',
             'commPercentage' => 'required|numeric',
+            'renewalPercentage' => 'nullable|numeric|between:0,100',
             'maxIncomeTarget' => 'nullable|numeric',
             'addToBalance' => 'required|numeric',
             'addAsPayment' => 'required|numeric',
@@ -823,7 +828,7 @@ class CommProfileShow extends Component
             'isFullAmount' => 'nullable|boolean',
         ]);
 
-        $res = Target::find($this->editTargetId)->editInfo($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount);
+        $res = Target::find($this->editTargetId)->editInfo($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount, $this->renewalPercentage);
         if ($res) {
             $this->closeEditTargetSection();
             $this->mount($this->profile->id);
@@ -863,6 +868,7 @@ class CommProfileShow extends Component
             'eachMonth' => 'required|numeric|between:1,12',
             'premTarget' => 'required|numeric',
             'commPercentage' => 'required|numeric|between:1,100',
+            'renewalPercentage' => 'nullable|numeric|between:0,100',
             'maxIncomeTarget' => 'nullable|numeric|gt:minIncomeTarget',
             'addToBalance' => 'required|numeric|between:0,100',
             'addAsPayment' => 'required|numeric|between:0,100',
@@ -870,7 +876,7 @@ class CommProfileShow extends Component
             'isFullAmount' => 'nullable|boolean',
         ]);
 
-        $res = $this->profile->addTarget($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount);
+        $res = $this->profile->addTarget($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount, $this->renewalPercentage);
 
         if ($res) {
             $this->closeNewTargetSection();

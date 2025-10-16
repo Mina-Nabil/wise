@@ -1112,6 +1112,11 @@
                                                         <td class="table-td ">
                                                             <p class="text-success-600 text-lg">
                                                                 <b>{{ $target->comm_percentage }}%</b>
+                                                                @if($target->renewal_percentage)
+                                                                    <span class="text-sm text-slate-500">
+                                                                        ({{ $target->renewal_percentage }}% renewal)
+                                                                    </span>
+                                                                @endif
                                                             </p>
                                                         </td>
                                                         <td class="table-td ">
@@ -2221,6 +2226,25 @@
                                 @enderror
 
                                 <div class="input-area mt-3">
+                                    <label for="renewalPercentage" class="form-label">Renewal Percentage</label>
+                                    <div class="relative">
+                                        <input type="number" name="renewalPercentage"
+                                            class="form-control @error('renewalPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="renewalPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
+                                    </div>
+                                    <small class=caption>Percentage to be paid for renewal policies only (optional)</small>
+                                    <small class=caption>Example: 80 (input in field) mean 80% of income is added to the target</small>
+                                </div>
+                                @error('renewalPercentage')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
                                     <label for="prem_target" class="form-label">Yearly Premium Target</label>
                                     <input id="premTarget" type="number" class="form-control"
                                         wire:model="premTarget">
@@ -2407,6 +2431,25 @@
 
 
                                 @error('commPercentage')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="renewalPercentage" class="form-label">Renewal Percentage</label>
+                                    <div class="relative">
+                                        <input type="number" name="renewalPercentage"
+                                            class="form-control @error('renewalPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="renewalPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
+                                    </div>
+                                    <small class=caption>Percentage of the incometo be paid for renewal policies only (optional)</small>
+                                    <small class=caption>Example: 80 (input in field) mean 80% of income is added to the target</small>
+                                </div>
+                                @error('renewalPercentage')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
