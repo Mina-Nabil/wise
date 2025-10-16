@@ -2236,8 +2236,10 @@
                                             %
                                         </span>
                                     </div>
-                                    <small class=caption>Percentage to be paid for renewal policies only (optional)</small>
-                                    <small class=caption>Example: 80 (input in field) mean 80% of income is added to the target</small>
+                                    <div class="flex flex-col">
+                                        <small class=caption>Percentage to be paid for renewal policies only (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% of income is added to the target</small>
+                                    </div>
                                 </div>
                                 @error('renewalPercentage')
                                     <span
@@ -2446,8 +2448,10 @@
                                             %
                                         </span>
                                     </div>
-                                    <small class=caption>Percentage of the incometo be paid for renewal policies only (optional)</small>
-                                    <small class=caption>Example: 80 (input in field) mean 80% of income is added to the target</small>
+                                    <div class="flex flex-col">
+                                        <small class=caption>Percentage of the incometo be paid for renewal policies only (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% of income is added to the target</small>
+                                    </div>
                                 </div>
                                 @error('renewalPercentage')
                                     <span
