@@ -751,7 +751,7 @@ class Offer extends Model
 
                 //assign offer to operations team when create a new option 
                 // $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
-                $this->setStatus(self::STATUS_PENDING_OPERATIONS);
+                // $this->setStatus(self::STATUS_PENDING_OPERATIONS);
                 return $tmpOption;
             } else {
                 AppLog::error("Can't add offer option", desc: "No stack found", loggable: $this);
