@@ -734,7 +734,8 @@ class Offer extends Model
                     "gross_premium"  =>  $gross_premium,
                     "payment_frequency"  =>  $payment_frequency,
                     "is_renewal"  =>  $is_renewal,
-                    "installements_count"  =>  $installements_count
+                    "installements_count"  =>  $installements_count,
+                    "status"  =>  OfferOption::STATUS_NEW,
                 ]
             )) {
 
@@ -749,7 +750,7 @@ class Offer extends Model
                 AppLog::info("Offer option added", loggable: $this);
 
                 //assign offer to operations team when create a new option 
-                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+                // $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
                 return $tmpOption;
             } else {
@@ -1024,6 +1025,10 @@ class Offer extends Model
             }
             if ($state == OfferOption::STATUS_RQST_QTTN) {
                 $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+            }
+            if ($state == OfferOption::STATUS_QTTN_RECV) {
+                $this->assignTo($this->creator_id, bypassUserCheck: true);
+                $this->setStatus(self::STATUS_PENDING_SALES);
             }
             return true;
         } catch (Exception $e) {

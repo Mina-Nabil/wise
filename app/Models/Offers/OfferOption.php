@@ -21,6 +21,7 @@ class OfferOption extends Model
 
     const MORPH_TYPE = 'offer_options';
 
+    const STATUS_NEW = 'new';
     const STATUS_RQST_QTTN = 'request_qoutation';
     const STATUS_RJCT_BY_OPER = 'rejected_by_operation';
     const STATUS_RJCT_BY_INS = 'rejected_by_insurance';
@@ -29,6 +30,7 @@ class OfferOption extends Model
     const STATUS_ISSUED = 'issued';
 
     const STATUSES = [
+        self::STATUS_NEW,
         self::STATUS_RQST_QTTN,
         self::STATUS_RJCT_BY_OPER,
         self::STATUS_RJCT_BY_INS,
