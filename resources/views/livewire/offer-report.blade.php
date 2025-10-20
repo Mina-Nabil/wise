@@ -312,6 +312,18 @@
                                         Due
                                     </th>
 
+                                    <th scope="col" class=" table-th ">
+                                        Sold Policy
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Creation Date
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Payment Date
+                                    </th>
+
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -399,6 +411,17 @@
                                             {{ date_format(date_create($offer->due), 'Y-m-d') }}
                                         </td>
 
+                                        <td class="table-td ">
+                                            {{ $offer->sold_policy ? $offer->sold_policy->policy_no : 'N/A' }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            {{ date_format(date_create($offer->created_at), 'Y-m-d') }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            {{ $offer->sold_policy && $offer->sold_policy->payment_date ? date_format(date_create($offer->sold_policy->payment_date), 'Y-m-d') : 'N/A' }}
+                                        </td>
 
                                     </tr>
                                 @endforeach

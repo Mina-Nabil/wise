@@ -37,6 +37,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\Customers\Relative;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Offer extends Model
 {
@@ -166,6 +167,18 @@ class Offer extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
 
+        // Set column headers in row 1
+        $activeSheet->getCell('A1')->setValue('Client Name');
+        $activeSheet->getCell('B1')->setValue('Client Type');
+        $activeSheet->getCell('C1')->setValue('Type');
+        $activeSheet->getCell('D1')->setValue('Status');
+        $activeSheet->getCell('E1')->setValue('Renewal');
+        $activeSheet->getCell('F1')->setValue('Value');
+        $activeSheet->getCell('G1')->setValue('Assignee');
+        $activeSheet->getCell('H1')->setValue('Sold Policy');
+        $activeSheet->getCell('I1')->setValue('Creation Date');
+        $activeSheet->getCell('J1')->setValue('Payment Date');
+
         $i = 2;
         foreach ($offers as $of) {
             $activeSheet->getCell('A' . $i)->setValue($of->client->full_name);
@@ -177,6 +190,9 @@ class Offer extends Model
             $activeSheet->getCell('G' . $i)->setValue(
                 $of->assignee ? ucwords($of->assignee->first_name) . ' ' . ucwords($of->assignee->last_name) : ($of->assignee_type ? ucwords($of->assignee_type) : 'No one/team assigned')
             );
+            $activeSheet->getCell('H' . $i)->setValue($of->sold_policy ? $of->sold_policy->policy_no : 'N/A');
+            $activeSheet->getCell('I' . $i)->setValue($of->created_at ? $of->created_at->format('Y-m-d') : 'N/A');
+            $activeSheet->getCell('J' . $i)->setValue($of->sold_policy && $of->sold_policy->payment_date ? Carbon::parse($of->sold_policy->payment_date)->format('Y-m-d') : 'N/A');
             $i++;
         }
 
@@ -1247,7 +1263,7 @@ class Offer extends Model
                         $qq->where('sold_policies.expiry', "<=", $v->format('Y-m-d 23:59:59'));
                     });
             });
-        $query->with('client', 'creator', 'assignee', 'selected_option', 'item', 'renewal_sold_policy');
+        $query->with('client', 'creator', 'assignee', 'selected_option', 'item', 'renewal_sold_policy', 'sold_policy');
         return $query;
     }
 
@@ -1350,6 +1366,11 @@ class Offer extends Model
     public function renewal_sold_policy(): BelongsTo
     {
         return $this->belongsTo(SoldPolicy::class, 'renewal_policy_id');
+    }
+
+    public function sold_policy(): HasOne
+    {
+        return $this->hasOne(SoldPolicy::class, 'offer_id');
     }
 
     public function watcher_ids(): HasMany
