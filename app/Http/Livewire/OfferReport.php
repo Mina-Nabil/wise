@@ -350,7 +350,7 @@ class OfferReport extends Component
             collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all() ,
             $this->expiryFrom,
             $this->expiryTo,
-        )->with('sold_policy')->paginate(30);
+        )->paginate(30);
         return view('livewire.offer-report', [
             'offers' => $offers,
             'STATUSES' => $STATUSES,

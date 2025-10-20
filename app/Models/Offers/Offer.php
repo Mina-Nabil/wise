@@ -192,7 +192,7 @@ class Offer extends Model
             );
             $activeSheet->getCell('H' . $i)->setValue($of->sold_policy ? $of->sold_policy->policy_no : 'N/A');
             $activeSheet->getCell('I' . $i)->setValue($of->created_at ? $of->created_at->format('Y-m-d') : 'N/A');
-            $activeSheet->getCell('J' . $i)->setValue($of->sold_policy && $of->sold_policy->payment_date ? Carbon::parse($of->sold_policy->payment_date)->format('Y-m-d') : 'N/A');
+            $activeSheet->getCell('J' . $i)->setValue($of->sold_policy && $of->sold_policy->client_payment_date ? Carbon::parse($of->sold_policy->client_payment_date)->format('Y-m-d') : 'N/A');
             $i++;
         }
 

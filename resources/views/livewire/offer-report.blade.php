@@ -431,7 +431,7 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            {{ $offer->sold_policy && $offer->sold_policy->payment_date ? date_format(date_create($offer->sold_policy->payment_date), 'Y-m-d') : 'N/A' }}
+                                            {{ $offer->sold_policy && $offer->sold_policy->client_payment_date ? date_format(date_create($offer->sold_policy->client_payment_date), 'Y-m-d') : 'N/A' }}
                                         </td>
 
                                     </tr>
