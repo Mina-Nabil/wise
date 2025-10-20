@@ -45,6 +45,8 @@ class SoldPolicyReport extends Component
     public $InsurancePolicies;
     public $searchPolicy;
 
+    public $searchLob;
+
     public $search;
     public $start_from;
     public $start_to;
@@ -55,7 +57,7 @@ class SoldPolicyReport extends Component
     public $paid_from;
     public $paid_to;
     public $main_sales_id;
-    public $line_of_business;
+    public $line_of_business_ids = [];
     public $value_from;
     public $value_to;
     public $net_premium_to;
@@ -84,7 +86,7 @@ class SoldPolicyReport extends Component
     public $Epaid_from;
     public $Epaid_to;
     public $Emain_sales_id;
-    public $Eline_of_business;
+    public $Eline_of_business_ids = [];
     public $Evalue_from;
     public $Evalue_to;
     public $Enet_premium_to;
@@ -483,19 +485,24 @@ class SoldPolicyReport extends Component
     {
         $this->toggle($this->lobSection);
         if ($this->lobSection) {
-            $this->Eline_of_business = $this->line_of_business;
+            $this->Eline_of_business_ids = $this->line_of_business_ids;
         }
+    }
+
+    public function pushLob($lob)
+    {
+        $this->Eline_of_business_ids[] = $lob;
     }
 
     public function setLob()
     {
-        $this->line_of_business = $this->Eline_of_business;
+        $this->line_of_business_ids = $this->Eline_of_business_ids;
         $this->toggle($this->lobSection);
     }
 
     public function clearLob()
     {
-        $this->line_of_business = null;
+        $this->line_of_business_ids = [];
     }
 
     public function toggleMainSales()
@@ -660,7 +667,7 @@ class SoldPolicyReport extends Component
                 $this->expiry_from,
                 $this->expiry_to,
                 $creators_ids,
-                $this->line_of_business,
+                $this->line_of_business_ids,
                 $this->value_from,
                 $this->value_to,
                 $this->net_premium_to,
@@ -701,7 +708,7 @@ class SoldPolicyReport extends Component
         /** @var User */
         $user = Auth::user();
         if ($user->can('viewCommission', SoldPolicy::class)) {
-            return SoldPolicy::exportHay2aReport($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to, $this->cancel_time_from, $this->cancel_time_to, $this->has_offer);
+            return SoldPolicy::exportHay2aReport($this->start_from, $this->start_to, $this->expiry_from, $this->expiry_to, $creators_ids, $this->line_of_business_ids, $this->value_from, $this->value_to, $this->net_premium_to, $this->net_premium_from, $this->brand_ids, $this->company_ids, $this->policy_ids, $this->is_valid, $this->is_paid, $this->search, $this->is_renewal, $this->main_sales_id, $this->issued_from, $this->issued_to, collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(), $this->is_welcomed, $this->is_penalized, $this->is_cancelled, $this->paid_from, $this->paid_to, $this->cancel_time_from, $this->cancel_time_to, $this->has_offer);
         }
     }
 
@@ -806,7 +813,7 @@ class SoldPolicyReport extends Component
             $this->expiry_from,
             $this->expiry_to,
             $creators_ids,
-            $this->line_of_business,
+            $this->line_of_business_ids,
             $this->value_from,
             $this->value_to,
             $this->net_premium_to,

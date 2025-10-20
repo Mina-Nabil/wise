@@ -332,10 +332,17 @@
                                 </button>
                             @endif
 
-                            @if ($line_of_business)
+                            @if ($line_of_business_ids)
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="toggleLob">
-                                        {{ $line_of_business ? 'LOB: ' . ucwords(str_replace('_', ' ', $line_of_business)) : '' }}
+                                        LOB(
+                                        @foreach ($line_of_business_ids as $lob)
+                                            {{ ucwords(str_replace('_', ' ', $lob)) }}
+                                            @if (!$loop->last)
+                                                ,
+                                            @endif
+                                        @endforeach
+                                        )
                                         &nbsp;&nbsp;
                                     </span>
                                     <span wire:click="clearLob">
@@ -1575,7 +1582,7 @@
                         <div
                             class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
-                                Line of business
+                                Line of Business
                             </h3>
                             <button wire:click="toggleLob" type="button"
                                 class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
@@ -1591,21 +1598,39 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
-                            <div class="from-group">
-                                <label for="Eline_of_business" class="form-label">Line of business</label>
-                                <select name="Eline_of_business" id="Eline_of_business"
-                                    class="form-control w-full mt-2" wire:model.defer="Eline_of_business">
-                                    <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
-                                        value="">
-                                        Select user</option>
-                                    @foreach ($LINES_OF_BUSINESS as $LOB)
-                                        <option value="{{ $LOB }}"
-                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                            {{ ucwords(str_replace('_', ' ', $LOB)) }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                            <div>
+                                @foreach ($Eline_of_business_ids as $lob)
+                                    <!-- Display selected LOB -->
+                                    <span
+                                        class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ ucwords(str_replace('_', ' ', $lob)) }}</span>
+                                @endforeach
                             </div>
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class="bg-slate-200 dark:bg-slate-700">
+                                    <tr>
+                                        <th scope="col" class=" table-th ">
+                                            Line of Business
+                                        </th>
+                                        <th scope="col" class=" table-th ">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                    @foreach ($LINES_OF_BUSINESS as $LOB)
+                                        @if (!in_array($LOB, $Eline_of_business_ids))
+                                            <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                <td class="table-td">{{ ucwords(str_replace('_', ' ', $LOB)) }}</td>
+                                                <td class="table-td "><button
+                                                        wire:click="pushLob('{{ $LOB }}')"
+                                                        class="btn inline-flex justify-center btn-success light">Add</button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                         <!-- Modal footer -->
                         <div
