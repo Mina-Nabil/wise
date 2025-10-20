@@ -156,6 +156,50 @@ class SoldPolicy extends Model
         }
     }
 
+    public function setRenewalOffer($offer_id)
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('update', $this)) return false;
+
+        try {
+            $offer = Offer::find($offer_id);
+            if (!$offer) {
+                AppLog::error("Can't set renewal offer", desc: "Offer not found", loggable: $this);
+                return false;
+            }
+
+            DB::transaction(function () use ($offer) {
+                // Link the offer to this sold policy as its renewal offer
+                $offer->update([
+                    'renewal_policy_id' => $this->id,
+                    'is_renewal' => true
+                ]);
+
+                // Mark this policy as renewed
+                $this->update([
+                    'is_renewed' => true,
+                ]);
+
+                // If the offer has already generated a sold policy, link it back to this expiring policy
+                $newSoldPolicy = SoldPolicy::byOfferID($offer->id)->first();
+                if ($newSoldPolicy) {
+                    $newSoldPolicy->update([
+                        'renewal_policy_id' => $this->id
+                    ]);
+                    AppLog::info("Renewal chain completed", loggable: $this, desc: "Offer#$offer->id and SoldPolicy#$newSoldPolicy->id linked as renewal");
+                }
+            });
+
+            AppLog::info("Renewal offer linked", loggable: $this, desc: "Offer#$offer_id linked as renewal offer");
+            return $offer;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't set renewal offer", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function setPenaltyInfo($is_manual_penalty, $is_penalized, $penalty_amount)
     {
         /** @var User */

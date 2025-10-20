@@ -8,6 +8,7 @@ use App\Models\Business\SoldPolicyBenefit;
 use App\Models\Business\SoldPolicyDoc;
 use App\Models\Business\SoldPolicyExclusion;
 use App\Models\Insurance\PolicyBenefit;
+use App\Models\Offers\Offer;
 use App\Models\Offers\OfferOption;
 use App\Models\Payments\PolicyComm;
 use App\Models\Tasks\TaskAction;
@@ -86,6 +87,9 @@ class SoldPolicyShow extends Component
     public $generateRenewalOfferSec = false;
     public $renewalOfferDue;
     public $inFavorTo;
+
+    public $setRenewalOfferSec = false;
+    public $renewalOfferId;
 
     public $note;
     public $noteSection = false;
@@ -1047,6 +1051,50 @@ class SoldPolicyShow extends Component
             $this->mount($this->soldPolicy->id);
             $this->toggleGenerateRenewalOfferSec();
             $this->alert('success', 'document deleted');
+            $this->dispatchBrowserEvent('openNewTab', ['url' => '/offers' . '/' . $res->id]);
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function openSetRenewalOfferSec()
+    {
+        $this->setRenewalOfferSec = true;
+    }
+
+    public function closeSetRenewalOfferSec()
+    {
+        $this->setRenewalOfferSec = false;
+        $this->renewalOfferId = null;
+    }
+
+    public function setRenewalOffer()
+    {
+        $this->validate([
+            'renewalOfferId' => 'required|integer|exists:offers,id',
+        ]);
+
+        $offer = Offer::find($this->renewalOfferId);
+        if (!$offer) {
+            $this->alert('failed', 'Offer not found');
+            return;
+        }
+
+        if ($offer->is_renewal) {
+            $this->alert('failed', 'Offer is already linked to a renewal policy');
+            return;
+        }
+
+        if ($offer->renewal_policy_id) {
+            $this->alert('failed', 'Offer is already linked to a renewal policy');
+            return;
+        }
+
+        $res = $this->soldPolicy->setRenewalOffer($this->renewalOfferId);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->closeSetRenewalOfferSec();
+            $this->alert('success', 'Renewal offer linked successfully!');
             $this->dispatchBrowserEvent('openNewTab', ['url' => '/offers' . '/' . $res->id]);
         } else {
             $this->alert('failed', 'server error');
