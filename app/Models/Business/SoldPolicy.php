@@ -1425,7 +1425,7 @@ class SoldPolicy extends Model
         ?Carbon $cancel_time_to = null,
         ?bool $is_expiring = null
     ) {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business_ids, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids, $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, null, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to, null, null, $is_expiring)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business_ids, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids, $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, null, $paid_from, $paid_to, null, null, null, null, $is_expiring)->get();
 
         $cancelledPolicies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business_ids, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, true, $paid_from, $paid_to, $issued_from, $issued_to, null, null, $is_expiring)->get();
 
@@ -1822,15 +1822,17 @@ class SoldPolicy extends Model
                 $q->where('start', ">=", $v->format('Y-m-d 00:00:00'));
             })->when($start_to, function ($q, $v) {
                 $q->where('start', "<=", $v->format('Y-m-d 23:59:59'));
-            })->when($issued_from, function ($q, $v) {
-                $q->where(function ($qq) use ($v) {
-                    $qq->where('sold_policies.created_at', ">=", $v->format('Y-m-d 00:00:00'))
-                        ->orWhere('sold_policies.cancellation_time', ">=", $v->format('Y-m-d 00:00:00'));
+            })->when($issued_from, function ($q, $v) use ($is_cancelled) {
+                $q->where(function ($qq) use ($v, $is_cancelled) {
+                    $qq->where('sold_policies.created_at', ">=", $v->format('Y-m-d 00:00:00'))->when($is_cancelled, function ($qq) use ($v) {
+                        $qq->orWhere('sold_policies.cancellation_time', ">=", $v->format('Y-m-d 00:00:00'));
+                    });
                 });
-            })->when($issued_to, function ($q, $v) {
-                $q->where(function ($qq) use ($v) {
-                    $qq->where('sold_policies.created_at', "<=", $v->format('Y-m-d 23:59:59'))
-                        ->orWhere('sold_policies.cancellation_time', "<=", $v->format('Y-m-d 23:59:59'));
+            })->when($issued_to, function ($q, $v) use ($is_cancelled) {
+                $q->where(function ($qq) use ($v, $is_cancelled) {
+                    $qq->where('sold_policies.created_at', "<=", $v->format('Y-m-d 23:59:59'))->when($is_cancelled, function ($qq) use ($v) {
+                        $qq->orWhere('sold_policies.cancellation_time', "<=", $v->format('Y-m-d 23:59:59'));
+                    });
                 });
             })->when($cancel_time_from, function ($q, $v) {
                 $q->where('sold_policies.cancellation_time', ">=", $v->format('Y-m-d 00:00:00'));
