@@ -570,7 +570,6 @@
                                                                 {{ $review->is_reviewed ? 'Edit Ratings & Comments' : 'Set Ratings & Comments' }}
                                                             </button>
                                                         </li>
-                                                    @endif
                                                 @endcan
 
                                                 <!-- Go to Claim -->
