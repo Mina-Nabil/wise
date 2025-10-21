@@ -266,7 +266,7 @@
         <div class="card-body px-6 pb-6">
             <div class=" -mx-6">
                 <div class="inline-block min-w-full align-middle">
-                    <div class="overflow-hidden ">
+                
                         <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                             <thead
                                 class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
@@ -317,11 +317,11 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Creation Date
+                                        Creation
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Payment Date
+                                        Payment
                                     </th>
 
                                 </tr>
@@ -459,10 +459,6 @@
                             </div>
                             {{-- END: empty filter result --}}
                         @endif
-
-                    </div>
-
-
 
                     {{ $offers->links('vendor.livewire.bootstrap') }}
 

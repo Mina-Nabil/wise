@@ -1425,7 +1425,7 @@ class SoldPolicy extends Model
         ?Carbon $cancel_time_to = null,
         ?bool $is_expiring = null
     ) {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business_ids, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, false, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to, null, null, $is_expiring)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business_ids, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids, $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, null, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to, null, null, $is_expiring)->get();
 
         $cancelledPolicies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business_ids, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, true, $paid_from, $paid_to, $issued_from, $issued_to, null, null, $is_expiring)->get();
 
