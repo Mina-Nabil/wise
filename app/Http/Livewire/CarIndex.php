@@ -104,7 +104,7 @@ class CarIndex extends Component
     {
         $this->validate(
             [
-                'updatedYear' => ['regex:/^\d{4}$/', 'unique:car_prices,model_year'],
+                'updatedYear' => ['regex:/^\d{4}$/'],
                 'updatedPrice' => 'required|numeric'
             ],
             [],
