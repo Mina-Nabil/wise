@@ -37,15 +37,15 @@
                             <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0"
                                 id="tabs-tab" role="tablist">
                                 @can('create', \App\Models\Insurance\Company::class)
-                                <li class="nav-item" role="presentation" wire:click="changeSection('invoices')">
-                                    <a href="#tabs-messages-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'invoices') active @endif dark:text-slate-300"
-                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
-                                        data-bs-target="#tabs-messages-withIcon" role="tab"
-                                        aria-controls="tabs-messages-withIcon" aria-selected="false">
-                                        <iconify-icon class="mr-1" icon="basil:invoice-outline"></iconify-icon>
-                                        Invoices</a>
-                                </li>
+                                    <li class="nav-item" role="presentation" wire:click="changeSection('invoices')">
+                                        <a href="#tabs-messages-withIcon"
+                                            class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'invoices') active @endif dark:text-slate-300"
+                                            id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
+                                            data-bs-target="#tabs-messages-withIcon" role="tab"
+                                            aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                            <iconify-icon class="mr-1" icon="basil:invoice-outline"></iconify-icon>
+                                            Invoices</a>
+                                    </li>
                                 @endcan
 
                                 <li class="nav-item" role="presentation" wire:click="changeSection('emails')">
@@ -60,15 +60,15 @@
                                 </li>
 
                                 @can('create', \App\Models\Insurance\Company::class)
-                                <li class="nav-item" role="presentation" wire:click="changeSection('extras')">
-                                    <a href="#tabs-profile-withIcon"
-                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'extras') active @endif dark:text-slate-300"
-                                        id="tabs-profile-withIcon-tab" data-bs-toggle="pill"
-                                        data-bs-target="#tabs-profile-withIcon" role="tab"
-                                        aria-controls="tabs-profile-withIcon" aria-selected="false">
-                                        <iconify-icon class="mr-1" icon="ph:plus-bold"></iconify-icon>
-                                        Extras</a>
-                                </li>
+                                    <li class="nav-item" role="presentation" wire:click="changeSection('extras')">
+                                        <a href="#tabs-profile-withIcon"
+                                            class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'extras') active @endif dark:text-slate-300"
+                                            id="tabs-profile-withIcon-tab" data-bs-toggle="pill"
+                                            data-bs-target="#tabs-profile-withIcon" role="tab"
+                                            aria-controls="tabs-profile-withIcon" aria-selected="false">
+                                            <iconify-icon class="mr-1" icon="ph:plus-bold"></iconify-icon>
+                                            Extras</a>
+                                    </li>
                                 @endcan
                             </ul>
                         </div>
