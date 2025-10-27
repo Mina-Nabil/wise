@@ -75,6 +75,7 @@ class CommProfileShow extends Component
     public $nextRunDate; //
     public $commPercentage; //
     public $renewalPercentage; //
+    public $salesOutPercentage; //
     public $addToBalance;
     public $addAsPayment;
     public $basePayment;
@@ -761,6 +762,7 @@ class CommProfileShow extends Component
         $this->nextRunDate = null;
         $this->commPercentage = null;
         $this->renewalPercentage = null;
+        $this->salesOutPercentage = null;
         $this->addToBalance = 100;
         $this->addAsPayment = 100;
         $this->basePayment = null;
@@ -788,6 +790,7 @@ class CommProfileShow extends Component
         // $this->nextRunDate = $t->next_run_date;
         $this->commPercentage = $t->comm_percentage;
         $this->renewalPercentage = $t->renewal_percentage;
+        $this->salesOutPercentage = $t->sales_out_percentage;
         $this->addToBalance = $t->add_to_balance;
         $this->addAsPayment = $t->add_as_payment;
         $this->basePayment = $t->base_payment;
@@ -804,6 +807,7 @@ class CommProfileShow extends Component
         $this->nextRunDate = null;
         $this->commPercentage = null;
         $this->renewalPercentage = null;
+        $this->salesOutPercentage = null;
         $this->addToBalance = 100;
         $this->addAsPayment = 100;
         $this->basePayment = null;
@@ -820,6 +824,7 @@ class CommProfileShow extends Component
             'premTarget' => 'required|numeric',
             'commPercentage' => 'required|numeric',
             'renewalPercentage' => 'nullable|numeric|between:0,100',
+            'salesOutPercentage' => 'nullable|numeric|between:0,100',
             'maxIncomeTarget' => 'nullable|numeric',
             'addToBalance' => 'required|numeric',
             'addAsPayment' => 'required|numeric',
@@ -828,7 +833,7 @@ class CommProfileShow extends Component
             'isFullAmount' => 'nullable|boolean',
         ]);
 
-        $res = Target::find($this->editTargetId)->editInfo($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount, $this->renewalPercentage);
+        $res = Target::find($this->editTargetId)->editInfo($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount, $this->renewalPercentage, $this->salesOutPercentage);
         if ($res) {
             $this->closeEditTargetSection();
             $this->mount($this->profile->id);
@@ -869,6 +874,7 @@ class CommProfileShow extends Component
             'premTarget' => 'required|numeric',
             'commPercentage' => 'required|numeric|between:1,100',
             'renewalPercentage' => 'nullable|numeric|between:0,100',
+            'salesOutPercentage' => 'nullable|numeric|between:0,100',
             'maxIncomeTarget' => 'nullable|numeric|gt:minIncomeTarget',
             'addToBalance' => 'required|numeric|between:0,100',
             'addAsPayment' => 'required|numeric|between:0,100',
@@ -876,7 +882,7 @@ class CommProfileShow extends Component
             'isFullAmount' => 'nullable|boolean',
         ]);
 
-        $res = $this->profile->addTarget($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount, $this->renewalPercentage);
+        $res = $this->profile->addTarget($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount, $this->renewalPercentage, $this->salesOutPercentage);
 
         if ($res) {
             $this->closeNewTargetSection();
@@ -915,6 +921,7 @@ class CommProfileShow extends Component
         $c = CommProfileConf::find($id);
         $this->percentage = $c->percentage;
         $this->renewalPercentage = $c->renewal_percentage;
+        $this->salesOutPercentage = $c->sales_out_percentage;
         $this->from = $c->from;
     }
 
@@ -923,6 +930,7 @@ class CommProfileShow extends Component
         $this->editConfId = null;
         $this->percentage = null;
         $this->renewalPercentage = null;
+        $this->salesOutPercentage = null;
         $this->from = null;
     }
 
@@ -931,10 +939,11 @@ class CommProfileShow extends Component
         $this->validate([
             'percentage' => 'required|numeric',
             'renewalPercentage' => 'nullable|numeric|between:0,100',
+            'salesOutPercentage' => 'nullable|numeric|between:0,100',
             'from' => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
 
-        $res = CommProfileConf::find($this->editConfId)->editInfo($this->percentage, $this->from, $this->renewalPercentage);
+        $res = CommProfileConf::find($this->editConfId)->editInfo($this->percentage, $this->from, $this->renewalPercentage, $this->salesOutPercentage);
 
         if ($res) {
             $this->closeEditConf();
@@ -1016,21 +1025,23 @@ class CommProfileShow extends Component
         $this->validate([
             'percentage' => 'required|numeric',
             'renewalPercentage' => 'nullable|numeric|between:0,100',
+            'salesOutPercentage' => 'nullable|numeric|between:0,100',
             'from' => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
         if ($this->line_of_business) {
             $this->validate([
                 'line_of_business' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),
             ]);
-            $res = $this->profile->addConfiguration($this->percentage, $this->from, line_of_business: $this->line_of_business, renewal_percentage: $this->renewalPercentage);
+            $res = $this->profile->addConfiguration($this->percentage, $this->from, line_of_business: $this->line_of_business, renewal_percentage: $this->renewalPercentage, sales_out_percentage: $this->salesOutPercentage);
         } else {
-            $res = $this->profile->addConfiguration($this->percentage, $this->from, condition: $this->condition, renewal_percentage: $this->renewalPercentage);
+            $res = $this->profile->addConfiguration($this->percentage, $this->from, condition: $this->condition, renewal_percentage: $this->renewalPercentage, sales_out_percentage: $this->salesOutPercentage);
         }
 
         if ($res) {
             $this->newConfSec = null;
             $this->percentage = null;
             $this->renewalPercentage = null;
+            $this->salesOutPercentage = null;
             $this->from = null;
             $this->condition = null;
             $this->line_of_business = null;
@@ -1057,6 +1068,7 @@ class CommProfileShow extends Component
     {
         $this->newConfSec = false;
         $this->renewalPercentage = null;
+        $this->salesOutPercentage = null;
     }
 
     public function openUpdateSec()

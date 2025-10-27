@@ -283,7 +283,8 @@ class CommProfile extends Model
         $from, //from const FROMS
         Policy|Company $condition = null, //include a policy or a company as a condition
         $line_of_business = null, // or select a line of business as the condition - line of business is on of Policy::LINES_OF_BUSINESS
-        $renewal_percentage = null // percentage for renewal policies
+        $renewal_percentage = null, // percentage for renewal policies
+        $sales_out_percentage = null // percentage for sales out policies
     ) {
         /** @var User */
         $user = Auth::user();
@@ -301,6 +302,7 @@ class CommProfile extends Model
             $conf = $this->configurations()->create([
                 "percentage"    =>  $percentage,
                 "renewal_percentage" =>  $renewal_percentage,
+                "sales_out_percentage" =>  $sales_out_percentage,
                 "from"          =>  $from,
                 "line_of_business" =>  $line_of_business,
                 "order"         =>  $order
@@ -344,6 +346,7 @@ class CommProfile extends Model
         $is_end_of_month = false,
         $is_full_amount = false,
         $renewal_percentage = null,
+        $sales_out_percentage = null,
     ) {
         try {
             AppLog::info("Creating comm profile target", loggable: $this);
@@ -354,6 +357,7 @@ class CommProfile extends Model
                 "prem_target"       =>  $prem_target,
                 "comm_percentage"   =>  $comm_percentage,
                 "renewal_percentage" =>  $renewal_percentage,
+                "sales_out_percentage" =>  $sales_out_percentage,
                 "min_income_target" =>  $min_income_target,
                 "add_to_balance"    =>  $add_to_balance,
                 "add_as_payment"    =>  $add_as_payment,

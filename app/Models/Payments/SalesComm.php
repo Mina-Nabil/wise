@@ -207,7 +207,8 @@ class SalesComm extends Model
         } else if ($valid_conf) {
             //update comm info then calc same as direct
             $isRenewal = $this->sold_policy->is_renewal;
-            $this->comm_percentage = $isRenewal && ($valid_conf->renewal_percentage > 0) ? $valid_conf->renewal_percentage : $valid_conf->percentage;
+            $hasSalesOut = $this->sold_policy->has_sales_out;
+            $this->comm_percentage = $this->calculatePercentageForConfiguration($isRenewal, $hasSalesOut, $valid_conf);
             $this->from = $valid_conf->from;
 
             $this->save();
@@ -239,6 +240,22 @@ class SalesComm extends Model
             AppLog::error("Calculating Sales Comm amount failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
+    }
+
+    private function calculatePercentageForConfiguration($isRenewal, $hasSalesOut, $valid_conf)
+    {
+
+        $percentage = $valid_conf->percentage;
+
+        if ($isRenewal && $valid_conf->renewal_percentage > 0) {
+            $percentage *= $valid_conf->renewal_percentage;
+        }
+
+        if ($hasSalesOut && $valid_conf->sales_out_percentage > 0) {
+            $percentage *= $valid_conf->sales_out_percentage;
+        }
+
+        return $percentage;
     }
 
     public function setAsPaid(Carbon $date = null)

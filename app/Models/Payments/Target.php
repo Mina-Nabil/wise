@@ -34,7 +34,8 @@ class Target extends Model
         "next_run_date",
         "is_end_of_month",
         "is_full_amount",
-        "renewal_percentage" //percentage of the target to be paid for renewal policies only
+        "renewal_percentage", //percentage of the target to be paid for renewal policies only
+        "sales_out_percentage" //percentage of the target to be paid for sales out policies only
     ];
     public $timestamps = false;
 
@@ -70,13 +71,13 @@ class Target extends Model
             $totalClientPaid = $sp->total_client_paid;
             if ($totalClientPaidBetween < $totalClientPaid) {
                 $tmpAmount = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
-                $incomeAmount = ($sp->is_renewal && $this->renewal_percentage > 0) ? ($tmpAmount * ($this->renewal_percentage / 100)) : $tmpAmount;
+                $incomeAmount = $this->calculateSoldPolicyIncome($sp, $tmpAmount);
                 $totalIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
             } else {
 
                 $tmpAmount = (($sp->tax_amount > 0) ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions;
-                $incomeAmount = ($sp->is_renewal && $this->renewal_percentage > 0) ? ($tmpAmount * ($this->renewal_percentage / 100)) : $tmpAmount;
+                $incomeAmount = $this->calculateSoldPolicyIncome($sp, $tmpAmount);
                 $totalIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
             }
@@ -137,6 +138,15 @@ class Target extends Model
         });
     }
 
+    private function calculateSoldPolicyIncome(SoldPolicy $sp, $tmpAmount)
+    {
+        $incomeAmount = ($sp->is_renewal && $this->renewal_percentage > 0) ? ($tmpAmount * ($this->renewal_percentage / 100)) : $tmpAmount;
+        if ($sp->has_sales_out && $this->sales_out_percentage > 0) {
+            $incomeAmount = ($incomeAmount * ($this->sales_out_percentage / 100));
+        }
+        return $incomeAmount;
+    }
+
     public function addRun($added_to_balance, $added_to_payments)
     {
         try {
@@ -163,6 +173,7 @@ class Target extends Model
         $is_end_of_month = false,
         $is_full_amount = false,
         $renewal_percentage = null,
+        $sales_out_percentage = null,
     ) {
         try {
             AppLog::info("Updating comm profile target", loggable: $this);
@@ -179,6 +190,7 @@ class Target extends Model
                 "is_end_of_month"   =>  $is_end_of_month,
                 "is_full_amount"   =>  $is_full_amount ?? false,
                 "renewal_percentage"   =>  $renewal_percentage,
+                "sales_out_percentage"   =>  $sales_out_percentage,
             ];
             if ($next_run_date)
                 $updates['next_run_date'] = $next_run_date->format('Y-m-d');

@@ -1117,6 +1117,11 @@
                                                                         ({{ $target->renewal_percentage }}% renewal)
                                                                     </span>
                                                                 @endif
+                                                                @if ($target->sales_out_percentage)
+                                                                    <span class="text-sm text-slate-500">
+                                                                        ({{ $target->sales_out_percentage }}% sales out)
+                                                                    </span>
+                                                                @endif
                                                             </p>
                                                         </td>
                                                         <td class="table-td ">
@@ -1273,6 +1278,11 @@
                                                                 @if($conf->renewal_percentage)
                                                                     <span class="text-sm text-slate-500">
                                                                         ({{ $conf->renewal_percentage }}% renewal)
+                                                                    </span>
+                                                                @endif
+                                                                @if($conf->sales_out_percentage)
+                                                                    <span class="text-sm text-slate-500">
+                                                                        ({{ $conf->sales_out_percentage }}% sales out)
                                                                     </span>
                                                                 @endif
                                                             </p>
@@ -2253,6 +2263,29 @@
                                 @enderror
 
                                 <div class="input-area mt-3">
+                                    <label for="salesOutPercentage" class="form-label">Sales Out Percentage</label>
+                                    <div class="relative">
+                                        <input type="number" name="salesOutPercentage"
+                                            class="form-control @error('salesOutPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="salesOutPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <small class=caption>Percentage to be paid for sales out policies only
+                                            (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% of income is added to
+                                            the target</small>
+                                    </div>
+                                </div>
+                                @error('salesOutPercentage')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
                                     <label for="prem_target" class="form-label">Yearly Premium Target</label>
                                     <input id="premTarget" type="number" class="form-control"
                                         wire:model="premTarget">
@@ -2467,6 +2500,29 @@
                                 @enderror
 
                                 <div class="input-area mt-3">
+                                    <label for="salesOutPercentage" class="form-label">Sales Out Percentage</label>
+                                    <div class="relative">
+                                        <input type="number" name="salesOutPercentage"
+                                            class="form-control @error('salesOutPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="salesOutPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <small class=caption>Percentage to be paid for sales out policies only
+                                            (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% of income is added to
+                                            the target</small>
+                                    </div>
+                                </div>
+                                @error('salesOutPercentage')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
                                     <label for="prem_target" class="form-label">Yearly Premium Target</label>
                                     <input id="premTarget" type="number" class="form-control"
                                         wire:model="premTarget">
@@ -2621,6 +2677,28 @@
                                         </div>
                                 </div>
                                 @error('renewalPercentage')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="salesOutPercentage" class="form-label">Sales Out Percentage</label>
+                                    <div class="relative">
+                                        <input type="number" name="salesOutPercentage"
+                                            class="form-control @error('salesOutPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="salesOutPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <small class=caption>Percentage to be paid for sales out policies only
+                                            (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% multiplied by the sales income after comm percentage is applied</small>
+                                    </div>
+                                </div>
+                                @error('salesOutPercentage')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
@@ -2794,10 +2872,32 @@
                                     </div>
                                     <div class="flex flex-col">
                                     <small class=caption>Percentage of the income to be paid for renewal policies only (optional)</small>
-                                        <small class=caption>Example: 80 (input in field) mean 80% multiplied by the selected 'From' value</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% multiplied by the sales income after comm percentage is applied</small>
                                     </div>
                                 </div>
                                 @error('renewalPercentage')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="salesOutPercentage" class="form-label">Sales Out Percentage</label>
+                                    <div class="relative">
+                                        <input type="number" name="salesOutPercentage"
+                                            class="form-control @error('salesOutPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="salesOutPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <small class=caption>Percentage to be paid for sales out policies only
+                                            (optional)</small>
+                                        <small class=caption>Example: 80 (input in field) mean 80% multiplied by the selected 'From' value</small>
+                                    </div>
+                                </div>
+                                @error('salesOutPercentage')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

@@ -30,6 +30,7 @@ class CommProfileConf extends Model
     public $fillable = [
         "percentage",
         "renewal_percentage",
+        "sales_out_percentage",
         "from",
         "line_of_business",
         "order"
@@ -71,7 +72,8 @@ class CommProfileConf extends Model
     public function editInfo(
         $percentage,
         $from,
-        $renewal_percentage = null
+        $renewal_percentage = null,
+        $sales_out_percentage = null
     ) {
         try {
 
@@ -83,6 +85,7 @@ class CommProfileConf extends Model
             $this->update([
                 "percentage"    =>  $percentage,
                 "renewal_percentage" =>  $renewal_percentage,
+                "sales_out_percentage" =>  $sales_out_percentage,
                 "from"          =>  $from
             ]);
             return true;
