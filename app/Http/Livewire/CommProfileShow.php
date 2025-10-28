@@ -10,7 +10,6 @@ use App\Models\Payments\Target;
 use App\Models\Payments\TargetRun;
 use App\Models\Payments\TargetCycle;
 use App\Models\Payments\CommProfilePayment;
-use App\Models\Payments\CompanyCommPayment;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
 use App\Models\Payments\ClientPayment;
@@ -107,10 +106,6 @@ class CommProfileShow extends Component
     public $salesCommArray = [];
     public $showLinkedSalesComm; //payment id
     public $linkedSalesComm;
-
-    // CompanyCommPayment properties
-    public $companyCommDeleteId;
-    public $companyCommStatus;
 
     // CommProfilePayment delete property
     public $deleteCommPaymentId;
@@ -1217,38 +1212,6 @@ class CommProfileShow extends Component
         }
     }
 
-    // CompanyCommPayment methods
-    public function setCompanyCommStatus($status = null)
-    {
-        if ($status) {
-            $this->companyCommStatus = $status;
-        } else {
-            $this->companyCommStatus = null;
-        }
-    }
-
-    public function dismissDeleteCompanyComm()
-    {
-        $this->companyCommDeleteId = null;
-    }
-
-    public function confirmDeleteCompanyComm($id)
-    {
-        $this->companyCommDeleteId = $id;
-    }
-
-    public function deleteCompanyComm()
-    {
-        $res = CompanyCommPayment::find($this->companyCommDeleteId)->delete();
-        if ($res) {
-            $this->dismissDeleteCompanyComm();
-            $this->mount($this->profile->id);
-            $this->alert('success', 'Company commission payment deleted!');
-        } else {
-            $this->alert('failed', 'server error!');
-        }
-    }
-
     public function mount($id)
     {
         $this->profile = CommProfile::with('sales_comm', 'sales_comm.sold_policy', 'sales_comm.sold_policy.policy', 'sales_comm.sold_policy.policy.company')->find($id);
@@ -1302,24 +1265,11 @@ class CommProfileShow extends Component
             })
             ->paginate(10);
 
-        // Get CompanyCommPayment records through sold policies related to this profile
-        $company_comm_payments = CompanyCommPayment::whereHas('sold_policy.sales_comms', function ($query) {
-                $query->where('comm_profile_id', $this->profile->id);
-            })
-            ->with(['sold_policy', 'sold_policy.client', 'sold_policy.policy.company', 'receiver'])
-            ->when($this->companyCommStatus, function ($query) {
-                return $query->where('status', $this->companyCommStatus);
-            })
-            ->when($this->isSortLatest, function ($query) {
-                return $query->latest(); // Sort company comm payments by latest
-            })
-            ->paginate(10);
 
         $totalIncome = SoldPolicy::byProfileId($this->profile->id)->sum('after_tax_comm');
         $totalSalesIncome = $this->profile->sales_comm()->sum('amount');
 
         $SALES_COMM_STATUSES = SalesComm::PYMT_STATES;
-        $COMPANY_COMM_STATUSES = CompanyCommPayment::PYMT_STATES;
 
         // Default entry titles if not actively searching
         if (empty($this->entryTitles)) {
@@ -1339,9 +1289,7 @@ class CommProfileShow extends Component
             'targets' => $targets,
             'configurations' => $configurations,
             'client_payments' => $client_payments,
-            'company_comm_payments' => $company_comm_payments,
             'SALES_COMM_STATUSES' => $SALES_COMM_STATUSES,
-            'COMPANY_COMM_STATUSES' => $COMPANY_COMM_STATUSES,
             'totalPaid' => $totalPaid,
             'totalIncome' => $totalIncome,
             'totalSalesIncome' => $totalSalesIncome
