@@ -140,7 +140,7 @@ class Target extends Model
 
     private function calculateSoldPolicyIncome(SoldPolicy $sp, $tmpAmount)
     {
-        $incomeAmount = ($sp->is_renewal && $this->renewal_percentage > 0) ? ($tmpAmount * ($this->renewal_percentage / 100)) : $tmpAmount;
+        $incomeAmount = ($sp->renewal_policy_id && $this->renewal_percentage > 0) ? ($tmpAmount * ($this->renewal_percentage / 100)) : $tmpAmount;
         if ($sp->has_sales_out && $this->sales_out_percentage > 0) {
             $incomeAmount = ($incomeAmount * ($this->sales_out_percentage / 100));
         }
