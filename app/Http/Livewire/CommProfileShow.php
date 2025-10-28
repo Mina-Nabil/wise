@@ -1202,7 +1202,7 @@ class CommProfileShow extends Component
             return;
         }
 
-        $res = $payment->delete();
+        $res = $payment->deletePayment();
         if ($res) {
             $this->dismissDeleteCommPayment();
             $this->mount($this->profile->id);

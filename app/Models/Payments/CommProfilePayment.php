@@ -338,7 +338,7 @@ class CommProfilePayment extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public function delete()
+    public function deletePayment()
     {
         /** @var User */
         $user = Auth::user();
