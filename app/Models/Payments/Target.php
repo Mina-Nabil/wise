@@ -101,12 +101,11 @@ class Target extends Model
 
         $max_income_target = $this->max_income_target > 0 ? $this->max_income_target : null;
 
-        $balance_update = ($this->comm_percentage / 100) *
-            (($this->is_full_amount ? $totalIncome :
-                min(
-                    $totalIncome,
-                    ($max_income_target ?? $totalIncome)
-                )) - $this->min_income_target) *  ($this->add_to_balance / 100);
+        $balance_update =  (($this->is_full_amount ? $totalIncome :
+            min(
+                $totalIncome,
+                ($max_income_target ?? $totalIncome)
+            )) - $this->min_income_target) *  ($this->add_to_balance / 100);
 
         Log::info("Target#$this->id balance update", ["balance_update" => $balance_update, 'max_income_target' => $max_income_target]);
 
@@ -145,7 +144,8 @@ class Target extends Model
 
     private function calculateCommissionPercentage(SoldPolicy $sp): float
     {
-        $commPercentage = ($sp->renewal_policy_id && $this->renewal_percentage > 0) ? ($this->renewal_percentage / 100) : 1;
+        $commPercentage = $this->comm_percentage / 100;
+        $commPercentage *= ($sp->renewal_policy_id && $this->renewal_percentage > 0) ? ($this->renewal_percentage / 100) : 1;
         if ($sp->has_sales_out && $this->sales_out_percentage > 0) {
             $commPercentage *= ($this->sales_out_percentage / 100);
         }
