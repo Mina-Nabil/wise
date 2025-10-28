@@ -65,7 +65,7 @@ class CommProfilePaymentPolicy
      */
     public function delete(User $user, CommProfilePayment $commProfilePayment)
     {
-        return $user->is_finance || $user->is_admin || $user->is_finance_assistant;
+        return  ($commProfilePayment->is_new || $commProfilePayment->is_cancelled) && ($user->is_finance || $user->is_admin || $user->is_finance_assistant);
     }
 
     /**

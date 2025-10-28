@@ -340,7 +340,17 @@ class CommProfilePayment extends Model
 
     public function delete()
     {
-        return $this->setAsCancelled();
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('delete', $this)) return false;
+
+        try {
+            return $this->forceDelete();
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Deleting Comm Profile Payment failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
     }
 
     ///attributes
@@ -351,6 +361,10 @@ class CommProfilePayment extends Model
     public function getIsApprovedAttribute()
     {
         return $this->status == self::PYMT_STATE_APPROVED;
+    }
+    public function getIsCancelledAttribute()
+    {
+        return $this->status == self::PYMT_STATE_CANCELLED;
     }
 
     ///scopes
