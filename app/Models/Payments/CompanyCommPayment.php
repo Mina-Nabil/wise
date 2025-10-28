@@ -162,14 +162,31 @@ class CompanyCommPayment extends Model
             AppLog::error("Setting Company Comm info failed", desc: $e->getMessage(), loggable: $this);
         }
     }
+
     public function delete()
     {
-        return $this->setAsCancelled();
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('delete', $this)) return false;
+
+        try {
+            return $this->forceDelete();
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Deleting Company Comm info failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
     }
+
     ///attributes
     public function getIsNewAttribute()
     {
         return $this->status == self::PYMT_STATE_NEW;
+    }
+
+    public function getIsCancelledAttribute()
+    {
+        return $this->status == self::PYMT_STATE_CANCELLED;
     }
 
     ///scopes

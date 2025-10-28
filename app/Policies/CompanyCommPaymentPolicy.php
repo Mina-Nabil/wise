@@ -65,7 +65,7 @@ class CompanyCommPaymentPolicy
      */
     public function delete(User $user, CompanyCommPayment $companyCommPayment)
     {
-        return $user->is_admin || $user->is_finance;
+        return  ($companyCommPayment->is_new || $companyCommPayment->is_cancelled) && ($user->is_admin || $user->is_finance);
     }
 
     /**
