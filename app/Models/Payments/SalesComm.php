@@ -132,7 +132,7 @@ class SalesComm extends Model
     }
 
     /** Should be used while target calculation only */
-    public function updatePaymentByTarget(Target $t, $paid_amount, $is_manual = false)
+    public function updatePaymentByTarget(Target $t, $paid_amount, $is_manual = false, $comm_percentage = null)
     {
 
         if ($is_manual) {
@@ -146,7 +146,7 @@ class SalesComm extends Model
             $this->comm_target_runs()->firstOrCreate([
                 'target_id' =>  $t->id
             ], [
-                'percentage'    =>  $t->comm_percentage,
+                'percentage'    =>  $comm_percentage ?? $t->comm_percentage,
                 'amount'    =>  $paid_amount,
             ]);
 

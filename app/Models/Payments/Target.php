@@ -62,6 +62,7 @@ class Target extends Model
         $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
         $paidAmounts = [];
         $paidAmountsPercent = [];
+        $commPercentages = [];
 
         /** @var SoldPolicy */
         foreach ($soldPolicies as $sp) {
@@ -71,15 +72,19 @@ class Target extends Model
             $totalClientPaid = $sp->total_client_paid;
             if ($totalClientPaidBetween < $totalClientPaid) {
                 $tmpAmount = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
-                $incomeAmount = $this->calculateSoldPolicyIncome($sp, $tmpAmount);
+                $commPercentage = $this->calculateCommissionPercentage($sp);
+                $incomeAmount = $commPercentage * $tmpAmount;
                 $totalIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
+                $commPercentages[$sp->id] = $commPercentage;
             } else {
 
                 $tmpAmount = (($sp->tax_amount > 0) ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions;
-                $incomeAmount = $this->calculateSoldPolicyIncome($sp, $tmpAmount);
+                $commPercentage = $this->calculateCommissionPercentage($sp);
+                $incomeAmount = $commPercentage * $tmpAmount;
                 $totalIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
+                $commPercentages[$sp->id] = $commPercentage;
             }
 
             Log::info("SP#$sp->id details", ["tmpAmount" => $tmpAmount, "tax_amount" => $sp->tax_amount, "after_tax_comm" => $sp->after_tax_comm, "client_paid_by_dates" => $sp->client_paid_by_dates, "gross_premium" => $sp->gross_premium, "total_comm_subtractions" => $sp->total_comm_subtractions, "isInstallements" => ($totalClientPaidBetween < $totalClientPaid)]);
@@ -116,7 +121,7 @@ class Target extends Model
 
             /** @var SalesComm */
             foreach ($salesCommissions as $s) {
-                $s->updatePaymentByTarget($this, $original_payment * $paidAmountsPercent[$s->sold_policy_id], $is_manual);
+                $s->updatePaymentByTarget($this, $original_payment * $paidAmountsPercent[$s->sold_policy_id], $is_manual, $commPercentages[$s->sold_policy_id]);
                 if ($s->amount > 0)
                     $linkedComms[$s->id] = [
                         'paid_percentage'   => (($original_payment * $paidAmountsPercent[$s->sold_policy_id]) / $s->amount) * 100,
@@ -138,13 +143,13 @@ class Target extends Model
         });
     }
 
-    private function calculateSoldPolicyIncome(SoldPolicy $sp, $tmpAmount)
+    private function calculateCommissionPercentage(SoldPolicy $sp): float
     {
-        $incomeAmount = ($sp->renewal_policy_id && $this->renewal_percentage > 0) ? ($tmpAmount * ($this->renewal_percentage / 100)) : $tmpAmount;
+        $commPercentage = ($sp->renewal_policy_id && $this->renewal_percentage > 0) ? ($this->renewal_percentage / 100) : 1;
         if ($sp->has_sales_out && $this->sales_out_percentage > 0) {
-            $incomeAmount = ($incomeAmount * ($this->sales_out_percentage / 100));
+            $commPercentage *= ($this->sales_out_percentage / 100);
         }
-        return $incomeAmount;
+        return $commPercentage;
     }
 
     public function addRun($added_to_balance, $added_to_payments)
