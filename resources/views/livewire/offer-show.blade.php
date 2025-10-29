@@ -2496,7 +2496,7 @@
                                 <p class="text-lg"><b>Select renewal policy</b></p>
                                 <div class="input-area">
                                     <label for="lastName" class="form-label">
-                                        @if ($selectedPolicy)
+                                        @if (isset($selectedPolicy) && $selectedPolicy)
                                             Selected Policy
                                         @else
                                             Search policy <iconify-icon wire:loading wire:target="searchPolicyText"
@@ -2505,7 +2505,7 @@
                                         @endif
 
                                     </label>
-                                    @if ($selectedPolicy)
+                                    @if (isset($selectedPolicy) && $selectedPolicy)
                                         {{ $selectedPolicy->policy_number . ' | ' . $selectedpolicy->client?->name }}
                                         <Span wire:click="clearSelectedPolicy"
                                             class="cursor-pointer text-primary-500">clear</Span></p>
