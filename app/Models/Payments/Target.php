@@ -55,7 +55,7 @@ class Target extends Model
     {
         $this->load('comm_profile');
         $end_date = $end_date ? $end_date->setTime(0, 0, 1) : Carbon::now()->setTime(0, 0, 1);
-        $start_date = $end_date->clone()->subMonths($this->each_month);
+        $start_date = $end_date->clone()->subMonths($this->each_month)->setTime(0, 0, 0);
         $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
