@@ -1004,16 +1004,16 @@ class ReviewsIndex extends Component
                                 $j->on('sold_policies.client_id', '=', 'customers.id')
                                     ->where('sold_policies.client_type', '=', Customer::MORPH_TYPE);
                             })
-                            ->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id');
-                            // ->where(function ($qq) {
-                            //     $qq->where('customers.first_name', 'like', '%' . $this->search . '%')
-                            //         ->orWhere('customers.last_name', 'like', '%' . $this->search . '%')
-                            //         ->orWhere('customers.middle_name', 'like', '%' . $this->search . '%')
-                            //         ->orWhere('customers.arabic_first_name', 'like', '%' . $this->search . '%')
-                            //         ->orWhere('customers.arabic_last_name', 'like', '%' . $this->search . '%')
-                            //         ->orWhere('customers.arabic_middle_name', 'like', '%' . $this->search . '%')
-                            //         ->orWhere('customer_phones.number', 'like', '%' . $this->search . '%');
-                            // });
+                            ->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')
+                            ->where(function ($qq) {
+                                $qq
+                                    // ->orWhere('customers.last_name', 'like', '%' . $this->search . '%')
+                                    // ->orWhere('customers.middle_name', 'like', '%' . $this->search . '%')
+                                    // ->orWhere('customers.arabic_first_name', 'like', '%' . $this->search . '%')
+                                    // ->orWhere('customers.arabic_last_name', 'like', '%' . $this->search . '%')
+                                    // ->orWhere('customers.arabic_middle_name', 'like', '%' . $this->search . '%')
+                                    ->orWhere('customer_phones.number', 'like', '%' . $this->search . '%');
+                            });
                         });
 
                 });
