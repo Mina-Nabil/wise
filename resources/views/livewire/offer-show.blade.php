@@ -1516,7 +1516,7 @@
                                 <div class="from-group">
                                     <label for="start" class="form-label">Start</label>
                                     <input type="date" name="start" class="form-control mt-2 w-full"
-                                        wire:model.defer="start">
+                                        wire:model.live="start">
                                     @error('start')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

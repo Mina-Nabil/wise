@@ -433,11 +433,6 @@ class OfferShow extends Component
         return $this->offer->exportComparison($this->selectedOptions);
     }
 
-    public function UpdatedUpoadfiler()
-    {
-        dd($this->upoadfiler);
-    }
-
     public function generateWhatsappMsg()
     {
         if ($this->whatsappMsgPhone === 'other') {
