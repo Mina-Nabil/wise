@@ -1032,7 +1032,7 @@ class ReviewsIndex extends Component
             ->hasEmployeeComment($this->has_employee_comment)
             ->hasPolicyConditionsComment($this->has_company_comment)
             ->needsManagerReview($this->need_manager_review)
-            ->orderBy('reviews.created_at', 'reviews.desc')
+            ->orderBy('reviews.created_at', 'desc')
             ->paginate(25);
 
         return view('livewire.reviews-index', [
