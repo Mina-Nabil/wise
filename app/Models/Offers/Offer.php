@@ -318,6 +318,8 @@ class Offer extends Model
                         $soldPolicy->addClientPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, $gross_premium / $installements_count, $i == 0 ? $clientDueDate : $clientDueDate->addMonth(), $main_sales_id ? $main_sales_id : $this->creator_id);
                     break;
             }
+
+            $this->sendOfferNotifications('Sold Policy Generated', 'Sold policy has been generated for your offer');
         }
         return $soldPolicy;
     }
