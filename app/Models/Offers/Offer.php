@@ -212,6 +212,13 @@ class Offer extends Model
      */
     public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry,  $installements_count, $payment_frequency, $insured_value, $net_rate, $net_premium, $gross_premium, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null, ?Carbon $issuing_date = null)
     {
+        /** @var User */
+        $user = Auth::user();
+        if(!$user->can('generateSoldPolicy', $this)) {
+            return false;
+        }
+
+
         $foundSoldPolicy = SoldPolicy::byOfferID($this->id)->notCancelled()->notExpired()->first();
         if ($foundSoldPolicy && $foundSoldPolicy->id && !$foundSoldPolicy->is_expired) return $foundSoldPolicy;
         if (!$this->selected_option_id) return false;

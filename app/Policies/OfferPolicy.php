@@ -44,6 +44,11 @@ class OfferPolicy
         return true;
     }
 
+    public function generateSoldPolicy(User $user, Offer $offer)
+    {
+        return $user->is_admin || $user->is_operations;
+    }
+
     /**
      * Determine whether the user can update the model.
      *
