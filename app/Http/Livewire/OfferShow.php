@@ -726,7 +726,7 @@ class OfferShow extends Component
         $doc = OfferDoc::findOrFail($id);
         $url = Storage::disk('s3')->url($doc->url);
 
-        return '<script>window.open("' . $url . '", "_blank");</script>';
+        $this->dispatchBrowserEvent('openNewTab', ['url' => $url]);
     }
 
     public function downloadOfferFile($id)
