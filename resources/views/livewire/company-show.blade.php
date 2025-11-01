@@ -134,7 +134,12 @@
                                                             {{ $email->type }}
                                                         </td>
 
-                                                        <td class="table-td">{{ $email->email }}</td>
+                                                        <td class="table-td">
+                                                            <div>{{ $email->email }}</div>
+                                                            @if($email->phone)
+                                                                <div class="text-sm text-slate-500">{{ $email->phone }}</div>
+                                                            @endif
+                                                        </td>
 
                                                         <td class="table-td ">
                                                             {{ $email->contact_first_name }}
@@ -968,6 +973,15 @@
                                 <input type="email" wire:model="email"
                                     class="form-control @error('email') !border-danger-500 @enderror">
                                 @error('email')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="text" wire:model="phone"
+                                    class="form-control @error('phone') !border-danger-500 @enderror">
+                                @error('phone')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

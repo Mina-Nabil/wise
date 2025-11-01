@@ -308,6 +308,7 @@
 
                                                                         <td class="table-td" style="padding-left: 1px;padding-right: 1px;">
                                                                             <input type="text" class="form-control @error('editableEmail') !border-danger-500 @enderror" placeholder="Email" wire:model.defer="editableEmail">
+                                                                            <input type="text" class="form-control mt-2 @error('editableEmailPhone') !border-danger-500 @enderror" placeholder="Phone" wire:model.defer="editableEmailPhone">
                                                                         </td>
 
                                                                         <td class="table-td flex justify-center" style="padding-left: 1px;padding-right: 1px;">
@@ -372,7 +373,12 @@
                                                                             {{ $email->type }}
                                                                         </td>
 
-                                                                        <td class="table-td">{{ $email->email }}</td>
+                                                                        <td class="table-td">
+                                                                            <div>{{ $email->email }}</div>
+                                                                            @if($email->phone)
+                                                                                <div class="text-sm text-slate-500">{{ $email->phone }}</div>
+                                                                            @endif
+                                                                        </td>
 
                                                                         <td class="table-td ">
                                                                             {{ $email->contact_first_name }}
@@ -426,6 +432,13 @@
                                             <label for="name" class="form-label">Email</label>
                                             <input type="text" class="form-control @error('newEmail') !border-danger-500 @enderror" placeholder="Email" wire:model.defer="newEmail">
                                             @error('newEmail')
+                                                <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label for="phone" class="form-label">Phone</label>
+                                            <input type="text" class="form-control @error('newEmailPhone') !border-danger-500 @enderror" placeholder="Phone" wire:model.defer="newEmailPhone">
+                                            @error('newEmailPhone')
                                                 <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
                                             @enderror
                                         </div>

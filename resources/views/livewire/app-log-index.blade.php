@@ -4,7 +4,14 @@
             <h4 class="card-title">
                 Activity Log
             </h4>
-            <input type="text" class="form-control w-auto d-inline-block cursor-pointer" style="width:auto" name="datetimes" id="reportrange" />
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <iconify-icon wire:loading wire:target="search" class="loading-icon absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
+                    <input type="text" class="form-control !pl-9 mr-1" style="width:250px"
+                        placeholder="Search by username or title" wire:model.debounce.300ms="search">
+                </div>
+                <input type="text" class="form-control w-auto d-inline-block cursor-pointer" style="width:auto" name="datetimes" id="reportrange" />
+            </div>
         </header>
         <div class="card-body px-6 pb-6">
             <div class=" -mx-6">

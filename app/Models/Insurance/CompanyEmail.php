@@ -34,6 +34,7 @@ class CompanyEmail extends Model
     protected $fillable = [
         "type", //one of emails types
         "email", //email itself
+        "phone", //phone number -- nullable
         "is_primary", //is email primary for the company?
         "contact_first_name", //email user first name -- nullable
         "contact_last_name", //email user last name -- nullable
@@ -47,7 +48,8 @@ class CompanyEmail extends Model
         $is_primary,
         $first_name = null,
         $last_name = null,
-        $note = null
+        $note = null,
+        $phone = null
     ): bool {
         try {
             /** @var User */
@@ -57,6 +59,7 @@ class CompanyEmail extends Model
             $this->update([
                 "type"  => $type,
                 "email"  => $email,
+                "phone"  => $phone,
                 "contact_first_name"  => $first_name,
                 "contact_last_name"  => $last_name,
                 "is_primary"  => $is_primary,

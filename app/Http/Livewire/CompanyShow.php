@@ -67,6 +67,7 @@ class CompanyShow extends Component
     public $newEmailSec = false;
     public $type = CompanyEmail::TYPES[0];
     public $email;
+    public $phone;
     public $is_primary = false;
     public $first_name;
     public $last_name;
@@ -296,18 +297,20 @@ class CompanyShow extends Component
         $this->validate([
             'type' => 'required|in:' . implode(',', CompanyEmail::TYPES),
             'email' => 'required',
+            'phone' => 'nullable|string|max:255',
             'is_primary' => 'boolean',
             'first_name' => 'nullable|string',
             'last_name' => 'nullable|string',
             'note' => 'nullable|string',
         ]);
 
-        $res = $this->company->addEmail($this->type, $this->email, $this->is_primary, $this->first_name, $this->last_name, $this->note);
+        $res = $this->company->addEmail($this->type, $this->email, $this->is_primary, $this->first_name, $this->last_name, $this->note, $this->phone);
 
         if ($res) {
             $this->mount($this->company->id, false);
             $this->alert('success', 'email added');
-            $this->reset(['newEmailSec']);
+            $this->reset(['newEmailSec', 'type', 'email', 'phone', 'is_primary', 'first_name', 'last_name', 'note']);
+            $this->type = CompanyEmail::TYPES[0];
         } else {
             $this->alert('failed', 'server error');
         }
@@ -334,6 +337,8 @@ class CompanyShow extends Component
     public function closeNewEmail()
     {
         $this->newEmailSec = false;
+        $this->reset(['type', 'email', 'phone', 'is_primary', 'first_name', 'last_name', 'note']);
+        $this->type = CompanyEmail::TYPES[0];
     }
 
     public function openEditInfo()

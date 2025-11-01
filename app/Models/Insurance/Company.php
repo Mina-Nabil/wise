@@ -80,7 +80,8 @@ class Company extends Model
         $is_primary,
         $first_name = null,
         $last_name = null,
-        $note = null
+        $note = null,
+        $phone = null
     ) {
 
         /** @var User */
@@ -94,6 +95,7 @@ class Company extends Model
             ], [
                 "contact_first_name"    =>  $first_name,
                 "contact_last_name"    =>  $last_name,
+                "phone"     =>  $phone,
                 "is_primary"    =>  $is_primary,
                 "note"      =>  $note
             ]);

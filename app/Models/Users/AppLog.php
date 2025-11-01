@@ -87,6 +87,20 @@ class AppLog extends Model
         $query->whereDate('created_at', '<=', $expired_date->format('Y-m-d'));
     }
 
+    public function scopeSearch(Builder $query, $searchText = null)
+    {
+        if (!$searchText) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($searchText) {
+            $q->where('title', 'LIKE', '%' . $searchText . '%')
+                ->orWhereHas('user', function ($userQuery) use ($searchText) {
+                    $userQuery->where('username', 'LIKE', '%' . $searchText . '%');
+                });
+        });
+    }
+
     ///relations
     public function loggable(): MorphTo
     {
