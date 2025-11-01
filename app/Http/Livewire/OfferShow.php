@@ -291,6 +291,13 @@ class OfferShow extends Component
         $this->sold_payment_frequency = $option->payment_frequency;
         $this->policy_number = $this->offer->renewal_policy;
         $this->soldInFavorTo = $this->offer->in_favor_to;
+        $oldPolicy = $this->offer->renewal_sold_policy;
+        if ($oldPolicy) {
+            $this->car_chassis = $oldPolicy->car_chassis;
+            $this->car_plate_no = $oldPolicy->car_plate_no;
+            $this->car_engine = $oldPolicy->car_engine;
+            $this->soldInFavorTo = $oldPolicy->in_favor_to;
+        }
     }
 
     public function closeGenerateSoldPolicy()
