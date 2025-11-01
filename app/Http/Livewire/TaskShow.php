@@ -130,9 +130,17 @@ class TaskShow extends Component
             return;
         }
 
+        // Store action details before deletion for comment
+        $actionTitle = ucwords(str_replace('_', ' ', $action->title));
+        $actionValue = $action->value ?? 'NULL';
+
+        $task = Task::find($this->taskId);
         $res = $action->delete();
 
         if ($res) {
+            // Add comment about the deletion
+            $task->addComment("Action deleted: {$actionTitle} ({$actionValue})", false);
+            
             $this->mount($this->taskId);
             $this->alert('success', 'Action deleted!');
         } else {
