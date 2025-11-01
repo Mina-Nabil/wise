@@ -411,7 +411,7 @@
                             @endif
                             @can('addContact', $companyInfo)
                                 <div class="input-area">
-                                    <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-6">
 
                                         <div>
                                             <label for="name" class="form-label">Type</label>
