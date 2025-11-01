@@ -300,7 +300,7 @@ class OfferShow extends Component
 
     public function updatedStart()
     {
-        $this->expiry = Carbon::parse($this->start)->addYears(1)->format('d/m/Y');
+        $this->expiry = Carbon::parse($this->start)->addYears(1)->format('Y-m-d');
     }
 
 
