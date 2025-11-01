@@ -538,7 +538,7 @@
                     <div class="loader" wire:loading wire:target="previewFile">
                         <div class="loaderBar"></div>
                     </div>
-                    {{-- <iframe src='https://wiseins.s3.eu-north-1.amazonaws.com/tasks/GGxyo5OihDGEJnn6dW51XyQ2x9544vNDGBqCMMVj.pdf' height='400px' frameborder='0'></iframe> --}}
+         
                 </div>
             </div>
 
@@ -913,7 +913,7 @@
         </div>
     </div>
     @if ($preview)
-        <iframe class="container mx-auto" src='{{ $preview }}' height='400px' frameborder='0'></iframe>
+        <iframe class=" mx-auto" src='{{ $preview }}' height='400px' frameborder='0'></iframe>
     @endif
     @if ($deleteFieldId)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
