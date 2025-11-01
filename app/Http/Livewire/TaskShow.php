@@ -6,6 +6,7 @@ use App\Exceptions\NoManagerException;
 use Livewire\Component;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskFile;
+use App\Models\Tasks\TaskAction;
 use App\Models\Users\User;
 use App\Models\Tasks\TaskComment;
 use App\Models\Tasks\TaskField;
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\URL;
 class TaskShow extends Component
 {
     use AlertFrontEnd, ToggleSectionLivewire, WithFileUploads;
+
+    protected $listeners = ['deleteAction'];
 
     public Task $task;
     public $taskId;
@@ -63,9 +66,78 @@ class TaskShow extends Component
     public $completeEndorsmentSec = false;
     public $actionsIds = [];
 
+    public $addActionSec = false;
+    public $newActionColumn;
+    public $newActionValue;
+
     public function closeCompleteEndorsmenet()
     {
         $this->completeEndorsmentSec = false;
+    }
+
+    public function openAddAction()
+    {
+        $this->addActionSec = true;
+    }
+
+    public function closeAddAction()
+    {
+        $this->addActionSec = false;
+        $this->newActionColumn = null;
+        $this->newActionValue = null;
+    }
+
+    public function addAction()
+    {
+        $this->validate([
+            'newActionColumn' => 'required|string|in:' . implode(',', TaskAction::COLUMNS[TaskAction::TABLE_SOLD_POLICY]),
+            'newActionValue' => 'nullable|string|max:255'
+        ], [], [
+            'newActionColumn' => 'Column',
+            'newActionValue' => 'Value'
+        ]);
+
+        $task = Task::find($this->taskId);
+        $res = $task->addAction($this->newActionColumn, $this->newActionValue);
+
+        if ($res) {
+            $this->closeAddAction();
+            $this->mount($this->taskId);
+            $this->alert('success', 'Action added!');
+        } else {
+            $this->alert('failed', 'Failed to add action. Make sure the task is an endorsement.');
+        }
+    }
+
+    public function deleteAction($id)
+    {
+        $action = TaskAction::find($id);
+        
+        if (!$action) {
+            $this->alert('failed', 'Action not found.');
+            return;
+        }
+
+        // Only allow deletion of actions with status 'new'
+        if ($action->status !== TaskAction::STATUS_NEW) {
+            $this->alert('failed', 'Can only delete actions with status "new".');
+            return;
+        }
+
+        // Verify the action belongs to this task
+        if ($action->task_id != $this->taskId) {
+            $this->alert('failed', 'Unauthorized action.');
+            return;
+        }
+
+        $res = $action->delete();
+
+        if ($res) {
+            $this->mount($this->taskId);
+            $this->alert('success', 'Action deleted!');
+        } else {
+            $this->alert('failed', 'Failed to delete action.');
+        }
     }
 
     public function openAddField()
@@ -124,7 +196,7 @@ class TaskShow extends Component
     {
         $this->taskId = $taskId;
         /** @var Task */
-        $task = Task::with('comments', 'comments.user')->findOrFail($this->taskId);
+        $task = Task::with('comments', 'comments.user', 'actions')->findOrFail($this->taskId);
         $this->taskTitle = $task->title;
         $this->assignedTo = $task->assigned_to_id;
         $this->desc = $task->desc;
@@ -132,7 +204,7 @@ class TaskShow extends Component
         $this->watchersList = $task->watcher_ids;
         $this->editedStatus = $task->status;
 
-
+        $this->actionsIds = [];
         foreach ($task->actions as $action) {
             array_push($this->actionsIds, $action->id);
         }
@@ -573,6 +645,7 @@ class TaskShow extends Component
         else $users = User::all();
 
         $fieldTitles = TaskField::TITLES;
+        $actionColumns = TaskAction::COLUMNS[TaskAction::TABLE_SOLD_POLICY] ?? [];
 
         return view('livewire.task-show', [
             'comments' => $comments,
@@ -588,7 +661,8 @@ class TaskShow extends Component
             // 'fileUrl' => $this->fileUrl,
             'taskableType' => $this->taskableType,
             'watchersList' => $this->watchersList,
-            'fieldTitles' => $fieldTitles
+            'fieldTitles' => $fieldTitles,
+            'actionColumns' => $actionColumns
         ]);
     }
 }

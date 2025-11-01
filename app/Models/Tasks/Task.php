@@ -345,23 +345,52 @@ class Task extends Model
 
     public function addAction($column_name, $value)
     {
-        if ($this->taskable == null) {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        
+        // Only allow adding actions to endorsement tasks
+        if (!$this->is_endorsment) {
+            AppLog::warning('Attempted to add action to non-endorsement task', "Task#$this->id is not an endorsement", $this);
             return false;
         }
+
+        if ($this->taskable == null) {
+            AppLog::warning('Attempted to add action to task without taskable', "Task#$this->id has no taskable", $this);
+            return false;
+        }
+
+        // Validate column_name if taskable is SoldPolicy
+        if (is_a($this->taskable, \App\Models\Business\SoldPolicy::class)) {
+            $validColumns = TaskAction::COLUMNS[TaskAction::TABLE_SOLD_POLICY] ?? [];
+            if (!in_array($column_name, $validColumns)) {
+                AppLog::warning('Invalid column name for action', "Column '$column_name' is not valid for sold policy", $this);
+                return false;
+            }
+        }
+
         try {
-            $newVal = $value ?? "'empty'";
-            $this->actions()->firstOrCreate(
+            $action = $this->actions()->firstOrCreate(
                 [
                     'column_name' => $column_name,
                 ],
                 [
                     'title' => "Change {$column_name}",
                     'value' => $value,
+                    'status' => TaskAction::STATUS_NEW,
                 ],
             );
+
+            if ($action) {
+                $this->last_action_by()->associate($loggedInUser);
+                $this->addComment("Action added: Change {$column_name} to " . ($value ?? 'NULL'), false);
+                AppLog::info('Action added to endorsement', "Added action to change {$column_name} in Task#$this->id", $this);
+                return $action;
+            }
+
+            return false;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't set task action", $e->getMessage());
+            AppLog::error("Can't add action to task", $e->getMessage(), $this);
             return false;
         }
     }
