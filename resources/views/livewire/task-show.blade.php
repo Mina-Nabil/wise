@@ -542,10 +542,6 @@
                 </div>
             </div>
 
-            @if ($preview)
-                <iframe class="container mx-auto" src='{{ $preview }}' height='400px' frameborder='0'></iframe>
-            @endif
-
 
             <div class="mt-4">
                 <button class="btn inline-flex justify-center btn-outline-danger" wire:click="toggleDelete">Delete
@@ -916,6 +912,9 @@
 
         </div>
     </div>
+    @if ($preview)
+        <iframe class="container mx-auto" src='{{ $preview }}' height='400px' frameborder='0'></iframe>
+    @endif
     @if ($deleteFieldId)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
             tabindex="-1" aria-labelledby="dangerModalLabel" aria-modal="true" role="dialog"
