@@ -476,6 +476,14 @@ class Review extends Model
         return $query;
     }
 
+    public function scopeByNoAnswer($query, $noAnswer)
+    {
+        if ($noAnswer !== null) {
+            $query->where('reviews.no_answer', $noAnswer);
+        }
+        return $query;
+    }
+
     /**
      * Export reviews data to Excel
      */

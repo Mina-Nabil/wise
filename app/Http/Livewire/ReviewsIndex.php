@@ -22,6 +22,7 @@ class ReviewsIndex extends Component
     public $reviewDateSection = false;
     public $employeeRatingSection = false;
     public $companyRatingSection = false;
+    public $noAnswerSection = false;
 
     // Filter values
     public $search;
@@ -56,6 +57,7 @@ class ReviewsIndex extends Component
     public $has_employee_comment;
     public $has_company_comment;
     public $need_manager_review;
+    public $no_answer;
 
     // Edit filter values
     public $Ecreated_from;
@@ -84,6 +86,7 @@ class ReviewsIndex extends Component
     public $Eclaims_specialist_rating_to;
     public $Ewise_rating_from;
     public $Ewise_rating_to;
+    public $Eno_answer;
 
     // Available reviewable types
     public $reviewableTypes = [];
@@ -149,6 +152,7 @@ class ReviewsIndex extends Component
     public function mount()
     {
         $this->is_reviewed = false; // Default to unreviewed only
+        $this->no_answer = null; // Initialize no_answer filter
 
         // Set need_manager_review to true by default if user can review reviews
         if (Auth::user() && Auth::user()->can_review_reviews) {
@@ -241,6 +245,15 @@ class ReviewsIndex extends Component
     public function toggleNeedManagerReview()
     {
         $this->toggle($this->need_manager_review);
+    }
+
+    public function toggleNoAnswer()
+    {
+        $this->toggle($this->noAnswerSection);
+        if ($this->noAnswerSection) {
+            // Convert null to "__null__" for select dropdown, otherwise keep as string for proper selection
+            $this->Eno_answer = $this->no_answer === null ? '__null__' : (string) $this->no_answer;
+        }
     }
 
     public function toggleServiceQualityRating()
@@ -519,6 +532,24 @@ class ReviewsIndex extends Component
     public function clearNeedManagerReview()
     {
         $this->need_manager_review = null;
+    }
+
+    public function setNoAnswerFilter()
+    {
+        // Handle special "__null__" value as null for "Not Yet Called" status
+        if ($this->Eno_answer === '__null__' || $this->Eno_answer === '') {
+            $this->no_answer = null;
+        } elseif ($this->Eno_answer !== null) {
+            $this->no_answer = (int) $this->Eno_answer;
+        } else {
+            $this->no_answer = null;
+        }
+        $this->toggle($this->noAnswerSection);
+    }
+
+    public function clearNoAnswer()
+    {
+        $this->no_answer = null;
     }
 
 
@@ -1033,6 +1064,7 @@ class ReviewsIndex extends Component
             ->hasEmployeeComment($this->has_employee_comment)
             ->hasPolicyConditionsComment($this->has_company_comment)
             ->needsManagerReview($this->need_manager_review)
+            ->byNoAnswer($this->no_answer)
             ->orderBy('reviews.created_at', 'desc')
             ->paginate(25);
 

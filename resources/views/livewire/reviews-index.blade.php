@@ -117,6 +117,11 @@
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
                             Need Manager Review</span>
                     </li>
+                    <li wire:click="toggleNoAnswer">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Call Status</span>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -161,6 +166,27 @@
                         Need Manager Review: Yes &nbsp;&nbsp;
                     </span>
                     <span wire:click="clearNeedManagerReview">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if (isset($no_answer))
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleNoAnswer">
+                        @php
+                            $statusLabels = [
+                                null => 'Not Yet Called',
+                                0 => 'No Answer',
+                                1 => 'Answered',
+                                2 => 'Sent WhatsApp',
+                                3 => 'Wrong Number',
+                                4 => 'Callback'
+                            ];
+                        @endphp
+                        Call Status: {{ $statusLabels[$no_answer] ?? 'Unknown' }} &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearNoAnswer">
                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                     </span>
                 </button>
@@ -1095,6 +1121,43 @@
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                             <button wire:click="setWiseRating" class="btn inline-flex justify-center text-white bg-black-500">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- No Answer Filter Modal -->
+    @if ($noAnswerSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Call Status</h3>
+                            <button wire:click="toggleNoAnswer" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eno_answer" class="form-label">Call Status</label>
+                                <select name="Eno_answer" class="form-control mt-2 w-full" wire:model.defer="Eno_answer">
+                                    <option value="">-- Select Status --</option>
+                                    <option value="__null__">Not Yet Called</option>
+                                    <option value="0">No Answer</option>
+                                    <option value="1">Answered</option>
+                                    <option value="2">Sent WhatsApp</option>
+                                    <option value="3">Wrong Number</option>
+                                    <option value="4">Callback</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setNoAnswerFilter" class="btn inline-flex justify-center text-white bg-black-500">Apply</button>
                         </div>
                     </div>
                 </div>
