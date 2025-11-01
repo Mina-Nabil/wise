@@ -70,6 +70,10 @@ class TaskShow extends Component
     public $newActionColumn;
     public $newActionValue;
 
+    public $editActionSec = false;
+    public $editActionId;
+    public $editActionValue;
+
     public function closeCompleteEndorsmenet()
     {
         $this->completeEndorsmentSec = false;
@@ -145,6 +149,100 @@ class TaskShow extends Component
             $this->alert('success', 'Action deleted!');
         } else {
             $this->alert('failed', 'Failed to delete action.');
+        }
+    }
+
+    public function openEditAction($id)
+    {
+        $action = TaskAction::find($id);
+        
+        if (!$action) {
+            $this->alert('failed', 'Action not found.');
+            return;
+        }
+
+        // Verify the action belongs to this task
+        if ($action->task_id != $this->taskId) {
+            $this->alert('failed', 'Unauthorized action.');
+            return;
+        }
+
+        // Check if action can be edited
+        if ($action->status !== TaskAction::STATUS_NEW) {
+            $this->alert('failed', 'Can only edit actions with status "new".');
+            return;
+        }
+
+        // Check if task is not closed or completed
+        $task = Task::find($this->taskId);
+        if (in_array($task->status, [Task::STATUS_COMPLETED, Task::STATUS_CLOSED])) {
+            $this->alert('failed', 'Cannot edit actions in closed or completed tasks.');
+            return;
+        }
+
+        $this->editActionId = $id;
+        $this->editActionValue = $action->value;
+        $this->editActionSec = true;
+    }
+
+    public function closeEditAction()
+    {
+        $this->editActionSec = false;
+        $this->editActionId = null;
+        $this->editActionValue = null;
+    }
+
+    public function saveEditAction()
+    {
+        $this->validate([
+            'editActionValue' => 'nullable|string|max:255'
+        ], [], [
+            'editActionValue' => 'Value'
+        ]);
+
+        if (!$this->editActionId) {
+            $this->alert('failed', 'No action selected for editing.');
+            return;
+        }
+
+        $action = TaskAction::find($this->editActionId);
+        
+        if (!$action) {
+            $this->alert('failed', 'Action not found.');
+            $this->closeEditAction();
+            return;
+        }
+
+        // Verify the action belongs to this task
+        if ($action->task_id != $this->taskId) {
+            $this->alert('failed', 'Unauthorized action.');
+            $this->closeEditAction();
+            return;
+        }
+
+        // Check if action can be edited
+        if ($action->status !== TaskAction::STATUS_NEW) {
+            $this->alert('failed', 'Can only edit actions with status "new".');
+            $this->closeEditAction();
+            return;
+        }
+
+        // Check if task is not closed or completed
+        $task = Task::find($this->taskId);
+        if (in_array($task->status, [Task::STATUS_COMPLETED, Task::STATUS_CLOSED])) {
+            $this->alert('failed', 'Cannot edit actions in closed or completed tasks.');
+            $this->closeEditAction();
+            return;
+        }
+
+        $res = $action->editValue($this->editActionValue);
+
+        if ($res) {
+            $this->closeEditAction();
+            $this->mount($this->taskId);
+            $this->alert('success', 'Action value updated!');
+        } else {
+            $this->alert('failed', 'Failed to update action value.');
         }
     }
 
