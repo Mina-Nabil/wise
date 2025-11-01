@@ -277,8 +277,8 @@
                                                 <td @if ($field->id !== $fieldId) wire:click="editThisField({{ $field->id }})" @endif
                                                     class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                     @if ($field->id === $fieldId)
-                                                        <textarea wire:model="editedFieldValue" style="width:100%;height:100%;"
-                                                            class="@error('editedFieldValue') !border-danger-500  @enderror"></textarea>
+                                                        <input type="text" wire:model="editedFieldValue" style="width:100%;height:100%;"
+                                                            class="@error('editedFieldValue') !border-danger-500  @enderror" list="claim_fields" />
                                                     @else
                                                         {{ $field->value }}
                                                     @endif
