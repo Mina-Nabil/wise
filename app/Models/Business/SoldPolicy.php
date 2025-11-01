@@ -1679,10 +1679,11 @@ class SoldPolicy extends Model
         });
 
         $query->when($is_expiring, function ($q) {
+            $startDate = Carbon::parse('2025-10-01');
             $now = Carbon::now();
             $now->addMonth();
             $q->where('is_renewed', 0)->whereBetween("expiry", [
-                $now->format('Y-m-01'),
+                $startDate->format('Y-m-d'),
                 $now->format('Y-m-t'),
             ]);
         });
