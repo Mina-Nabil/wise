@@ -936,7 +936,7 @@ class SoldPolicy extends Model
         $this->sendPolicyNotifications("Policy#$this->id claim added", Auth::user()->username . " added a claim");
 
         foreach (TaskField::SALES_CHECKLIST as $s) {
-            $newTask->addField($s, "NO");
+            $newTask->addField($s, "N/A");
         }
         foreach ($fields as $f) {
             $newTask->addField($f['title'], $f['value']);

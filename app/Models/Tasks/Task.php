@@ -395,24 +395,6 @@ class Task extends Model
         }
     }
 
-    public function editAction($id, $value)
-    {
-        try {
-            if (
-                $this->actions()
-                ->where('id', $id)
-                ->update([
-                    'value' => $value,
-                ])
-            ) {
-                $this->addComment("Action set to {$value}", true);
-            }
-        } catch (Exception $e) {
-            report($e);
-            return false;
-        }
-    }
-
     /////static functions
     /**
      * @param array $files must contain array of ['name' => filename, 'file_url' => url, 'user_id'  => user_id] records

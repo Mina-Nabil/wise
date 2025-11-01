@@ -1007,8 +1007,11 @@
                                     <label class="form-label">Value </label>
                                     <input type="text"
                                         class="form-control  @error('newValue') !border-danger-500 @enderror"
-                                        wire:model.defer="newValue" autocomplete="off" />
-                                    {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
+                                        wire:model.defer="newValue" autocomplete="off" list="claim_fields" />
+                                    <datalist id="claim_fields">
+                                        <option>Yes</option>
+                                        <option>No</option>
+                                    </datalist>
                                     @error('newValue')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
