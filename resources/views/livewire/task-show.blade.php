@@ -288,6 +288,7 @@
                                                             <datalist id="claim_fields_1">
                                                                 <option>Yes</option>
                                                                 <option>No</option>
+                                                                <option>N/A</option>
                                                             </datalist>
                                                     @else
                                                         {{ $field->value }}
