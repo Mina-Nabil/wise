@@ -298,6 +298,11 @@ class OfferShow extends Component
         $this->genarteSoldPolicySection  = false;
     }
 
+    public function updatedStart()
+    {
+        $this->expiry = Carbon::parse($this->start)->addYears(1);
+    }
+
 
     public function generateSoldPolicy()
     {
@@ -316,7 +321,7 @@ class OfferShow extends Component
             'car_plate_no' => 'nullable|string|max:255',
             'car_engine' => 'nullable|string|max:255',
             'soldInFavorTo' =>  'nullable|string|max:255',
-            'policyDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+            'policyDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
 
         if ($this->policyDoc) {
