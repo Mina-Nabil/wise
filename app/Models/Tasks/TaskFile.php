@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Users\User;
+use Illuminate\Support\Facades\Storage;
 
 class TaskFile extends Model
 {
@@ -15,6 +16,11 @@ class TaskFile extends Model
     protected $table = 'task_files';
     protected $fillable = ['user_id', 'file_url', 'name'];
     public $timestamps = false;
+
+    public function getFullFileUrlAttribute()
+    {
+        return Storage::disk('s3')->url($this->file_url);
+    }
 
     ///relations
     public function task(): BelongsTo

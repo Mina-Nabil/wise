@@ -359,12 +359,9 @@ class TaskShow extends Component
     public function previewFile($id)
     {
         $task = TaskFile::findOrFail($id);
-        $url = $task->file_url;
-        // dd('aaa');
-        $modifiedString = preg_replace('/\//', '', $url, 1);
-        $this->preview = 'https://wiseins.s3.eu-north-1.amazonaws.com/' . $modifiedString;
 
-        // dd($this->preview);
+        $this->preview = $task->full_file_url;
+
     }
 
     public function toggleSendTempAssign()
