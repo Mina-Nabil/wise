@@ -990,7 +990,7 @@ class ReviewsIndex extends Component
         $reviews = Review::with([
             'assignee',
             'reviewedBy'
-        ])
+        ])->select('reviews.*')
             ->leftjoin('sold_policies', 'sold_policies.id', '=', 'reviewable_id')
             ->leftjoin('customers', function ($j) {
                 $j->on('sold_policies.client_id', '=', 'customers.id')
