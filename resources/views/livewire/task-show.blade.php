@@ -2,8 +2,8 @@
     <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4 mb-3">
         <b>{{ $task->type }}</b>
     </h4>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
-        <div class="w-full sm:w-1/2" style="max-width: 600px">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+        <div class="w-full sm:w-1/2" >
 
             <div class="card mb-5">
                 <div class="card-body">
@@ -599,7 +599,7 @@
 
 
         </div>
-        <div class="w-full sm:w-1/2" style="max-width: 600px">
+        <div class="w-full sm:w-1/2" >
 
             <div class="card rounded-md bg-white dark:bg-slate-800 shadow-base mb-5">
                 <div class="card-body flex flex-col p-6 active">
