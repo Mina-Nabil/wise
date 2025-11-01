@@ -995,8 +995,6 @@ class ReviewsIndex extends Component
                 $query->where(function ($q) {
                     $q->where('title', 'like', '%' . $this->search . '%')
                         ->orWhere('desc', 'like', '%' . $this->search . '%')
-                        ->orWhere('client_employee_comment', 'like', '%' . $this->search . '%')
-                        ->orWhere('policy_conditions_comment', 'like', '%' . $this->search . '%')
                         ->orWhere(function ($q) {
                             $q->where('reviewable_type', '=', SoldPolicy::MORPH_TYPE)
                             ->leftjoin('sold_policies', 'sold_policies.id', '=', 'reviewable_id')
@@ -1006,12 +1004,12 @@ class ReviewsIndex extends Component
                             })
                             ->leftjoin('customer_phones', 'customer_phones.customer_id', '=', 'customers.id')
                             ->where(function ($qq) {
-                                $qq
-                                    // ->orWhere('customers.last_name', 'like', '%' . $this->search . '%')
-                                    // ->orWhere('customers.middle_name', 'like', '%' . $this->search . '%')
-                                    // ->orWhere('customers.arabic_first_name', 'like', '%' . $this->search . '%')
-                                    // ->orWhere('customers.arabic_last_name', 'like', '%' . $this->search . '%')
-                                    // ->orWhere('customers.arabic_middle_name', 'like', '%' . $this->search . '%')
+                                $qq->where('customers.first_name', 'like', '%' . $this->search . '%')
+                                    ->orWhere('customers.last_name', 'like', '%' . $this->search . '%')
+                                    ->orWhere('customers.middle_name', 'like', '%' . $this->search . '%')
+                                    ->orWhere('customers.arabic_first_name', 'like', '%' . $this->search . '%')
+                                    ->orWhere('customers.arabic_last_name', 'like', '%' . $this->search . '%')
+                                    ->orWhere('customers.arabic_middle_name', 'like', '%' . $this->search . '%')
                                     ->orWhere('customer_phones.number', 'like', '%' . $this->search . '%');
                             });
                         });
