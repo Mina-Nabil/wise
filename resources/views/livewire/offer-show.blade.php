@@ -974,6 +974,10 @@
 
                                             <div class="flex-none">
                                                 <span class="font-normal text-xs text-slate-500 mt-1"></span>
+                                                <button wire:click="previewOfferFile({{ $file->id }})"
+                                                    class="action-btn float-right mr-1 text-xs" type="button">
+                                                    <iconify-icon icon="heroicons:eye"></iconify-icon>
+                                                </button>
                                                 <button wire:click="downloadOfferFile({{ $file->id }})"
                                                     class="action-btn float-right mr-1 text-xs" type="button">
                                                     <iconify-icon icon="ic:baseline-download"></iconify-icon>

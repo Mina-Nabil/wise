@@ -721,6 +721,14 @@ class OfferShow extends Component
         }
     }
 
+    public function previewOfferFile($id)
+    {
+        $doc = OfferDoc::findOrFail($id);
+        $url = Storage::disk('s3')->url($doc->url);
+
+        return '<script>window.open("' . $url . '", "_blank");</script>';
+    }
+
     public function downloadOfferFile($id)
     {
         $doc = OfferDoc::findOrFail($id);
