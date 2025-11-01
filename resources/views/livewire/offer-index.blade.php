@@ -253,7 +253,26 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            {{ $offer->selected_option?->name }}
+                                            @if ($offer->selected_option)
+                                                <div class="flex-1 text-start">
+                                                    <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                        {{ $offer->selected_option?->policy?->name }}
+                                                    </h4>
+                                                    <div
+                                                        class="text-xs font-normal text-slate-600 dark:text-slate-400">
+                                                        {{ $offer->selected_option?->gross_premium }}
+                                                    </div>
+                                                    <div
+                                                        class="text-xs font-normal text-slate-600 dark:text-slate-400">
+                                                        {{ $offer->selected_option?->net_premium }}
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <span class="badge bg-danger-500 h-auto">
+                                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;No
+                                                    selected option
+                                                </span>
+                                            @endif
                                         </td>
 
                                     </tr>
