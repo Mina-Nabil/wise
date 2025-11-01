@@ -277,8 +277,17 @@
                                                 <td @if ($field->id !== $fieldId) wire:click="editThisField({{ $field->id }})" @endif
                                                     class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                     @if ($field->id === $fieldId)
-                                                        <input type="text" wire:model="editedFieldValue" style="width:100%;height:100%;"
-                                                            class="@error('editedFieldValue') !border-danger-500  @enderror" list="claim_fields" />
+                                                        <input type="text" wire:model="editedFieldValue" 
+                                               
+                                                        @class([
+                                                            'form-control',
+                                                            'w-full',
+                                                            'h-full',
+                                                            'border-danger-500' => $errors->has('editedFieldValue'),
+                                                            'border-slate-300' => !$errors->has('editedFieldValue'),
+                                                        ])
+
+                                                             list="claim_fields" />
                                                     @else
                                                         {{ $field->value }}
                                                     @endif
