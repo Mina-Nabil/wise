@@ -340,90 +340,90 @@ class Review extends Model
     // Scopes for filtering
     public function scopeByReviewableType($query, $type)
     {
-        return $query->where('reviewable_type', $type);
+        return $query->where('reviews.reviewable_type', $type);
     }
 
     public function scopeCreatedBetween($query, $from, $to)
     {
-        if ($from) $query->whereDate('created_at', '>=', $from);
-        if ($to) $query->whereDate('created_at', '<=', $to);
+        if ($from) $query->whereDate('reviews.created_at', '>=', $from);
+        if ($to) $query->whereDate('reviews.created_at', '<=', $to);
         return $query;
     }
 
     public function scopeReviewedBetween($query, $from, $to)
     {
-        if ($from) $query->whereDate('reviewed_at', '>=', $from);
-        if ($to) $query->whereDate('reviewed_at', '<=', $to);
+        if ($from) $query->whereDate('reviews.reviewed_at', '>=', $from);
+        if ($to) $query->whereDate('reviews.reviewed_at', '<=', $to);
         return $query;
     }
 
     public function scopeEmployeeRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('employee_rating', '>=', $from);
-        if ($to !== null) $query->where('employee_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.employee_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.employee_rating', '<=', $to);
         return $query;
     }
 
     public function scopePolicyConditionsRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('policy_conditions_rating', '>=', $from);
-        if ($to !== null) $query->where('policy_conditions_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.policy_conditions_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.policy_conditions_rating', '<=', $to);
         return $query;
     }
 
     public function scopeServiceQualityRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('service_quality_rating', '>=', $from);
-        if ($to !== null) $query->where('service_quality_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.service_quality_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.service_quality_rating', '<=', $to);
         return $query;
     }
 
     public function scopePricingRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('pricing_rating', '>=', $from);
-        if ($to !== null) $query->where('pricing_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.pricing_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.pricing_rating', '<=', $to);
         return $query;
     }
 
     public function scopeProcessingTimeRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('processing_time_rating', '>=', $from);
-        if ($to !== null) $query->where('processing_time_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.processing_time_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.processing_time_rating', '<=', $to);
         return $query;
     }
 
     public function scopeCollectionChannelRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('collection_channel_rating', '>=', $from);
-        if ($to !== null) $query->where('collection_channel_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.collection_channel_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.collection_channel_rating', '<=', $to);
         return $query;
     }
 
     public function scopeInsuranceCompanyRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('insurance_company_rating', '>=', $from);
-        if ($to !== null) $query->where('insurance_company_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.insurance_company_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.insurance_company_rating', '<=', $to);
         return $query;
     }
 
     public function scopeProviderRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('provider_rating', '>=', $from);
-        if ($to !== null) $query->where('provider_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.provider_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.provider_rating', '<=', $to);
         return $query;
     }
 
     public function scopeClaimsSpecialistRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('claims_specialist_rating', '>=', $from);
-        if ($to !== null) $query->where('claims_specialist_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.claims_specialist_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.claims_specialist_rating', '<=', $to);
         return $query;
     }
 
     public function scopeWiseRatingBetween($query, $from, $to)
     {
-        if ($from !== null) $query->where('wise_rating', '>=', $from);
-        if ($to !== null) $query->where('wise_rating', '<=', $to);
+        if ($from !== null) $query->where('reviews.wise_rating', '>=', $from);
+        if ($to !== null) $query->where('reviews.wise_rating', '<=', $to);
         return $query;
     }
 
@@ -431,12 +431,12 @@ class Review extends Model
     {
         if ($hasComment !== null) {
             if ($hasComment) {
-                $query->whereNotNull('client_employee_comment')
-                    ->where('client_employee_comment', '!=', '');
+                $query->whereNotNull('reviews.client_employee_comment')
+                    ->where('reviews.client_employee_comment', '!=', '');
             } else {
                 $query->where(function ($q) {
-                    $q->whereNull('client_employee_comment')
-                        ->orWhere('client_employee_comment', '=', '');
+                    $q->whereNull('reviews.client_employee_comment')
+                        ->orWhere('reviews.client_employee_comment', '=', '');
                 });
             }
         }
@@ -447,12 +447,12 @@ class Review extends Model
     {
         if ($hasComment !== null) {
             if ($hasComment) {
-                $query->whereNotNull('policy_conditions_comment')
-                    ->where('policy_conditions_comment', '!=', '');
+                $query->whereNotNull('reviews.policy_conditions_comment')
+                    ->where('reviews.policy_conditions_comment', '!=', '');
             } else {
                 $query->where(function ($q) {
-                    $q->whereNull('policy_conditions_comment')
-                        ->orWhere('policy_conditions_comment', '=', '');
+                    $q->whereNull('reviews.policy_conditions_comment')
+                        ->orWhere('reviews.policy_conditions_comment', '=', '');
                 });
             }
         }
@@ -463,7 +463,7 @@ class Review extends Model
     public function scopeByReviewStatus($query, $isReviewed)
     {
         if ($isReviewed !== null) {
-            $query->where('is_reviewed', $isReviewed);
+            $query->where('reviews.is_reviewed', $isReviewed);
         }
         return $query;
     }
@@ -471,7 +471,7 @@ class Review extends Model
     public function scopeNeedsManagerReview($query, $needsManagerReview)
     {
         if ($needsManagerReview !== null) {
-            $query->where('need_manager_review', $needsManagerReview);
+            $query->where('reviews.need_manager_review', $needsManagerReview);
         }
         return $query;
     }
