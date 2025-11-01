@@ -543,7 +543,7 @@
             </div>
 
             @if ($preview)
-                <iframe src='{{ $preview }}' height='400px' frameborder='0'></iframe>
+                <iframe class="container mx-auto" src='{{ $preview }}' height='400px' frameborder='0'></iframe>
             @endif
 
 
