@@ -277,17 +277,18 @@
                                                 <td @if ($field->id !== $fieldId) wire:click="editThisField({{ $field->id }})" @endif
                                                     class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                     @if ($field->id === $fieldId)
-                                                        <input type="text" wire:model="editedFieldValue" 
-                                               
-                                                        @class([
-                                                            'form-control',
-                                                            'w-full',
-                                                            'h-full',
-                                                            'border-danger-500' => $errors->has('editedFieldValue'),
-                                                            'border-slate-300' => !$errors->has('editedFieldValue'),
-                                                        ])
-
-                                                             list="claim_fields" />
+                                                        <input type="text" wire:model="editedFieldValue"
+                                                            @class([
+                                                                'form-control',
+                                                                'w-full',
+                                                                'h-full',
+                                                                'border-danger-500' => $errors->has('editedFieldValue'),
+                                                                'border-slate-300' => !$errors->has('editedFieldValue'),
+                                                            ]) list="claim_fields_1" />
+                                                            <datalist id="claim_fields_1">
+                                                                <option>Yes</option>
+                                                                <option>No</option>
+                                                            </datalist>
                                                     @else
                                                         {{ $field->value }}
                                                     @endif
@@ -367,7 +368,8 @@
                                                                 <iconify-icon icon="material-symbols:edit-outline"
                                                                     class="text-lg"></iconify-icon>
                                                             </button>
-                                                            <button wire:click="$emit('showConfirmation', 'Are you sure you want to delete this action?','danger','deleteAction', {{ $action->id }})"
+                                                            <button
+                                                                wire:click="$emit('showConfirmation', 'Are you sure you want to delete this action?','danger','deleteAction', {{ $action->id }})"
                                                                 class="btn inline-flex justify-center btn-danger light btn-sm"
                                                                 title="Delete Action">
                                                                 <iconify-icon icon="material-symbols:delete-outline"
@@ -409,7 +411,8 @@
 
             <div class="card">
                 <div class="card-body flex flex-col p-6">
-                    <header class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                    <header
+                        class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
                         <div class="flex-1">
                             <div class="card-title text-slate-900 dark:text-white">
                                 <h6>Files</h6>
@@ -418,14 +421,18 @@
                         <label for="myFile" class="custom-file-label cursor-pointer">
                             <span class="btn inline-flex justify-center btn-sm btn-outline-dark float-right">
                                 <span style="display: flex; align-items: center;">
-                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="uploadedFiles" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                        wire:loading wire:target="uploadedFiles"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
                                 </span>
                                 <span style="display: flex; align-items: center;">
-                                    <iconify-icon wire:loading.remove wire:target="uploadedFiles" icon="ic:baseline-upload"></iconify-icon>&nbsp;Upload Files
+                                    <iconify-icon wire:loading.remove wire:target="uploadedFiles"
+                                        icon="ic:baseline-upload"></iconify-icon>&nbsp;Upload Files
                                 </span>
                             </span>
                         </label>
-                        <input type="file" id="myFile" name="filename[]" multiple style="display: none;" wire:model="uploadedFiles"><br>
+                        <input type="file" id="myFile" name="filename[]" multiple style="display: none;"
+                            wire:model="uploadedFiles"><br>
                     </header>
                     <div class="loader" wire:loading wire:target="downloadFile">
                         <div class="loaderBar"></div>
@@ -433,7 +440,7 @@
                     @error('uploadedFiles.*')
                         <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">* {{ $message }}</span>
                     @enderror
-                    
+
                     <div class="card-body">
 
 
@@ -1157,7 +1164,8 @@
                         <div class="p-6 space-y-4">
                             <div class="input-area mb-3">
                                 <label class="form-label">Column Name</label>
-                                <select class="form-control py-2 @error('newActionColumn') !border-danger-500 @enderror"
+                                <select
+                                    class="form-control py-2 @error('newActionColumn') !border-danger-500 @enderror"
                                     id="action-column-picker" type="text" wire:model.defer="newActionColumn">
                                     <option value="">Select Column</option>
                                     @foreach ($actionColumns as $column)
@@ -1180,7 +1188,8 @@
                                 <label class="form-label">Value</label>
                                 <input type="text"
                                     class="form-control @error('newActionValue') !border-danger-500 @enderror"
-                                    wire:model.defer="newActionValue" autocomplete="off" placeholder="Enter new value" />
+                                    wire:model.defer="newActionValue" autocomplete="off"
+                                    placeholder="Enter new value" />
                                 @error('newActionValue')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
