@@ -913,7 +913,7 @@
         </div>
     </div>
     @if ($preview)
-        <iframe class="w-full mx-auto" src='{{ $preview }}' ></iframe>
+        <iframe class="w-full mx-auto" src='{{ $preview }}' height='900px' frameborder='0'></iframe>
     @endif
     @if ($deleteFieldId)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
