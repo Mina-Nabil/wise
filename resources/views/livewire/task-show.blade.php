@@ -538,12 +538,13 @@
                     <div class="loader" wire:loading wire:target="previewFile">
                         <div class="loaderBar"></div>
                     </div>
-                    @if ($preview)
-                        <iframe src='{{ $preview }}' height='400px' frameborder='0'></iframe>
-                    @endif
                     {{-- <iframe src='https://wiseins.s3.eu-north-1.amazonaws.com/tasks/GGxyo5OihDGEJnn6dW51XyQ2x9544vNDGBqCMMVj.pdf' height='400px' frameborder='0'></iframe> --}}
                 </div>
             </div>
+
+            @if ($preview)
+                <iframe src='{{ $preview }}' height='400px' frameborder='0'></iframe>
+            @endif
 
 
             <div class="mt-4">
