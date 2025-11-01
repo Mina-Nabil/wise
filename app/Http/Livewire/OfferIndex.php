@@ -357,6 +357,7 @@ class OfferIndex extends Component
                 $endDate = Carbon::parse($this->endDate);
                 return $query->fromTo($startDate, $endDate);
             })
+            ->with('selected_option', 'comm_profiles')
             ->paginate(10);
 
         return view('livewire.offer-index', [

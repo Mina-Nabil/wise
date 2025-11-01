@@ -157,7 +157,15 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Sales
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Due
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Selected
                                     </th>
 
                                 </tr>
@@ -233,11 +241,19 @@
                                         </td>
 
                                         <td class="table-td ">
+                                            {{ $offer->comm_profiles->pluck('name')->implode(', ') }}
+                                        </td>
+
+                                        <td class="table-td ">
                                             {{ ucwords($offer->creator->first_name) . ' ' . ucwords($offer->creator->last_name) }}
                                         </td>
 
                                         <td class="table-td ">
                                             {{ date_format(date_create($offer->due), 'Y-m-d') }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            {{ $offer->selected_option?->name }}
                                         </td>
 
                                     </tr>
