@@ -277,18 +277,18 @@
                                                 <td @if ($field->id !== $fieldId) wire:click="editThisField({{ $field->id }})" @endif
                                                     class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                     @if ($field->id === $fieldId)
-                                                        <select wire:model="editedFieldValue"
+                                                        <input type="text" wire:model="editedFieldValue"
                                                             @class([
                                                                 'form-control',
                                                                 'w-full',
                                                                 'h-full',
                                                                 'border-danger-500' => $errors->has('editedFieldValue'),
                                                                 'border-slate-300' => !$errors->has('editedFieldValue'),
-                                                            ]) >
-                                                            <option value="N/A">N/A</option>
-                                                            <option value="Yes">Yes
-                                                            <option value="No">No</option>
-                                                        </select>
+                                                            ]) list="claim_fields_1" />
+                                                            <datalist id="claim_fields_1">
+                                                                <option>Yes</option>
+                                                                <option>No</option>
+                                                            </datalist>
                                                     @else
                                                         {{ $field->value }}
                                                     @endif
