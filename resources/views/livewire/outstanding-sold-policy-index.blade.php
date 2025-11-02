@@ -303,6 +303,9 @@
                                                                     COMM. GROSS
                                                                 </th>
                                                                 <th scope="col" class="table-th ">
+                                                                    PENALTY
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
                                                                     PAID
                                                                 </th>
                                                                 <th scope="col" class="table-th ">
@@ -388,6 +391,10 @@
                                                                     <td class="table-td">
                                                                         <span class="block date-text">
                                                                             {{ number_format($policy->total_policy_comm, 2) }}</span>
+                                                                    </td>
+                                                                    <td class="table-td">
+                                                                        <span
+                                                                            class="block date-text">{{ number_format($policy->penalty_amount, 2) }}</span>
                                                                     </td>
                                                                     <td class="table-td">
                                                                         <span
