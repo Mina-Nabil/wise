@@ -45,12 +45,20 @@ class ClientPayment extends Model
     const PYMT_STATE_PREM_COLLECTED = 'prem_collected';
     const PYMT_STATE_PAID = 'paid';
     const PYMT_STATE_CANCELLED = 'cancelled';
+    
     const PYMT_STATES = [
         self::PYMT_STATE_NEW,
         self::PYMT_STATE_PREM_COLLECTED,
         self::PYMT_STATE_PAID,
         self::PYMT_STATE_CANCELLED,
     ];
+
+    const NOT_CANCELLED_STATES = [
+        self::PYMT_STATE_NEW,
+        self::PYMT_STATE_PREM_COLLECTED,
+        self::PYMT_STATE_PAID
+    ];
+
     const NOT_PAID_STATES = [
         self::PYMT_STATE_NEW,
         self::PYMT_STATE_PREM_COLLECTED,

@@ -650,7 +650,7 @@
                                                 </li>
 
                                                 <!-- Delete Review (Admin Only) -->
-                                                @if (false && Auth::user()->is_admin)
+                                                @can('delete', $review)
                                                     <li>
                                                         <button
                                                             wire:click="$emit('showConfirmation', 'Are you sure you want to delete this review?', 'red', 'deleteReview', {{ $review->id }})"
