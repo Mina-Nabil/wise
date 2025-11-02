@@ -194,7 +194,7 @@ class OfferPolicy
      */
     public function delete(User $user, Offer $offer)
     {
-        return true;
+        return $user->is_admin;
     }
     /**
      * Determine whether the user can delete the model.

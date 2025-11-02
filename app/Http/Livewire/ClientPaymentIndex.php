@@ -85,7 +85,7 @@ class ClientPaymentIndex extends Component
         $statuses = ClientPayment::PYMT_STATES;
         $PYMT_TYPES = ClientPayment::PYMT_TYPES;
 
-        $paymentsQuery = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText)
+        $paymentsQuery = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText, is_totals: true)
             ->when(count($this->types), fn($q) => $q->byTypes($this->types))
             ->when($this->startDate && $this->endDate, function ($query) {
                 $startDate = $this->startDate ? Carbon::parse($this->startDate) : null;
@@ -95,10 +95,10 @@ class ClientPaymentIndex extends Component
 
         $totalPayments = $paymentsQuery
             ->clone()
-            ->select('client_payments.id', 'client_payments.amount')
-            ->groupBy('client_payments.id')
             ->selectRaw('SUM(client_payments.amount) as total_amount')->first()?->total_amount ?? 0;
         $payments = $paymentsQuery
+            ->select('client_payments.*')
+            ->groupBy('client_payments.id')
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned')
             ->paginate(50);
 
