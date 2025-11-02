@@ -151,6 +151,7 @@ class OfferShow extends Component
     public $car_engine = null;
     public $soldInFavorTo;
     public $policyDoc;
+    public $policyDoc2;
 
     public $carBrand;
     public $models;
@@ -329,12 +330,19 @@ class OfferShow extends Component
             'car_engine' => 'nullable|string|max:255',
             'soldInFavorTo' =>  'nullable|string|max:255',
             'policyDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+            'policyDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
         ]);
 
         if ($this->policyDoc) {
             $url = $this->policyDoc->store(SoldPolicy::FILES_DIRECTORY, 's3');
         } else {
             $url = null;
+        }
+
+        if ($this->policyDoc2) {
+            $url2 = $this->policyDoc2->store(SoldPolicy::FILES_DIRECTORY, 's3');
+        } else {
+            $url2 = null;
         }
 
         try {
@@ -355,6 +363,7 @@ class OfferShow extends Component
                 $this->car_plate_no,
                 $this->soldInFavorTo,
                 Carbon::parse($this->issuing_date),
+                $url2
 
             );
             if ($res) {

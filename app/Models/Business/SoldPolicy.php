@@ -85,6 +85,7 @@ class SoldPolicy extends Model
         'policy_number',
         'in_favor_to',
         'policy_doc',
+        'policy_doc_2',
         'note',
         'is_renewed',
         'is_paid',
@@ -720,6 +721,23 @@ class SoldPolicy extends Model
         }
     }
 
+    public function setPolicyDoc2($policy_doc_2)
+    {
+        $this->update([
+            'policy_doc_2' => $policy_doc_2,
+        ]);
+
+        try {
+            $this->save();
+            AppLog::info("Sold Policy doc 2 updated", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't set Sold Policy doc 2", desc: $e->getMessage());
+            return false;
+        }
+    }
+
     public function setMainSales($main_sales_id, $manual_change = true)
     {
         if ($manual_change) {
@@ -757,6 +775,24 @@ class SoldPolicy extends Model
         } catch (Exception $e) {
             report($e);
             AppLog::error("Can't delete Sold Policy doc", desc: $e->getMessage());
+            return false;
+        }
+    }
+
+    public function deletePolicyDoc2()
+    {
+        if (Storage::disk('s3')->delete($this->policy_doc_2)) {
+            $this->policy_doc_2 = null;
+            $this->save();
+        }
+
+        try {
+            $this->save();
+            AppLog::info("Sold Policy doc 2 deleted", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't delete Sold Policy doc 2", desc: $e->getMessage());
             return false;
         }
     }
@@ -1233,7 +1269,7 @@ class SoldPolicy extends Model
 
 
     ///static functons
-    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null, $renewal_policy_id = null, $sales_id = null, $origin_discount = 0): self|bool
+    public static function newSoldPolicy(Customer|Corporate $client, $policy_id, $policy_number, $insured_value, $net_rate, $net_premium, $gross_premium, $installements_count, $payment_frequency, Carbon $start, Carbon $expiry, $discount = 0, $offer_id = null, $customer_car_id = null, $car_chassis = null, $car_plate_no = null, $car_engine = null, $is_valid = true, $note = null, $in_favor_to = null, $policy_doc = null, Carbon $issuing_date = null, $renewal_policy_id = null, $sales_id = null, $origin_discount = 0, $policy_doc_2 = null): self|bool
     {
         $created_at = $issuing_date ? $issuing_date->format('Y-m-d') : (Carbon::now()->format('Y-m-d'));
         $newSoldPolicy = new self([
@@ -1259,6 +1295,7 @@ class SoldPolicy extends Model
             'note'          => $note,
             'in_favor_to'   => $in_favor_to,
             'policy_doc'    => $policy_doc,
+            'policy_doc_2'  => $policy_doc_2,
             'created_at'    => $created_at,
             "renewal_policy_id" =>  $renewal_policy_id,
         ]);

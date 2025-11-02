@@ -247,6 +247,16 @@
                         <input type="file" style="display: none" name="uploadDoc" id="uploadDoc"
                             wire:model="docFile">
                     @endif
+                    @if (!$soldPolicy->policy_doc_2)
+                        <label for="uploadDoc2">
+                            <a
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                dark:hover:text-white cursor-pointer">
+                                Add document 2</a>
+                        </label>
+                        <input type="file" style="display: none" name="uploadDoc2" id="uploadDoc2"
+                            wire:model="docFile2">
+                    @endif
                     @can('delete', $soldPolicy)
                         <li>
                             <a wire:click="toggleDeleteSoldPolicy"
@@ -259,6 +269,9 @@
             </div>
 
             @error('docFile')
+                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+            @enderror
+            @error('docFile2')
                 <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
             @enderror
         </div>
@@ -383,6 +396,38 @@
                                             icon="material-symbols:delete-outline"></iconify-icon>
                                         <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
                                             wire:loading wire:target="toggleDeleteDoc"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <span>Remove</span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($soldPolicy->policy_doc_2)
+                    <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+                        <div class="card-body flex flex-col p-6 active justify-center">
+                            <div class="flex justify-between gap-2">
+                                <button wire:click="downloadDoc2"
+                                    class="btn inline-flex justify-center btn-success block-btn btn-sm w-3/4">
+                                    <span class="flex items-center">
+                                        <iconify-icon wire:loading.remove wire:target="downloadDoc2" class="text-xl"
+                                            icon="material-symbols:download"></iconify-icon>
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                            wire:loading wire:target="downloadDoc2"
+                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                                        <span>Download document 2</span>
+                                    </span>
+                                </button>
+                                <button wire:click="toggleDeleteDoc2"
+                                    class="btn inline-flex justify-center  btn-danger  btn-sm w-1/4">
+                                    <span class="flex items-center">
+                                        <iconify-icon wire:loading.remove wire:target="toggleDeleteDoc2"
+                                            class="text-xl  ltr:mr-2 rtl:ml-2"
+                                            icon="material-symbols:delete-outline"></iconify-icon>
+                                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                            wire:loading wire:target="toggleDeleteDoc2"
                                             icon="line-md:loading-twotone-loop"></iconify-icon>
                                         <span>Remove</span>
                                     </span>
@@ -3758,6 +3803,40 @@
                                 class="btn inline-flex justify-center text-white bg-danger-500">Yes,
                                 Delete</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($deleteDocSec2)
+        <div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-all duration-300 flex items-center justify-center"
+            x-data="{ show: @entangle('deleteDocSec2') }" x-show="show" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" wire:click="toggleDeleteDoc2">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full mx-4"
+                @click.stop>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Delete Document 2</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-6">Are you sure you want to delete this document?
+                        This action cannot be undone.</p>
+                    <div class="flex justify-end gap-3">
+                        <button wire:click="toggleDeleteDoc2" type="button"
+                            class="btn inline-flex justify-center btn-secondary">
+                            Cancel
+                        </button>
+                        <button wire:click="deleteDocument2" type="button"
+                            class="btn inline-flex justify-center btn-danger">
+                            <span class="flex items-center">
+                                <iconify-icon wire:loading.remove wire:target="deleteDocument2" class="text-xl ltr:mr-2 rtl:ml-2"
+                                    icon="material-symbols:delete-outline"></iconify-icon>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="deleteDocument2"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                Delete
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>

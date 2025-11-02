@@ -642,11 +642,19 @@
                                 @enderror
                             </div>
                             <div class="input-area mb-3">
-                                <label for="policyDoc" class="form-label">Policy Document</label>
+                                <label for="policyDoc" class="form-label">Policy Document <span class="text-danger-500">*</span></label>
                                 <input name="policyDoc"
                                     class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('policyDoc') !border-danger-500 @enderror"
                                     id="default-picker" type="file" wire:model.defer="policyDoc">
                                 @error('policyDoc')
+                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <label for="policyDoc2" class="form-label">Policy Document 2 (Optional)</label>
+                                <input name="policyDoc2"
+                                    class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('policyDoc2') !border-danger-500 @enderror"
+                                    id="policyDoc2" type="file" wire:model.defer="policyDoc2">
+                                @error('policyDoc2')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

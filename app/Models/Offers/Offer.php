@@ -210,7 +210,7 @@ class Offer extends Model
      * Policy number, start and expiry shall be presented as new empty fields
      * Other fields can be populated from the selected option, expect the car details(chassis, engine & plate)
      */
-    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry,  $installements_count, $payment_frequency, $insured_value, $net_rate, $net_premium, $gross_premium, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null, ?Carbon $issuing_date = null)
+    public function generateSoldPolicy($policy_number, $policy_doc,  Carbon $start, Carbon $expiry,  $installements_count, $payment_frequency, $insured_value, $net_rate, $net_premium, $gross_premium, $car_chassis = null, $car_engine = null, $car_plate_no = null, $in_favor_to = null, ?Carbon $issuing_date = null, $policy_doc_2 = null)
     {
         /** @var User */
         $user = Auth::user();
@@ -257,6 +257,7 @@ class Offer extends Model
             car_plate_no: $car_plate_no,
             car_engine: $car_engine,
             policy_doc: $policy_doc,
+            policy_doc_2: $policy_doc_2,
             issuing_date: $issuing_date,
             renewal_policy_id: $this->renewal_policy_id,
             discount: $this->getDiscountTotal('comm'),

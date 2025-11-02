@@ -60,6 +60,7 @@ class SoldPolicyIndex extends Component
     public $note = null;
     public $inFavorTo = null;
     public $policyDoc = null;
+    public $policyDoc2 = null;
 
     public $newPolicySection = false;
     public $isPaidCB = 'all';
@@ -110,6 +111,7 @@ class SoldPolicyIndex extends Component
             'note' => 'nullable|string|max:255',
             'inFavorTo' => 'nullable|string|max:255',
             'policyDoc' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+            'policyDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             'issuing_date' => 'required|date',
         ]);
 
@@ -117,6 +119,12 @@ class SoldPolicyIndex extends Component
             $url = $this->policyDoc->store(SoldPolicy::FILES_DIRECTORY, 's3');
         } else {
             $url = null;
+        }
+
+        if ($this->policyDoc2) {
+            $url2 = $this->policyDoc2->store(SoldPolicy::FILES_DIRECTORY, 's3');
+        } else {
+            $url2 = null;
         }
 
 
@@ -142,7 +150,11 @@ class SoldPolicyIndex extends Component
             $this->note,
             $this->inFavorTo,
             $url,
-            Carbon::parse($this->issuing_date)
+            Carbon::parse($this->issuing_date),
+            null,
+            null,
+            0,
+            $url2
         );
 
         if ($res) {

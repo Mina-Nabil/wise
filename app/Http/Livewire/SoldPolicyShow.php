@@ -83,6 +83,8 @@ class SoldPolicyShow extends Component
     public $newEndorsementSection = false;
     public $deleteDocSec = false;
     public $docFile;
+    public $deleteDocSec2 = false;
+    public $docFile2;
 
     public $generateRenewalOfferSec = false;
     public $renewalOfferDue;
@@ -1142,6 +1144,58 @@ class SoldPolicyShow extends Component
         $headers = [
             'Content-Type' => 'application/octet-stream',
             'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number . '_document.' . $extension . '"',
+        ];
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
+    }
+
+    public function toggleDeleteDoc2()
+    {
+        $this->toggle($this->deleteDocSec2);
+    }
+
+    public function deleteDocument2()
+    {
+        $res = $this->soldPolicy->deletePolicyDoc2();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->toggleDeleteDoc2();
+            $this->alert('success', 'document 2 deleted');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function updatedDocFile2()
+    {
+        $this->validate([
+            'docFile2' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+        ]);
+
+        $url = $this->docFile2->store(SoldPolicy::FILES_DIRECTORY, 's3');
+
+        $res = $this->soldPolicy->setPolicyDoc2($url);
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'document 2 added');
+        } else {
+            $this->alert('failed', 'server error');
+        }
+    }
+
+    public function downloadDoc2()
+    {
+        $fileContents = Storage::disk('s3')->get($this->soldPolicy->policy_doc_2);
+        $extension = pathinfo($this->soldPolicy->policy_doc_2, PATHINFO_EXTENSION);
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $this->soldPolicy->policy_number . '_document_2.' . $extension . '"',
         ];
 
         return response()->stream(
