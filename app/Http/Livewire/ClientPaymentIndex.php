@@ -94,7 +94,7 @@ class ClientPaymentIndex extends Component
             })
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
 
-        $totalPayments = $paymentsQuery->sum('client_payments.amount');
+        $totalPayments = $paymentsQuery->selectRaw('SUM(client_payments.amount) as total_amount')->first()->total_amount;
         $payments = $paymentsQuery->paginate(50);
 
         return view('livewire.client-payment-index', [
