@@ -96,6 +96,7 @@ class ClientPaymentIndex extends Component
 
         $totalPayments = $paymentsQuery
         ->clone()
+        ->select('client_payments.id', 'client_payments.amount')
         ->groupBy('client_payments.id')
         ->selectRaw('SUM(client_payments.amount) as total_amount')->first()->total_amount;
         $payments = $paymentsQuery->paginate(50);
