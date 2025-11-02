@@ -2038,6 +2038,11 @@ class SoldPolicy extends Model
         return $this->sales_out_comm + $this->discount;
     }
 
+    public function getTotalCommSubtractionsAfterPenaltyAttribute()
+    {
+        return $this->sales_out_comm + $this->discount + $this->penalty_amount;
+    }
+
     public function getLeftToPayAttribute()
     {
         return $this->gross_premium - $this->total_client_paid;
