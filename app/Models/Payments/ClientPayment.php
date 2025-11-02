@@ -45,7 +45,7 @@ class ClientPayment extends Model
     const PYMT_STATE_PREM_COLLECTED = 'prem_collected';
     const PYMT_STATE_PAID = 'paid';
     const PYMT_STATE_CANCELLED = 'cancelled';
-    
+
     const PYMT_STATES = [
         self::PYMT_STATE_NEW,
         self::PYMT_STATE_PREM_COLLECTED,
@@ -567,6 +567,14 @@ class ClientPayment extends Model
             $query->join('policies', 'sold_policies.policy_id', '=', 'policies.id');
         }
         return $query->where('policies.company_id', "=", $company_id);
+    }
+
+    public function scopeSoldPolicyByDateRange(Builder $query, $start_date = null, $end_date = null)
+    {
+        if (!Helpers::joined($query, 'sold_policies')) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        return $query->whereBetween('sold_policies.start', [$start_date, $end_date]);
     }
 
     public function scopeByDateRange(Builder $query, $start_date = null, $end_date = null)
