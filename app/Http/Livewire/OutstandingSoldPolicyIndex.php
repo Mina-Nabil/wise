@@ -303,7 +303,7 @@ class OutstandingSoldPolicyIndex extends Component
             $this->statuses
         );
 
-        $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('sold_policies.total_policy_comm');
+        $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('total_policy_comm');
         $soldPolicies = $soldPoliciesQuery->simplePaginate(10);
 
         return view('livewire.outstanding-sold-policy-index', [
