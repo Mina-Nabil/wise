@@ -277,10 +277,12 @@ class OutstandingSoldPolicyIndex extends Component
             $client_outstanding = false;
             $commission_outstanding = true;
             $invoice_outstanding = false;
+            $this->statuses = [];
         } elseif ($this->outstandingType === 'invoice') {
             $client_outstanding = false;
             $commission_outstanding = false;
             $invoice_outstanding = true;
+            $this->statuses = [];
         }
 
         $soldPolicies = SoldPolicy::outstandingPolicies(
