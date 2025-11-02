@@ -85,20 +85,23 @@ class ClientPaymentIndex extends Component
         $statuses = ClientPayment::PYMT_STATES;
         $PYMT_TYPES = ClientPayment::PYMT_TYPES;
         
-        $payments = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText)
+        $paymentsQuery = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText)
             ->when(count($this->types), fn($q) => $q->byTypes($this->types))
             ->when($this->startDate && $this->endDate, function ($query) {
                 $startDate = $this->startDate ? Carbon::parse($this->startDate) : null;
                 $endDate = $this->endDate ? Carbon::parse($this->endDate) : null;
                 return $query->byDateRange($startDate, $endDate);
             })
-            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned')
-            ->paginate(50);
+            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
+
+        $totalPayments = $paymentsQuery->sum('amount');
+        $payments = $paymentsQuery->paginate(50);
 
         return view('livewire.client-payment-index', [
             'statuses' => $statuses,
             'PYMT_TYPES' => $PYMT_TYPES,
-            'payments' => $payments
+            'payments' => $payments,
+            'totalPayments' => $totalPayments
         ]);
     }
 }
