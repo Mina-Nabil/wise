@@ -449,19 +449,17 @@ class ClientPayment extends Model
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned', 'sold_policy.offer', 'sales_out');
     }
 
-    public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false, string $searchText = null, $upcoming_only = false, $is_totals = false)
+    public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false, string $searchText = null, $upcoming_only = false)
     {
         /** @var User */
         $user = Auth::user();
         $canSeeAll = $user->can('viewAny', self::class);
 
-        $query->leftjoin('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
+        $query->select('client_payments.*')
+            ->leftjoin('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id')
             ->leftjoin('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
             ->leftjoin('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
-            ->when(!$is_totals, function ($q) {
-                $q->select('client_payments.id')
-                    ->groupBy('client_payments.id');
-            });
+            ->groupBy('client_payments.id');
 
         if (!$canSeeAll) $query->where(
             function ($q) use ($user) {
