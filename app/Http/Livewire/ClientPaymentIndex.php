@@ -15,11 +15,17 @@ class ClientPaymentIndex extends Component
     public $myPayments = false;
     public $searchText;
     public $dateRange;
+    public $startDate;
+    public $endDate;
     public $types = [];
     public $section = 'all';
     
 
-    protected $queryString = ['section'];
+    protected $queryString = [
+        'section',
+        'startDate' => ['except' => ''],
+        'endDate' => ['except' => ''],
+    ];
 
     public function getTypeIcon($type)
     {
@@ -66,6 +72,14 @@ class ClientPaymentIndex extends Component
         $this->resetPage();
     }
 
+    public function updatedDateRange()
+    {
+        if (strpos($this->dateRange, 'to') !== false) {
+            // The string contains 'to'
+            [$this->startDate, $this->endDate] = explode(' to ', $this->dateRange);
+        }
+    }
+
     public function render()
     {
         $statuses = ClientPayment::PYMT_STATES;
@@ -73,6 +87,11 @@ class ClientPaymentIndex extends Component
         
         $payments = ClientPayment::userData($this->filteredStatus, $this->myPayments, $this->searchText)
             ->when(count($this->types), fn($q) => $q->byTypes($this->types))
+            ->when($this->startDate && $this->endDate, function ($query) {
+                $startDate = $this->startDate ? Carbon::parse($this->startDate) : null;
+                $endDate = $this->endDate ? Carbon::parse($this->endDate) : null;
+                return $query->byDateRange($startDate, $endDate);
+            })
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned')
             ->paginate(50);
 
