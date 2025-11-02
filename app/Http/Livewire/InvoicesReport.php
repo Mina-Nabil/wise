@@ -21,7 +21,7 @@ class InvoicesReport extends Component
     // Edit sections
     public $createdSection = false;
     public $companySection = false;
-    
+
     // Edit variables
     public $Ecompany_ids = [];
     public $Ecreated_from;
@@ -92,7 +92,7 @@ class InvoicesReport extends Component
     public function updatedSearchCompany()
     {
         $this->companies = Company::when(
-            $this->searchCompany, 
+            $this->searchCompany,
             fn($q) => $q->SearchBy($this->searchCompany)
         )->get()->take(5);
     }
@@ -105,7 +105,7 @@ class InvoicesReport extends Component
     public function mount()
     {
         $this->companies = Company::when(
-            $this->searchCompany, 
+            $this->searchCompany,
             fn($q) => $q->SearchBy($this->searchCompany)
         )->get()->take(5);
     }
@@ -113,32 +113,31 @@ class InvoicesReport extends Component
     public function render()
     {
         $invoicesQuery = Invoice::with(['creator', 'commissions', 'company'])
-            ->when($this->created_from, function($query) {
+            ->when($this->created_from, function ($query) {
                 $query->whereDate('created_at', '>=', $this->created_from);
             })
-            ->when($this->created_to, function($query) {
+            ->when($this->created_to, function ($query) {
                 $query->whereDate('created_at', '<=', $this->created_to);
             })
-            ->when($this->company_ids, function($query) {
+            ->when($this->company_ids, function ($query) {
                 $query->whereIn('company_id', $this->company_ids);
             })
-            ->when($this->searchText, function($query) {
-                $query->where(function($q) {
+            ->when($this->searchText, function ($query) {
+                $query->where(function ($q) {
                     $q->where('serial', 'like', "%{$this->searchText}%")
-                      ->orWhereHas('creator', function($q) {
-                          $q->where('first_name', 'like', "%{$this->searchText}%")
-                            ->orWhere('last_name', 'like', "%{$this->searchText}%");
-                      });
+                        ->orWhereHas('creator', function ($q) {
+                            $q->where('first_name', 'like', "%{$this->searchText}%")
+                                ->orWhere('last_name', 'like', "%{$this->searchText}%");
+                        });
                 });
             })
-            ->when($this->sortColumn, function($query) {
+            ->when($this->sortColumn, function ($query) {
                 $query->orderBy($this->sortColumn, $this->sortDirection);
-            }, function($query) {
+            }, function ($query) {
                 $query->latest();
-            })
-        );
-        
-        $totalInvoices = $invoicesQuery->clone()->get()->sum('amount');
+            });
+
+        $totalInvoices = $invoicesQuery->clone()->get()->sum('net_total');
         $invoices = $invoicesQuery->paginate(50);
 
         return view('livewire.invoices-report', [
@@ -146,4 +145,4 @@ class InvoicesReport extends Component
             'totalInvoices' => $totalInvoices
         ]);
     }
-} 
+}
