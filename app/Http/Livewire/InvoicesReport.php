@@ -112,7 +112,7 @@ class InvoicesReport extends Component
 
     public function render()
     {
-        $invoices = Invoice::with(['creator', 'commissions', 'company'])
+        $invoicesQuery = Invoice::with(['creator', 'commissions', 'company'])
             ->when($this->created_from, function($query) {
                 $query->whereDate('created_at', '>=', $this->created_from);
             })
@@ -136,10 +136,14 @@ class InvoicesReport extends Component
             }, function($query) {
                 $query->latest();
             })
-            ->paginate(50);
+        );
+        
+        $totalInvoices = $invoicesQuery->clone()->get()->sum('amount');
+        $invoices = $invoicesQuery->paginate(50);
 
         return view('livewire.invoices-report', [
-            'invoices' => $invoices
+            'invoices' => $invoices,
+            'totalInvoices' => $totalInvoices
         ]);
     }
 } 

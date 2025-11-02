@@ -285,7 +285,7 @@ class OutstandingSoldPolicyIndex extends Component
             $this->statuses = [];
         }
 
-        $soldPolicies = SoldPolicy::outstandingPolicies(
+        $soldPoliciesQuery = SoldPolicy::outstandingPolicies(
             $this->search,
             $commission_outstanding,
             $client_outstanding,
@@ -301,12 +301,14 @@ class OutstandingSoldPolicyIndex extends Component
             $this->invoicePaidFilter,
             true,
             $this->statuses
-        )->simplePaginate(10);
+        );
 
-        
+        $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('sold_policies.total_policy_comm');
+        $soldPolicies = $soldPoliciesQuery->simplePaginate(10);
 
         return view('livewire.outstanding-sold-policy-index', [
             'soldPolicies' => $soldPolicies,
+            'totalSoldPolicies' => $totalSoldPolicies,
             'companies' =>  Company::when($this->searchCompany, function ($query) {
                 return $query->where('name', 'like', '%' . $this->searchCompany . '%');
             })->get(),
