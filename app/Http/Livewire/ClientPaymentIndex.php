@@ -90,7 +90,7 @@ class ClientPaymentIndex extends Component
             ->when($this->startDate && $this->endDate, function ($query) {
                 $startDate = $this->startDate ? Carbon::parse($this->startDate) : null;
                 $endDate = $this->endDate ? Carbon::parse($this->endDate) : null;
-                return $query->byDateRange($startDate, $endDate);
+                return $query->soldPolicyByDateRange($startDate, $endDate);
             })
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
 
