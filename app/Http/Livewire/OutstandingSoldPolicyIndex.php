@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\models\Business\SoldPolicy;
 use App\Models\Insurance\Company;
+use App\Models\Payments\ClientPayment;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
@@ -44,6 +45,11 @@ class OutstandingSoldPolicyIndex extends Component
     public $Einvoice_payment_to;
 
     public $invoicePaidFilter = null;
+
+    // Add client payment statuses filter properties
+    public $statusesSection = false;
+    public $statuses = [];
+    public $Estatuses = [];
 
     //company filter
     public $companySection = false;
@@ -192,6 +198,25 @@ class OutstandingSoldPolicyIndex extends Component
         $this->invoicePaidFilter = null;
     }
 
+    public function togglestatuses()
+    {
+        $this->toggle($this->statusesSection);
+        if ($this->statusesSection) {
+            $this->Estatuses = $this->statuses;
+        }
+    }
+
+    public function clearstatuses()
+    {
+        $this->statuses = [];
+    }
+
+    public function setStatuses()
+    {
+        $this->statuses = $this->Estatuses;
+        $this->toggle($this->statusesSection);
+    }
+
     public function exportReport()
     {
         if ($this->outstandingType === 'all') {
@@ -225,7 +250,8 @@ class OutstandingSoldPolicyIndex extends Component
             $this->hasInvoiceFilter,
             $this->invoice_payment_from,
             $this->invoice_payment_to,
-            $this->invoicePaidFilter
+            $this->invoicePaidFilter,
+            $this->statuses
         );
     }
 
@@ -269,14 +295,17 @@ class OutstandingSoldPolicyIndex extends Component
             $this->hasInvoiceFilter,
             $this->invoice_payment_from,
             $this->invoice_payment_to,
-            $this->invoicePaidFilter
+            $this->invoicePaidFilter,
+            true,
+            $this->statuses
         )->simplePaginate(10);
 
         return view('livewire.outstanding-sold-policy-index', [
             'soldPolicies' => $soldPolicies,
             'companies' =>  Company::when($this->searchCompany, function ($query) {
                 return $query->where('name', 'like', '%' . $this->searchCompany . '%');
-            })->get()
+            })->get(),
+            'STATUSES' => ClientPayment::PYMT_STATES
         ]);
     }
 }

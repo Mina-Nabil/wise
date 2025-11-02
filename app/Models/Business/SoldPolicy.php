@@ -1324,8 +1324,8 @@ class SoldPolicy extends Model
         $has_invoice = null,
         $invoice_payment_from = null,
         $invoice_payment_to = null,
-        $invoice_paid = null
-
+        $invoice_paid = null,
+        array $payment_statuses = []
     ) {
         /** @var User */
         $user = Auth::user();
@@ -1345,6 +1345,8 @@ class SoldPolicy extends Model
             $invoice_payment_from,
             $invoice_payment_to,
             $invoice_paid,
+            true,
+            $payment_statuses
         )->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_outstanding_report.xlsx'));
@@ -1726,17 +1728,17 @@ class SoldPolicy extends Model
         });
 
         $query->when($is_commission_outstanding, function ($q) {
-            $q->whereRaw("total_comp_paid < after_tax_comm")->only2025();
+            $q->whereRaw("total_comp_paid < (after_tax_comm - 1)")->only2025();
         });
         $query->when($is_client_outstanding, function ($q) {
-            $q->whereRaw("total_client_paid < gross_premium")->fromOct2024();
+            $q->whereRaw("total_client_paid < (gross_premium - 1)")->fromOct2024();
         });
 
         $query->when($is_invoice_outstanding, function ($q) {
             if (!Helpers::joined($q, 'company_comm_payments')) {
                 $q->join('company_comm_payments', 'company_comm_payments.sold_policy_id', 'sold_policies.id');
             }
-            $q->havingRaw("total_comp_paid < SUM(company_comm_payments.amount)")->fromOct2024();
+            $q->havingRaw("total_comp_paid < (SUM(company_comm_payments.amount) - 1)")->fromOct2024();
         });
 
         return $query->orderBy("sold_policies.start");
@@ -1784,7 +1786,8 @@ class SoldPolicy extends Model
         $invoice_payment_from = null,
         $invoice_payment_to = null,
         $invoice_paid = null,
-        bool $group_data = true
+        bool $group_data = true,
+        array $payment_statuses = []
     ) {
         return $query->userData(
             searchText: $search,
@@ -1817,6 +1820,11 @@ class SoldPolicy extends Model
             })
             ->when(!is_null($invoice_paid), function ($q) use ($invoice_paid) {
                 $q->invoicePaid($invoice_paid);
+            })
+            ->when(!empty($payment_statuses), function ($q) use ($payment_statuses) {
+                $q->whereHas('client_payments', function ($query) use ($payment_statuses) {
+                    $query->whereIn('status', $payment_statuses);
+                });
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
             ->with('last_company_comm_payment', 'last_company_comm_payment.invoice');
