@@ -226,7 +226,7 @@ class Invoice extends Model
             $activeSheet->getCell('B' . $i)->setValue((new Carbon($this->created_at))->format('d-M-y'));
             $activeSheet->getCell('D' . $i)->setValue($comm->sold_policy->policy_number);
             $activeSheet->getCell('E' . $i)->setValue($comm->sold_policy->client?->name);
-            $activeSheet->getCell('F' . $i)->setValue((new Carbon($comm->sold_policy->issuing_date))->format('d-M-y'));
+            $activeSheet->getCell('F' . $i)->setValue((new Carbon($comm->sold_policy->start))->format('d-M-y'));
             $activeSheet->getCell('G' . $i)->setValue($comm->pymnt_perm);
             $activeSheet->getCell('O' . $i)->setValue('اذن صرف عمولة ' . $comm->pymnt_perm);
             $activeSheet->getCell('I' . $i)->setValue($comm->amount + $comm->tax_amount);
@@ -240,6 +240,84 @@ class Invoice extends Model
         $writer = new Xlsx($newFile);
         $file_path = SoldPolicy::FILES_DIRECTORY . "invoice{$this->serial}.xlsx";
         $public_file_path = storage_path($file_path);
+        $writer->save($public_file_path);
+
+        return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    public static function exportReport(?Carbon $created_from = null, ?Carbon $created_to = null, array $company_ids = [], ?string $searchText = null)
+    {
+        $invoicesQuery = self::with(['creator', 'commissions', 'company'])
+            ->when($created_from, function ($query) use ($created_from) {
+                $query->whereDate('created_at', '>=', $created_from);
+            })
+            ->when($created_to, function ($query) use ($created_to) {
+                $query->whereDate('created_at', '<=', $created_to);
+            })
+            ->when($company_ids, function ($query) use ($company_ids) {
+                $query->whereIn('company_id', $company_ids);
+            })
+            ->when($searchText, function ($query) use ($searchText) {
+                $query->where(function ($q) use ($searchText) {
+                    $q->where('serial', 'like', "%{$searchText}%")
+                        ->orWhereHas('creator', function ($q) use ($searchText) {
+                            $q->where('first_name', 'like', "%{$searchText}%")
+                                ->orWhere('last_name', 'like', "%{$searchText}%");
+                        });
+                });
+            })
+            ->latest();
+
+        $invoices = $invoicesQuery->get();
+
+        // Create new spreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $activeSheet = $spreadsheet->getActiveSheet();
+
+        // Set column headers
+        $activeSheet->setCellValue('A1', 'System ID');
+        $activeSheet->setCellValue('B1', 'Serial');
+        $activeSheet->setCellValue('C1', 'Creation Date');
+        $activeSheet->setCellValue('D1', 'Creator');
+        $activeSheet->setCellValue('E1', 'Company');
+        $activeSheet->setCellValue('F1', 'Gross Total');
+        $activeSheet->setCellValue('G1', 'Tax Total');
+        $activeSheet->setCellValue('H1', 'Net Total');
+        $activeSheet->setCellValue('I1', 'Payment Date');
+
+        // Style headers
+        $activeSheet->getStyle('A1:I1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:I1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:I1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+
+        $i = 2;
+        foreach ($invoices as $invoice) {
+            $activeSheet->setCellValue('A' . $i, $invoice->id);
+            $activeSheet->setCellValue('B' . $i, $invoice->serial);
+            $activeSheet->setCellValue('C' . $i, $invoice->created_at ? $invoice->created_at->format('Y-m-d') : 'N/A');
+            $activeSheet->setCellValue('D' . $i, $invoice->creator->username ?? 'N/A');
+            $activeSheet->setCellValue('E' . $i, $invoice->company->name ?? 'N/A');
+            $activeSheet->setCellValue('F' . $i, $invoice->gross_total);
+            $activeSheet->setCellValue('G' . $i, $invoice->tax_total);
+            $activeSheet->setCellValue('H' . $i, $invoice->net_total);
+            $activeSheet->setCellValue('I' . $i, $invoice->payment_date ?? 'Not Paid');
+            $i++;
+        }
+
+        // Auto-size columns
+        foreach (range('A', 'I') as $col) {
+            $activeSheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $file_path = self::FILES_DIRECTORY . "invoices_export.xlsx";
+        $public_file_path = storage_path($file_path);
+        
+        // Make sure directory exists
+        if (!file_exists(dirname($public_file_path))) {
+            mkdir(dirname($public_file_path), 0755, true);
+        }
+        
         $writer->save($public_file_path);
 
         return response()->download($public_file_path)->deleteFileAfterSend(true);

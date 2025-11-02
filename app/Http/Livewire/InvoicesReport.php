@@ -110,6 +110,20 @@ class InvoicesReport extends Component
         )->get()->take(5);
     }
 
+    public function exportReport()
+    {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            abort(403);
+        }
+
+        return Invoice::exportReport(
+            $this->created_from,
+            $this->created_to,
+            $this->company_ids,
+            $this->searchText
+        );
+    }
+
     public function render()
     {
         $invoicesQuery = Invoice::with(['creator', 'commissions', 'company'])
