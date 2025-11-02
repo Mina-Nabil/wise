@@ -150,7 +150,7 @@ class CommProfile extends Model
             $activeSheet->getCell('M' . $i)->setValue($comm->status);
 
             $activeSheet->getCell('N' . $i)->setValue($comm->sold_policy->total_policy_comm);
-            $activeSheet->getCell('O' . $i)->setValue($comm->sold_policy->after_tax_comm);
+            $activeSheet->getCell('O' . $i)->setValue($comm->sold_policy->total_policy_comm * .95);
             $activeSheet->getCell('P' . $i)->setValue($comm->sold_policy->sales_out_comm);
             $activeSheet->getCell('Q' . $i)->setValue($comm->sold_policy->total_policy_comm - $comm->sold_policy->total_comm_subtractions_after_penalty);
 
