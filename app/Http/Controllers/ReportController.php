@@ -46,6 +46,11 @@ class ReportController extends Controller
         return view('reports.invoices-report');
     }
 
+    public function salesCommissions()
+    {
+        return view('reports.sales-commissions-report');
+    }
+
     public function clientPaymentsFinance()
     {
         /** @var User */
