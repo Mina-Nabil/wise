@@ -179,14 +179,14 @@
                     <!-- Apps Area -->
                     <li class="sidebar-menu-title">CRM</li>
                     @can('viewAny', \App\Models\Offers\Offer::class)
-                    <li>
-                        <a href="{{ url('/offers') }}" class="navItem @yield('offers')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="ic:outline-local-offer"></iconify-icon>
-                                <span>Offers</span>
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url('/offers') }}" class="navItem @yield('offers')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="ic:outline-local-offer"></iconify-icon>
+                                    <span>Offers</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
                     <li>
                         <a href="{{ url('/sold-policies') }}" class="navItem @yield('sold-policies')">
@@ -197,135 +197,142 @@
                         </a>
                     </li>
                     @can('viewReports', \App\Models\SoldPolicy\SoldPolicy::class)
-                    <li>
-                        <a href="{{ url('/outstanding-sold-policies') }}" class="navItem @yield('outstanding-sold-policies')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="ic:round-security"></iconify-icon>
-                                <span>Outstanding Policies</span>
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url('/outstanding-sold-policies') }}" class="navItem @yield('outstanding-sold-policies')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="ic:round-security"></iconify-icon>
+                                    <span>Outstanding Policies</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
                     @can('viewReports', \App\Models\SoldPolicy\SoldPolicy::class)
-                    <li>
-                        <a href="{{ url('/exp-sold-policies') }}" class="navItem @yield('exp-sold-policies')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="iconoir:privacy-policy"></iconify-icon>
-                                <span>Expiry Sold Policies</span>
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url('/exp-sold-policies') }}" class="navItem @yield('exp-sold-policies')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="iconoir:privacy-policy"></iconify-icon>
+                                    <span>Expiry Sold Policies</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
                     @can('viewReports', \App\Models\SoldPolicy\SoldPolicy::class)
-                    <li>
-                        <a href="{{ url('/payments') }}" class="navItem @yield('client-payment-index')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="material-symbols:payments"></iconify-icon>
-                                <span>Client Payments</span>
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url('/payments') }}" class="navItem @yield('client-payment-index')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="material-symbols:payments"></iconify-icon>
+                                    <span>Client Payments</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
                     @can('viewAny', \App\Models\Marketing\Review::class)
-                    <li>
-                        <a href="{{ url('/reviews') }}" class="navItem @yield('reviews')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="ic:outline-reviews"></iconify-icon>
-                                <span>Reviews</span>
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url('/reviews') }}" class="navItem @yield('reviews')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="ic:outline-reviews"></iconify-icon>
+                                    <span>Reviews</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
                     @can('viewAny', \App\Models\Customers\Customer::class)
-                    <li>
-                        <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
-                                <span>Customers</span>
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url('/customers') }}" class="navItem @yield('customers')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="raphael:customer"></iconify-icon>
+                                    <span>Customers</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
                     @can('viewAny', \App\Models\Corporates\Corporate::class)
-                    <li>
-                        <a href="{{ url('/corporates') }}" class="navItem @yield('corporates')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
-                                <span>Corporates</span>
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url('/corporates') }}" class="navItem @yield('corporates')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="material-symbols:corporate-fare"></iconify-icon>
+                                    <span>Corporates</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
                     @can('viewAny', \App\Models\Customers\Followup::class)
-                    <li>
-                        <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
-                            <span class="flex items-center">
-                                <iconify-icon class="nav-icon" icon="icon-park-outline:cycle-arrow"></iconify-icon>
-                                <span>Follow Ups</span>
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url('/followups') }}" class="navItem @yield('followups')">
+                                <span class="flex items-center">
+                                    <iconify-icon class="nav-icon" icon="icon-park-outline:cycle-arrow"></iconify-icon>
+                                    <span>Follow Ups</span>
+                                </span>
+                            </a>
+                        </li>
                     @endcan
 
                     @can('viewReports', \App\Models\SoldPolicy\SoldPolicy::class)
-                    <li class="">
-                        <a href="javascript:void(0)" class="navItem">
-                            <span class="flex items-center">
-                                <iconify-icon class=" nav-icon" icon="ic:round-add-task"></iconify-icon>
-                                <span>Reports</span>
-                            </span>
-                            <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
-                        </a>
-                        <ul class="sidebar-submenu">
-                            <li>
-                                <a href="{{ url('/reports/offers') }}" class="@yield('reports.offers')">Offers</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/reports/tasks') }}" class="@yield('reports.tasks')">Tasks</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/reports/followups') }}" class="@yield('reports.followups')">Followups</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold
-                                    Policies</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/reports/client-payment-finance') }}"
-                                    class="@yield('client-payment-finance')">Payments Due</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/reports/client-payments') }}" class="@yield('client-payments')">Client
-                                    Payments</a>
-                            </li>
-                            @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
-                            <li>
-                                <a href="{{ url('/reports/company-comm-payments') }}" class="@yield('company-comm-payments-report')">Company
-                                    Commission Payments</a>
-                            </li>
-                            @endif
-                            <li>
-                                <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Customer
-                                    Interests</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/reports/corporate-interest') }}"
-                                    class="@yield('corporate-interests-report')">Corporate Interests</a>
-                            </li>
-                            @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
-                            <li>
-                                <a href="{{ url('/reports/invoices-report') }}" class="@yield('invoices-report')">Invoices
-                                        Report</a>
-                                </li>
-
+                        <li class="">
+                            <a href="javascript:void(0)" class="navItem">
+                                <span class="flex items-center">
+                                    <iconify-icon class=" nav-icon" icon="ic:round-add-task"></iconify-icon>
+                                    <span>Reports</span>
+                                </span>
+                                <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
+                            </a>
+                            <ul class="sidebar-submenu">
                                 <li>
-                                    <a href="{{ url('/reports/sales-commissions') }}" class="@yield('sales-commissions-report')">Sales Commissions</a>
+                                    <a href="{{ url('/reports/offers') }}" class="@yield('reports.offers')">Offers</a>
                                 </li>
-                            @endif
-                        </ul>
-                    </li>
+                                <li>
+                                    <a href="{{ url('/reports/tasks') }}" class="@yield('reports.tasks')">Tasks</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/reports/followups') }}" class="@yield('reports.followups')">Followups</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/reports/sold-policy') }}" class="@yield('reports.sold-policy')">Sold
+                                        Policies</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/reports/client-payment-finance') }}"
+                                        class="@yield('client-payment-finance')">Payments Due</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/reports/client-payments') }}" class="@yield('client-payments')">Client
+                                        Payments</a>
+                                </li>
+                                @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
+                                    <li>
+                                        <a href="{{ url('/reports/company-comm-payments') }}"
+                                            class="@yield('company-comm-payments-report')">Company
+                                            Commission Payments</a>
+                                    </li>
+                                @endif
+                                <li>
+                                    <a href="{{ url('/reports/client-interest') }}" class="@yield('client-interests-report')">Customer
+                                        Interests</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/reports/corporate-interest') }}"
+                                        class="@yield('corporate-interests-report')">Corporate Interests</a>
+                                </li>
+                                @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
+                                    <li>
+                                        <a href="{{ url('/reports/invoices-report') }}"
+                                            class="@yield('invoices-report')">Invoices
+                                            Report</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="{{ url('/reports/sales-commissions') }}"
+                                            class="@yield('sales-commissions-report')">Sales Commissions</a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </li>
                     @endcan
-                    @if (Auth::user()->is_admin || Auth::user()->is_hr || Auth::user()->is_any_finance || Auth::user()->is_operations || Auth::user()->is_claims)
+                    @if (Auth::user()->is_admin ||
+                            Auth::user()->is_hr ||
+                            Auth::user()->is_any_finance ||
+                            Auth::user()->is_operations ||
+                            Auth::user()->is_claims)
                         <li class="sidebar-menu-title">Settings</li>
                         @if (Auth::user()->is_admin || Auth::user()->is_any_finance)
                             <li>
@@ -459,7 +466,7 @@
                                         class="leading-none bg-transparent relative text-xl top-[2px] text-slate-900 dark:text-white"
                                         icon="heroicons-outline:menu-alt-3"></iconify-icon>
                                 </button>
-                           
+
 
                             </div>
 
@@ -476,7 +483,8 @@
                                 <div class="text-right">
                                     <a href="https://hire.wise-ib.com" target="_blank">
                                         <button
-                                            class="btn btn-sm inline-flex justify-center btn-outline-light rounded-[25px]">HR APP</button>
+                                            class="btn btn-sm inline-flex justify-center btn-outline-light rounded-[25px]">HR
+                                            APP</button>
                                     </a>
                                 </div>
                             @endif
@@ -536,7 +544,8 @@
                                     </li>
 
                                     <li>
-                                        <a href="{{ url('/calendar/followups') }}" class="navItem @yield('followups-calendar')">
+                                        <a href="{{ url('/calendar/followups') }}"
+                                            class="navItem @yield('followups-calendar')">
                                             <div class="flex space-x-2 items-start rtl:space-x-reverse ">
                                                 <iconify-icon icon=heroicons:phone class="leading-[1] text-base">
                                                 </iconify-icon>
