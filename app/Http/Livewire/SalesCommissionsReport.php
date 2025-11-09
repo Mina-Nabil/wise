@@ -18,8 +18,9 @@ class SalesCommissionsReport extends Component
     use AuthorizesRequests;
 
     public $commProfilesSection = false;
-    public $profiles = [];
-    public $Eprofiles = [];
+    public $profileIds = [];
+    public $EprofileIds = [];
+    public $searchProfile;
 
     public $statusesSection = false;
     public $statuses = [];
@@ -55,20 +56,30 @@ class SalesCommissionsReport extends Component
     {
         $this->toggle($this->commProfilesSection);
         if ($this->commProfilesSection) {
-            $this->Eprofiles = $this->profiles;
+            $this->EprofileIds = $this->profileIds;
+        }
+        if (! $this->commProfilesSection) {
+            $this->searchProfile = null;
         }
     }
 
     public function setProfiles(): void
     {
-        $this->profiles = array_values(array_unique($this->Eprofiles));
+        $this->profileIds = array_values(array_unique(array_map('intval', $this->EprofileIds)));
         $this->toggleProfiles();
     }
 
     public function clearProfiles(): void
     {
-        $this->profiles = [];
-        $this->Eprofiles = [];
+        $this->profileIds = [];
+        $this->EprofileIds = [];
+    }
+
+    public function pushProfile(int $id): void
+    {
+        if (! in_array($id, $this->EprofileIds, true)) {
+            $this->EprofileIds[] = $id;
+        }
     }
 
     public function toggleStatuses(): void
@@ -161,33 +172,41 @@ class SalesCommissionsReport extends Component
         )->paginate(50);
 
         $selectedProfiles = $this->selectedProfiles();
+        $modalSelectedProfiles = $this->commProfilesSection
+            ? CommProfile::whereIn('id', $this->EprofileIds)->orderBy('title')->get()
+            : collect();
         $commProfiles = $this->commProfilesSection
-            ? CommProfile::select('id', 'title')->orderBy('title')->get()
+            ? CommProfile::select('id', 'title')
+                ->when($this->EprofileIds, fn($q) => $q->whereNotIn('id', $this->EprofileIds))
+                ->when($this->searchProfile, fn($q) => $q->where('title', 'like', '%' . $this->searchProfile . '%'))
+                ->orderBy('title')
+                ->take(10)
+                ->get()
             : collect();
 
         return view('livewire.sales-commissions-report', [
             'STATUSES' => $STATUSES,
             'commissions' => $commissions,
             'selectedProfiles' => $selectedProfiles,
+            'modalSelectedProfiles' => $modalSelectedProfiles,
             'commProfiles' => $commProfiles,
         ]);
     }
 
     protected function selectedProfiles(): Collection
     {
-        return collect($this->profiles)
-            ->map(fn($profile) => json_decode($profile, true))
-            ->filter(fn($profile) => isset($profile['id'], $profile['title']));
+        if (empty($this->profileIds)) {
+            return collect();
+        }
+
+        return CommProfile::whereIn('id', $this->profileIds)
+            ->orderBy('title')
+            ->get();
     }
 
     protected function selectedProfileIds(): array
     {
-        return $this->selectedProfiles()
-            ->pluck('id')
-            ->map(fn($id) => (int) $id)
-            ->unique()
-            ->values()
-            ->all();
+        return array_values(array_unique(array_map('intval', $this->profileIds)));
     }
 
     protected function asCarbon($value): ?Carbon

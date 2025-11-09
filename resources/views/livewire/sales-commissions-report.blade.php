@@ -232,26 +232,53 @@
                             </button>
                         </div>
 
-                        <div class="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
-                            @forelse ($commProfiles as $profile)
-                                <div class="checkbox-area">
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="hidden"
-                                            value="{{ json_encode(['id' => $profile->id, 'title' => $profile->title]) }}"
-                                            wire:model.defer="Eprofiles">
-                                        <span
-                                            class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
-                                                class="h-[10px] w-[10px] block m-auto opacity-0">
-                                        </span>
-                                        <span class="text-slate-500 dark:text-slate-400 text-sm leading-6">
-                                            {{ $profile->title }}
-                                        </span>
-                                    </label>
-                                </div>
-                            @empty
-                                <p class="text-sm text-slate-500">No commission profiles available.</p>
-                            @endforelse
+                        <div class="p-6 space-y-4">
+                            <div>
+                                @foreach ($modalSelectedProfiles as $profile)
+                                    <span class="badge bg-slate-900 text-white capitalize rounded-3xl">
+                                        {{ $profile->title }}
+                                    </span>
+                                @endforeach
+                            </div>
+
+                            <div class="from-group">
+                                <label for="searchProfile" class="form-label">Search Commission Profile</label>
+                                <input name="searchProfile" type="text" class="form-control mt-2 w-full"
+                                    wire:model="searchProfile">
+                            </div>
+
+                            <div class="max-h-[45vh] overflow-y-auto">
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                    <thead class="bg-slate-200 dark:bg-slate-700">
+                                        <tr>
+                                            <th scope="col" class="table-th">Title</th>
+                                            <th scope="col" class="table-th">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                        @forelse ($commProfiles as $profile)
+                                            @if (!in_array($profile->id, $EprofileIds ?? [], true))
+                                                <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                    <td class="table-td">{{ $profile->title }}</td>
+                                                    <td class="table-td">
+                                                        <button wire:click="pushProfile({{ $profile->id }})"
+                                                            class="btn inline-flex justify-center btn-success light">
+                                                            Add
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @empty
+                                            <tr>
+                                                <td colspan="2" class="table-td text-center">
+                                                    No commission profiles found.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div
