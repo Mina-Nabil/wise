@@ -562,8 +562,11 @@ class SalesComm extends Model
         ?Carbon $clientPaymentDateFrom = null,
         ?Carbon $clientPaymentDateTo = null
     ) {
-        $query->select('sales_comms.*')
-            ->leftJoin('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
+        if (empty($query->getQuery()->columns)) {
+            $query->select('sales_comms.*');
+        }
+
+        $query->leftJoin('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
             ->leftJoin('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'comm_profile')
             ->when(!empty($commProfileIds), fn($q) => $q->whereIn('sales_comms.comm_profile_id', $commProfileIds))
@@ -584,6 +587,36 @@ class SalesComm extends Model
             });
 
         return $query;
+    }
+
+    public static function totalsReport(
+        array $commProfileIds = [],
+        ?Carbon $policyStartFrom = null,
+        ?Carbon $policyStartTo = null,
+        ?Carbon $paymentDateFrom = null,
+        ?Carbon $paymentDateTo = null,
+        array $statuses = [],
+        ?Carbon $clientPaymentDateFrom = null,
+        ?Carbon $clientPaymentDateTo = null
+    ): Builder {
+        $query = self::query()
+            ->select('sales_comms.comm_profile_id')
+            ->selectRaw('COALESCE(comm_profiles.title, "N/A") as profile_title')
+            ->selectRaw('SUM(sales_comms.amount) as total_amount');
+
+        $query->report(
+            $commProfileIds,
+            $policyStartFrom,
+            $policyStartTo,
+            $paymentDateFrom,
+            $paymentDateTo,
+            $statuses,
+            $clientPaymentDateFrom,
+            $clientPaymentDateTo
+        );
+
+        return $query->groupBy('sales_comms.comm_profile_id', 'comm_profiles.title')
+            ->orderBy('profile_title');
     }
 
     public function scopeNotTotalyPaid(Builder $query, $profile_id)
