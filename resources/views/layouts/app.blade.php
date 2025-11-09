@@ -321,7 +321,7 @@
                                     </li>
 
                                     <li>
-                                        <a href="{{ url('/reports/sales-commissions') }}"
+                                        <a href="{{ url('/reports/sales-comm-report') }}"
                                             class="@yield('sales-commissions-report')">Sales Commissions</a>
                                     </li>
                                 @endif
