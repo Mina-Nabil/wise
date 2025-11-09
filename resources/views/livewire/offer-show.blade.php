@@ -745,12 +745,18 @@
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                        <button wire:click="downloadOptionDoc({{ $file->id }})"
-                                                            class="action-btn float-right text-xs border-blue-600"
-                                                            type="button"
-                                                            style="border-color: darkgrey;margin-right:10px">
-                                                            <iconify-icon icon="ic:baseline-download"></iconify-icon>
-                                                        </button>
+                                                            <button wire:click="previewOptionDoc({{ $file->id }})"
+                                                                class="action-btn float-right text-xs border-blue-600"
+                                                                type="button"
+                                                                style="border-color: darkgrey;margin-right:10px">
+                                                                <iconify-icon icon="heroicons:eye"></iconify-icon>
+                                                            </button>
+                                                            <button wire:click="downloadOptionDoc({{ $file->id }})"
+                                                                class="action-btn float-right text-xs border-blue-600"
+                                                                type="button"
+                                                                style="border-color: darkgrey;margin-right:10px">
+                                                                <iconify-icon icon="ic:baseline-download"></iconify-icon>
+                                                            </button>
                                                     </div>
                                                 @endforeach
                                             </div>
