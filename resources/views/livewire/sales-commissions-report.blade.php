@@ -1,4 +1,12 @@
 <div>
+    @php
+        $statusStyles = [
+            'not_confirmed' => ['label' => 'Not Confirmed', 'class' => 'text-primary-500 bg-primary-500'],
+            'confirmed' => ['label' => 'Confirmed', 'class' => 'text-info-500 bg-info-500'],
+            'paid' => ['label' => 'Paid', 'class' => 'text-success-500 bg-success-500'],
+            'cancelled' => ['label' => 'Cancelled', 'class' => 'text-danger-500 bg-danger-500'],
+        ];
+    @endphp
     <div class="flex justify-between flex-wrap items-center">
         <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
             <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
@@ -157,7 +165,17 @@
                                                 {{ number_format((float) $commission->amount, 2, '.', ',') }}
                                             </td>
                                             <td class="table-td">
-                                                {{ $commission->status ? ucwords(str_replace('_', ' ', $commission->status)) : 'N/A' }}
+                                                @php
+                                                    $statusMeta = $statusStyles[$commission->status] ?? null;
+                                                @endphp
+                                                @if ($statusMeta)
+                                                    <div
+                                                        class="inline-block px-3 min-w-[110px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-xs {{ $statusMeta['class'] }}">
+                                                        {{ $statusMeta['label'] }}
+                                                    </div>
+                                                @else
+                                                    <span class="text-slate-500">N/A</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
