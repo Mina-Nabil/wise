@@ -751,6 +751,10 @@
                                                     class="action-btn float-right mr-1 text-xs" type="button">
                                                     <iconify-icon icon="ic:baseline-download"></iconify-icon>
                                                 </button>
+                                                <button wire:click="previewSoldPolicyFile({{ $file->id }})"
+                                                    class="action-btn float-right mr-1 text-xs" type="button">
+                                                    <iconify-icon icon="heroicons:eye"></iconify-icon>
+                                                </button>
                                                 {{-- <button type="button" wire:click="downloadFile({{ $file->id }})" class="text-xs text-slate-900 dark:text-white">
                                                     Download
                                                 </button> --}}

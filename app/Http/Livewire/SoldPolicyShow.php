@@ -1727,6 +1727,15 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function previewSoldPolicyFile($id)
+    {
+        $doc = SoldPolicyDoc::findOrFail($id);
+        $url = Storage::disk('s3')->url($doc->url);
+        $url = str_replace('docs//', 'docs/', $url);
+
+        $this->dispatchBrowserEvent('openNewTab', ['url' => $url]);
+    }
+
     // Penalty modal methods
     public function openPenaltyModal()
     {
