@@ -18,6 +18,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class SalesComm extends Model
 {
@@ -402,6 +406,85 @@ class SalesComm extends Model
         return $this->comm_profile->type == CommProfile::TYPE_SALES_OUT;
     }
 
+    public static function exportReport(
+        array $commProfileIds = [],
+        ?Carbon $policyStartFrom = null,
+        ?Carbon $policyStartTo = null,
+        ?Carbon $paymentDateFrom = null,
+        ?Carbon $paymentDateTo = null,
+        array $statuses = []
+    ) {
+        $commissions = self::report(
+            $commProfileIds,
+            $policyStartFrom,
+            $policyStartTo,
+            $paymentDateFrom,
+            $paymentDateTo,
+            $statuses
+        )->get();
+
+        $spreadsheet = new Spreadsheet();
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $activeSheet->setTitle('Sales Commissions');
+
+        $headers = [
+            'A1' => 'Policy#',
+            'B1' => 'Creator',
+            'C1' => 'Client',
+            'D1' => 'Policy Start',
+            'E1' => 'Commission Profile',
+            'F1' => 'Amount',
+            'G1' => 'Status',
+            'H1' => 'From',
+            'I1' => 'Percentage',
+        ];
+
+        foreach ($headers as $cell => $value) {
+            $activeSheet->setCellValue($cell, $value);
+        }
+
+        $activeSheet->getStyle('A1:I1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:I1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:I1')->getFill()->getStartColor()->setARGB('FFD3D3D3');
+
+        foreach (range('A', 'I') as $column) {
+            $activeSheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        $row = 2;
+
+        /** @var self $commission */
+        foreach ($commissions as $commission) {
+            $policy = $commission->sold_policy;
+            $clientName = $policy?->client?->full_name ?? $policy?->client?->name ?? 'N/A';
+            $creator = $policy?->creator?->username ?? 'N/A';
+            $profileTitle = $commission->comm_profile?->title ?? 'N/A';
+
+            $activeSheet->setCellValue('A' . $row, $policy?->policy_number ?? 'N/A');
+            $activeSheet->setCellValue('B' . $row, $creator);
+            $activeSheet->setCellValue('C' . $row, $clientName);
+            $activeSheet->setCellValue('D' . $row, $policy?->start ? Carbon::parse($policy->start)->format('d/m/Y') : 'N/A');
+            $activeSheet->setCellValue('E' . $row, $profileTitle);
+            $activeSheet->setCellValue('F' . $row, number_format((float) $commission->amount, 2, '.', ','));
+            $activeSheet->setCellValue('G' . $row, ucwords(str_replace('_', ' ', $commission->status ?? '')));
+            $activeSheet->setCellValue('H' . $row, ucwords(str_replace('_', ' ', $commission->from ?? '')));
+            $activeSheet->setCellValue('I' . $row, number_format((float) $commission->comm_percentage, 2, '.', ',') . '%');
+
+            $row++;
+        }
+
+        if ($row > 2) {
+            $activeSheet->getStyle('A1:I' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filePath = 'sales_commissions_report.xlsx';
+        $publicPath = storage_path('app/' . $filePath);
+        $writer->save($publicPath);
+
+        return response()->download($publicPath)->deleteFileAfterSend(true);
+    }
+
     ///scopes
     public function scopeNew(Builder $query)
     {
@@ -462,6 +545,29 @@ class SalesComm extends Model
         if ($status && in_array($status, self::PYMT_STATES, true)) {
             $query->where('status', $status);
         }
+    }
+
+    public function scopeReport(
+        Builder $query,
+        array $commProfileIds = [],
+        ?Carbon $policyStartFrom = null,
+        ?Carbon $policyStartTo = null,
+        ?Carbon $paymentDateFrom = null,
+        ?Carbon $paymentDateTo = null,
+        array $statuses = []
+    ) {
+        $query->select('sales_comms.*')
+            ->leftJoin('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
+            ->leftJoin('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
+            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'comm_profile')
+            ->when(!empty($commProfileIds), fn($q) => $q->whereIn('sales_comms.comm_profile_id', $commProfileIds))
+            ->when($policyStartFrom, fn($q, $date) => $q->where('sold_policies.start', '>=', $date->format('Y-m-d 00:00:00')))
+            ->when($policyStartTo, fn($q, $date) => $q->where('sold_policies.start', '<=', $date->format('Y-m-d 23:59:59')))
+            ->when($paymentDateFrom, fn($q, $date) => $q->where('sales_comms.payment_date', '>=', $date->format('Y-m-d 00:00:00')))
+            ->when($paymentDateTo, fn($q, $date) => $q->where('sales_comms.payment_date', '<=', $date->format('Y-m-d 23:59:59')))
+            ->when(!empty($statuses), fn($q) => $q->whereIn('sales_comms.status', $statuses));
+
+        return $query;
     }
 
     public function scopeNotTotalyPaid(Builder $query, $profile_id)

@@ -317,6 +317,10 @@
                                 <a href="{{ url('/reports/invoices-report') }}" class="@yield('invoices-report')">Invoices
                                         Report</a>
                                 </li>
+
+                                <li>
+                                    <a href="{{ url('/reports/sales-commissions') }}" class="@yield('sales-commissions-report')">Sales Commissions</a>
+                                </li>
                             @endif
                         </ul>
                     </li>
