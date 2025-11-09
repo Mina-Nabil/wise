@@ -157,7 +157,7 @@ class Offer extends Model
         $file->cleanDirectory(storage_path(self::FILES_DIRECTORY));
     }
 
-    public static function exportReport(?Carbon $from = null, ?Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], ?Carbon $expiry_from = null, ?  Carbon $expiry_to = null)
+    public static function exportReport(?Carbon $from = null, ?Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], ?Carbon $expiry_from = null, ?Carbon $expiry_to = null)
     {
         $offers = self::report($from, $to, $statuses, $creator_ids, $assignee_id_or_type, $closed_by_id, $line_of_business, $value_from, $value_to, $searchText, $is_renewal, $comm_profile_ids, $expiry_from, $expiry_to)->get();
         $template = IOFactory::load(resource_path('import/offers_report.xlsx'));
@@ -214,7 +214,7 @@ class Offer extends Model
     {
         /** @var User */
         $user = Auth::user();
-        if(!$user->can('generateSoldPolicy', $this)) {
+        if (!$user->can('generateSoldPolicy', $this)) {
             return false;
         }
 
@@ -812,8 +812,8 @@ class Offer extends Model
         $this->medical_offer_clients()->delete();
         foreach ($clients as $client) {
             $this->addMedicalClient(
-                $client['name'], 
-                Carbon::parse($client['birth_date']), 
+                $client['name'],
+                Carbon::parse($client['birth_date']),
                 $client['relation'] ?? Relative::RELATION_MAIN
             );
         }
@@ -853,14 +853,14 @@ class Offer extends Model
                 $name       = $activeSheet->getCell('A' . $i)->getValue();
                 $birth_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((int) $activeSheet->getCell('B' . $i)->getValue());
                 $relation   = $activeSheet->getCell('C' . $i)->getValue() ?: Relative::RELATION_MAIN;
-                
+
                 if (!$name) continue;
-                
+
                 // Validate relation
                 if (!in_array($relation, Relative::RELATIONS)) {
                     $relation = Relative::RELATION_MAIN;
                 }
-                
+
                 $this->addMedicalClient($name, Carbon::parse($birth_date), $relation);
             } catch (Exception $e) {
                 report($e);
@@ -1048,11 +1048,9 @@ class Offer extends Model
                 $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
                 // }
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
-            }
-            if ($state == OfferOption::STATUS_RQST_QTTN) {
+            } elseif ($state == OfferOption::STATUS_RQST_QTTN) {
                 $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
-            }
-            if ($state == OfferOption::STATUS_QTTN_RECV) {
+            } elseif ($state == OfferOption::STATUS_QTTN_RECV) {
                 $this->assignTo($this->creator_id, bypassUserCheck: true);
                 $this->setStatus(self::STATUS_PENDING_SALES);
             }
@@ -1235,7 +1233,7 @@ class Offer extends Model
         // ->orderByDesc('due');
     }
 
-    public function scopeReport($query, ?Carbon $from = null, ?Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], ?Carbon $expiry_from = null, ?  Carbon $expiry_to = null)
+    public function scopeReport($query, ?Carbon $from = null, ?Carbon $to = null, array $statuses = [], $creator_ids = [], $assignee_id_or_type = null, $closed_by_id = null, $line_of_business = null, $value_from = null, $value_to = null, $searchText = null, $is_renewal = null, array $comm_profile_ids = [], ?Carbon $expiry_from = null, ?Carbon $expiry_to = null)
     {
         $query->userData($searchText)
             ->when($from, function ($q, $v) {
