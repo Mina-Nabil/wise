@@ -324,6 +324,10 @@
                                         <a href="{{ url('/reports/sales-comm-report') }}"
                                             class="@yield('sales-commissions-report')">Sales Commissions</a>
                                     </li>
+                                    <li>
+                                        <a href="{{ url('/reports/sales-comm-totals-report') }}"
+                                            class="@yield('sales-commissions-totals-report')">Sales Commission Totals</a>
+                                    </li>
                                 @endif
                             </ul>
                         </li>

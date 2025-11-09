@@ -111,6 +111,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/reports/corporate-interest', [ReportController::class, 'corporateInterests'])->name('reports.corporate-interest');
     Route::get('/reports/invoices-report', [ReportController::class, 'invoicesReport'])->name('reports.invoices');
     Route::get('/reports/sales-comm-report', [ReportController::class, 'salesCommissions'])->name('reports.sales-comm-report');
+    Route::get('/reports/sales-comm-totals-report', [ReportController::class, 'salesCommissionsTotals'])->name('reports.sales-comm-totals-report');
     Route::get('/reports/campaigns', [ReportController::class, 'campaignsIndex'])->name('reports.campaigns');
 
     //Cars routes
