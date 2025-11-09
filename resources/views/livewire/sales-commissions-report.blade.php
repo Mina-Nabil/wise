@@ -166,15 +166,26 @@
                                             </td>
                                             <td class="table-td">
                                                 @php
-                                                    $statusMeta = $statusStyles[$commission->status] ?? null;
+                                                    $status = $commission->status;
                                                 @endphp
-                                                @if ($statusMeta)
-                                                    <div
-                                                        class="inline-block px-3 min-w-[110px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-xs {{ $statusMeta['class'] }}">
-                                                        {{ $statusMeta['label'] }}
-                                                    </div>
-                                                @else
+                                                @if (!$status)
                                                     <span class="text-slate-500">N/A</span>
+                                                @elseif (str_contains($status, 'not_confirmed'))
+                                                    <span class="badge bg-warning-500 text-white h-auto">
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
+                                                    </span>
+                                                @elseif (str_contains($status, 'cancelled'))
+                                                    <span class="badge bg-danger-500 text-white h-auto">
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
+                                                    </span>
+                                                @elseif ($status === 'confirmed' || str_contains($status, 'paid'))
+                                                    <span class="badge bg-success-500 text-white h-auto">
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-primary-500 text-white h-auto">
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
+                                                    </span>
                                                 @endif
                                             </td>
                                         </tr>
