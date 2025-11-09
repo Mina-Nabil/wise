@@ -412,7 +412,9 @@ class SalesComm extends Model
         ?Carbon $policyStartTo = null,
         ?Carbon $paymentDateFrom = null,
         ?Carbon $paymentDateTo = null,
-        array $statuses = []
+        array $statuses = [],
+        ?Carbon $clientPaymentDateFrom = null,
+        ?Carbon $clientPaymentDateTo = null
     ) {
         $commissions = self::report(
             $commProfileIds,
@@ -420,7 +422,9 @@ class SalesComm extends Model
             $policyStartTo,
             $paymentDateFrom,
             $paymentDateTo,
-            $statuses
+            $statuses,
+            $clientPaymentDateFrom,
+            $clientPaymentDateTo
         )->get();
 
         $spreadsheet = new Spreadsheet();
@@ -554,7 +558,9 @@ class SalesComm extends Model
         ?Carbon $policyStartTo = null,
         ?Carbon $paymentDateFrom = null,
         ?Carbon $paymentDateTo = null,
-        array $statuses = []
+        array $statuses = [],
+        ?Carbon $clientPaymentDateFrom = null,
+        ?Carbon $clientPaymentDateTo = null
     ) {
         $query->select('sales_comms.*')
             ->leftJoin('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
@@ -565,7 +571,17 @@ class SalesComm extends Model
             ->when($policyStartTo, fn($q, $date) => $q->where('sold_policies.start', '<=', $date->format('Y-m-d 23:59:59')))
             ->when($paymentDateFrom, fn($q, $date) => $q->where('sales_comms.payment_date', '>=', $date->format('Y-m-d 00:00:00')))
             ->when($paymentDateTo, fn($q, $date) => $q->where('sales_comms.payment_date', '<=', $date->format('Y-m-d 23:59:59')))
-            ->when(!empty($statuses), fn($q) => $q->whereIn('sales_comms.status', $statuses));
+            ->when(!empty($statuses), fn($q) => $q->whereIn('sales_comms.status', $statuses))
+            ->when($clientPaymentDateFrom || $clientPaymentDateTo, function ($q) use ($clientPaymentDateFrom, $clientPaymentDateTo) {
+                $q->whereHas('sold_policy.client_payments', function ($paymentQuery) use ($clientPaymentDateFrom, $clientPaymentDateTo) {
+                    if ($clientPaymentDateFrom) {
+                        $paymentQuery->where('client_payments.payment_date', '>=', $clientPaymentDateFrom->format('Y-m-d 00:00:00'));
+                    }
+                    if ($clientPaymentDateTo) {
+                        $paymentQuery->where('client_payments.payment_date', '<=', $clientPaymentDateTo->format('Y-m-d 23:59:59'));
+                    }
+                });
+            });
 
         return $query;
     }
