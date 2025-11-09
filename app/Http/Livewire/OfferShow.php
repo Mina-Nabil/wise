@@ -680,7 +680,7 @@ class OfferShow extends Component
     {
         $doc = OptionDoc::findOrFail($id);
         $url = Storage::disk('s3')->url($doc->url);
-        $url = str_replace('options//', 'docs/', $url);
+        $url = str_replace('options//', 'options/', $url);
 
         $this->dispatchBrowserEvent('openNewTab', ['url' => $url]);
     }
