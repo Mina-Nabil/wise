@@ -1514,7 +1514,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('J' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $activeSheet->getCell('K' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('L' . $i)->setValue(round($policy->totalPaidBetween($issued_from, $issued_to) + $policy->totalTaxBetween($issued_from, $issued_to), 2)); //total_policy_comm
+                $activeSheet->getCell('L' . $i)->setValue($policy->editted ? 0 :round($policy->totalPaidBetween($issued_from, $issued_to) + $policy->totalTaxBetween($issued_from, $issued_to), 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $activeSheet->getCell('M' . $i)->setValue($policy->editted ? "ملحق تعديل" : "");
