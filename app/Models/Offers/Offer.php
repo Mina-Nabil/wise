@@ -590,6 +590,7 @@ class Offer extends Model
                 //check if there is options before sending it to operations
                 $this->loadCount('options');
                 if (!$this->options_count) return "No offer options found";
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
                 break;
 
             case self::STATUS_PENDING_INSUR:
@@ -613,6 +614,7 @@ class Offer extends Model
                 if (!$approvedCount) return "No offer options approved";
                 break;
             case self::STATUS_PENDING_SALES:
+                $this->assignTo($this->creator_id, bypassUserCheck: true);
                 break;
             default:
                 return "Invalid status";
@@ -993,16 +995,12 @@ class Offer extends Model
         $loggedInUser = Auth::user();
         if (!$bypassUserCheck && !$loggedInUser?->can('updateAssignTo', $this)) return false;
 
-        if($user_id_or_type == User::TYPE_OPERATIONS){
-            if($this->status != self::STATUS_PENDING_OPERATIONS){
-                return "Please set the offer status to pending operations first";
-            }
+        if (!$bypassUserCheck && $user_id_or_type == User::TYPE_OPERATIONS) {
+            return "Please set the offer status to pending operations";
         }
 
-        if($user_id_or_type == User::TYPE_SALES){
-            if($this->status != self::STATUS_PENDING_SALES){
-                return "Please set the offer status to pending sales first";
-            }
+        if (!$bypassUserCheck && $user_id_or_type == User::TYPE_SALES) {
+            return "Please set the offer status to pending sales";
         }
 
         $assignedToTitle = null;
@@ -1059,7 +1057,6 @@ class Offer extends Model
                 // if (!$this->with_operations) { // assigned to operations even if it was accepted by on of the operations
                 // }
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
-                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
             } elseif ($state == OfferOption::STATUS_RQST_QTTN) {
                 $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
             } elseif ($state == OfferOption::STATUS_QTTN_RECV) {
