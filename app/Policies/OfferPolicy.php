@@ -70,7 +70,7 @@ class OfferPolicy
      */
     public function updateAssignTo(User $user, Offer $offer)
     {
-        return $user->id == $offer->assignee_id;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
 
     /**
@@ -82,11 +82,11 @@ class OfferPolicy
      */
     public function updateStatus(User $user, Offer $offer)
     {
-        return $user->id == $offer->assignee_id;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
     public function setInsuranceStatuses(User $user, Offer $offer)
     {
-        return $user->is_operations;
+        return $user->is_admin || $user->is_operations;
     }
 
     /**
@@ -98,7 +98,7 @@ class OfferPolicy
      */
     public function updateItem(User $user, Offer $offer)
     {
-        return $user->id == $offer->assignee_id;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
 
     /**
@@ -110,7 +110,7 @@ class OfferPolicy
      */
     public function updateLineFields(User $user, Offer $offer)
     {
-        return $user->id == $offer->assignee_id;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
 
     /**
@@ -122,7 +122,7 @@ class OfferPolicy
      */
     public function updateOptions(User $user, Offer $offer)
     {
-        return $user->id == $offer->assignee_id;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
 
     /**
@@ -134,7 +134,7 @@ class OfferPolicy
      */
     public function updateDiscount(User $user, Offer $offer)
     {
-        return $user->id == $offer->assignee_id;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
 
     /**
@@ -158,7 +158,7 @@ class OfferPolicy
      */
     public function updateDue(User $user, Offer $offer)
     {
-        return $user->id == $offer->assignee_id;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
 
     /**
@@ -170,7 +170,7 @@ class OfferPolicy
      */
     public function updateNote(User $user, Offer $offer)
     {
-        return $user->id == $offer->assignee_id;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
 
     /**
@@ -182,7 +182,7 @@ class OfferPolicy
      */
     public function updateCommission(User $user, Offer $offer)
     {
-        return true;
+        return $user->is_admin || $user->id == $offer->assignee_id;
     }
 
     /**

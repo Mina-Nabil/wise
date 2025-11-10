@@ -1045,14 +1045,14 @@ class Offer extends Model
                 $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
                 $this->addComment("Offer option accepted", false);
                 // if (!$this->with_operations) { // assigned to operations even if it was accepted by on of the operations
-                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
                 // }
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
             } elseif ($state == OfferOption::STATUS_RQST_QTTN) {
                 $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
             } elseif ($state == OfferOption::STATUS_QTTN_RECV) {
-                $this->assignTo($this->creator_id, bypassUserCheck: true);
                 $this->setStatus(self::STATUS_PENDING_SALES);
+                $this->assignTo($this->creator_id, bypassUserCheck: true);
             }
             return true;
         } catch (Exception $e) {
