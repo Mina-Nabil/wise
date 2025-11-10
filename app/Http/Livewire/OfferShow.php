@@ -464,7 +464,7 @@ class OfferShow extends Component
     public function changeAsignee()
     {
         $res = $this->offer->assignTo($this->newAsignee);
-        if ($res) {
+        if ($res === true) {
             $this->alert('success', 'Assignee Updated');
             $this->newAsignee = null;
             $this->toggleEditAssignee();
