@@ -46,7 +46,7 @@ class OfferPolicy
 
     public function generateSoldPolicy(User $user, Offer $offer)
     {
-        return $user->is_admin || $user->is_operations;
+        return ($user->is_admin || $user->is_operations) && $offer->assignee_id == $user->id;
     }
 
     /**
