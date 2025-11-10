@@ -70,7 +70,9 @@ class OfferPolicy
      */
     public function updateAssignTo(User $user, Offer $offer)
     {
-        return $user->is_admin || $user->id == $offer->assignee_id;
+        return $user->is_admin 
+        || $user->id == $offer->assignee_id
+        || $offer->assignee_type == $user->type;
     }
 
     /**

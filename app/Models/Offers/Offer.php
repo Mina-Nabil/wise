@@ -993,6 +993,18 @@ class Offer extends Model
         $loggedInUser = Auth::user();
         if (!$bypassUserCheck && !$loggedInUser?->can('updateAssignTo', $this)) return false;
 
+        if($user_id_or_type == User::TYPE_OPERATIONS){
+            if($this->status != self::STATUS_PENDING_OPERATIONS){
+                return "Please set the offer status to pending operations first";
+            }
+        }
+
+        if($user_id_or_type == User::TYPE_SALES){
+            if($this->status != self::STATUS_PENDING_SALES){
+                return "Please set the offer status to pending sales first";
+            }
+        }
+
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
             $this->assignee_id = $user_id_or_type;

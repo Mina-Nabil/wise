@@ -470,7 +470,11 @@ class OfferShow extends Component
             $this->toggleEditAssignee();
             $this->mount($this->offer->id);
         } else {
-            $this->alert('failed', 'Server Error');
+            if(is_string($res)){
+                $this->alert('failed', $res);
+            } else {
+                $this->alert('failed', 'Server Error');
+            }
         }
     }
 
