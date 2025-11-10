@@ -569,7 +569,7 @@ class Offer extends Model
      * @return string if failed, an error message will return
      * @return true if done
      */
-    public function setStatus($status, $sub_status = null): string|bool
+    public function setStatus($status, $sub_status = null, $skipCheck = false): string|bool
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -614,7 +614,9 @@ class Offer extends Model
                 if (!$approvedCount) return "No offer options approved";
                 break;
             case self::STATUS_PENDING_SALES:
-                $this->assignTo($this->creator_id, bypassUserCheck: true);
+                if(!$skipCheck) {
+                    return "Please assign the offer to a sales user";
+                }
                 break;
             default:
                 return "Invalid status";
@@ -1000,14 +1002,16 @@ class Offer extends Model
         }
 
         if (!$bypassUserCheck && $user_id_or_type == User::TYPE_SALES) {
-            return "Please set the offer status to pending sales";
+            return "Please assign the offer to a sales user";
         }
 
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
             $this->assignee_id = $user_id_or_type;
             $this->assignee_type = null;
-            $assignedToTitle = User::findOrFail($user_id_or_type)->username;
+            $user = User::findOrFail($user_id_or_type);
+            $assignedToTitle = $user->username;
+            $this->setStatus(self::STATUS_PENDING_SALES, null, true);
         } else if (in_array($user_id_or_type, User::TYPES)) {
             $this->assignee_id = null;
             $this->assignee_type = $user_id_or_type;
