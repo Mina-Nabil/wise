@@ -268,7 +268,7 @@
                                                 </a>
                                             </td>
 
-                                            <td class="table-td">
+                                            <td class="table-td" style="min-width: 200px;">
                                                 {{ $payment->sold_policy->client?->full_name ?? ($payment->sold_policy->client?->name ?? 'N/A') }}
                                             </td>
 
