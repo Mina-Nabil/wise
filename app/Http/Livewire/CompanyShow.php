@@ -561,7 +561,7 @@ class CompanyShow extends Component
 
         // Load company with invoices
         $this->company->load(['invoices' => function ($query) {
-            $query->orderBy('created_at', 'desc');
+            $query->orderBy('created_at', 'desc')->with('commissions');
         }]);
 
         $this->available_policies = SoldPolicy::when($this->seachAvailablePoliciesText, fn($q) => $q->searchByPolicyNumber($this->seachAvailablePoliciesText))

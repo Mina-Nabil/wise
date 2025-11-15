@@ -214,6 +214,10 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
+                                                        Confirmation at
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
                                                         Gross total
                                                     </th>
 
@@ -249,6 +253,9 @@
                                                         </td>
                                                         <td class="table-td ">
                                                             {{ $invoice->created_at->format('d/m/Y') }}
+                                                        </td>
+                                                        <td class="table-td ">
+                                                            {{ $invoice->commissions->first()->payment_date ? $invoice->commissions->first()->payment_date->format('d/m/Y') : 'N/A' }}
                                                         </td>
                                                         <td class="table-td ">
                                                             {{ 'EGP ' . number_format($invoice->gross_total, 2) }}</td>
