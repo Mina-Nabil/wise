@@ -30,7 +30,7 @@ class ReviewPolicy
      */
     public function view(User $user, Review $review)
     {
-        return $user->is_admin || $user->is_crm;
+        return $user->is_admin || $user->is_crm || $user->can_review_reviews;
     }
 
     /**
@@ -53,7 +53,7 @@ class ReviewPolicy
      */
     public function update(User $user, Review $review)
     {
-        return $user->is_admin || $user->is_crm;
+        return $user->is_admin || $user->is_crm || $user->can_review_reviews;
     }
 
     /**
@@ -65,7 +65,7 @@ class ReviewPolicy
      */
     public function delete(User $user, Review $review)
     {
-        return $user->is_admin || $user->is_crm;
+        return $user->is_admin || $user->is_crm || $user->can_review_reviews ;
     }
 
     public function markAsReviewed(User $user, Review $review)
@@ -75,6 +75,6 @@ class ReviewPolicy
 
     public function receiveClientComment(User $user, Review $review)
     {
-        return $user->is_admin || $user->is_crm;
+        return $user->is_admin || $user->is_crm || $user->can_review_reviews;
     }
 }
