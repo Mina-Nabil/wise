@@ -241,7 +241,7 @@
                                         </td>
 
                                         <td class="table-td ">
-                                            {{ $offer->comm_profiles->pluck('name')->implode(', ') }}
+                                            {{ $offer->comm_profiles->pluck('title')->implode(', ') }}
                                         </td>
 
                                         <td class="table-td ">
