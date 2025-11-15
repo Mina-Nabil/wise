@@ -315,6 +315,10 @@
                                                     <span
                                                         class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Renewal</span>
                                                 @endif
+                                                @if ($payment->sold_policy->cancellation_time)
+                                                    <span
+                                                        class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Sold Policy Cancelled on: {{ \Carbon\Carbon::parse($payment->sold_policy->cancellation_time)->format('d/m/Y') }}</span>
+                                                @endif
                                             </td>
 
                                             <td class="table-td">
