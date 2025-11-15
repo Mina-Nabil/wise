@@ -116,193 +116,197 @@
                 <div class="overflow-x-auto -mx-6">
                     <div class="inline-block min-w-full align-middle px-5">
                         <div class="inline-block min-w-full align-middle px-5">
-                        <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                            <thead
-                                class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
-                                <tr>
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead
+                                    class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
+                                    <tr>
 
-                                    <th scope="col" class=" table-th ">
-                                        #
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            #
+                                        </th>
 
-                                    <th scope="col" class=" table-th " style="min-width: 200px;">
-                                        Client
-                                    </th>
+                                        <th scope="col" class=" table-th " style="min-width: 200px;">
+                                            Client
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Type
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Type
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Offer
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Offer
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Status
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Status
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Renewal
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Renewal
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Value
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Value
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Assignee
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Assignee
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Profiles
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Profiles
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Creator
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Creator
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Due
-                                    </th>
+                                        <th scope="col" class=" table-th ">
+                                            Due
+                                        </th>
 
-                                    <th scope="col" class=" table-th ">
-                                        Selected
-                                    </th>
-
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-
-                                @foreach ($offers as $offer)
-                                    <tr wire:click="redirectToShowPage({{ $offer->id }})"
-                                        class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
-
-                                        <td class="table-td ">
-                                            {{ $offer->id }}
-                                        </td>
-
-                                        <td class="table-td ">
-                                            @if ($offer->client_type === 'corporate')
-                                                <b>{{ $offer->client->name }}</b>
-                                            @elseif($offer->client_type === 'customer')
-                                                <b>{{ $offer->client->first_name . ' ' . $offer->client->middle_name . ' ' . $offer->client->last_name }}</b>
-                                            @endif
-
-                                        </td>
-
-                                        <td class="table-td ">
-                                            {{ $offer->client_type }}
-                                        </td>
-
-                                        <td class="table-td ">
-                                            {{ ucwords(str_replace('_', ' ', $offer->type)) }}
-                                        </td>
-
-                                        <td class="table-td ">
-                                            @if ($offer->status === 'new')
-                                                <span class="badge bg-info-500 h-auto">
-                                                    <iconify-icon
-                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                                </span>
-                                            @elseif(str_contains($offer->status, 'pending'))
-                                                <span class="badge bg-warning-500 h-auto">
-                                                    <iconify-icon
-                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                                </span>
-                                            @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
-                                                <span class="badge bg-danger-500 h-auto">
-                                                    <iconify-icon
-                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                                </span>
-                                            @elseif($offer->status === 'approved')
-                                                <span class="badge bg-success-500 h-auto">
-                                                    <iconify-icon
-                                                        icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
-                                                </span>
-                                            @endif
-
-                                            @if ($offer->is_renewal)
-                                                <span
-                                                    class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl"
-                                                    style="vertical-align: top;">Renewal</span>
-                                            @endif
-                                            <small>{{ $offer->sub_status }}</small>
-                                        </td>
-
-                                        <td class="table-td ">
-                                            <b>{{ $offer->renewal_policy }}</b>
-                                        </td>
-
-                                        <td class="table-td ">
-                                            <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b>
-                                        </td>
-
-                                        <td class="table-td ">
-                                            {{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type) : 'No one/team assigned') }}
-                                        </td>
-
-                                        <td class="table-td ">
-                                            {{ $offer->comm_profiles->pluck('title')->implode(', ') }}
-                                        </td>
-
-                                        <td class="table-td ">
-                                            {{ ucwords($offer->creator->first_name) . ' ' . ucwords($offer->creator->last_name) }}
-                                        </td>
-
-                                        <td class="table-td ">
-                                            {{ date_format(date_create($offer->due), 'Y-m-d') }}
-                                        </td>
-
-                                        <td class="table-td ">
-                                            @if ($offer->selected_option)
-                                                <div class="flex-1 text-start">
-                                                    <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
-                                                        {{ $offer->selected_option?->policy?->name }}
-                                                    </h4>
-                                                    <div
-                                                        class="text-xs font-normal text-slate-600 dark:text-slate-400">
-                                                        Gross: {{ $offer->selected_option?->gross_premium }}
-                                                    </div>
-                                                    <div
-                                                        class="text-xs font-normal text-slate-600 dark:text-slate-400">
-                                                        Net: {{ $offer->selected_option?->net_premium }}
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <span class="badge bg-danger-500 h-auto">
-                                                    <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;No
-                                                    selected option
-                                                </span>
-                                            @endif
-                                        </td>
+                                        <th scope="col" class=" table-th ">
+                                            Selected
+                                        </th>
 
                                     </tr>
-                                @endforeach
+                                </thead>
+                                <tbody
+                                    class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                            </tbody>
-                        </table>
+                                    @foreach ($offers as $offer)
+                                        <tr wire:click="redirectToShowPage({{ $offer->id }})"
+                                            class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
 
-                        @if ($offers->isEmpty())
-                            {{-- START: empty filter result --}}
-                            <div class="card m-5 p-5">
-                                <div class="card-body rounded-md bg-white dark:bg-slate-800">
-                                    <div class="items-center text-center p-5">
-                                        <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
-                                        <h2 class="card-title text-slate-900 dark:text-white mb-3">No offers with the
-                                            applied
-                                            filters</h2>
-                                        <p class="card-text">Try changing the filters or search terms for this view.
-                                        </p>
-                                        <a href="{{ url('/offers') }}"
-                                            class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
-                                            all offers</a>
+                                            <td class="table-td ">
+                                                {{ $offer->id }}
+                                            </td>
+
+                                            <td class="table-td ">
+                                                @if ($offer->client_type === 'corporate')
+                                                    <b>{{ $offer->client->name }}</b>
+                                                @elseif($offer->client_type === 'customer')
+                                                    <b>{{ $offer->client->first_name . ' ' . $offer->client->middle_name . ' ' . $offer->client->last_name }}</b>
+                                                @endif
+
+                                            </td>
+
+                                            <td class="table-td ">
+                                                {{ $offer->client_type }}
+                                            </td>
+
+                                            <td class="table-td ">
+                                                {{ ucwords(str_replace('_', ' ', $offer->type)) }}
+                                            </td>
+
+                                            <td class="table-td ">
+                                                @if ($offer->status === 'new')
+                                                    <span class="badge bg-info-500 h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                    </span>
+                                                @elseif(str_contains($offer->status, 'pending'))
+                                                    <span class="badge bg-warning-500 h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                    </span>
+                                                @elseif(str_contains($offer->status, 'declined') || str_contains($offer->status, 'cancelled'))
+                                                    <span class="badge bg-danger-500 h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                    </span>
+                                                @elseif($offer->status === 'approved')
+                                                    <span class="badge bg-success-500 h-auto">
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                                    </span>
+                                                @endif
+
+                                                @if ($offer->is_renewal)
+                                                    <span
+                                                        class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl"
+                                                        style="vertical-align: top;">Renewal</span>
+                                                @endif
+                                                <small>{{ $offer->sub_status }}</small>
+                                            </td>
+
+                                            <td class="table-td ">
+                                                <b>{{ $offer->renewal_policy }}</b>
+                                            </td>
+
+                                            <td class="table-td ">
+                                                <b>{{ number_format($offer->item_value, 0, '.', ',') }}</b>
+                                            </td>
+
+                                            <td class="table-td ">
+                                                {{ $offer->assignee ? ucwords($offer->assignee->first_name) . ' ' . ucwords($offer->assignee->last_name) : ($offer->assignee_type ? ucwords($offer->assignee_type) : 'No one/team assigned') }}
+                                            </td>
+
+                                            <td class="table-td ">
+                                                {{ $offer->comm_profiles->pluck('title')->implode(', ') }}
+                                            </td>
+
+                                            <td class="table-td ">
+                                                {{ ucwords($offer->creator->first_name) . ' ' . ucwords($offer->creator->last_name) }}
+                                            </td>
+
+                                            <td class="table-td ">
+                                                {{ date_format(date_create($offer->due), 'Y-m-d') }}
+                                            </td>
+
+                                            <td class="table-td ">
+                                                @if ($offer->selected_option)
+                                                    <div class="flex-1 text-start">
+                                                        <h4
+                                                            class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                            {{ $offer->selected_option?->policy?->name }}
+                                                        </h4>
+                                                        <div
+                                                            class="text-xs font-normal text-slate-600 dark:text-slate-400">
+                                                            Gross: {{ $offer->selected_option?->gross_premium }}
+                                                        </div>
+                                                        <div
+                                                            class="text-xs font-normal text-slate-600 dark:text-slate-400">
+                                                            Net: {{ $offer->selected_option?->net_premium }}
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <span class="badge bg-danger-500 h-auto">
+                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;No
+                                                        selected option
+                                                    </span>
+                                                @endif
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+
+                            @if ($offers->isEmpty())
+                                {{-- START: empty filter result --}}
+                                <div class="card m-5 p-5">
+                                    <div class="card-body rounded-md bg-white dark:bg-slate-800">
+                                        <div class="items-center text-center p-5">
+                                            <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
+                                            <h2 class="card-title text-slate-900 dark:text-white mb-3">No offers with
+                                                the
+                                                applied
+                                                filters</h2>
+                                            <p class="card-text">Try changing the filters or search terms for this
+                                                view.
+                                            </p>
+                                            <a href="{{ url('/offers') }}"
+                                                class="btn inline-flex justify-center mx-2 mt-3 btn-primary active btn-sm">View
+                                                all offers</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            {{-- END: empty filter result --}}
-                        @endif
+                                {{-- END: empty filter result --}}
+                            @endif
 
-                    </div>
+                        </div>
                     </div>
 
 
