@@ -153,7 +153,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Owner
+                                        Comm Profiles
                                     </th>
 
                                     <th scope="col" class=" table-th ">
