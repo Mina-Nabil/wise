@@ -1197,7 +1197,8 @@ class Offer extends Model
             if ($loggedInUser->is_operations && !$assignedToMe) {
                 $query->orWhere(function ($q) {
                     $q->whereHas('assignee', function ($query) {
-                        $query->where('username', 'Sales.Renewal');
+                        $query->where('username', 'Sales.Renewal')
+                        ->orWhere('users.type', User::TYPE_OPERATIONS);
                     });
                 });
             }
