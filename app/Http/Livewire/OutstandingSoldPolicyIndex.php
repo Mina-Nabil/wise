@@ -82,7 +82,7 @@ class OutstandingSoldPolicyIndex extends Component
     public function toggleSelectAllCompanies()
     {
         $this->selectAllCompanies = !$this->selectAllCompanies;
-        
+
         if ($this->selectAllCompanies) {
             $this->Ecompany_ids = Company::when($this->searchCompany, function ($query) {
                 return $query->where('name', 'like', '%' . $this->searchCompany . '%');
@@ -97,8 +97,8 @@ class OutstandingSoldPolicyIndex extends Component
         $allCompanyIds = Company::when($this->searchCompany, function ($query) {
             return $query->where('name', 'like', '%' . $this->searchCompany . '%');
         })->pluck('id')->toArray();
-        
-        $this->selectAllCompanies = !empty($allCompanyIds) && 
+
+        $this->selectAllCompanies = !empty($allCompanyIds) &&
             count(array_intersect($allCompanyIds, $this->Ecompany_ids)) === count($allCompanyIds);
     }
 
@@ -302,8 +302,11 @@ class OutstandingSoldPolicyIndex extends Component
             true,
             $this->statuses
         );
-
-        $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('total_policy_comm');
+        if ($this->client_outstanding) {
+            $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('left_to_pay');
+        } else {
+            $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('total_policy_comm');
+        }
         $soldPolicies = $soldPoliciesQuery->simplePaginate(10);
 
         return view('livewire.outstanding-sold-policy-index', [
