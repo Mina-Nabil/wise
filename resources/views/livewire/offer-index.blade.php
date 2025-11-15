@@ -114,7 +114,7 @@
         <div class="card-body px-6 pb-6">
             <div class=" -mx-6">
                 <div class="inline-block min-w-full align-middle">
-                    <div class="overflow-hidden ">
+                    <div >
                         <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                             <thead
                                 class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
@@ -125,7 +125,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Client Name
+                                        Client
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -133,7 +133,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Offer Type
+                                        Offer
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -153,7 +153,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Comm Profiles
+                                        Profiles
                                     </th>
 
                                     <th scope="col" class=" table-th ">
