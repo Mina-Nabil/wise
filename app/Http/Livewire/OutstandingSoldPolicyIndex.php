@@ -302,7 +302,7 @@ class OutstandingSoldPolicyIndex extends Component
             true,
             $this->statuses
         );
-        if ($this->client_outstanding) {
+        if ($client_outstanding) {
             $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('left_to_pay');
         } else {
             $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('total_policy_comm');
