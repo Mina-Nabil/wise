@@ -104,7 +104,11 @@
                                                                                 <span class="block date-text">{{ \Carbon\Carbon::parse($policy->expiry)->format('d-m-Y') }}</span>
                                                                             </td>
                                                                             <td class="table-td">
-                                                                                <span class="block date-text">{{ $policy->policy_number }}</span>
+                                                                                <a href="{{ route('sold.policy.show', $policy->id) }}"
+                                                                                    target="_blank"
+                                                                                    class="block date-text hover:underline hover:text-primary-500 cursor-pointer">
+                                                                                    {{ $policy->policy_number }}
+                                                                                </a>
                                                                             </td>
                                                                             <td class="table-td">
                                                                                 <div class="flex space-x-3 items-center text-left rtl:space-x-reverse">
@@ -131,6 +135,12 @@
                                                                             <td class="table-td">
                                                                                 @if ($policy->is_valid)
                                                                                     <span class="badge bg-success-500 text-slate-800 text-success-500 bg-opacity-30 capitalize rounded-3xl">Validated</span>
+                                                                                @endif
+                                                                                @if ($policy->cancellation_time)
+                                                                                    <span class="badge bg-danger-500 text-slate-800 text-danger-500 bg-opacity-30 capitalize rounded-3xl">Cancelled
+                                                                                        on:
+                                                                                        {{ \Carbon\Carbon::parse($policy->cancellation_time)->format('D d/m/Y') }}
+                                                                                    </span>
                                                                                 @endif
                                                                             </td>
                                                                             <td class="table-td">
