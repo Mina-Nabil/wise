@@ -18,7 +18,7 @@ class ReviewPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->is_admin || $user->is_crm;
+        return $user->is_admin || $user->is_crm || $user->can_review_reviews;
     }
 
     /**
