@@ -1616,6 +1616,11 @@ class SoldPolicy extends Model
         return $query->whereNull("cancellation_time");
     }
 
+    public function scopeCancelled($query)
+    {
+        return $query->whereNotNull("cancellation_time");
+    }
+
     public function scopeNotExpired($query)
     {
         return $query->where("expiry", ">", Carbon::now()->format('Y-m-d'));
