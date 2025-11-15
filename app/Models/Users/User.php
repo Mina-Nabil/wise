@@ -76,17 +76,18 @@ class User extends Authenticatable
     /////////////functions
     public function editInfo($username, $first_name, $last_name, $type, $email = null, $phone = null, $image = null, $password = null, $manager_id = null, $can_review_reviews = null): bool
     {
+        $user = Auth::user();
         try {
             $this->first_name   = $first_name;
             $this->last_name    = $last_name;
             $this->email        = $email;
             $this->phone        = $phone;
-            $this->username     = $username;
-            $this->type         = $type;
-            $this->manager_id   = $manager_id;
+            $this->username     = $user->is_admin ? $username : $this->username;
+            $this->type         = $user->is_admin ? $type : $this->type;
+            $this->manager_id   = $user->is_admin ? $manager_id : $this->manager_id;
             $this->image        = $image;
             if ($can_review_reviews !== null)
-                $this->can_review_reviews = $can_review_reviews;
+                $this->can_review_reviews = $user->is_admin ? $can_review_reviews : $this->can_review_reviews;
             if ($password)
                 $this->password     =   bcrypt($password);
 
