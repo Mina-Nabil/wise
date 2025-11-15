@@ -124,7 +124,7 @@
                                         #
                                     </th>
 
-                                    <th scope="col" class=" table-th ">
+                                    <th scope="col" class=" table-th " style="min-width: 200px;">
                                         Client
                                     </th>
 
