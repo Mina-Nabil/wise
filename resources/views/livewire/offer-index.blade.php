@@ -157,7 +157,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Sales
+                                        Creator
                                     </th>
 
                                     <th scope="col" class=" table-th ">
