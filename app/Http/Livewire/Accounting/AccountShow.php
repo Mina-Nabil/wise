@@ -3,6 +3,8 @@
 namespace App\Http\Livewire\Accounting;
 
 use App\Models\Accounting\Account;
+use App\Models\Accounting\JournalEntry;
+use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -10,7 +12,7 @@ use Livewire\WithPagination;
 
 class AccountShow extends Component
 {
-    use WithPagination ,ToggleSectionLivewire;
+    use WithPagination, ToggleSectionLivewire, AlertFrontEnd;
     public $page_title = 'Account';
     public $searchText;
 
@@ -34,6 +36,17 @@ class AccountShow extends Component
     {
         $this->accountId = $id;
         $this->account = Account::findOrFail($id);
+    }
+
+    public function downloadJournalEntries()
+    {
+        $res = JournalEntry::downloadJournalEntries(Carbon::parse($this->fromDate), Carbon::parse($this->toDate), $this->accountId);
+        if ($res) {
+            $this->alert('success', 'Journal entries downloaded!');
+            return $res;
+        } else {
+            $this->alert('failed', 'server error');
+        }
     }
 
     public function render()

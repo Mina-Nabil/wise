@@ -367,7 +367,7 @@ class JournalEntry extends Model
      * @param Carbon $to End date
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public static function downloadJournalEntries(Carbon $from, Carbon $to)
+    public static function downloadJournalEntries(Carbon $from, Carbon $to, $account_id = null)
     {
         $newFile = new Spreadsheet();
         $activeSheet = $newFile->getSheet(0);
@@ -397,6 +397,11 @@ class JournalEntry extends Model
 
         // Get journal entries with accounts
         $entries = self::between($from, $to)
+            ->when($account_id, function ($query) use ($account_id) {
+                $query->whereHas('accounts', function ($query) use ($account_id) {
+                    $query->where('account_id', $account_id);
+                });
+            })
             ->with(['accounts.parent_account', 'accounts.parent_account.parent_account', 'accounts.parent_account.parent_account.parent_account', 'creator', 'entry_title'])
             ->orderBy('id', 'desc')
             ->get();
@@ -405,10 +410,10 @@ class JournalEntry extends Model
         foreach ($entries as $entry) {
             foreach ($entry->accounts as $accountEntry) {
                 $account = $accountEntry->pivot;
-                
+
                 // Get account hierarchy
                 $hierarchy = self::getAccountHierarchy($accountEntry);
-                
+
                 // Set transaction details
                 $activeSheet->setCellValue('A' . $row, $entry->id . ' / #' . $entry->day_serial);
                 $activeSheet->setCellValue('B' . $row, Carbon::parse($entry->created_at)->format('d/m/Y'));
@@ -476,7 +481,7 @@ class JournalEntry extends Model
         // Build hierarchy from bottom up (only Account objects)
         while ($currentAccount) {
             array_unshift($levels, $currentAccount);
-            if($currentAccount->parent_account?->id == $currentAccount->id) break;
+            if ($currentAccount->parent_account?->id == $currentAccount->id) break;
             $currentAccount = $currentAccount->parent_account;
         }
 
@@ -632,5 +637,4 @@ class JournalEntry extends Model
     {
         return $this->hasOne(CommProfilePayment::class, 'journal_entry_id');
     }
-
 }

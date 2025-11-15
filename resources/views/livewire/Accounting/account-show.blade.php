@@ -33,8 +33,15 @@
                         : number_format($account->balance, 2) }}
                 </h4>
             </div>
-            <input type="text" class="form-control w-auto d-inline-block cursor-pointer" style="width:auto"
-                name="datetimes" id="reportrange" />
+            <div class="flex items-center gap-2">
+                <button wire:click="downloadJournalEntries"
+                    class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="line-md:download-loop"></iconify-icon>
+                    Download Journal Entries
+                </button>
+                <input type="text" class="form-control w-auto d-inline-block cursor-pointer" style="width:auto"
+                    name="datetimes" id="reportrange" />
+            </div>
         </header>
 
         <header class="card-header noborder">
