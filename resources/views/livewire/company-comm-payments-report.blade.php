@@ -281,13 +281,11 @@
                                             </td>
 
                                             <td class="table-td">
-                                                <p><b>{{ number_format($payment->sold_policy->net_premium, 2, '.', ',') }}
-                                                        EGP</b></p>
+                                                <p><b>{{ number_format($payment->sold_policy->net_premium, 2, '.', ',') }}</b></p>
                                             </td>
 
                                             <td class="table-td">
-                                                <p><b>{{ number_format($payment->amount + $payment->tax_amount, 2, '.', ',') }}
-                                                        EGP</b></p>
+                                                <p><b>{{ number_format($payment->amount + $payment->tax_amount, 2, '.', ',') }}</b></p>
                                             </td>
                                             <td class="table-td">
                                                 <p><b>{{ number_format($payment->tax_amount, 2, '.', ',') }}</b>
