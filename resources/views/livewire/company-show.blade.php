@@ -255,7 +255,7 @@
                                                             {{ $invoice->created_at->format('d/m/Y') }}
                                                         </td>
                                                         <td class="table-td ">
-                                                            {{ $invoice->commissions->first()?->payment_date ? Carbon::parse($invoice->commissions->first()?->payment_date)->format('d/m/Y') : 'N/A' }}
+                                                            {{ $invoice->commissions->first()?->payment_date ? \Carbon\Carbon::parse($invoice->commissions->first()?->payment_date)->format('d/m/Y') : 'N/A' }}
                                                         </td>
                                                         <td class="table-td ">
                                                             {{ 'EGP ' . number_format($invoice->gross_total, 2) }}</td>
