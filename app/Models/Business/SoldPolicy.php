@@ -1119,11 +1119,11 @@ class SoldPolicy extends Model
         }
     }
 
-    public function setWatchers(array $user_ids = [])
+    public function setWatchers(array $user_ids = [], $detach = true)
     {
         try {
-            $this->sendPolicyNotifications("Policy#$this->id watchers change", Auth::user()->username . " changed watcher list");
-            $this->watchers()->sync($user_ids);
+            // $this->sendPolicyNotifications("Policy#$this->id watchers change", Auth::user()->username . " changed watcher list");
+            $this->watchers()->sync($user_ids, $detach);
             return true;
         } catch (Exception $e) {
             report($e);

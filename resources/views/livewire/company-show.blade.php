@@ -210,6 +210,10 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
+                                                        Created at
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
                                                         Gross total
                                                     </th>
 
@@ -242,6 +246,9 @@
                                                     <tr>
                                                         <td class="table-td">
                                                             <b>{{ $invoice->serial }}</b>
+                                                        </td>
+                                                        <td class="table-td ">
+                                                            {{ $invoice->created_at->format('d/m/Y') }}
                                                         </td>
                                                         <td class="table-td ">
                                                             {{ 'EGP ' . number_format($invoice->gross_total, 2) }}</td>

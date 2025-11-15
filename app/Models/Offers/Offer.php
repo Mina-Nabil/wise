@@ -274,6 +274,10 @@ class Offer extends Model
                     "sold_policy_id"    =>  $soldPolicy->id,
                     "created_at"        =>  $issuing_date
                 ]);
+                $user = User::find($commaya->user_id);
+                if($user) {
+                    $soldPolicy->setWatchers([$user->id], false);
+                }
                 $commaya->refreshPaymentInfo();
             }
 
@@ -614,9 +618,9 @@ class Offer extends Model
                 if (!$approvedCount) return "No offer options approved";
                 break;
             case self::STATUS_PENDING_SALES:
-                if(!$skipCheck) {
-                    return "Please assign the offer to a sales user";
-                }
+                // if(!$skipCheck) {
+                //     return "Please assign the offer to a sales user";
+                // }
                 break;
             default:
                 return "Invalid status";
@@ -997,13 +1001,13 @@ class Offer extends Model
         $loggedInUser = Auth::user();
         if (!$bypassUserCheck && !$loggedInUser?->can('updateAssignTo', $this)) return false;
 
-        if (!$bypassUserCheck && $user_id_or_type == User::TYPE_OPERATIONS) {
-            return "Please set the offer status to pending operations";
-        }
+        // if (!$bypassUserCheck && $user_id_or_type == User::TYPE_OPERATIONS) {
+        //     return "Please set the offer status to pending operations";
+        // }
 
-        if (!$bypassUserCheck && $user_id_or_type == User::TYPE_SALES) {
-            return "Please assign the offer to a sales user";
-        }
+        // if (!$bypassUserCheck && $user_id_or_type == User::TYPE_SALES) {
+        //     return "Please assign the offer to a sales user";
+        // }
 
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
@@ -1011,7 +1015,7 @@ class Offer extends Model
             $this->assignee_type = null;
             $user = User::findOrFail($user_id_or_type);
             $assignedToTitle = $user->username;
-            $this->setStatus(self::STATUS_PENDING_SALES, null, true);
+            // $this->setStatus(self::STATUS_PENDING_SALES, null, true);
         } else if (in_array($user_id_or_type, User::TYPES)) {
             $this->assignee_id = null;
             $this->assignee_type = $user_id_or_type;
