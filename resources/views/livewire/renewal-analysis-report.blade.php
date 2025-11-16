@@ -39,7 +39,7 @@
 					<select class="form-control" wire:model="selectedUserId">
 						<option value="">All users</option>
 						@foreach($users as $usr)
-							<option value="{{ $usr['id'] }}">{{ $usr['name'] }}</option>
+							<option value="{{ $usr['id'] }}">{{ $usr['username'] }}</option>
 						@endforeach
 					</select>
 					@error('selectedUserId')
@@ -70,7 +70,7 @@
 					</span>
 					@if($selectedUserId)
 						<span class="mx-2">|</span>
-						<span>User: {{ collect($users)->firstWhere('id', (int) $selectedUserId)['name'] ?? $selectedUserId }}</span>
+						<span>User: {{ collect($users)->firstWhere('id', (int) $selectedUserId)['username'] ?? $selectedUserId }}</span>
 					@endif
 				</div>
 			</header>

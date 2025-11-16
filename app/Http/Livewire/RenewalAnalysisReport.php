@@ -96,9 +96,8 @@ class RenewalAnalysisReport extends Component
     private function loadUsers(): array
     {
         return User::query()
-            ->orderBy('name')
-            ->get(['id', 'name'])
-            ->map(fn (User $u) => ['id' => $u->id, 'name' => (string) $u->name])
+            ->orderBy('username')
+            ->get(['id', 'username'])
             ->all();
     }
 }
