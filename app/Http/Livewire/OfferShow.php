@@ -167,7 +167,7 @@ class OfferShow extends Component
     public $profilesRes;
 
     public $subStatusSection;
-    public $subStatuses;
+    public $subStatuses = [];
     public $subStatusOfferStatus;
     public $subStatus;
 
