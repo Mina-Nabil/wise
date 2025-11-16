@@ -25,7 +25,7 @@
 				<div>
 					<label class="form-label">Month </label>
 					<select class="form-control" wire:model="selectedMonth">
-						<option value=null>Select month</option>
+						<option value="">Select month</option>
 						@foreach($months as $month)
 							<option value="{{ $month['value'] }}">{{ $month['label'] }}</option>
 						@endforeach
