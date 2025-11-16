@@ -1180,7 +1180,7 @@ class OfferShow extends Component
 
     public function setStatus($s = null)
     {
-        if ($s == Offer::STATUS_PENDING_INSUR || $s == Offer::STATUS_PENDING_CUSTOMER) {
+        if ($s == Offer::STATUS_PENDING_INSUR || $s == Offer::STATUS_PENDING_CUSTOMER || $s == Offer::STATUS_DECLINED_CUSTOMER) {
             $this->subStatusOfferStatus = $s;
             $this->subStatusSection = true;
             return;
