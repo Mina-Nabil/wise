@@ -45,6 +45,12 @@
                                     dark:hover:text-white cursor-pointer">
                             Statuses</span>
                     </li>
+                    <li wire:click="toggleSubStatus">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Sub-status</span>
+                    </li>
 
                     <li wire:click="toggleProfiles">
                         <span
@@ -218,6 +224,18 @@
                         &nbsp;&nbsp;
                     </span>
                     <span wire:click="clearstatuses">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($sub_status)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleSubStatus">
+                        Sub-status:&nbsp;{{ $sub_status }}
+                        &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearSubStatus">
                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                     </span>
                 </button>
@@ -710,6 +728,19 @@
                                     </div>
                                 @endforeach
                             </div>
+                            <div class="from-group mt-4">
+                                <label for="Esub_status" class="form-label">Select sub-status</label>
+                                <select name="Esub_status" id="Esub_status" class="form-control w-full mt-2" wire:model.defer="Esub_status">
+                                    <option value="">Any</option>
+                                    @foreach ($SUB_STATUSES as $PARENT_STATUS => $VALUES)
+                                        <optgroup label="{{ ucwords(str_replace('_', ' ', $PARENT_STATUS)) }}">
+                                            @foreach ($VALUES as $SS)
+                                                <option value="{{ $SS }}">{{ $SS }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <!-- Modal footer -->
                         <div
@@ -721,6 +752,13 @@
                                     wire:loading wire:target="setStatuses"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
 
+                            </button>
+                            <button wire:click="setSubStatus" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setSubStatus">Set Sub-status</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="setSubStatus"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
                     </div>

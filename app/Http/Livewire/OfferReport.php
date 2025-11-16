@@ -29,6 +29,7 @@ class OfferReport extends Component
 
     public $from;
     public $to;
+    public $sub_status;
     public $expiryFrom;
     public $expiryTo;
     public $statuses = [];
@@ -51,6 +52,7 @@ class OfferReport extends Component
     public $Evalue_from;
     public $Evalue_to;
     public $Eis_renewal;
+    public $Esub_status;
 
     public $FilteredCreators = [];
     public $selectedCreators = [];
@@ -166,6 +168,25 @@ class OfferReport extends Component
     {
         $this->value_from = null;
         $this->value_to = null;
+    }
+
+    public function toggleSubStatus()
+    {
+        $this->toggle($this->statusesSection);
+        if ($this->statusesSection) {
+            $this->Esub_status = $this->sub_status;
+        }
+    }
+
+    public function setSubStatus()
+    {
+        $this->sub_status = $this->Esub_status;
+        $this->toggle($this->statusesSection);
+    }
+
+    public function clearSubStatus()
+    {
+        $this->sub_status = null;
     }
 
     public function openCreatorSection()
@@ -294,6 +315,7 @@ class OfferReport extends Component
                 $this->profiles,
                 $this->expiryFrom,
                 $this->expiryTo,
+                $this->sub_status,
             );
         }
     }
@@ -309,6 +331,7 @@ class OfferReport extends Component
     {
         $STATUSES = Offer::STATUSES;
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
+        $SUB_STATUSES = Offer::SUB_STATUSES;
         $COMM_PROFILES = CommProfile::select('title', 'id')->get();
 
         if ($this->assignee_id) {
@@ -350,14 +373,17 @@ class OfferReport extends Component
             collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all() ,
             $this->expiryFrom,
             $this->expiryTo,
+            $this->sub_status,
         )->paginate(30);
         return view('livewire.offer-report', [
             'offers' => $offers,
             'STATUSES' => $STATUSES,
+            'SUB_STATUSES' => $SUB_STATUSES,
             'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
             'users' => $users,
             'types' => User::TYPES,
-            'COMM_PROFILES' => $COMM_PROFILES
+            'COMM_PROFILES' => $COMM_PROFILES,
+            'SUB_STATUSES' => $SUB_STATUSES
         ]);
     }
 }
