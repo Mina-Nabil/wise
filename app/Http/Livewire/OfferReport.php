@@ -24,6 +24,7 @@ class OfferReport extends Component
     public $valueSection = false;
     public $closerSection = false;
     public $statusesSection = false;
+    public $subStatusSection = false;
     public $assigneeName;
     public $closerName;
 
@@ -172,8 +173,8 @@ class OfferReport extends Component
 
     public function toggleSubStatus()
     {
-        $this->toggle($this->statusesSection);
-        if ($this->statusesSection) {
+        $this->toggle($this->subStatusSection);
+        if ($this->subStatusSection) {
             $this->Esub_status = $this->sub_status;
         }
     }
@@ -181,7 +182,7 @@ class OfferReport extends Component
     public function setSubStatus()
     {
         $this->sub_status = $this->Esub_status;
-        $this->toggle($this->statusesSection);
+        $this->toggle($this->subStatusSection);
     }
 
     public function clearSubStatus()
