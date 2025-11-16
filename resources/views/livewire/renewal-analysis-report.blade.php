@@ -23,7 +23,7 @@
 					@enderror
 				</div>
 				<div>
-					<label class="form-label">Month <span class="text-red-500">*</span></label>
+					<label class="form-label">Month </label>
 					<select class="form-control" wire:model="selectedMonth">
 						<option value="">Select month</option>
 						@foreach($months as $month)
