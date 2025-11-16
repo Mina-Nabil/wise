@@ -36,6 +36,9 @@ class RenewalAnalysis
 
         /** @var Collection<int,int> $expiringPolicyIds */
         $expiringPolicyIds = $expiringPoliciesQuery->pluck('id');
+        $sumNetExpiring = SoldPolicy::query()
+            ->whereIn('id', $expiringPolicyIds->all())
+            ->sum('net_premium');
 
         $totalExpiringSoldPolicies = $expiringPolicyIds->count();
 
@@ -47,6 +50,9 @@ class RenewalAnalysis
                 'pctOffersOfExpiring' => 0.0,
                 'pctNewOfOffers' => 0.0,
                 'pctNewOfExpiring' => 0.0,
+                'sumNetExpiring' => 0.0,
+                'sumNetNewFromOffers' => 0.0,
+                'pctNetNewOfExpiring' => 0.0,
             ];
         }
 
@@ -63,16 +69,22 @@ class RenewalAnalysis
         $totalOffersForExpiring = $offerIds->count();
 
         $newSoldPoliciesFromOffers = 0;
+        $sumNetNewFromOffers = 0.0;
         if ($totalOffersForExpiring > 0) {
             $newSoldPoliciesFromOffers = SoldPolicy::query()
                 ->where('is_valid', true)
                 ->whereIn('offer_id', $offerIds->all())
                 ->count();
+            $sumNetNewFromOffers = SoldPolicy::query()
+                ->where('is_valid', true)
+                ->whereIn('offer_id', $offerIds->all())
+                ->sum('net_premium');
         }
 
         $pctOffersOfExpiring = self::pct($totalOffersForExpiring, $totalExpiringSoldPolicies);
         $pctNewOfOffers = self::pct($newSoldPoliciesFromOffers, $totalOffersForExpiring);
         $pctNewOfExpiring = self::pct($newSoldPoliciesFromOffers, $totalExpiringSoldPolicies);
+        $pctNetNewOfExpiring = self::pctFloat($sumNetNewFromOffers, $sumNetExpiring);
 
         return [
             'totalExpiringSoldPolicies' => $totalExpiringSoldPolicies,
@@ -81,6 +93,9 @@ class RenewalAnalysis
             'pctOffersOfExpiring' => $pctOffersOfExpiring,
             'pctNewOfOffers' => $pctNewOfOffers,
             'pctNewOfExpiring' => $pctNewOfExpiring,
+            'sumNetExpiring' => (float) $sumNetExpiring,
+            'sumNetNewFromOffers' => (float) $sumNetNewFromOffers,
+            'pctNetNewOfExpiring' => $pctNetNewOfExpiring,
         ];
     }
 
@@ -112,6 +127,9 @@ class RenewalAnalysis
                 'pctOffersOfExpiring' => $stats['pctOffersOfExpiring'],
                 'pctNewOfOffers' => $stats['pctNewOfOffers'],
                 'pctNewOfExpiring' => $stats['pctNewOfExpiring'],
+                'sumNetExpiring' => $stats['sumNetExpiring'],
+                'sumNetNewFromOffers' => $stats['sumNetNewFromOffers'],
+                'pctNetNewOfExpiring' => $stats['pctNetNewOfExpiring'],
             ];
         }
         return $rows;
@@ -120,6 +138,14 @@ class RenewalAnalysis
     private static function pct(int $num, int $den): float
     {
         if ($den === 0) {
+            return 0.0;
+        }
+        return round(($num / $den) * 100, 2);
+    }
+
+    private static function pctFloat(float $num, float $den): float
+    {
+        if ($den == 0.0) {
             return 0.0;
         }
         return round(($num / $den) * 100, 2);

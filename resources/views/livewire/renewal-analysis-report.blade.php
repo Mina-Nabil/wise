@@ -85,6 +85,8 @@
 										<th scope="col" class="table-th text-right">Count</th>
 										<th scope="col" class="table-th text-right">% of Expiring</th>
 										<th scope="col" class="table-th text-right">% of Offers</th>
+										<th scope="col" class="table-th text-right">Net Premium</th>
+										<th scope="col" class="table-th text-right">% of Expiring Net</th>
 									</tr>
 								</thead>
 								<tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -93,18 +95,24 @@
 										<td class="table-td text-right">{{ $stats['totalExpiringSoldPolicies'] ?? 0 }}</td>
 										<td class="table-td text-right">100%</td>
 										<td class="table-td text-right">-</td>
+										<td class="table-td text-right">{{ number_format($stats['sumNetExpiring'] ?? 0, 2) }}</td>
+										<td class="table-td text-right">100%</td>
 									</tr>
 									<tr class="even:bg-slate-50 dark:even:bg-slate-700">
 										<td class="table-td">Total offers for these expiring policies</td>
 										<td class="table-td text-right">{{ $stats['totalOffersForExpiring'] ?? 0 }}</td>
 										<td class="table-td text-right">{{ number_format($stats['pctOffersOfExpiring'] ?? 0, 2) }}%</td>
 										<td class="table-td text-right">100%</td>
+										<td class="table-td text-right">-</td>
+										<td class="table-td text-right">-</td>
 									</tr>
 									<tr class="even:bg-slate-50 dark:even:bg-slate-700">
 										<td class="table-td">Total new sold policies created from these offers</td>
 										<td class="table-td text-right">{{ $stats['totalNewSoldPoliciesFromOffers'] ?? 0 }}</td>
 										<td class="table-td text-right">{{ number_format($stats['pctNewOfExpiring'] ?? 0, 2) }}%</td>
 										<td class="table-td text-right">{{ number_format($stats['pctNewOfOffers'] ?? 0, 2) }}%</td>
+										<td class="table-td text-right">{{ number_format($stats['sumNetNewFromOffers'] ?? 0, 2) }}</td>
+										<td class="table-td text-right">{{ number_format($stats['pctNetNewOfExpiring'] ?? 0, 2) }}%</td>
 									</tr>
 								</tbody>
 							</table>
@@ -141,6 +149,9 @@
 										<th scope="col" class="table-th text-right">% Offers of Expiring</th>
 										<th scope="col" class="table-th text-right">% New of Offers</th>
 										<th scope="col" class="table-th text-right">% New of Expiring</th>
+										<th scope="col" class="table-th text-right">Expiring Net</th>
+										<th scope="col" class="table-th text-right">New Net</th>
+										<th scope="col" class="table-th text-right">% New Net of Expiring Net</th>
 									</tr>
 								</thead>
 								<tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -153,6 +164,9 @@
 											<td class="table-td text-right">{{ number_format($row['pctOffersOfExpiring'], 2) }}%</td>
 											<td class="table-td text-right">{{ number_format($row['pctNewOfOffers'], 2) }}%</td>
 											<td class="table-td text-right">{{ number_format($row['pctNewOfExpiring'], 2) }}%</td>
+											<td class="table-td text-right">{{ number_format($row['sumNetExpiring'], 2) }}</td>
+											<td class="table-td text-right">{{ number_format($row['sumNetNewFromOffers'], 2) }}</td>
+											<td class="table-td text-right">{{ number_format($row['pctNetNewOfExpiring'], 2) }}%</td>
 										</tr>
 									@endforeach
 								</tbody>
