@@ -167,6 +167,7 @@ class OfferShow extends Component
     public $profilesRes;
 
     public $subStatusSection;
+    public $subStatuses;
     public $subStatusOfferStatus;
     public $subStatus;
 
@@ -1181,6 +1182,7 @@ class OfferShow extends Component
     public function setStatus($s = null)
     {
         if ($s == Offer::STATUS_PENDING_INSUR || $s == Offer::STATUS_PENDING_CUSTOMER || $s == Offer::STATUS_DECLINED_CUSTOMER || $s == Offer::STATUS_PENDING_SALES) {
+            $this->subStatuses = array_key_exists($s, Offer::SUB_STATUSES) ? Offer::SUB_STATUSES[$s] : [];
             $this->subStatusOfferStatus = $s;
             $this->subStatusSection = true;
             return;
@@ -1463,8 +1465,7 @@ class OfferShow extends Component
             'optionStatuses' => $optionStatuses,
             'type_policies' => $type_policies,
             'RELATIONS' => $RELATIONS,
-            'brands' => $brands,
-            'subStatuses' => Offer::SUB_STATUSES
+            'brands' => $brands
         ]);
     }
 }

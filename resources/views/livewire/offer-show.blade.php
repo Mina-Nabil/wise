@@ -2392,9 +2392,9 @@
                                     <label for="subStatus" class="form-label">Sub Status</label>
                                     <input type="text" name="subStatus" class="form-control mt-2 w-full"
                                         wire:model.defer="subStatus" list="subStatuses">
-                                        @if(array_key_exists($subStatusOfferStatus, $subStatuses))
+                                        @if(!empty($subStatuses))
                                         <datalist id="subStatuses">
-                                            @foreach($subStatuses[$subStatusOfferStatus] as $subStatus)
+                                            @foreach($subStatuses as $subStatus)
                                                 <option value="{{ $subStatus }}">{{ $subStatus }}</option>
                                             @endforeach
                                         </datalist>
