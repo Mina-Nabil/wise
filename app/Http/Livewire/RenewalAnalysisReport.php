@@ -48,7 +48,11 @@ class RenewalAnalysisReport extends Component
 
     public function updatedSelectedUserId(): void
     {
-        // optional filter; keep results shown
+        if ($this->selectedUserId == -1) {
+            $this->selectedUserId = null;
+        }
+        $this->showResults = false;
+
     }
 
     public function load(): void

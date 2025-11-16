@@ -37,7 +37,7 @@
 				<div>
 					<label class="form-label">User (optional)</label>
 					<select class="form-control" wire:model="selectedUserId">
-						<option value="">All users</option>
+						<option value="-1">All users</option>
 						@foreach($users as $usr)
 							<option value="{{ $usr['id'] }}">{{ $usr['username'] }}</option>
 						@endforeach
