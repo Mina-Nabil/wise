@@ -2391,9 +2391,9 @@
                                 <div class="from-group">
                                     <label for="subStatus" class="form-label">Sub Status</label>
                                     <input type="text" name="subStatus" class="form-control mt-2 w-full"
-                                        wire:model.defer="subStatus" list="subStatuses">
+                                        wire:model.defer="subStatus" list="subStatusesList">
                                         @if(!empty($subStatuses))
-                                        <datalist id="subStatuses">
+                                        <datalist id="subStatusesList">
                                             @foreach($subStatuses as $subStatus)
                                                 <option value="{{ $subStatus }}">{{ $subStatus }}</option>
                                             @endforeach
