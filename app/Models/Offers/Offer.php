@@ -82,6 +82,25 @@ class Offer extends Model
         self::STATUS_PENDING_CUSTOMER,
     ];
 
+    const SUB_STATUSES = [
+        self::STATUS_DECLINED_CUSTOMER => [
+            'Financial reason',
+            'chose another broker',
+            'negative experience',
+            'Not interested anymore',
+            'Sell his car'
+        ],
+        self::STATUS_PENDING_OPERATIONS => [
+            'waiting for documents',
+            'Reviewing the offer',
+            'ask for time to decide',
+        ],
+        self::STATUS_PENDING_SALES => [
+            'waiting payment',
+            'waiting customer confirmation',
+        ],
+    ];
+
     protected $table = 'offers';
     protected $fillable = [
         'creator_id',
@@ -275,7 +294,7 @@ class Offer extends Model
                     "created_at"        =>  $issuing_date
                 ]);
                 $user = User::find($commaya->user_id);
-                if($user) {
+                if ($user) {
                     $soldPolicy->setWatchers([$user->id], false);
                 }
                 $commaya->refreshPaymentInfo();
@@ -1198,7 +1217,7 @@ class Offer extends Model
                 $query->orWhere(function ($q) {
                     $q->whereHas('assignee', function ($query) {
                         $query->where('username', 'Sales.Renewal')
-                        ->orWhere('users.type', User::TYPE_OPERATIONS);
+                            ->orWhere('users.type', User::TYPE_OPERATIONS);
                     });
                 });
             }

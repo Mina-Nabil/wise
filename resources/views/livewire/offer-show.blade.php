@@ -2391,7 +2391,14 @@
                                 <div class="from-group">
                                     <label for="subStatus" class="form-label">Sub Status</label>
                                     <input type="text" name="subStatus" class="form-control mt-2 w-full"
-                                        wire:model.defer="subStatus">
+                                        wire:model.defer="subStatus" list="subStatuses">
+                                        @if(isset($subStatuses[$subStatusOfferStatus]))
+                                        <datalist id="subStatuses">
+                                            @foreach($subStatuses[$subStatusOfferStatus] as $subStatus)
+                                                <option value="{{ $subStatus }}">{{ $subStatus }}</option>
+                                            @endforeach
+                                        </datalist>
+                                        @endif
                                     @error('subStatus')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

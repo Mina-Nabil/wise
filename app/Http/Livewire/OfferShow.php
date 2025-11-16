@@ -1463,7 +1463,8 @@ class OfferShow extends Component
             'optionStatuses' => $optionStatuses,
             'type_policies' => $type_policies,
             'RELATIONS' => $RELATIONS,
-            'brands' => $brands
+            'brands' => $brands,
+            'subStatuses' => Offer::SUB_STATUSES
         ]);
     }
 }
