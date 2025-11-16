@@ -44,6 +44,9 @@ class RenewalAnalysis
                 'totalExpiringSoldPolicies' => 0,
                 'totalOffersForExpiring' => 0,
                 'totalNewSoldPoliciesFromOffers' => 0,
+                'pctOffersOfExpiring' => 0.0,
+                'pctNewOfOffers' => 0.0,
+                'pctNewOfExpiring' => 0.0,
             ];
         }
 
@@ -67,11 +70,59 @@ class RenewalAnalysis
                 ->count();
         }
 
+        $pctOffersOfExpiring = self::pct($totalOffersForExpiring, $totalExpiringSoldPolicies);
+        $pctNewOfOffers = self::pct($newSoldPoliciesFromOffers, $totalOffersForExpiring);
+        $pctNewOfExpiring = self::pct($newSoldPoliciesFromOffers, $totalExpiringSoldPolicies);
+
         return [
             'totalExpiringSoldPolicies' => $totalExpiringSoldPolicies,
             'totalOffersForExpiring' => $totalOffersForExpiring,
             'totalNewSoldPoliciesFromOffers' => $newSoldPoliciesFromOffers,
+            'pctOffersOfExpiring' => $pctOffersOfExpiring,
+            'pctNewOfOffers' => $pctNewOfOffers,
+            'pctNewOfExpiring' => $pctNewOfExpiring,
         ];
+    }
+
+    /**
+     * Yearly breakdown per month (1..12) with counts and percentages.
+     *
+     * @return array<int,array{
+     *   month:int,
+     *   name:string,
+     *   totalExpiringSoldPolicies:int,
+     *   totalOffersForExpiring:int,
+     *   totalNewSoldPoliciesFromOffers:int,
+     *   pctOffersOfExpiring:float,
+     *   pctNewOfOffers:float,
+     *   pctNewOfExpiring:float
+     * }>
+     */
+    public static function calculateYearly(int $year, ?int $userId = null): array
+    {
+        $rows = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $stats = self::calculate($year, $m, $userId);
+            $rows[] = [
+                'month' => $m,
+                'name' => Carbon::create($year, $m, 1)->format('F'),
+                'totalExpiringSoldPolicies' => $stats['totalExpiringSoldPolicies'],
+                'totalOffersForExpiring' => $stats['totalOffersForExpiring'],
+                'totalNewSoldPoliciesFromOffers' => $stats['totalNewSoldPoliciesFromOffers'],
+                'pctOffersOfExpiring' => $stats['pctOffersOfExpiring'],
+                'pctNewOfOffers' => $stats['pctNewOfOffers'],
+                'pctNewOfExpiring' => $stats['pctNewOfExpiring'],
+            ];
+        }
+        return $rows;
+    }
+
+    private static function pct(int $num, int $den): float
+    {
+        if ($den === 0) {
+            return 0.0;
+        }
+        return round(($num / $den) * 100, 2);
     }
 }
 

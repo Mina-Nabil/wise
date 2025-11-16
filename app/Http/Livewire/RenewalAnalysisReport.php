@@ -17,6 +17,7 @@ class RenewalAnalysisReport extends Component
 
     public bool $showResults = false;
     public array $stats = [];
+    public array $yearlyStats = [];
 
     /** @var array<int,int> */
     public array $years = [];
@@ -51,11 +52,17 @@ class RenewalAnalysisReport extends Component
     {
         $this->validate([
             'selectedYear' => ['required', 'integer'],
-            'selectedMonth' => ['required', 'integer', 'between:1,12'],
+            'selectedMonth' => ['nullable', 'integer', 'between:1,12'],
             'selectedUserId' => ['nullable', 'integer', 'exists:users,id'],
         ]);
 
-        $this->stats = RenewalAnalysis::calculate($this->selectedYear, $this->selectedMonth, $this->selectedUserId);
+        if ($this->selectedMonth) {
+            $this->stats = RenewalAnalysis::calculate($this->selectedYear, $this->selectedMonth, $this->selectedUserId);
+            $this->yearlyStats = [];
+        } else {
+            $this->stats = [];
+            $this->yearlyStats = RenewalAnalysis::calculateYearly($this->selectedYear, $this->selectedUserId);
+        }
         $this->showResults = true;
     }
 
