@@ -40,7 +40,7 @@ class RenewalAnalysisReport extends Component
 
     public function updatedSelectedMonth(): void
     {
-        if (!$this->selectedMonth) {
+        if ($this->selectedMonth == -1) {
             $this->selectedMonth = null;
         }
         $this->showResults = false;
