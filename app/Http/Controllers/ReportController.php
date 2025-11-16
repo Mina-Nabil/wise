@@ -56,6 +56,11 @@ class ReportController extends Controller
         return view('reports.sales-commissions-totals-report');
     }
 
+    public function renewalAnalysis()
+    {
+        return view('reports.renewal-analysis-report');
+    }
+
     public function clientPaymentsFinance()
     {
         /** @var User */

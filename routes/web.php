@@ -25,9 +25,7 @@ use App\Http\Livewire\Accounting\CreateJournalEntry;
 use App\Http\Livewire\Accounting\UnapprovedEntryIndex;
 use App\Http\Livewire\EntryTitleIndex;
 use App\Http\Livewire\JournalEntryIndex;
-use App\Http\Livewire\TaskReport;
-use App\Http\Livewire\CampaignIndex;
-use App\Http\Livewire\ReviewIndex;
+use App\Http\Livewire\RenewalAnalysisIndex;
 use App\Models\Accounting\Account;
 use App\Models\Users\User;
 use Illuminate\Http\Request;
@@ -113,6 +111,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/reports/sales-comm-report', [ReportController::class, 'salesCommissions'])->name('reports.sales-comm-report');
     Route::get('/reports/sales-comm-totals-report', [ReportController::class, 'salesCommissionsTotals'])->name('reports.sales-comm-totals-report');
     Route::get('/reports/campaigns', [ReportController::class, 'campaignsIndex'])->name('reports.campaigns');
+    Route::get('/reports/renewal-analysis', [ReportController::class, 'renewalAnalysis'])->name('reports.renewal-analysis');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);
