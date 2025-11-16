@@ -75,9 +75,33 @@
 				</div>
 			</header>
 			<div class="card-body px-6 pb-6">
-				<div class="text-slate-600">
-					{{-- Replace this section with actual analysis content --}}
-					<p>Implement the renewal analysis query and presentation here.</p>
+				<div class="overflow-x-auto -mx-6">
+					<div class="inline-block min-w-full align-middle">
+						<div class="overflow-hidden">
+							<table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+								<thead class="bg-slate-200 dark:bg-slate-700">
+									<tr>
+										<th scope="col" class="table-th">Metric</th>
+										<th scope="col" class="table-th text-right">Count</th>
+									</tr>
+								</thead>
+								<tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+									<tr class="even:bg-slate-50 dark:even:bg-slate-700">
+										<td class="table-td">Total expiring sold policies</td>
+										<td class="table-td text-right">{{ $stats['totalExpiringSoldPolicies'] ?? 0 }}</td>
+									</tr>
+									<tr class="even:bg-slate-50 dark:even:bg-slate-700">
+										<td class="table-td">Total offers for these expiring policies</td>
+										<td class="table-td text-right">{{ $stats['totalOffersForExpiring'] ?? 0 }}</td>
+									</tr>
+									<tr class="even:bg-slate-50 dark:even:bg-slate-700">
+										<td class="table-td">Total new sold policies created from these offers</td>
+										<td class="table-td text-right">{{ $stats['totalNewSoldPoliciesFromOffers'] ?? 0 }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

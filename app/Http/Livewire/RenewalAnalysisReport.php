@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Livewire;
 
 use App\Models\Users\User;
+use App\Models\Reports\RenewalAnalysis;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
@@ -15,6 +16,7 @@ class RenewalAnalysisReport extends Component
     public ?int $selectedUserId = null; // optional
 
     public bool $showResults = false;
+    public array $stats = [];
 
     /** @var array<int,int> */
     public array $years = [];
@@ -53,6 +55,7 @@ class RenewalAnalysisReport extends Component
             'selectedUserId' => ['nullable', 'integer', 'exists:users,id'],
         ]);
 
+        $this->stats = RenewalAnalysis::calculate($this->selectedYear, $this->selectedMonth, $this->selectedUserId);
         $this->showResults = true;
     }
 
