@@ -308,7 +308,12 @@ class Task extends Model
             }
             $this->last_action_by()->associate($loggedInUser);
             if (($status == self::STATUS_COMPLETED || $status == self::STATUS_CLOSED) && $this->type == self::TYPE_CLAIM) {
-                Review::createReview($this, "Claim Review", "Claim# $this->id completed");
+                try {
+                    Review::createReview($this, "Claim Review", "Claim# $this->id completed");
+                } catch (Exception $e) {
+                    report($e);
+                    AppLog::error("Can't create claim review", $e->getMessage(), $this);
+                }
             }
             $this->sendTaskNotifications('Status changed', "Task#$this->id is set to $status");
             return true;
@@ -347,7 +352,7 @@ class Task extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        
+
         // Only allow adding actions to endorsement tasks
         if (!$this->is_endorsment) {
             AppLog::warning('Attempted to add action to non-endorsement task', "Task#$this->id is not an endorsement", $this);
