@@ -720,6 +720,10 @@ class TaskShow extends Component
     {
         /** @var Task */
         $task = Task::findOrFail($this->taskId);
+        if($task->status == Task::STATUS_COMPLETED || $task->status == Task::STATUS_CLOSED && $task->type == Task::TYPE_CLAIM) {
+            $this->alert('failed', 'Claim cannot be deleted because it is completed or closed');
+            return;
+        }
         $res = $task->delete();
         if ($res) {
             $this->alert('success', 'Task deleted');

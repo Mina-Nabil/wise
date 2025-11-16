@@ -307,8 +307,8 @@ class Task extends Model
                 $this->addComment($comment, false);
             }
             $this->last_action_by()->associate($loggedInUser);
-            if (($status == self::STATUS_COMPLETED || $status == self::STATUS_CLOSED) && $this->type == self::TYPE_CLAIM && $this->taskable) {
-                Review::createReview($this->taskable, "Claim Review", "Claim# $this->id completed");
+            if (($status == self::STATUS_COMPLETED || $status == self::STATUS_CLOSED) && $this->type == self::TYPE_CLAIM) {
+                Review::createReview($this, "Claim Review", "Claim# $this->id completed");
             }
             $this->sendTaskNotifications('Status changed', "Task#$this->id is set to $status");
             return true;
