@@ -745,6 +745,7 @@
                 </div>
             </div>
         </div>
+    @endif
 
     {{-- subStatusSection --}}
     @if ($subStatusSection)
@@ -805,7 +806,7 @@
             </div>
         </div>
     @endif
-    @endif
+
 
     {{-- commProfilesSection --}}
     @if ($commProfilesSection)
