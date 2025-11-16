@@ -90,7 +90,7 @@ class Offer extends Model
             'Not interested anymore',
             'Sell his car'
         ],
-        self::STATUS_PENDING_OPERATIONS => [
+        self::STATUS_PENDING_CUSTOMER => [
             'waiting for documents',
             'Reviewing the offer',
             'ask for time to decide',
