@@ -111,11 +111,20 @@
                                     </li>
                                 </ul>
                             </div>
-                            <a href="{{ route($offer->client_type . 's.show', $offer->client_id) }}" target="_blank">
-                                <button wire:click="toggleEditInfo"
-                                    class="btn inline-flex justify-center btn-secondary shadow-base2 float-right btn-sm mr-2">View
-                                    {{ ucwords($offer->client_type) }}</button>
-                            </a>
+                            <div class="flex gap-2 float-right">
+                                <button 
+                                    wire:click="toggleLock"
+                                    class="btn inline-flex justify-center btn-secondary shadow-base2 btn-sm mr-2"
+                                    title="{{ $offer->is_locked ? 'Unlock Offer' : 'Lock Offer' }}">
+                                    <iconify-icon icon="{{ $offer->is_locked ? 'mdi:lock' : 'mdi:lock-open-variant' }}"></iconify-icon>
+                                    <span class="ml-1">{{ $offer->is_locked ? 'Unlock' : 'Lock' }}</span>
+                                </button>
+                                <a href="{{ route($offer->client_type . 's.show', $offer->client_id) }}" target="_blank">
+                                    <button wire:click="toggleEditInfo"
+                                        class="btn inline-flex justify-center btn-secondary shadow-base2 btn-sm">View
+                                        {{ ucwords($offer->client_type) }}</button>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <p class="text-sm text-slate-400 font-light">

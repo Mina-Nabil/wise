@@ -31,7 +31,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
@@ -120,7 +119,8 @@ class Offer extends Model
         'in_favor_to',
         'renewal_policy',
         'sub_status',
-        'renewal_policy_id'
+        'renewal_policy_id',
+        'is_locked',
     ];
 
 
@@ -588,6 +588,38 @@ class Offer extends Model
         }
     }
 
+    public function lock()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('lock', $this)) return false;
+
+        if ($this->is_locked) return true;
+
+        $this->update(['is_locked' => true]);
+
+        AppLog::info("Offer locked", loggable: $this);
+        $this->addComment("Offer locked", false);
+
+        return true;
+    }
+
+    public function unlock()
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('unlock', $this)) return false;
+
+        if (!$this->is_locked) return true;
+        
+        $this->update(['is_locked' => false]);
+
+        AppLog::info("Offer unlocked", loggable: $this);
+        $this->addComment("Offer unlocked", false);
+
+        return true;
+    }
+
     /**
      * @return string if failed, an error message will return
      * @return true if done
@@ -611,9 +643,9 @@ class Offer extends Model
 
             case self::STATUS_PENDING_OPERATIONS:
                 //check if there is options before sending it to operations
-                $this->loadCount('options');
-                if (!$this->options_count) return "No offer options found";
-                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+                // $this->loadCount('options');
+                // if (!$this->options_count) return "No offer options found";
+                // $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
                 break;
 
             case self::STATUS_PENDING_INSUR:
@@ -1020,25 +1052,29 @@ class Offer extends Model
         $loggedInUser = Auth::user();
         if (!$bypassUserCheck && !$loggedInUser?->can('updateAssignTo', $this)) return false;
 
-        // if (!$bypassUserCheck && $user_id_or_type == User::TYPE_OPERATIONS) {
-        //     return "Please set the offer status to pending operations";
-        // }
-
-        // if (!$bypassUserCheck && $user_id_or_type == User::TYPE_SALES) {
-        //     return "Please assign the offer to a sales user";
-        // }
-
         $assignedToTitle = null;
         if (is_numeric($user_id_or_type)) {
             $this->assignee_id = $user_id_or_type;
             $this->assignee_type = null;
             $user = User::findOrFail($user_id_or_type);
             $assignedToTitle = $user->username;
+            if($user->is_operations) {
+                $this->setStatus(self::STATUS_PENDING_OPERATIONS, null, true);
+                $this->lock();
+            } elseif($user->is_sales) {
+                $this->setStatus(self::STATUS_PENDING_SALES, null, true);
+                $this->unlock();
+            }
             // $this->setStatus(self::STATUS_PENDING_SALES, null, true);
         } else if (in_array($user_id_or_type, User::TYPES)) {
             $this->assignee_id = null;
             $this->assignee_type = $user_id_or_type;
             $assignedToTitle = $user_id_or_type;
+            if($user_id_or_type == User::TYPE_OPERATIONS) {
+                $this->setStatus(self::STATUS_PENDING_OPERATIONS, null, true);
+            } elseif($user_id_or_type == User::TYPE_SALES) {
+                $this->setStatus(self::STATUS_PENDING_SALES, null, true);
+            }
         } else {
             AppLog::warning("Wrong input", "Trying to set Offer#$this->id to $user_id_or_type", $this);
             return false;

@@ -1427,6 +1427,29 @@ class OfferShow extends Component
         $this->currentPolicyNote = '';
     }
 
+    public function toggleLock()
+    {
+        $this->authorize($this->offer->is_locked ? 'unlock' : 'lock', $this->offer);
+        
+        if ($this->offer->is_locked) {
+            $res = $this->offer->unlock();
+            if ($res) {
+                $this->alert('success', 'Offer unlocked');
+                $this->mount($this->offer->id);
+            } else {
+                $this->alert('failed', 'Failed to unlock offer');
+            }
+        } else {
+            $res = $this->offer->lock();
+            if ($res) {
+                $this->alert('success', 'Offer locked');
+                $this->mount($this->offer->id);
+            } else {
+                $this->alert('failed', 'Failed to lock offer');
+            }
+        }
+    }
+
     public function render()
     {
         $loggedInUser = Auth::user();
