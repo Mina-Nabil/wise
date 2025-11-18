@@ -112,18 +112,18 @@
                                 </ul>
                             </div>
                             <div class="flex gap-2 float-right">
-                                <button 
-                                    wire:click="toggleLock"
+                                <button wire:click="toggleLock"
                                     class="btn inline-flex justify-center btn-secondary shadow-base2 btn-sm mr-2"
                                     title="{{ $offer->is_locked ? 'Unlock Offer' : 'Lock Offer' }}">
-                                    <iconify-icon icon="{{ $offer->is_locked ? 'mdi:lock' : 'mdi:lock-open-variant' }}"></iconify-icon>
+                                    <iconify-icon
+                                        icon="{{ $offer->is_locked ? 'mdi:lock' : 'mdi:lock-open-variant' }}"></iconify-icon>
                                     <span class="ml-1">{{ $offer->is_locked ? 'Unlock' : 'Lock' }}</span>
                                 </button>
-                                <a href="{{ route($offer->client_type . 's.show', $offer->client_id) }}" target="_blank">
-                                    <button wire:click="toggleEditInfo"
-                                        class="btn inline-flex justify-center btn-secondary shadow-base2 btn-sm">View
-                                        {{ ucwords($offer->client_type) }}</button>
+                                <a href="{{ route($offer->client_type . 's.show', $offer->client_id) }}"
+                                    target="_blank">
                                 </a>
+                                <button wire:click="toggleEditInfo"
+                                    class="btn inline-flex justify-center btn-secondary shadow-base2 btn-sm"></button>
                             </div>
                         </div>
                     </div>
@@ -376,20 +376,21 @@
                                                             </td>
                                                             <td class="table-td ">
                                                                 <div class="flex items-center gap-2">
-                                                                @if($policy['policy']['note'])
-                                                                    <button 
-                                                                        wire:click="showPolicyNote('{{ addslashes($policy['policy']['note']) }}')"
-                                                                        class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm me-2"
-                                                                    >
-                                                                        <iconify-icon icon="heroicons:information-circle" class="text-slate-600"></iconify-icon>
-                                                                    </button>
-                                                                @endif
-                                                                <button
-                                                                    wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['cond']['id'] }})"
-                                                                    class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon
-                                                                        icon="bi:stars"
-                                                                        class="text-primary-600"></iconify-icon>&nbsp;
-                                                                    Generate</button>
+                                                                    @if ($policy['policy']['note'])
+                                                                        <button
+                                                                            wire:click="showPolicyNote('{{ addslashes($policy['policy']['note']) }}')"
+                                                                            class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm me-2">
+                                                                            <iconify-icon
+                                                                                icon="heroicons:information-circle"
+                                                                                class="text-slate-600"></iconify-icon>
+                                                                        </button>
+                                                                    @endif
+                                                                    <button
+                                                                        wire:click="generateOption({{ $policy['policy']['id'] . ',' . $policy['cond']['id'] }})"
+                                                                        class="btn inline-flex justify-center btn-light rounded-[25px] btn-sm"><iconify-icon
+                                                                            icon="bi:stars"
+                                                                            class="text-primary-600"></iconify-icon>&nbsp;
+                                                                        Generate</button>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -754,18 +755,18 @@
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                            <button wire:click="previewOptionDoc({{ $file->id }})"
-                                                                class="action-btn float-right text-xs border-blue-600"
-                                                                type="button"
-                                                                style="border-color: darkgrey;margin-right:10px">
-                                                                <iconify-icon icon="heroicons:eye"></iconify-icon>
-                                                            </button>
-                                                            <button wire:click="downloadOptionDoc({{ $file->id }})"
-                                                                class="action-btn float-right text-xs border-blue-600"
-                                                                type="button"
-                                                                style="border-color: darkgrey;margin-right:10px">
-                                                                <iconify-icon icon="ic:baseline-download"></iconify-icon>
-                                                            </button>
+                                                        <button wire:click="previewOptionDoc({{ $file->id }})"
+                                                            class="action-btn float-right text-xs border-blue-600"
+                                                            type="button"
+                                                            style="border-color: darkgrey;margin-right:10px">
+                                                            <iconify-icon icon="heroicons:eye"></iconify-icon>
+                                                        </button>
+                                                        <button wire:click="downloadOptionDoc({{ $file->id }})"
+                                                            class="action-btn float-right text-xs border-blue-600"
+                                                            type="button"
+                                                            style="border-color: darkgrey;margin-right:10px">
+                                                            <iconify-icon icon="ic:baseline-download"></iconify-icon>
+                                                        </button>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -1449,12 +1450,14 @@
                                 </div>
                             </div>
                             <div class="input-area mb-3">
-                                <label for="policyDoc" class="form-label">Policy Document <span class="text-danger-500">*</span></label>
+                                <label for="policyDoc" class="form-label">Policy Document <span
+                                        class="text-danger-500">*</span></label>
                                 <input name="policyDoc"
                                     class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('policyDoc') !border-danger-500 @enderror"
                                     id="default-picker" type="file" wire:model.defer="policyDoc">
                                 @error('policyDoc')
-                                    <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
                                 <label for="policyDoc2" class="form-label">Policy Document 2 (Optional)</label>
@@ -1925,7 +1928,8 @@
                                                     <select name="basicSelect"
                                                         class="form-control w-full mt-2  @error('relatives.' . $index . '.relation') !border-danger-500 @enderror"
                                                         wire:model="relatives.{{ $index }}.relation">
-                                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                        <option
+                                                            class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                             Select Relation...</option>
                                                         @foreach ($RELATIONS as $relation)
                                                             <option value="{{ $relation }}"
@@ -2136,7 +2140,8 @@
                                             wire:loading wire:target="searchPolicy"
                                             icon="line-md:loading-twotone-loop"></iconify-icon>
                                     </label>
-                                    <input type="text" class="form-control mt-2 w-full" wire:model="searchPolicy">
+                                    <input type="text" class="form-control mt-2 w-full"
+                                        wire:model="searchPolicy">
                                 </div>
                                 <div class="text-sm mt-0">
                                     @if ($policiesData)
@@ -2401,13 +2406,13 @@
                                     <label for="subStatus" class="form-label">Sub Status</label>
                                     <input type="text" name="subStatus" class="form-control mt-2 w-full"
                                         wire:model.defer="subStatus" list="subStatusesList">
-                                        @if(!empty($subStatuses))
+                                    @if (!empty($subStatuses))
                                         <datalist id="subStatusesList">
-                                            @foreach($subStatuses as $subStatus)
+                                            @foreach ($subStatuses as $subStatus)
                                                 <option value="{{ $subStatus }}">{{ $subStatus }}</option>
                                             @endforeach
                                         </datalist>
-                                        @endif
+                                    @endif
                                     @error('subStatus')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3412,18 +3417,26 @@
         </div>
     @endif
 
-    @if($showPolicyNoteModal)
-        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show" tabindex="-1" aria-labelledby="policyNoteModal" aria-modal="true" role="dialog" style="display: block;">
+    @if ($showPolicyNoteModal)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="policyNoteModal" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none">
-                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <!-- Modal header -->
-                    <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                    <div
+                        class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                         <h3 class="text-xl font-medium text-white dark:text-white">
                             Policy Note
                         </h3>
-                        <button wire:click="hidePolicyNote" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        <button wire:click="hidePolicyNote" type="button"
+                            class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
                             </svg>
                             <span class="sr-only">Close modal</span>
                         </button>
@@ -3435,7 +3448,8 @@
                         </p>
                     </div>
                     <!-- Modal footer -->
-                    <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                    <div
+                        class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
                         <button wire:click="hidePolicyNote" type="button" class="btn btn-secondary">
                             Close
                         </button>
