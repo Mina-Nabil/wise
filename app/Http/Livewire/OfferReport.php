@@ -376,6 +376,7 @@ class OfferReport extends Component
             $this->expiryTo,
             $this->sub_status,
         )->paginate(30);
+        
         return view('livewire.offer-report', [
             'offers' => $offers,
             'STATUSES' => $STATUSES,

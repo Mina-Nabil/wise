@@ -839,7 +839,8 @@ class SoldPolicyReport extends Component
             $this->bank_payment_time_from,
             $this->bank_payment_time_to,
             $this->has_offer
-        )->simplePaginate(30);
+        )->paginate(15);
+        
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
             'users' => $users,
