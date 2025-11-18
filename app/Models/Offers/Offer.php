@@ -611,7 +611,7 @@ class Offer extends Model
         if (!$loggedInUser?->can('unlock', $this)) return false;
 
         if (!$this->is_locked) return true;
-        
+
         $this->update(['is_locked' => false]);
 
         AppLog::info("Offer unlocked", loggable: $this);
@@ -1058,10 +1058,12 @@ class Offer extends Model
             $this->assignee_type = null;
             $user = User::findOrFail($user_id_or_type);
             $assignedToTitle = $user->username;
-            if($user->is_operations) {
+            if ($user->is_operations) {
+                $this->loadCount('options');
+                if (!$this->options_count) return "No offer options found";
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS, null, true);
                 $this->lock();
-            } elseif($user->is_sales) {
+            } elseif ($user->is_sales) {
                 $this->setStatus(self::STATUS_PENDING_SALES, null, true);
                 $this->unlock();
             }
@@ -1070,9 +1072,11 @@ class Offer extends Model
             $this->assignee_id = null;
             $this->assignee_type = $user_id_or_type;
             $assignedToTitle = $user_id_or_type;
-            if($user_id_or_type == User::TYPE_OPERATIONS) {
+            if ($user_id_or_type == User::TYPE_OPERATIONS) {
+                $this->loadCount('options');
+                if (!$this->options_count) return "No offer options found";
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS, null, true);
-            } elseif($user_id_or_type == User::TYPE_SALES) {
+            } elseif ($user_id_or_type == User::TYPE_SALES) {
                 $this->setStatus(self::STATUS_PENDING_SALES, null, true);
             }
         } else {
@@ -1113,6 +1117,7 @@ class Offer extends Model
             $option->save();
             if ($state == OfferOption::STATUS_CLNT_ACPT) {
                 $this->selected_option_id = $option_id;
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
                 $this->generateSalesCommissions();
                 $this->save();
                 $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
@@ -1121,7 +1126,7 @@ class Offer extends Model
                 // }
                 $this->setStatus(self::STATUS_PENDING_OPERATIONS);
             } elseif ($state == OfferOption::STATUS_RQST_QTTN) {
-                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
+                // $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
             } elseif ($state == OfferOption::STATUS_QTTN_RECV) {
                 $this->setStatus(self::STATUS_PENDING_SALES);
                 $this->assignTo($this->creator_id, bypassUserCheck: true);

@@ -4,6 +4,14 @@
             <div class="card-text h-full space-y-10 pt-4">
                 @php(isset($this->numberOfPaginatorsRendered[$paginator->getPageName()]) ? $this->numberOfPaginatorsRendered[$paginator->getPageName()]++ : ($this->numberOfPaginatorsRendered[$paginator->getPageName()] = 1))
 
+                {{-- Total Count Display --}}
+                <div class="flex justify-center items-center mb-3">
+                    <p class="text-sm text-slate-700 dark:text-slate-300 font-Inter">
+                        <span>Total:</span>
+                        <span class="font-medium">{{ $paginator->total() }}</span>
+                    </p>
+                </div>
+
                 <ul class="list-none">
                     {{-- Previous Page Link --}}
                     @if ($paginator->onFirstPage())
