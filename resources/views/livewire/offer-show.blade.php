@@ -120,7 +120,7 @@
                                     <span class="ml-1">{{ $offer->is_locked ? 'Unlock' : 'Lock' }}</span>
                                 </button>
                                 <a href="{{ route($offer->client_type . 's.show', $offer->client_id) }}"
-                                    target="_blank">
+                                    target="_blank">View {{ ucwords($offer->client_type) }}
                                 </a>
                                 <button wire:click="toggleEditInfo"
                                     class="btn inline-flex justify-center btn-secondary shadow-base2 btn-sm"></button>
