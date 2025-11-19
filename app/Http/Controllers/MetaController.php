@@ -13,6 +13,7 @@ class MetaController extends Controller
 
     public function index(Request $request)
     {
+        Log::info('Meta webhook request received', ['request' => $request->all()]);
         // Handle GET request for webhook verification
         if($request->isMethod('GET') && $request->has('hub_mode') && $request->hub_mode === 'subscribe'){
             return $this->verifyToken($request);
