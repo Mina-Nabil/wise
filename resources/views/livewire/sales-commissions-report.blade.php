@@ -190,10 +190,10 @@
                                                 {{ number_format((float) $commission->amount, 2, '.', ',') }}
                                             </td>
                                             <td class="table-td">
-                                                {{ $commission->sold_policy?->start ? \Carbon\Carbon::parse($commission->sold_policy->start)->format('d/m/Y') : 'N/A' }}
+                                                {{ $commission->sold_policy?->client?->full_name ?? ($commission->sold_policy?->client?->name ?? 'N/A') }}
                                             </td>
                                             <td class="table-td">
-                                                {{ $commission->sold_policy?->client?->full_name ?? ($commission->sold_policy?->client?->name ?? 'N/A') }}
+                                                {{ $commission->sold_policy?->start ? \Carbon\Carbon::parse($commission->sold_policy->start)->format('d/m/Y') : 'N/A' }}
                                             </td>
                                             <td class="table-td">
                                                 @php
