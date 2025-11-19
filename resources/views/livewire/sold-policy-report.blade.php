@@ -27,7 +27,7 @@
                 @endif
                 <div class="dropdown relative ">
                     <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
-                        type="button" id="darksplitDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        type="button" id="toggleDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         Add filter
                         <span
                             class="cursor-pointer absolute ltr:border-l rtl:border-r border-slate-100 h-full ltr:right-0 rtl:left-0 px-2 flex
