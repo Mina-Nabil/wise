@@ -5,12 +5,14 @@
                 @php(isset($this->numberOfPaginatorsRendered[$paginator->getPageName()]) ? $this->numberOfPaginatorsRendered[$paginator->getPageName()]++ : ($this->numberOfPaginatorsRendered[$paginator->getPageName()] = 1))
 
                 {{-- Total Count Display --}}
+                @if(is_a($paginator, 'Illuminate\Pagination\LengthAwarePaginator'))
                 <div class="flex justify-center items-center mb-3">
                     <p class="text-sm text-slate-700 dark:text-slate-300 font-Inter">
-                        <span>Total:</span>
-                        <span class="font-medium">{{ $paginator->total() }}</span>
-                    </p>
-                </div>
+                            <span>Total:</span>
+                            <span class="font-medium">{{ $paginator->total() }}</span>
+                        </p>
+                    </div>
+                @endif
 
                 <ul class="list-none">
                     {{-- Previous Page Link --}}
