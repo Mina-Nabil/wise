@@ -14,7 +14,7 @@ class MetaController extends Controller
 
     public function index(Request $request)
     {
-        if($request->has('hub_challenge')){
+        if($request->has('hub_mode') && $request->hub_mode === 'subscribe'){
             return $this->verifyToken($request);
         }
         return response()->json(['message' => 'Invalid request'], 404);
@@ -23,7 +23,7 @@ class MetaController extends Controller
     private function verifyToken(Request $request)
     {
         try{
-            if(!$request->has('hub_token')){
+            if(!$request->has('hub_verify_token')){
                 return response()->json(['message' => 'Token is required'], 400);
             }
             if($request->token !== env('META_TOKEN')){
