@@ -26,7 +26,7 @@ class MetaController extends Controller
             if(!$request->has('token')){
                 return response()->json(['message' => 'Token is required'], 400);
             }
-            if($request->token !== env('app.token')){
+            if($request->token !== env('META_TOKEN')){
                 return response()->json(['message' => 'Invalid token'], 401);
             }
             $challenge = $request->input('challenge');
