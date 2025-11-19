@@ -432,7 +432,7 @@
                                 </button>
                             @endif
 
-                            @if ($Epolicy_ids)
+                            @if ($policy_ids)
                                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                                     <span wire:click="togglePolicy">
                                         Policy(
