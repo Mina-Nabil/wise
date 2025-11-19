@@ -440,11 +440,8 @@
                                             @php
                                                 $pol = \App\Models\Insurance\Policy::find($id);
                                             @endphp
-
-                                            {{ $pol->company->name }} - {{ $pol->name }}
-                                            @if (!$loop->last)
-                                                ,
-                                            @endif
+                                            
+                                            {{ $pol->company->name }} - {{ $pol->name }} 
                                         @endforeach
 
                                         )
