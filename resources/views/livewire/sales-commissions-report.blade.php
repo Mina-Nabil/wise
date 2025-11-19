@@ -14,7 +14,8 @@
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
-            <button wire:click="generateCommProfilePayment" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
+            <button wire:click="generateCommProfilePayment"
+                class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
                 <span wire:loading.remove wire:target="generateCommProfilePayment">Generate Comm Profile Payment</span>
                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
                     wire:target="generateCommProfilePayment" icon="line-md:loading-twotone-loop"></iconify-icon>
@@ -154,12 +155,12 @@
                                         <th scope="col" class="table-th w-12"></th>
                                         <th scope="col" class="table-th">Policy #</th>
                                         <th scope="col" class="table-th">Creator</th>
-                                        <th scope="col" class="table-th">Client</th>
-                                        <th scope="col" class="table-th">Policy Start</th>
                                         <th scope="col" class="table-th">Commission Profile</th>
                                         <th scope="col" class="table-th">From</th>
                                         <th scope="col" class="table-th text-right">Percentage</th>
                                         <th scope="col" class="table-th text-right">Amount</th>
+                                        <th scope="col" class="table-th">Client</th>
+                                        <th scope="col" class="table-th">Policy Start</th>
                                         <th scope="col" class="table-th">Status</th>
                                     </tr>
                                 </thead>
@@ -167,21 +168,14 @@
                                     @forelse ($commissions as $commission)
                                         <tr>
                                             <td class="table-td">
-                                                <input type="checkbox" class="form-checkbox" 
-                                                    value="{{ $commission->id }}"
-                                                    wire:model="selectedCommissions">
+                                                <input type="checkbox" class="form-checkbox"
+                                                    value="{{ $commission->id }}" wire:model="selectedCommissions">
                                             </td>
                                             <td class="table-td">
                                                 {{ $commission->sold_policy?->policy_number ?? 'N/A' }}
                                             </td>
                                             <td class="table-td">
                                                 {{ $commission->sold_policy?->creator?->username ?? 'N/A' }}
-                                            </td>
-                                            <td class="table-td">
-                                                {{ $commission->sold_policy?->client?->full_name ?? $commission->sold_policy?->client?->name ?? 'N/A' }}
-                                            </td>
-                                            <td class="table-td">
-                                                {{ $commission->sold_policy?->start ? \Carbon\Carbon::parse($commission->sold_policy->start)->format('d/m/Y') : 'N/A' }}
                                             </td>
                                             <td class="table-td">
                                                 {{ $commission->comm_profile?->title ?? 'N/A' }}
@@ -196,6 +190,12 @@
                                                 {{ number_format((float) $commission->amount, 2, '.', ',') }}
                                             </td>
                                             <td class="table-td">
+                                                {{ $commission->sold_policy?->start ? \Carbon\Carbon::parse($commission->sold_policy->start)->format('d/m/Y') : 'N/A' }}
+                                            </td>
+                                            <td class="table-td">
+                                                {{ $commission->sold_policy?->client?->full_name ?? ($commission->sold_policy?->client?->name ?? 'N/A') }}
+                                            </td>
+                                            <td class="table-td">
                                                 @php
                                                     $status = $commission->status;
                                                 @endphp
@@ -203,19 +203,23 @@
                                                     <span class="text-slate-500">N/A</span>
                                                 @elseif (str_contains($status, 'not_confirmed'))
                                                     <span class="badge bg-warning-500 text-white h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
                                                     </span>
                                                 @elseif (str_contains($status, 'cancelled'))
                                                     <span class="badge bg-danger-500 text-white h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
                                                     </span>
                                                 @elseif ($status === 'confirmed' || str_contains($status, 'paid'))
                                                     <span class="badge bg-success-500 text-white h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
                                                     </span>
                                                 @else
                                                     <span class="badge bg-primary-500 text-white h-auto">
-                                                        <iconify-icon icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
+                                                        <iconify-icon
+                                                            icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $status)) }}
                                                     </span>
                                                 @endif
                                             </td>
@@ -246,7 +250,8 @@
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white capitalize">
                                 Commission Profiles
                             </h3>
@@ -314,13 +319,15 @@
 
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setProfiles" class="btn inline-flex justify-center text-white bg-black-500">
+                            <button wire:click="setProfiles"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setProfiles">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
                                     wire:loading wire:target="setProfiles"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
-                            <button wire:click="clearProfiles" class="btn inline-flex justify-center btn-outline-dark">
+                            <button wire:click="clearProfiles"
+                                class="btn inline-flex justify-center btn-outline-dark">
                                 Clear
                             </button>
                         </div>
@@ -337,7 +344,8 @@
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white capitalize">
                                 Statuses
                             </h3>
@@ -358,7 +366,8 @@
                             @foreach ($STATUSES as $status)
                                 <div class="checkbox-area">
                                     <label class="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="hidden" value="{{ $status }}" wire:model.defer="Estatuses">
+                                        <input type="checkbox" class="hidden" value="{{ $status }}"
+                                            wire:model.defer="Estatuses">
                                         <span
                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                             <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
@@ -374,13 +383,15 @@
 
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setStatuses" class="btn inline-flex justify-center text-white bg-black-500">
+                            <button wire:click="setStatuses"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setStatuses">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
                                     wire:loading wire:target="setStatuses"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
-                            <button wire:click="clearStatuses" class="btn inline-flex justify-center btn-outline-dark">
+                            <button wire:click="clearStatuses"
+                                class="btn inline-flex justify-center btn-outline-dark">
                                 Clear
                             </button>
                         </div>
@@ -397,7 +408,8 @@
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white capitalize">
                                 Policy Start Range
                             </h3>
@@ -429,13 +441,15 @@
 
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setStartDates" class="btn inline-flex justify-center text-white bg-black-500">
+                            <button wire:click="setStartDates"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setStartDates">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
                                     wire:loading wire:target="setStartDates"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
-                            <button wire:click="clearStartDates" class="btn inline-flex justify-center btn-outline-dark">
+                            <button wire:click="clearStartDates"
+                                class="btn inline-flex justify-center btn-outline-dark">
                                 Clear
                             </button>
                         </div>
@@ -452,7 +466,8 @@
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white capitalize">
                                 Payment Date Range
                             </h3>
@@ -484,13 +499,15 @@
 
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setPaymentDates" class="btn inline-flex justify-center text-white bg-black-500">
+                            <button wire:click="setPaymentDates"
+                                class="btn inline-flex justify-center text-white bg-black-500">
                                 <span wire:loading.remove wire:target="setPaymentDates">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
                                     wire:loading wire:target="setPaymentDates"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
-                            <button wire:click="clearPaymentDates" class="btn inline-flex justify-center btn-outline-dark">
+                            <button wire:click="clearPaymentDates"
+                                class="btn inline-flex justify-center btn-outline-dark">
                                 Clear
                             </button>
                         </div>
@@ -507,7 +524,8 @@
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                     <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
-                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
                             <h3 class="text-xl font-medium text-white capitalize">
                                 Client Payment Date Range
                             </h3>
@@ -558,4 +576,3 @@
         </div>
     @endif
 </div>
-
