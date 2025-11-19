@@ -33,7 +33,7 @@ class MetaController extends Controller
             if(!$challenge){
                 return response()->json(['message' => 'Challenge is required'], 400);
             }
-            return response()->json(['message' => 'Challenge verified', 'challenge' => $challenge]);
+            return response()->json($challenge);
 
         }   catch(\Exception $e){
             Log::error('Error verifying token: ' . $e->getMessage());
