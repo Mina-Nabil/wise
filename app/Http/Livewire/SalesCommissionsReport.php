@@ -198,6 +198,10 @@ class SalesCommissionsReport extends Component
 
     public function generateCommProfilePayment()
     {
+        if(empty($this->selectedCommissions)) {
+            $this->alert('error', 'Please select at least one commission');
+            return;
+        }
         $commissions = SalesComm::whereIn('id', $this->selectedCommissions)->get();
         $commProfileID = $commissions->first()->comm_profile_id;
         foreach ($commissions as $commission) {
