@@ -67,7 +67,7 @@ class RenewalAnalysis
         }
 
         /** @var Collection<int,int> $offerIds */
-        $offerIds = $offersQuery->pluck('id');
+        $offerIds = $offersQuery->pluck('offers.id');
         $totalOffersForExpiring = $offerIds->count();
 
         $newSoldPoliciesFromOffers = 0;
