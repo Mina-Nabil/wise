@@ -25,7 +25,7 @@ class RenewalAnalysis
      *   totalNewSoldPoliciesFromOffers:int
      * }
      */
-    public static function calculate(int $year, int $month, ?int $userId = null): array
+    public static function calculate(int $year, int $month, ?int $commProfileId = null): array
     {
         $start = Carbon::create($year, $month, 1, 0, 0, 0)->startOfMonth();
         $end = (clone $start)->endOfMonth();
@@ -60,8 +60,10 @@ class RenewalAnalysis
             ->whereIn('renewal_policy_id', $expiringPolicyIds->all())
             ->whereNull('deleted_at'); // exclude soft-deleted offers
 
-        if ($userId !== null) {
-            $offersQuery->where('creator_id', $userId);
+        if ($commProfileId !== null) {
+            $offersQuery->join('offer_comm_profiles', 'offer_comm_profiles.offer_id', '=', 'offers.id')
+                ->groupBy('offers.id')
+                ->where('offer_comm_profiles.comm_profile_id', $commProfileId);
         }
 
         /** @var Collection<int,int> $offerIds */
@@ -151,5 +153,3 @@ class RenewalAnalysis
         return round(($num / $den) * 100, 2);
     }
 }
-
-

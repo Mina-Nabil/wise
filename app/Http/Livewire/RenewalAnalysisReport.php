@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Livewire;
 
+use App\Models\Payments\CommProfile;
 use App\Models\Users\User;
 use App\Models\Reports\RenewalAnalysis;
 use Illuminate\Contracts\View\View;
@@ -30,7 +31,7 @@ class RenewalAnalysisReport extends Component
     {
         $this->years = $this->generateYears();
         $this->months = $this->generateMonths();
-        $this->users = $this->loadUsers();
+        $this->users = $this->loadCommProfiles();
     }
 
     public function updatedSelectedYear(): void
@@ -110,11 +111,11 @@ class RenewalAnalysisReport extends Component
     /**
      * @return array<int,array{id:int,name:string}>
      */
-    private function loadUsers(): array
+    private function loadCommProfiles(): array
     {
-        return User::query()
-            ->orderBy('username')
-            ->get(['id', 'username'])
+        return CommProfile::query()
+            ->orderBy('title')
+            ->get(['id', 'title'])
             ->all();
     }
 }
