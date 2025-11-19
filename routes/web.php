@@ -12,6 +12,7 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AppLogController;
+use App\Http\Controllers\MetaController;
 use App\Models\Customers\Customer;
 use App\Models\Users\ContactInfo;
 use Illuminate\Support\Facades\Route;
@@ -158,3 +159,6 @@ Route::get('/contact/generate/{id}', function ($id) {
     $contact = ContactInfo::findOrFail($id);
     return $contact->generateQRCode();
 });
+
+
+Route::post('/leads/webhook', [MetaController::class, 'index']);
