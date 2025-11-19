@@ -26,7 +26,7 @@ class MetaController extends Controller
             if(!$request->has('hub_verify_token')){
                 return response()->json(['message' => 'Token is required'], 400);
             }
-            if($request->token !== env('META_TOKEN')){
+            if($request->hub_verify_token !== env('META_TOKEN')){
                 return response()->json(['message' => 'Invalid token'], 401);
             }
             $challenge = $request->input('hub_challenge');
