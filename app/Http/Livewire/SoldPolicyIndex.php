@@ -8,12 +8,10 @@ use App\models\Insurance\Policy;
 use App\Models\Customers\Customer;
 use App\Models\Corporates\Corporate;
 use App\Models\Offers\OfferOption;
-use App\Models\Users\User;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 use App\Traits\AlertFrontEnd;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 
 class SoldPolicyIndex extends Component

@@ -14,6 +14,11 @@
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+            <button wire:click="generateCommProfilePayment" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
+                <span wire:loading.remove wire:target="generateCommProfilePayment">Generate Comm Profile Payment</span>
+                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                    wire:target="generateCommProfilePayment" icon="line-md:loading-twotone-loop"></iconify-icon>
+            </button>
             <button wire:click="exportReport" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
                 <span wire:loading.remove wire:target="exportReport">Export</span>
                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
@@ -146,6 +151,7 @@
                             <table class="min-w-full divide-y divide-slate-100 table-fixed">
                                 <thead class="bg-slate-50">
                                     <tr>
+                                        <th scope="col" class="table-th w-12"></th>
                                         <th scope="col" class="table-th">Policy #</th>
                                         <th scope="col" class="table-th">Creator</th>
                                         <th scope="col" class="table-th">Client</th>
@@ -160,6 +166,11 @@
                                 <tbody class="bg-white divide-y divide-slate-100">
                                     @forelse ($commissions as $commission)
                                         <tr>
+                                            <td class="table-td">
+                                                <input type="checkbox" class="form-checkbox" 
+                                                    value="{{ $commission->id }}"
+                                                    wire:model="selectedCommissions">
+                                            </td>
                                             <td class="table-td">
                                                 {{ $commission->sold_policy?->policy_number ?? 'N/A' }}
                                             </td>
@@ -211,7 +222,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="9" class="table-td text-center">
+                                            <td colspan="10" class="table-td text-center">
                                                 No sales commissions found for the selected filters.
                                             </td>
                                         </tr>

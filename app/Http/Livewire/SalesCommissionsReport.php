@@ -4,18 +4,22 @@ namespace App\Http\Livewire;
 
 use App\Models\Payments\CommProfile;
 use App\Models\Payments\SalesComm;
+use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Session as FacadesSession;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class SalesCommissionsReport extends Component
 {
     use WithPagination;
     use ToggleSectionLivewire;
     use AuthorizesRequests;
+    use AlertFrontEnd;
 
     public $commProfilesSection = false;
     public $profileIds = [];
@@ -43,6 +47,8 @@ class SalesCommissionsReport extends Component
     public $client_payment_date_to;
     public $Eclient_payment_date_from;
     public $Eclient_payment_date_to;
+
+    public $selectedCommissions = [];
 
     protected $paginationTheme = 'bootstrap';
 
@@ -190,6 +196,26 @@ class SalesCommissionsReport extends Component
         );
     }
 
+    public function generateCommProfilePayment()
+    {
+        $commissions = SalesComm::whereIn('id', $this->selectedCommissions)->get();
+        $commProfileID = $commissions->first()->comm_profile_id;
+        foreach ($commissions as $commission) {
+            if ($commission->comm_profile_id !== $commProfileID) {
+                $this->alert('error', 'All commissions must be for the same comm profile');
+                return;
+            }
+        }
+        $commProfile = CommProfile::find($commProfileID);
+        if (!$commProfile) {
+            $this->alert('error', 'Comm profile not found');
+            return;
+        }
+        FacadesSession::put('commissions', $commissions);
+        $this->redirect(route('comm.profile.show', $commProfileID));
+        return;
+    }
+
     public function render()
     {
         $STATUSES = SalesComm::PYMT_STATES;
@@ -211,11 +237,11 @@ class SalesCommissionsReport extends Component
             : collect();
         $commProfiles = $this->commProfilesSection
             ? CommProfile::select('id', 'title')
-                ->when($this->EprofileIds, fn($q) => $q->whereNotIn('id', $this->EprofileIds))
-                ->when($this->searchProfile, fn($q) => $q->where('title', 'like', '%' . $this->searchProfile . '%'))
-                ->orderBy('title')
-                ->take(10)
-                ->get()
+            ->when($this->EprofileIds, fn($q) => $q->whereNotIn('id', $this->EprofileIds))
+            ->when($this->searchProfile, fn($q) => $q->where('title', 'like', '%' . $this->searchProfile . '%'))
+            ->orderBy('title')
+            ->take(10)
+            ->get()
             : collect();
 
         return view('livewire.sales-commissions-report', [
@@ -252,5 +278,3 @@ class SalesCommissionsReport extends Component
         return $value instanceof Carbon ? $value : Carbon::parse($value);
     }
 }
-
-

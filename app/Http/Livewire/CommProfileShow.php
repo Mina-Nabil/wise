@@ -30,6 +30,7 @@ use App\Models\Business\SoldPolicy;
 use App\Models\Payments\PolicyComm;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 use function Clue\StreamFilter\fun;
 
@@ -1215,6 +1216,14 @@ class CommProfileShow extends Component
     public function mount($id)
     {
         $this->profile = CommProfile::with('sales_comm', 'sales_comm.sold_policy', 'sales_comm.sold_policy.policy', 'sales_comm.sold_policy.policy.company')->find($id);
+        if (Session::has('commissions')) {
+            foreach (Session::get('commissions') as $commission) {
+                $this->addToInvoice($commission->id);
+            }
+            $this->openNewPymtSection();
+            Session::forget('commissions');
+            $this->alert('success', 'Commissions loaded!');
+        }
     }
 
     public function render()
