@@ -161,4 +161,4 @@ Route::get('/contact/generate/{id}', function ($id) {
 });
 
 
-Route::post('/leads/webhook', [MetaController::class, 'index']);
+Route::get('/leads/webhook', [MetaController::class, 'index']);
