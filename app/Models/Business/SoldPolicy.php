@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class SoldPolicy extends Model
@@ -1397,31 +1398,185 @@ class SoldPolicy extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
 
-        $i = 2;
         /** @var User */
         $user = Auth::user();
-        if ($user->can('viewCommission', self::class)) {
-            $activeSheet->getCell('I1')->setValue("Expected Comm.");
-            $activeSheet->getCell('J1')->setValue("Collected Comm.");
+        $canReview = $user->can('review', self::class);
+        $canViewCommission = $user->can('viewCommission', self::class);
+
+        // Set up header row using column index
+        $colIndex = 1; // Start at column A (index 1)
+        if ($canReview) {
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("REVIEW");
+            $colIndex++;
         }
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("POLICY COMPANY");
+        $colIndex++;
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("POLICY NAME");
+        $colIndex++;
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("START");
+        $colIndex++;
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("END");
+        $colIndex++;
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("PYMT");
+        $colIndex++;
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("NUMBER");
+        $colIndex++;
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("CLIENT NAME");
+        $colIndex++;
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("NET PREM.");
+        $colIndex++;
+        if ($canViewCommission) {
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("SalesOut");
+            $colIndex++;
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("SalesOut Paid");
+            $colIndex++;
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("SalesOut Paid Date");
+            $colIndex++;
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("Expected");
+            $colIndex++;
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("Invoice");
+            $colIndex++;
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("Collected");
+            $colIndex++;
+        }
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $activeSheet->getCell($colLetter . '1')->setValue("STATUS");
+
+        $i = 2;
         foreach ($policies as $policy) {
-            $activeSheet->getCell('A' . $i)->setValue($policy->policy->company->name);
-            $activeSheet->getCell('B' . $i)->setValue($policy->policy->name);
-            $activeSheet->getCell('C' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
-            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
-            $activeSheet->getCell('E' . $i)->setValue($policy->policy_number);
-            $activeSheet->getCell('F' . $i)->setValue($policy->client?->name);
-            $activeSheet->getCell('G' . $i)->setValue($policy->is_valid ? "Valid" : '');
-            $activeSheet->getCell('H' . $i)->setValue($policy->is_paid ? 'Paid' : '');
-            if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('I' . $i)->setValue($policy->total_policy_comm);
-                $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
-                // $activeSheet->getCell('I' . $i)->setValue($policy->after_tax_comm);
-                // $activeSheet->getCell('J' . $i)->setValue($policy->total_policy_comm);
-                // $activeSheet->getCell('K' . $i)->setValue($policy->total_comp_paid);
-                // $activeSheet->getCell('L' . $i)->setValue($policy->total_comp_paid - $policy->tax_amount);
-                // $activeSheet->getCell('M' . $i)->setValue(($policy->after_tax_comm - $policy->tax_amount) - ($policy->total_comp_paid - $policy->tax_amount));
+            $colIndex = 1; // Start at column A (index 1)
+            
+            // REVIEW column (if can review)
+            if ($canReview) {
+                $reviewStatus = $policy->is_reviewed ? "Reviewed" : "Not Reviewed";
+                $validDataStatus = $policy->is_valid_data ? "Valid Data" : "Invalid Data";
+                $reviewText = $reviewStatus . " / " . $validDataStatus;
+                if ($policy->review_comment) {
+                    $reviewText .= " / " . $policy->review_comment;
+                }
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue($reviewText);
+                $colIndex++;
             }
+
+            // POLICY Company
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue($policy->policy->company->name);
+            $colIndex++;
+            
+            // POLICY Name
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue($policy->policy->name);
+            $colIndex++;
+            
+            // START
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
+            $colIndex++;
+            
+            // END
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
+            $colIndex++;
+            
+            // PYMT (client_payment_date)
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue($policy->client_payment_date ? Carbon::parse($policy->client_payment_date)->format('d-m-Y') : '');
+            $colIndex++;
+            
+            // NUMBER (policy_number)
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue($policy->policy_number);
+            $colIndex++;
+            
+            // CLIENT NAME
+            $clientName = '';
+            if ($policy->client_type === 'customer') {
+                $clientName = trim(($policy->client?->first_name ?? '') . ' ' . ($policy->client?->middle_name ?? '') . ' ' . ($policy->client?->last_name ?? ''));
+            } elseif ($policy->client_type === 'corporate') {
+                $clientName = $policy->client?->name ?? '';
+            }
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue($clientName);
+            $colIndex++;
+            
+            // NET PREM.
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue($policy->net_premium);
+            $colIndex++;
+            
+            // Commission columns (if can viewCommission)
+            if ($canViewCommission) {
+                // SalesOut
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue($policy->sales_out_comm ?? 0);
+                $colIndex++;
+                
+                // SalesOut Paid
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue($policy->sales_out_comm_paid ?? 0);
+                $colIndex++;
+                
+                // SalesOut Paid Date
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue($policy->sales_out_comm_paid_date ?? '');
+                $colIndex++;
+                
+                // Expected (total_policy_comm)
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue($policy->total_policy_comm ?? 0);
+                $colIndex++;
+                
+                // Invoice (invoiced_amount)
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue($policy->invoiced_amount ?? 0);
+                $colIndex++;
+                
+                // Collected (total_comp_paid + tax_amount)
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue(($policy->total_comp_paid ?? 0) + ($policy->tax_amount ?? 0));
+                $colIndex++;
+            }
+            
+            // STATUS (combine all status flags)
+            $statuses = [];
+            if ($policy->is_valid) {
+                $statuses[] = "Validated";
+            }
+            if ($policy->is_paid) {
+                $statuses[] = "Paid";
+            }
+            if ($policy->is_renewal) {
+                $statuses[] = "Renewal";
+            }
+            if ($policy->is_penalized) {
+                $statuses[] = "Penalty";
+            }
+            if ($policy->cancellation_time) {
+                $statuses[] = "Cancelled on: " . Carbon::parse($policy->cancellation_time)->format('D d/m/Y');
+            }
+            if ($policy->client?->is_welcomed) {
+                $statuses[] = "Welcomed";
+            } else {
+                $statuses[] = "Not Welcomed";
+            }
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . $i)->setValue(implode(' / ', $statuses));
 
             $i++;
         }
