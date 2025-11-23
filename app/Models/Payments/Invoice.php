@@ -247,36 +247,7 @@ class Invoice extends Model
 
     public static function exportReport(?Carbon $created_from = null, ?Carbon $created_to = null, array $company_ids = [], ?string $searchText = null, ?bool $is_paid = null)
     {
-        $invoicesQuery = self::with(['creator', 'commissions', 'company'])
-            ->when($created_from, function ($query) use ($created_from) {
-                $query->whereDate('created_at', '>=', $created_from);
-            })
-            ->when($created_to, function ($query) use ($created_to) {
-                $query->whereDate('created_at', '<=', $created_to);
-            })
-            ->when($company_ids, function ($query) use ($company_ids) {
-                $query->whereIn('company_id', $company_ids);
-            })
-            ->when($is_paid, function ($query) use ($is_paid) {
-                $query->whereHas('commissions', function ($q) use ($is_paid) {
-                    $q->where('status', CompanyCommPayment::PYMT_STATE_PAID);
-                });
-            })
-            ->when($is_paid === false, function ($query) use ($is_paid) {
-                $query->whereHas('commissions', function ($q) use ($is_paid) {
-                    $q->whereNot('status', CompanyCommPayment::PYMT_STATE_PAID);
-                });
-            })
-            ->when($searchText, function ($query) use ($searchText) {
-                $query->where(function ($q) use ($searchText) {
-                    $q->where('serial', 'like', "%{$searchText}%")
-                        ->orWhereHas('creator', function ($q) use ($searchText) {
-                            $q->where('first_name', 'like', "%{$searchText}%")
-                                ->orWhere('last_name', 'like', "%{$searchText}%");
-                        });
-                });
-            })
-            ->latest();
+        $invoicesQuery = self::report($created_from, $created_to, $company_ids, $searchText, $is_paid);
 
         $invoices = $invoicesQuery->get();
 
@@ -358,6 +329,41 @@ class Invoice extends Model
             return $this->commissions()->first()->payment_date ? Carbon::parse($this->commissions()->first()->payment_date)->format('d-M-y') : null;
         }
         return null;
+    }
+
+    ////scopes
+    public function scopeReport(Builder $query, ?Carbon $created_from = null, ?Carbon $created_to = null, array $company_ids = [], ?string $searchText = null, ?bool $is_paid = null)
+    {
+        return $query->with(['creator', 'commissions', 'company'])
+        ->when($created_from, function ($query) use ($created_from) {
+            $query->whereDate('created_at', '>=', $created_from);
+        })
+        ->when($created_to, function ($query) use ($created_to) {
+            $query->whereDate('created_at', '<=', $created_to);
+        })
+        ->when($company_ids, function ($query) use ($company_ids) {
+            $query->whereIn('company_id', $company_ids);
+        })
+        ->when($is_paid, function ($query) use ($is_paid) {
+            $query->whereHas('commissions', function ($q) use ($is_paid) {
+                $q->where('status', CompanyCommPayment::PYMT_STATE_PAID);
+            });
+        })
+        ->when($is_paid === false, function ($query) use ($is_paid) {
+            $query->whereHas('commissions', function ($q) use ($is_paid) {
+                $q->whereNot('status', CompanyCommPayment::PYMT_STATE_PAID);
+            });
+        })
+        ->when($searchText, function ($query) use ($searchText) {
+            $query->where(function ($q) use ($searchText) {
+                $q->where('serial', 'like', "%{$searchText}%")
+                    ->orWhereHas('creator', function ($q) use ($searchText) {
+                        $q->where('first_name', 'like', "%{$searchText}%")
+                            ->orWhere('last_name', 'like', "%{$searchText}%");
+                    });
+            });
+        })
+        ->latest();
     }
 
     ////relations

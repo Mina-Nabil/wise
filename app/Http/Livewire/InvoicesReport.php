@@ -144,25 +144,7 @@ class InvoicesReport extends Component
 
     public function render()
     {
-        $invoicesQuery = Invoice::with(['creator', 'commissions', 'company'])
-            ->when($this->created_from, function ($query) {
-                $query->whereDate('created_at', '>=', $this->created_from);
-            })
-            ->when($this->created_to, function ($query) {
-                $query->whereDate('created_at', '<=', $this->created_to);
-            })
-            ->when($this->company_ids, function ($query) {
-                $query->whereIn('company_id', $this->company_ids);
-            })
-            ->when($this->searchText, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('serial', 'like', "%{$this->searchText}%")
-                        ->orWhereHas('creator', function ($q) {
-                            $q->where('first_name', 'like', "%{$this->searchText}%")
-                                ->orWhere('last_name', 'like', "%{$this->searchText}%");
-                        });
-                });
-            })
+        $invoicesQuery = Invoice::report($this->created_from, $this->created_to, $this->company_ids, $this->searchText, $this->togglePaid)
             ->when($this->sortColumn, function ($query) {
                 $query->orderBy($this->sortColumn, $this->sortDirection);
             }, function ($query) {
