@@ -94,6 +94,11 @@ class SalesCommissionsReport extends Component
         }
     }
 
+    public function removeProfile(int $id): void
+    {
+        $this->EprofileIds = array_diff($this->EprofileIds, [$id]);
+    }   
+
     public function toggleStatuses(): void
     {
         $this->toggle($this->statusesSection);
