@@ -259,8 +259,8 @@ class OutstandingSoldPolicyIndex extends Component
     public function mount()
     {
         $this->authorize('viewReports', SoldPolicy::class);
-        $this->payment_from = Carbon::now()->startOfMonth();
-        $this->payment_to = Carbon::now()->endOfMonth();
+        $this->start_from = Carbon::now()->startOfMonth();
+        $this->start_to = Carbon::now()->endOfMonth();
         $this->statuses = ClientPayment::NOT_CANCELLED_STATES;
     }
 
