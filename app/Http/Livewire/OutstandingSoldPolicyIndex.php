@@ -272,7 +272,7 @@ class OutstandingSoldPolicyIndex extends Component
             $client_outstanding = true;
             $commission_outstanding = false;
             $invoice_outstanding = false;
-            $this->statuses = ClientPayment::NOT_CANCELLED_STATES;
+            // $this->statuses = ClientPayment::NOT_CANCELLED_STATES;
         } elseif ($this->outstandingType === 'commission') {
             $client_outstanding = false;
             $commission_outstanding = true;
