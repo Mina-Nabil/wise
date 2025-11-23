@@ -137,7 +137,8 @@ class InvoicesReport extends Component
             $this->created_from,
             $this->created_to,
             $this->company_ids,
-            $this->searchText
+            $this->searchText,
+            $this->togglePaid
         );
     }
 
