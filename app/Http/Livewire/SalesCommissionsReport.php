@@ -224,7 +224,7 @@ class SalesCommissionsReport extends Component
     {
         $STATUSES = SalesComm::PYMT_STATES;
 
-        $commissions = SalesComm::report(
+        $commissionsQuery = SalesComm::report(
             $this->selectedProfileIds(),
             $this->asCarbon($this->start_from),
             $this->asCarbon($this->start_to),
@@ -233,7 +233,9 @@ class SalesCommissionsReport extends Component
             $this->statuses,
             $this->asCarbon($this->client_payment_date_from),
             $this->asCarbon($this->client_payment_date_to)
-        )->paginate(50);
+        );
+        $totalCommissions = $commissionsQuery->clone()->get()->sum('amount');
+        $commissions = $commissionsQuery->paginate(50);
 
         $selectedProfiles = $this->selectedProfiles();
         $modalSelectedProfiles = $this->commProfilesSection
@@ -251,6 +253,7 @@ class SalesCommissionsReport extends Component
         return view('livewire.sales-commissions-report', [
             'STATUSES' => $STATUSES,
             'commissions' => $commissions,
+            'totalCommissions' => $totalCommissions,
             'selectedProfiles' => $selectedProfiles,
             'modalSelectedProfiles' => $modalSelectedProfiles,
             'commProfiles' => $commProfiles,
