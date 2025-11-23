@@ -40,12 +40,12 @@ class AccountShow extends Component
 
     public function downloadJournalEntries()
     {
-        $res = Account::downloadAccountDetails(Carbon::parse($this->fromDate), Carbon::parse($this->toDate));
+        $res = Account::findOrFail($this->accountId)->downloadAccountDetails(Carbon::parse($this->fromDate), Carbon::parse($this->toDate));
         if ($res) {
-            $this->alert('success', 'Journal entries downloaded!');
+            $this->alert('success', 'Account details downloaded!');
             return $res;
         } else {
-            $this->alert('failed', 'server error');
+            $this->alert('failed', 'Failed to download account details');
         }
     }
 
