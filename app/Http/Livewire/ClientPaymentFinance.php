@@ -19,6 +19,7 @@ class ClientPaymentFinance extends Component
     public $selectedCompany = null;
     public $isDuePassed = false;
     public $dueDays;
+    public $searchConfiguration;
     public $myPayments = false;
     public $searchText;
 
