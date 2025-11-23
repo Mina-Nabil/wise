@@ -11,6 +11,7 @@ use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Log;
 
 class OutstandingSoldPolicyIndex extends Component
 {
@@ -314,6 +315,7 @@ class OutstandingSoldPolicyIndex extends Component
             $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('total_policy_comm');
             $totalTitle = 'Total Comm Gross: ';
         }
+        Log::info($soldPoliciesQuery->toSql());
         $soldPolicies = $soldPoliciesQuery->simplePaginate(10);
 
         return view('livewire.outstanding-sold-policy-index', [
