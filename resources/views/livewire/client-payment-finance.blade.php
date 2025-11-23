@@ -80,6 +80,8 @@
 
         <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model="searchText"
             placeholder="Search by policy number">
+        <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model="searchConfiguration"
+            placeholder="Search by configuration title">
         <input class="form-control py-2 w-auto ml-5" style="width:100px" type="number" wire:model="dueDays"
             placeholder="Days">
 

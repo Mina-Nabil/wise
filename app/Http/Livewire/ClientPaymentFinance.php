@@ -105,10 +105,10 @@ class ClientPaymentFinance extends Component
         $this->authorize('viewReports', SoldPolicy::class);
         $statuses = ClientPayment::PYMT_STATES;
         $companies = Company::all();
-        $payments = ClientPayment::userData(states: $this->filteredStatus, searchText: $this->searchText)->includeDue()
+        $payments = ClientPayment::userData(states: $this->filteredStatus, searchText: $this->searchText)->includeDue($this->searchConfiguration)
             ->when($this->selectedCompany, fn($q) => $q->byCompany($this->selectedCompany->id))
             ->when($this->dueDays && !$this->isDuePassed, fn($q) => $q->dueAfter($this->dueDays))
-            ->when($this->dueDays && $this->isDuePassed, fn($q) => $q->duePassed($this->dueDays))
+            ->when($this->dueDays && $this->isDuePassed, fn($q) => $q->duePassed($this->dueDay))
             ->when($this->sortColomn === 'due' , fn($q) => $q->SortByDue(sort:$this->sortDirection))
             ->when($this->sortColomn === 'start' , fn($q) => $q->SortByPolicyStart(sort:$this->sortDirection))
             // ->sortByDue()
