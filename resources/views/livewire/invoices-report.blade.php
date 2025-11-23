@@ -67,7 +67,7 @@
                 </div>
 
                 <!-- Search -->
-                <div class="filter-group col-span-2">
+                <div class="filter-group col-span-3">
                     <input type="text" class="form-control" placeholder="Search by serial or creator..." wire:model="searchText">
                 </div>
             </div>
