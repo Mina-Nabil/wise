@@ -1891,7 +1891,7 @@ class SoldPolicy extends Model
             $q->whereRaw("total_comp_paid < (after_tax_comm - 1)")->only2025();
         });
         $query->when($is_client_outstanding, function ($q) {
-            $q->whereRaw("total_client_paid < (gross_premium - 1)")->fromOct2024();
+            $q->whereRaw("total_client_paid < gross_premium")->fromOct2024();
         });
 
         $query->when($is_invoice_outstanding, function ($q) {
