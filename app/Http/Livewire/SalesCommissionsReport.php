@@ -207,11 +207,13 @@ class SalesCommissionsReport extends Component
             $this->alert('error', 'Please select at least one commission');
             return;
         }
-        $commissions = SalesComm::whereIn('id', $this->selectedCommissions)->get();
+        $commissions = SalesComm::whereIn('sales_comms.id', $this->selectedCommissions)->get();
         $commProfileID = $commissions->first()->comm_profile_id;
         foreach ($commissions as $commission) {
             if ($commission->comm_profile_id !== $commProfileID) {
-                $this->alert('error', 'All commissions must be for the same comm profile');
+                $commProfile1 = CommProfile::findOrFail('id', $commission->comm_profile_id);
+                $commProfile2 = CommProfile::findOrFail('id', $commProfileID);
+                $this->alert('error', 'All commissions must be for the same comm profile, found ' . $commProfile1->title . ' and ' . $commProfile2->title);
                 return;
             }
         }
