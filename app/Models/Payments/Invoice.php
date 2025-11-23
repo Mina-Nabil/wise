@@ -245,7 +245,7 @@ class Invoice extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function exportReport(?Carbon $created_from = null, ?Carbon $created_to = null, array $company_ids = [], ?string $searchText = null)
+    public static function exportReport(?Carbon $created_from = null, ?Carbon $created_to = null, array $company_ids = [], ?string $searchText = null, ?bool $is_paid = null)
     {
         $invoicesQuery = self::with(['creator', 'commissions', 'company'])
             ->when($created_from, function ($query) use ($created_from) {
@@ -256,6 +256,16 @@ class Invoice extends Model
             })
             ->when($company_ids, function ($query) use ($company_ids) {
                 $query->whereIn('company_id', $company_ids);
+            })
+            ->when($is_paid, function ($query) use ($is_paid) {
+                $query->whereHas('commissions', function ($q) use ($is_paid) {
+                    $q->where('status', CompanyCommPayment::PYMT_STATE_PAID);
+                });
+            })
+            ->when($is_paid === false, function ($query) use ($is_paid) {
+                $query->whereHas('commissions', function ($q) use ($is_paid) {
+                    $q->whereNot('status', CompanyCommPayment::PYMT_STATE_PAID);
+                });
             })
             ->when($searchText, function ($query) use ($searchText) {
                 $query->where(function ($q) use ($searchText) {

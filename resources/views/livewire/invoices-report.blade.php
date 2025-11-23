@@ -19,7 +19,7 @@
 
     <div class="card p-6">
         <div class="card-body px-6 pb-6">
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div class="grid grid-cols-3 sm:grid-cols-3 gap-3">
                 <!-- Creation Date Filter -->
                 <div class="filter-group">
                     <button wire:click="toggleCreatedDate" type="button" class="btn btn-dark flex items-center justify-between w-full">
@@ -46,6 +46,23 @@
                             @endif
                         </span>
                         <iconify-icon class="text-xl ml-2" icon="heroicons-outline:office-building"></iconify-icon>
+                    </button>
+                </div>
+
+                <!-- Company Filter -->
+                <div class="filter-group">
+                    <button wire:click="togglePaid" type="button" class="btn btn-dark flex items-center justify-between w-full">
+                        <span class="truncate">
+                            <span class="font-bold">Is Paid?</span>
+                            @if($togglePaid === null)
+                                 All
+                            @elseif($togglePaid)
+                                Yes
+                            @else
+                                No
+                            @endif
+                        </span>
+                        <iconify-icon class="text-xl ml-2" icon="heroicons-outline:check-circle"></iconify-icon>
                     </button>
                 </div>
 

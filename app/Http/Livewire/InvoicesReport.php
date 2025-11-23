@@ -33,6 +33,8 @@ class InvoicesReport extends Component
     public $companies;
     public $searchCompany;
 
+    public $togglePaid = null;
+
     public function sortByColumn($column)
     {
         if ($this->sortColumn === $column) {
@@ -95,6 +97,21 @@ class InvoicesReport extends Component
             $this->searchCompany,
             fn($q) => $q->SearchBy($this->searchCompany)
         )->get()->take(5);
+    }
+
+    public function togglePaid()
+    {
+        switch ($this->togglePaid) {
+            case null:
+                $this->togglePaid = true;
+                break;
+            case true:
+                $this->togglePaid = false;
+                break;
+            case false:
+                $this->togglePaid = null;
+                break;
+        }
     }
 
     public function updatingSearchText()
