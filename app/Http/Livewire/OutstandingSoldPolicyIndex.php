@@ -260,6 +260,7 @@ class OutstandingSoldPolicyIndex extends Component
         $this->authorize('viewReports', SoldPolicy::class);
         $this->payment_from = Carbon::now()->startOfMonth();
         $this->payment_to = Carbon::now()->endOfMonth();
+        $this->statuses = ClientPayment::NOT_CANCELLED_STATES;
     }
 
     public function render()
@@ -272,7 +273,6 @@ class OutstandingSoldPolicyIndex extends Component
             $client_outstanding = true;
             $commission_outstanding = false;
             $invoice_outstanding = false;
-            $this->statuses = count($this->statuses) == 0 ? ClientPayment::NOT_CANCELLED_STATES : $this->statuses;
         } elseif ($this->outstandingType === 'commission') {
             $client_outstanding = false;
             $commission_outstanding = true;
