@@ -3,7 +3,7 @@
         <div class="flex justify-between flex-wrap items-center">
             <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
                 <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-                    Outstanding Sold Policies -- Total: {{ number_format($totalSoldPolicies, 2) }}
+                    Outstanding Sold Policies -- {{ $totalTitle }} {{ number_format($totalSoldPolicies, 2) }}
                 </h4>
             </div>
             {{-- @can('viewCommission', App\Models\Business\SoldPolicy::class)
