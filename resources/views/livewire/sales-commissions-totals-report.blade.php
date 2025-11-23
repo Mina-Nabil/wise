@@ -136,7 +136,7 @@
                                         <th scope="col" class="table-th text-right">Total Amount</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-slate-100">
+                                <tbody class="bg-white divide-y divide-slate-100 hover:bg-slate-50">
                                     @forelse ($totals as $row)
                                         <tr>
                                             <td class="table-td">
