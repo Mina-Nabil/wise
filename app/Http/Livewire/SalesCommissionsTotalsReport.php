@@ -51,6 +51,10 @@ class SalesCommissionsTotalsReport extends Component
     public function mount(): void
     {
         $this->authorize('viewAny', SalesComm::class);
+        $this->statuses= [
+            SalesComm::PYMT_STATE_NOT_CONFIRMED,
+            SalesComm::PYMT_STATE_CONFIRMED,
+        ];
     }
 
     public function updating($name, $value): void
