@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CommProfile extends Model
@@ -127,10 +128,23 @@ class CommProfile extends Model
 
         $i = 3;
 
-        $activeSheet->getCell('N1')->setValue('Total Policy Comm');
-        $activeSheet->getCell('O1')->setValue('After Tax Comm');
-        $activeSheet->getCell('P1')->setValue('Sales Out Comm');
-        $activeSheet->getCell('Q1')->setValue('Total Comm Subtractions After Penalty');
+        $activeSheet->getCell('N1')->setValue('Policy');
+        $activeSheet->getCell('O1')->setValue('Total Policy Comm');
+        $activeSheet->getCell('P1')->setValue('After Tax Comm');
+        $activeSheet->getCell('Q1')->setValue('Sales Out Comm');
+        $activeSheet->getCell('R1')->setValue('Total Comm Subtractions After Penalty');
+
+        // Apply consistent header styling: black background with white text
+        $headerStyle = [
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF000000'], // Black background
+            ],
+            'font' => [
+                'color' => ['argb' => 'FFFFFFFF'], // White text
+            ],
+        ];
+        $activeSheet->getStyle('A1:R1')->applyFromArray($headerStyle);
 
         foreach ($comms as $comm) {
             $clientPayment = $comm->sold_policy->client_payments->first();
@@ -148,7 +162,7 @@ class CommProfile extends Model
             $activeSheet->getCell('J' . $i)->setValue($comm->sold_policy->insured_value);
             $activeSheet->getCell('L' . $i)->setValue($comm->sold_policy->customer_car?->car?->car_model?->brand?->name . ' - ' . $comm->sold_policy->customer_car?->car?->car_model?->name);
             $activeSheet->getCell('M' . $i)->setValue($comm->status);
-
+            $activeSheet->getCell('N' . $i)->setValue($comm->sold_policy->policy->company->name . ' - ' . $comm->sold_policy->policy->name);
             $activeSheet->getCell('N' . $i)->setValue($comm->sold_policy->total_policy_comm);
             $activeSheet->getCell('O' . $i)->setValue($comm->sold_policy->total_policy_comm * .95);
             $activeSheet->getCell('P' . $i)->setValue($comm->sold_policy->sales_out_comm);
