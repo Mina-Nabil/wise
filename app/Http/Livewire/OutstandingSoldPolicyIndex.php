@@ -321,7 +321,8 @@ class OutstandingSoldPolicyIndex extends Component
             'companies' =>  Company::when($this->searchCompany, function ($query) {
                 return $query->where('name', 'like', '%' . $this->searchCompany . '%');
             })->get(),
-            'STATUSES' => ClientPayment::PYMT_STATES
+            'STATUSES' => ClientPayment::PYMT_STATES,
+            'totalTitle' => $totalTitle
         ]);
     }
 }
