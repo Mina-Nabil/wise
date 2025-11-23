@@ -136,9 +136,9 @@
                                         <th scope="col" class="table-th text-right">Total Amount</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-slate-100 hover:bg-slate-50">
+                                <tbody class="bg-white divide-y divide-slate-100 ">
                                     @forelse ($totals as $row)
-                                        <tr>
+                                        <tr class="hover:bg-slate-50">
                                             <td class="table-td">
                                                 {{ $row->profile_title ?? 'N/A' }}
                                             </td>
