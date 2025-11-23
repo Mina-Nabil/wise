@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Account extends Model
@@ -231,39 +233,60 @@ class Account extends Model
     }
 
     ////model functions
-    public function downloadAccountDetails(Carbon $from, Carbon $to)
+    public function downloadAccountDetails(Carbon $from, Carbon $to, $search = null)
     {
-        $debit_entries = $this->debit_entries()->with('entry_title')->between($from, $to)->get();
-        $credit_entries = $this->credit_entries()->with('entry_title')->between($from, $to)->get();
-        $all_entries = $debit_entries->merge($credit_entries);
-        $template = IOFactory::load(resource_path('import/accounting_sheets.xlsx'));
-        if (!$template) {
-            throw new Exception('Failed to read template file');
+        // Get entries using the same method as the view
+        $entries = self::getEntries($this->id, $from, $to, $search);
+
+        // Create new spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $activeSheet = $spreadsheet->getActiveSheet();
+
+        // Set worksheet title
+        $activeSheet->setTitle('Account Details');
+
+        // Set headers matching the table columns
+        $activeSheet->setCellValue('A1', '#');
+        $activeSheet->setCellValue('B1', 'Date');
+        $activeSheet->setCellValue('C1', 'Title');
+        $activeSheet->setCellValue('D1', 'Comment');
+        $activeSheet->setCellValue('E1', 'Debit');
+        $activeSheet->setCellValue('F1', 'Credit');
+        $activeSheet->setCellValue('G1', 'Balance');
+        $activeSheet->setCellValue('H1', 'Debit $');
+        $activeSheet->setCellValue('I1', 'Credit $');
+        $activeSheet->setCellValue('J1', 'Balance $');
+        $activeSheet->setCellValue('K1', 'Creator');
+
+        // Style headers
+        $activeSheet->getStyle('A1:K1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:K1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:K1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+
+        // Fill data rows
+        $row = 2;
+        foreach ($entries as $entry) {
+            $activeSheet->setCellValue('A' . $row, $entry->id);
+            $activeSheet->setCellValue('B' . $row, $entry->created_at->format('d/m/Y'));
+            $activeSheet->setCellValue('C' . $row, $entry->name);
+            $activeSheet->setCellValue('D' . $row, $entry->cash_title);
+            $activeSheet->setCellValue('E' . $row, number_format($entry->debit_amount, 2));
+            $activeSheet->setCellValue('F' . $row, number_format($entry->credit_amount, 2));
+            $activeSheet->setCellValue('G' . $row, number_format($entry->account_balance, 2));
+            $activeSheet->setCellValue('H' . $row, number_format($entry->debit_foreign_amount, 2));
+            $activeSheet->setCellValue('I' . $row, number_format($entry->credit_foreign_amount, 2));
+            $activeSheet->setCellValue('J' . $row, number_format($entry->account_foreign_balance, 2));
+            $activeSheet->setCellValue('K' . $row, $entry->username);
+            $row++;
         }
-        $newFile = $template->copy();
-        $activeSheet = $newFile->getSheet(0);
 
-        $activeSheet->getCell('C3')->setValue('تحليلى	' . $this->name);
-
-        $i = 8;
-        foreach ($all_entries as $e) {
-            $activeSheet->getCell('C' . $i)->setValue($e->id);
-            $activeSheet->getCell('D' . $i)->setValue(Carbon::parse($e->created_at)->format('d / M / Y'));
-
-            $activeSheet->getCell('E' . $i)->setValue($e->entry_title->name);
-
-            if ($e->debit_id) {
-                $activeSheet->getCell('E' . $i)->setValue($e->amount);
-                $activeSheet->getCell('H' . $i)->setValue($e->debit_balance);
-            } else {
-                $activeSheet->getCell('F' . $i)->setValue($e->amount);
-                $activeSheet->getCell('H' . $i)->setValue($e->credit_balance);
-            }
-            $activeSheet->insertNewRowBefore($i);
+        // Auto-size columns
+        foreach (range('A', 'K') as $col) {
+            $activeSheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        $writer = new Xlsx($newFile);
-        $file_path = SoldPolicy::FILES_DIRECTORY . 'account_balance.xlsx';
+        $writer = new Xlsx($spreadsheet);
+        $file_path = SoldPolicy::FILES_DIRECTORY . 'account_details.xlsx';
         $public_file_path = storage_path($file_path);
         $writer->save($public_file_path);
 

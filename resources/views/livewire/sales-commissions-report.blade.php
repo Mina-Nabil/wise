@@ -273,6 +273,11 @@
                                 @foreach ($modalSelectedProfiles as $profile)
                                     <span class="badge bg-slate-900 text-white capitalize rounded-3xl">
                                         {{ $profile->title }}
+                                        <button wire:click="removeProfile({{ $profile->id }})"
+                                            class="btn inline-flex justify-center btn-danger light">
+                                            <iconify-icon icon="material-symbols:close" width="1.2em"
+                                                height="1.2em"></iconify-icon>
+                                        </button>
                                     </span>
                                 @endforeach
                             </div>
