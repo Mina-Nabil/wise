@@ -306,7 +306,7 @@ class OutstandingSoldPolicyIndex extends Component
         $totalTitle = 'Total: ';
         if($this->hasInvoiceFilter) {
             //$policy->after_tax_comm / 0.95) - ($policy->total_comp_paid / 0.95
-            $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('after_tax_comm') / 0.95 - $soldPoliciesQuery->clone()->get()->sum('total_comp_paid') / 0.95;
+            $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('after_tax_comm') - $soldPoliciesQuery->clone()->get()->sum('total_comp_paid');
             $totalTitle = 'Total Diff: ';
         } else if ($client_outstanding) {
             $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('left_to_pay');
