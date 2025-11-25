@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -57,6 +58,11 @@ class Campaign extends Model
     public function followups(): HasMany
     {
         return $this->hasMany(Followup::class);
+    }
+
+    public function handler(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'handler');
     }
 
     /**

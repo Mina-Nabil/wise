@@ -209,11 +209,15 @@ class SalesCommissionsReport extends Component
         }
         $commissions = SalesComm::whereIn('sales_comms.id', $this->selectedCommissions)->get();
         $commProfileID = $commissions->first()->comm_profile_id;
-        foreach ($commissions as $commission) {
+        foreach ($commissions as $key => $commission) {
             if ($commission->comm_profile_id !== $commProfileID) {
                 $commProfile1 = CommProfile::findOrFail('id', $commission->comm_profile_id);
                 $commProfile2 = CommProfile::findOrFail('id', $commProfileID);
                 $this->alert('error', 'All commissions must be for the same comm profile, found ' . $commProfile1->title . ' and ' . $commProfile2->title);
+                return;
+            }
+            if(in_array($commission->status, [SalesComm::PYMT_STATE_PAID, SalesComm::PYMT_STATE_CANCELLED])) {
+                $this->alert('error', 'A commission is already paid or cancelled');
                 return;
             }
         }
