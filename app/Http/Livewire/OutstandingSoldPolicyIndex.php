@@ -315,7 +315,7 @@ class OutstandingSoldPolicyIndex extends Component
             $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('total_policy_comm');
             $totalTitle = 'Total Comm Gross: ';
         }
-        Log::info($soldPoliciesQuery->toSql());
+
         $soldPolicies = $soldPoliciesQuery->simplePaginate(10);
 
         return view('livewire.outstanding-sold-policy-index', [

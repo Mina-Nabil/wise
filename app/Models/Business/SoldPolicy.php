@@ -1421,7 +1421,7 @@ class SoldPolicy extends Model
             // PAID GROSS (total_comp_paid / 0.95)
             $activeSheet->getCell('M' . $i)->setValue($policy->total_comp_paid ? ($policy->total_comp_paid / 0.95) : 0);
             // DIFF (after_tax_comm - total_comp_paid)
-            $activeSheet->getCell('N' . $i)->setValue(($policy->after_tax_comm ?? 0) - ($policy->total_comp_paid ?? 0));
+            $activeSheet->getCell('N' . $i)->setValue(($policy->after_tax_comm ?? 0) - ($policy->total_comp_paid ? ($policy->total_comp_paid / 0.95) : 0));
             // INVOICE (last company comm payment created_at)
             $activeSheet->getCell('O' . $i)->setValue($policy->last_company_comm_payment ? Carbon::parse($policy->last_company_comm_payment->created_at)->format('d-m-Y') : 'N/A');
             // # (invoice serial)
