@@ -985,7 +985,7 @@ class SoldPolicy extends Model
     public function addTaskToOperations($due = null, $desc = null)
     {
 
-        $newTask = $this->addTask(Task::TYPE_TASK, "Policy# $this->policy_number task", $desc, $due);
+        $newTask = $this->addTask(Task::TYPE_TASK, "Policy# $this->policy_number - " . $this->client?->name, $desc, $due);
         if (!$newTask) return false;
         $this->sendPolicyNotifications("Policy#$this->id task added", Auth::user()->username . " added a claim");
 
