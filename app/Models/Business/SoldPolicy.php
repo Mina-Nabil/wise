@@ -1421,9 +1421,9 @@ class SoldPolicy extends Model
             // PAID (total_comp_paid)
             $activeSheet->getCell('L' . $i)->setValue($policy->total_comp_paid ?? 0);
             // TAX (tax_amount)
-            $activeSheet->getCell('M' . $i)->setValue($policy->tax_amount ?? 0);
+            $activeSheet->getCell('M' . $i)->setValue($policy->company_comm_payments_sum_tax_amount ?? 0);
             // PAID GROSS (total_comp_paid + tax_amount)
-            $activeSheet->getCell('N' . $i)->setValue(($policy->total_comp_paid ?? 0) + ($policy->tax_amount ?? 0));
+            $activeSheet->getCell('N' . $i)->setValue(($policy->total_comp_paid ?? 0) + ($policy->company_comm_payments_sum_tax_amount ?? 0));
             // DIFF (after_tax_comm - total_comp_paid + tax_amount)
             $activeSheet->getCell('O' . $i)->setValue(($policy->after_tax_comm ?? 0) - ($policy->total_comp_paid ?? 0) + ($policy->tax_amount ?? 0));
             // INVOICE (last company comm payment created_at)
@@ -2046,7 +2046,8 @@ class SoldPolicy extends Model
                 });
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
-            ->with('last_company_comm_payment', 'last_company_comm_payment.invoice');
+            ->with('last_company_comm_payment', 'last_company_comm_payment.invoice')
+            ->withSum('company_comm_payments', 'tax_amount');
     }
 
     public function scopeReport(
