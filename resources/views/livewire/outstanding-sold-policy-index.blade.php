@@ -309,6 +309,9 @@
                                                                     PAID
                                                                 </th>
                                                                 <th scope="col" class="table-th ">
+                                                                    TAX
+                                                                </th>
+                                                                <th scope="col" class="table-th ">
                                                                     PAID GROSS
                                                                 </th>
                                                                 <th scope="col" class="table-th ">
@@ -402,12 +405,17 @@
                                                                         </span>
                                                                     </td>
                                                                     <td class="table-td">
+                                                                        <span
+                                                                            class="block date-text">{{ number_format($policy->tax_amount, 2) }}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="table-td">
                                                                         <span class="block date-text">
-                                                                            {{ number_format($policy->total_comp_paid / 0.95, 2) }}</span>
+                                                                            {{ number_format($policy->total_comp_paid + $policy->tax_amount, 2) }}</span>
                                                                     </td>
                                                                     <td class="table-td">
                                                                         <span
-                                                                            class="block date-text">{{ number_format($policy->after_tax_comm - ($policy->total_comp_paid / 0.95), 2) }}</span>
+                                                                            class="block date-text">{{ number_format($policy->after_tax_comm - $policy->total_comp_paid + $policy->tax_amount, 2) }}</span>
                                                                     </td>
 
                                                                     <td class="table-td">
