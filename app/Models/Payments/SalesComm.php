@@ -566,8 +566,8 @@ class SalesComm extends Model
             $query->select('sales_comms.*');
         }
 
-        $query->leftJoin('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
-            ->leftJoin('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
+        $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
+            ->join('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'comm_profile')
             ->when(!empty($commProfileIds), fn($q) => $q->whereIn('sales_comms.comm_profile_id', $commProfileIds))
             ->when($policyStartFrom, fn($q, $date) => $q->where('sold_policies.start', '>=', $date->format('Y-m-d 00:00:00')))
