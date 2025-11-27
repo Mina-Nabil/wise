@@ -415,7 +415,7 @@
                                                                     </td>
                                                                     <td class="table-td">
                                                                         <span
-                                                                            class="block date-text">{{ number_format($policy->total_policy_comm - $policy->total_comp_paid + $policy->company_comm_payments_sum_tax_amount, 2) }}</span>
+                                                                            class="block date-text">{{ number_format($policy->total_policy_comm - ($policy->total_comp_paid + $policy->company_comm_payments_sum_tax_amount), 2) }}</span>
                                                                     </td>
 
                                                                     <td class="table-td">
