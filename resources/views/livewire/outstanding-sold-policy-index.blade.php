@@ -406,7 +406,7 @@
                                                                     </td>
                                                                     <td class="table-td">
                                                                         <span
-                                                                            class="block date-text">{{ number_format($policy->tax_amount, 2) }}
+                                                                            class="block date-text">{{ number_format($policy->company_comm_payments_sum_tax_amount, 2) }}
                                                                         </span>
                                                                     </td>
                                                                     <td class="table-td">
