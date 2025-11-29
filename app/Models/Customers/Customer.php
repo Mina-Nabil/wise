@@ -125,7 +125,8 @@ class Customer extends Model
         'driver_license_doc_2',
         'is_welcomed',
         'welcome_note',
-        'campaign_id'
+        'campaign_id',
+        'channel'
     ];
 
     ///model functions
@@ -191,6 +192,7 @@ class Customer extends Model
         $id_doc_2 = null,
         $driver_license_doc_2 = null,
         $campaign_id = null,
+        $channel = null,
     ): bool {
         $updates['first_name'] = $first_name;
         $updates['last_name'] = $last_name;
@@ -213,6 +215,7 @@ class Customer extends Model
         if ($id_doc_2) $updates['id_doc_2'] = $id_doc_2;
         if ($driver_license_doc_2) $updates['driver_license_doc_2'] = $driver_license_doc_2;
         if ($campaign_id) $updates['campaign_id'] = $campaign_id;
+        if ($channel !== null) $updates['channel'] = $channel;
 
         $this->update($updates);
 
@@ -599,6 +602,7 @@ class Customer extends Model
         $driver_license_doc = null,
         $note = null,
         $campaign_id = null,
+        $channel = null,
     ): self|false {
         $newLead = new self([
             "type"          =>  self::TYPE_LEAD,
@@ -624,6 +628,7 @@ class Customer extends Model
             "note"          =>  $note,
             "creator_id"    => Auth::id() ?? 10,
             "campaign_id"   => $campaign_id,
+            "channel"       => $channel,
         ]);
 
         try {
@@ -662,7 +667,8 @@ class Customer extends Model
         $id_doc_2 = null,
         $driver_license_doc_2 = null,
         $note = null,
-        $campaign_id = null
+        $campaign_id = null,
+        $channel = null
     ): self|false {
         $newCustomer = new self([
             "type"          =>  self::TYPE_CLIENT,
@@ -690,6 +696,7 @@ class Customer extends Model
             "note"          =>  $note,
             "creator_id"    => Auth::id() ?? 1,
             "campaign_id"   => $campaign_id,
+            "channel"       => $channel,
         ]);
 
         try {

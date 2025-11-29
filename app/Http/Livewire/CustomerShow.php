@@ -58,6 +58,7 @@ class CustomerShow extends Component
     public $driverLicenseDoc2;
     public $customerNote;
     public $customerNoteSec = false;
+    public $channel;
 
     public $editCustomerSection = false;
 
@@ -1217,6 +1218,7 @@ class CustomerShow extends Component
             'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             'idDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             'driverLicenseDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+            'channel' => 'nullable|string|max:255',
         ]);
 
         $customer = Customer::find($this->customer->id);
@@ -1258,7 +1260,8 @@ class CustomerShow extends Component
             $driverLicenseDoc_url,
             $idDoc2_url,
             $driverLicenseDoc2_url,
-
+            campaign_id: null,
+            channel: $this->channel
         );
         if ($c) {
             $this->alert('success', 'Updated Successfuly!');
@@ -1315,6 +1318,7 @@ class CustomerShow extends Component
         $this->driverLicenseDoc = $this->customer->driver_license_doc;
         $this->idDoc2 = $this->customer->id_doc_2;
         $this->driverLicenseDoc2 = $this->customer->driver_license_doc_2;
+        $this->channel = $this->customer->channel;
     }
 
     public function updatedCarBrand($value)

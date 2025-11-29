@@ -687,6 +687,11 @@
                                     <p><b>Campaign</b></p>
                                     <p class="text-wrap">{{ $customer->campaign->name }}</p>
                                 @endif
+                                @if ($customer->channel)
+                                    <br>
+                                    <p><b>Channel</b></p>
+                                    <p class="text-wrap">{{ $customer->channel }}</p>
+                                @endif
                             </div>
                         </div>
 
@@ -1720,6 +1725,18 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                                 @error('driverLicenseDoc2')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <hr class="mt-5">
+                                <p class="mt-3 text-lg"><b>Additional Info</b></p>
+                                <div class="input-area mt-3">
+                                    <label for="channel" class="form-label">Channel</label>
+                                    <input id="channel" type="text"
+                                        class="form-control w-full mt-2 @error('channel') !border-danger-500 @enderror"
+                                        wire:model.defer="channel" placeholder="Enter channel">
+                                </div>
+                                @error('channel')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

@@ -51,6 +51,7 @@ class CustomerIndex extends Component
     public $driverLicenseDoc2;
     public $followupCallDateTime;
     public $campaignId;
+    public $channel;
 
     public $addLeadSection;
     public $leadFirstName;
@@ -62,6 +63,7 @@ class CustomerIndex extends Component
     public $LeadPhone;
     public $LeadNote;
     public $leadCampaignId;
+    public $leadChannel;
 
     public $changeCustStatusId;
     public $changeCustStatusStatus;
@@ -132,9 +134,10 @@ class CustomerIndex extends Component
             'LeadNote' => 'nullable|string|max:255',
             'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
             'ownerId' => 'nullable|integer|exists:users,id',
+            'leadChannel' => 'nullable|string|max:255',
         ]);
 
-        $res = Customer::newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note: $this->LeadNote, campaign_id: $this->leadCampaignId);
+        $res = Customer::newLead($this->leadFirstName, $this->leadLastName, $this->LeadPhone, $this->leadMiddleName, $this->leadArabicFirstName, $this->leadArabicMiddleName, $this->leadArabicLastName, owner_id: $this->ownerId, note: $this->LeadNote, campaign_id: $this->leadCampaignId, channel: $this->leadChannel);
 
 
         if ($this->followupCallDateTime) {
@@ -202,6 +205,7 @@ class CustomerIndex extends Component
             'driverLicenseDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             'idDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
             'driverLicenseDoc2' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
+            'channel' => 'nullable|string|max:255',
 
         ]);
 
@@ -248,7 +252,8 @@ class CustomerIndex extends Component
             id_doc_2: $idDoc2_url,
             driver_license_doc_2: $driverLicenseDoc2_url,
             note: $this->note,
-            campaign_id: $this->campaignId
+            campaign_id: $this->campaignId,
+            channel: $this->channel
         );
 
         if ($this->followupCallDateTime) {

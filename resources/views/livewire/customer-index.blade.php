@@ -567,6 +567,17 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
+                                <div class="input-area mt-3">
+                                    <label for="channel" class="form-label">Channel</label>
+                                    <input id="channel" type="text"
+                                        class="form-control w-full mt-2 @error('channel') !border-danger-500 @enderror"
+                                        wire:model.defer="channel" placeholder="Enter channel">
+                                </div>
+                                @error('channel')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
                                 <hr class="mt-5">
                                 <p class="mt-3 text-lg"><b>Driver License Document</b></p>
                                 <div class="input-area ">
@@ -779,6 +790,17 @@
                                     </select>
                                 </div>
                                 @error('leadCampaignId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="leadChannel" class="form-label">Channel</label>
+                                    <input id="leadChannel" type="text"
+                                        class="form-control w-full mt-2 @error('leadChannel') !border-danger-500 @enderror"
+                                        wire:model.defer="leadChannel" placeholder="Enter channel">
+                                </div>
+                                @error('leadChannel')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

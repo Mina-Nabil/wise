@@ -28,6 +28,7 @@ class NewLead extends Component
     public $leadType = 'customer';
     public $followup_is_meeting = false;
     public $campaignId;
+    public $channel;
 
 
     public function toggleAddLead()
@@ -51,6 +52,7 @@ class NewLead extends Component
                 'LeadEmail' => 'nullable|email',
                 'note' => 'nullable|string|max:255',
                 'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
+                'channel' => 'nullable|string|max:255',
             ]);
 
             if ($this->followupCallDateTime || $this->followup_is_meeting){
@@ -72,7 +74,8 @@ class NewLead extends Component
                 email: $this->LeadEmail,
                 owner_id: auth()->id(),
                 note: $this->note,
-                campaign_id: $this->campaignId
+                campaign_id: $this->campaignId,
+                channel: $this->channel
             );
 
             if ($this->followupCallDateTime || $this->followup_is_meeting) {

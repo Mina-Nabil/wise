@@ -4,13 +4,16 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Marketing\Campaign;
+use App\Models\Users\User;
 use App\Traits\AlertFrontEnd;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class CampaignIndex extends Component
 {
-    use WithPagination, AlertFrontEnd, AuthorizesRequests;
+    use WithPagination, AlertFrontEnd, AuthorizesRequests, WithFileUploads;
 
     public $search;
     public $deleteThisCampaign;
@@ -31,6 +34,10 @@ class CampaignIndex extends Component
     // Modal controls
     public $newCampaignSec = false;
     public $editCampaignSec = false;
+    public $importLeadsSec = false;
+    public $importCampaignId;
+    public $importLeadsFile;
+    public $importUserId;
 
     public function openCampaignSec()
     {
@@ -83,6 +90,85 @@ class CampaignIndex extends Component
     public function closeDeleteCampaign()
     {
         $this->deleteThisCampaign = null;
+    }
+
+    public function openImportLeads($id)
+    {
+        $campaign = Campaign::find($id);
+        if ($campaign) {
+            $this->authorize('importLeads', [$campaign, null]);
+            $this->importCampaignId = $id;
+            $this->importLeadsSec = true;
+            $this->importLeadsFile = null;
+            $this->importUserId = null;
+        }
+    }
+
+    public function closeImportLeads()
+    {
+        $this->importLeadsSec = false;
+        $this->importCampaignId = null;
+        $this->importLeadsFile = null;
+        $this->importUserId = null;
+        $this->resetValidation();
+    }
+
+    public function importLeads()
+    {
+        $campaign = Campaign::find($this->importCampaignId);
+        if (!$campaign) {
+            $this->alert('failed', 'Campaign not found');
+            return;
+        }
+
+        $this->authorize('importLeads', [$campaign, $this->importUserId]);
+
+        $this->validate([
+            'importLeadsFile' => 'required|file|mimes:xlsx,xls|max:10240',
+        ]);
+
+        try {
+            // Store the file temporarily
+            $filePath = $this->importLeadsFile->store('tmp', 'local');
+            $fullPath = storage_path('app/' . $filePath);
+
+            // Get user_id - only admins can set it, others will be null
+            $userId = null;
+            $user = Auth::user();
+            if ($this->importUserId && $user && $user->is_admin) {
+                $userId = $this->importUserId;
+            }
+
+            // Import leads
+            $results = $campaign->importLeads($fullPath, $userId);
+
+            // Delete temporary file
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
+            }
+
+            // Show results
+            if ($results['success'] > 0) {
+                $message = "Successfully imported {$results['success']} lead(s)";
+                if (!empty($results['errors'])) {
+                    $message .= ". " . count($results['errors']) . " error(s) occurred.";
+                }
+                $this->alert('success', $message);
+            } else {
+                $this->alert('failed', 'No leads were imported. ' . (count($results['errors']) > 0 ? implode(' ', array_slice($results['errors'], 0, 3)) : ''));
+            }
+
+            // Show errors if any
+            if (!empty($results['errors']) && count($results['errors']) > 0) {
+                foreach (array_slice($results['errors'], 0, 5) as $error) {
+                    $this->alert('failed', $error);
+                }
+            }
+
+            $this->closeImportLeads();
+        } catch (\Exception $e) {
+            $this->alert('failed', 'Import failed: ' . $e->getMessage());
+        }
     }
 
     public function updatingSearch()
@@ -214,8 +300,11 @@ class CampaignIndex extends Component
                   ->orWhere('handler', 'like', '%' . $this->search . '%');
         })->paginate(12);
 
+        $users = User::active()->orderBy('first_name')->get();
+
         return view('livewire.campaign-index', [
             'campaigns' => $campaigns,
+            'users' => $users,
         ])->layout('layouts.app');
     }
 }
