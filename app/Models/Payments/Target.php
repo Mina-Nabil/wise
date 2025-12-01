@@ -87,7 +87,7 @@ class Target extends Model
                 $commPercentages[$sp->id] = $commPercentage;
             }
 
-            Log::info("SP#$sp->id details", ["tmpAmount" => $tmpAmount, "tax_amount" => $sp->tax_amount, "after_tax_comm" => $sp->after_tax_comm, "client_paid_by_dates" => $sp->client_paid_by_dates, "gross_premium" => $sp->gross_premium, "total_comm_subtractions" => $sp->total_comm_subtractions, "isInstallements" => ($totalClientPaidBetween < $totalClientPaid)]);
+            Log::info("SP#$sp->id details", ["tmpAmount" => $tmpAmount, "commPercentage" => $commPercentage, "tax_amount" => $sp->tax_amount, "after_tax_comm" => $sp->after_tax_comm, "client_paid_by_dates" => $sp->client_paid_by_dates, "gross_premium" => $sp->gross_premium, "total_comm_subtractions" => $sp->total_comm_subtractions, "isInstallements" => ($totalClientPaidBetween < $totalClientPaid)]);
         }
         foreach ($soldPolicies as $sp) {
             $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalIncome;
