@@ -136,8 +136,9 @@
 
                                                         <td class="table-td">
                                                             <div>{{ $email->email }}</div>
-                                                            @if($email->phone)
-                                                                <div class="text-sm text-slate-500">{{ $email->phone }}</div>
+                                                            @if ($email->phone)
+                                                                <div class="text-sm text-slate-500">{{ $email->phone }}
+                                                                </div>
                                                             @endif
                                                         </td>
 
