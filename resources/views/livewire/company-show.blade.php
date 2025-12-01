@@ -371,7 +371,7 @@
                                         </table>
                                     </div>
                                     <div class="mt-6">
-                                        {{ $invoices->links() }}
+                                        {{ $invoices->links('vendor.livewire.bootstrap') }}
                                     </div>
                                 </div>
                             </div>
@@ -464,7 +464,7 @@
                                         </div>
                                     @endif
                                     <div class="mt-6">
-                                        {{ $invoiceExtras->links() }}
+                                        {{ $invoiceExtras->links('vendor.livewire.bootstrap') }}
                                     </div>
                                 </div>
                             </div>
