@@ -560,9 +560,7 @@ class CompanyShow extends Component
         $soldPolicies = []; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
 
         // Load company with invoices
-        $this->company->load(['invoices' => function ($query) {
-            $query->orderBy('created_at', 'desc')->with('commissions');
-        }]);
+        $invoices = $this->company->invoices()->orderBy('created_at', 'desc')->with('commissions')->paginate(8);
 
         $this->available_policies = SoldPolicy::when($this->seachAvailablePoliciesText, fn($q) => $q->searchByPolicyNumber($this->seachAvailablePoliciesText))
             ->byCompany(
@@ -576,6 +574,7 @@ class CompanyShow extends Component
             'companyEmails' => $companyEmails,
             'available_policies' => $this->available_policies,
             'invoiceExtras' => $invoiceExtras,
+            'invoices' => $invoices,
         ]);
     }
 }

@@ -246,7 +246,7 @@
                                             <tbody
                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
-                                                @forelse ($company->invoices as $invoice)
+                                                @forelse ($invoices as $invoice)
                                                     <tr>
                                                         <td class="table-td">
                                                             <b>{{ $invoice->serial }}</b>
@@ -368,6 +368,9 @@
 
                                             </tbody>
                                         </table>
+                                    </div>
+                                    <div class="mt-6">
+                                        {{ $invoices->links() }}
                                     </div>
                                 </div>
                             </div>
