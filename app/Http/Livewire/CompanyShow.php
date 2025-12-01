@@ -551,16 +551,16 @@ class CompanyShow extends Component
     {
         $companyEmails = Company::find($this->company->id)
             ->emails()
-            ->paginate(20);
+            ->paginate(10);
             
         $invoiceExtras = Company::find($this->company->id)
             ->invoiceExtras()
-            ->paginate(20);
+            ->paginate(10);
             
         $soldPolicies = []; //SoldPolicy::userData(searchText: $this->seachAllSoldPolicies)->ByCompany(company_id: $this->company->id)->paginate(8);
 
         // Load company with invoices
-        $invoices = $this->company->invoices()->orderBy('created_at', 'desc')->with('commissions')->paginate(8);
+        $invoices = $this->company->invoices()->orderBy('created_at', 'desc')->with('commissions')->paginate(4);
 
         $this->available_policies = SoldPolicy::when($this->seachAvailablePoliciesText, fn($q) => $q->searchByPolicyNumber($this->seachAvailablePoliciesText))
             ->byCompany(
