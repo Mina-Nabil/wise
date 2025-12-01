@@ -79,7 +79,7 @@ class Target extends Model
                 $commPercentages[$sp->id] = $commPercentage;
             } else {
 
-                $tmpAmount = (($sp->tax_amount > 0) ? $sp->after_tax_comm : $sp->after_tax_comm * .95) - $sp->total_comm_subtractions;
+                $tmpAmount = ($sp->tax_amount > 0 ? $sp->after_tax_comm : ($sp->after_tax_comm * .95)) - $sp->total_comm_subtractions;
                 $commPercentage = $this->calculateCommissionPercentage($sp);
                 $incomeAmount = $commPercentage * $tmpAmount;
                 $totalIncome += $incomeAmount;
