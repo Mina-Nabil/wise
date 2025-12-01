@@ -211,8 +211,8 @@ class SalesCommissionsReport extends Component
         $commProfileID = $commissions->first()->comm_profile_id;
         foreach ($commissions as $key => $commission) {
             if ($commission->comm_profile_id !== $commProfileID) {
-                $commProfile1 = CommProfile::findOrFail('id', $commission->comm_profile_id);
-                $commProfile2 = CommProfile::findOrFail('id', $commProfileID);
+                $commProfile1 = CommProfile::findOrFail($commission->comm_profile_id);
+                $commProfile2 = CommProfile::findOrFail($commProfileID);
                 $this->alert('error', 'All commissions must be for the same comm profile, found ' . $commProfile1->title . ' and ' . $commProfile2->title);
                 return;
             }
