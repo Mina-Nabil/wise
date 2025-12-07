@@ -386,6 +386,22 @@
                                                                     </a>
                                                                 </td>
 
+                                                                <td class="table-td">
+                                                                    <div
+                                                                        class="flex space-x-3 items-center text-left rtl:space-x-reverse">
+
+                                                                        <div
+                                                                            class="flex-1 font-medium text-sm leading-4 whitespace-nowrap">
+                                                                            <a class="hover:underline cursor-pointer"
+                                                                                href="{{ route($policy->client_type . 's.show', $policy->client_id) }}">
+
+                                                                                {{ $policy->client?->name }}
+
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+
                                                                 @can('viewCommission',
                                                                     App\Models\Business\SoldPolicy::class)
                                                                     <td class="table-td">
@@ -432,21 +448,6 @@
                                                                             class="block date-text">{{ $policy->last_company_comm_payment?->payment_date ? \Carbon\Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A' }}</span>
                                                                     </td>
                                                                 @endcan
-                                                                <td class="table-td">
-                                                                    <div
-                                                                        class="flex space-x-3 items-center text-left rtl:space-x-reverse">
-
-                                                                        <div
-                                                                            class="flex-1 font-medium text-sm leading-4 whitespace-nowrap">
-                                                                            <a class="hover:underline cursor-pointer"
-                                                                                href="{{ route($policy->client_type . 's.show', $policy->client_id) }}">
-
-                                                                                {{ $policy->client?->name }}
-
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
                                                                 <td class="table-td">
                                                                     @if ($policy->is_valid)
                                                                         <span
