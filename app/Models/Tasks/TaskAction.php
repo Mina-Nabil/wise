@@ -96,7 +96,7 @@ class TaskAction extends Model
             $this->task->taskable->{$this->column_name} = $this->value;
             $this->task->taskable->save();
             if ($this->column_name == 'cancellation_time') {
-                $this->task->taskable->cancelSoldPolicy();
+                $this->task->taskable->cancelSoldPolicy(true);
             }
             if($this->column_name == 'gross_premium'){
                 $this->task->taskable->createMissingClientPayments();

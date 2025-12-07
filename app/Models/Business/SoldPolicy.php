@@ -1148,11 +1148,11 @@ class SoldPolicy extends Model
         $this->save();
     }
 
-    public function cancelSoldPolicy()
+    public function cancelSoldPolicy($skipCheck = false)
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        if (!$loggedInUser->can('delete', $this)) return false;
+        if (!$skipCheck && !$loggedInUser->can('delete', $this)) return false;
         DB::transaction(function () {
             Review::createReview($this, "Policy Cancelled", "Policy cancelled on " . Carbon::now()->format('d/m/Y'));
             $this->client_payments()->notCollected()->get()->each(function ($payment) {
