@@ -399,6 +399,9 @@
                                                     class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl"
                                                     style="vertical-align: top;">Renewal</span>
                                             @endif
+                                            @if ($offer->sub_status)
+                                                {{ $offer->sub_status }}
+                                            @endif
                                         </td>
 
                                         <td class="table-td ">
