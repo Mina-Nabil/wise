@@ -679,8 +679,8 @@ class Offer extends Model
 
         try {
             $updates['status']  = $status;
-            if ($sub_status && $status == self::STATUS_PENDING_INSUR) $updates['sub_status'] = $sub_status;
-            else $updates['sub_status'] = null;
+            if ($sub_status) $updates['sub_status'] = $sub_status;
+
             if ($this->update($updates)) {
                 AppLog::info("Changed status to " . $status, loggable: $this);
                 $this->sendOfferNotifications("Offer status changed", "Offer#$this->id's status changed");
