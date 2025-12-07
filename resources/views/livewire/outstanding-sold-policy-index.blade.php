@@ -271,6 +271,9 @@
                                                     <thead class="bg-slate-200 dark:bg-slate-700">
                                                         <tr>
                                                             <th scope="col" class="table-th ">
+                                                                COMPANY
+                                                            </th>
+                                                            <th scope="col" class="table-th ">
                                                                 POLICY
                                                             </th>
                                                             <th scope="col" class="table-th ">
@@ -340,15 +343,13 @@
                                                         @foreach ($soldPolicies as $policy)
                                                             <tr class="even:bg-slate-50 dark:even:bg-slate-700">
                                                                 <td class="table-td">
+                                                                    <span
+                                                                        class="block date-text">{{ $policy->policy->company->name }}</span>
+                                                                </td>
+                                                                <td class="table-td">
                                                                     <div class="flex-1 text-start">
-                                                                        <h4
-                                                                            class="text-sm font-medium text-slate-600 whitespace-nowrap">
-                                                                            {{ $policy->policy->company->name }}
-                                                                        </h4>
-                                                                        <div
-                                                                            class="text-xs font-normal text-slate-600 dark:text-slate-400">
-                                                                            {{ $policy->policy->name }}
-                                                                        </div>
+                                                                        <span
+                                                                            class="block date-text">{{ $policy->policy->name }}</span>
                                                                     </div>
                                                                 </td>
                                                                 <td class="table-td">
