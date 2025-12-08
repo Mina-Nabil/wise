@@ -37,6 +37,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\Customers\Relative;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Log;
 
 class Offer extends Model
 {
@@ -631,6 +632,8 @@ class Offer extends Model
         if (!$loggedInUser?->can('updateStatus', $this))
             return false;
 
+        Log::info("setStatus", ['status' => $status, 'sub_status' => $sub_status]);
+
         $updates = array();
         //perform checks
         switch ($status) {
@@ -680,6 +683,8 @@ class Offer extends Model
         try {
             $updates['status']  = $status;
             if ($sub_status) $updates['sub_status'] = $sub_status;
+
+            Log::info("updates", $updates);
 
             if ($this->update($updates)) {
                 AppLog::info("Changed status to " . $status, loggable: $this);
