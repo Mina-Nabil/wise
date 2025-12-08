@@ -143,7 +143,7 @@ class SoldPolicy extends Model
             foreach ($this->files()->get() as $f) {
                 $newOffer->addFile($f->name, $f->url);
             }
-            foreach ($this->sales_comms()->get() as $sc) {
+            foreach ($this->sales_comms()->notCancelled()->get() as $sc) {
                 $newOffer->addCommProfile($sc->comm_profile_id);
             }
             $fields = [];
