@@ -22,6 +22,7 @@
                                 <span class="badge bg-info-500 h-auto">
                                     <iconify-icon
                                         icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                        {{ $offer->sub_status ? " - $offer->sub_status" : '' }}
                                 </span>
                             @elseif(str_contains($offer->status, 'pending'))
                                 <span class="badge bg-warning-500 h-auto">
@@ -33,11 +34,13 @@
                                 <span class="badge bg-danger-500 h-auto">
                                     <iconify-icon
                                         icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                        {{ $offer->sub_status ? " - $offer->sub_status" : '' }}
                                 </span>
                             @elseif($offer->status === 'approved')
                                 <span class="badge bg-success-500 h-auto">
                                     <iconify-icon
                                         icon="pajamas:status"></iconify-icon>&nbsp;{{ ucwords(str_replace('_', ' ', $offer->status)) }}
+                                        {{ $offer->sub_status ? " - $offer->sub_status" : '' }}
                                 </span>
                             @endif
                             <span class="badge bg-secondary-500 h-auto">
