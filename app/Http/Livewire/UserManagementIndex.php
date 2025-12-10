@@ -185,6 +185,8 @@ class UserManagementIndex extends Component
     public function openNewUserSec()
     {
         $this->newUserSection = true;
+        $this->reset(['newUsername', 'newFirstName', 'newLastName', 'newType', 'newPassword', 'newPassword_confirmation', 'newEmail', 'newPhone', 'newManagerId', 'newCanReviewReviews']);
+        $this->newType = User::TYPE_SALES;
     }
 
     public function render()
