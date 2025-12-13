@@ -232,6 +232,137 @@ class Account extends Model
         return (DB::table('accounts')->selectRaw('MAX(code) as max_code')->where('parent_account_id', $parent_account_id)->where('main_account_id', $main_account_id)->first()?->max_code ?? 0) + 1;
     }
 
+    /**
+     * Refresh all account codes based on created_at ordering
+     * Groups accounts by main_account_id and parent_account_id,
+     * then assigns sequential codes based on creation date
+     * 
+     * @return array ['success' => bool, 'message' => string, 'accounts_processed' => int, 'errors' => array]
+     */
+    public static function refreshAllCodes(): array
+    {
+        try {
+            DB::beginTransaction();
+
+            $accountsProcessed = 0;
+            $errors = [];
+
+            // Get all unique combinations of main_account_id and parent_account_id
+            $groups = DB::table('accounts')
+                ->select('main_account_id', 'parent_account_id')
+                ->groupBy('main_account_id', 'parent_account_id')
+                ->get();
+
+            foreach ($groups as $group) {
+                try {
+                    // Get all accounts in this group, ordered by created_at
+                    $accounts = self::where('main_account_id', $group->main_account_id)
+                        ->where('parent_account_id', $group->parent_account_id)
+                        ->orderBy('created_at', 'asc')
+                        ->orderBy('id', 'asc') // Secondary sort by id for consistency
+                        ->get();
+
+                    // Assign sequential codes starting from 1
+                    $code = 1;
+                    foreach ($accounts as $account) {
+                        $account->code = $code;
+                        $account->save();
+                        $code++;
+                        $accountsProcessed++;
+                    }
+                } catch (Exception $e) {
+                    $errors[] = "Group (main_account_id: {$group->main_account_id}, parent_account_id: " . ($group->parent_account_id ?? 'null') . "): " . $e->getMessage();
+                    report($e);
+                }
+            }
+
+            // Now update saved_full_code for all accounts
+            // We need to process parent accounts first, then children
+            // So we'll process accounts with no parent first, then recursively process children
+            try {
+                // Process accounts with no parent first
+                $parentAccounts = self::whereNull('parent_account_id')->get();
+                foreach ($parentAccounts as $account) {
+                    $account->load('main_account');
+                    $fullCode = $account->main_account->code . '-' . $account->code;
+                    $account->saved_full_code = $fullCode;
+                    $account->save();
+                }
+
+                // Process accounts with parents (need to process in hierarchy order)
+                $accountIds = self::whereNotNull('parent_account_id')->pluck('id')->toArray();
+                $maxDepth = 10; // Safety limit for hierarchy depth
+                $depth = 0;
+
+                while (!empty($accountIds) && $depth < $maxDepth) {
+                    $processed = [];
+                    
+                    foreach ($accountIds as $accountId) {
+                        $account = self::find($accountId);
+                        if (!$account) continue;
+                        
+                        $parent = self::find($account->parent_account_id);
+                        
+                        // Only process if parent's saved_full_code is already set
+                        if ($parent && $parent->saved_full_code) {
+                            $account->load('parent_account');
+                            $fullCode = $account->parent_account->saved_full_code . '-' . $account->code;
+                            $account->saved_full_code = $fullCode;
+                            $account->save();
+                            $processed[] = $accountId;
+                        }
+                    }
+
+                    // Remove processed account IDs from the list
+                    $accountIds = array_diff($accountIds, $processed);
+
+                    $depth++;
+                }
+
+                // If there are still unprocessed accounts, try to process them using the accessor
+                foreach ($accountIds as $accountId) {
+                    try {
+                        $account = self::find($accountId);
+                        if ($account) {
+                            $account->load(['parent_account', 'main_account']);
+                            // Use the full_code accessor which will calculate and save it
+                            $account->full_code;
+                        }
+                    } catch (Exception $e) {
+                        $errors[] = "Account ID {$accountId}: Failed to update full_code - " . $e->getMessage();
+                    }
+                }
+            } catch (Exception $e) {
+                $errors[] = "Failed to update saved_full_code: " . $e->getMessage();
+                report($e);
+            }
+
+            DB::commit();
+
+            $message = "Successfully refreshed codes for {$accountsProcessed} accounts.";
+            if (!empty($errors)) {
+                $message .= " Errors: " . implode('; ', $errors);
+            }
+
+            return [
+                'success' => true,
+                'message' => $message,
+                'accounts_processed' => $accountsProcessed,
+                'errors' => $errors
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+            report($e);
+            AppLog::error("Failed to refresh account codes", desc: $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Failed to refresh account codes: ' . $e->getMessage(),
+                'accounts_processed' => $accountsProcessed ?? 0,
+                'errors' => [$e->getMessage()]
+            ];
+        }
+    }
+
     ////model functions
     public function downloadAccountDetails(Carbon $from, Carbon $to, $search = null)
     {
