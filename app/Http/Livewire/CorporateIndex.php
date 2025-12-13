@@ -50,6 +50,8 @@ class CorporateIndex extends Component
     public $LeadName;
     public $leadCampaignId;
     public $campaignId;
+    public $leadChannel;
+    public $channel;
 
     public $leadsImportFile;
     public $downloadUserLeadsID;
@@ -119,6 +121,8 @@ class CorporateIndex extends Component
             'ownerId' => 'nullable|integer|exists:users,id',
             'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
             'LeadNote' => 'nullable|string|max:255',
+            'leadCampaignId' => 'nullable|integer|exists:campaigns,id',
+            'leadChannel' => 'nullable|string|max:255',
         ]);
 
         $corporate = new Corporate();
@@ -126,7 +130,9 @@ class CorporateIndex extends Component
         $res = $corporate->newLead(
             $this->name,
             owner_id: $this->ownerId,
-            note: $this->LeadNote
+            note: $this->LeadNote,
+            campaign_id: $this->leadCampaignId,
+            channel: $this->leadChannel
         );
 
         if ($this->followupCallDateTime) {
@@ -139,6 +145,10 @@ class CorporateIndex extends Component
             $this->alert('success', 'Lead Added');
             $this->name = null;
             $this->ownerId = null;
+            $this->leadCampaignId = null;
+            $this->leadChannel = null;
+            $this->LeadNote = null;
+            $this->followupCallDateTime = null;
             $this->toggleAddLead();
         }else{
             $this->alert('failed', 'server error');
@@ -166,6 +176,8 @@ class CorporateIndex extends Component
             'ownerId' => 'nullable|integer|exists:users,id',
             'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
             'note' => 'nullable|string|max:255',
+            'campaignId' => 'nullable|integer|exists:campaigns,id',
+            'channel' => 'nullable|string|max:255',
         ]);
 
         $corporate = new Corporate();
@@ -183,7 +195,10 @@ class CorporateIndex extends Component
             $this->kycDoc,
             $this->contractDoc,
             $this->mainBandEvidence,
-            $this->note
+            $this->note,
+            campaign_id: $this->campaignId,
+            phone: null,
+            channel: $this->channel
         );
 
         if ($this->followupCallDateTime) {

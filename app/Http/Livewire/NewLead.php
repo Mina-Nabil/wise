@@ -90,6 +90,7 @@ class NewLead extends Component
                 'LeadEmail' => 'nullable|email',
                 'note' => 'nullable|string|max:255',
                 'followupCallDateTime' => 'nullable|date_format:Y-m-d\TH:i',
+                'channel' => 'nullable|string|max:255',
             ]);
 
             $corporate = new Corporate();
@@ -97,7 +98,8 @@ class NewLead extends Component
                 $this->corporateName,
                 email: $this->LeadEmail,
                 note: $this->note,
-                campaign_id: $this->campaignId
+                campaign_id: $this->campaignId,
+                channel: $this->channel
             );
 
             $res->addPhone('home', $this->LeadPhone);

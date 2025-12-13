@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -54,7 +53,8 @@ class Corporate extends Model
         'note',
         'is_welcomed',
         'welcome_note',
-        'campaign_id'
+        'campaign_id',
+        'channel'
     ];
 
     ///model functions
@@ -93,6 +93,7 @@ class Corporate extends Model
         $main_bank_evidence = null,
         $note = null,
         $campaign_id = null,
+        $channel = null,
     ): bool {
         $updates['name'] = $name;
         if ($arabic_name) $updates['arabic_name'] = $arabic_name;
@@ -105,8 +106,9 @@ class Corporate extends Model
         if ($kyc_doc) $updates['kyc_doc'] = $kyc_doc;
         if ($contract_doc) $updates['contract_doc'] = $contract_doc;
         if ($note) $updates['note'] = $note;
-        if ($main_bank_evidence) $updates['main_bank_evidence'] = $contract_doc;
+        if ($main_bank_evidence) $updates['main_bank_evidence'] = $main_bank_evidence;
         if ($campaign_id) $updates['campaign_id'] = $campaign_id;
+        if ($channel) $updates['channel'] = $channel;
         $this->update($updates);
 
         try {
@@ -538,6 +540,7 @@ class Corporate extends Model
         $owner_id = null,
         $note = null,
         $campaign_id = null,
+        $channel = null,
     ): self|false {
         $newLead = new self([
             "type"          =>  self::TYPE_LEAD,
@@ -556,6 +559,7 @@ class Corporate extends Model
             "creator_id"    => Auth::id(),
             "note"          =>  $note,
             "campaign_id"   => $campaign_id,
+            "channel"       => $channel,
         ]);
         try {
             $newLead->save();
@@ -584,6 +588,8 @@ class Corporate extends Model
         $main_bank_evidence = null,
         $note = null,
         $campaign_id = null,
+        $phone = null,
+        $channel = null,
     ): self|false {
         $newCorporate = new self([
             "type"          =>  self::TYPE_LEAD,
@@ -602,12 +608,14 @@ class Corporate extends Model
             "creator_id"    => Auth::id() ?? 1,
             "note"          =>  $note,
             "campaign_id"   => $campaign_id,
+            "channel"       => $channel,
         ]);
 
         try {
             $newCorporate->save();
             $newCorporate->setStatus(Status::STATUS_CLIENT, 'New Client');
-
+            if ($phone)
+                $newCorporate->addPhone(Phone::TYPE_MOBILE, $phone, true);
             AppLog::info('New corporate created', loggable: $newCorporate);
             return $newCorporate;
         } catch (Exception $e) {

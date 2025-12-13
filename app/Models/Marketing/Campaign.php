@@ -242,6 +242,7 @@ class Campaign extends Model
                     $fullName = trim($activeSheet->getCell('D' . $row)->getValue() ?? '');
                     $phone = trim($activeSheet->getCell('E' . $row)->getValue() ?? '');
                     $jobTitle = trim($activeSheet->getCell('F' . $row)->getValue() ?? '');
+                    $clientType = trim($activeSheet->getCell('F' . $row)->getValue() ?? '') == 'شركه' ? 'corporate' : 'customer';
 
                     // Skip empty rows
                     if (empty($fullName) && empty($phone) && empty($email)) {
@@ -274,7 +275,11 @@ class Campaign extends Model
                     $phone = trim($phone);
 
                     // Check if customer with same phone and first name already exists
-                    $existingCustomer = Customer::where('first_name', $firstName)
+                    $existingCustomer = $clientType == 'customer' ? Customer::where('first_name', $firstName)
+                        ->whereHas('phones', function ($query) use ($phone) {
+                            $query->where('number', $phone);
+                        })
+                        ->first() : Corporate::where('name', $firstName)
                         ->whereHas('phones', function ($query) use ($phone) {
                             $query->where('number', $phone);
                         })
@@ -287,7 +292,7 @@ class Campaign extends Model
 
                     // Get or create profession if job_title is provided
                     $professionId = null;
-                    if (!empty($jobTitle)) {
+                    if ($clientType == 'customer' && !empty($jobTitle)) {
                         $profession = Profession::firstOrCreate(
                             ['title' => $jobTitle]
                         );
@@ -298,21 +303,28 @@ class Campaign extends Model
                     $business = null;
                     
                     if ($interestType === 'تأمين_صحى') {
-                        $business = Policy::BUSINESS_PERSONAL_MEDICAL;
+                        $business = $clientType == 'customer' ? Policy::BUSINESS_PERSONAL_MEDICAL : Policy::BUSINESS_CORPORATE_MEDICAL;
                     } elseif ($interestType === 'تأمين_على_العربية') {
-                        $business = Policy::BUSINESS_PERSONAL_MOTOR;
+                        $business = $clientType == 'customer' ? Policy::BUSINESS_PERSONAL_MOTOR : Policy::BUSINESS_CORPORATE_MOTOR;
                     } elseif ($interestType === 'تأمين_على_بيتك') {
-                        $business = Policy::BUSINESS_HOME;
+                        $business = $clientType == 'customer' ? Policy::BUSINESS_HOME : Policy::BUSINESS_PROPERTY;
                     }
                     // If interestType is 'اخر' or empty, don't add interest
 
                     // Create the lead
-                    $customer = Customer::newLead(
+                    $customer = $clientType == 'customer' ? Customer::newLead(
                         first_name: $firstName,
                         last_name: $lastName,
                         phone: $phone,
                         email: !empty($email) ? $email : null,
                         profession_id: $professionId,
+                        owner_id: $user_id,
+                        campaign_id: $this->id,
+                        channel: !empty($channel) ? $channel : null
+                    ) : Corporate::newCorporate(
+                        name: $firstName,
+                        phone: $phone,
+                        email: !empty($email) ? $email : null,
                         owner_id: $user_id,
                         campaign_id: $this->id,
                         channel: !empty($channel) ? $channel : null

@@ -42,6 +42,7 @@ class CorporateShow extends Component
     public $mainBandEvidence;
     public $editCorporateSection = false;
     public $campaignId;
+    public $channel;
 
     //address
     public $type;
@@ -177,6 +178,7 @@ class CorporateShow extends Component
         $this->contractDoc = $this->corporate->contract_doc;
         $this->mainBandEvidence = $this->corporate->main_bank_evidence;
         $this->campaignId = $this->corporate->campaign_id;
+        $this->channel = $this->corporate->channel;
         $this->toggle($this->editCorporateSection);
     }
 
@@ -583,6 +585,8 @@ class CorporateShow extends Component
         $this->kycDoc = $this->corporate->kyc_doc;
         $this->contractDoc = $this->corporate->contract_doc;
         $this->mainBandEvidence = $this->corporate->main_bank_evidence;
+        $this->campaignId = $this->corporate->campaign_id;
+        $this->channel = $this->corporate->channel;
     }
 
     public function downloadDoc($url, $fileType)
@@ -646,7 +650,7 @@ class CorporateShow extends Component
         $mainBandEvidence = $this->generateUrl('main_bank_evidence', 'mainBandEvidence');
 
         $c = Corporate::find($this->corporate->id);
-        $res = $c->editInfo($this->name, $this->arabicName, $this->email, $this->commercialRecord, $commercialRecordDoc, $this->taxId, $taxIdDoc, $this->kyc, $kycDoc, $contractDoc, $mainBandEvidence, null, $this->campaignId);
+        $res = $c->editInfo($this->name, $this->arabicName, $this->email, $this->commercialRecord, $commercialRecordDoc, $this->taxId, $taxIdDoc, $this->kyc, $kycDoc, $contractDoc, $mainBandEvidence, null, $this->campaignId, $this->channel);
         if ($res) {
             $this->alert('success', 'Corporate edited successfuly');
             $this->name = null;
@@ -661,6 +665,7 @@ class CorporateShow extends Component
             $this->contractDoc = null;
             $this->mainBandEvidence = null;
             $this->campaignId = null;
+            $this->channel = null;
             $this->editCorporateSection = false;
             $this->mount($this->corporate->id);
         } else {

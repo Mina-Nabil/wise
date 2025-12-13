@@ -427,6 +427,33 @@
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="campaignId" class="form-label">Campaign</label>
+                                    <select name="campaignId" id="campaignId"
+                                        class="form-control w-full mt-2 @error('campaignId') !border-danger-500 @enderror"
+                                        wire:model.defer="campaignId">
+                                        <option value="">None</option>
+                                        @foreach ($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('campaignId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="channel" class="form-label">Channel</label>
+                                    <input id="channel" type="text"
+                                        class="form-control w-full mt-2 @error('channel') !border-danger-500 @enderror"
+                                        wire:model.defer="channel" placeholder="Enter channel">
+                                </div>
+                                @error('channel')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <hr class="mt-5">
@@ -541,6 +568,32 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
+                                <div class="input-area mt-3">
+                                    <label for="leadCampaignId" class="form-label">Campaign</label>
+                                    <select name="leadCampaignId" id="leadCampaignId"
+                                        class="form-control w-full mt-2 @error('leadCampaignId') !border-danger-500 @enderror"
+                                        wire:model.defer="leadCampaignId">
+                                        <option value="">None</option>
+                                        @foreach ($campaigns as $campaign)
+                                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('leadCampaignId')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+
+                                <div class="input-area mt-3">
+                                    <label for="leadChannel" class="form-label">Channel</label>
+                                    <input id="leadChannel" type="text"
+                                        class="form-control w-full mt-2 @error('leadChannel') !border-danger-500 @enderror"
+                                        wire:model.defer="leadChannel" placeholder="Enter channel">
+                                </div>
+                                @error('leadChannel')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
 
                                 <hr class="mt-5">
                                 <div class="from-group">

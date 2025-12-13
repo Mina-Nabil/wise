@@ -476,6 +476,11 @@
                                         <p><b>Campaign</b></p>
                                         <p class="text-wrap">{{ $corporate->campaign->name }}</p>
                                     @endif
+                                    @if ($corporate->channel)
+                                        <br>
+                                        <p><b>Channel</b></p>
+                                        <p class="text-wrap">{{ $corporate->channel }}</p>
+                                    @endif
                                 </div>
                             </div>
                         @endif
@@ -1976,6 +1981,17 @@
                                 </select>
                             </div>
                             @error('campaignId')
+                                <span
+                                    class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                            @enderror
+
+                            <div class="input-area mt-3">
+                                <label for="channel" class="form-label">Channel</label>
+                                <input id="channel" type="text"
+                                    class="form-control w-full mt-2 @error('channel') !border-danger-500 @enderror"
+                                    wire:model.defer="channel" placeholder="Enter channel">
+                            </div>
+                            @error('channel')
                                 <span
                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                             @enderror
