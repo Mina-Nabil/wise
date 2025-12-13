@@ -237,10 +237,10 @@ class JournalEntry extends Model
                     // Reverse the first entry's effect
                     if ($entryNature == $accountNature) {
                         // Entry increased the balance, so subtract to get starting balance
-                        $startingBalance = $startingBalance - $entryAmount;
+                        $startingBalance = abs($startingBalance - $entryAmount);
                     } else {
                         // Entry decreased the balance, so add to get starting balance
-                        $startingBalance = $startingBalance + $entryAmount;
+                        $startingBalance = abs($startingBalance + $entryAmount);
                     }
 
                     // Calculate starting foreign balance if applicable
@@ -250,9 +250,9 @@ class JournalEntry extends Model
                         $entryForeignAmount = $firstPivot->currency_amount ?? 0;
 
                         if ($entryNature == $accountNature) {
-                            $startingForeignBalance = $startingForeignBalance - $entryForeignAmount;
+                            $startingForeignBalance = abs($startingForeignBalance - $entryForeignAmount);
                         } else {
-                            $startingForeignBalance = $startingForeignBalance + $entryForeignAmount;
+                            $startingForeignBalance = abs($startingForeignBalance + $entryForeignAmount);
                         }
                     }
 
