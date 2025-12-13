@@ -180,6 +180,186 @@ class JournalEntry extends Model
         }
     }
 
+    /**
+     * Refresh all account balances by recalculating from scratch
+     * This function:
+     * 1. Calculates starting balance for each account (before first entry)
+     * 2. Replays all entries chronologically to rebuild balances
+     * 3. Updates both account balances and pivot table snapshots
+     * 
+     * @return array ['success' => bool, 'message' => string, 'accounts_processed' => int]
+     */
+    public static function refreshAllBalances(): array
+    {
+        try {
+            DB::beginTransaction();
+
+            $accounts = Account::all();
+            $accountsProcessed = 0;
+            $errors = [];
+
+            foreach ($accounts as $account) {
+                try {
+                    // Get all journal entries for this account, ordered chronologically
+                    $entries = self::byAccount($account->id)
+                        ->orderBy('created_at', 'asc')
+                        ->orderBy('id', 'asc')
+                        ->get();
+
+                    if ($entries->isEmpty()) {
+                        // No entries for this account, reset to 0
+                        $account->balance = 0;
+                        $account->foreign_balance = 0;
+                        $account->save();
+                        $accountsProcessed++;
+                        continue;
+                    }
+
+                    // Get the first entry's pivot data directly from the pivot table
+                    $firstEntry = $entries->first();
+                    $firstPivot = DB::table('entry_accounts')
+                        ->where('journal_entry_id', $firstEntry->id)
+                        ->where('account_id', $account->id)
+                        ->first();
+
+                    if (!$firstPivot) {
+                        // Skip if pivot data not found (shouldn't happen, but safety check)
+                        $accountsProcessed++;
+                        continue;
+                    }
+
+                    // Calculate starting balance: reverse the effect of the first entry
+                    $startingBalance = $firstPivot->account_balance;
+                    $entryAmount = $firstPivot->amount;
+                    $entryNature = $firstPivot->nature;
+                    $accountNature = $account->nature;
+
+                    // Reverse the first entry's effect
+                    if ($entryNature == $accountNature) {
+                        // Entry increased the balance, so subtract to get starting balance
+                        $startingBalance = $startingBalance - $entryAmount;
+                    } else {
+                        // Entry decreased the balance, so add to get starting balance
+                        $startingBalance = $startingBalance + $entryAmount;
+                    }
+
+                    // Calculate starting foreign balance if applicable
+                    $startingForeignBalance = 0;
+                    if ($firstPivot->currency && $firstPivot->currency != self::CURRENCY_EGP && $firstPivot->currency == $account->default_currency) {
+                        $startingForeignBalance = $firstPivot->account_foreign_balance ?? 0;
+                        $entryForeignAmount = $firstPivot->currency_amount ?? 0;
+
+                        if ($entryNature == $accountNature) {
+                            $startingForeignBalance = $startingForeignBalance - $entryForeignAmount;
+                        } else {
+                            $startingForeignBalance = $startingForeignBalance + $entryForeignAmount;
+                        }
+                    }
+
+                    // Reset account balances to starting values
+                    $account->balance = $startingBalance;
+                    $account->foreign_balance = $startingForeignBalance;
+                    $account->save();
+
+                    // Now replay all entries chronologically
+                    $currentBalance = $startingBalance;
+                    $currentForeignBalance = $startingForeignBalance;
+
+                    foreach ($entries as $entry) {
+                        // Get pivot data directly from the pivot table
+                        $pivot = DB::table('entry_accounts')
+                            ->where('journal_entry_id', $entry->id)
+                            ->where('account_id', $account->id)
+                            ->first();
+
+                        if (!$pivot) {
+                            // Skip if pivot data not found
+                            continue;
+                        }
+
+                        $entryAmount = $pivot->amount;
+                        $entryNature = $pivot->nature;
+
+                        // Calculate new balance using the same logic as updateBalance()
+                        $balanceChange = $entryAmount;
+                        if ($entryNature != $accountNature) {
+                            $balanceChange = -1 * $balanceChange;
+                        }
+
+                        $currentBalance = $currentBalance + $balanceChange;
+
+                        // Update account balance
+                        $account->balance = $currentBalance;
+                        $account->save();
+
+                        // Update pivot table snapshot
+                        DB::table('entry_accounts')
+                            ->where('journal_entry_id', $entry->id)
+                            ->where('account_id', $account->id)
+                            ->update(['account_balance' => $currentBalance]);
+
+                        // Handle foreign balance if applicable
+                        if ($pivot->currency && $pivot->currency != self::CURRENCY_EGP && $pivot->currency == $account->default_currency) {
+                            $entryForeignAmount = $pivot->currency_amount ?? 0;
+                            $foreignBalanceChange = $entryForeignAmount;
+
+                            if ($entryNature != $accountNature) {
+                                $foreignBalanceChange = -1 * $foreignBalanceChange;
+                            }
+
+                            $currentForeignBalance = $currentForeignBalance + $foreignBalanceChange;
+
+                            // Update account foreign balance
+                            $account->foreign_balance = $currentForeignBalance;
+                            $account->save();
+
+                            // Update pivot table foreign balance snapshot
+                            DB::table('entry_accounts')
+                                ->where('journal_entry_id', $entry->id)
+                                ->where('account_id', $account->id)
+                                ->update(['account_foreign_balance' => $currentForeignBalance]);
+                        } else {
+                            // Ensure foreign balance is set to 0 or existing value if not applicable
+                            DB::table('entry_accounts')
+                                ->where('journal_entry_id', $entry->id)
+                                ->where('account_id', $account->id)
+                                ->update(['account_foreign_balance' => 0]);
+                        }
+                    }
+
+                    $accountsProcessed++;
+                } catch (Exception $e) {
+                    $errors[] = "Account ID {$account->id} ({$account->name}): " . $e->getMessage();
+                    report($e);
+                }
+            }
+
+            DB::commit();
+
+            $message = "Successfully refreshed balances for {$accountsProcessed} accounts.";
+            if (!empty($errors)) {
+                $message .= " Errors: " . implode('; ', $errors);
+            }
+
+            return [
+                'success' => true,
+                'message' => $message,
+                'accounts_processed' => $accountsProcessed,
+                'errors' => $errors
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+            report($e);
+            AppLog::error("Failed to refresh balances", desc: $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Failed to refresh balances: ' . $e->getMessage(),
+                'accounts_processed' => 0,
+                'errors' => [$e->getMessage()]
+            ];
+        }
+    }
+
     private static function getCashSerial($type)
     {
         return (self::where('cash_entry_type', $type)
