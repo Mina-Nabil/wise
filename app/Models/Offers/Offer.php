@@ -703,6 +703,28 @@ class Offer extends Model
         }
     }
 
+    public function setSubStatusOnly(?string $sub_status = null): bool
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('updateStatus', $this)) return false;
+
+        try {
+            if ($this->update(['sub_status' => $sub_status])) {
+                AppLog::info("Changed sub_status to " . ($sub_status ?? 'null'), loggable: $this);
+                $this->addComment("set Sub Status to " . ($sub_status ?? 'null'), false);
+                return true;
+            } else {
+                AppLog::error("Changing sub_status failed", desc: "No Exception found", loggable: $this);
+                return false;
+            }
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Changing sub_status failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function setLineFields($fields)
     {
         /** @var User */

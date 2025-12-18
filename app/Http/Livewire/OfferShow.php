@@ -171,6 +171,9 @@ class OfferShow extends Component
     public $subStatusOfferStatus;
     public $subStatus;
 
+    public $setSubStatusOnlyModal = false;
+    public $subStatusOnly;
+
     public $relatives = [];
 
     public $showPolicyNoteModal = false;
@@ -1214,6 +1217,34 @@ class OfferShow extends Component
     public function closeSubStatusSection()
     {
         $this->reset(['subStatusSection', 'subStatus']);
+    }
+
+    public function openSetSubStatusOnlyModal()
+    {
+        $this->subStatusOnly = $this->offer->sub_status;
+        $this->setSubStatusOnlyModal = true;
+    }
+
+    public function closeSetSubStatusOnlyModal()
+    {
+        $this->setSubStatusOnlyModal = false;
+        $this->subStatusOnly = null;
+    }
+
+    public function saveSetSubStatusOnly()
+    {
+        $this->validate([
+            'subStatusOnly' => 'nullable|string|max:255',
+        ]);
+
+        $res = $this->offer->setSubStatusOnly($this->subStatusOnly);
+        if ($res) {
+            $this->alert('success', 'Sub Status updated!');
+            $this->closeSetSubStatusOnlyModal();
+            $this->mount($this->offer->id);
+        } else {
+            $this->alert('failed', 'Server error');
+        }
     }
 
     public function changeOptionState($optionId, $status)
