@@ -649,6 +649,11 @@ class Corporate extends Model
         return $this->arabic_name ? $this->arabic_name : $this->name;
     }
 
+    public function getOtherNameAttribute()
+    {
+        return $this->arabic_name ? $this->arabic_name : $this->name;
+    }
+
     public function getTelephone1Attribute()
     {
         $this->load('phones');

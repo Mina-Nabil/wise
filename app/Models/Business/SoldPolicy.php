@@ -958,7 +958,7 @@ class SoldPolicy extends Model
     public function addEndorsement($due = null, $desc = null, $actions = [])
     {
 
-        $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement - " . $this->client?->name, $desc, $due);
+    $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement - " . $this->client?->other_name, $desc, $due);
         if (!$newEndors) return false;
         $this->sendPolicyNotifications("Policy#$this->id endorsement added", Auth::user()->username . " added a endorsement");
         foreach ($actions as $a) {
@@ -970,7 +970,7 @@ class SoldPolicy extends Model
     public function addClaim($due = null, $desc = null, $fields = [])
     {
 
-        $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim - " . $this->client?->name, $desc, $due);
+        $newTask = $this->addTask(Task::TYPE_CLAIM, "Policy# $this->policy_number claim - " . $this->client?->other_name, $desc, $due);
         if (!$newTask) return false;
         $this->sendPolicyNotifications("Policy#$this->id claim added", Auth::user()->username . " added a claim");
 

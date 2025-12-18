@@ -863,6 +863,13 @@ class Customer extends Model
             : $this->first_name . ' ' . $this->last_name;
     }
 
+    public function getOtherNameAttribute()
+    {
+        return ($this->arabic_first_name && $this->arabic_middle_name)
+            ? $this->arabic_first_name . ' ' . $this->arabic_middle_name
+            : $this->first_name . ' ' . $this->middle_name;
+    }
+
     public function getFullNameAttribute()
     {
         return ($this->arabic_first_name && $this->arabic_last_name)
