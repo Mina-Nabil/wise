@@ -102,7 +102,7 @@ class CampaignIndex extends Component
                 return;
             }
 
-            $this->authorize('importLeads', $campaign);
+            // $this->authorize('importLeads', $campaign);
 
             $this->importCampaignId = $id;
             $this->importLeadsSec = true;
