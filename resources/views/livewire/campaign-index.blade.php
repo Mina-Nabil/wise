@@ -489,13 +489,13 @@
 
 {{-- Import Leads Modal --}}
 @if ($importLeadsSec)
-    <div class="modal fade fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto z-50"
-        style="display: block; background-color: rgba(0, 0, 0, 0.5);" 
+    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+        style="display: block"
         wire:click.self="closeImportLeads">
-        <div class="modal-dialog relative w-auto pointer-events-none flex items-center min-h-screen max-w-2xl mx-auto px-4">
+        <div class="modal-dialog relative w-auto pointer-events-none">
             <div
                 class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
-                    rounded-md outline-none text-current dark:bg-slate-800">
+                    rounded-md outline-none text-current">
                 <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                     <!-- Modal header -->
                     <div
