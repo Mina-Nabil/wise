@@ -320,70 +320,101 @@
                 <div class="card mb-5">
                     <div class="card-body">
                         <div class="card-text h-full">
-                            <header class="border-b px-4 pt-4 pb-3 flex justify-between border-primary-500">
-                                <div class="flex-wrap items-center">
-                                    <h5 class="mb-0 text-primary-500" style="display: flex; align-items: center;">
-                                        <iconify-icon class="text-xl inline-block ltr:mr-2 rtl:ml-2 text-primary-500"
-                                            icon="heroicons:megaphone"></iconify-icon>
-                                        {{ $campaign->name }} &nbsp; 
-                                        @if($campaign->is_active)
-                                            <span class="badge bg-success-500 text-white">Active</span>
-                                        @else
-                                            <span class="badge bg-slate-500 text-white">Inactive</span>
-                                        @endif
-                                    </h5>
-                                </div>
+                            <header class="border-b px-4 pt-4 pb-3 border-primary-500">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <iconify-icon class="text-xl text-primary-500 flex-shrink-0"
+                                                icon="heroicons:megaphone"></iconify-icon>
+                                            <h5 class="mb-0 text-primary-500 font-semibold truncate">
+                                                {{ $campaign->name }}
+                                            </h5>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            @if($campaign->is_active)
+                                                <span class="badge bg-success-500 text-white">Active</span>
+                                            @else
+                                                <span class="badge bg-slate-500 text-white">Inactive</span>
+                                            @endif
+                                        </div>
+                                    </div>
 
-                                <div class="flex space-x-3 rtl:space-x-reverse float-right">
-                                    @can('importLeads', $campaign)
-                                        <button wire:click="openImportLeads({{ $campaign->id }})" class="action-btn" type="button" title="Import Leads">
-                                            <iconify-icon icon="heroicons:arrow-up-tray"></iconify-icon>
-                                        </button>
-                                    @endcan
-                                    @can('update', $campaign)
-                                        <button wire:click="openEditCampaign({{ $campaign->id }})" class="action-btn" type="button">
-                                            <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                        </button>
-                                    @endcan
-                                    @can('delete', $campaign)
-                                        <button wire:click="openDeleteCampaign({{ $campaign->id }})" class="action-btn" type="button">
-                                            <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                        </button>
-                                    @endcan
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        @php
+                                            $canImport = auth()->user() && \Illuminate\Support\Facades\Gate::allows('importLeads', [$campaign, null]);
+                                        @endphp
+                                        @if($canImport)
+                                            <button wire:click="openImportLeads({{ $campaign->id }})" 
+                                                wire:loading.attr="disabled"
+                                                class="btn btn-sm btn-primary light" 
+                                                type="button" 
+                                                title="Import Leads">
+                                                <span wire:loading.remove wire:target="openImportLeads">
+                                                    <iconify-icon icon="heroicons:arrow-up-tray" class="text-lg"></iconify-icon>
+                                                </span>
+                                                <span wire:loading wire:target="openImportLeads">
+                                                    <iconify-icon class="text-lg animate-spin" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                </span>
+                                            </button>
+                                        @endif
+                                        @can('update', $campaign)
+                                            <button wire:click="openEditCampaign({{ $campaign->id }})" 
+                                                class="btn btn-sm btn-warning light" 
+                                                type="button"
+                                                title="Edit Campaign">
+                                                <iconify-icon icon="heroicons:pencil-square" class="text-lg"></iconify-icon>
+                                            </button>
+                                        @endcan
+                                        @can('delete', $campaign)
+                                            <button wire:click="openDeleteCampaign({{ $campaign->id }})" 
+                                                class="btn btn-sm btn-danger light" 
+                                                type="button"
+                                                title="Delete Campaign">
+                                                <iconify-icon icon="heroicons:trash" class="text-lg"></iconify-icon>
+                                            </button>
+                                        @endcan
+                                    </div>
                                 </div>
                             </header>
-                            <div class="py-3 px-5">
+                            <div class="py-4 px-5">
                                 @if($campaign->description)
-                                    <p class="card-text text-sm text-slate-600 mb-2">{{ Str::limit($campaign->description, 100) }}</p>
+                                    <p class="card-text text-sm text-slate-600 dark:text-slate-300 mb-3">{{ Str::limit($campaign->description, 100) }}</p>
                                 @endif
                                 
-                                @if($campaign->target_audience)
-                                    <h6 class="card-subtitle text-sm mb-1">
-                                        <span class="text-slate-700 font-medium">Target:</span> {{ $campaign->target_audience }}
-                                    </h6>
-                                @endif
+                                <div class="space-y-2 mb-4">
+                                    @if($campaign->target_audience)
+                                        <div class="flex items-start gap-2">
+                                            <span class="text-slate-700 dark:text-slate-300 font-medium text-sm min-w-[80px]">Target:</span>
+                                            <span class="text-slate-600 dark:text-slate-400 text-sm">{{ $campaign->target_audience }}</span>
+                                        </div>
+                                    @endif
+                                    
+                                    @if($campaign->handler)
+                                        <div class="flex items-start gap-2">
+                                            <span class="text-slate-700 dark:text-slate-300 font-medium text-sm min-w-[80px]">Handler:</span>
+                                            <span class="text-slate-600 dark:text-slate-400 text-sm">{{ $campaign->handler }}</span>
+                                        </div>
+                                    @endif
+                                    
+                                    @if($campaign->budget)
+                                        <div class="flex items-start gap-2">
+                                            <span class="text-slate-700 dark:text-slate-300 font-medium text-sm min-w-[80px]">Budget:</span>
+                                            <span class="text-slate-600 dark:text-slate-400 text-sm">${{ number_format($campaign->budget, 2) }}</span>
+                                        </div>
+                                    @endif
+                                    
+                                    @if($campaign->start_date || $campaign->end_date)
+                                        <div class="flex items-start gap-2">
+                                            <span class="text-slate-700 dark:text-slate-300 font-medium text-sm min-w-[80px]">Period:</span>
+                                            <span class="text-slate-600 dark:text-slate-400 text-sm">
+                                                {{ $campaign->start_date ? $campaign->start_date->format('M d, Y') : 'Not set' }} - 
+                                                {{ $campaign->end_date ? $campaign->end_date->format('M d, Y') : 'Open' }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
                                 
-                                @if($campaign->handler)
-                                    <h6 class="card-subtitle text-sm mb-1">
-                                        <span class="text-slate-700 font-medium">Handler:</span> {{ $campaign->handler }}
-                                    </h6>
-                                @endif
-                                
-                                @if($campaign->budget)
-                                    <h6 class="card-subtitle text-sm mb-1">
-                                        <span class="text-slate-700 font-medium">Budget:</span> ${{ number_format($campaign->budget, 2) }}
-                                    </h6>
-                                @endif
-                                
-                                @if($campaign->start_date || $campaign->end_date)
-                                    <h6 class="card-subtitle text-sm mb-1">
-                                        <span class="text-slate-700 font-medium">Period:</span> 
-                                        {{ $campaign->start_date ? $campaign->start_date->format('M d, Y') : 'Not set' }} - 
-                                        {{ $campaign->end_date ? $campaign->end_date->format('M d, Y') : 'Open' }}
-                                    </h6>
-                                @endif
-                                
-                                <div class="mt-3 flex space-x-2">
+                                <div class="flex flex-wrap gap-2 pt-3 border-t border-slate-200 dark:border-slate-700">
                                     <span class="badge bg-info-500 text-white text-xs">
                                         Customers: {{ $campaign->customers()->count() }}
                                     </span>
@@ -461,12 +492,14 @@
 
 {{-- Import Leads Modal --}}
 @if ($importLeadsSec)
-    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-        style="display: block">
-        <div class="modal-dialog relative w-auto pointer-events-none">
+    <div class="modal fade fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto z-50"
+        style="display: block; background-color: rgba(0, 0, 0, 0.5);" 
+        wire:key="import-leads-modal-{{ $importCampaignId }}"
+        wire:click.self="closeImportLeads">
+        <div class="modal-dialog relative w-auto pointer-events-none flex items-center min-h-screen max-w-2xl mx-auto px-4">
             <div
                 class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
-                    rounded-md outline-none text-current">
+                    rounded-md outline-none text-current dark:bg-slate-800">
                 <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
                     <!-- Modal header -->
                     <div

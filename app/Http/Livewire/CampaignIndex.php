@@ -10,6 +10,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CampaignIndex extends Component
 {
@@ -94,13 +95,24 @@ class CampaignIndex extends Component
 
     public function openImportLeads($id)
     {
-        $campaign = Campaign::find($id);
-        if ($campaign) {
-            $this->authorize('importLeads', [$campaign, null]);
+        try {
+            $campaign = Campaign::find($id);
+            if (!$campaign) {
+                $this->alert('failed', 'Campaign not found');
+                return;
+            }
+
+            if (!Gate::allows('importLeads', [$campaign, null])) {
+                $this->alert('failed', 'You do not have permission to import leads for this campaign');
+                return;
+            }
+
             $this->importCampaignId = $id;
             $this->importLeadsSec = true;
             $this->importLeadsFile = null;
             $this->importUserId = null;
+        } catch (\Exception $e) {
+            $this->alert('failed', 'Error opening import modal: ' . $e->getMessage());
         }
     }
 
