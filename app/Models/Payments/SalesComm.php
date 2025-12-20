@@ -208,7 +208,6 @@ class SalesComm extends Model
                     $from_amount -= $this->sold_policy->total_comm_subtractions;
                 }
             }
-            dd($from_amount);
         } else if ($valid_conf) {
             //update comm info then calc same as direct
             $isRenewal = $this->sold_policy->is_renewal;
@@ -230,6 +229,8 @@ class SalesComm extends Model
         }
 
         $amount = (($this->comm_percentage / 100) * $from_amount) - $comm_disc;
+
+        dd($from_amount, $comm_disc, $amount);
 
         try {
             if ($increment_amount) {
