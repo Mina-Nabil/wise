@@ -288,8 +288,8 @@ class CampaignIndex extends Component
 
         $this->authorize('delete', $campaign);
 
-        // Check if campaign has customers or corporates attached
-        if ($campaign->customers()->count() > 0 || $campaign->corporates()->count() > 0) {
+        // Check if campaign can be deleted
+        if (!$campaign->canDelete()) {
             $this->alert('failed', 'Cannot delete campaign. It has customers or corporates attached.');
             $this->closeDeleteCampaign();
             return;
@@ -311,9 +311,12 @@ class CampaignIndex extends Component
 
         $users = User::active()->orderBy('first_name')->get();
 
+        $campaignToDelete = $this->deleteThisCampaign ? Campaign::find($this->deleteThisCampaign) : null;
+
         return view('livewire.campaign-index', [
             'campaigns' => $campaigns,
             'users' => $users,
+            'campaignToDelete' => $campaignToDelete,
         ])->layout('layouts.app');
     }
 }

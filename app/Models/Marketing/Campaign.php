@@ -102,6 +102,17 @@ class Campaign extends Model
     }
 
     /**
+     * Check if the campaign can be deleted
+     * A campaign cannot be deleted if it has customers or corporates attached
+     *
+     * @return bool
+     */
+    public function canDelete(): bool
+    {
+        return $this->customers()->count() === 0 && $this->corporates()->count() === 0;
+    }
+
+    /**
      * Export campaigns report to Excel
      */
     public static function exportReport(?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $end_from = null, ?Carbon $end_to = null, ?float $budget_from = null, ?float $budget_to = null, ?string $handler_id = null, ?string $search = null)

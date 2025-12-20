@@ -475,9 +475,7 @@
                         </h6>
                         <p class="text-base text-slate-600 dark:text-slate-400 leading-6">
                             This action cannot be undone. The campaign will be permanently deleted from the system.
-                            @if (Campaign::find($deleteThisCampaign) &&
-                                    (Campaign::find($deleteThisCampaign)->customers()->count() > 0 ||
-                                        Campaign::find($deleteThisCampaign)->corporates()->count() > 0))
+                            @if ($campaignToDelete && !$campaignToDelete->canDelete())
                                 <br><strong class="text-danger-500">Warning: This campaign has customers or corporates
                                     attached and cannot be deleted.</strong>
                             @endif
