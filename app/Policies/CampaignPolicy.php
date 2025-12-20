@@ -77,14 +77,11 @@ class CampaignPolicy
      * @param  int|null  $user_id
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function importLeads(User $user, Campaign $campaign, ?int $user_id = null)
+    public function importLeads(User $user, Campaign $campaign=null, ?int $user_id = null)
     {
-        // If user_id is provided, only admins can use it
-        if ($user_id !== null) {
-            return $user->is_admin;
+        if($user_id !== null) {
+            return $user = User::find($user_id);
         }
-        
-        // Normal users can import leads (they'll be assigned to themselves)
-        return true;
+        return $user->is_admin;
     }
 }

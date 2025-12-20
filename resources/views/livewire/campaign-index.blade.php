@@ -340,10 +340,7 @@
                                     </div>
 
                                     <div class="flex items-center gap-2 flex-shrink-0">
-                                        @php
-                                            $canImport = auth()->user() && \Illuminate\Support\Facades\Gate::allows('importLeads', [$campaign, null]);
-                                        @endphp
-                                        @if($canImport)
+                                        @can('importLeads', $campaign)
                                             <button wire:click="openImportLeads({{ $campaign->id }})" 
                                                 wire:loading.attr="disabled"
                                                 class="btn btn-sm btn-primary light" 
@@ -356,7 +353,7 @@
                                                     <iconify-icon class="text-lg animate-spin" icon="line-md:loading-twotone-loop"></iconify-icon>
                                                 </span>
                                             </button>
-                                        @endif
+                                        @endcan
                                         @can('update', $campaign)
                                             <button wire:click="openEditCampaign({{ $campaign->id }})" 
                                                 class="btn btn-sm btn-warning light" 

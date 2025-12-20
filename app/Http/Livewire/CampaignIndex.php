@@ -102,10 +102,7 @@ class CampaignIndex extends Component
                 return;
             }
 
-            if (!Gate::allows('importLeads', [$campaign, null])) {
-                $this->alert('failed', 'You do not have permission to import leads for this campaign');
-                return;
-            }
+            $this->authorize('importLeads', $campaign);
 
             $this->importCampaignId = $id;
             $this->importLeadsSec = true;
@@ -133,7 +130,7 @@ class CampaignIndex extends Component
             return;
         }
 
-        $this->authorize('importLeads', [$campaign, $this->importUserId]);
+        $this->authorize('importLeads');
 
         $this->validate([
             'importLeadsFile' => 'required|file|mimes:xlsx,xls|max:10240',
