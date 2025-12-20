@@ -197,8 +197,6 @@ class SalesComm extends Model
         $from_amount = 0;
         $comm_disc = 0;
 
-        dd($valid_conf);
-
         if ($this->is_direct) {
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
@@ -210,6 +208,7 @@ class SalesComm extends Model
                     $from_amount -= $this->sold_policy->total_comm_subtractions;
                 }
             }
+            dd($from_amount);
         } else if ($valid_conf) {
             //update comm info then calc same as direct
             $isRenewal = $this->sold_policy->is_renewal;
