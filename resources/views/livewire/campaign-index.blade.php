@@ -335,7 +335,7 @@
                                 </div>
 
                                 <div class="flex space-x-3 rtl:space-x-reverse float-right">
-                                    @can('importLeads', [$campaign, null])
+                                    @can('importLeads', $campaign)
                                         <button wire:click="openImportLeads({{ $campaign->id }})" class="action-btn" type="button" title="Import Leads">
                                             <iconify-icon icon="heroicons:arrow-up-tray"></iconify-icon>
                                         </button>
