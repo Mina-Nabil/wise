@@ -491,7 +491,6 @@
 @if ($importLeadsSec)
     <div class="modal fade fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto z-50"
         style="display: block; background-color: rgba(0, 0, 0, 0.5);" 
-        wire:key="import-leads-modal-{{ $importCampaignId }}"
         wire:click.self="closeImportLeads">
         <div class="modal-dialog relative w-auto pointer-events-none flex items-center min-h-screen max-w-2xl mx-auto px-4">
             <div
