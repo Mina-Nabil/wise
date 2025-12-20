@@ -197,6 +197,8 @@ class SalesComm extends Model
         $from_amount = 0;
         $comm_disc = 0;
 
+        dd($valid_conf);
+
         if ($this->is_direct) {
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
