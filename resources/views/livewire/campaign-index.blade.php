@@ -314,7 +314,7 @@
             </div>
         </div>
         
-        <div class="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5">
+        <div class="grid xl:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-5">
             {{-- BEGIN: Campaign list --}}
             @foreach ($campaigns as $campaign)
                 <div class="card mb-5">
