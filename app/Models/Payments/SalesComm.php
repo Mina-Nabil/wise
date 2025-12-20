@@ -198,6 +198,7 @@ class SalesComm extends Model
         $comm_disc = 0;
 
         if ($this->is_direct) {
+            $this->comm_percentage = $valid_conf->percentage;
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
                 $comm_disc = $this->sold_policy->discount + $this->sold_policy->penalty_amount;
@@ -229,8 +230,6 @@ class SalesComm extends Model
         }
 
         $amount = (($this->comm_percentage / 100) * $from_amount) - $comm_disc;
-
-        dd($from_amount, $comm_disc, $amount);
 
         try {
             if ($increment_amount) {
