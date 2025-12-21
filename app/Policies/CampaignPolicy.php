@@ -77,11 +77,13 @@ class CampaignPolicy
      * @param  int|null  $user_id
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function importLeads(User $user, Campaign $campaign=null, ?int $user_id = null)
+    public function importLeads(User $user, Campaign $campaign = null, ?int $user_id = null)
     {
-        if($user_id !== null) {
+        if ($user->is_admin) {
+            return true;
+        }
+        if ($user_id !== null) {
             return $user = User::find($user_id);
         }
-        return $user->is_admin;
     }
 }
