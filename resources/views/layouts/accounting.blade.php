@@ -148,6 +148,15 @@
                             </span>
                         </a>
                     </li>
+                    <li class="sidebar-menu-title">Reports</li>
+                    <li>
+                        <a href="{{ url('accounts/reports/income-statement') }}" class="navItem {{ $income_statement ?? '' }}">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="heroicons:document-chart-bar"></iconify-icon>
+                                <span>Income Statement</span>
+                            </span>
+                        </a>
+                    </li>
                     <li class="sidebar-menu-title">Settings</li>
                     <li>
                         <a href="{{ url('accounts/settings') }}" class="navItem {{ $account_settings ?? '' }}">
