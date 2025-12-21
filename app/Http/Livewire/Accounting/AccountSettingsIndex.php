@@ -62,8 +62,8 @@ class AccountSettingsIndex extends Component
                 $this->accounts = [
                     [
                         'id' => $account->id,
-                        'acc_code' => $account->acc_code,
-                        'acc_name' => $account->acc_name,
+                        'acc_code' => $account->saved_full_code,
+                        'acc_name' => $account->name,
                     ]
                 ];
             }
@@ -91,8 +91,8 @@ class AccountSettingsIndex extends Component
                 ->map(function ($account) {
                     return [
                         'id' => $account->id,
-                        'acc_code' => $account->acc_code,
-                        'acc_name' => $account->acc_name,
+                        'acc_code' => $account->saved_full_code,
+                        'acc_name' => $account->name,
                     ];
                 })
                 ->toArray();
@@ -106,7 +106,7 @@ class AccountSettingsIndex extends Component
         $this->selectedAccountId = $accountId;
         $account = Account::find($accountId);
         if ($account) {
-            $this->searchAccount = $account->acc_code . ' - ' . $account->acc_name;
+            $this->searchAccount = $account->saved_full_code . ' - ' . $account->name;
         }
         $this->accounts = [];
     }
