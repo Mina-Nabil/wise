@@ -134,7 +134,7 @@ class AccountSettingsIndex extends Component
 
     public function render()
     {
-        return view('livewire.accounting.account-settings-index')
+        return view('livewire.Accounting.account-settings-index')
             ->layout('layouts.accounting', [
                 'page_title' => $this->page_title,
             ]);
