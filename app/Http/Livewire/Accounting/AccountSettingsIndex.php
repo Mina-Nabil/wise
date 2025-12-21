@@ -41,8 +41,8 @@ class AccountSettingsIndex extends Component
                 'key' => $key,
                 'label' => $label,
                 'account_id' => $accountId,
-                'account_name' => $account ? $account->acc_name : null,
-                'account_code' => $account ? $account->acc_code : null,
+                'account_name' => $account ? $account->name : null,
+                'account_code' => $account ? $account->saved_full_code : null,
             ];
         }
     }
