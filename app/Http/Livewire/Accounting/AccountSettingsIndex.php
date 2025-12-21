@@ -85,7 +85,7 @@ class AccountSettingsIndex extends Component
     public function updatedSearchAccount()
     {
         if (strlen($this->searchAccount) >= 2) {
-            $this->accounts = Account::where('acc_name', 'like', '%' . $this->searchAccount . '%')
+            $this->accounts = Account::where('name', 'like', '%' . $this->searchAccount . '%')
                 ->orWhere('acc_code', 'like', '%' . $this->searchAccount . '%')
                 ->limit(20)
                 ->get()
