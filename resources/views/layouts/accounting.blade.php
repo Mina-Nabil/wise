@@ -147,6 +147,15 @@
                                 <span>Titles</span>
                             </span>
                         </a>
+                    </li>
+                    <li class="sidebar-menu-title">Settings</li>
+                    <li>
+                        <a href="{{ url('accounts/settings') }}" class="navItem {{ $account_settings ?? '' }}">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="heroicons:cog-6-tooth"></iconify-icon>
+                                <span>Account Settings</span>
+                            </span>
+                        </a>
                     </li> 
                 </ul>
             </div>

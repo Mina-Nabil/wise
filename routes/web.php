@@ -24,6 +24,7 @@ use App\Http\Livewire\Accounting\AccountIndex;
 use App\Http\Livewire\Accounting\AccountShow;
 use App\Http\Livewire\Accounting\CreateJournalEntry;
 use App\Http\Livewire\Accounting\UnapprovedEntryIndex;
+use App\Http\Livewire\Accounting\AccountSettingsIndex;
 use App\Http\Livewire\EntryTitleIndex;
 use App\Http\Livewire\JournalEntryIndex;
 use App\Http\Livewire\RenewalAnalysisIndex;
@@ -139,6 +140,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/accounts/entries/unapproved', UnapprovedEntryIndex::class);
     Route::get('/accounts/entries/{id}', JournalEntryIndex::class)->name('accounts.entries');
     Route::get('/accounts/titles', EntryTitleIndex::class);
+    Route::get('/accounts/settings', AccountSettingsIndex::class);
     Route::get('/accounts/gettree/{id}', function ($id) {
         return response()->json(Account::findOrFail($id)->getTree());
     });
