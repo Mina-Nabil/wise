@@ -9,8 +9,8 @@
                     <div class="alert alert-warning mb-4">
                         <div class="flex items-start space-x-3 rtl:space-x-reverse">
                             <div class="flex-1">
-                                <h5 class="text-base mb-1 font-semibold text-warning-600">Configuration Required</h5>
-                                <p class="text-sm text-warning-600">
+                                <h5 class="text-base mb-1 font-semibold text-white">Configuration Required</h5>
+                                <p class="text-sm text-white">
                                     Please configure all account settings before generating the report.
                                 </p>
                                 <div class="mt-2">
