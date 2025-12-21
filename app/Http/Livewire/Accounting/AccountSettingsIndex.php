@@ -18,6 +18,8 @@ class AccountSettingsIndex extends Component
     public $currentKey;
     public $currentKeyLabel;
     public $selectedAccountId;
+    public $selectedAccountCode;
+    public $selectedAccountName;
     public $searchAccount = '';
     public $accounts = [];
 
@@ -42,7 +44,7 @@ class AccountSettingsIndex extends Component
                 'label' => $label,
                 'account_id' => $accountId,
                 'account_name' => $account ? $account->name : null,
-                'account_code' => $account ? $account->saved_full_code : null,
+                'account_code' => $account ? $account->full_code : null,
             ];
         }
     }
@@ -54,18 +56,16 @@ class AccountSettingsIndex extends Component
         $this->selectedAccountId = AccountSetting::getAccountId($key);
         $this->searchAccount = '';
         $this->accounts = [];
+        $this->selectedAccountCode = null;
+        $this->selectedAccountName = null;
         
-        // Load initial accounts if there's already a selected account
+        // Load initial account if there's already a selected account
         if ($this->selectedAccountId) {
             $account = Account::find($this->selectedAccountId);
             if ($account) {
-                $this->accounts = [
-                    [
-                        'id' => $account->id,
-                        'acc_code' => $account->saved_full_code,
-                        'acc_name' => $account->name,
-                    ]
-                ];
+                $this->selectedAccountCode = $account->full_code;
+                $this->selectedAccountName = $account->name;
+                $this->searchAccount = $account->full_code . ' - ' . $account->name;
             }
         }
         
@@ -78,6 +78,8 @@ class AccountSettingsIndex extends Component
         $this->currentKey = null;
         $this->currentKeyLabel = null;
         $this->selectedAccountId = null;
+        $this->selectedAccountCode = null;
+        $this->selectedAccountName = null;
         $this->searchAccount = '';
         $this->accounts = [];
     }
@@ -86,12 +88,13 @@ class AccountSettingsIndex extends Component
     {
         if (strlen($this->searchAccount) >= 2) {
             $this->accounts = Account::where('name', 'like', '%' . $this->searchAccount . '%')
+                ->orWhere('saved_full_code', 'like', '%' . $this->searchAccount . '%')
                 ->limit(20)
                 ->get()
                 ->map(function ($account) {
                     return [
                         'id' => $account->id,
-                        'acc_code' => $account->saved_full_code,
+                        'acc_code' => $account->full_code,
                         'acc_name' => $account->name,
                     ];
                 })
@@ -106,7 +109,9 @@ class AccountSettingsIndex extends Component
         $this->selectedAccountId = $accountId;
         $account = Account::find($accountId);
         if ($account) {
-            $this->searchAccount = $account->saved_full_code . ' - ' . $account->name;
+            $this->selectedAccountCode = $account->full_code;
+            $this->selectedAccountName = $account->name;
+            $this->searchAccount = $account->full_code . ' - ' . $account->name;
         }
         $this->accounts = [];
     }
@@ -114,7 +119,10 @@ class AccountSettingsIndex extends Component
     public function clearAccount()
     {
         $this->selectedAccountId = null;
+        $this->selectedAccountCode = null;
+        $this->selectedAccountName = null;
         $this->searchAccount = '';
+        $this->accounts = [];
     }
 
     public function saveAccountSetting()

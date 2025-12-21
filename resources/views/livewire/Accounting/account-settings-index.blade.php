@@ -150,11 +150,17 @@
 
                                 @if($selectedAccountId)
                                     <div class="mt-3 p-3 bg-success-50 dark:bg-success-500/10 border border-success-500 rounded-md">
-                                        <div class="flex items-center">
-                                            <iconify-icon icon="heroicons:check-circle" class="text-success-500 text-xl mr-2"></iconify-icon>
-                                            <span class="text-sm text-success-700 dark:text-success-400">
-                                                Account selected
-                                            </span>
+                                        <div class="flex items-start">
+                                            <iconify-icon icon="heroicons:check-circle" class="text-success-500 text-xl mr-2 flex-shrink-0 mt-0.5"></iconify-icon>
+                                            <div class="flex-1">
+                                                <div class="text-sm font-medium text-success-700 dark:text-success-400 mb-1">
+                                                    Account selected
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="badge bg-slate-900 text-white text-xs">{{ $selectedAccountCode }}</span>
+                                                    <span class="text-sm text-slate-600 dark:text-slate-300">{{ $selectedAccountName }}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
