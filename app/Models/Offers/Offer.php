@@ -659,11 +659,11 @@ class Offer extends Model
                 break;
 
             case self::STATUS_PENDING_CUSTOMER:
-                $approvedCount = $this->options()->where('status', OfferOption::STATUS_QTTN_RECV)
-                    ->get()->count();
+                // $approvedCount = $this->options()->where('status', OfferOption::STATUS_QTTN_RECV)
+                //     ->get()->count();
                 if (!($this->assignee?->is_sales || $this->assignee?->is_manager))
                     return "Offer not assigned to sales";
-                if (!$approvedCount) return "No qoutation received";
+                // if (!$approvedCount) return "No qoutation received";
                 break;
 
             case self::STATUS_APPROVED:
