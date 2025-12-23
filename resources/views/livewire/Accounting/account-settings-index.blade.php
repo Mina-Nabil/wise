@@ -58,14 +58,18 @@
                                                 </div>
                                             </td>
                                             <td class="table-td">
-                                                @if($setting['account_id'])
-                                                    <div>
-                                                        <span class="badge bg-slate-900 text-white capitalize px-3 py-1">
-                                                            {{ $setting['account_code'] }}
-                                                        </span>
-                                                        <span class="text-sm text-slate-600 dark:text-slate-300 ml-2">
-                                                            {{ $setting['account_name'] }}
-                                                        </span>
+                                                @if(count($setting['accounts']) > 0)
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach($setting['accounts'] as $account)
+                                                            <div class="inline-flex items-center">
+                                                                <span class="badge bg-slate-900 text-white capitalize px-3 py-1">
+                                                                    {{ $account['code'] }}
+                                                                </span>
+                                                                <span class="text-sm text-slate-600 dark:text-slate-300 ml-2">
+                                                                    {{ $account['name'] }}
+                                                                </span>
+                                                            </div>
+                                                        @endforeach
                                                     </div>
                                                 @else
                                                     <span class="text-sm text-slate-400 dark:text-slate-500 italic">
@@ -123,17 +127,42 @@
 
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
+                            <!-- Selected Accounts -->
+                            @if(count($selectedAccounts) > 0)
+                                <div class="from-group">
+                                    <label class="form-label">Selected Accounts ({{ count($selectedAccounts) }})</label>
+                                    <div class="space-y-2">
+                                        @foreach($selectedAccounts as $account)
+                                            <div class="flex items-center justify-between p-3 bg-success-50 dark:bg-success-500/10 border border-success-200 dark:border-success-700 rounded-md">
+                                                <div class="flex items-center gap-2 flex-1">
+                                                    <iconify-icon icon="heroicons:check-circle" class="text-success-500 text-lg flex-shrink-0"></iconify-icon>
+                                                    <span class="badge bg-slate-900 text-white text-xs">{{ $account['code'] }}</span>
+                                                    <span class="text-sm text-slate-600 dark:text-slate-300">{{ $account['name'] }}</span>
+                                                </div>
+                                                <button wire:click="removeAccount({{ $account['id'] }})" type="button"
+                                                    class="text-danger-500 hover:text-danger-600 ml-2">
+                                                    <iconify-icon icon="heroicons:x-mark" class="text-xl"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    @if(count($selectedAccounts) > 1)
+                                        <button wire:click="clearAllAccounts" type="button"
+                                            class="mt-2 text-sm text-danger-500 hover:text-danger-600">
+                                            Clear all
+                                        </button>
+                                    @endif
+                                </div>
+                            @endif
+
+                            <!-- Search Account -->
                             <div class="from-group">
-                                <label for="searchAccount" class="form-label">Search Account</label>
+                                <label for="searchAccount" class="form-label">
+                                    {{ count($selectedAccounts) > 0 ? 'Add Another Account' : 'Search Account' }}
+                                </label>
                                 <div class="relative">
                                     <input wire:model.debounce.300ms="searchAccount" type="text"
                                         class="form-control py-2" placeholder="Search by code or name...">
-                                    @if($selectedAccountId)
-                                        <button wire:click="clearAccount" type="button"
-                                            class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                                            <iconify-icon icon="heroicons:x-mark" class="text-xl"></iconify-icon>
-                                        </button>
-                                    @endif
                                 </div>
                                 
                                 @if(count($accounts) > 0)
@@ -145,23 +174,6 @@
                                                 <span class="text-sm text-slate-600 dark:text-slate-300">{{ $account['acc_name'] }}</span>
                                             </div>
                                         @endforeach
-                                    </div>
-                                @endif
-
-                                @if($selectedAccountId)
-                                    <div class="mt-3 p-3 bg-success-50 dark:bg-success-500/10 border border-success-500 rounded-md">
-                                        <div class="flex items-start">
-                                            <iconify-icon icon="heroicons:check-circle" class="text-success-500 text-xl mr-2 flex-shrink-0 mt-0.5"></iconify-icon>
-                                            <div class="flex-1">
-                                                <div class="text-sm font-medium text-success-700 dark:text-success-400 mb-1">
-                                                    Account selected
-                                                </div>
-                                                <div class="flex items-center gap-2">
-                                                    <span class="badge bg-slate-900 text-white text-xs">{{ $selectedAccountCode }}</span>
-                                                    <span class="text-sm text-slate-600 dark:text-slate-300">{{ $selectedAccountName }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 @endif
                             </div>

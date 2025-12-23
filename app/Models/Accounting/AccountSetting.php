@@ -40,43 +40,94 @@ class AccountSetting extends Model
     }
 
     /**
-     * Get account ID by key
+     * Get account IDs by key (supports multiple accounts per key)
      */
-    public static function getAccountId(string $key): ?int
+    public static function getAccountIds(string $key): array
     {
         return Cache::remember("account_setting.{$key}", 3600, function () use ($key) {
-            return self::where('key', $key)->value('account_id');
+            return self::where('key', $key)
+                ->whereNotNull('account_id')
+                ->pluck('account_id')
+                ->toArray();
         });
     }
 
     /**
-     * Get account by key
+     * Get accounts by key (returns collection of Account models)
      */
-    public static function getAccount(string $key): ?Account
+    public static function getAccounts(string $key)
     {
-        $accountId = self::getAccountId($key);
-        return $accountId ? Account::find($accountId) : null;
+        $accountIds = self::getAccountIds($key);
+        return Account::whereIn('id', $accountIds)->get();
     }
 
     /**
-     * Set account ID for a key
+     * Set account IDs for a key (replaces all existing accounts for this key)
      */
-    public static function setAccountId(string $key, ?int $accountId): void
+    public static function setAccountIds(string $key, array $accountIds): void
     {
-        self::updateOrCreate(
-            ['key' => $key],
-            ['account_id' => $accountId]
-        );
+        // Remove existing entries for this key
+        self::where('key', $key)->delete();
+        
+        // Add new entries
+        foreach ($accountIds as $accountId) {
+            if ($accountId) {
+                self::create([
+                    'key' => $key,
+                    'account_id' => $accountId
+                ]);
+            }
+        }
         
         Cache::forget("account_setting.{$key}");
     }
 
     /**
-     * Get all configured settings as key => account_id array
+     * Add an account to a key
+     */
+    public static function addAccount(string $key, int $accountId): void
+    {
+        // Check if already exists
+        $exists = self::where('key', $key)
+            ->where('account_id', $accountId)
+            ->exists();
+        
+        if (!$exists) {
+            self::create([
+                'key' => $key,
+                'account_id' => $accountId
+            ]);
+            Cache::forget("account_setting.{$key}");
+        }
+    }
+
+    /**
+     * Remove an account from a key
+     */
+    public static function removeAccount(string $key, int $accountId): void
+    {
+        self::where('key', $key)
+            ->where('account_id', $accountId)
+            ->delete();
+        
+        Cache::forget("account_setting.{$key}");
+    }
+
+    /**
+     * Get all configured settings as key => [account_ids] array
      */
     public static function getAllSettings(): array
     {
-        return self::pluck('account_id', 'key')->toArray();
+        $settings = self::whereNotNull('account_id')
+            ->get()
+            ->groupBy('key');
+        
+        $result = [];
+        foreach ($settings as $key => $items) {
+            $result[$key] = $items->pluck('account_id')->toArray();
+        }
+        
+        return $result;
     }
 
     /**
@@ -88,11 +139,14 @@ class AccountSetting extends Model
     }
 
     /**
-     * Check if all required keys are configured
+     * Check if all required keys are configured (at least one account per key)
      */
     public static function isFullyConfigured(): bool
     {
-        $configuredKeys = self::whereNotNull('account_id')->pluck('key')->toArray();
+        $configuredKeys = self::whereNotNull('account_id')
+            ->distinct('key')
+            ->pluck('key')
+            ->toArray();
         $requiredKeys = array_keys(self::ACCOUNT_KEYS);
         
         return empty(array_diff($requiredKeys, $configuredKeys));
@@ -103,7 +157,10 @@ class AccountSetting extends Model
      */
     public static function getMissingKeys(): array
     {
-        $configuredKeys = self::whereNotNull('account_id')->pluck('key')->toArray();
+        $configuredKeys = self::whereNotNull('account_id')
+            ->distinct('key')
+            ->pluck('key')
+            ->toArray();
         $requiredKeys = array_keys(self::ACCOUNT_KEYS);
         
         return array_diff($requiredKeys, $configuredKeys);

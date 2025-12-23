@@ -1095,13 +1095,21 @@ class Account extends Model
             
             $row++;
             
-            // Get all balances
+            // Get all balances (sum from multiple accounts per key)
             $balances = [];
             foreach (AccountSetting::ACCOUNT_KEYS as $key => $label) {
-                $accountId = $settings[$key] ?? null;
+                $accountIds = $settings[$key] ?? [];
+                $startBalance = 0;
+                $endBalance = 0;
+                
+                foreach ($accountIds as $accountId) {
+                    $startBalance += $getAccountBalance($accountId, $startDate);
+                    $endBalance += $getAccountBalance($accountId, $endDate);
+                }
+                
                 $balances[$key] = [
-                    'start' => $getAccountBalance($accountId, $startDate),
-                    'end' => $getAccountBalance($accountId, $endDate),
+                    'start' => $startBalance,
+                    'end' => $endBalance,
                 ];
             }
             

@@ -17,9 +17,8 @@ class AccountSettingsIndex extends Component
     public $isEditModalOpen = false;
     public $currentKey;
     public $currentKeyLabel;
-    public $selectedAccountId;
-    public $selectedAccountCode;
-    public $selectedAccountName;
+    public $selectedAccountIds = [];
+    public $selectedAccounts = [];
     public $searchAccount = '';
     public $accounts = [];
 
@@ -36,15 +35,19 @@ class AccountSettingsIndex extends Component
         $allSettings = AccountSetting::getAllSettings();
         
         foreach (AccountSetting::getRequiredKeys() as $key => $label) {
-            $accountId = $allSettings[$key] ?? null;
-            $account = $accountId ? Account::find($accountId) : null;
+            $accountIds = $allSettings[$key] ?? [];
+            $accounts = Account::whereIn('id', $accountIds)->get();
             
             $this->settings[] = [
                 'key' => $key,
                 'label' => $label,
-                'account_id' => $accountId,
-                'account_name' => $account ? $account->name : null,
-                'account_code' => $account ? $account->full_code : null,
+                'accounts' => $accounts->map(function($account) {
+                    return [
+                        'id' => $account->id,
+                        'code' => $account->full_code,
+                        'name' => $account->name,
+                    ];
+                })->toArray(),
             ];
         }
     }
@@ -53,23 +56,31 @@ class AccountSettingsIndex extends Component
     {
         $this->currentKey = $key;
         $this->currentKeyLabel = $label;
-        $this->selectedAccountId = AccountSetting::getAccountId($key);
+        $this->selectedAccountIds = AccountSetting::getAccountIds($key);
         $this->searchAccount = '';
         $this->accounts = [];
-        $this->selectedAccountCode = null;
-        $this->selectedAccountName = null;
         
-        // Load initial account if there's already a selected account
-        if ($this->selectedAccountId) {
-            $account = Account::find($this->selectedAccountId);
-            if ($account) {
-                $this->selectedAccountCode = $account->full_code;
-                $this->selectedAccountName = $account->name;
-                $this->searchAccount = $account->full_code . ' - ' . $account->name;
-            }
-        }
+        // Load currently selected accounts
+        $this->loadSelectedAccounts();
         
         $this->isEditModalOpen = true;
+    }
+
+    public function loadSelectedAccounts()
+    {
+        if (empty($this->selectedAccountIds)) {
+            $this->selectedAccounts = [];
+            return;
+        }
+        
+        $accounts = Account::whereIn('id', $this->selectedAccountIds)->get();
+        $this->selectedAccounts = $accounts->map(function($account) {
+            return [
+                'id' => $account->id,
+                'code' => $account->full_code,
+                'name' => $account->name,
+            ];
+        })->toArray();
     }
 
     public function closeEditModal()
@@ -77,9 +88,8 @@ class AccountSettingsIndex extends Component
         $this->isEditModalOpen = false;
         $this->currentKey = null;
         $this->currentKeyLabel = null;
-        $this->selectedAccountId = null;
-        $this->selectedAccountCode = null;
-        $this->selectedAccountName = null;
+        $this->selectedAccountIds = [];
+        $this->selectedAccounts = [];
         $this->searchAccount = '';
         $this->accounts = [];
     }
@@ -106,21 +116,33 @@ class AccountSettingsIndex extends Component
 
     public function selectAccount($accountId)
     {
-        $this->selectedAccountId = $accountId;
-        $account = Account::find($accountId);
-        if ($account) {
-            $this->selectedAccountCode = $account->full_code;
-            $this->selectedAccountName = $account->name;
-            $this->searchAccount = $account->full_code . ' - ' . $account->name;
+        // Check if already selected
+        if (in_array($accountId, $this->selectedAccountIds)) {
+            $this->alert('warning', 'Account already selected');
+            return;
         }
+        
+        // Add to selected accounts
+        $this->selectedAccountIds[] = $accountId;
+        $this->loadSelectedAccounts();
+        
+        // Clear search
+        $this->searchAccount = '';
         $this->accounts = [];
     }
 
-    public function clearAccount()
+    public function removeAccount($accountId)
     {
-        $this->selectedAccountId = null;
-        $this->selectedAccountCode = null;
-        $this->selectedAccountName = null;
+        $this->selectedAccountIds = array_values(
+            array_filter($this->selectedAccountIds, fn($id) => $id != $accountId)
+        );
+        $this->loadSelectedAccounts();
+    }
+
+    public function clearAllAccounts()
+    {
+        $this->selectedAccountIds = [];
+        $this->selectedAccounts = [];
         $this->searchAccount = '';
         $this->accounts = [];
     }
@@ -132,9 +154,14 @@ class AccountSettingsIndex extends Component
             return;
         }
 
-        AccountSetting::setAccountId($this->currentKey, $this->selectedAccountId);
+        if (empty($this->selectedAccountIds)) {
+            $this->alert('error', 'Please select at least one account');
+            return;
+        }
+
+        AccountSetting::setAccountIds($this->currentKey, $this->selectedAccountIds);
         
-        $this->alert('success', 'Account setting updated successfully');
+        $this->alert('success', 'Account settings updated successfully');
         $this->loadSettings();
         $this->closeEditModal();
     }
