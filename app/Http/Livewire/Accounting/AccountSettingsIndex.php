@@ -32,22 +32,28 @@ class AccountSettingsIndex extends Component
     public function loadSettings()
     {
         $this->settings = [];
-        $allSettings = AccountSetting::getAllSettings();
+        $allSettings = AccountSetting::getAllSettingsWithCalcType();
         
         foreach (AccountSetting::getRequiredKeys() as $key => $label) {
-            $accountIds = $allSettings[$key] ?? [];
-            $accounts = Account::whereIn('id', $accountIds)->get();
+            $accountsData = $allSettings[$key] ?? [];
+            
+            $accounts = [];
+            foreach ($accountsData as $data) {
+                $account = Account::find($data['account_id']);
+                if ($account) {
+                    $accounts[] = [
+                        'id' => $account->id,
+                        'code' => $account->full_code,
+                        'name' => $account->name,
+                        'calc_type' => $data['calc_type'],
+                    ];
+                }
+            }
             
             $this->settings[] = [
                 'key' => $key,
                 'label' => $label,
-                'accounts' => $accounts->map(function($account) {
-                    return [
-                        'id' => $account->id,
-                        'code' => $account->full_code,
-                        'name' => $account->name,
-                    ];
-                })->toArray(),
+                'accounts' => $accounts,
             ];
         }
     }
@@ -56,12 +62,25 @@ class AccountSettingsIndex extends Component
     {
         $this->currentKey = $key;
         $this->currentKeyLabel = $label;
-        $this->selectedAccountIds = AccountSetting::getAccountIds($key);
         $this->searchAccount = '';
         $this->accounts = [];
         
-        // Load currently selected accounts
-        $this->loadSelectedAccounts();
+        // Load currently selected accounts with calc_type
+        $accountsData = AccountSetting::getAccountsWithCalcType($key);
+        $this->selectedAccountIds = array_column($accountsData, 'account_id');
+        
+        $this->selectedAccounts = [];
+        foreach ($accountsData as $data) {
+            $account = Account::find($data['account_id']);
+            if ($account) {
+                $this->selectedAccounts[] = [
+                    'id' => $account->id,
+                    'code' => $account->full_code,
+                    'name' => $account->name,
+                    'calc_type' => $data['calc_type'],
+                ];
+            }
+        }
         
         $this->isEditModalOpen = true;
     }
@@ -75,10 +94,13 @@ class AccountSettingsIndex extends Component
         
         $accounts = Account::whereIn('id', $this->selectedAccountIds)->get();
         $this->selectedAccounts = $accounts->map(function($account) {
+            // Check if account already has calc_type set
+            $existingAccount = collect($this->selectedAccounts)->firstWhere('id', $account->id);
             return [
                 'id' => $account->id,
                 'code' => $account->full_code,
                 'name' => $account->name,
+                'calc_type' => $existingAccount['calc_type'] ?? AccountSetting::CALC_TYPE_ADD,
             ];
         })->toArray();
     }
@@ -122,9 +144,17 @@ class AccountSettingsIndex extends Component
             return;
         }
         
-        // Add to selected accounts
-        $this->selectedAccountIds[] = $accountId;
-        $this->loadSelectedAccounts();
+        // Add to selected accounts with default calc_type
+        $account = Account::find($accountId);
+        if ($account) {
+            $this->selectedAccountIds[] = $accountId;
+            $this->selectedAccounts[] = [
+                'id' => $account->id,
+                'code' => $account->full_code,
+                'name' => $account->name,
+                'calc_type' => AccountSetting::CALC_TYPE_ADD, // Default to 'add'
+            ];
+        }
         
         // Clear search
         $this->searchAccount = '';
@@ -136,7 +166,20 @@ class AccountSettingsIndex extends Component
         $this->selectedAccountIds = array_values(
             array_filter($this->selectedAccountIds, fn($id) => $id != $accountId)
         );
-        $this->loadSelectedAccounts();
+        $this->selectedAccounts = array_values(
+            array_filter($this->selectedAccounts, fn($acc) => $acc['id'] != $accountId)
+        );
+    }
+
+    public function updateCalcType($accountId, $calcType)
+    {
+        // Update calc_type for the account in selectedAccounts
+        foreach ($this->selectedAccounts as &$account) {
+            if ($account['id'] == $accountId) {
+                $account['calc_type'] = $calcType;
+                break;
+            }
+        }
     }
 
     public function clearAllAccounts()
@@ -154,12 +197,20 @@ class AccountSettingsIndex extends Component
             return;
         }
 
-        if (empty($this->selectedAccountIds)) {
+        if (empty($this->selectedAccounts)) {
             $this->alert('error', 'Please select at least one account');
             return;
         }
 
-        AccountSetting::setAccountIds($this->currentKey, $this->selectedAccountIds);
+        // Prepare data with calc_type
+        $accountsData = array_map(function($account) {
+            return [
+                'account_id' => $account['id'],
+                'calc_type' => $account['calc_type'],
+            ];
+        }, $this->selectedAccounts);
+
+        AccountSetting::setAccountIds($this->currentKey, $accountsData);
         
         $this->alert('success', 'Account settings updated successfully');
         $this->loadSettings();

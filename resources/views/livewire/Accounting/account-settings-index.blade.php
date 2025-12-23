@@ -59,13 +59,18 @@
                                             </td>
                                             <td class="table-td">
                                                 @if(count($setting['accounts']) > 0)
-                                                    <div class="flex flex-wrap gap-2">
+                                                    <div class="space-y-2">
                                                         @foreach($setting['accounts'] as $account)
-                                                            <div class="inline-flex items-center">
+                                                            <div class="flex items-center gap-2">
+                                                                @if($account['calc_type'] === 'add')
+                                                                    <span class="badge bg-success-500 text-white text-xs px-2 py-1">+</span>
+                                                                @else
+                                                                    <span class="badge bg-danger-500 text-white text-xs px-2 py-1">-</span>
+                                                                @endif
                                                                 <span class="badge bg-slate-900 text-white capitalize px-3 py-1">
                                                                     {{ $account['code'] }}
                                                                 </span>
-                                                                <span class="text-sm text-slate-600 dark:text-slate-300 ml-2">
+                                                                <span class="text-sm text-slate-600 dark:text-slate-300">
                                                                     {{ $account['name'] }}
                                                                 </span>
                                                             </div>
@@ -131,16 +136,35 @@
                             @if(count($selectedAccounts) > 0)
                                 <div class="from-group">
                                     <label class="form-label">Selected Accounts ({{ count($selectedAccounts) }})</label>
-                                    <div class="space-y-2">
-                                        @foreach($selectedAccounts as $account)
-                                            <div class="flex items-center justify-between p-3 bg-success-50 dark:bg-success-500/10 border border-success-200 dark:border-success-700 rounded-md">
-                                                <div class="flex items-center gap-2 flex-1">
-                                                    <iconify-icon icon="heroicons:check-circle" class="text-success-500 text-lg flex-shrink-0"></iconify-icon>
-                                                    <span class="badge bg-slate-900 text-white text-xs">{{ $account['code'] }}</span>
-                                                    <span class="text-sm text-slate-600 dark:text-slate-300">{{ $account['name'] }}</span>
+                                    <div class="space-y-3">
+                                        @foreach($selectedAccounts as $index => $account)
+                                            <div class="flex items-center gap-3 p-3 bg-success-50 dark:bg-success-500/10 border border-success-200 dark:border-success-700 rounded-md">
+                                                <iconify-icon icon="heroicons:check-circle" class="text-success-500 text-lg flex-shrink-0"></iconify-icon>
+                                                
+                                                <!-- Account Info -->
+                                                <div class="flex-1">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="badge bg-slate-900 text-white text-xs">{{ $account['code'] }}</span>
+                                                        <span class="text-sm text-slate-600 dark:text-slate-300">{{ $account['name'] }}</span>
+                                                    </div>
                                                 </div>
+
+                                                <!-- Calc Type Selector -->
+                                                <div class="flex items-center gap-2">
+                                                    <select wire:change="updateCalcType({{ $account['id'] }}, $event.target.value)"
+                                                        class="form-control py-1 px-2 text-sm min-w-[120px]">
+                                                        <option value="add" {{ $account['calc_type'] === 'add' ? 'selected' : '' }}>
+                                                            ➕ Add
+                                                        </option>
+                                                        <option value="subtract" {{ $account['calc_type'] === 'subtract' ? 'selected' : '' }}>
+                                                            ➖ Subtract
+                                                        </option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- Remove Button -->
                                                 <button wire:click="removeAccount({{ $account['id'] }})" type="button"
-                                                    class="text-danger-500 hover:text-danger-600 ml-2">
+                                                    class="text-danger-500 hover:text-danger-600">
                                                     <iconify-icon icon="heroicons:x-mark" class="text-xl"></iconify-icon>
                                                 </button>
                                             </div>

@@ -10,7 +10,11 @@ class AccountSetting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['key', 'account_id'];
+    protected $fillable = ['key', 'account_id', 'calc_type'];
+
+    const CALC_TYPE_ADD = 'add';
+    const CALC_TYPE_SUBTRACT = 'subtract';
+    const CALC_TYPES = [self::CALC_TYPE_ADD, self::CALC_TYPE_SUBTRACT];
 
     /**
      * Array of all account keys needed for financial reports
@@ -62,30 +66,55 @@ class AccountSetting extends Model
     }
 
     /**
-     * Set account IDs for a key (replaces all existing accounts for this key)
+     * Get accounts with calc_type by key
      */
-    public static function setAccountIds(string $key, array $accountIds): void
+    public static function getAccountsWithCalcType(string $key): array
+    {
+        return Cache::remember("account_setting.{$key}.calc", 3600, function () use ($key) {
+            return self::where('key', $key)
+                ->whereNotNull('account_id')
+                ->get()
+                ->map(function($setting) {
+                    return [
+                        'account_id' => $setting->account_id,
+                        'calc_type' => $setting->calc_type,
+                    ];
+                })
+                ->toArray();
+        });
+    }
+
+    /**
+     * Set account IDs for a key with calc_types (replaces all existing accounts for this key)
+     * @param array $accountsData Array of ['account_id' => id, 'calc_type' => 'add'/'subtract']
+     */
+    public static function setAccountIds(string $key, array $accountsData): void
     {
         // Remove existing entries for this key
         self::where('key', $key)->delete();
         
         // Add new entries
-        foreach ($accountIds as $accountId) {
+        foreach ($accountsData as $data) {
+            $accountId = is_array($data) ? ($data['account_id'] ?? null) : $data;
+            $calcType = is_array($data) ? ($data['calc_type'] ?? self::CALC_TYPE_ADD) : self::CALC_TYPE_ADD;
+            
             if ($accountId) {
                 self::create([
                     'key' => $key,
-                    'account_id' => $accountId
+                    'account_id' => $accountId,
+                    'calc_type' => $calcType,
                 ]);
             }
         }
         
         Cache::forget("account_setting.{$key}");
+        Cache::forget("account_setting.{$key}.calc");
     }
 
     /**
-     * Add an account to a key
+     * Add an account to a key with calc_type
      */
-    public static function addAccount(string $key, int $accountId): void
+    public static function addAccount(string $key, int $accountId, string $calcType = self::CALC_TYPE_ADD): void
     {
         // Check if already exists
         $exists = self::where('key', $key)
@@ -95,10 +124,25 @@ class AccountSetting extends Model
         if (!$exists) {
             self::create([
                 'key' => $key,
-                'account_id' => $accountId
+                'account_id' => $accountId,
+                'calc_type' => $calcType,
             ]);
             Cache::forget("account_setting.{$key}");
+            Cache::forget("account_setting.{$key}.calc");
         }
+    }
+
+    /**
+     * Update calc_type for a specific account setting
+     */
+    public static function updateCalcType(string $key, int $accountId, string $calcType): void
+    {
+        self::where('key', $key)
+            ->where('account_id', $accountId)
+            ->update(['calc_type' => $calcType]);
+        
+        Cache::forget("account_setting.{$key}");
+        Cache::forget("account_setting.{$key}.calc");
     }
 
     /**
@@ -111,6 +155,7 @@ class AccountSetting extends Model
             ->delete();
         
         Cache::forget("account_setting.{$key}");
+        Cache::forget("account_setting.{$key}.calc");
     }
 
     /**
@@ -125,6 +170,28 @@ class AccountSetting extends Model
         $result = [];
         foreach ($settings as $key => $items) {
             $result[$key] = $items->pluck('account_id')->toArray();
+        }
+        
+        return $result;
+    }
+
+    /**
+     * Get all configured settings with calc_type as key => [['account_id' => id, 'calc_type' => type]] array
+     */
+    public static function getAllSettingsWithCalcType(): array
+    {
+        $settings = self::whereNotNull('account_id')
+            ->get()
+            ->groupBy('key');
+        
+        $result = [];
+        foreach ($settings as $key => $items) {
+            $result[$key] = $items->map(function($item) {
+                return [
+                    'account_id' => $item->account_id,
+                    'calc_type' => $item->calc_type,
+                ];
+            })->toArray();
         }
         
         return $result;

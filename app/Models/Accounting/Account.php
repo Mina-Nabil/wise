@@ -1041,8 +1041,8 @@ class Account extends Model
         }
 
         try {
-            // Get account settings
-            $settings = AccountSetting::getAllSettings();
+            // Get account settings with calc_type
+            $settings = AccountSetting::getAllSettingsWithCalcType();
             
             // Helper function to get account balance at a specific date
             $getAccountBalance = function($accountId, Carbon $date) {
@@ -1095,16 +1095,28 @@ class Account extends Model
             
             $row++;
             
-            // Get all balances (sum from multiple accounts per key)
+            // Get all balances (sum from multiple accounts per key, respecting calc_type)
             $balances = [];
             foreach (AccountSetting::ACCOUNT_KEYS as $key => $label) {
-                $accountIds = $settings[$key] ?? [];
+                $accountsData = $settings[$key] ?? [];
                 $startBalance = 0;
                 $endBalance = 0;
                 
-                foreach ($accountIds as $accountId) {
-                    $startBalance += $getAccountBalance($accountId, $startDate);
-                    $endBalance += $getAccountBalance($accountId, $endDate);
+                foreach ($accountsData as $data) {
+                    $accountId = $data['account_id'];
+                    $calcType = $data['calc_type'];
+                    
+                    $accountStartBalance = $getAccountBalance($accountId, $startDate);
+                    $accountEndBalance = $getAccountBalance($accountId, $endDate);
+                    
+                    // Apply calc_type: add or subtract
+                    if ($calcType === AccountSetting::CALC_TYPE_SUBTRACT) {
+                        $startBalance -= $accountStartBalance;
+                        $endBalance -= $accountEndBalance;
+                    } else {
+                        $startBalance += $accountStartBalance;
+                        $endBalance += $accountEndBalance;
+                    }
                 }
                 
                 $balances[$key] = [
@@ -1123,8 +1135,8 @@ class Account extends Model
             
             $activeSheet->setCellValue('A' . $row, 'تكلفة الحصول علي الايرادات');
             $activeSheet->setCellValue('B' . $row, '(7)');
-            $activeSheet->setCellValue('C' . $row, -1 * $balances['cost_of_revenues']['end']);
-            $activeSheet->setCellValue('D' . $row, -1 * $balances['cost_of_revenues']['start']);
+            $activeSheet->setCellValue('C' . $row, $balances['cost_of_revenues']['end']);
+            $activeSheet->setCellValue('D' . $row, $balances['cost_of_revenues']['start']);
             $row++;
             
             // Gross Profit
@@ -1209,8 +1221,8 @@ class Account extends Model
             $row++;
             
             $activeSheet->setCellValue('A' . $row, 'مخصصات');
-            $activeSheet->setCellValue('C' . $row, -1 * $balances['provisions']['end']);
-            $activeSheet->setCellValue('D' . $row, -1 * $balances['provisions']['start']);
+            $activeSheet->setCellValue('C' . $row, $balances['provisions']['end']);
+            $activeSheet->setCellValue('D' . $row, $balances['provisions']['start']);
             $row++;
             
             $otherEndRow = $row - 1;
@@ -1228,14 +1240,14 @@ class Account extends Model
             
             // Taxes
             $activeSheet->setCellValue('A' . $row, 'ضريبة الدخل المؤجله');
-            $activeSheet->setCellValue('C' . $row, -1 * $balances['deferred_income_tax']['end']);
-            $activeSheet->setCellValue('D' . $row, -1 * $balances['deferred_income_tax']['start']);
+            $activeSheet->setCellValue('C' . $row, $balances['deferred_income_tax']['end']);
+            $activeSheet->setCellValue('D' . $row, $balances['deferred_income_tax']['start']);
             $deferredTaxRow = $row;
             $row++;
             
             $activeSheet->setCellValue('A' . $row, 'ضريبة الدخل');
-            $activeSheet->setCellValue('C' . $row, -1 * $balances['income_tax']['end']);
-            $activeSheet->setCellValue('D' . $row, -1 * $balances['income_tax']['start']);
+            $activeSheet->setCellValue('C' . $row, $balances['income_tax']['end']);
+            $activeSheet->setCellValue('D' . $row, $balances['income_tax']['start']);
             $incomeTaxRow = $row;
             $row++;
             
