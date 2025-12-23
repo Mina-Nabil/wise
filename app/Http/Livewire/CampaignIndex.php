@@ -130,7 +130,7 @@ class CampaignIndex extends Component
             return;
         }
 
-        $this->authorize('importLeads');
+        $this->authorize('importLeads', $campaign);
 
         $this->validate([
             'importLeadsFile' => 'required|file|mimes:xlsx,xls|max:10240',
