@@ -253,7 +253,7 @@ class Campaign extends Model
                     $fullName = trim($activeSheet->getCell('D' . $row)->getValue() ?? '');
                     $phone = trim($activeSheet->getCell('E' . $row)->getValue() ?? '');
                     $jobTitle = trim($activeSheet->getCell('F' . $row)->getValue() ?? '');
-                    $clientType = trim($activeSheet->getCell('F' . $row)->getValue() ?? '') == 'شركه' ? 'corporate' : 'customer';
+                    $clientType = trim($activeSheet->getCell('G' . $row)->getValue() ?? '') == 'شركه' ? 'corporate' : 'customer';
 
                     // Skip empty rows
                     if (empty($fullName) && empty($phone) && empty($email)) {
