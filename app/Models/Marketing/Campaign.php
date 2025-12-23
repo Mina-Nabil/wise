@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Exception;
 
@@ -110,6 +111,82 @@ class Campaign extends Model
     public function canDelete(): bool
     {
         return $this->customers()->count() === 0 && $this->corporates()->count() === 0;
+    }
+
+    /**
+     * Download import leads template Excel file
+     * 
+     * Excel format:
+     * Column A: Platform/Channel
+     * Column B: Interest Type (تأمين_صحى, تأمين_على_العربية, تأمين_على_بيتك, اخر)
+     * Column C: Email
+     * Column D: Full Name
+     * Column E: Phone Number
+     * Column F: Job Title
+     * Column G: Client Type (شركه for corporate, otherwise customer)
+     * 
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public static function downloadImportTemplate()
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeSheet = $spreadsheet->getActiveSheet();
+
+        // Set headers
+        $activeSheet->setCellValue('A1', 'Platform/Channel');
+        $activeSheet->setCellValue('B1', 'Interest Type');
+        $activeSheet->setCellValue('C1', 'Email');
+        $activeSheet->setCellValue('D1', 'Full Name');
+        $activeSheet->setCellValue('E1', 'Phone Number');
+        $activeSheet->setCellValue('F1', 'Job Title');
+        $activeSheet->setCellValue('G1', 'Client Type');
+
+        // Style header row
+        $headerStyle = [
+            'font' => ['bold' => true],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'E0E0E0']
+            ]
+        ];
+        $activeSheet->getStyle('A1:G1')->applyFromArray($headerStyle);
+
+        // Set column widths
+        $activeSheet->getColumnDimension('A')->setWidth(20);
+        $activeSheet->getColumnDimension('B')->setWidth(25);
+        $activeSheet->getColumnDimension('C')->setWidth(30);
+        $activeSheet->getColumnDimension('D')->setWidth(25);
+        $activeSheet->getColumnDimension('E')->setWidth(20);
+        $activeSheet->getColumnDimension('F')->setWidth(20);
+        $activeSheet->getColumnDimension('G')->setWidth(15);
+
+        // Add example row with instructions
+        $activeSheet->setCellValue('A2', 'Example: Facebook');
+        $activeSheet->setCellValue('B2', 'تأمين_صحى');
+        $activeSheet->setCellValue('C2', 'example@email.com');
+        $activeSheet->setCellValue('D2', 'John Doe');
+        $activeSheet->setCellValue('E2', '01234567890');
+        $activeSheet->setCellValue('F2', 'Engineer');
+        $activeSheet->setCellValue('G2', 'customer');
+
+        // Style example row
+        $exampleStyle = [
+            'font' => ['italic' => true, 'color' => ['rgb' => '666666']]
+        ];
+        $activeSheet->getStyle('A2:G2')->applyFromArray($exampleStyle);
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'import_leads_template.xlsx';
+        $filePath = storage_path('app/exports/' . $fileName);
+        
+        // Create exports directory if it doesn't exist
+        if (!is_dir(storage_path('app/exports'))) {
+            mkdir(storage_path('app/exports'), 0755, true);
+        }
+        
+        $writer->save($filePath);
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
     /**

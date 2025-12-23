@@ -6,6 +6,11 @@
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+            <button wire:click="downloadImportTemplate"
+                class="btn inline-flex justify-center btn-outline-primary m-1">
+                <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="heroicons:arrow-down-tray"></iconify-icon>
+                Download Import Template
+            </button>
             @can('create', \App\Models\Marketing\Campaign::class)
                 <button wire:click="openCampaignSec"
                     class="btn inline-flex justify-center btn-dark dark:bg-slate-700 dark:text-slate-300 m-1">
@@ -410,6 +415,7 @@
                                                 <li><strong>Column D:</strong> Full Name</li>
                                                 <li><strong>Column E:</strong> Phone Number</li>
                                                 <li><strong>Column F:</strong> Job Title</li>
+                                                <li><strong>Column G:</strong> Client Type (شركه for corporate, otherwise customer)</li>
                                             </ul>
                                         </div>
 
@@ -463,6 +469,11 @@
                                     <!-- Modal footer -->
                                     <div
                                         class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                        <button wire:click="downloadImportTemplate"
+                                            class="btn inline-flex justify-center btn-outline-primary">
+                                            <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="heroicons:arrow-down-tray"></iconify-icon>
+                                            Download Template
+                                        </button>
                                         <button wire:click="importLeads" wire:loading.attr="disabled"
                                             class="btn inline-flex justify-center text-white bg-primary-500"
                                             @if (!$importLeadsFile) disabled @endif>

@@ -180,6 +180,11 @@ class CampaignIndex extends Component
         }
     }
 
+    public function downloadImportTemplate()
+    {
+        return Campaign::downloadImportTemplate();
+    }
+
     public function updatingSearch()
     {
         $this->resetPage();
