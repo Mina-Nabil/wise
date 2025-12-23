@@ -14,7 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('account_settings', function (Blueprint $table) {
-            //
+            // Drop the unique constraint on key column
+            $table->dropUnique(['key']);
+            
+            // Keep the regular index for faster lookups
+            // The index was added in the original migration, so we don't need to re-add it
         });
     }
 
@@ -26,7 +30,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('account_settings', function (Blueprint $table) {
-            //
+            // Re-add the unique constraint if rolling back
+            $table->unique('key');
         });
     }
 };

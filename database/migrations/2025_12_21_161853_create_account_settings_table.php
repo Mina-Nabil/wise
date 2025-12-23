@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('account_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique()->comment('Setting key identifier');
+            $table->string('key')->comment('Setting key identifier');
             $table->unsignedBigInteger('account_id')->nullable()->comment('Reference to account ID');
             $table->timestamps();
             
             // Foreign key constraint
             $table->foreign('account_id')->references('id')->on('accounts')->onDelete('set null');
             
-            // Index for faster lookups
+            // Index for faster lookups (not unique to allow multiple accounts per key)
             $table->index('key');
         });
     }
