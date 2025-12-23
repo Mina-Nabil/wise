@@ -74,6 +74,7 @@ class CustomerIndex extends Component
     public $downloadUserLeadsID;
 
     public $statusFilter = false;
+    public $campaignFilter = null;
 
     // Interest management properties
     public $interestManagementModalOpen = false;
@@ -329,6 +330,11 @@ class CustomerIndex extends Component
         $this->resetPage();
     }
 
+    public function updatingCampaignFilter()
+    {
+        $this->resetPage();
+    }
+
     // Interest Management Functions
     public function openInterestManagement($customerId)
     {
@@ -476,7 +482,13 @@ class CustomerIndex extends Component
         $customers = Customer::userData(
             $this->search,
             statusFilter: $this->statusFilter != 'all' ? $this->statusFilter  : null
-        )->latest()->paginate(10);
+        )
+        ->when($this->campaignFilter, function ($query) {
+            $query->where('customers.campaign_id', $this->campaignFilter);
+        })
+        ->with('campaign')
+        ->latest()
+        ->paginate(10);
         $users = User::all();
 
         $campaigns = Campaign::all();

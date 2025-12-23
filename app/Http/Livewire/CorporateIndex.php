@@ -42,6 +42,7 @@ class CorporateIndex extends Component
 
     //status change
     public $statusFilter;
+    public $campaignFilter = null;
     public $changeStatusId;
     public $status;
     public $statusReason;
@@ -392,9 +393,19 @@ class CorporateIndex extends Component
         }
     }
 
+    public function updatingCampaignFilter()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $corporates = Corporate::userData($this->search, $this->statusFilter)->paginate(10);
+        $corporates = Corporate::userData($this->search, $this->statusFilter)
+            ->when($this->campaignFilter, function ($query) {
+                $query->where('corporates.campaign_id', $this->campaignFilter);
+            })
+            ->with('campaign')
+            ->paginate(10);
         $users = User::all();
         $customerStatus = Status::STATUSES;
         $LINES_OF_BUSINESS = Policy::CORPORATE_TYPES;

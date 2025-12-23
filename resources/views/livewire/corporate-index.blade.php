@@ -51,6 +51,18 @@
                 </div>
             @endforeach
 
+            <div class="flex items-center space-x-7 flex-wrap h-[30px] mt-4">
+                <div class="input-area">
+                    <label class="form-label text-sm">Campaign:</label>
+                    <select class="form-control form-control-sm" wire:model="campaignFilter">
+                        <option value="">All Campaigns</option>
+                        @foreach ($campaigns as $campaign)
+                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
 
             <div class=" -mx-6">
                 <div class="inline-block min-w-full align-middle">
@@ -66,6 +78,10 @@
 
                                     <th scope="col" class=" table-th ">
                                         Type
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Campaign
                                     </th>
 
                                     {{-- <th scope="col" class=" table-th ">
@@ -99,6 +115,10 @@
                                         <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
                                             wire:click="openChangeStatus({{ $corporate->id }})">
                                             {{ $corporate->type }} - {{ $corporate->status?->status }}
+                                        </td>
+
+                                        <td class="table-td ">
+                                            {{ $corporate->campaign->name ?? 'N/A' }}
                                         </td>
 
                                         {{-- <td class="table-td ">
