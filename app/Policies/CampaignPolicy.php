@@ -82,8 +82,5 @@ class CampaignPolicy
         if ($user->is_admin) {
             return true;
         }
-        if ($user_id !== null) {
-            return $user = User::find($user_id);
-        }
     }
 }
