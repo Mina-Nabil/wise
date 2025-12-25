@@ -307,20 +307,37 @@ class Invoice extends Model
 
     public function deleteInvoice()
     {
+        // Check if invoice has any journal entries
+        if ($this->created_journal_entry_id || $this->paid_journal_entry_id) {
+            return [
+                'success' => false,
+                'message' => 'Cannot delete invoice. There are journal entries linked.'
+            ];
+        }
+
         try {
             DB::transaction(function () {
-                /** @var PolicyComm */
+                /** @var CompanyCommPayment */
                 foreach ($this->commissions()->get() as $comm) {
+                    // Check if commission payment has any journal entries
+                    // Note: CompanyCommPayment doesn't have direct journal_entry_id
+                    // but we can add additional checks here if needed in the future
                     $comm->delete();
                 }
                 $this->delete();
             });
-            AppLog::info("Invoice delete");
-            return true;
+            AppLog::info("Invoice deleted", loggable: $this);
+            return [
+                'success' => true,
+                'message' => 'Invoice deleted successfully'
+            ];
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't create invoice", $e->getMessage(), $this);
-            return false;
+            AppLog::error("Can't delete invoice", $e->getMessage(), $this);
+            return [
+                'success' => false,
+                'message' => 'Failed to delete invoice: ' . $e->getMessage()
+            ];
         }
     }
 

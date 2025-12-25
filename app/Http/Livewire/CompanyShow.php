@@ -391,12 +391,20 @@ class CompanyShow extends Component
 
     public function deleteInvoice($id)
     {
-        $res = Invoice::find($id)->deleteInvoice();
-        if ($res) {
-            $this->alert('success', 'invoice deleted');
+        $invoice = Invoice::find($id);
+        
+        if (!$invoice) {
+            $this->alert('failed', 'Invoice not found');
+            return;
+        }
+
+        $result = $invoice->deleteInvoice();
+        
+        if ($result['success']) {
+            $this->alert('success', $result['message']);
             $this->mount($this->company->id, false);
         } else {
-            $this->alert('failed', 'server error');
+            $this->alert('failed', $result['message']);
         }
     }
 
