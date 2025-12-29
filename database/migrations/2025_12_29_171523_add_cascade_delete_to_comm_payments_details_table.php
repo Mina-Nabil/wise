@@ -15,8 +15,6 @@ return new class extends Migration
     public function up()
     {
         Schema::table('comm_payments_details', function (Blueprint $table) {
-            // Drop existing foreign key constraint
-            $table->dropForeign(['comm_profile_payment_id']);
             
             // Add foreign key with cascade delete
             $table->foreign('comm_profile_payment_id')
