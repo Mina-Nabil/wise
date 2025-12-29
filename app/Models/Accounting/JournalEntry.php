@@ -389,25 +389,49 @@ class JournalEntry extends Model
 
     public function revertEntry()
     {
-        $this->load('accounts');
-        foreach ($this->accounts as $ac) {
-            $accounts[$ac->id] = [
-                'nature'    =>  $ac->pivot->nature == 'debit' ? 'credit' : 'debit',
-                'amount'    =>  $ac->pivot->amount,
-                'currency' => $ac->pivot->currency,
-                'currency_amount' => $ac->pivot->currency_amount,
-                'currency_rate' => $ac->pivot->currency_rate,
-                'doc_url' => $ac->pivot->doc_url,
-            ];
-        }
-        return self::newJournalEntry(
-            $this->entry_title_id,
-            $this->cash_entry_type = null,
-            $this->receiver_name = null,
-            revert_entry_id: $this->id,
-            comment: $this->comment,
-            accounts: $accounts
-        );
+        return DB::transaction(function () {
+            // Lock this entry to prevent concurrent reversals
+            $entry = self::where('id', $this->id)->lockForUpdate()->first();
+            
+            if (!$entry) {
+                return false;
+            }
+            
+            // Check if this entry has already been reverted
+            $existingReversal = self::where('revert_entry_id', $this->id)->first();
+            if ($existingReversal) {
+                AppLog::warning("Entry already reverted", loggable: $this);
+                return "This entry has already been reverted (Reversal Entry ID: {$existingReversal->id})";
+            }
+            
+            // Prevent reverting an entry that is itself a reversal
+            if ($this->revert_entry_id) {
+                AppLog::warning("Cannot revert a reversal entry", loggable: $this);
+                return "Cannot revert an entry that is itself a reversal";
+            }
+            
+            $entry->load('accounts');
+            $accounts = [];
+            foreach ($entry->accounts as $ac) {
+                $accounts[$ac->id] = [
+                    'nature'    =>  $ac->pivot->nature == 'debit' ? 'credit' : 'debit',
+                    'amount'    =>  $ac->pivot->amount,
+                    'currency' => $ac->pivot->currency,
+                    'currency_amount' => $ac->pivot->currency_amount,
+                    'currency_rate' => $ac->pivot->currency_rate,
+                    'doc_url' => $ac->pivot->doc_url,
+                ];
+            }
+            
+            return self::newJournalEntry(
+                $entry->entry_title_id,
+                cash_entry_type: null,
+                receiver_name: null,
+                revert_entry_id: $entry->id,
+                comment: $entry->comment,
+                accounts: $accounts
+            );
+        });
     }
 
     public function uploadDoc($account_id, $file_url)
