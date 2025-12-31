@@ -166,7 +166,7 @@ class JournalEntry extends Model
                     $account = Account::findOrFail($account_id);
                     $entry_arr['account_balance'] =  $account->updateBalance($entry_arr['amount'], $entry_arr['nature'], $skip_auth);
                     if ($entry_arr['currency'] && $entry_arr['currency'] != self::CURRENCY_EGP && $entry_arr['currency'] == $account->default_currency) {
-                        $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['currency'], $entry_arr['nature'], $skip_auth);
+                        $entry_arr['account_foreign_balance'] =  $account->updateForeignBalance($entry_arr['amount'], $entry_arr['nature'], $skip_auth);
                     }
                     $newEntry->accounts()->attach($account_id, $entry_arr);
                 }
