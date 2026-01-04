@@ -24,6 +24,7 @@ use App\Http\Livewire\Accounting\AccountIndex;
 use App\Http\Livewire\Accounting\AccountShow;
 use App\Http\Livewire\Accounting\CreateJournalEntry;
 use App\Http\Livewire\Accounting\UnapprovedEntryIndex;
+use App\Http\Livewire\Accounting\ArchivedEntryIndex;
 use App\Http\Livewire\Accounting\AccountSettingsIndex;
 use App\Http\Livewire\Accounting\IncomeStatementReport;
 use App\Http\Livewire\EntryTitleIndex;
@@ -140,6 +141,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/accounts/entries', JournalEntryIndex::class);
     Route::get('/accounts/entries/new', CreateJournalEntry::class);
     Route::get('/accounts/entries/unapproved', UnapprovedEntryIndex::class);
+    Route::get('/accounts/entries/archived', ArchivedEntryIndex::class);
     Route::get('/accounts/entries/{id}', JournalEntryIndex::class)->name('accounts.entries');
     Route::get('/accounts/titles', EntryTitleIndex::class);
     Route::get('/accounts/reports/income-statement', IncomeStatementReport::class);

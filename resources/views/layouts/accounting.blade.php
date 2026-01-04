@@ -141,6 +141,14 @@
                         </a>
                     </li> 
                     <li>
+                        <a href="{{ url('accounts/entries/archived') }}" class="navItem {{ $archived_entries ?? '' }}">
+                            <span class="flex items-center">
+                                <iconify-icon class=" nav-icon" icon="lucide:archive"></iconify-icon>
+                                <span>Archived Entries</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ url('accounts/titles') }}" class="navItem {{ $entry_titles ?? '' }}">
                             <span class="flex items-center">
                                 <iconify-icon class=" nav-icon" icon="material-symbols:text-fields"></iconify-icon>
