@@ -17,6 +17,16 @@
                 <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="lucide:calendar"></iconify-icon>
                 Opening Balances
             </button>
+            <button wire:click="openArchiveModal"
+                class="btn inline-flex justify-center btn-warning dark:bg-yellow-600 dark:text-white m-1">
+                <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="lucide:archive"></iconify-icon>
+                Archive Entries
+            </button>
+            <button wire:click="openDownloadArchivedModal"
+                class="btn inline-flex justify-center btn-secondary dark:bg-slate-600 dark:text-white m-1">
+                <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="lucide:download"></iconify-icon>
+                Download Archived
+            </button>
             {{-- @endcan --}}
             {{-- @can('create', \App\Models\Accounting\AccountType::class) --}}
             <button wire:click="openAddNewModal"
@@ -538,6 +548,156 @@
                                     wire:loading wire:target="exportOpeningBalances"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                                 <span wire:loading.remove="exportOpeningBalances">Export</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Archive Entries Modal -->
+    @if ($isArchiveModalOpen)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="archive_modal" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 500px;">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Archive Journal Entries
+                            </h3>
+
+                            <button wire:click="closeArchiveModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
+                                <div class="flex">
+                                    <iconify-icon icon="lucide:alert-triangle" class="text-yellow-600 dark:text-yellow-400 text-xl mr-2"></iconify-icon>
+                                    <div>
+                                        <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                                            Warning: This action cannot be undone
+                                        </p>
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                                            All journal entries created on or before the selected date will be archived and then deleted from the journal entries table.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-5">
+                                <label for="archiveDate" class="form-label">Archive Date</label>
+                                <input type="date" id="archiveDate"
+                                    class="form-control mt-2 w-full {{ $errors->has('archiveDate') ? '!border-danger-500' : '' }}"
+                                    wire:model="archiveDate" max="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                                @error('archiveDate')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                                <p class="text-sm text-slate-500 mt-1">All entries created on or before this date will be archived</p>
+                            </div>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeArchiveModal"
+                                class="btn inline-flex justify-center btn-outline-dark">
+                                Cancel
+                            </button>
+                            <button wire:click="archiveEntries"
+                                class="btn inline-flex justify-center btn-warning dark:bg-yellow-600 dark:text-white">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="archiveEntries"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove="archiveEntries">Archive Entries</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Download Archived Entries Modal -->
+    @if ($isDownloadArchivedModalOpen)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="download_archived_modal" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 500px;">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Download Archived Entries
+                            </h3>
+
+                            <button wire:click="closeDownloadArchivedModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="form-group mb-5">
+                                    <label for="downloadArchivedFromDate" class="form-label">From Date</label>
+                                    <input type="date" id="downloadArchivedFromDate"
+                                        class="form-control mt-2 w-full {{ $errors->has('downloadArchivedFromDate') ? '!border-danger-500' : '' }}"
+                                        wire:model="downloadArchivedFromDate">
+                                    @error('downloadArchivedFromDate')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="form-group mb-5">
+                                    <label for="downloadArchivedToDate" class="form-label">To Date</label>
+                                    <input type="date" id="downloadArchivedToDate"
+                                        class="form-control mt-2 w-full {{ $errors->has('downloadArchivedToDate') ? '!border-danger-500' : '' }}"
+                                        wire:model="downloadArchivedToDate">
+                                    @error('downloadArchivedToDate')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-500">Download archived journal entries within the selected date range (based on archived date)</p>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="closeDownloadArchivedModal"
+                                class="btn inline-flex justify-center btn-outline-dark">
+                                Cancel
+                            </button>
+                            <button wire:click="downloadArchivedEntries"
+                                class="btn inline-flex justify-center btn-secondary dark:bg-slate-600 dark:text-white">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="downloadArchivedEntries"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove="downloadArchivedEntries">Download</span>
                             </button>
                         </div>
                     </div>

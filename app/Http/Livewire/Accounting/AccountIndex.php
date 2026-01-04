@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Accounting;
 
 use App\Models\Accounting\Account;
+use App\Models\Accounting\ArchivedEntry;
 use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\MainAccount;
 use App\Traits\AlertFrontEnd;
@@ -20,6 +21,8 @@ class AccountIndex extends Component
     public $isAddNewModalOpen = false;
     public $isExportModalOpen = false;
     public $isOpeningBalanceExportModalOpen = false;
+    public $isArchiveModalOpen = false;
+    public $isDownloadArchivedModalOpen = false;
 
     public $acc_code;
     public $acc_name;
@@ -41,6 +44,13 @@ class AccountIndex extends Component
     // Opening Balance Export properties
     public $openingBalanceYear;
     public $openingBalanceShowZero = true;
+
+    // Archive properties
+    public $archiveDate;
+
+    // Download Archived properties
+    public $downloadArchivedFromDate;
+    public $downloadArchivedToDate;
 
     private $filteredAccounts;
 
@@ -112,6 +122,35 @@ class AccountIndex extends Component
     {
         $this->isOpeningBalanceExportModalOpen = false;
         $this->reset(['openingBalanceYear', 'openingBalanceShowZero']);
+    }
+
+    // Method to open archive modal
+    public function openArchiveModal()
+    {
+        $this->archiveDate = Carbon::now()->subYear()->format('Y-m-d');
+        $this->isArchiveModalOpen = true;
+    }
+
+    // Method to close archive modal
+    public function closeArchiveModal()
+    {
+        $this->isArchiveModalOpen = false;
+        $this->reset(['archiveDate']);
+    }
+
+    // Method to open download archived modal
+    public function openDownloadArchivedModal()
+    {
+        $this->downloadArchivedFromDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $this->downloadArchivedToDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        $this->isDownloadArchivedModalOpen = true;
+    }
+
+    // Method to close download archived modal
+    public function closeDownloadArchivedModal()
+    {
+        $this->isDownloadArchivedModalOpen = false;
+        $this->reset(['downloadArchivedFromDate', 'downloadArchivedToDate']);
     }
 
     // Method to open edit modal
@@ -206,6 +245,56 @@ class AccountIndex extends Component
         } catch (\Exception $e) {
             Log::error('Opening balance export failed: ' . $e->getMessage());
             $this->alert('failed', 'Opening balance export failed: ' . $e->getMessage());
+        }
+    }
+
+    // Archive entries function
+    public function archiveEntries()
+    {
+        $this->validate([
+            'archiveDate' => 'required|date|before_or_equal:today',
+        ]);
+
+        try {
+            $date = Carbon::parse($this->archiveDate);
+            $result = ArchivedEntry::archiveEntriesByDate($date);
+
+            if ($result['success']) {
+                $this->closeArchiveModal();
+                $this->alert('success', $result['message']);
+            } else {
+                $this->alert('failed', $result['message']);
+            }
+        } catch (\Exception $e) {
+            Log::error('Archive entries failed: ' . $e->getMessage());
+            $this->alert('failed', 'Archive failed: ' . $e->getMessage());
+        }
+    }
+
+    // Download archived entries function
+    public function downloadArchivedEntries()
+    {
+        $this->validate([
+            'downloadArchivedFromDate' => 'required|date',
+            'downloadArchivedToDate' => 'required|date|after_or_equal:downloadArchivedFromDate',
+        ]);
+
+        try {
+            $fromDate = Carbon::parse($this->downloadArchivedFromDate);
+            $toDate = Carbon::parse($this->downloadArchivedToDate);
+
+            $result = ArchivedEntry::downloadArchivedEntries($fromDate, $toDate);
+
+            if ($result) {
+                $this->closeDownloadArchivedModal();
+                $this->alert('success', 'Download completed successfully');
+                return $result;
+            } else {
+                $this->alert('failed', 'Download failed. Please try again.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Download archived entries failed: ' . $e->getMessage());
+            $this->alert('failed', 'Download failed: ' . $e->getMessage());
         }
     }
 
