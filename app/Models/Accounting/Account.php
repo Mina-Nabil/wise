@@ -849,6 +849,95 @@ class Account extends Model
         return $this->limit <= $amount;
     }
 
+    /**
+     * Set the opening balance for this account and refresh all entry balances
+     * 
+     * @param float $balance The opening balance amount (balance BEFORE any entries)
+     * @param float|null $foreignBalance The opening foreign balance amount (optional)
+     * @return array ['success' => bool, 'message' => string]
+     */
+    public function setOpeningBalance(float $balance, ?float $foreignBalance = null): array
+    {
+        try {
+            return DB::transaction(function () use ($balance, $foreignBalance) {
+                // Get the first entry for this account
+                $firstEntry = JournalEntry::byAccount($this->id)
+                    ->orderBy('created_at', 'asc')
+                    ->orderBy('id', 'asc')
+                    ->first();
+
+                if ($firstEntry) {
+                    // Get the first entry's pivot data
+                    $firstPivot = DB::table('entry_accounts')
+                        ->where('journal_entry_id', $firstEntry->id)
+                        ->where('account_id', $this->id)
+                        ->first();
+
+                    if ($firstPivot) {
+                        // Calculate what the first entry's account_balance should be
+                        // based on the new opening balance
+                        $entryAmount = $firstPivot->amount;
+                        $entryNature = $firstPivot->nature;
+
+                        // Apply the entry effect to the opening balance
+                        if ($entryNature == $this->nature) {
+                            // Same nature increases balance
+                            $newFirstEntryBalance = $balance + $entryAmount;
+                        } else {
+                            // Opposite nature decreases balance
+                            $newFirstEntryBalance = $balance - $entryAmount;
+                        }
+
+                        // Update the first entry's account_balance in pivot table
+                        DB::table('entry_accounts')
+                            ->where('journal_entry_id', $firstEntry->id)
+                            ->where('account_id', $this->id)
+                            ->update(['account_balance' => $newFirstEntryBalance]);
+
+                        // Handle foreign balance if provided
+                        if ($foreignBalance !== null && $firstPivot->currency && $firstPivot->currency != JournalEntry::CURRENCY_EGP && $firstPivot->currency == $this->default_currency) {
+                            $entryForeignAmount = $firstPivot->currency_amount ?? 0;
+
+                            if ($entryNature == $this->nature) {
+                                $newFirstEntryForeignBalance = $foreignBalance + $entryForeignAmount;
+                            } else {
+                                $newFirstEntryForeignBalance = $foreignBalance - $entryForeignAmount;
+                            }
+
+                            DB::table('entry_accounts')
+                                ->where('journal_entry_id', $firstEntry->id)
+                                ->where('account_id', $this->id)
+                                ->update(['account_foreign_balance' => $newFirstEntryForeignBalance]);
+                        }
+                    }
+                } else {
+                    // No entries exist, just update the account balance directly
+                    $this->balance = $balance;
+                    if ($foreignBalance !== null) {
+                        $this->foreign_balance = $foreignBalance;
+                    }
+                    $this->save();
+                }
+
+                AppLog::info('Set opening balance', loggable: $this);
+
+                // Refresh all balances to recalculate all entry snapshots
+                $result = JournalEntry::refreshAllBalances();
+
+                return $result;
+            });
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't set opening balance", desc: $e->getMessage(), loggable: $this);
+            return [
+                'success' => false,
+                'message' => 'Failed to set opening balance: ' . $e->getMessage(),
+                'accounts_processed' => 0,
+                'errors' => [$e->getMessage()]
+            ];
+        }
+    }
+
     public function editInfo($code, $name, $nature, $main_account_id, $parent_account_id = null, $desc = null, $default_currency = JournalEntry::CURRENCY_EGP, $is_show_dashboard = false): bool
     {
         /** @var User */

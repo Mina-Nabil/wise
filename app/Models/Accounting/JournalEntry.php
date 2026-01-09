@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -106,57 +107,74 @@ class JournalEntry extends Model
         $extra_note = null
     ): self|UnapprovedEntry|string|false {
 
-        /** @var EntryTitle */
-        $entry = EntryTitle::findOrFail($entry_title_id);
-        /** @var User */
-        $loggedInUser = Auth::user();
-        if (!$skip_auth && !$loggedInUser->can('createEntry', $entry)) return false;
+        // Create a unique lock key based on user and entry title to prevent duplicate submissions
+        $lockKey = 'journal_entry_creation_' . ($user_id ?? Auth::id()) . '_' . $entry_title_id;
+        $lock = Cache::lock($lockKey, 10); // Lock for 10 seconds max
 
-
-        $total_debit = 0;
-        $total_credit = 0;
-
-        foreach ($accounts as $ac) {
-            if ($ac['nature'] == 'debit') $total_debit += round($ac['amount'], 2);
-            else $total_credit += round($ac['amount'], 2);
+        if (!$lock->get()) {
+            return "Entry creation in progress. Please wait.";
         }
-
-        if (round($total_credit - $total_debit) != 0) return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
-
-
-        //////////////////////////////loading & checking data//////////////////////////////
-
-        $day_serial = self::getTodaySerial();
-
-        if (!$revert_entry_id && !$approver_id && !$entry->isEntryValid($accounts)) return UnapprovedEntry::newEntry(
-            $entry_title_id,
-            $cash_entry_type,
-            $receiver_name,
-            $comment,
-            $accounts,
-            $extra_note
-        );
-
-
-        ///////////////////////////////preparing entry
-        $updates = [
-            "user_id"           => $user_id ?? Auth::id(),
-            "entry_title_id"    =>  $entry_title_id,
-            "day_serial"        =>  $day_serial,
-            "revert_entry_id"   =>  $revert_entry_id,
-            "cash_entry_type"   =>  $cash_entry_type,
-            "receiver_name"     =>  $receiver_name,
-            "approver_id"       =>  $approver_id,
-            "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
-            "comment"           =>  $comment,
-            "extra_note"           =>  $extra_note,
-        ];
-        if ($cash_entry_type) {
-            $updates['cash_serial'] = self::getCashSerial($cash_entry_type);
-        }
-        $newEntry = new self($updates);
 
         try {
+            /** @var EntryTitle */
+            $entry = EntryTitle::findOrFail($entry_title_id);
+            /** @var User */
+            $loggedInUser = Auth::user();
+            if (!$skip_auth && !$loggedInUser->can('createEntry', $entry)) {
+                $lock->release();
+                return false;
+            }
+
+
+            $total_debit = 0;
+            $total_credit = 0;
+
+            foreach ($accounts as $ac) {
+                if ($ac['nature'] == 'debit') $total_debit += round($ac['amount'], 2);
+                else $total_credit += round($ac['amount'], 2);
+            }
+
+            if (round($total_credit - $total_debit) != 0) {
+                $lock->release();
+                return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
+            }
+
+
+            //////////////////////////////loading & checking data//////////////////////////////
+
+            $day_serial = self::getTodaySerial();
+
+            if (!$revert_entry_id && !$approver_id && !$entry->isEntryValid($accounts)) {
+                $lock->release();
+                return UnapprovedEntry::newEntry(
+                    $entry_title_id,
+                    $cash_entry_type,
+                    $receiver_name,
+                    $comment,
+                    $accounts,
+                    $extra_note
+                );
+            }
+
+
+            ///////////////////////////////preparing entry
+            $updates = [
+                "user_id"           => $user_id ?? Auth::id(),
+                "entry_title_id"    =>  $entry_title_id,
+                "day_serial"        =>  $day_serial,
+                "revert_entry_id"   =>  $revert_entry_id,
+                "cash_entry_type"   =>  $cash_entry_type,
+                "receiver_name"     =>  $receiver_name,
+                "approver_id"       =>  $approver_id,
+                "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
+                "comment"           =>  $comment,
+                "extra_note"           =>  $extra_note,
+            ];
+            if ($cash_entry_type) {
+                $updates['cash_serial'] = self::getCashSerial($cash_entry_type);
+            }
+            $newEntry = new self($updates);
+
             ///////////////////////////////saving entry
             DB::transaction(function () use ($newEntry, $accounts, $skip_auth) {
 
@@ -177,6 +195,8 @@ class JournalEntry extends Model
             report($e);
             AppLog::error("Can't create entry", desc: $e->getMessage());
             return false;
+        } finally {
+            $lock->release();
         }
     }
 
@@ -192,163 +212,160 @@ class JournalEntry extends Model
     public static function refreshAllBalances(): array
     {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () {
+                $accounts = Account::all();
+                $accountsProcessed = 0;
+                $errors = [];
 
-            $accounts = Account::all();
-            $accountsProcessed = 0;
-            $errors = [];
+                foreach ($accounts as $account) {
+                    try {
+                        // Get all journal entries for this account, ordered chronologically
+                        $entries = self::byAccount($account->id)
+                            ->orderBy('created_at', 'asc')
+                            ->orderBy('id', 'asc')
+                            ->get();
 
-            foreach ($accounts as $account) {
-                try {
-                    // Get all journal entries for this account, ordered chronologically
-                    $entries = self::byAccount($account->id)
-                        ->orderBy('created_at', 'asc')
-                        ->orderBy('id', 'asc')
-                        ->get();
-
-                    if ($entries->isEmpty()) {
-                        // No entries for this account, reset to 0
-                        $account->balance = 0;
-                        $account->foreign_balance = 0;
-                        $account->save();
-                        $accountsProcessed++;
-                        continue;
-                    }
-
-                    // Get the first entry's pivot data directly from the pivot table
-                    $firstEntry = $entries->first();
-                    $firstPivot = DB::table('entry_accounts')
-                        ->where('journal_entry_id', $firstEntry->id)
-                        ->where('account_id', $account->id)
-                        ->first();
-
-                    if (!$firstPivot) {
-                        // Skip if pivot data not found (shouldn't happen, but safety check)
-                        $accountsProcessed++;
-                        continue;
-                    }
-
-                    // Calculate starting balance: reverse the effect of the first entry
-                    $startingBalance = $firstPivot->account_balance;
-                    $entryAmount = $firstPivot->amount;
-                    $entryNature = $firstPivot->nature;
-                    $accountNature = $account->nature;
-
-                    // Reverse the first entry's effect
-                    if ($entryNature == $accountNature) {
-                        // Entry increased the balance, so subtract to get starting balance
-                        $startingBalance = abs($startingBalance - $entryAmount);
-                    } else {
-                        // Entry decreased the balance, so add to get starting balance
-                        $startingBalance = abs($startingBalance + $entryAmount);
-                    }
-
-                    // Calculate starting foreign balance if applicable
-                    $startingForeignBalance = 0;
-                    if ($firstPivot->currency && $firstPivot->currency != self::CURRENCY_EGP && $firstPivot->currency == $account->default_currency) {
-                        $startingForeignBalance = $firstPivot->account_foreign_balance ?? 0;
-                        $entryForeignAmount = $firstPivot->currency_amount ?? 0;
-
-                        if ($entryNature == $accountNature) {
-                            $startingForeignBalance = abs($startingForeignBalance - $entryForeignAmount);
-                        } else {
-                            $startingForeignBalance = abs($startingForeignBalance + $entryForeignAmount);
-                        }
-                    }
-
-                    // Reset account balances to starting values
-                    $account->balance = $startingBalance;
-                    $account->foreign_balance = $startingForeignBalance;
-                    $account->save();
-
-                    // Now replay all entries chronologically
-                    $currentBalance = $startingBalance;
-                    $currentForeignBalance = $startingForeignBalance;
-
-                    foreach ($entries as $entry) {
-                        // Get pivot data directly from the pivot table
-                        $pivot = DB::table('entry_accounts')
-                            ->where('journal_entry_id', $entry->id)
-                            ->where('account_id', $account->id)
-                            ->first();
-
-                        if (!$pivot) {
-                            // Skip if pivot data not found
+                        if ($entries->isEmpty()) {
+                            // No entries for this account, reset to 0
+                            $account->balance = 0;
+                            $account->foreign_balance = 0;
+                            $account->save();
+                            $accountsProcessed++;
                             continue;
                         }
 
-                        $entryAmount = $pivot->amount;
-                        $entryNature = $pivot->nature;
+                        // Get the first entry's pivot data directly from the pivot table
+                        $firstEntry = $entries->first();
+                        $firstPivot = DB::table('entry_accounts')
+                            ->where('journal_entry_id', $firstEntry->id)
+                            ->where('account_id', $account->id)
+                            ->first();
 
-                        // Calculate new balance using the same logic as updateBalance()
-                        $balanceChange = $entryAmount;
-                        if ($entryNature != $accountNature) {
-                            $balanceChange = -1 * $balanceChange;
+                        if (!$firstPivot) {
+                            // Skip if pivot data not found (shouldn't happen, but safety check)
+                            $accountsProcessed++;
+                            continue;
                         }
 
-                        $currentBalance = $currentBalance + $balanceChange;
+                        // Calculate starting balance: reverse the effect of the first entry
+                        $startingBalance = $firstPivot->account_balance;
+                        $entryAmount = $firstPivot->amount;
+                        $entryNature = $firstPivot->nature;
+                        $accountNature = $account->nature;
 
-                        // Update account balance
-                        $account->balance = $currentBalance;
+                        // Reverse the first entry's effect
+                        if ($entryNature == $accountNature) {
+                            // Entry increased the balance, so subtract to get starting balance
+                            $startingBalance = $startingBalance - $entryAmount;
+                        } else {
+                            // Entry decreased the balance, so add to get starting balance
+                            $startingBalance = $startingBalance + $entryAmount;
+                        }
+
+                        // Calculate starting foreign balance if applicable
+                        $startingForeignBalance = 0;
+                        if ($firstPivot->currency && $firstPivot->currency != self::CURRENCY_EGP && $firstPivot->currency == $account->default_currency) {
+                            $startingForeignBalance = $firstPivot->account_foreign_balance ?? 0;
+                            $entryForeignAmount = $firstPivot->currency_amount ?? 0;
+
+                            if ($entryNature == $accountNature) {
+                                $startingForeignBalance = $startingForeignBalance - $entryForeignAmount;
+                            } else {
+                                $startingForeignBalance = $startingForeignBalance + $entryForeignAmount;
+                            }
+                        }
+
+                        // Reset account balances to starting values
+                        $account->balance = $startingBalance;
+                        $account->foreign_balance = $startingForeignBalance;
                         $account->save();
 
-                        // Update pivot table snapshot
-                        DB::table('entry_accounts')
-                            ->where('journal_entry_id', $entry->id)
-                            ->where('account_id', $account->id)
-                            ->update(['account_balance' => $currentBalance]);
+                        // Now replay all entries chronologically
+                        $currentBalance = $startingBalance;
+                        $currentForeignBalance = $startingForeignBalance;
 
-                        // Handle foreign balance if applicable
-                        if ($pivot->currency && $pivot->currency != self::CURRENCY_EGP && $pivot->currency == $account->default_currency) {
-                            $entryForeignAmount = $pivot->currency_amount ?? 0;
-                            $foreignBalanceChange = $entryForeignAmount;
+                        foreach ($entries as $entry) {
+                            // Get pivot data directly from the pivot table
+                            $pivot = DB::table('entry_accounts')
+                                ->where('journal_entry_id', $entry->id)
+                                ->where('account_id', $account->id)
+                                ->first();
 
-                            if ($entryNature != $accountNature) {
-                                $foreignBalanceChange = -1 * $foreignBalanceChange;
+                            if (!$pivot) {
+                                // Skip if pivot data not found
+                                continue;
                             }
 
-                            $currentForeignBalance = $currentForeignBalance + $foreignBalanceChange;
+                            $entryAmount = $pivot->amount;
+                            $entryNature = $pivot->nature;
 
-                            // Update account foreign balance
-                            $account->foreign_balance = $currentForeignBalance;
+                            // Calculate new balance using the same logic as updateBalance()
+                            $balanceChange = $entryAmount;
+                            if ($entryNature != $accountNature) {
+                                $balanceChange = -1 * $balanceChange;
+                            }
+
+                            $currentBalance = $currentBalance + $balanceChange;
+
+                            // Update account balance
+                            $account->balance = $currentBalance;
                             $account->save();
 
-                            // Update pivot table foreign balance snapshot
+                            // Update pivot table snapshot
                             DB::table('entry_accounts')
                                 ->where('journal_entry_id', $entry->id)
                                 ->where('account_id', $account->id)
-                                ->update(['account_foreign_balance' => $currentForeignBalance]);
-                        } else {
-                            // Ensure foreign balance is set to 0 or existing value if not applicable
-                            DB::table('entry_accounts')
-                                ->where('journal_entry_id', $entry->id)
-                                ->where('account_id', $account->id)
-                                ->update(['account_foreign_balance' => 0]);
+                                ->update(['account_balance' => $currentBalance]);
+
+                            // Handle foreign balance if applicable
+                            if ($pivot->currency && $pivot->currency != self::CURRENCY_EGP && $pivot->currency == $account->default_currency) {
+                                $entryForeignAmount = $pivot->currency_amount ?? 0;
+                                $foreignBalanceChange = $entryForeignAmount;
+
+                                if ($entryNature != $accountNature) {
+                                    $foreignBalanceChange = -1 * $foreignBalanceChange;
+                                }
+
+                                $currentForeignBalance = $currentForeignBalance + $foreignBalanceChange;
+
+                                // Update account foreign balance
+                                $account->foreign_balance = $currentForeignBalance;
+                                $account->save();
+
+                                // Update pivot table foreign balance snapshot
+                                DB::table('entry_accounts')
+                                    ->where('journal_entry_id', $entry->id)
+                                    ->where('account_id', $account->id)
+                                    ->update(['account_foreign_balance' => $currentForeignBalance]);
+                            } else {
+                                // Ensure foreign balance is set to 0 or existing value if not applicable
+                                DB::table('entry_accounts')
+                                    ->where('journal_entry_id', $entry->id)
+                                    ->where('account_id', $account->id)
+                                    ->update(['account_foreign_balance' => 0]);
+                            }
                         }
+
+                        $accountsProcessed++;
+                    } catch (Exception $e) {
+                        $errors[] = "Account ID {$account->id} ({$account->name}): " . $e->getMessage();
+                        report($e);
                     }
-
-                    $accountsProcessed++;
-                } catch (Exception $e) {
-                    $errors[] = "Account ID {$account->id} ({$account->name}): " . $e->getMessage();
-                    report($e);
                 }
-            }
 
-            DB::commit();
+                $message = "Successfully refreshed balances for {$accountsProcessed} accounts.";
+                if (!empty($errors)) {
+                    $message .= " Errors: " . implode('; ', $errors);
+                }
 
-            $message = "Successfully refreshed balances for {$accountsProcessed} accounts.";
-            if (!empty($errors)) {
-                $message .= " Errors: " . implode('; ', $errors);
-            }
-
-            return [
-                'success' => true,
-                'message' => $message,
-                'accounts_processed' => $accountsProcessed,
-                'errors' => $errors
-            ];
+                return [
+                    'success' => true,
+                    'message' => $message,
+                    'accounts_processed' => $accountsProcessed,
+                    'errors' => $errors
+                ];
+            });
         } catch (Exception $e) {
-            DB::rollBack();
             report($e);
             AppLog::error("Failed to refresh balances", desc: $e->getMessage());
             return [

@@ -24,6 +24,24 @@ class AccountShow extends Component
 
     public $is_open_edit = true;
 
+    // Opening balance modal
+    public $isOpeningBalanceModalOpen = false;
+    public $openingBalance;
+    public $openingForeignBalance;
+
+    public function openOpeningBalanceModal()
+    {
+        $this->openingBalance = 0;
+        $this->openingForeignBalance = 0;
+        $this->isOpeningBalanceModalOpen = true;
+    }
+
+    public function closeOpeningBalanceModal()
+    {
+        $this->isOpeningBalanceModalOpen = false;
+        $this->reset(['openingBalance', 'openingForeignBalance']);
+    }
+
     public function dateRangeSelected($startDate, $endDate)
     {
         $this->fromDate = $startDate;
@@ -46,6 +64,29 @@ class AccountShow extends Component
             return $res;
         } else {
             $this->alert('failed', 'Failed to download account details');
+        }
+    }
+
+    public function setOpeningBalance()
+    {
+        $this->validate([
+            'openingBalance' => 'required|numeric',
+            'openingForeignBalance' => 'nullable|numeric',
+        ]);
+
+        $account = Account::findOrFail($this->accountId);
+        
+        $result = $account->setOpeningBalance(
+            (float) $this->openingBalance,
+            $this->openingForeignBalance ? (float) $this->openingForeignBalance : null
+        );
+
+        if ($result['success']) {
+            $this->alert('success', 'Opening balance set successfully! ' . $result['accounts_processed'] . ' accounts processed.');
+            $this->account = $account->fresh();
+            $this->closeOpeningBalanceModal();
+        } else {
+            $this->alert('failed', $result['message']);
         }
     }
 
