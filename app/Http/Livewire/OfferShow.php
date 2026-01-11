@@ -474,7 +474,7 @@ class OfferShow extends Component
             $this->toggleEditAssignee();
             $this->mount($this->offer->id);
         } else {
-            if(is_string($res)){
+            if (is_string($res)) {
                 $this->alert('failed', $res);
             } else {
                 $this->alert('failed', 'Server Error');
@@ -734,7 +734,12 @@ class OfferShow extends Component
 
     public function removeOptionFile($id)
     {
-        $res = OptionDoc::find($id)->delete();
+        $res = OptionDoc::find($id);
+        if (!$res) {
+            $this->alert('failed', 'File not found');
+            return;
+        }
+        $res->delete();
         if ($res) {
             $this->alert('success', 'File Deleted');
             $this->mount($this->offer->id);
@@ -1461,7 +1466,7 @@ class OfferShow extends Component
     public function toggleLock()
     {
         $this->authorize($this->offer->is_locked ? 'unlock' : 'lock', $this->offer);
-        
+
         if ($this->offer->is_locked) {
             $res = $this->offer->unlock();
             if ($res) {

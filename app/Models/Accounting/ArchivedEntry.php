@@ -56,7 +56,7 @@ class ArchivedEntry extends Model
                 'receiver_name' => $journalEntry->receiver_name,
                 'cash_entry_type' => $journalEntry->cash_entry_type,
                 'comment' => $journalEntry->comment,
-                'revert_entry_id' => $journalEntry->revert_entry_id,
+                // 'revert_entry_id' => $journalEntry->revert_entry_id,
                 'cash_serial' => $journalEntry->cash_serial,
                 'extra_note' => $journalEntry->extra_note,
                 'archived_at' => Carbon::now(),

@@ -789,20 +789,14 @@ class Review extends Model
         try {
             // Validate the value
             if ($noAnswer !== null && !in_array($noAnswer, [0, 1, 2, 3, 4])) {
-                AppLog::error('Invalid no_answer value provided', [
-                    'no_answer' => $noAnswer,
-                    'review_id' => $this->id
-                ], loggable: $this);
+                AppLog::error('Invalid no_answer value provided', desc: "no_answer: {$noAnswer}, review_id: {$this->id}", loggable: $this);
                 return false;
             }
 
             $this->no_answer = $noAnswer;
             $result = $this->save();
 
-            AppLog::info('Review no answer flag updated successfully', [
-                'no_answer' => $noAnswer,
-                'review_id' => $this->id
-            ], loggable: $this);
+            AppLog::info('Review no answer flag updated successfully', desc: "no_answer: {$noAnswer}, review_id: {$this->id}", loggable: $this);
 
             return $result;
         } catch (Exception $e) {
@@ -830,10 +824,7 @@ class Review extends Model
             $reviewId = $this->id;
             $result = $this->delete();
 
-            AppLog::info('Review deleted successfully', [
-                'review_id' => $reviewId,
-                'deleted_by' => $loggedInUser->id
-            ]);
+            AppLog::info('Review deleted successfully', desc: "review_id: {$reviewId}, deleted_by: {$loggedInUser->id}");
 
             return $result;
         } catch (Exception $e) {
