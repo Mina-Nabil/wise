@@ -29,11 +29,7 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Archived At
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
-                                        Archived By
+                                        Created At
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -64,6 +60,14 @@
                                         View
                                     </th>
 
+                                    <th scope="col" class=" table-th ">
+                                        Archived At
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
+                                        Archived By
+                                    </th>
+
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 no-wrap">
@@ -88,9 +92,7 @@
                                             @endif
                                         </td>
 
-                                        <td class="table-td ">{{ \Carbon\Carbon::parse($entry->archived_at)->format('d/m/Y H:i') }}</td>
-
-                                        <td class="table-td ">{{ $entry->archivedBy->username ?? '-' }}</td>
+                                        <td class="table-td ">{{ \Carbon\Carbon::parse($entry->created_at)->format('d/m/Y H:i') }}</td>
 
                                         <td class="table-td ">-</td>
 
@@ -119,6 +121,10 @@
                                                 @endif
                                             </div>
                                         </td>
+
+                                        <td class="table-td ">{{ \Carbon\Carbon::parse($entry->archived_at)->format('d/m/Y H:i') }}</td>
+
+                                        <td class="table-td ">{{ $entry->archivedBy->username ?? '-' }}</td>
 
                                     </tr>
 
