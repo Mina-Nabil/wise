@@ -17,11 +17,13 @@
                 <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="lucide:calendar"></iconify-icon>
                 Opening Balances
             </button>
-            <button wire:click="openArchiveModal"
-                class="btn inline-flex justify-center btn-warning dark:bg-yellow-600 dark:text-white m-1">
-                <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="lucide:archive"></iconify-icon>
-                Archive Entries
-            </button>
+            @can('archive', \App\Models\Accounting\JournalEntry::class)
+                <button wire:click="openArchiveModal"
+                    class="btn inline-flex justify-center btn-warning dark:bg-yellow-600 dark:text-white m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="lucide:archive"></iconify-icon>
+                    Archive Entries
+                </button>
+            @endcan
             <button wire:click="openDownloadArchivedModal"
                 class="btn inline-flex justify-center btn-secondary dark:bg-slate-600 dark:text-white m-1">
                 <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="lucide:download"></iconify-icon>
@@ -559,7 +561,8 @@
     <!-- Archive Entries Modal -->
     @if ($isArchiveModalOpen)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="archive_modal" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="archive_modal" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 500px;">
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
@@ -584,15 +587,18 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
-                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
+                            <div
+                                class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
                                 <div class="flex">
-                                    <iconify-icon icon="lucide:alert-triangle" class="text-yellow-600 dark:text-yellow-400 text-xl mr-2"></iconify-icon>
+                                    <iconify-icon icon="lucide:alert-triangle"
+                                        class="text-yellow-600 dark:text-yellow-400 text-xl mr-2"></iconify-icon>
                                     <div>
                                         <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                                             Warning: This action cannot be undone
                                         </p>
                                         <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                                            All journal entries created on or before the selected date will be archived and then deleted from the journal entries table.
+                                            All journal entries created on or before the selected date will be archived
+                                            and then deleted from the journal entries table.
                                         </p>
                                     </div>
                                 </div>
@@ -607,7 +613,8 @@
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
-                                <p class="text-sm text-slate-500 mt-1">All entries created on or before this date will be archived</p>
+                                <p class="text-sm text-slate-500 mt-1">All entries created on or before this date will
+                                    be archived</p>
                             </div>
                         </div>
 
@@ -635,7 +642,8 @@
     <!-- Download Archived Entries Modal -->
     @if ($isDownloadArchivedModalOpen)
         <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
-            tabindex="-1" aria-labelledby="download_archived_modal" aria-modal="true" role="dialog" style="display: block;">
+            tabindex="-1" aria-labelledby="download_archived_modal" aria-modal="true" role="dialog"
+            style="display: block;">
             <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 500px;">
                 <div
                     class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
@@ -682,7 +690,8 @@
                                     @enderror
                                 </div>
                             </div>
-                            <p class="text-sm text-slate-500">Download archived journal entries within the selected date range (based on archived date)</p>
+                            <p class="text-sm text-slate-500">Download archived journal entries within the selected
+                                date range (based on archived date)</p>
                         </div>
 
                         <!-- Modal footer -->

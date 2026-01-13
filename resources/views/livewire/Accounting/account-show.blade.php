@@ -10,11 +10,13 @@
                     @endif
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ ucwords($account->nature) }}</p>
                 </div>
+                @can('setOpeningBalance', $account)
                 <button wire:click="openOpeningBalanceModal"
                     class="btn inline-flex justify-center btn-outline-primary btn-sm">
                     <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="lucide:settings-2"></iconify-icon>
                     Set Opening Balance
                 </button>
+                @endcan
             </div>
         </div>
     </div>

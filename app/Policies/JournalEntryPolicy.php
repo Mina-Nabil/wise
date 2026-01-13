@@ -103,4 +103,9 @@ class JournalEntryPolicy
     {
         return true;
     }
+
+    public function archive(User $user, JournalEntry $journalEntry)
+    {
+        return $user->is_admin;
+    }
 }

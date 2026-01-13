@@ -67,4 +67,9 @@ class AccountPolicy
     {
         return $user->is_admin || $user->is_finance;
     }
+
+    public function setOpeningBalance(User $user, Account $account)
+    {
+        return $user->is_admin;
+    }
 }
