@@ -4,9 +4,12 @@ namespace App\Http\Livewire\Accounting;
 
 use App\Models\Accounting\ArchivedEntry;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class ArchivedEntryIndex extends Component
 {
+    use WithPagination;
+    
     public $page_title = '• Archived Entries';
 
     //to show child accounts
