@@ -68,6 +68,10 @@
                                         Archived By
                                     </th>
 
+                                    <th scope="col" class=" table-th ">
+                                        Download
+                                    </th>
+
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700 no-wrap">
@@ -126,6 +130,8 @@
 
                                         <td class="table-td ">{{ $entry->archivedBy->username ?? '-' }}</td>
 
+                                        <td class="table-td "></td>
+
                                     </tr>
 
                                     @if (in_array($entry->id, $showChildAccounts))
@@ -154,14 +160,30 @@
                                                 <td class="table-td">{{ $childAccount->pivot->currency }}</td>
                                                 <td class="table-td">{{ number_format($childAccount->pivot->currency_amount, 2) }}</td>
                                                 <td class="table-td">{{ $childAccount->pivot->currency_rate }}</td>
-                                                <td class="table-td" colspan="3"></td>
+                                                <td class="table-td"></td>
+                                                <td class="table-td"></td>
+                                                <td class="table-td">
+                                                    @if ($childAccount->pivot->doc_url)
+                                                        <button
+                                                            wire:click='downloadAccountDoc({{ $entry->id }} , {{ $childAccount->id }})'
+                                                            class="btn inline-flex justify-center btn-outline-light btn-sm">
+                                                            <span wire:loading.remove
+                                                                wire:target="downloadAccountDoc({{ $entry->id }} , {{ $childAccount->id }})">Download</span>
+                                                            <iconify-icon
+                                                                class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                                                wire:loading
+                                                                wire:target="downloadAccountDoc({{ $entry->id }} , {{ $childAccount->id }})"
+                                                                icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                        </button>
+                                                    @endif
+                                                </td>
                                             </tr>
                                         @endforeach
                                     @endif
 
                                 @empty
                                     <tr>
-                                        <td colspan="12">
+                                        <td colspan="14">
                                             {{-- START: empty filter result --}}
                                             <div class="card m-5 p-5">
                                                 <div class="card-body rounded-md bg-white dark:bg-slate-800 m-5">

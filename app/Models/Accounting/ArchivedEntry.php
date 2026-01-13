@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Users\AppLog;
 use App\Models\Business\SoldPolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -171,6 +172,26 @@ class ArchivedEntry extends Model
         $this->accounts()->sync([]);
         $this->delete();
         return true;
+    }
+
+    public function downloadDoc($account_id)
+    {
+        $account_entry = $this->accounts()->where('accounts.id', $account_id)->first();
+        $fileContents = Storage::disk('s3')->get($account_entry->pivot->doc_url);
+        $fileExtension = last(explode('.', $account_entry->pivot->doc_url));
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+        ];
+        if ($fileExtension)
+            $headers['Content-Disposition'] = 'attachment; filename="' . $account_entry->name . "_" . $this->id . "_archived_doc." . $fileExtension . '"';
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
     }
 
     public function accounts(): BelongsToMany

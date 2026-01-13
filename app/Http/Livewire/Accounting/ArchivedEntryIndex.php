@@ -31,6 +31,11 @@ class ArchivedEntryIndex extends Component
         });
     }
 
+    public function downloadAccountDoc($entry_id, $account_id)
+    {
+        return ArchivedEntry::findOrFail($entry_id)->downloadDoc($account_id);
+    }
+
     public function render()
     {
         $entries = ArchivedEntry::with(['entry_title', 'creator', 'archivedBy', 'accounts.main_account'])
