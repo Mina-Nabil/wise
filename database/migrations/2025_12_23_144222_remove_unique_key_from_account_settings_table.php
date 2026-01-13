@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('account_settings', function (Blueprint $table) {
             // Drop the unique constraint on key column
-            $table->dropUnique(['key']);
+            // $table->dropUnique(['key']);
             
             // Keep the regular index for faster lookups
             // The index was added in the original migration, so we don't need to re-add it

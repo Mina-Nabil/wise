@@ -16,6 +16,10 @@
                             <thead class="bg-slate-200 dark:bg-slate-700 no-wrap">
                                 <tr>
 
+                                    <th scope="col" class=" table-th ">
+                                        View
+                                    </th>
+
                                     <th scope="col" class=" table-th !p-1">
                                         #
                                     </th>
@@ -57,10 +61,6 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        View
-                                    </th>
-
-                                    <th scope="col" class=" table-th ">
                                         Archived At
                                     </th>
 
@@ -74,6 +74,22 @@
 
                                 @forelse ($entries as $entry)
                                     <tr>
+
+                                        <td class="table-td flex justify-between">
+                                            <div>
+                                                @if ($entry->accounts->isNotEmpty())
+                                                    @if (in_array($entry->id, $showChildAccounts))
+                                                        <button class="action-btn mr-2" type="button" wire:click="hideThisChildAccount({{ $entry->id }})">
+                                                            <iconify-icon icon="mingcute:up-fill"></iconify-icon>
+                                                        </button>
+                                                    @else
+                                                        <button class="action-btn mr-2" type="button" wire:click="showThisChildAccount({{ $entry->id }})">
+                                                            <iconify-icon icon="mingcute:down-fill"></iconify-icon>
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </td>
 
                                         <td class="table-td"><b>#{{ $entry->id }}</b></td>
 
@@ -106,22 +122,6 @@
 
                                         <td class="table-td ">-</td>
 
-                                        <td class="table-td flex justify-between">
-                                            <div>
-                                                @if ($entry->accounts->isNotEmpty())
-                                                    @if (in_array($entry->id, $showChildAccounts))
-                                                        <button class="action-btn mr-2" type="button" wire:click="hideThisChildAccount({{ $entry->id }})">
-                                                            <iconify-icon icon="mingcute:up-fill"></iconify-icon>
-                                                        </button>
-                                                    @else
-                                                        <button class="action-btn mr-2" type="button" wire:click="showThisChildAccount({{ $entry->id }})">
-                                                            <iconify-icon icon="mingcute:down-fill"></iconify-icon>
-                                                        </button>
-                                                    @endif
-                                                @endif
-                                            </div>
-                                        </td>
-
                                         <td class="table-td ">{{ \Carbon\Carbon::parse($entry->archived_at)->format('d/m/Y H:i') }}</td>
 
                                         <td class="table-td ">{{ $entry->archivedBy->username ?? '-' }}</td>
@@ -133,7 +133,7 @@
                                             <tr class="bg-slate-50 dark:bg-slate-700">
                                                 <td class="table-td" colspan="3"><b>{{ $childAccount->main_account->name }} • {{ $childAccount->name }}</b></td>
 
-                                                <td class="table-td" colspan="2"></td>
+                                                <td class="table-td" ></td>
 
                                                 <td class="table-td">
                                                     <span class="badge bg-black-500 text-white capitalize inline-flex items-center">
@@ -154,7 +154,7 @@
                                                 <td class="table-td">{{ $childAccount->pivot->currency }}</td>
                                                 <td class="table-td">{{ number_format($childAccount->pivot->currency_amount, 2) }}</td>
                                                 <td class="table-td">{{ $childAccount->pivot->currency_rate }}</td>
-                                                <td class="table-td"></td>
+                                                <td class="table-td" colspan="3"></td>
                                             </tr>
                                         @endforeach
                                     @endif
