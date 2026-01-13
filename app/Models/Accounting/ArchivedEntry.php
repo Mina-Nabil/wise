@@ -39,6 +39,7 @@ class ArchivedEntry extends Model
         'extra_note',
         'archived_at',
         'archived_by',
+        'created_at',
     ];
 
     ////static functions
@@ -61,6 +62,7 @@ class ArchivedEntry extends Model
                 'extra_note' => $journalEntry->extra_note,
                 'archived_at' => Carbon::now(),
                 'archived_by' => $archived_by ?? Auth::id(),
+                'created_at' => $journalEntry->created_at,
             ]);
 
             $journalEntry->load('accounts');
@@ -79,7 +81,7 @@ class ArchivedEntry extends Model
             }
 
             $saveFunction = function () use ($archivedEntry, $accounts_arr) {
-                $archivedEntry->save();
+                $archivedEntry->save(['touch' => false]);
                 foreach ($accounts_arr as $account_id => $entry_arr) {
                     $archivedEntry->accounts()->attach($account_id, $entry_arr);
                 }
