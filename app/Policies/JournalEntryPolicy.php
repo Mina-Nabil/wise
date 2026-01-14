@@ -104,7 +104,7 @@ class JournalEntryPolicy
         return true;
     }
 
-    public function archive(User $user, JournalEntry $journalEntry)
+    public function archive(User $user, JournalEntry $journalEntry=null)
     {
         return $user->is_admin;
     }
