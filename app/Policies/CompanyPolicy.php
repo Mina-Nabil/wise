@@ -31,7 +31,7 @@ class CompanyPolicy
      */
     public function view(User $user, Company $company)
     {
-        return true;
+        return $user->is_admin || $user->is_any_finance;
     }
 
     /**
@@ -42,7 +42,7 @@ class CompanyPolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin;
     }
 
     /**
@@ -54,7 +54,7 @@ class CompanyPolicy
      */
     public function update(User $user, Company $company)
     {
-        return $user->is_admin || $user->is_finance;
+        return $user->is_admin;
     }
 
     /**
