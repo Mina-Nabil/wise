@@ -537,6 +537,8 @@ class CompanyShow extends Component
 
     public function mount($company_id, $updateSerial = true)
     {
+        $this->authorize('view', $this->company);
+        
         if ($updateSerial) {
             $this->serial = Invoice::getNextSerial();
         }
