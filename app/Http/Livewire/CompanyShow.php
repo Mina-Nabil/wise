@@ -10,13 +10,14 @@ use App\Models\Payments\Invoice;
 use App\Models\Accounting\Account;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class CompanyShow extends Component
 {
-    use AlertFrontEnd, WithPagination;
+    use AlertFrontEnd, WithPagination, AuthorizesRequests;
     protected $queryString = ['section'];
 
     public $company;
@@ -538,7 +539,7 @@ class CompanyShow extends Component
     public function mount($company_id, $updateSerial = true)
     {
         $this->authorize('view', $this->company);
-        
+
         if ($updateSerial) {
             $this->serial = Invoice::getNextSerial();
         }
