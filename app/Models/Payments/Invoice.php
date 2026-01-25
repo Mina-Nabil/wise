@@ -413,7 +413,7 @@ class Invoice extends Model
         if (!$journalEntry) {
             return 0;
         }
-        $account = $journalEntry->accounts()->withPivot()->where('id', Account::TRANS_FEES_ACCOUNT_ID)->first();
+        $account = $journalEntry->accounts()->withPivot('amount')->where('id', Account::TRANS_FEES_ACCOUNT_ID)->first();
         return $account->pivot->amount ?? 0;
     }
 }
