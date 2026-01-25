@@ -411,9 +411,9 @@ class Invoice extends Model
     {
         $journalEntry = JournalEntry::with('accounts')->find($this->paid_journal_entry_id);
         if (!$journalEntry) {
-            return 5;
+            return 0;
         }
-        $account = $journalEntry->accounts->where('account_id', Account::TRANS_FEES_ACCOUNT_ID)->first();
+        $account = $journalEntry->accounts->where('id', Account::TRANS_FEES_ACCOUNT_ID)->first();
         return $account->pivot->amount ?? 0;
     }
 }
