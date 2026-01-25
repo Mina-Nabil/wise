@@ -38,12 +38,15 @@ class Invoice extends Model
         'tax_total',
         'net_total',
         'created_journal_entry_id',
-        'paid_journal_entry_id'
+        'paid_journal_entry_id',
+        'trans_fees',
+        'trans_fees_notes',
+        'is_declare_debit'
     ];
 
     ///static functions
     /** @param  array $sold_policies_entries should contain an array of associated arrays [ 'id' => ? , 'amount' => ?, 'pymnt_perm' => ? ]  */
-    public static function newInvoice($company_id, $serial, $gross_total, $sold_policies_entries = [], $extras_ids = [])
+    public static function newInvoice($company_id, $serial, $gross_total, $sold_policies_entries = [], $extras_ids = [], $is_declare_debit = null)
     {
         $newInvoice = new self([
             "company_id"    =>  $company_id,
@@ -52,6 +55,8 @@ class Invoice extends Model
             "gross_total"   =>  $gross_total,
             "tax_total"     => ($gross_total * self::TAX_RATE),
             "net_total"     => ($gross_total * (1 - self::TAX_RATE)),
+            "trans_fees"    => 0,
+            "is_declare_debit" => $is_declare_debit,
         ]);
         try {
 
@@ -133,17 +138,19 @@ class Invoice extends Model
         return true;
     }
 
-    public function createPaidJournalEntry($bank_account_id, $trans_fees = 0)
+    public function createPaidJournalEntry($bank_account_id, $trans_fees = 0, $trans_fees_notes = null)
     {
         if ($this->paid_journal_entry_id) {
             throw new Exception('Paid journal entry already exists');
         }
 
         try {
-            DB::transaction(function () use ($bank_account_id, $trans_fees) {
+            DB::transaction(function () use ($bank_account_id, $trans_fees, $trans_fees_notes) {
                 $company = Company::find($this->company_id);
                 $accounts = [];
                 if ($trans_fees) {
+                    $this->trans_fees = $trans_fees;
+                    $this->trans_fees_notes = $trans_fees_notes;
                     $accounts[Account::TRANS_FEES_ACCOUNT_ID] = [
                         'nature' => 'debit',
                         'amount' => $trans_fees,
@@ -349,6 +356,14 @@ class Invoice extends Model
         return null;
     }
 
+    public function getDeclareDebitDisplayAttribute()
+    {
+        if ($this->is_declare_debit === null) {
+            return 'N/A';
+        }
+        return $this->is_declare_debit ? 'اشعار مدين' : 'اشعار دائن';
+    }
+
     ////scopes
     public function scopeReport(Builder $query, ?Carbon $created_from = null, ?Carbon $created_to = null, array $company_ids = [], ?string $searchText = null, ?bool $is_paid = null)
     {
@@ -405,15 +420,4 @@ class Invoice extends Model
         return $this->hasMany(InvoiceExtra::class);
     }
 
-    ////attributes
-
-    public function getTransFeesAttribute()
-    {
-        $journalEntry = JournalEntry::with('accounts')->find($this->paid_journal_entry_id);
-        if (!$journalEntry) {
-            return 0;
-        }
-        $account = $journalEntry->accounts->where('id', Account::TRANS_FEES_ACCOUNT_ID)->first();
-        return $account->pivot->amount ?? 5;
-    }
 }

@@ -239,6 +239,10 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
+                                                        إشعار
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
                                                         Action
                                                     </th>
 
@@ -270,6 +274,9 @@
                                                                 <span
                                                                     class="badge bg-success-500 text-success-500 bg-opacity-30 capitalize rounded-3xl">Confirmed</span>
                                                             @endif
+                                                        </td>
+                                                        <td class="table-td ">
+                                                            {{ $invoice->declare_debit_display }}
                                                         </td>
                                                         <td class="table-td ">
                                                             <div>
@@ -550,6 +557,20 @@
                                         Perm is 95% of the gross total.
                                     </small>
                                 </div>
+                            </div>
+
+                            <div class="input-area mt-3">
+                                <label for="is_declare_debit" class="form-label">إشعار</label>
+                                <select id="is_declare_debit" wire:model="is_declare_debit"
+                                    class="form-control @error('is_declare_debit') !border-danger-500 @enderror">
+                                    <option value="">N/A</option>
+                                    <option value="0">اشعار دائن</option>
+                                    <option value="1">اشعار مدين</option>
+                                </select>
+                                @error('is_declare_debit')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <h5>Available Sold Policies <small>({{ $available_policies->total() }})</small></h5>
@@ -1361,6 +1382,16 @@
                         <input type="number" step="0.01" wire:model.defer="transFees"
                             class="block bg-gray-200 w-full h-10 rounded-lg px-4 border border-transparent focus:border-blue-300 focus:ring-0">
                         @error('transFees')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="font-medium block">Transaction Fees Notes</label>
+                        <textarea wire:model.defer="transFeesNotes" rows="3"
+                            class="block bg-gray-200 w-full rounded-lg px-4 py-2 border border-transparent focus:border-blue-300 focus:ring-0"
+                            placeholder="Optional notes about transaction fees"></textarea>
+                        @error('transFeesNotes')
                             <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                         @enderror
                     </div>

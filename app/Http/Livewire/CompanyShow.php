@@ -27,6 +27,7 @@ class CompanyShow extends Component
     public $gross_total;
     public $tax_total;
     public $net_total;
+    public $is_declare_debit = null;
 
     public $seachAllSoldPolicies; // for sold policy tab
     public $seachAvailablePoliciesText;
@@ -61,6 +62,7 @@ class CompanyShow extends Component
     public $createPaidJournalEntryId = null;
     public $bankAccountId = null;
     public $transFees = 0;
+    public $transFeesNotes = null;
     public $bankAccountsParent = [];
 
     protected $listeners = ['deleteInvoice', 'confirmInvoice', 'deleteExtra', 'createJournalEntry', 'createPaidJournalEntry']; //functions need confirmation
@@ -126,6 +128,7 @@ class CompanyShow extends Component
         $this->createPaidJournalEntryId = $id;
         $this->bankAccountId = null;
         $this->transFees = 0;
+        $this->transFeesNotes = null;
     }
 
     public function closeCreatePaidJournalEntryModal()
@@ -133,6 +136,7 @@ class CompanyShow extends Component
         $this->createPaidJournalEntryId = null;
         $this->bankAccountId = null;
         $this->transFees = 0;
+        $this->transFeesNotes = null;
     }
 
     public function createPaidJournalEntry()
@@ -140,6 +144,7 @@ class CompanyShow extends Component
         $this->validate([
             'bankAccountId' => 'required|exists:accounts,id',
             'transFees' => 'required|numeric|min:0',
+            'transFeesNotes' => 'nullable|string|max:255',
         ]);
         
         try {
@@ -155,7 +160,7 @@ class CompanyShow extends Component
                 return;
             }
 
-            $result = $invoice->createPaidJournalEntry($this->bankAccountId, $this->transFees);
+            $result = $invoice->createPaidJournalEntry($this->bankAccountId, $this->transFees, $this->transFeesNotes);
             
             if ($result) {
                 $this->closeCreatePaidJournalEntryModal();
@@ -419,6 +424,7 @@ class CompanyShow extends Component
     {
         $this->newInvoiceSection = false;
         $this->selectedExtras = []; // Reset selected extras when closing
+        $this->is_declare_debit = null;
     }
 
     protected $rules = [
@@ -453,6 +459,7 @@ class CompanyShow extends Component
                 'sold_policies_entries.*.id' => 'required|integer',
                 'sold_policies_entries.*.amount' => 'required|numeric',
                 'sold_policies_entries.*.pymnt_perm' => 'string',
+                'is_declare_debit' => 'nullable|in:,0,1',
             ],
             attributes: [
                 'sold_policies_entries.*.amount' => 'amount',
@@ -460,10 +467,16 @@ class CompanyShow extends Component
             ],
         );
 
-        $res = Invoice::newInvoice($this->company->id, $this->serial, $this->gross_total, $this->sold_policies_entries, $this->selectedExtras);
+        // Convert is_declare_debit from string to boolean/null
+        $is_declare_debit = null;
+        if ($this->is_declare_debit !== null && $this->is_declare_debit !== '') {
+            $is_declare_debit = (bool) (int) $this->is_declare_debit;
+        }
+
+        $res = Invoice::newInvoice($this->company->id, $this->serial, $this->gross_total, $this->sold_policies_entries, $this->selectedExtras, $is_declare_debit);
 
         if ($res) {
-            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries', 'selectedExtras']);
+            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries', 'selectedExtras', 'is_declare_debit']);
             $this->closeNewInvoiceSec();
             $this->alert('success', 'invoice added');
             $this->mount($this->company->id, false);
