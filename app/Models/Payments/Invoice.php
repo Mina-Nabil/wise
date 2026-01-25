@@ -414,7 +414,7 @@ class Invoice extends Model
             return 0;
         }
         $account = $journalEntry->accounts->where('id', Account::TRANS_FEES_ACCOUNT_ID)->first();
-        dd($account->pivot);
+        dd($account);
         return $account->pivot->amount ?? 0;
     }
 }
