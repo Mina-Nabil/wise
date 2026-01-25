@@ -102,6 +102,8 @@
                                     <th class="table-th">Gross Total</th>
                                     <th class="table-th">Tax Total</th>
                                     <th class="table-th">Net Total</th>
+                                    <th class="table-th">Trans Fees</th>
+                                    <th class="table-th">Net - Trans Fees</th>
                                     <th class="table-th">Payment Date</th>
                                 </tr>
                             </thead>
@@ -122,6 +124,8 @@
                                         <td class="table-td">{{ number_format($invoice->gross_total, 2) }}</td>
                                         <td class="table-td">{{ number_format($invoice->tax_total, 2) }}</td>
                                         <td class="table-td">{{ number_format($invoice->net_total, 2) }}</td>
+                                        <td class="table-td">{{ number_format($invoice->trans_fees, 2) }}</td>
+                                        <td class="table-td">{{ number_format($invoice->net_total - $invoice->trans_fees, 2) }}</td>
                                         <td class="table-td">
                                             {{ $invoice->payment_date ?? 'Not Paid' }}
                                         </td>

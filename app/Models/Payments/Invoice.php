@@ -404,4 +404,16 @@ class Invoice extends Model
     {
         return $this->hasMany(InvoiceExtra::class);
     }
+
+    ////attributes
+
+    public function getTransFeesAttribute()
+    {
+        $journalEntry = JournalEntry::find($this->paid_journal_entry_id);
+        if (!$journalEntry) {
+            return 0;
+        }
+        $accounts = $journalEntry->accounts()->withPivot('amount')->wherePivot('account_id', Account::TRANS_FEES_ACCOUNT_ID)->get();
+        return $accounts->sum('amount');
+    }
 }
