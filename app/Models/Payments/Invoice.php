@@ -253,7 +253,7 @@ class Invoice extends Model
         if ($this->extras->count() > 0) {
             // Find the last row with data
             $lastRow = $activeSheet->getHighestRow();
-            $extrasStartRow = $lastRow + 3; // Add some spacing
+            $extrasStartRow = $i + $this->commissions->count() + 9; // Add some spacing
             
             // Add header row for extras
             $headerRow = $extrasStartRow;
