@@ -409,11 +409,10 @@ class Invoice extends Model
 
     public function getTransFeesAttribute()
     {
-        $journalEntry = JournalEntry::with('accounts')->find($this->paid_journal_entry_id);
+        $journalEntry = JournalEntry::with('accounts.pivot.amount')->find($this->paid_journal_entry_id);
         if (!$journalEntry) {
             return 0;
         }
-        $account = $journalEntry->accounts()->withPivot('amount')->where('id', Account::TRANS_FEES_ACCOUNT_ID)->first();
-        return $account->pivot->amount ?? 0;
+        return $journalEntry->accounts->where('id', Account::TRANS_FEES_ACCOUNT_ID)->first()->pivot->amount ?? 0;
     }
 }
