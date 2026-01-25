@@ -19,6 +19,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Invoice extends Model
@@ -220,7 +224,7 @@ class Invoice extends Model
 
     public function printInvoice()
     {
-        $this->load('commissions', 'commissions.sold_policy', 'commissions.sold_policy.client');
+        $this->load('commissions', 'commissions.sold_policy', 'commissions.sold_policy.client', 'extras');
         $template = IOFactory::load(resource_path('import/company_invoice.xlsx'));
         if (!$template) {
             throw new Exception('Failed to read template file');
@@ -244,6 +248,77 @@ class Invoice extends Model
         }
         $activeSheet->removeRow(2);
         $activeSheet->removeRow(2);
+
+        // Add extras table if there are extras
+        if ($this->extras->count() > 0) {
+            // Find the last row with data
+            $lastRow = $activeSheet->getHighestRow();
+            $extrasStartRow = $lastRow + 3; // Add some spacing
+            
+            // Add header row for extras
+            $headerRow = $extrasStartRow;
+            $activeSheet->getCell('A' . $headerRow)->setValue('إضافات');
+            $activeSheet->getCell('B' . $headerRow)->setValue('العنوان');
+            $activeSheet->getCell('C' . $headerRow)->setValue('الملاحظات');
+            $activeSheet->getCell('D' . $headerRow)->setValue('المبلغ');
+            
+            // Style the header row
+            $headerStyle = [
+                'font' => [
+                    'bold' => true,
+                    'size' => 12,
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'CCCCCC'],
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                    ],
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ];
+            $activeSheet->getStyle('A' . $headerRow . ':D' . $headerRow)->applyFromArray($headerStyle);
+            
+            // Add extras data rows
+            $row = $headerRow + 1;
+            foreach ($this->extras as $extra) {
+                $activeSheet->getCell('A' . $row)->setValue($row - $headerRow); // Row number
+                $activeSheet->getCell('B' . $row)->setValue($extra->title);
+                $activeSheet->getCell('C' . $row)->setValue($extra->note ?? '');
+                $activeSheet->getCell('D' . $row)->setValue($extra->amount);
+                
+                // Style the data row
+                $dataStyle = [
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                        ],
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_LEFT,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ];
+                $activeSheet->getStyle('A' . $row . ':D' . $row)->applyFromArray($dataStyle);
+                
+                // Format amount column as number with 2 decimal places
+                $activeSheet->getStyle('D' . $row)->getNumberFormat()
+                    ->setFormatCode(NumberFormat::FORMAT_NUMBER_00);
+                
+                $row++;
+            }
+            
+            // Auto-size columns for extras table
+            $activeSheet->getColumnDimension('A')->setAutoSize(true);
+            $activeSheet->getColumnDimension('B')->setAutoSize(true);
+            $activeSheet->getColumnDimension('C')->setAutoSize(true);
+            $activeSheet->getColumnDimension('D')->setAutoSize(true);
+        }
 
         $writer = new Xlsx($newFile);
         $file_path = SoldPolicy::FILES_DIRECTORY . "invoice{$this->serial}.xlsx";
