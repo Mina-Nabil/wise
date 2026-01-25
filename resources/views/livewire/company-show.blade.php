@@ -36,7 +36,7 @@
                         <div>
                             <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0"
                                 id="tabs-tab" role="tablist">
-                                @can('create', \App\Models\Insurance\Company::class)
+                                @can('create', \App\Models\Payments\Invoice::class)
                                     <li class="nav-item" role="presentation" wire:click="changeSection('invoices')">
                                         <a href="#tabs-messages-withIcon"
                                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'invoices') active @endif dark:text-slate-300"
@@ -59,7 +59,7 @@
                                         Emails</a>
                                 </li>
 
-                                @can('create', \App\Models\Insurance\Company::class)
+                                @can('create', \App\Models\Payments\Invoice::class)
                                     <li class="nav-item" role="presentation" wire:click="changeSection('extras')">
                                         <a href="#tabs-profile-withIcon"
                                             class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'extras') active @endif dark:text-slate-300"
