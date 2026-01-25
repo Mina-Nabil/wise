@@ -538,12 +538,12 @@ class CompanyShow extends Component
 
     public function mount($company_id, $updateSerial = true)
     {
-        $this->authorize('view', $this->company);
-
+        
         if ($updateSerial) {
             $this->serial = Invoice::getNextSerial();
         }
         $this->company = Company::find($company_id);
+        $this->authorize('view', $this->company);
         $this->bankAccountsParent = Account::where('id', Account::BANK_ACCOUNT_PARENT_ID)->with('children_accounts')->get();
 
     }
