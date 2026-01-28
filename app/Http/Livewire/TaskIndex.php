@@ -188,7 +188,7 @@ class TaskIndex extends Component
             ->when($this->filteredStatus == null, function ($query) {
                 return $query->byStates(['active']);
             })
-            ->normalTasks()
+            // ->normalTasks()
             ->paginate(10);
 
         //fixing assignedTo when a user adds a test without changing the assigned to list
