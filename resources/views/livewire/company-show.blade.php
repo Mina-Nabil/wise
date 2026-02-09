@@ -627,6 +627,10 @@
                                                             class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                             Issue
                                                         </th>
+                                                        <th scope="col"
+                                                            class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
+                                                            Cancelled
+                                                        </th>
 
                                                         <th scope="col"
                                                             class=" table-th border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
@@ -659,6 +663,9 @@
                                                             <td
                                                                 class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
                                                                 {{ $policy->created_at->format('d/m/Y') }}</td>
+                                                            <td
+                                                                class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
+                                                                {{ $policy->cancellation_time?->format('d/m/Y') ?? "N/A" }}</td>
                                                             <td
                                                                 class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
                                                                 {{ $policy->policy->name }}</td>
