@@ -1185,8 +1185,7 @@ class SoldPolicy extends Model
             $loggedInUser = Auth::user();
             if (!$loggedInUser->can('delete', $this)) return false;
             DB::transaction(function () {
-                dd($this->renewal_offer()->get());
-                $this->renewal_offer()->update([
+                $this->renewal_offer()->withTrashed()->update([
                     'renewal_policy_id' => null
                 ]);
                 $this->client_payments()->delete();
