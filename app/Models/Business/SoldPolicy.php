@@ -1185,6 +1185,9 @@ class SoldPolicy extends Model
             $loggedInUser = Auth::user();
             if (!$loggedInUser->can('delete', $this)) return false;
             DB::transaction(function () {
+                $this->renewal_offer()->update([
+                    'renewal_policy_id' => null
+                ]);
                 $this->client_payments()->delete();
                 $this->tasks()->delete();
                 $this->files()->delete();
@@ -2437,6 +2440,11 @@ class SoldPolicy extends Model
     public function files(): HasMany
     {
         return $this->hasMany(SoldPolicyDoc::class);
+    }
+
+    public function renewal_offer(): HasOne
+    {
+        return $this->hasOne(Offer::class, 'renewal_policy_id');
     }
 
     public function renewal_policy(): BelongsTo
