@@ -1188,7 +1188,7 @@ class SoldPolicy extends Model
                 $this->renewal_offer()->withTrashed()->update([
                     'renewal_policy_id' => null
                 ]);
-                SoldPolicy::withTrashed()->where('renewal_policy_id', $this->id)->update([
+                SoldPolicy::where('renewal_policy_id', $this->id)->update([
                     'renewal_policy_id' => null
                 ]);
                 $this->client_payments()->delete();
