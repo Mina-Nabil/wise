@@ -262,7 +262,7 @@
                                         <td class="table-td ">
                                             {{ \Carbon\Carbon::parse($entry->created_at)->format('Y-m-d H:i') }}</td>
 
-                                        <td class="table-td ">{{ $entry->entry_title->name }}</td>
+                                        <td class="table-td ">{{ $entry->entry_title->name }} {{ $entry->revert_entry_id ? ' (R)' : '' }} </td>
 
                                         <td class="table-td ">
                                             @if ($entry->is_reviewed)
