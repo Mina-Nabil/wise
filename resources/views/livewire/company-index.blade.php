@@ -373,6 +373,9 @@
                                                                             @endif
 
                                                                             {{ $email->type }}
+                                                                            @if($email->job_title)
+                                                                            <div class="text-sm text-slate-500">{{ $email->job_title }}</div>
+                                                                        @endif
                                                                         </td>
 
                                                                         <td class="table-td">
@@ -385,9 +388,6 @@
                                                                         <td class="table-td ">
                                                                             {{ $email->contact_first_name }}
                                                                             {{ $email->contact_last_name }}
-                                                                            @if($email->job_title)
-                                                                                <div class="text-sm text-slate-500">{{ $email->job_title }}</div>
-                                                                            @endif
                                                                         </td>
 
                                                                         <td class="table-td flex">
