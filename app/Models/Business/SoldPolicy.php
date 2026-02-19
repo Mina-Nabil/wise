@@ -260,7 +260,7 @@ class SoldPolicy extends Model
                             $this->is_penalized = true;
                             $this->save();
                         } else {
-                            $this->is_penalized = false;
+                            $this->is_penalized = $this->penalty_amount > 0;
                             $this->save();
                         }
                     }
@@ -1180,6 +1180,10 @@ class SoldPolicy extends Model
 
     public function deleteSoldPolicy()
     {
+        if($this->company_comm_payments()->whereNotNull('invoice_id')->count() > 0) {
+            return "Sold policy has an invoice, can't delete";
+        }
+
         try {
             /** @var User */
             $loggedInUser = Auth::user();

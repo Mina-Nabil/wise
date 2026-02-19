@@ -1420,7 +1420,10 @@ class SoldPolicyShow extends Component
     public function deleteSoldPolicy()
     {
         $res = $this->soldPolicy->deleteSoldPolicy();
-        if ($res) {
+        if (is_string($res)) {
+            $this->alert('danger', $res);
+            return;
+        } else if ($res) {
             $this->alert('success', 'Sold Policy deleted');
             return redirect(route('sold.policy.index'));
         } else {
