@@ -144,8 +144,11 @@
 
                                                         <td class="table-td ">
                                                             {{ $email->contact_first_name }}
-
-                                                            {{ $email->contact_last_name }}</td>
+                                                            {{ $email->contact_last_name }}
+                                                            @if ($email->job_title)
+                                                                <div class="text-sm text-slate-500">{{ $email->job_title }}</div>
+                                                            @endif
+                                                        </td>
 
                                                         <td class="table-td flex">
                                                             @can('edit', $company)
@@ -1050,6 +1053,15 @@
                                 <input type="text" wire:model="last_name"
                                     class="form-control @error('last_name') !border-danger-500 @enderror">
                                 @error('last_name')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area">
+                                <label for="job_title" class="form-label">Job Title</label>
+                                <input type="text" wire:model="job_title"
+                                    class="form-control @error('job_title') !border-danger-500 @enderror">
+                                @error('job_title')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

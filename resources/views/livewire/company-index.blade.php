@@ -313,7 +313,8 @@
 
                                                                         <td class="table-td flex justify-center" style="padding-left: 1px;padding-right: 1px;">
                                                                             <input type="text" class="form-control @error('editableEmailFname') !border-danger-500 @enderror" placeholder="First Name" wire:model.defer="editableEmailFname">
-                                                                            <input type="text" class="form-control @error('editableEmailLname') !border-danger-500 @enderror" placeholder="Last Name" wire:model.defer="editableEmailLname">
+                                                                            <input type="text" class="form-control mt-2 @error('editableEmailLname') !border-danger-500 @enderror" placeholder="Last Name" wire:model.defer="editableEmailLname">
+                                                                            <input type="text" class="form-control mt-2 @error('editableEmailJobTitle') !border-danger-500 @enderror" placeholder="Job Title" wire:model.defer="editableEmailJobTitle">
                                                                         </td>
 
                                                                         <td class="table-td" style="padding-right: 1px;">
@@ -382,8 +383,11 @@
 
                                                                         <td class="table-td ">
                                                                             {{ $email->contact_first_name }}
-
-                                                                            {{ $email->contact_last_name }}</td>
+                                                                            {{ $email->contact_last_name }}
+                                                                            @if($email->job_title)
+                                                                                <div class="text-sm text-slate-500">{{ $email->job_title }}</div>
+                                                                            @endif
+                                                                        </td>
 
                                                                         <td class="table-td flex">
                                                                             @can('addContact', $companyInfo)
@@ -459,7 +463,13 @@
                                             @enderror
                                         </div>
 
-
+                                        <div>
+                                            <label for="job_title" class="form-label">Job Title</label>
+                                            <input type="text" class="form-control @error('newEmailJobTitle') !border-danger-500 @enderror" placeholder="Job Title" wire:model.defer="newEmailJobTitle">
+                                            @error('newEmailJobTitle')
+                                                <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
+                                            @enderror
+                                        </div>
 
                                     </div>
                                     <button class="btn inline-flex justify-center btn-light btn-sm mt-2" wire:click="addEmail">Submit</button>

@@ -1960,7 +1960,7 @@ class SoldPolicy extends Model
         });
 
         $query->when($is_commission_outstanding, function ($q) {
-            $q->whereRaw("total_comp_paid < (after_tax_comm - 1)")->only2025();
+            $q->whereRaw("total_comp_paid + penalty_amount < (after_tax_comm - 1)")->only2025();
         });
         $query->when($is_client_outstanding, function ($q) {
             $q->whereRaw("total_client_paid < gross_premium")->fromOct2024();
@@ -1970,7 +1970,7 @@ class SoldPolicy extends Model
             if (!Helpers::joined($q, 'company_comm_payments')) {
                 $q->join('company_comm_payments', 'company_comm_payments.sold_policy_id', 'sold_policies.id');
             }
-            $q->havingRaw("total_comp_paid < (SUM(company_comm_payments.amount) - 1)")->fromOct2024();
+            $q->havingRaw("total_comp_paid + penalty_amount < (SUM(company_comm_payments.amount) - 1)")->fromOct2024();
         });
 
         return $query->orderBy("sold_policies.start");

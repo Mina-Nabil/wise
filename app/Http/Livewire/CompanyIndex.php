@@ -27,6 +27,7 @@ class CompanyIndex extends Component
     public $newEmailPhone;
     public $newEmailFname;
     public $newEmailLname;
+    public $newEmailJobTitle;
 
     public $editableEmailId;
     public $editableEmailType;
@@ -35,6 +36,7 @@ class CompanyIndex extends Component
     public $editableEmailPhone;
     public $editableEmailFname;
     public $editableEmailLname;
+    public $editableEmailJobTitle;
 
     public $deleteThisEmail;
 
@@ -103,6 +105,7 @@ class CompanyIndex extends Component
         $this->editableEmailPhone = $email->phone;
         $this->editableEmailFname = $email->contact_first_name;
         $this->editableEmailLname = $email->contact_last_name;
+        $this->editableEmailJobTitle = $email->job_title;
     }
 
     public function closeEditEmailRow()
@@ -113,6 +116,7 @@ class CompanyIndex extends Component
         $this->editableEmailPhone = null;
         $this->editableEmailFname = null;
         $this->editableEmailLname = null;
+        $this->editableEmailJobTitle = null;
     }
 
 
@@ -125,6 +129,7 @@ class CompanyIndex extends Component
                 'editableEmailPhone' => 'nullable|string|max:255',
                 'editableEmailFname' => 'required|string|max:255',
                 'editableEmailLname' => 'required|string|max:255',
+                'editableEmailJobTitle' => 'nullable|string|max:255',
             ],
             [],
             [
@@ -133,6 +138,7 @@ class CompanyIndex extends Component
                 'editableEmailPhone' => 'Phone',
                 'editableEmailFname' => 'First Name',
                 'editableEmailLname' => 'Last Name',
+                'editableEmailJobTitle' => 'Job Title',
             ],
         );
 
@@ -142,7 +148,7 @@ class CompanyIndex extends Component
             $this->editableEmailIsPrim = true;
         };
 
-        $e = $email->editInfo($this->editableEmailType, $this->editableEmail, $this->editableEmailIsPrim, $this->editableEmailFname, $this->editableEmailLname, null, $this->editableEmailPhone);
+        $e = $email->editInfo($this->editableEmailType, $this->editableEmail, $this->editableEmailIsPrim, $this->editableEmailFname, $this->editableEmailLname, null, $this->editableEmailPhone, $this->editableEmailJobTitle);
 
         if ($e) {
             $this->alert('success', 'Email Updated Succesfuly!');
@@ -192,6 +198,7 @@ class CompanyIndex extends Component
                 'newEmailPhone' => 'nullable|string|max:255',
                 'newEmailFname' => 'required|string|max:255',
                 'newEmailLname' => 'required|string|max:255',
+                'newEmailJobTitle' => 'nullable|string|max:255',
             ],
             [],
             [
@@ -200,13 +207,14 @@ class CompanyIndex extends Component
                 'newEmailPhone' => 'Phone',
                 'newEmailFname' => 'First Name',
                 'newEmailLname' => 'Last Name',
+                'newEmailJobTitle' => 'Job Title',
             ],
         );
 
         /** @var Company */
         $company = Company::findOrFail($this->editThisComp);
 
-        $a = $company->addEmail($this->newEmailType, $this->newEmail, true, $this->newEmailFname, $this->newEmailLname, null, $this->newEmailPhone);
+        $a = $company->addEmail($this->newEmailType, $this->newEmail, true, $this->newEmailFname, $this->newEmailLname, null, $this->newEmailPhone, $this->newEmailJobTitle);
 
         // dd($a);
 
@@ -218,6 +226,7 @@ class CompanyIndex extends Component
             $this->newEmailPhone = null;
             $this->newEmailFname = null;
             $this->newEmailLname = null;
+            $this->newEmailJobTitle = null;
         } else {
             $this->alert('failed', 'Failed to Add!');
         }

@@ -38,6 +38,7 @@ class CompanyEmail extends Model
         "is_primary", //is email primary for the company?
         "contact_first_name", //email user first name -- nullable
         "contact_last_name", //email user last name -- nullable
+        "job_title", //contact job title -- nullable
         "note" //extra note for users -- nullable
     ];
 
@@ -49,7 +50,8 @@ class CompanyEmail extends Model
         $first_name = null,
         $last_name = null,
         $note = null,
-        $phone = null
+        $phone = null,
+        $job_title = null
     ): bool {
         try {
             /** @var User */
@@ -62,6 +64,7 @@ class CompanyEmail extends Model
                 "phone"  => $phone,
                 "contact_first_name"  => $first_name,
                 "contact_last_name"  => $last_name,
+                "job_title"  => $job_title,
                 "is_primary"  => $is_primary,
                 "note"  => $note,
             ]);

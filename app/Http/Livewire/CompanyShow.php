@@ -74,6 +74,7 @@ class CompanyShow extends Component
     public $is_primary = false;
     public $first_name;
     public $last_name;
+    public $job_title;
     public $note;
 
     public $confirmInvoiceId;
@@ -307,15 +308,16 @@ class CompanyShow extends Component
             'is_primary' => 'boolean',
             'first_name' => 'nullable|string',
             'last_name' => 'nullable|string',
+            'job_title' => 'nullable|string|max:255',
             'note' => 'nullable|string',
         ]);
 
-        $res = $this->company->addEmail($this->type, $this->email, $this->is_primary, $this->first_name, $this->last_name, $this->note, $this->phone);
+        $res = $this->company->addEmail($this->type, $this->email, $this->is_primary, $this->first_name, $this->last_name, $this->note, $this->phone, $this->job_title);
 
         if ($res) {
             $this->mount($this->company->id, false);
             $this->alert('success', 'email added');
-            $this->reset(['newEmailSec', 'type', 'email', 'phone', 'is_primary', 'first_name', 'last_name', 'note']);
+            $this->reset(['newEmailSec', 'type', 'email', 'phone', 'is_primary', 'first_name', 'last_name', 'job_title', 'note']);
             $this->type = CompanyEmail::TYPES[0];
         } else {
             $this->alert('failed', 'server error');
@@ -343,7 +345,7 @@ class CompanyShow extends Component
     public function closeNewEmail()
     {
         $this->newEmailSec = false;
-        $this->reset(['type', 'email', 'phone', 'is_primary', 'first_name', 'last_name', 'note']);
+        $this->reset(['type', 'email', 'phone', 'is_primary', 'first_name', 'last_name', 'job_title', 'note']);
         $this->type = CompanyEmail::TYPES[0];
     }
 

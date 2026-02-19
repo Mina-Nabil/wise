@@ -1338,7 +1338,7 @@
                                     </div>
                                     <div class="text-slate-800 dark:text-white text-md font-medium flex justify-between">
                                         <span>
-                                            {{ $soldPolicy->total_policy_comm ? number_format($soldPolicy->total_policy_comm, 0, '.', ',') . ' / ' . number_format($soldPolicy->after_tax_comm, 0, '.', ',') : '-' }}
+                                            {{ $soldPolicy->total_policy_comm ? number_format($soldPolicy->total_policy_comm, 0, '.', ',') . ' / ' . number_format($soldPolicy->after_tax_comm - $soldPolicy->penalty_amount, 0, '.', ',') : '-' }}
                                         </span>
                                         @can('updateWiseCommPayments', $soldPolicy)
                                             <button class="action-btn btn-sm" type="button"
