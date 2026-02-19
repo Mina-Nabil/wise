@@ -400,7 +400,7 @@ class Account extends Model
         foreach ($entries as $entry) {
             $activeSheet->setCellValue('A' . $row, $entry->id);
             $activeSheet->setCellValue('B' . $row, $entry->created_at->format('d/m/Y'));
-            $activeSheet->setCellValue('C' . $row, $entry->name);
+            $activeSheet->setCellValue('C' . $row, $entry->name . ' ' . ($entry->revert_entry_id ? ' (R)' : ''));
             $activeSheet->setCellValue('D' . $row, $entry->cash_title);
             $activeSheet->setCellValue('E' . $row, number_format($entry->debit_amount, 2));
             $activeSheet->setCellValue('F' . $row, number_format($entry->credit_amount, 2));
