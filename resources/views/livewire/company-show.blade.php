@@ -131,7 +131,11 @@
                                                                 </span>
                                                             @endif
 
-                                                            {{ $email->type }}
+                                                            {{ $email->type }} -
+                                                            @if ($email->job_title)
+                                                                <div class="text-sm text-slate-500">
+                                                                    {{ $email->job_title }}</div>
+                                                            @endif
                                                         </td>
 
                                                         <td class="table-td">
@@ -145,9 +149,6 @@
                                                         <td class="table-td ">
                                                             {{ $email->contact_first_name }}
                                                             {{ $email->contact_last_name }}
-                                                            @if ($email->job_title)
-                                                                <div class="text-sm text-slate-500">{{ $email->job_title }}</div>
-                                                            @endif
                                                         </td>
 
                                                         <td class="table-td flex">
@@ -668,7 +669,8 @@
                                                                 {{ $policy->created_at->format('d/m/Y') }}</td>
                                                             <td
                                                                 class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
-                                                                {{ $policy->cancellation_time ? \Carbon\Carbon::parse($policy->cancellation_time)->format('d/m/Y') : "N/A" }}</td>
+                                                                {{ $policy->cancellation_time ? \Carbon\Carbon::parse($policy->cancellation_time)->format('d/m/Y') : 'N/A' }}
+                                                            </td>
                                                             <td
                                                                 class="table-td border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
                                                                 {{ $policy->policy->name }}</td>
@@ -1018,6 +1020,15 @@
                                 @enderror
                             </div>
                             <div class="input-area">
+                                <label for="job_title" class="form-label">Job Title</label>
+                                <input type="text" wire:model="job_title"
+                                    class="form-control @error('job_title') !border-danger-500 @enderror">
+                                @error('job_title')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="input-area">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" wire:model="email"
                                     class="form-control @error('email') !border-danger-500 @enderror">
@@ -1057,15 +1068,7 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="input-area">
-                                <label for="job_title" class="form-label">Job Title</label>
-                                <input type="text" wire:model="job_title"
-                                    class="form-control @error('job_title') !border-danger-500 @enderror">
-                                @error('job_title')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-                            </div>
+
                             <div class="input-area">
                                 <label for="note" class="form-label">Note</label>
                                 <textarea wire:model="note" class="form-control @error('note') !border-danger-500 @enderror"></textarea>
