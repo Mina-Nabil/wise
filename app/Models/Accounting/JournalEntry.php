@@ -870,12 +870,12 @@ class JournalEntry extends Model
         return $this->hasOne(CommProfilePayment::class, 'journal_entry_id');
     }
 
-    public function revert_entry(): BelongsTo
+    public function reverted_entry(): BelongsTo
     {
         return $this->belongsTo(self::class, 'revert_entry_id');
     }
 
-    public function reverted_entry(): HasOne
+    public function revert_entry(): HasOne
     {
         return $this->hasOne(self::class, 'revert_entry_id');
     }
