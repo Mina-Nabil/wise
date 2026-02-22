@@ -824,6 +824,17 @@ class JournalEntry extends Model
         return $sum;
     }
 
+    public function getIsRevertEntryAttribute()
+    {
+        return $this->revert_entry_id !== null;
+    }
+
+    public function getIsRevertedEntryAttribute()
+    {
+        $this->loadMissing('revert_entry');
+        return $this->revert_entry !== null;
+    }
+
     ////relations
     public function accounts(): BelongsToMany
     {
@@ -857,5 +868,15 @@ class JournalEntry extends Model
     public function comm_profile_payment(): HasOne
     {
         return $this->hasOne(CommProfilePayment::class, 'journal_entry_id');
+    }
+
+    public function revert_entry(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'revert_entry_id');
+    }
+
+    public function reverted_entry(): HasOne
+    {
+        return $this->hasOne(self::class, 'revert_entry_id');
     }
 }
