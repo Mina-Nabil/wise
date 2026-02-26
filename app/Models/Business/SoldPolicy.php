@@ -1160,7 +1160,8 @@ class SoldPolicy extends Model
             });
             $this->client_payments()->notCollected()->delete();
             $this->sales_comms()->notPaid()->get()->each(function ($comm) {
-                $comm->setAsCancelled(Carbon::now(), true);
+                $comm->sold_policy_id = null;
+                $comm->save();
             });
             $this->sales_comms()->notPaid()->delete();
 
