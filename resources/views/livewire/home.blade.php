@@ -512,7 +512,7 @@
                                                     $currentDate = now();
                                                     $startDate = $task->created_at;
                                                     $dueDate = $task->due;
-                                                    $totalDuration = $startDate->diffInSeconds($dueDate);
+                                                    $totalDuration = min(1, $startDate->diffInSeconds($dueDate));
                                                     $elapsedDuration = $startDate->diffInSeconds($currentDate);
                                                     $percentagePassed = ($elapsedDuration / $totalDuration) * 100;
                                                 @endphp
