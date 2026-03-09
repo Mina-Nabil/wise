@@ -1206,7 +1206,7 @@ class SoldPolicy extends Model
                 $this->watcher_ids()->delete();
                 $this->comms_details()->delete();
                 $this->company_comm_payments()->delete();
-                $this->sales_comms()->delete();
+                $this->sales_comms()->update(['sold_policy_id' => null]);
                 $this->delete();
             });
             return true;
