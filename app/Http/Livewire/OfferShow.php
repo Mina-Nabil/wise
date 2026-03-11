@@ -593,7 +593,7 @@ class OfferShow extends Component
         $offer = Offer::with('renewal_sold_policy')->find($this->offer->id);
         $res = $offer->delete();
         if ($res) {
-            if ($offer->renewal_sold_policy) {
+            if ($offer->renewal_sold_policy && Offer::where('renewal_policy_id', $offer->renewal_sold_policy->id)->count() == 0) {
                 $offer->renewal_sold_policy->update(['is_renewed' => 0]);
             }
             return redirect(route('offers.index'));
