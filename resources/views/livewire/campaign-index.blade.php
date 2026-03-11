@@ -533,7 +533,7 @@
                                             <label for="updateCustomersOwnerUserId" class="form-label">Select Owner</label>
                                             <select
                                                 class="form-control @error('updateCustomersOwnerUserId') !border-danger-500 @enderror"
-                                                wire:model.defer="updateCustomersOwnerUserId">
+                                                wire:model.live="updateCustomersOwnerUserId">
                                                 <option value="">-- Select user --</option>
                                                 @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
