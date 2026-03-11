@@ -39,6 +39,9 @@ class CampaignIndex extends Component
     public $importCampaignId;
     public $importLeadsFile;
     public $importUserId;
+    public $updateCustomersOwnerSec = false;
+    public $updateCustomersOwnerCampaignId;
+    public $updateCustomersOwnerUserId;
 
     public function openCampaignSec()
     {
@@ -120,6 +123,48 @@ class CampaignIndex extends Component
         $this->importLeadsFile = null;
         $this->importUserId = null;
         $this->resetValidation();
+    }
+
+    public function openUpdateCustomersOwner($id)
+    {
+        $campaign = Campaign::find($id);
+        if (!$campaign) {
+            $this->alert('failed', 'Campaign not found');
+            return;
+        }
+
+        $this->authorize('update', $campaign);
+
+        $this->updateCustomersOwnerCampaignId = $id;
+        $this->updateCustomersOwnerUserId = null;
+        $this->updateCustomersOwnerSec = true;
+    }
+
+    public function closeUpdateCustomersOwner()
+    {
+        $this->updateCustomersOwnerSec = false;
+        $this->updateCustomersOwnerCampaignId = null;
+        $this->updateCustomersOwnerUserId = null;
+        $this->resetValidation();
+    }
+
+    public function updateLinkedCustomersOwner()
+    {
+        $campaign = Campaign::find($this->updateCustomersOwnerCampaignId);
+        if (!$campaign) {
+            $this->alert('failed', 'Campaign not found');
+            return;
+        }
+
+        $this->authorize('update', $campaign);
+
+        $this->validate([
+            'updateCustomersOwnerUserId' => 'required|exists:users,id',
+        ]);
+
+        $count = $campaign->updateLinkedCustomersOwner($this->updateCustomersOwnerUserId);
+        $this->alert('success', "Successfully updated {$count} linked customer(s) owner.");
+        $this->closeUpdateCustomersOwner();
     }
 
     public function importLeads()

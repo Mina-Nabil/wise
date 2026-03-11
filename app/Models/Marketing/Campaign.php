@@ -446,4 +446,15 @@ class Campaign extends Model
 
         return $results;
     }
+
+    /**
+     * Update all linked customers owner for this campaign
+     *
+     * @param int $userId The user id to set as owner (owner_id)
+     * @return int Number of customers updated
+     */
+    public function updateLinkedCustomersOwner(int $userId): int
+    {
+        return Customer::where('campaign_id', $this->id)->update(['owner_id' => $userId]);
+    }
 }

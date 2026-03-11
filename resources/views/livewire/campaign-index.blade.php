@@ -495,6 +495,79 @@
                     </div>
                 </div>
             @endif
+
+            {{-- Update Linked Customers Owner Modal --}}
+            @if ($updateCustomersOwnerSec)
+                <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+                    style="display: block">
+                    <div class="modal-dialog relative w-auto pointer-events-none">
+                        <div
+                            class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                rounded-md outline-none text-current">
+                            <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                                <!-- Modal header -->
+                                <div
+                                    class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-secondary-500">
+                                    <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                        Update All Linked Customers Owner
+                                    </h3>
+                                    <button type="button" wire:click="closeUpdateCustomersOwner"
+                                        class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                            dark:hover:bg-slate-600 dark:hover:text-white"
+                                        data-bs-dismiss="modal">
+                                        <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewbox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="sr-only">Close modal</span>
+                                    </button>
+                                </div>
+                                <!-- Modal body -->
+                                <div class="card-text h-full">
+                                    <div class="px-4 pt-4 pb-3">
+                                        <p class="text-base text-slate-600 dark:text-slate-400 mb-4">
+                                            Update the owner of all customers linked to this campaign to the selected user.
+                                        </p>
+                                        <div class="input-area mb-3">
+                                            <label for="updateCustomersOwnerUserId" class="form-label">Select Owner</label>
+                                            <select
+                                                class="form-control @error('updateCustomersOwnerUserId') !border-danger-500 @enderror"
+                                                wire:model.defer="updateCustomersOwnerUserId">
+                                                <option value="">-- Select user --</option>
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('updateCustomersOwnerUserId')
+                                                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <!-- Modal footer -->
+                                    <div
+                                        class="flex items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                        <button wire:click="updateLinkedCustomersOwner"
+                                            wire:loading.attr="disabled"
+                                            class="btn inline-flex justify-center text-white bg-secondary-500"
+                                            @if (!$updateCustomersOwnerUserId) disabled @endif>
+                                            <span wire:loading.remove wire:target="updateLinkedCustomersOwner">Update Owner</span>
+                                            <span wire:loading wire:target="updateLinkedCustomersOwner">
+                                                <iconify-icon class="text-xl animate-spin" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                Updating...
+                                            </span>
+                                        </button>
+                                        <button wire:click="closeUpdateCustomersOwner"
+                                            class="btn inline-flex justify-center text-slate-900 bg-slate-200">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -536,6 +609,14 @@
                                     </div>
 
                                     <div class="flex items-center gap-2 flex-shrink-0">
+                                        @can('update', $campaign)
+                                            <button wire:click="openUpdateCustomersOwner({{ $campaign->id }})"
+                                                wire:loading.attr="disabled" class="btn btn-sm btn-secondary light"
+                                                type="button" title="Update all linked customers owner">
+                                                <iconify-icon icon="heroicons:user-group"
+                                                    class="text-lg"></iconify-icon>
+                                            </button>
+                                        @endcan
                                         @can('importLeads', $campaign)
                                             <button wire:click="openImportLeads({{ $campaign->id }})"
                                                 wire:loading.attr="disabled" class="btn btn-sm btn-primary light"
