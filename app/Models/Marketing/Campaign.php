@@ -455,6 +455,6 @@ class Campaign extends Model
      */
     public function updateLinkedCustomersOwner(int $userId): int
     {
-        return Customer::where('campaign_id', $this->id)->update(['owner_id' => $userId]);
+        return Customer::where('campaign_id', $this->id)->update(['owner_id' => $userId]) && Followup::where('campaign_id', $this->id)->update(['creator_id' => $userId]);
     }
 }
