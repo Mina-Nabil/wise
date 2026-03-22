@@ -90,6 +90,7 @@ class CommProfileShow extends Component
     public $editCycleId;
 
     public $newPymtSec = false;
+    public $newNegPymtSec = false;
     public $pymtAmount;
     public $pymtType;
     public $pymtDoc;
@@ -753,6 +754,45 @@ class CommProfileShow extends Component
         $this->salesCommSearch = '';
         $this->salesCommSearchResults = [];
         $this->selectedSalesComm = null;
+    }
+
+    public function openNewNegPymtSection()
+    {
+        $this->newNegPymtSec = true;
+    }
+
+    public function closeNewNegPymtSection()
+    {
+        $this->newNegPymtSec = false;
+        $this->pymtAmount = null;
+        $this->pymtType = null;
+        $this->pymtNote = null;
+    }
+
+    public function addNegativePayment()
+    {
+        $this->validate(
+            [
+                'pymtAmount' => 'required|numeric|gt:0',
+                'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
+                'pymtNote' => 'nullable|string',
+            ],
+            attributes: [
+                'pymtAmount' => 'amount',
+                'pymtType' => 'payment type',
+                'pymtNote' => 'note',
+            ],
+        );
+
+        $res = $this->profile->addPayment(-$this->pymtAmount, $this->pymtType, null, $this->pymtNote);
+
+        if ($res) {
+            $this->closeNewNegPymtSection();
+            $this->mount($this->profile->id);
+            $this->alert('success', 'Negative payment added!');
+        } else {
+            $this->alert('failed', 'server error!');
+        }
     }
 
     public function closeNewTargetSection()

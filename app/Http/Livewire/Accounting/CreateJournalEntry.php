@@ -23,6 +23,7 @@ class CreateJournalEntry extends Component
     public $extra_note;
     public $cash_entry_type;
     public $receiver_name;
+    public $entryDate;
 
     public $credit_accounts_list;
     public $debit_accounts_list;
@@ -150,6 +151,7 @@ class CreateJournalEntry extends Component
                 'credit_accounts.*.currency_rate' => 'nullable|numeric|min:0', // Optional, positive number
                 'credit_accounts.*.doc_url' => 'nullable|file|mimes:xlsx,csv,jpg,jpeg,png,pdf|max:2048', // Optional file
                 'notes' => 'nullable|string', // Optional field; if provided, must be a string
+                'entryDate' => 'nullable|date|before_or_equal:today',
             ]
         );
 
@@ -180,7 +182,7 @@ class CreateJournalEntry extends Component
 
         $accounts = $formattedDebitAccounts + $formattedCreditAccounts;
 
-        $res = JournalEntry::newJournalEntry($this->selectedTitle->id, $this->cash_entry_type, $this->receiver_name, comment: $this->notes, accounts: $accounts, extra_note: $this->extra_note);
+        $res = JournalEntry::newJournalEntry($this->selectedTitle->id, $this->cash_entry_type, $this->receiver_name, comment: $this->notes, accounts: $accounts, extra_note: $this->extra_note, entry_date: $this->entryDate ? \Carbon\Carbon::parse($this->entryDate) : null);
         if (is_string($res)) {
             $this->alert('failed', $res);
         } else if ($res) {

@@ -258,6 +258,16 @@
                         </div>
                     </div>
 
+                    <div class="from-group mt-5">
+                        <div class="mb-4">
+                            <label for="entryDate" class="block text-gray-700 dark:text-gray-300">Entry Date <span class="text-slate-400 text-sm font-normal">(leave blank for today)</span></label>
+                            <input type="date" id="entryDate" max="{{ date('Y-m-d') }}" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('entryDate') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="entryDate">
+                            @error('entryDate')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
                     <!-- Submit Button -->
                     <div class="flex justify-end mt-6">
                         <button wire:click="save" wire:loading.attr="disabled" wire:target="save" data-bs-dismiss="modal" class="btn inline-flex justify-center text-white bg-black-500 disabled:opacity-50 disabled:cursor-not-allowed" @disabled($this->selectedTitle == null)>

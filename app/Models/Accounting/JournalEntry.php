@@ -47,7 +47,8 @@ class JournalEntry extends Model
         'approved_at',
         'revert_entry_id',
         'cash_serial',
-        'extra_note'
+        'extra_note',
+        'entry_date',
     ];
 
     const CURRENCY_EGP  = 'EGP';
@@ -104,7 +105,8 @@ class JournalEntry extends Model
         $approver_id = null,
         $skip_auth = false,
         $accounts = [],
-        $extra_note = null
+        $extra_note = null,
+        Carbon $entry_date = null
     ): self|UnapprovedEntry|string|false {
 
         // Create a unique lock key based on user and entry title to prevent duplicate submissions
@@ -168,7 +170,8 @@ class JournalEntry extends Model
                 "approver_id"       =>  $approver_id,
                 "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
                 "comment"           =>  $comment,
-                "extra_note"           =>  $extra_note,
+                "extra_note"        =>  $extra_note,
+                "entry_date"        =>  $entry_date?->format('Y-m-d'),
             ];
             if ($cash_entry_type) {
                 $updates['cash_serial'] = self::getCashSerial($cash_entry_type);
@@ -189,6 +192,11 @@ class JournalEntry extends Model
                     $newEntry->accounts()->attach($account_id, $entry_arr);
                 }
             });
+            // If entry is backdated, refresh all balances to maintain chronological correctness
+            if ($entry_date && $entry_date->lt(Carbon::today())) {
+                self::refreshAllBalances();
+            }
+
             AppLog::info("Created entry", loggable: $newEntry);
             return $newEntry;
         } catch (Exception $e) {
@@ -220,8 +228,9 @@ class JournalEntry extends Model
                 foreach ($accounts as $account) {
                     try {
                         // Get all journal entries for this account, ordered chronologically
+                        // Use entry_date when set (backdated entries), otherwise fall back to created_at
                         $entries = self::byAccount($account->id)
-                            ->orderBy('created_at', 'asc')
+                            ->orderByRaw('COALESCE(entry_date, DATE(created_at)) ASC')
                             ->orderBy('id', 'asc')
                             ->get();
 
