@@ -464,9 +464,9 @@ class JournalEntry extends Model
             /** @var \App\Models\Users\User */
             $loggedInUser = Auth::user();
 
-            // Admins and finance users create the reversal entry directly;
-            // everyone else submits it for approval via unapproved entries
-            if ($loggedInUser->is_admin || $loggedInUser->is_finance) {
+            // Only admins create the reversal entry directly;
+            // all other users (including finance) submit for a second user's approval
+            if ($loggedInUser->is_admin) {
                 return self::newJournalEntry(
                     $entry->entry_title_id,
                     cash_entry_type: null,
