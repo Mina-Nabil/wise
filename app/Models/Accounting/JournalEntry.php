@@ -418,45 +418,76 @@ class JournalEntry extends Model
         return DB::transaction(function () {
             // Lock this entry to prevent concurrent reversals
             $entry = self::where('id', $this->id)->lockForUpdate()->first();
-            
+
             if (!$entry) {
                 return false;
             }
-            
-            // Check if this entry has already been reverted
+
+            // Check if this entry has already been reverted (approved reversal exists)
             $existingReversal = self::where('revert_entry_id', $this->id)->first();
             if ($existingReversal) {
                 AppLog::warning("Entry already reverted", loggable: $this);
                 return "This entry has already been reverted (Reversal Entry ID: {$existingReversal->id})";
             }
-            
+
+            // Check if a pending unapproved reversal already exists
+            $pendingReversal = UnapprovedEntry::where('revert_entry_id', $this->id)->first();
+            if ($pendingReversal) {
+                AppLog::warning("Reversal already pending approval", loggable: $this);
+                return "A reversal for this entry is already pending approval (Unapproved Entry ID: {$pendingReversal->id})";
+            }
+
             // Prevent reverting an entry that is itself a reversal
             if ($this->revert_entry_id) {
                 AppLog::warning("Cannot revert a reversal entry", loggable: $this);
                 return "Cannot revert an entry that is itself a reversal";
             }
-            
+
+            // Derive the effective date of the original entry so the reversal sits at the same point in history
+            $effectiveDate = $entry->entry_date
+                ? Carbon::parse($entry->entry_date)
+                : Carbon::parse($entry->created_at)->startOfDay();
+
             $entry->load('accounts');
             $accounts = [];
             foreach ($entry->accounts as $ac) {
                 $accounts[$ac->id] = [
-                    'nature'    =>  $ac->pivot->nature == 'debit' ? 'credit' : 'debit',
-                    'amount'    =>  $ac->pivot->amount,
-                    'currency' => $ac->pivot->currency,
+                    'nature'          => $ac->pivot->nature == 'debit' ? 'credit' : 'debit',
+                    'amount'          => $ac->pivot->amount,
+                    'currency'        => $ac->pivot->currency,
                     'currency_amount' => $ac->pivot->currency_amount,
-                    'currency_rate' => $ac->pivot->currency_rate,
-                    'doc_url' => $ac->pivot->doc_url,
+                    'currency_rate'   => $ac->pivot->currency_rate,
+                    'doc_url'         => $ac->pivot->doc_url,
                 ];
             }
-            
-            return self::newJournalEntry(
-                $entry->entry_title_id,
-                cash_entry_type: null,
-                receiver_name: null,
-                revert_entry_id: $entry->id,
-                comment: $entry->comment,
-                accounts: $accounts
-            );
+
+            /** @var \App\Models\Users\User */
+            $loggedInUser = Auth::user();
+
+            // Only admins create the reversal entry directly;
+            // all other users (including finance) submit for a second user's approval
+            if ($loggedInUser->is_admin) {
+                return self::newJournalEntry(
+                    $entry->entry_title_id,
+                    cash_entry_type: null,
+                    receiver_name: null,
+                    revert_entry_id: $entry->id,
+                    comment: $entry->comment,
+                    accounts: $accounts,
+                    entry_date: $effectiveDate,
+                );
+            } else {
+                return UnapprovedEntry::newEntry(
+                    $entry->entry_title_id,
+                    null,
+                    null,
+                    $entry->comment,
+                    $accounts,
+                    null,
+                    $effectiveDate,
+                    $entry->id,
+                );
+            }
         });
     }
 
@@ -619,11 +650,12 @@ class JournalEntry extends Model
         $activeSheet->setCellValue('N1', 'Transaction Description');
         $activeSheet->setCellValue('O1', 'User ID');
         $activeSheet->setCellValue('P1', 'Approved');
+        $activeSheet->setCellValue('Q1', 'Title');
 
         // Style headers
-        $activeSheet->getStyle('A1:P1')->getFont()->setBold(true);
-        $activeSheet->getStyle('A1:P1')->getFill()->setFillType(Fill::FILL_SOLID);
-        $activeSheet->getStyle('A1:P1')->getFill()->getStartColor()->setARGB('FFFFFF00'); // Yellow background
+        $activeSheet->getStyle('A1:Q1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:Q1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:Q1')->getFill()->getStartColor()->setARGB('FFFFFF00'); // Yellow background
 
         // Get journal entries with accounts
         $entries = self::between($from, $to)
@@ -651,6 +683,7 @@ class JournalEntry extends Model
                 $activeSheet->setCellValue('M' . $row, $entry->comment);
                 $activeSheet->setCellValue('N' . $row, $entry->creator->username ?? '');
                 $activeSheet->setCellValue('O' . $row, ucfirst($account->nature));
+                $activeSheet->setCellValue('Q' . $row, $entry->entry_title->name ?? '');
 
                 // Set account hierarchy columns
                 $activeSheet->setCellValue('D' . $row, $hierarchy['main_code'] ?? '');

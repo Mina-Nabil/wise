@@ -214,9 +214,12 @@ class CompanyIndex extends Component
         /** @var Company */
         $company = Company::findOrFail($this->editThisComp);
 
-        $a = $company->addEmail($this->newEmailType, $this->newEmail, true, $this->newEmailFname, $this->newEmailLname, null, $this->newEmailPhone, $this->newEmailJobTitle);
-
-        // dd($a);
+        try {
+            $a = $company->addEmail($this->newEmailType, $this->newEmail, true, $this->newEmailFname, $this->newEmailLname, null, $this->newEmailPhone, $this->newEmailJobTitle);
+        } catch (\Exception $e) {
+            $this->alert('failed', 'Unauthorized');
+            return;
+        }
 
         if ($a) {
             $this->alert('success', 'Email Added Succesfuly!');

@@ -622,6 +622,9 @@
                                                                     @can('viewCommission',
                                                                         App\Models\Business\SoldPolicy::class)
                                                                         <th scope="col" class="table-th ">
+                                                                            Sales Out Profiles
+                                                                        </th>
+                                                                        <th scope="col" class="table-th ">
                                                                             SalesOut
                                                                         </th>
                                                                         <th scope="col" class="table-th ">
@@ -759,6 +762,9 @@
                                                                             <b>{{ number_format($policy->net_premium, 0, '.', ',') }}</b>
                                                                         </td>
                                                                         @can('viewCommission', $policy)
+                                                                            <td class="table-td">
+                                                                                <b>{{ $policy->sales_out_profile_names }}</b>
+                                                                            </td>
                                                                             <td class="table-td ">
                                                                                 <b>{{ number_format($policy->sales_out_comm, 0, '.', ',') }}</b>
                                                                             </td>

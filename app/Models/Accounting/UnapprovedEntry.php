@@ -35,6 +35,8 @@ class UnapprovedEntry extends Model
         'receiver_name',
         'cash_entry_type',
         'extra_note',
+        'entry_date',
+        'revert_entry_id',
     ];
 
     ////static functions
@@ -44,16 +46,20 @@ class UnapprovedEntry extends Model
         $receiver_name = null,
         $comment = null,
         $accounts = [],
-        $extra_note = null
+        $extra_note = null,
+        Carbon $entry_date = null,
+        $revert_entry_id = null
     ) {
         try {
             $newEntry = new self([
                 'user_id'           => Auth::id(),
                 'entry_title_id'    => $entry_title_id,
-                'comment'       => $comment,
-                'receiver_name' => $receiver_name,
-                'cash_entry_type'     => $cash_entry_type,
-                'extra_note'     => $extra_note,
+                'comment'           => $comment,
+                'receiver_name'     => $receiver_name,
+                'cash_entry_type'   => $cash_entry_type,
+                'extra_note'        => $extra_note,
+                'entry_date'        => $entry_date?->format('Y-m-d'),
+                'revert_entry_id'   => $revert_entry_id,
             ]);
             DB::transaction(function () use ($newEntry, $accounts) {
                 $newEntry->save();
@@ -105,7 +111,9 @@ class UnapprovedEntry extends Model
                     approver_id: Auth::id(),
                     approved_at: Carbon::now(),
                     user_id: Auth::id(),
-                    accounts: $accounts_arr
+                    accounts: $accounts_arr,
+                    revert_entry_id: $this->revert_entry_id,
+                    entry_date: $this->entry_date ? Carbon::parse($this->entry_date) : null,
                 );
 
                 if ($newEntry) {

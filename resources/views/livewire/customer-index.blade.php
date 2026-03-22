@@ -134,10 +134,12 @@
                                             {{ $customer->id }}
                                         </td>
 
-                                        <td wire:click="redirectToShowPage({{ $customer }})"
-                                            class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
-                                            <b>{{ $customer->first_name }} {{ $customer->middle_name }}
-                                                {{ $customer->last_name }}</b>
+                                        <td class="table-td">
+                                            <a href="{{ route('customers.show', $customer->id) }}" target="_blank"
+                                                class="hover:text-primary-500 font-semibold">
+                                                {{ $customer->first_name }} {{ $customer->middle_name }}
+                                                {{ $customer->last_name }}
+                                            </a>
                                         </td>
 
                                         <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"

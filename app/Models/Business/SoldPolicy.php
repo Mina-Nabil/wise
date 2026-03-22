@@ -1509,6 +1509,9 @@ class SoldPolicy extends Model
         $colIndex++;
         if ($canViewCommission) {
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("Sales Out Profiles");
+            $colIndex++;
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . '1')->setValue("SalesOut");
             $colIndex++;
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
@@ -1595,6 +1598,11 @@ class SoldPolicy extends Model
             
             // Commission columns (if can viewCommission)
             if ($canViewCommission) {
+                // Sales Out Profiles
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue($policy->sales_out_profile_names);
+                $colIndex++;
+
                 // SalesOut
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $activeSheet->getCell($colLetter . $i)->setValue($policy->sales_out_comm ?? 0);
@@ -2186,7 +2194,7 @@ class SoldPolicy extends Model
                     });
             });
 
-        $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car");
+        $query->with('client', 'policy', 'policy.company', 'creator', 'customer_car', "customer_car.car", 'active_sales_comms', 'active_sales_comms.comm_profile');
 
         return $query;
     }
@@ -2314,6 +2322,16 @@ class SoldPolicy extends Model
             }
         }
         return $txt;
+    }
+
+    public function getSalesOutProfileNamesAttribute()
+    {
+        $this->loadMissing('active_sales_comms', 'active_sales_comms.comm_profile');
+        return $this->active_sales_comms
+            ->filter(fn($sc) => $sc->comm_profile?->type === \App\Models\Payments\CommProfile::TYPE_SALES_OUT)
+            ->pluck('comm_profile.title')
+            ->unique()
+            ->join(', ');
     }
 
     public function getSalesOutCommPaidAttribute()

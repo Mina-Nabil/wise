@@ -312,7 +312,12 @@ class CompanyShow extends Component
             'note' => 'nullable|string',
         ]);
 
-        $res = $this->company->addEmail($this->type, $this->email, $this->is_primary, $this->first_name, $this->last_name, $this->note, $this->phone, $this->job_title);
+        try {
+            $res = $this->company->addEmail($this->type, $this->email, $this->is_primary, $this->first_name, $this->last_name, $this->note, $this->phone, $this->job_title);
+        } catch (\Exception $e) {
+            $this->alert('failed', 'Unauthorized');
+            return;
+        }
 
         if ($res) {
             $this->mount($this->company->id, false);
