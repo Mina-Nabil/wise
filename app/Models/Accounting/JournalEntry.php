@@ -418,45 +418,76 @@ class JournalEntry extends Model
         return DB::transaction(function () {
             // Lock this entry to prevent concurrent reversals
             $entry = self::where('id', $this->id)->lockForUpdate()->first();
-            
+
             if (!$entry) {
                 return false;
             }
-            
-            // Check if this entry has already been reverted
+
+            // Check if this entry has already been reverted (approved reversal exists)
             $existingReversal = self::where('revert_entry_id', $this->id)->first();
             if ($existingReversal) {
                 AppLog::warning("Entry already reverted", loggable: $this);
                 return "This entry has already been reverted (Reversal Entry ID: {$existingReversal->id})";
             }
-            
+
+            // Check if a pending unapproved reversal already exists
+            $pendingReversal = UnapprovedEntry::where('revert_entry_id', $this->id)->first();
+            if ($pendingReversal) {
+                AppLog::warning("Reversal already pending approval", loggable: $this);
+                return "A reversal for this entry is already pending approval (Unapproved Entry ID: {$pendingReversal->id})";
+            }
+
             // Prevent reverting an entry that is itself a reversal
             if ($this->revert_entry_id) {
                 AppLog::warning("Cannot revert a reversal entry", loggable: $this);
                 return "Cannot revert an entry that is itself a reversal";
             }
-            
+
+            // Derive the effective date of the original entry so the reversal sits at the same point in history
+            $effectiveDate = $entry->entry_date
+                ? Carbon::parse($entry->entry_date)
+                : Carbon::parse($entry->created_at)->startOfDay();
+
             $entry->load('accounts');
             $accounts = [];
             foreach ($entry->accounts as $ac) {
                 $accounts[$ac->id] = [
-                    'nature'    =>  $ac->pivot->nature == 'debit' ? 'credit' : 'debit',
-                    'amount'    =>  $ac->pivot->amount,
-                    'currency' => $ac->pivot->currency,
+                    'nature'          => $ac->pivot->nature == 'debit' ? 'credit' : 'debit',
+                    'amount'          => $ac->pivot->amount,
+                    'currency'        => $ac->pivot->currency,
                     'currency_amount' => $ac->pivot->currency_amount,
-                    'currency_rate' => $ac->pivot->currency_rate,
-                    'doc_url' => $ac->pivot->doc_url,
+                    'currency_rate'   => $ac->pivot->currency_rate,
+                    'doc_url'         => $ac->pivot->doc_url,
                 ];
             }
-            
-            return self::newJournalEntry(
-                $entry->entry_title_id,
-                cash_entry_type: null,
-                receiver_name: null,
-                revert_entry_id: $entry->id,
-                comment: $entry->comment,
-                accounts: $accounts
-            );
+
+            /** @var \App\Models\Users\User */
+            $loggedInUser = Auth::user();
+
+            // Admins and finance users create the reversal entry directly;
+            // everyone else submits it for approval via unapproved entries
+            if ($loggedInUser->is_admin || $loggedInUser->is_finance) {
+                return self::newJournalEntry(
+                    $entry->entry_title_id,
+                    cash_entry_type: null,
+                    receiver_name: null,
+                    revert_entry_id: $entry->id,
+                    comment: $entry->comment,
+                    accounts: $accounts,
+                    entry_date: $effectiveDate,
+                );
+            } else {
+                return UnapprovedEntry::newEntry(
+                    $entry->entry_title_id,
+                    null,
+                    null,
+                    $entry->comment,
+                    $accounts,
+                    null,
+                    $effectiveDate,
+                    $entry->id,
+                );
+            }
         });
     }
 
