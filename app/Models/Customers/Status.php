@@ -21,6 +21,8 @@ class Status extends Model
     const STATUS_REJECTED = 'rejected';
     const STATUS_CLIENT = 'client';
     const STATUS_INACTIVE = 'in_active';
+    const STATUS_NOT_QUALIFIED = 'not_qualified';
+    const STATUS_NO_ANSWER = 'no_answer';
 
     const STATUSES = [
         self::STATUS_NEW,
@@ -28,6 +30,8 @@ class Status extends Model
         self::STATUS_REJECTED,
         self::STATUS_CLIENT,
         self::STATUS_INACTIVE,
+        self::STATUS_NOT_QUALIFIED,
+        self::STATUS_NO_ANSWER,
     ];
 
     const REASONS = [
