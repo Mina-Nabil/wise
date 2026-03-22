@@ -650,11 +650,12 @@ class JournalEntry extends Model
         $activeSheet->setCellValue('N1', 'Transaction Description');
         $activeSheet->setCellValue('O1', 'User ID');
         $activeSheet->setCellValue('P1', 'Approved');
+        $activeSheet->setCellValue('Q1', 'Title');
 
         // Style headers
-        $activeSheet->getStyle('A1:P1')->getFont()->setBold(true);
-        $activeSheet->getStyle('A1:P1')->getFill()->setFillType(Fill::FILL_SOLID);
-        $activeSheet->getStyle('A1:P1')->getFill()->getStartColor()->setARGB('FFFFFF00'); // Yellow background
+        $activeSheet->getStyle('A1:Q1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:Q1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:Q1')->getFill()->getStartColor()->setARGB('FFFFFF00'); // Yellow background
 
         // Get journal entries with accounts
         $entries = self::between($from, $to)
@@ -682,6 +683,7 @@ class JournalEntry extends Model
                 $activeSheet->setCellValue('M' . $row, $entry->comment);
                 $activeSheet->setCellValue('N' . $row, $entry->creator->username ?? '');
                 $activeSheet->setCellValue('O' . $row, ucfirst($account->nature));
+                $activeSheet->setCellValue('Q' . $row, $entry->entry_title->name ?? '');
 
                 // Set account hierarchy columns
                 $activeSheet->setCellValue('D' . $row, $hierarchy['main_code'] ?? '');
