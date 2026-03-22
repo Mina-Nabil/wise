@@ -6,6 +6,29 @@
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+            <div class="dropdown relative">
+                <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add filter
+                    <span
+                        class="cursor-pointer absolute ltr:border-l rtl:border-r border-slate-100 h-full ltr:right-0 rtl:left-0 px-2 flex items-center justify-center leading-none">
+                        <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                    </span>
+                </button>
+                <ul
+                    class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                    <li wire:click="toggleStatusFilter">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Status</span>
+                    </li>
+                    <li wire:click="toggleCampaignFilter">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Campaign</span>
+                    </li>
+                </ul>
+            </div>
             <button wire:click="toggleAddLead" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
                 <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
                 Add Lead
@@ -27,40 +50,30 @@
         </header>
 
         <div class="card-body px-6 pb-6">
-            <div class="flex items-center space-x-7 flex-wrap h-[30px]">
-                <div class="secondary-radio">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="radio" name="statusFilter" class="hidden" value="all" wire:model="statusFilter">
-                        <span
-                            class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                        <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
-                    </label>
+            @if (($statusFilter && $statusFilter !== 'all') || $campaignFilter)
+                <div class="flex flex-wrap gap-2 mb-4">
+                    @if ($statusFilter && $statusFilter !== 'all')
+                        <button class="btn inline-flex justify-center btn-dark btn-sm">
+                            <span wire:click="toggleStatusFilter">
+                                Status: {{ $statusFilter }} &nbsp;&nbsp;
+                            </span>
+                            <span wire:click="clearStatusFilter">
+                                <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                            </span>
+                        </button>
+                    @endif
+                    @if ($campaignFilter)
+                        <button class="btn inline-flex justify-center btn-dark btn-sm">
+                            <span wire:click="toggleCampaignFilter">
+                                Campaign: {{ $campaigns->firstWhere('id', $campaignFilter)?->name ?? $campaignFilter }} &nbsp;&nbsp;
+                            </span>
+                            <span wire:click="clearCampaignFilter">
+                                <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                            </span>
+                        </button>
+                    @endif
                 </div>
-            </div>
-            @foreach ($customerStatus as $cs)
-                <div class="flex items-center space-x-7 flex-wrap h-[30px]">
-                    <div class="secondary-radio">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="statusFilter"  class="hidden" value="{{ $cs }}" wire:model="statusFilter">
-                            <span
-                                class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                            <span class="text-secondary-500 text-sm leading-6 capitalize">{{ $cs }}</span>
-                        </label>
-                    </div>
-                </div>
-            @endforeach
-
-            <div class="flex items-center space-x-7 flex-wrap h-[30px] mt-4">
-                <div class="input-area">
-                    <label class="form-label text-sm">Campaign:</label>
-                    <select class="form-control form-control-sm" wire:model="campaignFilter">
-                        <option value="">All Campaigns</option>
-                        @foreach ($campaigns as $campaign)
-                            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+            @endif
 
             <div class=" -mx-6">
                 <div class="inline-block min-w-full align-middle">
@@ -1307,6 +1320,94 @@
                             <button wire:click="addFollowup" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
                                 Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Status Filter Modal --}}
+    @if ($statusSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Status</h3>
+                            <button wire:click="toggleStatusFilter" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-2">
+                            <div>
+                                <label class="flex items-center cursor-pointer gap-2">
+                                    <input type="radio" name="statusFilterModal" value="all"
+                                        wire:model="statusFilter" wire:click="toggleStatusFilter">
+                                    <span class="capitalize">All</span>
+                                </label>
+                            </div>
+                            @foreach ($customerStatus as $cs)
+                                <div>
+                                    <label class="flex items-center cursor-pointer gap-2">
+                                        <input type="radio" name="statusFilterModal" value="{{ $cs }}"
+                                            wire:model="statusFilter" wire:click="toggleStatusFilter">
+                                        <span class="capitalize">{{ $cs }}</span>
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Campaign Filter Modal --}}
+    @if ($campaignSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white">Campaign</h3>
+                            <button wire:click="toggleCampaignFilter" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Campaign</label>
+                                <select class="form-control mt-2 w-full" wire:model.defer="EcampaignFilter">
+                                    <option value="">All Campaigns</option>
+                                    @foreach ($campaigns as $campaign)
+                                        <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setCampaignFilter"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                Apply
                             </button>
                         </div>
                     </div>

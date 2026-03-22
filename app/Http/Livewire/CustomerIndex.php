@@ -75,6 +75,11 @@ class CustomerIndex extends Component
 
     public $statusFilter = false;
     public $campaignFilter = null;
+    public $EcampaignFilter = null;
+
+    // Filter section toggles
+    public $statusSection = false;
+    public $campaignSection = false;
 
     // Interest management properties
     public $interestManagementModalOpen = false;
@@ -330,8 +335,45 @@ class CustomerIndex extends Component
         $this->resetPage();
     }
 
+    public function updatingStatusFilter()
+    {
+        $this->resetPage();
+    }
+
     public function updatingCampaignFilter()
     {
+        $this->resetPage();
+    }
+
+    public function toggleStatusFilter()
+    {
+        $this->toggle($this->statusSection);
+    }
+
+    public function toggleCampaignFilter()
+    {
+        $this->toggle($this->campaignSection);
+        if ($this->campaignSection) {
+            $this->EcampaignFilter = $this->campaignFilter;
+        }
+    }
+
+    public function setCampaignFilter()
+    {
+        $this->campaignFilter = $this->EcampaignFilter ?: null;
+        $this->toggle($this->campaignSection);
+        $this->resetPage();
+    }
+
+    public function clearStatusFilter()
+    {
+        $this->statusFilter = false;
+        $this->resetPage();
+    }
+
+    public function clearCampaignFilter()
+    {
+        $this->campaignFilter = null;
         $this->resetPage();
     }
 
