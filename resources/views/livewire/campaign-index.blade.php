@@ -595,9 +595,10 @@
                                         <div class="flex items-center gap-2 mb-2">
                                             <iconify-icon class="text-xl text-primary-500 flex-shrink-0"
                                                 icon="heroicons:megaphone"></iconify-icon>
-                                            <h5 class="mb-0 text-primary-500 font-semibold truncate">
+                                            <a href="{{ route('campaigns.show', $campaign->id) }}"
+                                                class="mb-0 text-primary-500 font-semibold truncate hover:underline">
                                                 {{ $campaign->name }}
-                                            </h5>
+                                            </a>
                                         </div>
                                         <div class="flex items-center gap-2">
                                             @if ($campaign->is_active)
