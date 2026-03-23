@@ -48,7 +48,6 @@ class JournalEntry extends Model
         'revert_entry_id',
         'cash_serial',
         'extra_note',
-        'entry_date',
     ];
 
     const CURRENCY_EGP  = 'EGP';
@@ -171,16 +170,20 @@ class JournalEntry extends Model
                 "approved_at"       =>  $approved_at ? $approved_at->format('Y-m-d H:i:s') : null,
                 "comment"           =>  $comment,
                 "extra_note"        =>  $extra_note,
-                "entry_date"        =>  $entry_date?->format('Y-m-d'),
             ];
             if ($cash_entry_type) {
                 $updates['cash_serial'] = self::getCashSerial($cash_entry_type);
             }
             $newEntry = new self($updates);
+            if ($entry_date) {
+                $newEntry->created_at = $entry_date->startOfDay();
+                $newEntry->updated_at = $entry_date->startOfDay();
+            }
 
             ///////////////////////////////saving entry
             DB::transaction(function () use ($newEntry, $accounts, $skip_auth) {
 
+                $newEntry->timestamps = false; // prevent Eloquent from overwriting the backdated created_at
                 $newEntry->save();
                 foreach ($accounts as $account_id => $entry_arr) {
                     /** @var Account */
@@ -193,7 +196,7 @@ class JournalEntry extends Model
                 }
             });
             // If entry is backdated, refresh all balances to maintain chronological correctness
-            if ($entry_date && $entry_date->lt(Carbon::today())) {
+            if ($entry_date && $entry_date->startOfDay()->lt(Carbon::today()->startOfDay())) {
                 self::refreshAllBalances();
             }
 
@@ -227,10 +230,9 @@ class JournalEntry extends Model
 
                 foreach ($accounts as $account) {
                     try {
-                        // Get all journal entries for this account, ordered chronologically
-                        // Use entry_date when set (backdated entries), otherwise fall back to created_at
+                        // Get all journal entries for this account, ordered chronologically by created_at
                         $entries = self::byAccount($account->id)
-                            ->orderByRaw('COALESCE(entry_date, DATE(created_at)) ASC')
+                            ->orderBy('created_at', 'asc')
                             ->orderBy('id', 'asc')
                             ->get();
 
@@ -444,9 +446,7 @@ class JournalEntry extends Model
             }
 
             // Derive the effective date of the original entry so the reversal sits at the same point in history
-            $effectiveDate = $entry->entry_date
-                ? Carbon::parse($entry->entry_date)
-                : Carbon::parse($entry->created_at)->startOfDay();
+            $effectiveDate = Carbon::parse($entry->created_at)->startOfDay();
 
             $entry->load('accounts');
             $accounts = [];

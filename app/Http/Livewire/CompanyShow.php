@@ -65,7 +65,7 @@ class CompanyShow extends Component
     public $transFeesNotes = null;
     public $bankAccountsParent = [];
 
-    protected $listeners = ['deleteInvoice', 'confirmInvoice', 'deleteExtra', 'createJournalEntry', 'createPaidJournalEntry']; //functions need confirmation
+    protected $listeners = ['confirmInvoice', 'deleteExtra', 'createJournalEntry', 'createPaidJournalEntry'];
 
     public $newEmailSec = false;
     public $type = CompanyEmail::TYPES[0];
@@ -79,6 +79,7 @@ class CompanyShow extends Component
 
     public $confirmInvoiceId;
     public $confirmDate;
+    public $deleteConfirmInvoiceId = null;
 
     public $Emailtypes = CompanyEmail::TYPES;
 
@@ -402,17 +403,23 @@ class CompanyShow extends Component
         return Invoice::find($id)->printInvoice();
     }
 
-    public function deleteInvoice($id)
+    public function deleteInvoice()
     {
-        $invoice = Invoice::find($id);
-        
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            $this->alert('failed', 'Unauthorized action.');
+            return;
+        }
+
+        $invoice = Invoice::find($this->deleteConfirmInvoiceId);
+        $this->deleteConfirmInvoiceId = null;
+
         if (!$invoice) {
-            $this->alert('failed', 'Invoice not found');
+            $this->alert('failed', 'Invoice not found.');
             return;
         }
 
         $result = $invoice->deleteInvoice();
-        
+
         if ($result['success']) {
             $this->alert('success', $result['message']);
             $this->mount($this->company->id, false);
