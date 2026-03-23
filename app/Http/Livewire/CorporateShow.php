@@ -933,6 +933,7 @@ class CorporateShow extends Component
         $countries = Country::all();
         $tasks = $this->corporate->tasks;
         $offers = $this->corporate->offers;
+        $soldPolicies = $this->corporate->soldpolicies()->with('policy.company', 'policy')->latest()->get();
         $LINES_OF_BUSINESS = Policy::CORPORATE_TYPES;
         $campaigns = Campaign::all();
 
@@ -945,6 +946,7 @@ class CorporateShow extends Component
             'cities' => $cities,
             'countries' => $countries,
             'offers' => $offers,
+            'soldPolicies' => $soldPolicies,
             'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,
             'campaigns' => $campaigns
         ]);
