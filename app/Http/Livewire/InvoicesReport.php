@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Insurance\Company;
 use App\Models\Payments\Invoice;
+use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -11,7 +12,7 @@ use Livewire\WithPagination;
 
 class InvoicesReport extends Component
 {
-    use WithPagination, ToggleSectionLivewire;
+    use WithPagination, ToggleSectionLivewire, AlertFrontEnd;
 
     public $searchText;
     public $company_ids = [];
@@ -34,6 +35,7 @@ class InvoicesReport extends Component
     public $searchCompany;
 
     public $togglePaid = null;
+    public $deleteConfirmId = null;
 
     public function sortByColumn($column)
     {
@@ -125,6 +127,29 @@ class InvoicesReport extends Component
             $this->searchCompany,
             fn($q) => $q->SearchBy($this->searchCompany)
         )->get()->take(5);
+    }
+
+    public function deleteInvoice($id)
+    {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            $this->alert('failed', 'Unauthorized action.');
+            return;
+        }
+
+        $invoice = Invoice::find($id);
+        if (!$invoice) {
+            $this->alert('failed', 'Invoice not found.');
+            return;
+        }
+
+        $result = $invoice->deleteInvoice();
+        $this->deleteConfirmId = null;
+
+        if ($result['success']) {
+            $this->alert('success', $result['message']);
+        } else {
+            $this->alert('failed', $result['message']);
+        }
     }
 
     public function exportReport()
