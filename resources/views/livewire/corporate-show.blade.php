@@ -43,6 +43,15 @@
                                         <iconify-icon class="mr-1" icon="ic:outline-local-offer"></iconify-icon>
                                         Offers</a>
                                 </li>
+                                <li class="nav-item" role="presentation" wire:click="changeSection('sold_policies')">
+                                    <a href="#tabs-messages-withIcon"
+                                        class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'sold_policies') active @endif dark:text-slate-300"
+                                        id="tabs-messages-withIcon-tab" data-bs-toggle="pill"
+                                        data-bs-target="#tabs-messages-withIcon" role="tab"
+                                        aria-controls="tabs-messages-withIcon" aria-selected="false">
+                                        <iconify-icon class="mr-1" icon="mdi:shield-check-outline"></iconify-icon>
+                                        Sold Policies</a>
+                                </li>
                                 <li class="nav-item" role="presentation" wire:click="changeSection('tasks')">
                                     <a href="#tabs-messages-withIcon"
                                         class="nav-link w-full flex items-center font-medium text-sm font-Inter leading-tight capitalize border-x-0 border-t-0 border-b border-transparent px-4 pb-2 my-2 hover:border-transparent focus:border-transparent  @if ($section === 'tasks') active @endif dark:text-slate-300"
@@ -794,6 +803,80 @@
                         <div class="flex items-start space-x-3 rtl:space-x-reverse">
                             <div class="flex-1">
                                 No Offers for this corporate!
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endif
+
+            @if ($section === 'sold_policies')
+                @if ($soldPolicies->isEmpty())
+                    <div
+                        class="col-span-2 py-[18px] px-6 font-normal font-Inter text-sm rounded-md bg-warning-500 bg-opacity-[14%] w-full text-warning-500">
+                        <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                            <div class="flex-1">
+                                No sold policies for this corporate.
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="card col-span-2">
+                        <div class="card-body p-0">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                    <thead class="bg-slate-200 dark:bg-slate-700">
+                                        <tr>
+                                            <th class="table-th">Policy #</th>
+                                            <th class="table-th">Product</th>
+                                            <th class="table-th">Company</th>
+                                            <th class="table-th">Gross Premium</th>
+                                            <th class="table-th">Start</th>
+                                            <th class="table-th">Expiry</th>
+                                            <th class="table-th">Status</th>
+                                            <th class="table-th"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                        @foreach ($soldPolicies as $sp)
+                                            <tr>
+                                                <td class="table-td font-medium">
+                                                    {{ $sp->policy_number ?? '—' }}
+                                                </td>
+                                                <td class="table-td">
+                                                    {{ $sp->policy->name ?? '—' }}
+                                                </td>
+                                                <td class="table-td">
+                                                    {{ $sp->policy->company->name ?? '—' }}
+                                                </td>
+                                                <td class="table-td">
+                                                    {{ number_format($sp->gross_premium, 2) }}
+                                                </td>
+                                                <td class="table-td">
+                                                    <span class="date-text">{{ $sp->start ? \Carbon\Carbon::parse($sp->start)->format('d M Y') : '—' }}</span>
+                                                </td>
+                                                <td class="table-td">
+                                                    <span class="date-text">{{ $sp->expiry ? \Carbon\Carbon::parse($sp->expiry)->format('d M Y') : '—' }}</span>
+                                                </td>
+                                                <td class="table-td">
+                                                    @if ($sp->cancellation_time)
+                                                        <span class="badge bg-danger-500 h-auto">Cancelled</span>
+                                                    @elseif ($sp->is_valid)
+                                                        <span class="badge bg-success-500 h-auto">Valid</span>
+                                                    @else
+                                                        <span class="badge bg-warning-500 h-auto">Pending</span>
+                                                    @endif
+                                                </td>
+                                                <td class="table-td">
+                                                    <a href="{{ route('sold.policy.show', $sp->id) }}"
+                                                        class="btn btn-sm inline-flex justify-center btn-light light">
+                                                        <iconify-icon icon="heroicons-outline:eye" class="mr-1"></iconify-icon>
+                                                        View
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
