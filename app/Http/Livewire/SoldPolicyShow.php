@@ -854,6 +854,11 @@ class SoldPolicyShow extends Component
             'commFrom' => 'required|in:' . implode(',', CommProfileConf::FROMS),
         ]);
 
+        if ($this->commProfile && $this->soldPolicy->sales_comms()->where('comm_profile_id', $this->commProfile)->whereNot('status', SalesComm::PYMT_STATE_CANCELLED)->exists()) {
+            $this->throwError('commProfile', 'This commission profile is already linked to this policy.');
+            return;
+        }
+
         $res = $this->soldPolicy->addSalesCommission($this->commTitle, $this->commFrom, $this->commPer, $this->commProfile, $this->newcommNote);
         if ($res) {
             $this->toggleAddComm();

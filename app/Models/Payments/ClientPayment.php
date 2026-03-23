@@ -140,6 +140,8 @@ class ClientPayment extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
 
+        $activeSheet->getCell('I1')->setValue('COMPANY');
+
         $i = 2;
         /** @var User */
 
@@ -155,6 +157,7 @@ class ClientPayment extends Model
             $activeSheet->getCell('G' . $i)->setValue($payment->status);
             $activeSheet->getCell('H' . $i)->setValue($payment->type .
                 (($payment->type == self::PYMT_TYPE_SALES_OUT) ? (' ' . $payment->sales_out?->title) : ''));
+            $activeSheet->getCell('I' . $i)->setValue($payment->sold_policy->policy->company->name);
 
             $i++;
         }
@@ -454,7 +457,7 @@ class ClientPayment extends Model
             ->when(count($filteredStatus), fn($q) => $q->FilterByStates($filteredStatus))
             ->when(count($types), fn($q) => $q->byTypes($types))
             ->when($sortColomn === 'start', fn($q) => $q->SortByPolicyStart(sort: $sortDirection))
-            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned', 'sold_policy.offer', 'sales_out');
+            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'sold_policy.policy.company', 'assigned', 'sold_policy.offer', 'sales_out');
     }
 
     public function scopeUserData($query, array $states = [self::PYMT_STATE_NEW], $assigned_only = false, string $searchText = null, $upcoming_only = false)

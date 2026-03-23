@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Users\AppLog;
@@ -50,6 +51,13 @@ class UnapprovedEntry extends Model
         Carbon $entry_date = null,
         $revert_entry_id = null
     ) {
+        $lockKey = 'unapproved_entry_creation_' . Auth::id() . '_' . $entry_title_id . ($revert_entry_id ? '_revert_' . $revert_entry_id : '');
+        $lock = Cache::lock($lockKey, 10);
+
+        if (!$lock->get()) {
+            return "Entry creation in progress. Please wait.";
+        }
+
         try {
             $newEntry = new self([
                 'user_id'           => Auth::id(),
@@ -68,11 +76,12 @@ class UnapprovedEntry extends Model
                 }
             });
 
-            $newEntry->save();
             return $newEntry;
         } catch (Exception $e) {
             report($e);
             return false;
+        } finally {
+            $lock->release();
         }
     }
 
@@ -82,26 +91,36 @@ class UnapprovedEntry extends Model
     {
         /** @var User */
         $loggedInUser = Auth::user();
-        $this->load('accounts');
-        foreach ($this->accounts as $ac) {
-            $accounts_arr[$ac->id] = [
-                'nature'    =>  $ac->pivot->nature,
-                'amount'    =>  $ac->pivot->amount,
-                'currency' => $ac->pivot->currency,
-                'currency_amount' => $ac->pivot->currency_amount,
-                'currency_rate' => $ac->pivot->currency_rate,
-                'doc_url' => $ac->pivot->doc_url,
-            ];
-        }
-
-        /** @var EntryTitle */
-        $entry = EntryTitle::findOrFail($this->entry_title_id);
-
-        if (!$entry->isEntryValid($accounts_arr) && !$loggedInUser->can('approve', JournalEntry::class)) return false;
         $newEntry = null;
-        try {
 
-            DB::transaction(function () use ($accounts_arr, &$newEntry) {
+        try {
+            DB::transaction(function () use ($loggedInUser, &$newEntry) {
+                // Lock this record to prevent concurrent approvals
+                $locked = self::where('id', $this->id)->lockForUpdate()->first();
+                if (!$locked) {
+                    AppLog::warning("Unapproved entry already approved or deleted", loggable: $this);
+                    return;
+                }
+
+                $this->load('accounts');
+                $accounts_arr = [];
+                foreach ($this->accounts as $ac) {
+                    $accounts_arr[$ac->id] = [
+                        'nature'          => $ac->pivot->nature,
+                        'amount'          => $ac->pivot->amount,
+                        'currency'        => $ac->pivot->currency,
+                        'currency_amount' => $ac->pivot->currency_amount,
+                        'currency_rate'   => $ac->pivot->currency_rate,
+                        'doc_url'         => $ac->pivot->doc_url,
+                    ];
+                }
+
+                /** @var EntryTitle */
+                $entry = EntryTitle::findOrFail($this->entry_title_id);
+                if (!$entry->isEntryValid($accounts_arr) && !$loggedInUser->can('approve', JournalEntry::class)) {
+                    return;
+                }
+
                 $newEntry = JournalEntry::newJournalEntry(
                     entry_title_id: $this->entry_title_id,
                     receiver_name: $this->receiver_name,
@@ -123,6 +142,7 @@ class UnapprovedEntry extends Model
         } catch (Exception $e) {
             report($e);
         }
+
         return $newEntry;
     }
 

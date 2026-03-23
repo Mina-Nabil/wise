@@ -305,11 +305,13 @@ class JournalEntryIndex extends Component
 
         $res = $e->revertEntry();
 
-        if ($res) {
-            $this->alert('success', 'Entry reverted successfuly!');
+        if (is_string($res)) {
+            $this->alert('failed', $res);
+        } elseif ($res) {
+            $this->alert('success', 'Entry reverted successfully!');
             $this->mount();
         } else {
-            $this->alert('failed', 'server error');
+            $this->alert('failed', 'Server error');
         }
     }
 

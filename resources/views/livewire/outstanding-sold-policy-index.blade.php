@@ -297,6 +297,15 @@
                                                             <th scope="col" class="table-th ">
                                                                 POLICY#
                                                             </th>
+                                                            <th scope="col" class="table-th ">
+                                                                CLIENT
+                                                            </th>
+                                                            <th scope="col" class="table-th ">
+                                                                SALES OUT
+                                                            </th>
+                                                            <th scope="col" class="table-th ">
+                                                                INSTALLMENTS
+                                                            </th>
                                                             @can('viewCommission',
                                                                 App\Models\Business\SoldPolicy::class)
                                                                 <th scope="col" class="table-th ">
@@ -330,9 +339,6 @@
                                                                     PYMT
                                                                 </th>
                                                             @endcan
-                                                            <th scope="col" class="table-th ">
-                                                                CLIENT
-                                                            </th>
                                                             <th scope="col" class="table-th ">
                                                                 STATUS
                                                             </th>
@@ -400,6 +406,14 @@
                                                                             </a>
                                                                         </div>
                                                                     </div>
+                                                                </td>
+                                                                <td class="table-td">
+                                                                    <span
+                                                                        class="block date-text">{{ $policy->sales_out_profile_names }}</span>
+                                                                </td>
+                                                                <td class="table-td">
+                                                                    <span
+                                                                        class="block date-text">{{ $policy->not_cancelled_client_payments_count }}</span>
                                                                 </td>
 
                                                                 @can('viewCommission',

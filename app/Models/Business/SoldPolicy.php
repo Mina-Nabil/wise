@@ -358,6 +358,11 @@ class SoldPolicy extends Model
         $loggedInUser = Auth::user();
         if ($loggedInUser && !$loggedInUser->can('create', SalesComm::class)) return false;
 
+        if ($comm_profile_id && $this->sales_comms()->where('comm_profile_id', $comm_profile_id)->whereNot('status', SalesComm::PYMT_STATE_CANCELLED)->exists()) {
+            AppLog::warning("Duplicate commission profile attempted", desc: "Comm profile {$comm_profile_id} is already linked to policy {$this->id}", loggable: $this);
+            return false;
+        }
+
         try {
             /** @var SalesComm */
             $tmp = $this->sales_comms()->create([
@@ -1381,18 +1386,20 @@ class SoldPolicy extends Model
         $activeSheet->getCell('H1')->setValue('PYMT');
         $activeSheet->getCell('I1')->setValue('POLICY#');
         $activeSheet->getCell('J1')->setValue('CLIENT');
+        $activeSheet->getCell('K1')->setValue('SALES OUT');
+        $activeSheet->getCell('L1')->setValue('INSTALLMENTS');
         // Commission columns
-        $activeSheet->getCell('K1')->setValue('COMM.');
-        $activeSheet->getCell('L1')->setValue('COMM. GROSS');
-        $activeSheet->getCell('M1')->setValue('PENALTY');
-        $activeSheet->getCell('N1')->setValue('PAID');
-        $activeSheet->getCell('O1')->setValue('TAX');
-        $activeSheet->getCell('P1')->setValue('PAID GROSS');
-        $activeSheet->getCell('Q1')->setValue('DIFF');
-        $activeSheet->getCell('R1')->setValue('INVOICE');
-        $activeSheet->getCell('S1')->setValue('#');
-        $activeSheet->getCell('T1')->setValue('PYMT');
-        $activeSheet->getCell('U1')->setValue('STATUS');
+        $activeSheet->getCell('M1')->setValue('COMM.');
+        $activeSheet->getCell('N1')->setValue('COMM. GROSS');
+        $activeSheet->getCell('O1')->setValue('PENALTY');
+        $activeSheet->getCell('P1')->setValue('PAID');
+        $activeSheet->getCell('Q1')->setValue('TAX');
+        $activeSheet->getCell('R1')->setValue('PAID GROSS');
+        $activeSheet->getCell('S1')->setValue('DIFF');
+        $activeSheet->getCell('T1')->setValue('INVOICE');
+        $activeSheet->getCell('U1')->setValue('#');
+        $activeSheet->getCell('V1')->setValue('PYMT');
+        $activeSheet->getCell('W1')->setValue('STATUS');
 
         // Apply consistent header styling: black background with white text
         $headerStyle = [
@@ -1404,11 +1411,11 @@ class SoldPolicy extends Model
                 'color' => ['argb' => 'FFFFFFFF'], // White text
             ],
         ];
-        $activeSheet->getStyle('A1:T1')->applyFromArray($headerStyle);
+        $activeSheet->getStyle('A1:W1')->applyFromArray($headerStyle);
 
         $i = 2;
         foreach ($data as $policy) {
-            // POLICY (company name - policy name)
+            // COMPANY
             $activeSheet->getCell('A' . $i)->setValue($policy->policy->company->name);
             // POLICY
             $activeSheet->getCell('B' . $i)->setValue($policy->policy->name);
@@ -1419,7 +1426,7 @@ class SoldPolicy extends Model
             // LEFT
             $activeSheet->getCell('E' . $i)->setValue($policy->left_to_pay);
             // START
-            $activeSheet->getCell('E' . $i)->setValue($policy->start ? Carbon::parse($policy->start)->format('d-m-Y') : 'N/A');
+            $activeSheet->getCell('F' . $i)->setValue($policy->start ? Carbon::parse($policy->start)->format('d-m-Y') : 'N/A');
             // END
             $activeSheet->getCell('G' . $i)->setValue($policy->expiry ? Carbon::parse($policy->expiry)->format('d-m-Y') : 'N/A');
             // PYMT (client payment date)
@@ -1428,28 +1435,32 @@ class SoldPolicy extends Model
             $activeSheet->getCell('I' . $i)->setValue($policy->policy_number);
             // CLIENT
             $activeSheet->getCell('J' . $i)->setValue($policy->client?->name ?? 'N/A');
+            // SALES OUT
+            $activeSheet->getCell('K' . $i)->setValue($policy->sales_out_profile_names);
+            // INSTALLMENTS
+            $activeSheet->getCell('L' . $i)->setValue($policy->not_cancelled_client_payments_count ?? 0);
             // COMM. (after_tax_comm)
-            $activeSheet->getCell('K' . $i)->setValue($policy->after_tax_comm ?? 0);
+            $activeSheet->getCell('M' . $i)->setValue($policy->after_tax_comm ?? 0);
             // COMM. GROSS (total_policy_comm)
-            $activeSheet->getCell('L' . $i)->setValue($policy->total_policy_comm ?? 0);
+            $activeSheet->getCell('N' . $i)->setValue($policy->total_policy_comm ?? 0);
             // PENALTY
-            $activeSheet->getCell('M' . $i)->setValue($policy->penalty_amount ?? 0);
+            $activeSheet->getCell('O' . $i)->setValue($policy->penalty_amount ?? 0);
             // PAID (total_comp_paid)
-            $activeSheet->getCell('N' . $i)->setValue($policy->total_comp_paid ?? 0);
+            $activeSheet->getCell('P' . $i)->setValue($policy->total_comp_paid ?? 0);
             // TAX (tax_amount)
-            $activeSheet->getCell('O' . $i)->setValue($policy->company_comm_payments_sum_tax_amount ?? 0);
+            $activeSheet->getCell('Q' . $i)->setValue($policy->company_comm_payments_sum_tax_amount ?? 0);
             // PAID GROSS (total_comp_paid + tax_amount)
-            $activeSheet->getCell('P' . $i)->setValue(($policy->total_comp_paid ?? 0) + ($policy->company_comm_payments_sum_tax_amount ?? 0));
-            // DIFF (after_tax_comm - total_comp_paid + tax_amount)
-            $activeSheet->getCell('Q' . $i)->setValue(($policy->total_policy_comm ?? 0) - (($policy->total_comp_paid ?? 0) + ($policy->company_comm_payments_sum_tax_amount ?? 0)));
+            $activeSheet->getCell('R' . $i)->setValue(($policy->total_comp_paid ?? 0) + ($policy->company_comm_payments_sum_tax_amount ?? 0));
+            // DIFF (total_policy_comm - paid gross)
+            $activeSheet->getCell('S' . $i)->setValue(($policy->total_policy_comm ?? 0) - (($policy->total_comp_paid ?? 0) + ($policy->company_comm_payments_sum_tax_amount ?? 0)));
             // INVOICE (last company comm payment created_at)
-            $activeSheet->getCell('R' . $i)->setValue($policy->last_company_comm_payment ? Carbon::parse($policy->last_company_comm_payment->created_at)->format('d-m-Y') : 'N/A');
+            $activeSheet->getCell('T' . $i)->setValue($policy->last_company_comm_payment ? Carbon::parse($policy->last_company_comm_payment->created_at)->format('d-m-Y') : 'N/A');
             // # (invoice serial)
-            $activeSheet->getCell('S' . $i)->setValue($policy->last_company_comm_payment?->invoice?->serial ?? 'N/A');
+            $activeSheet->getCell('U' . $i)->setValue($policy->last_company_comm_payment?->invoice?->serial ?? 'N/A');
             // PYMT (last company comm payment payment_date)
-            $activeSheet->getCell('T' . $i)->setValue($policy->last_company_comm_payment?->payment_date ? Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A');
+            $activeSheet->getCell('V' . $i)->setValue($policy->last_company_comm_payment?->payment_date ? Carbon::parse($policy->last_company_comm_payment->payment_date)->format('d-m-Y') : 'N/A');
             // STATUS
-            $activeSheet->getCell('U' . $i)->setValue($policy->is_valid ? 'Validated' : '');
+            $activeSheet->getCell('W' . $i)->setValue($policy->is_valid ? 'Validated' : '');
             $i++;
         }
         $writer = new Xlsx($newFile);
@@ -2068,7 +2079,10 @@ class SoldPolicy extends Model
                 });
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
-            ->with('last_company_comm_payment', 'last_company_comm_payment.invoice')
+            ->with('last_company_comm_payment', 'last_company_comm_payment.invoice', 'active_sales_comms', 'active_sales_comms.comm_profile')
+            ->withCount(['client_payments as not_cancelled_client_payments_count' => function ($q) {
+                $q->whereIn('status', ClientPayment::NOT_CANCELLED_STATES);
+            }])
             ->withSum('company_comm_payments', 'tax_amount');
     }
 
