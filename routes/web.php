@@ -98,6 +98,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
     Route::get('/campaigns', [PoliciesController::class, 'campaignIndex'])->name('campaigns.index');
+    Route::get('/campaigns/{id}', [PoliciesController::class, 'campaignShow'])->name('campaigns.show');
     Route::get('/reviews',[ReportController::class, 'reviewsIndex'])->name('reviews.index');
     Route::get('/logs', [AppLogController::class, 'index'])->name('logs.index');
     Route::get('/slarecords', [AppLogController::class, 'slaRecordsIndex'])->name('slarecords.index');
