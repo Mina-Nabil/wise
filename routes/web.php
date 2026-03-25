@@ -104,6 +104,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/slarecords', [AppLogController::class, 'slaRecordsIndex'])->name('slarecords.index');
 
     Route::get('/reports/sold-policy', [ReportController::class, 'soldPolicyIndex'])->name('reports.soldpolicy');
+    Route::get('/reports/income', [ReportController::class, 'soldPolicyIncomeIndex'])->name('reports.income');
     Route::get('/reports/offers', [ReportController::class, 'offersIndex'])->name('reports.offers');
     Route::get('/reports/tasks', [ReportController::class, 'tasksIndex'])->name('reports.tasks');
     Route::get('/reports/followups', [ReportController::class, 'followupsIndex'])->name('reports.followups');
