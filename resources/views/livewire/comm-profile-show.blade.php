@@ -472,15 +472,14 @@
                                                                                     icon="line-md:cancel"></iconify-icon>
                                                                                 <span>Set as Cancelled</span></a>
                                                                         </li>
-                                                                        @can('delete', $payment)
+                                                                        @if(Auth::user()->is_admin)
                                                                             <li>
                                                                                 <a wire:click="confirmDeleteCommPayment({{ $payment->id }})"
-                                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
-                                                                                    <iconify-icon
-                                                                                        icon="mdi:delete"></iconify-icon>
+                                                                                    class="hover:bg-danger-500 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm text-danger-500 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
                                                                                     <span>Delete</span></a>
                                                                             </li>
-                                                                        @endcan
+                                                                        @endif
                                                                     @endif
 
                                                                     @if ($payment->doc_url)
@@ -548,10 +547,12 @@
                                                             class="btn inline-flex justify-center btn-light btn-sm">
                                                             Add new payment
                                                         </button>
-                                                        <button wire:click="openNewNegPymtSection"
-                                                            class="btn inline-flex justify-center btn-outline-danger btn-sm ltr:ml-2 rtl:mr-2">
-                                                            Add negative payment
-                                                        </button>
+                                                        @if(Auth::user()->is_admin)
+                                                            <button wire:click="openNewNegPymtSection"
+                                                                class="btn inline-flex justify-center btn-outline-danger btn-sm ltr:ml-2 rtl:mr-2">
+                                                                Add negative payment
+                                                            </button>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             </tbody>

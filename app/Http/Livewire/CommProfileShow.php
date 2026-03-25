@@ -771,6 +771,11 @@ class CommProfileShow extends Component
 
     public function addNegativePayment()
     {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            $this->alert('failed', 'Unauthorized. Only admins can add negative payments.');
+            return;
+        }
+
         $this->validate(
             [
                 'pymtAmount' => 'required|numeric|gt:0',
@@ -1237,6 +1242,11 @@ class CommProfileShow extends Component
 
     public function deleteCommPayment()
     {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            $this->alert('failed', 'Unauthorized. Only admins can delete payments.');
+            return;
+        }
+
         $payment = CommProfilePayment::find($this->deleteCommPaymentId);
         if (!$payment) {
             $this->alert('failed', 'Payment not found!');
