@@ -333,6 +333,12 @@
                                             class="@yield('renewal-analysis-report')">Renewal Analysis</a>
                                     </li>
                                 @endif
+                                @if (Auth::user()->is_admin)
+                                    <li>
+                                        <a href="{{ url('/reports/income') }}"
+                                            class="@yield('reports.income')">Income Report</a>
+                                    </li>
+                                @endif
                             </ul>
                         </li>
                     @endcan

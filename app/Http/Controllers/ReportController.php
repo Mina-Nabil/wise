@@ -76,6 +76,14 @@ class ReportController extends Controller
         return view('reports.sold-policy-index');
     }
 
+    public function soldPolicyIncomeIndex()
+    {
+        if (!auth()->user()?->is_admin) {
+            abort(403);
+        }
+        return view('reports.sold-policy-income-index');
+    }
+
     public function followupsIndex()
     {
         return view('reports.followups-index');

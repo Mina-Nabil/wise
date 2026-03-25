@@ -1,0 +1,1294 @@
+<div>
+    <div>
+        <div class="flex justify-between flex-wrap items-center">
+            <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
+                <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
+                    <b>Reports:</b> Income Report -- Total: {{ $policies->total() }}
+                </h4>
+            </div>
+            <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+                <div class="dropdown relative ">
+                    <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Add filter
+                        <span
+                            class="cursor-pointer absolute ltr:border-l rtl:border-r border-slate-100 h-full ltr:right-0 rtl:left-0 px-2 flex
+                                    items-center justify-center leading-none">
+                            <iconify-icon class="leading-none text-xl"
+                                icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                        </span>
+                    </button>
+                    <ul
+                        class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                        <li wire:click="toggleStartDate">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Start date ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleExpiryDate">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Expiry date ( From-To )</span>
+                        </li>
+                        <li wire:click="togglePaidDate">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Paid date ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleIssuedDate">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Issued date ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleCancelTime">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Cancel Time ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleBankPaymentTime">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Bank Payment ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleProfiles">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Commissions Profile</span>
+                        </li>
+                        <li wire:click="openCreatorSection">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Creator</span>
+                        </li>
+                        <li wire:click="toggleMainSales">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Main Sales</span>
+                        </li>
+                        <li wire:click="toggleLob">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Line of business</span>
+                        </li>
+                        <li wire:click="toggleValues">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Insured Value ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleNetPrem">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Net premium ( From-To )</span>
+                        </li>
+                        <li wire:click="toggleBrands">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Car brand</span>
+                        </li>
+                        <li wire:click="toggleCompany">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Insurance Company</span>
+                        </li>
+                        <li wire:click="togglePolicy">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Policy</span>
+                        </li>
+                        <li wire:click="toggleValidated">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Valid</span>
+                        </li>
+                        <li wire:click="togglePaid">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Paid</span>
+                        </li>
+                        <li wire:click="toggleRenewal">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Renewal</span>
+                        </li>
+                        <li wire:click="togglePenalized">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Penalty</span>
+                        </li>
+                        <li wire:click="toggleWelcomed">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                is Welcomed</span>
+                        </li>
+                        <li wire:click="toggleHasOffer">
+                            <span
+                                class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                        dark:hover:text-white cursor-pointer">
+                                Has Offer</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body px-6 pb-6 overflow-x-auto">
+            <div class="-mx-6">
+                <div class="inline-block min-w-full align-middle">
+                    <div class="card">
+                        <header class="card-header cust-card-header noborder">
+                            <iconify-icon wire:loading class="loading-icon text-lg"
+                                icon="line-md:loading-twotone-loop"></iconify-icon>
+                            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
+                                wire:model="search">
+                        </header>
+
+                        <header class="card-header cust-card-header noborder" style="display: block;">
+
+                            @if ($start_from || $start_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleStartDate">
+                                        {{ $start_from ? 'Start From: ' . \Carbon\Carbon::parse($start_from)->format('l d/m/Y') : '' }}
+                                        {{ $start_from && $start_to ? '-' : '' }}
+                                        {{ $start_to ? 'Start To: ' . \Carbon\Carbon::parse($start_to)->format('l d/m/Y') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearStartDates">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($expiry_from || $expiry_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="setExpiryDates">
+                                        {{ $expiry_from ? 'Expiry From: ' . \Carbon\Carbon::parse($expiry_from)->format('l d/m/Y') : '' }}
+                                        {{ $expiry_from && $expiry_to ? '-' : '' }}
+                                        {{ $expiry_to ? 'Expiry To: ' . \Carbon\Carbon::parse($expiry_to)->format('l d/m/Y') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearExpiryDates">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($paid_from || $paid_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="setPaidDates">
+                                        {{ $paid_from ? 'Paid From: ' . \Carbon\Carbon::parse($paid_from)->format('l d/m/Y') : '' }}
+                                        {{ $paid_from && $paid_to ? '-' : '' }}
+                                        {{ $paid_to ? 'Paid To: ' . \Carbon\Carbon::parse($paid_to)->format('l d/m/Y') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearPaidDates">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($profiles)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleProfiles">
+                                        Profiles:&nbsp;(
+                                        @foreach ($profiles as $profile)
+                                            @php $decodedProfile = json_decode($profile, true); @endphp
+                                            {{ $decodedProfile['title'] }}
+                                            @if (!$loop->last), @endif
+                                        @endforeach
+                                        )
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearProfiles">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($issued_from || $issued_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleIssuedDate">
+                                        {{ $issued_from ? 'Issued From: ' . \Carbon\Carbon::parse($issued_from)->format('l d/m/Y') : '' }}
+                                        {{ $issued_from && $issued_to ? '-' : '' }}
+                                        {{ $issued_to ? 'Issued To: ' . \Carbon\Carbon::parse($issued_to)->format('l d/m/Y') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearIssuedDates">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($cancel_time_from || $cancel_time_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleCancelTime">
+                                        {{ $cancel_time_from ? 'Cancel From: ' . \Carbon\Carbon::parse($cancel_time_from)->format('l d/m/Y') : '' }}
+                                        {{ $cancel_time_from && $cancel_time_to ? '-' : '' }}
+                                        {{ $cancel_time_to ? 'Cancel To: ' . \Carbon\Carbon::parse($cancel_time_to)->format('l d/m/Y') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearCancelTimeDates">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($bank_payment_time_from || $bank_payment_time_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleBankPaymentTime">
+                                        {{ $bank_payment_time_from ? 'Bank Payment From: ' . \Carbon\Carbon::parse($bank_payment_time_from)->format('l d/m/Y') : '' }}
+                                        {{ $bank_payment_time_from && $bank_payment_time_to ? '-' : '' }}
+                                        {{ $bank_payment_time_to ? 'Bank Payment To: ' . \Carbon\Carbon::parse($bank_payment_time_to)->format('l d/m/Y') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearBankPaymentTimeDates">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!empty($FilteredCreators))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span class="text-slate-300">Creators:</span>&nbsp;
+                                    <span wire:click="openCreatorSection">
+                                        @foreach ($FilteredCreators as $index => $creator)
+                                            {{ $creator['name'] }}@if (!$loop->last), @endif
+                                        @endforeach
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearCreator">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"
+                                            wire:loading.remove wire:target="clearCreator"></iconify-icon>
+                                        <iconify-icon class="text-xl spin-slow" icon="line-md:loading-twotone-loop"
+                                            wire:loading wire:target="clearCreator"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($main_sales_id)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleMainSales">
+                                        {{ $main_sales_id ? 'Main Sales: ' . $mainSalesName : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearMainSales">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($line_of_business_ids)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleLob">
+                                        LOB(
+                                        @foreach ($line_of_business_ids as $lob)
+                                            {{ ucwords(str_replace('_', ' ', $lob)) }}
+                                            @if (!$loop->last), @endif
+                                        @endforeach
+                                        )
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearLob">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($value_from || $value_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleValues">
+                                        {{ $value_from ? 'Value From: ' . number_format($value_from, 0, '.', ',') : '' }}
+                                        {{ $value_from && $value_to ? '-' : '' }}
+                                        {{ $value_to ? 'Value To: ' . number_format($value_to, 0, '.', ',') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearValues">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($net_premium_from || $net_premium_to)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleNetPrem">
+                                        {{ $net_premium_from ? 'Net Premium From: ' . number_format($net_premium_from, 0, '.', ',') : '' }}
+                                        {{ $net_premium_from && $net_premium_to ? '-' : '' }}
+                                        {{ $net_premium_to ? 'Net Premium To: ' . number_format($net_premium_to, 0, '.', ',') : '' }}
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearNetPrems">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($brand_ids)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleBrands">
+                                        Brands(
+                                        @foreach ($brand_ids as $id)
+                                            @php $brand = \App\Models\Cars\Brand::find($id)->name; @endphp
+                                            {{ $brand }}
+                                            @if (!$loop->last), @endif
+                                        @endforeach
+                                        )
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearBrands">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($company_ids)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleCompany">
+                                        Company(
+                                        @foreach ($company_ids as $id)
+                                            @php $company = \App\Models\Insurance\Company::find($id)->name; @endphp
+                                            {{ $company }}
+                                            @if (!$loop->last), @endif
+                                        @endforeach
+                                        )
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearCompany">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if ($policy_ids)
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="togglePolicy">
+                                        Policy(
+                                        @foreach ($policy_ids as $id)
+                                            @php $pol = \App\Models\Insurance\Policy::find($id); @endphp
+                                            {{ $pol->company->name }} - {{ $pol->name }}
+                                            @if (!$loop->last), @endif
+                                        @endforeach
+                                        )
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearPolicy">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_valid))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleValidated">
+                                        @if ($is_valid) Valid:&nbsp;Yes @else Valid:&nbsp;No @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearvalid">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_paid))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="togglePaid">
+                                        @if ($is_paid) Paid:&nbsp;Yes @else Paid:&nbsp;No @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearpaid">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_renewal))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleRenewal">
+                                        @if ($is_renewal) Renewal:&nbsp;Yes @else Renewal:&nbsp;No @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearrenewal">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_penalized))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="togglePenalized">
+                                        @if ($is_penalized) Penalty:&nbsp;Yes @else Penalty:&nbsp;No @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearpenalized">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_cancelled))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleCancelled">
+                                        @if ($is_cancelled) Cancelled:&nbsp;Yes @else Cancelled:&nbsp;No @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearcancelled">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($is_welcomed))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleWelcomed">
+                                        @if ($is_welcomed) Welcomed:&nbsp;Yes @else Welcomed:&nbsp;No @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearwelcomed">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                            @if (!is_null($has_offer))
+                                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                    <span wire:click="toggleHasOffer">
+                                        @if ($has_offer) Has Offer:&nbsp;Yes @else Has Offer:&nbsp;No @endif
+                                        &nbsp;&nbsp;
+                                    </span>
+                                    <span wire:click="clearhasoffer">
+                                        <iconify-icon icon="material-symbols:close" width="1.2em"
+                                            height="1.2em"></iconify-icon>
+                                    </span>
+                                </button>
+                            @endif
+
+                        </header>
+
+                        <div class="tab-content mt-6" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-list" role="tabpanel"
+                                aria-labelledby="pills-list-tab">
+                                <div class="tab-content">
+                                    <div class="card">
+                                        <div class="card-body px-6 rounded pb-3">
+                                            <div class="-mx-6">
+                                                <div class="inline-block min-w-full align-middle">
+                                                    <div class="">
+                                                        <table
+                                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 no-wrap">
+                                                            <thead class="bg-slate-200 dark:bg-slate-700">
+                                                                <tr>
+                                                                    <th scope="col" class="table-th">
+                                                                        POLICY
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        CLIENT
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        NUMBER
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        GROSS PREM.
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        NET PREM.
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        CLIENT PAID
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        AFTER TAX COMM
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        SALES COMM
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        INCOME
+                                                                    </th>
+                                                                    <th scope="col" class="table-th">
+                                                                        INCOME %
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody
+                                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                                @foreach ($policies as $policy)
+                                                                    @php
+                                                                        $income = ($policy->after_tax_comm ?? 0) - ($policy->total_sales_comm ?? 0);
+                                                                        $incomePercent = ($policy->after_tax_comm > 0)
+                                                                            ? round(($income / $policy->after_tax_comm) * 100, 1)
+                                                                            : 0;
+                                                                    @endphp
+                                                                    <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                        <td class="table-td">
+                                                                            <div class="flex-1 text-start">
+                                                                                <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                    {{ $policy->policy->company->name }}
+                                                                                </h4>
+                                                                                <div class="text-xs font-normal text-slate-600 dark:text-slate-400">
+                                                                                    {{ $policy->policy->name }}
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <div class="flex-1 font-medium text-sm leading-4 whitespace-nowrap">
+                                                                                <a class="hover:underline cursor-pointer"
+                                                                                    href="{{ route($policy->client_type . 's.show', $policy->client_id) }}">
+                                                                                    @if ($policy->client_type === 'customer')
+                                                                                        {{ $policy->client?->first_name . ' ' . $policy->client?->middle_name . ' ' . $policy->client?->last_name }}
+                                                                                    @elseif($policy->client_type === 'corporate')
+                                                                                        {{ $policy->client?->name }}
+                                                                                    @endif
+                                                                                </a>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <a href="{{ route('sold.policy.show', $policy->id) }}"
+                                                                                target="_blank"
+                                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                <span class="block date-text">
+                                                                                    {{ $policy->policy_number }}
+                                                                                </span>
+                                                                            </a>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <b>{{ number_format($policy->gross_premium, 0, '.', ',') }}</b>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <b>{{ number_format($policy->net_premium, 0, '.', ',') }}</b>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <b>{{ number_format($policy->total_client_paid, 0, '.', ',') }}</b>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <b>{{ number_format($policy->after_tax_comm, 0, '.', ',') }}</b>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <b>{{ number_format($policy->total_sales_comm, 0, '.', ',') }}</b>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <b class="{{ $income >= 0 ? 'text-success-500' : 'text-danger-500' }}">
+                                                                                {{ number_format($income, 0, '.', ',') }}
+                                                                            </b>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <span class="badge {{ $incomePercent >= 0 ? 'bg-success-500 text-success-500' : 'bg-danger-500 text-danger-500' }} bg-opacity-30 rounded-3xl">
+                                                                                {{ $incomePercent }}%
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                @if ($policies->isEmpty())
+                                                    <div class="card m-5 p-5">
+                                                        <div class="card-body rounded-md bg-white dark:bg-slate-800">
+                                                            <div class="items-center text-center p-5">
+                                                                <h2><iconify-icon icon="icon-park-outline:search"></iconify-icon></h2>
+                                                                <h2 class="card-title text-slate-900 dark:text-white mb-3">
+                                                                    No Sold Policies with the applied filters</h2>
+                                                                <p class="card-text">Try changing the filters or search terms for this view.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            {{ $policies->links('vendor.livewire.bootstrap') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- commProfilesSection --}}
+    @if ($commProfilesSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">Commissions Profiles</h3>
+                            <button wire:click="toggleProfiles" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Select Profile</label>
+                                @foreach ($COMM_PROFILES as $COMM_PROFILE)
+                                    <div class="checkbox-area">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="hidden"
+                                                value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
+                                                name="checkbox" wire:model.defer="Eprofiles">
+                                            <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                            </span>
+                                            <span class="text-slate-500 dark:text-slate-400 text-sm leading-6">{{ $COMM_PROFILE->title }}</span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setProfiles" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setProfiles">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setProfiles" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- startSection --}}
+    @if ($startSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Start date</h3>
+                            <button wire:click="toggleStartDate" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Start from</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Estart_from">
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Start to</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Estart_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setStartDates" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setStartDates">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setStartDates" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- expirySection --}}
+    @if ($expirySection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Expiry date</h3>
+                            <button wire:click="toggleExpiryDate" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Expiry from</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Eexpiry_from">
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Expiry to</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Eexpiry_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setExpiryDates" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setExpiryDates">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setExpiryDates" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- paidSection --}}
+    @if ($paidSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Paid date</h3>
+                            <button wire:click="togglePaidDate" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Paid from</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Epaid_from">
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Paid to</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Epaid_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setPaidDates" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setPaidDates">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setPaidDates" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- issuedSection --}}
+    @if ($issuedSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Issued date</h3>
+                            <button wire:click="toggleIssuedDate" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Issued from</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Eissued_from">
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Issued to</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Eissued_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setIssuedDates" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setIssuedDates">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setIssuedDates" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- cancelTimeSection --}}
+    @if ($cancelTimeSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Cancel Time</h3>
+                            <button wire:click="toggleCancelTime" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Cancel time from</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Ecancel_time_from">
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Cancel time to</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Ecancel_time_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setCancelTimeDates" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setCancelTimeDates">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setCancelTimeDates" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- bankPaymentTimeSection --}}
+    @if ($bankPaymentTimeSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Bank Payment</h3>
+                            <button wire:click="toggleBankPaymentTime" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Bank Payment from</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Ebank_payment_time_from">
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Bank Payment to</label>
+                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Ebank_payment_time_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setBankPaymentTimeDates" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setBankPaymentTimeDates">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setBankPaymentTimeDates" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- creatorSection --}}
+    @if ($creatorSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Filter by creator</h3>
+                            <button wire:click="closeCreatorSection" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                <div class="from-group">
+                                    <label class="form-label">User</label>
+                                    <select class="form-control w-full mt-2" wire:model="selectAUser">
+                                        <option value="">Select user</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->first_name . ' ' . $user->last_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="checkbox-area mt-2">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input wire:model.defer='isAddCommProfiles' type="checkbox" class="hidden" name="checkbox">
+                                        <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                            <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
+                                        </span>
+                                        <span class="text-slate-500 dark:text-slate-400 text-sm leading-6">Select Commission Profiles ?</span>
+                                    </label>
+                                </div>
+                                <div class="mt-5">
+                                    <button wire:click='selectChildrens' class="btn inline-flex justify-center btn-dark btn-sm">
+                                        <span wire:loading.remove wire:target="selectChildrens">Select all team</span>
+                                        <iconify-icon class="text-md spin-slow relative top-[1px]" wire:loading wire:target="selectChildrens" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    </button>
+                                    <button wire:click='clearSelectedCreatorst' class="btn inline-flex justify-center btn-light btn-sm">
+                                        <span wire:loading.remove wire:target="clearSelectedCreatorst">Clear</span>
+                                        <iconify-icon class="text-md spin-slow relative top-[1px]" wire:loading wire:target="clearSelectedCreatorst" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class='mt-5'>
+                                @foreach ($selectedCreators as $index => $creator)
+                                    <span class="badge bg-slate-900 text-white capitalize">
+                                        {{ $creator['name'] }} &nbsp;
+                                        <iconify-icon class="cursor-pointer" wire:click="removeCreator({{ $index }})" icon="mdi:remove" width="12" height="12"></iconify-icon>
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setCtreators" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setCtreators">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setCtreators" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- mainSalesSection --}}
+    @if ($mainSalesSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Main Sales</h3>
+                            <button wire:click="toggleMainSales" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Main Sales</label>
+                                <select class="form-control w-full mt-2" wire:model.defer="Emain_sales_id">
+                                    <option value="">Select user</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->first_name . ' ' . $user->last_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setMainSales" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setMainSales">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setMainSales" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- lobSection --}}
+    @if ($lobSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Line of Business</h3>
+                            <button wire:click="toggleLob" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                @foreach ($Eline_of_business_ids as $lob)
+                                    <span class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ ucwords(str_replace('_', ' ', $lob)) }}</span>
+                                @endforeach
+                            </div>
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class="bg-slate-200 dark:bg-slate-700">
+                                    <tr>
+                                        <th scope="col" class="table-th">Line of Business</th>
+                                        <th scope="col" class="table-th">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                    @foreach ($LINES_OF_BUSINESS as $LOB)
+                                        @if (!in_array($LOB, $Eline_of_business_ids))
+                                            <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                <td class="table-td">{{ ucwords(str_replace('_', ' ', $LOB)) }}</td>
+                                                <td class="table-td"><button wire:click="pushLob('{{ $LOB }}')" class="btn inline-flex justify-center btn-success light">Add</button></td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setLob" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setLob">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setLob" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- valueSection --}}
+    @if ($valueSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Insured Values</h3>
+                            <button wire:click="toggleValues" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Value from</label>
+                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="Evalue_from">
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Value to</label>
+                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="Evalue_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setValues" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setValues">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setValues" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- netPremSection --}}
+    @if ($netPremSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Net Premium Values</h3>
+                            <button wire:click="toggleNetPrem" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label class="form-label">Net Premium from</label>
+                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="Enet_premium_from">
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Net Premium to</label>
+                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="Enet_premium_to">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setNetPrem" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setNetPrem">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setNetPrem" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- brandSection --}}
+    @if ($brandSection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Car Brands</h3>
+                            <button wire:click="toggleBrands" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                @foreach ($Ebrand_ids as $id)
+                                    @php $brand = \App\Models\Cars\Brand::find($id)->name; @endphp
+                                    <span class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $brand }}</span>
+                                @endforeach
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Search Brand</label>
+                                <input type="text" class="form-control mt-2 w-full" wire:model="searchBrand">
+                            </div>
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class="bg-slate-200 dark:bg-slate-700">
+                                    <tr>
+                                        <th scope="col" class="table-th">Name</th>
+                                        <th scope="col" class="table-th">Country</th>
+                                        <th scope="col" class="table-th">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                    @foreach ($brands as $brand)
+                                        @if (!in_array($brand->id, $Ebrand_ids))
+                                            <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                <td class="table-td">{{ $brand->name }}</td>
+                                                <td class="table-td">{{ $brand->country->name }}</td>
+                                                <td class="table-td"><button wire:click="pushBrand({{ $brand->id }})" class="btn inline-flex justify-center btn-success light">Add</button></td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setBrands" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setBrands">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setBrands" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- companySection --}}
+    @if ($companySection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Insurance Company</h3>
+                            <button wire:click="toggleCompany" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                @foreach ($Ecompany_ids as $id)
+                                    @php $company = \App\Models\Insurance\Company::find($id)->name; @endphp
+                                    <span class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $company }}</span>
+                                @endforeach
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Search Company</label>
+                                <input type="text" class="form-control mt-2 w-full" wire:model="searchCompany">
+                            </div>
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class="bg-slate-200 dark:bg-slate-700">
+                                    <tr>
+                                        <th scope="col" class="table-th">Name</th>
+                                        <th scope="col" class="table-th">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                    @foreach ($companies as $company)
+                                        @if (!in_array($company->id, $Ecompany_ids))
+                                            <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                <td class="table-td">{{ $company->name }}</td>
+                                                <td class="table-td"><button wire:click="pushCompany({{ $company->id }})" class="btn inline-flex justify-center btn-success light">Add</button></td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setCompany" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setCompany">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setCompany" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- PolicySection --}}
+    @if ($PolicySection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white capitalize">Insurance Policy</h3>
+                            <button wire:click="togglePolicy" type="button" class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                @foreach ($Epolicy_ids as $id)
+                                    @php $pol = \App\Models\Insurance\Policy::find($id); @endphp
+                                    <span class="badge bg-slate-900 text-white capitalize rounded-3xl">{{ $pol->company->name }} - {{ ucwords(str_replace('_', ' ', $pol->business)) }}</span>
+                                @endforeach
+                            </div>
+                            <div class="from-group">
+                                <label class="form-label">Search Policy</label>
+                                <input type="text" class="form-control mt-2 w-full" wire:model="searchPolicy">
+                            </div>
+                            <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                <thead class="bg-slate-200 dark:bg-slate-700">
+                                    <tr>
+                                        <th scope="col" class="table-th">Company</th>
+                                        <th scope="col" class="table-th">Name</th>
+                                        <th scope="col" class="table-th">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                    @foreach ($InsurancePolicies as $pol)
+                                        @if (!in_array($pol->id, $Epolicy_ids))
+                                            <tr class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                <td class="table-td">{{ $pol->company->name }}</td>
+                                                <td class="table-td">{{ $pol->name }}</td>
+                                                <td class="table-td"><button wire:click="pushPolicy({{ $pol->id }})" class="btn inline-flex justify-center btn-success light">Add</button></td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setPolicy" class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setPolicy">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading wire:target="setPolicy" icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+</div>
