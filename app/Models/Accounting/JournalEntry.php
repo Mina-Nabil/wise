@@ -181,6 +181,9 @@ class JournalEntry extends Model
             if ($entry_date) {
                 $newEntry->created_at = $entry_date->startOfDay();
                 $newEntry->updated_at = $entry_date->startOfDay();
+            } else {
+                $newEntry->created_at = Carbon::now();
+                $newEntry->updated_at = Carbon::now();
             }
 
             ///////////////////////////////saving entry
