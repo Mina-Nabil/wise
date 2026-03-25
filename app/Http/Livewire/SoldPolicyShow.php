@@ -1021,6 +1021,45 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function confirmDeleteSalesComm($id)
+    {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            $this->alert('failed', 'Unauthorized. Only admins can delete sales commissions.');
+            return;
+        }
+        $this->deleteCommId = $id;
+    }
+
+    public function dismissDeleteSalesComm()
+    {
+        $this->deleteCommId = null;
+    }
+
+    public function deleteSalesComm()
+    {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            $this->alert('failed', 'Unauthorized. Only admins can delete sales commissions.');
+            return;
+        }
+
+        $comm = SalesComm::find($this->deleteCommId);
+        $this->deleteCommId = null;
+
+        if (!$comm) {
+            $this->alert('failed', 'Commission not found.');
+            return;
+        }
+
+        try {
+            $comm->forceDelete();
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Commission deleted.');
+        } catch (\Exception $e) {
+            report($e);
+            $this->alert('failed', 'Server error.');
+        }
+    }
+
     public function toggleNoteSection()
     {
         $this->toggle($this->noteSection);

@@ -145,7 +145,9 @@ class JournalEntry extends Model
 
             $day_serial = self::getTodaySerial();
 
-            if (!$revert_entry_id && !$approver_id && !$entry->isEntryValid($accounts)) {
+            $isBackdated = $entry_date && $entry_date->startOfDay()->lt(Carbon::today()->startOfDay());
+
+            if (!$revert_entry_id && !$approver_id && !$skip_auth && (!$entry->isEntryValid($accounts) || $isBackdated)) {
                 $lock->release();
                 return UnapprovedEntry::newEntry(
                     $entry_title_id,
@@ -153,7 +155,8 @@ class JournalEntry extends Model
                     $receiver_name,
                     $comment,
                     $accounts,
-                    $extra_note
+                    $extra_note,
+                    $entry_date,
                 );
             }
 

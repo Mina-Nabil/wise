@@ -6,6 +6,7 @@ use App\Models\Marketing\Campaign;
 use App\Models\Customers\Customer;
 use App\Models\Corporates\Corporate;
 use App\Models\Business\SoldPolicy;
+use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
@@ -38,6 +39,11 @@ class CampaignShow extends Component
     public $totalWithOffers;
     public $totalSoldPoliciesCount;
     public $totalOffersCount;
+
+    // ROI
+    public $grossIncome;
+    public $netIncome;
+    public $roi;
 
     public function mount($id)
     {
@@ -115,6 +121,24 @@ class CampaignShow extends Component
                 $i->where('client_type', Corporate::MORPH_TYPE)->whereIn('client_id', $corporateIds);
             });
         })->count();
+
+        // ROI calculation
+        $totals = SoldPolicy::where(function ($q) use ($customerIds, $corporateIds) {
+            $q->where(function ($i) use ($customerIds) {
+                $i->where('client_type', Customer::MORPH_TYPE)->whereIn('client_id', $customerIds);
+            })->orWhere(function ($i) use ($corporateIds) {
+                $i->where('client_type', Corporate::MORPH_TYPE)->whereIn('client_id', $corporateIds);
+            });
+        })->selectRaw('SUM(after_tax_comm) as gross_income, SUM(total_sales_comm) as total_sales_comm')->first();
+
+        $this->grossIncome = (float) ($totals->gross_income ?? 0);
+        $netIncome         = $this->grossIncome - (float) ($totals->total_sales_comm ?? 0);
+        $this->netIncome   = $netIncome;
+
+        $budget = (float) ($this->campaign->budget ?? 0);
+        $this->roi = ($budget > 0)
+            ? round((($netIncome - $budget) / $budget) * 100, 1)
+            : null;
     }
 
     public function render()
@@ -136,7 +160,7 @@ class CampaignShow extends Component
                     });
                 })
                 ->withCount(['soldpolicies', 'offers'])
-                ->with(['phones' => fn($q) => $q->limit(1)])
+                ->with(['phones' => fn($q) => $q->limit(1), 'interests'])
                 ->latest()
                 ->paginate(20, ['*'], 'customersPage');
         }
@@ -189,10 +213,11 @@ class CampaignShow extends Component
         }
 
         return view('livewire.campaign-show', [
-            'customers'    => $customers,
-            'corporates'   => $corporates,
-            'soldPolicies' => $soldPolicies,
-            'offers'       => $offers,
+            'customers'       => $customers,
+            'corporates'      => $corporates,
+            'soldPolicies'    => $soldPolicies,
+            'offers'          => $offers,
+            'linesOfBusiness' => Policy::PERSONAL_TYPES,
         ])->layout('layouts.app', ['page_title' => $this->campaign->name]);
     }
 }

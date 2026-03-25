@@ -31,7 +31,7 @@
     </div>
 
     {{-- Stat Cards --}}
-    <div class="grid xl:grid-cols-5 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 mb-6">
+    <div class="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 mb-4">
         <div class="bg-primary-500 rounded-md p-4 bg-opacity-[0.15] dark:bg-opacity-25 relative z-[1]">
             <span class="block mb-1 text-sm text-slate-600 dark:text-slate-300 font-medium">Total Clients</span>
             <span class="block text-3xl text-slate-900 dark:text-white font-semibold">{{ $totalClients }}</span>
@@ -76,6 +76,41 @@
                 <span class="text-xs text-slate-500 dark:text-slate-400">Any offer status</span>
             </div>
         </div>
+
+        <div class="bg-success-500 rounded-md p-4 bg-opacity-[0.15] dark:bg-opacity-25 relative z-[1]">
+            <span class="block mb-1 text-sm text-slate-600 dark:text-slate-300 font-medium">Gross Income</span>
+            <span class="block text-2xl text-slate-900 dark:text-white font-semibold">{{ number_format($grossIncome, 0) }}</span>
+            <div class="flex items-center space-x-1 rtl:space-x-reverse mt-2">
+                <iconify-icon icon="heroicons:banknotes" class="text-success-500 text-lg"></iconify-icon>
+                <span class="text-xs text-slate-500 dark:text-slate-400">Sum of after-tax comm</span>
+            </div>
+        </div>
+
+        <div class="bg-{{ $netIncome >= 0 ? 'success' : 'danger' }}-500 rounded-md p-4 bg-opacity-[0.15] dark:bg-opacity-25 relative z-[1]">
+            <span class="block mb-1 text-sm text-slate-600 dark:text-slate-300 font-medium">Net Income</span>
+            <span class="block text-2xl text-slate-900 dark:text-white font-semibold">{{ number_format($netIncome, 0) }}</span>
+            <div class="flex items-center space-x-1 rtl:space-x-reverse mt-2">
+                <iconify-icon icon="heroicons:calculator" class="text-{{ $netIncome >= 0 ? 'success' : 'danger' }}-500 text-lg"></iconify-icon>
+                <span class="text-xs text-slate-500 dark:text-slate-400">After sales commissions</span>
+            </div>
+        </div>
+
+        @if ($campaign->budget)
+            <div class="bg-{{ $roi === null ? 'slate' : ($roi >= 0 ? 'success' : 'danger') }}-500 rounded-md p-4 bg-opacity-[0.15] dark:bg-opacity-25 relative z-[1]">
+                <span class="block mb-1 text-sm text-slate-600 dark:text-slate-300 font-medium">ROI</span>
+                @if ($roi !== null)
+                    <span class="block text-2xl text-slate-900 dark:text-white font-semibold">
+                        {{ $roi >= 0 ? '+' : '' }}{{ number_format($roi, 1) }}%
+                    </span>
+                @else
+                    <span class="block text-2xl text-slate-900 dark:text-white font-semibold">—</span>
+                @endif
+                <div class="flex items-center space-x-1 rtl:space-x-reverse mt-2">
+                    <iconify-icon icon="heroicons:arrow-trending-up" class="text-{{ $roi === null ? 'slate' : ($roi >= 0 ? 'success' : 'danger') }}-500 text-lg"></iconify-icon>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">Budget: {{ number_format($campaign->budget, 0) }}</span>
+                </div>
+            </div>
+        @endif
     </div>
 
     {{-- Tabs --}}
@@ -232,6 +267,78 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- ROI Breakdown --}}
+                <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+                    <h6 class="font-medium text-slate-700 dark:text-slate-300 mb-4 text-base">Financial Breakdown</h6>
+                    <div class="grid lg:grid-cols-2 grid-cols-1 gap-4">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 rounded-md bg-slate-50 dark:bg-slate-700">
+                                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                                    <iconify-icon icon="heroicons:banknotes" class="text-success-500 text-lg"></iconify-icon>
+                                    <span class="text-sm text-slate-600 dark:text-slate-300">Gross Income</span>
+                                </div>
+                                <span class="font-semibold text-slate-900 dark:text-white">{{ number_format($grossIncome, 2) }}</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-md bg-slate-50 dark:bg-slate-700">
+                                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                                    <iconify-icon icon="heroicons:minus-circle" class="text-danger-500 text-lg"></iconify-icon>
+                                    <span class="text-sm text-slate-600 dark:text-slate-300">Sales Commissions</span>
+                                </div>
+                                <span class="font-semibold text-danger-500">- {{ number_format($grossIncome - $netIncome, 2) }}</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-md bg-{{ $netIncome >= 0 ? 'success' : 'danger' }}-500 bg-opacity-10 dark:bg-opacity-20">
+                                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                                    <iconify-icon icon="heroicons:calculator" class="text-{{ $netIncome >= 0 ? 'success' : 'danger' }}-500 text-lg"></iconify-icon>
+                                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Net Income</span>
+                                </div>
+                                <span class="font-semibold text-{{ $netIncome >= 0 ? 'success-600 dark:text-success-400' : 'danger-600 dark:text-danger-400' }}">
+                                    {{ number_format($netIncome, 2) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        @if ($campaign->budget)
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 rounded-md bg-slate-50 dark:bg-slate-700">
+                                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                                        <iconify-icon icon="heroicons:wallet" class="text-warning-500 text-lg"></iconify-icon>
+                                        <span class="text-sm text-slate-600 dark:text-slate-300">Campaign Budget</span>
+                                    </div>
+                                    <span class="font-semibold text-slate-900 dark:text-white">{{ number_format($campaign->budget, 2) }}</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 rounded-md bg-slate-50 dark:bg-slate-700">
+                                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                                        <iconify-icon icon="heroicons:currency-dollar" class="text-info-500 text-lg"></iconify-icon>
+                                        <span class="text-sm text-slate-600 dark:text-slate-300">Net Income − Budget</span>
+                                    </div>
+                                    @php $profit = $netIncome - $campaign->budget; @endphp
+                                    <span class="font-semibold {{ $profit >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}">
+                                        {{ $profit >= 0 ? '+' : '' }}{{ number_format($profit, 2) }}
+                                    </span>
+                                </div>
+                                @if ($roi !== null)
+                                    <div class="flex items-center justify-between p-3 rounded-md bg-{{ $roi >= 0 ? 'success' : 'danger' }}-500 bg-opacity-10 dark:bg-opacity-20">
+                                        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                                            <iconify-icon icon="heroicons:arrow-trending-up" class="text-{{ $roi >= 0 ? 'success' : 'danger' }}-500 text-lg"></iconify-icon>
+                                            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">ROI</span>
+                                        </div>
+                                        <span class="font-bold text-lg {{ $roi >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}">
+                                            {{ $roi >= 0 ? '+' : '' }}{{ number_format($roi, 1) }}%
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <div class="flex items-center justify-center p-6 rounded-md bg-slate-50 dark:bg-slate-700 text-center">
+                                <div>
+                                    <iconify-icon icon="heroicons:wallet" class="text-slate-300 text-4xl mb-2"></iconify-icon>
+                                    <p class="text-sm text-slate-400">No budget set — ROI cannot be calculated.</p>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             @endif
 
             {{-- Customers Tab --}}
@@ -248,6 +355,7 @@
                                 <th class="table-th">#</th>
                                 <th class="table-th">Name</th>
                                 <th class="table-th">Phone</th>
+                                <th class="table-th">Interests</th>
                                 <th class="table-th">Offers</th>
                                 <th class="table-th">Sold Policies</th>
                                 <th class="table-th">Status</th>
@@ -268,6 +376,26 @@
                                         <span class="text-sm text-slate-600 dark:text-slate-300">
                                             {{ $customer->phones->first()?->number ?? '—' }}
                                         </span>
+                                    </td>
+                                    <td class="table-td">
+                                        @php
+                                            $interestMap = $customer->interests->keyBy('business');
+                                        @endphp
+                                        @if ($customer->interests->isNotEmpty())
+                                            <div class="flex flex-wrap gap-1">
+                                                @foreach ($linesOfBusiness as $lob)
+                                                    @if ($interestMap->has($lob))
+                                                        @php $interest = $interestMap->get($lob); @endphp
+                                                        <span class="badge {{ $interest->interested ? 'bg-success-500' : 'bg-danger-500' }} text-white text-xs capitalize inline-flex items-center">
+                                                            <iconify-icon icon="mdi:stars" class="mr-1 text-xs"></iconify-icon>
+                                                            {{ ucwords(str_replace('_', ' ', $lob)) }}
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <span class="text-slate-400 text-sm">—</span>
+                                        @endif
                                     </td>
                                     <td class="table-td">
                                         <span class="badge {{ $customer->offers_count > 0 ? 'bg-info-500 text-white' : 'bg-slate-200 text-slate-500' }}">
@@ -291,7 +419,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="table-td text-center text-slate-400 py-8">
+                                    <td colspan="7" class="table-td text-center text-slate-400 py-8">
                                         No customers found.
                                     </td>
                                 </tr>

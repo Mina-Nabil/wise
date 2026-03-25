@@ -389,6 +389,12 @@ class Invoice extends Model
 
     public function deleteInvoice()
     {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user || !$user->is_admin) {
+            return ['success' => false, 'message' => 'Unauthorized. Only admins can delete invoices.'];
+        }
+
         try {
             DB::transaction(function () {
                 // Revert the "invoice created" journal entry if it exists

@@ -2097,6 +2097,15 @@
                                                                                     wire:model="commDoc">
                                                                             </li>
                                                                         @endif
+                                                                        @if (Auth::user()->is_admin)
+                                                                            <li>
+                                                                                <a wire:click="confirmDeleteSalesComm({{ $comm->id }})"
+                                                                                    class="hover:bg-danger-500 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm text-danger-500 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                                                    <span>Delete</span>
+                                                                                </a>
+                                                                            </li>
+                                                                        @endif
                                                                     </ul>
                                                                 </div>
                                                             </td>
@@ -5037,5 +5046,36 @@
         </div>
     @endif
     {{-- END: Penalty Modal --}}
+
+    {{-- BEGIN: Delete Sales Comm Confirmation Modal --}}
+    @if ($deleteCommId)
+        <div class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-sm mx-4">
+                <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-600">
+                    <h5 class="text-base font-semibold text-slate-900 dark:text-white">Delete Sales Commission</h5>
+                    <button wire:click="dismissDeleteSalesComm" class="text-slate-400 hover:text-slate-600">
+                        <iconify-icon icon="heroicons:x-mark"></iconify-icon>
+                    </button>
+                </div>
+                <div class="p-5">
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Are you sure you want to delete this sales commission? This action cannot be undone.</p>
+                </div>
+                <div class="flex items-center justify-end p-5 space-x-2 border-t border-slate-200 dark:border-slate-600">
+                    <button wire:click="dismissDeleteSalesComm" type="button"
+                        class="btn inline-flex justify-center btn-white dark:bg-slate-700 dark:text-slate-300">
+                        Cancel
+                    </button>
+                    <button wire:click="deleteSalesComm" type="button"
+                        class="btn inline-flex justify-center text-white bg-danger-500 hover:bg-danger-600">
+                        <span wire:loading.remove wire:target="deleteSalesComm">Delete</span>
+                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                            wire:loading wire:target="deleteSalesComm"
+                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+    {{-- END: Delete Sales Comm Confirmation Modal --}}
 
 </div>
