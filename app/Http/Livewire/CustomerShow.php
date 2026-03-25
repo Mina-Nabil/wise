@@ -1456,6 +1456,7 @@ class CustomerShow extends Component
         $phoneTypes = Phone::TYPES;
         $tasks = $this->customer->tasks;
         $offers = $this->customer->offers;
+        $soldPolicies = $this->customer->soldpolicies()->with('policy.company', 'policy')->latest()->get();
         $bankAccTypes = BankAccount::TYPES;
         $companies = Company::all();
         // dd($tasks);
@@ -1481,6 +1482,7 @@ class CustomerShow extends Component
             'cities' => $cities,
             'areas' => $areas,
             'offers' => $offers,
+            'soldPolicies' => $soldPolicies,
             'bankAccTypes' => $bankAccTypes,
             'companies' => $companies,
             'LINES_OF_BUSINESS' => $LINES_OF_BUSINESS,

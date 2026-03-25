@@ -357,14 +357,16 @@
                                                                                         icon="lets-icons:print-light"></iconify-icon>
                                                                                     <span>Print</span></a>
                                                                             </li>
-                                                                            <li
-                                                                                wire:click="$emit('showConfirmation', 'Are you sure you want to delete this invoice?','danger','deleteInvoice' , {{ $invoice->id }})">
-                                                                                <a href="#"
-                                                                                    class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
-                                                                                    <iconify-icon
-                                                                                        icon="fluent:delete-28-regular"></iconify-icon>
-                                                                                    <span>Delete</span></a>
-                                                                            </li>
+                                                                            @if (Auth::user()->is_admin)
+                                                                                <li
+                                                                                    wire:click="$set('deleteConfirmInvoiceId', {{ $invoice->id }})">
+                                                                                    <a href="#"
+                                                                                        class="hover:bg-danger-500 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm text-danger-500 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                        <iconify-icon
+                                                                                            icon="heroicons:trash"></iconify-icon>
+                                                                                        <span>Delete</span></a>
+                                                                                </li>
+                                                                            @endif
                                                                         </ul>
                                                                     </div>
                                                                 </div>
@@ -1430,6 +1432,54 @@
                 </div>
             </div>
         </div>
+    @endif
+
+    {{-- Delete Invoice Confirmation Modal --}}
+    @if ($deleteConfirmInvoiceId)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none max-w-sm mx-auto mt-24">
+                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current dark:bg-slate-800">
+                    <div class="relative bg-white dark:bg-slate-800 rounded-lg shadow">
+                        <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-danger-500">
+                            <h3 class="text-xl font-medium text-white flex items-center space-x-2">
+                                <iconify-icon icon="heroicons:exclamation-triangle" class="text-2xl mr-2"></iconify-icon>
+                                Delete Invoice
+                            </h3>
+                            <button wire:click="$set('deleteConfirmInvoiceId', null)" type="button"
+                                class="text-white bg-transparent hover:opacity-75 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <svg class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <p class="text-slate-700 dark:text-slate-300 text-sm">
+                                Are you sure you want to permanently delete this invoice?
+                            </p>
+                            <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1 list-disc list-inside">
+                                <li>All related company commission payments will be force-deleted.</li>
+                                <li>Any linked journal entries will be reversed automatically.</li>
+                                <li>This action <strong class="text-danger-500">cannot be undone</strong>.</li>
+                            </ul>
+                        </div>
+                        <div class="flex items-center justify-end p-4 space-x-2 border-t dark:border-slate-600">
+                            <button wire:click="$set('deleteConfirmInvoiceId', null)" type="button"
+                                class="btn btn-light">Cancel</button>
+                            <button wire:click="deleteInvoice" type="button"
+                                class="btn btn-danger inline-flex items-center space-x-1">
+                                <span wire:loading.remove wire:target="deleteInvoice">
+                                    <iconify-icon icon="heroicons:trash" class="mr-1"></iconify-icon>Delete
+                                </span>
+                                <iconify-icon class="text-xl spin-slow" wire:loading wire:target="deleteInvoice"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
     @endif
 
 </div>

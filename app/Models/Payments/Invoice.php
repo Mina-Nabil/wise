@@ -389,37 +389,56 @@ class Invoice extends Model
 
     public function deleteInvoice()
     {
-        // Check if invoice has any journal entries
-        if ($this->created_journal_entry_id || $this->paid_journal_entry_id) {
-            return [
-                'success' => false,
-                'message' => 'Cannot delete invoice. There are journal entries linked.'
-            ];
+        /** @var User */
+        $user = Auth::user();
+        if (!$user || !$user->is_admin) {
+            return ['success' => false, 'message' => 'Unauthorized. Only admins can delete invoices.'];
         }
 
         try {
             DB::transaction(function () {
-                /** @var CompanyCommPayment */
-                foreach ($this->commissions()->get() as $comm) {
-                    // Check if commission payment has any journal entries
-                    // Note: CompanyCommPayment doesn't have direct journal_entry_id
-                    // but we can add additional checks here if needed in the future
-                    $comm->delete();
+                // Revert the "invoice created" journal entry if it exists
+                if ($this->created_journal_entry_id) {
+                    $createdEntry = JournalEntry::find($this->created_journal_entry_id);
+                    if ($createdEntry) {
+                        $result = $createdEntry->revertEntry();
+                        if ($result === false) {
+                            throw new Exception('Failed to revert the invoice-created journal entry.');
+                        }
+                        if (is_string($result)) {
+                            // Already reverted or pending — log but continue
+                            AppLog::warning("Invoice created-entry revert skipped: $result", loggable: $this);
+                        }
+                    }
                 }
+
+                // Revert the "invoice paid" journal entry if it exists
+                if ($this->paid_journal_entry_id) {
+                    $paidEntry = JournalEntry::find($this->paid_journal_entry_id);
+                    if ($paidEntry) {
+                        $result = $paidEntry->revertEntry();
+                        if ($result === false) {
+                            throw new Exception('Failed to revert the invoice-paid journal entry.');
+                        }
+                        if (is_string($result)) {
+                            AppLog::warning("Invoice paid-entry revert skipped: $result", loggable: $this);
+                        }
+                    }
+                }
+
+                // Force-delete all related company commission payments (model uses SoftDeletes)
+                $this->commissions()->withTrashed()->forceDelete();
+
+                // Hard-delete the invoice itself (no SoftDeletes on this model)
                 $this->delete();
             });
-            AppLog::info("Invoice deleted", loggable: $this);
-            return [
-                'success' => true,
-                'message' => 'Invoice deleted successfully'
-            ];
+
+            AppLog::info("Invoice #{$this->serial} deleted with journal entry reversals", loggable: $this);
+            return ['success' => true, 'message' => 'Invoice deleted successfully.'];
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't delete invoice", $e->getMessage(), $this);
-            return [
-                'success' => false,
-                'message' => 'Failed to delete invoice: ' . $e->getMessage()
-            ];
+            AppLog::error("Can't delete invoice #{$this->serial}", $e->getMessage(), $this);
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
 
