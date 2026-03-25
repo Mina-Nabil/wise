@@ -6,6 +6,7 @@ use App\Models\Marketing\Campaign;
 use App\Models\Customers\Customer;
 use App\Models\Corporates\Corporate;
 use App\Models\Business\SoldPolicy;
+use App\Models\Insurance\Policy;
 use App\Models\Offers\Offer;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
@@ -159,7 +160,7 @@ class CampaignShow extends Component
                     });
                 })
                 ->withCount(['soldpolicies', 'offers'])
-                ->with(['phones' => fn($q) => $q->limit(1)])
+                ->with(['phones' => fn($q) => $q->limit(1), 'interests'])
                 ->latest()
                 ->paginate(20, ['*'], 'customersPage');
         }
@@ -212,10 +213,11 @@ class CampaignShow extends Component
         }
 
         return view('livewire.campaign-show', [
-            'customers'    => $customers,
-            'corporates'   => $corporates,
-            'soldPolicies' => $soldPolicies,
-            'offers'       => $offers,
+            'customers'       => $customers,
+            'corporates'      => $corporates,
+            'soldPolicies'    => $soldPolicies,
+            'offers'          => $offers,
+            'linesOfBusiness' => Policy::PERSONAL_TYPES,
         ])->layout('layouts.app', ['page_title' => $this->campaign->name]);
     }
 }

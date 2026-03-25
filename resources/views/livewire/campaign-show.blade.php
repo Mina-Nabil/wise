@@ -355,6 +355,7 @@
                                 <th class="table-th">#</th>
                                 <th class="table-th">Name</th>
                                 <th class="table-th">Phone</th>
+                                <th class="table-th">Interests</th>
                                 <th class="table-th">Offers</th>
                                 <th class="table-th">Sold Policies</th>
                                 <th class="table-th">Status</th>
@@ -375,6 +376,26 @@
                                         <span class="text-sm text-slate-600 dark:text-slate-300">
                                             {{ $customer->phones->first()?->number ?? '—' }}
                                         </span>
+                                    </td>
+                                    <td class="table-td">
+                                        @php
+                                            $interestMap = $customer->interests->keyBy('business');
+                                        @endphp
+                                        @if ($customer->interests->isNotEmpty())
+                                            <div class="flex flex-wrap gap-1">
+                                                @foreach ($linesOfBusiness as $lob)
+                                                    @if ($interestMap->has($lob))
+                                                        @php $interest = $interestMap->get($lob); @endphp
+                                                        <span class="badge {{ $interest->interested ? 'bg-success-500' : 'bg-danger-500' }} text-white text-xs capitalize inline-flex items-center">
+                                                            <iconify-icon icon="mdi:stars" class="mr-1 text-xs"></iconify-icon>
+                                                            {{ ucwords(str_replace('_', ' ', $lob)) }}
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <span class="text-slate-400 text-sm">—</span>
+                                        @endif
                                     </td>
                                     <td class="table-td">
                                         <span class="badge {{ $customer->offers_count > 0 ? 'bg-info-500 text-white' : 'bg-slate-200 text-slate-500' }}">
@@ -398,7 +419,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="table-td text-center text-slate-400 py-8">
+                                    <td colspan="7" class="table-td text-center text-slate-400 py-8">
                                         No customers found.
                                     </td>
                                 </tr>
