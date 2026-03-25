@@ -885,6 +885,8 @@ class Account extends Model
                             // Opposite nature decreases balance
                             $newFirstEntryBalance = $balance - $entryAmount;
                         }
+                        $this->balance = $newFirstEntryBalance;
+                        $this->save();
 
                         // Update the first entry's account_balance in pivot table
                         DB::table('entry_accounts')
