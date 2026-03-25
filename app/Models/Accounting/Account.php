@@ -463,9 +463,7 @@ class Account extends Model
             $accounts = self::orderByCode()->includeLastEntryBalance($to)
                 ->when($main_accounts_only && $mode == 'balance', fn($q) => $q->parentAccounts())
                 ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to));
-            Log::info($accounts->toSql());
             $accounts = $accounts->get();
-
 
 
             // Get parent accounts (accounts with no parent)
