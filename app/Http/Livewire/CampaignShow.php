@@ -39,6 +39,11 @@ class CampaignShow extends Component
     public $totalSoldPoliciesCount;
     public $totalOffersCount;
 
+    // ROI
+    public $grossIncome;
+    public $netIncome;
+    public $roi;
+
     public function mount($id)
     {
         $this->campaignId = $id;
@@ -115,6 +120,24 @@ class CampaignShow extends Component
                 $i->where('client_type', Corporate::MORPH_TYPE)->whereIn('client_id', $corporateIds);
             });
         })->count();
+
+        // ROI calculation
+        $totals = SoldPolicy::where(function ($q) use ($customerIds, $corporateIds) {
+            $q->where(function ($i) use ($customerIds) {
+                $i->where('client_type', Customer::MORPH_TYPE)->whereIn('client_id', $customerIds);
+            })->orWhere(function ($i) use ($corporateIds) {
+                $i->where('client_type', Corporate::MORPH_TYPE)->whereIn('client_id', $corporateIds);
+            });
+        })->selectRaw('SUM(after_tax_comm) as gross_income, SUM(total_sales_comm) as total_sales_comm')->first();
+
+        $this->grossIncome = (float) ($totals->gross_income ?? 0);
+        $netIncome         = $this->grossIncome - (float) ($totals->total_sales_comm ?? 0);
+        $this->netIncome   = $netIncome;
+
+        $budget = (float) ($this->campaign->budget ?? 0);
+        $this->roi = ($budget > 0)
+            ? round((($netIncome - $budget) / $budget) * 100, 1)
+            : null;
     }
 
     public function render()
