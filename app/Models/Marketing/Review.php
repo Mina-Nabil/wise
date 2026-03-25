@@ -471,7 +471,7 @@ class Review extends Model
     public function scopeNeedsManagerReview($query, $needsManagerReview)
     {
         if ($needsManagerReview !== null) {
-            $query->where('reviews.need_manager_review', $needsManagerReview);
+            $query->where('reviews.need_manager_review', $needsManagerReview ? 1 : 0);
         }
         return $query;
     }
@@ -479,7 +479,7 @@ class Review extends Model
     public function scopeByNoAnswer($query, $noAnswer)
     {
         if ($noAnswer !== null) {
-            $query->where('reviews.no_answer', $noAnswer);
+            $query->where('reviews.no_answer', $noAnswer ? 1 : 0);
         }
         return $query;
     }
