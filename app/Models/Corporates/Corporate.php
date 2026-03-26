@@ -5,6 +5,7 @@ namespace App\Models\Corporates;
 use App\Models\Customers\Followup;
 use App\Models\Marketing\Campaign;
 use App\Models\Tasks\Task;
+use App\Models\Business\SoldPolicy;
 use App\Models\Offers\Offer;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -815,7 +816,7 @@ class Corporate extends Model
 
     public function soldpolicies(): MorphMany
     {
-        return $this->morphMany(Offer::class, 'client');
+        return $this->morphMany(SoldPolicy::class, 'client');
     }
 
     public function interests(): HasMany
