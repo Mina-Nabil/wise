@@ -104,6 +104,10 @@
                                         New Business
                                     </th>
 
+                                    <th scope="col" class=" table-th ">
+                                        Lead Interest
+                                    </th>
+
                                     {{-- <th scope="col" class=" table-th ">
                                         Phone
                                     </th> --}}
@@ -160,6 +164,20 @@
                                                     @foreach ($businesses as $business)
                                                         <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs px-2 py-0.5 rounded">
                                                             {{ str_replace('_', ' ', $business) }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <span class="text-slate-400">—</span>
+                                            @endif
+                                        </td>
+
+                                        <td class="table-td">
+                                            @if ($customer->interests->isNotEmpty())
+                                                <div class="flex flex-wrap gap-1">
+                                                    @foreach ($customer->interests as $interest)
+                                                        <span class="text-xs px-2 py-0.5 rounded font-medium {{ $interest->interested ? 'bg-success-500 text-white' : 'bg-danger-500 text-white' }}">
+                                                            {{ str_replace('_', ' ', $interest->business) }}
                                                         </span>
                                                     @endforeach
                                                 </div>
