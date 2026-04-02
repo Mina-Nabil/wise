@@ -229,7 +229,7 @@ class SalesComm extends Model
             $from_amount =  (($this->sold_policy->tax_amount > 0) ? $this->sold_policy->after_tax_comm : $this->sold_policy->after_tax_comm * .95) - $this->sold_policy->total_comm_subtractions;
         }
 
-        $amount = (($this->comm_percentage / 100) * $from_amount) - $comm_disc;
+        $amount = max(0, (($this->comm_percentage / 100) * $from_amount) - $comm_disc);
 
         try {
             if ($increment_amount) {
