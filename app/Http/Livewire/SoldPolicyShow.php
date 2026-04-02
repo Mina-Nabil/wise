@@ -1051,7 +1051,7 @@ class SoldPolicyShow extends Component
         }
 
         try {
-            $comm->forceDelete();
+            $comm->delete();
             $this->mount($this->soldPolicy->id);
             $this->alert('success', 'Commission deleted.');
         } catch (\Exception $e) {
