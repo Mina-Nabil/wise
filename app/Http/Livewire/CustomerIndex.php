@@ -528,7 +528,7 @@ class CustomerIndex extends Component
         ->when($this->campaignFilter, function ($query) {
             $query->where('customers.campaign_id', $this->campaignFilter);
         })
-        ->with(['campaign', 'soldpolicies.policy'])
+        ->with(['campaign', 'soldpolicies.policy', 'interests'])
         ->latest()
         ->paginate(10);
         $users = User::all();

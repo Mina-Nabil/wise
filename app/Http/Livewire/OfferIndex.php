@@ -64,6 +64,7 @@ class OfferIndex extends Component
     public $carPrice;
     public $selectedCarPriceArray;
     public $filteredStatus = ['active'];
+    public $lineOfBusiness = '';
 
     ///date filters
     public $dateRange;
@@ -321,6 +322,11 @@ class OfferIndex extends Component
         $this->resetPage();
     }
 
+    public function updatingLineOfBusiness()
+    {
+        $this->resetPage();
+    }
+
     public function mount()
     {
         $this->startDate = null;
@@ -357,6 +363,10 @@ class OfferIndex extends Component
                 $endDate = Carbon::parse($this->endDate);
                 return $query->fromTo($startDate, $endDate);
             })
+            ->when($this->lineOfBusiness, function ($query) {
+                return $query->where('type', $this->lineOfBusiness);
+            })
+            ->orderBy('due', 'asc')
             ->with('selected_option.policy', 'comm_profiles')
             ->paginate(10);
 
