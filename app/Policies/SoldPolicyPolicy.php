@@ -192,4 +192,9 @@ class SoldPolicyPolicy
     {
         return !$user->is_claims && !$user->is_crm;
     }
+
+    public function toggleHideFromExpiry(User $user)
+    {
+        return $user->is_admin;
+    }
 }
