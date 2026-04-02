@@ -90,6 +90,7 @@ class SoldPolicy extends Model
         'policy_doc_2',
         'note',
         'is_renewed',
+        'hide_from_expiry',
         'is_paid',
         'client_payment_date',
         'total_policy_comm',
@@ -1969,7 +1970,7 @@ class SoldPolicy extends Model
             }
         });
 
-        $query->when($is_expiring, function ($q) {
+        $query->when($is_expiring, function ($q) use ($loggedInUser) {
             $startDate = Carbon::parse('2025-10-01');
             $now = Carbon::now();
             $now->addMonth();
@@ -1977,6 +1978,9 @@ class SoldPolicy extends Model
                 $startDate->format('Y-m-d'),
                 $now->format('Y-m-t'),
             ]);
+            if (!$loggedInUser->is_admin) {
+                $q->where('sold_policies.hide_from_expiry', false);
+            }
         });
 
         $query->when($is_commission_outstanding, function ($q) {

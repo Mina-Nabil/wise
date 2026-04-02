@@ -7,6 +7,7 @@ use App\models\Business\SoldPolicy;
 use Livewire\WithPagination;
 use App\Traits\AlertFrontEnd;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class ExpSoldPolicyIndex extends Component
 {
@@ -31,6 +32,13 @@ class ExpSoldPolicyIndex extends Component
         $this->isCancelledFilter = null;
     }
 
+    public function toggleHideFromExpiry($id)
+    {
+        $this->authorize('toggleHideFromExpiry', SoldPolicy::class);
+        $policy = SoldPolicy::findOrFail($id);
+        $policy->update(['hide_from_expiry' => !$policy->hide_from_expiry]);
+    }
+
     public function render()
     {
         $this->authorize('viewReports', SoldPolicy::class);
@@ -43,8 +51,9 @@ class ExpSoldPolicyIndex extends Component
         }
         
         $soldPolicies = $query->paginate(20);
-        return view('livewire.exp-sold-policy-index',[
+        return view('livewire.exp-sold-policy-index', [
             'soldPolicies' => $soldPolicies,
-            ]);
+            'isAdmin' => Auth::user()->is_admin,
+        ]);
     }
 }
