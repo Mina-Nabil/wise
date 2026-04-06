@@ -206,7 +206,7 @@ class OfferPolicy
 
     public function unlock(User $user, Offer $offer)
     {
-        return $user->is_admin || ($user->is_operations && ($offer->assignee_id == $user->id || $offer->assignee_type == $user->type));
+        return $user->is_admin || $user->is_operations;
     }
 
     /**
