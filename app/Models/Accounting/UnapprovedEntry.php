@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Users\AppLog;
+use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class UnapprovedEntry extends Model
@@ -165,6 +166,11 @@ class UnapprovedEntry extends Model
             'currency_rate',
             'doc_url'
         ]);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function entry_title(): BelongsTo

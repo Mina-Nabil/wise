@@ -14,6 +14,9 @@ class UnapprovedEntryIndex extends Component
 
     protected $listeners = ['approveEntry','deleteEntry']; //functions need confirmation
 
+    public $entryId;
+    public $entryInfo;
+
     //to show child accounts
     public $showChildAccounts = [];
 
@@ -31,6 +34,18 @@ class UnapprovedEntryIndex extends Component
         $this->showChildAccounts = array_filter($this->showChildAccounts, function($id) use ($entryId) {
             return $id !== $entryId;
         });
+    }
+
+    public function showEntry($id)
+    {
+        $this->entryId = $id;
+        $this->entryInfo = UnapprovedEntry::with('creator')->findOrFail($id);
+    }
+
+    public function closeShowInfo()
+    {
+        $this->entryId = null;
+        $this->entryInfo = null;
     }
 
     public function approveEntry($id){
@@ -53,7 +68,7 @@ class UnapprovedEntryIndex extends Component
 
     public function render()
     {
-        $entries = UnapprovedEntry::paginate(50);
+        $entries = UnapprovedEntry::with(['creator', 'entry_title', 'accounts.main_account'])->paginate(50);
         return view('livewire.Accounting.unapproved-entry-index',[
             'entries' => $entries
         ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'unapproved_entries' => 'active']);
