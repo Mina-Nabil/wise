@@ -364,7 +364,7 @@ class OfferIndex extends Component
                 return $query->fromTo($startDate, $endDate);
             })
             ->when($this->lineOfBusiness, function ($query) {
-                return $query->where('type', $this->lineOfBusiness);
+                return $query->where('offers.type', $this->lineOfBusiness);
             })
             ->orderBy('due', 'asc')
             ->with('selected_option.policy', 'comm_profiles')
