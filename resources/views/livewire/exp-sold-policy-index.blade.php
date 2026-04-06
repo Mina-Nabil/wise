@@ -156,6 +156,14 @@
                                                                                                 <iconify-icon icon="heroicons-outline:eye"></iconify-icon>
                                                                                                 <span>View</span></a>
                                                                                         </li>
+                                                                                        @if ($isAdmin)
+                                                                                            <li wire:click="toggleHideFromExpiry({{ $policy->id }})" wire:confirm="{{ $policy->hide_from_expiry ? 'Show this policy in expiry list?' : 'Hide this policy from expiry list?' }}">
+                                                                                                <span class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
+                                                                                                    <iconify-icon icon="{{ $policy->hide_from_expiry ? 'heroicons-outline:eye' : 'heroicons-outline:eye-off' }}"></iconify-icon>
+                                                                                                    <span>{{ $policy->hide_from_expiry ? 'Show in Expiry' : 'Hide from Expiry' }}</span>
+                                                                                                </span>
+                                                                                            </li>
+                                                                                        @endif
                                                                                         {{-- <li>
                                                                                             <a href="#" data-bs-toggle="modal" data-bs-target="#editModal"
                                                                                                 class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300 last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize rtl:space-x-reverse">
