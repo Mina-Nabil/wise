@@ -368,20 +368,23 @@ class Account extends Model
     public function downloadAccountDetails(Carbon $from, Carbon $to, $search = null, bool $includeChildren = false, bool $sameSheet = false)
     {
         $spreadsheet = new Spreadsheet();
-
         $activeSheet = $spreadsheet->getActiveSheet();
         $activeSheet->setTitle(substr($this->name, 0, 31));
-        $this->fillAccountSheet($activeSheet, $this->id, $from, $to, $search);
 
-        if ($includeChildren) {
-            foreach ($this->children_accounts as $child) {
-                if ($sameSheet) {
-                    $nextRow = $activeSheet->getHighestRow() + 2;
-                    $this->appendAccountSectionToSheet($activeSheet, $child, $from, $to, $search, $nextRow);
-                } else {
+        if ($includeChildren && $sameSheet) {
+            $childIds = $this->children_accounts->pluck('id')->toArray();
+            $allIds = array_merge([$this->id], $childIds);
+            $this->fillMixedSheet($activeSheet, $allIds, $from, $to, $search);
+        } else {
+            $this->fillAccountSheet($activeSheet, $this->id, $from, $to, $search);
+
+            if ($includeChildren) {
+                foreach ($this->children_accounts as $child) {
+                    $entries = self::getEntries($child->id, $from, $to, $search);
+                    if ($entries->isEmpty()) continue; // Change 1: skip empty accounts
                     $sheet = $spreadsheet->createSheet();
                     $sheet->setTitle(substr($child->name, 0, 31));
-                    $this->fillAccountSheet($sheet, $child->id, $from, $to, $search);
+                    $this->fillAccountSheet($sheet, $child->id, $from, $to, $search, $entries);
                 }
             }
         }
@@ -394,9 +397,9 @@ class Account extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    private function fillAccountSheet($sheet, int $accountId, Carbon $from, Carbon $to, $search = null): void
+    private function fillAccountSheet($sheet, int $accountId, Carbon $from, Carbon $to, $search = null, $entries = null): void
     {
-        $entries = self::getEntries($accountId, $from, $to, $search);
+        $entries = $entries ?? self::getEntries($accountId, $from, $to, $search);
 
         $sheet->setCellValue('A1', '#');
         $sheet->setCellValue('B1', 'Date');
@@ -435,44 +438,91 @@ class Account extends Model
         }
     }
 
-    private function appendAccountSectionToSheet($sheet, self $account, Carbon $from, Carbon $to, $search, int $startRow): void
+    private function fillMixedSheet($sheet, array $accountIds, Carbon $from, Carbon $to, $search = null): void
     {
-        $entries = self::getEntries($account->id, $from, $to, $search);
+        $entries = self::getMixedEntries($accountIds, $from, $to, $search);
 
-        // Section header with account name
-        $sheet->setCellValue('A' . $startRow, $account->name);
-        $sheet->mergeCells('A' . $startRow . ':K' . $startRow);
-        $sheet->getStyle('A' . $startRow)->getFont()->setBold(true);
-        $sheet->getStyle('A' . $startRow)->getFill()->setFillType(Fill::FILL_SOLID);
-        $sheet->getStyle('A' . $startRow)->getFill()->getStartColor()->setARGB('FF4472C4');
-        $sheet->getStyle('A' . $startRow)->getFont()->getColor()->setARGB('FFFFFFFF');
-        $startRow++;
-
-        // Column headers
-        $headers = ['#', 'Date', 'Title', 'Comment', 'Debit', 'Credit', 'Balance', 'Debit $', 'Credit $', 'Balance $', 'Creator'];
-        foreach (array_values($headers) as $i => $header) {
-            $sheet->setCellValueByColumnAndRow($i + 1, $startRow, $header);
+        $headers = ['#', 'Date', 'Account', 'Title', 'Comment', 'Debit', 'Credit', 'Balance', 'Debit $', 'Credit $', 'Balance $', 'Creator'];
+        $cols = range('A', 'L');
+        foreach ($headers as $i => $header) {
+            $sheet->setCellValue($cols[$i] . '1', $header);
         }
-        $headerRange = 'A' . $startRow . ':K' . $startRow;
-        $sheet->getStyle($headerRange)->getFont()->setBold(true);
-        $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_SOLID);
-        $sheet->getStyle($headerRange)->getFill()->getStartColor()->setARGB('FFCCCCCC');
-        $startRow++;
+        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:L1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A1:L1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+
+        $runningBalance = 0.0;
+        $runningForeignBalance = 0.0;
+        $row = 2;
 
         foreach ($entries as $entry) {
-            $sheet->setCellValue('A' . $startRow, $entry->id);
-            $sheet->setCellValue('B' . $startRow, $entry->created_at->format('d/m/Y'));
-            $sheet->setCellValue('C' . $startRow, $entry->name . ' ' . ($entry->is_reverted_entry ? ' (R1)' : '') . ($entry->is_revert_entry ? ' (R2)' : ''));
-            $sheet->setCellValue('D' . $startRow, $entry->cash_title);
-            $sheet->setCellValue('E' . $startRow, number_format($entry->debit_amount, 2));
-            $sheet->setCellValue('F' . $startRow, number_format($entry->credit_amount, 2));
-            $sheet->setCellValue('G' . $startRow, number_format($entry->account_balance, 2));
-            $sheet->setCellValue('H' . $startRow, number_format($entry->debit_foreign_amount, 2));
-            $sheet->setCellValue('I' . $startRow, number_format($entry->credit_foreign_amount, 2));
-            $sheet->setCellValue('J' . $startRow, number_format($entry->account_foreign_balance, 2));
-            $sheet->setCellValue('K' . $startRow, $entry->username);
-            $startRow++;
+            $amount = (float) $entry->entry_amount;
+            $foreignAmount = (float) ($entry->entry_currency_amount ?? 0);
+
+            // same logic as Account::updateBalance:
+            // if entry nature matches account nature → positive contribution, else negative
+            if ($entry->entry_nature === $entry->account_nature) {
+                $runningBalance += $amount;
+                $runningForeignBalance += $foreignAmount;
+            } else {
+                $runningBalance -= $amount;
+                $runningForeignBalance -= $foreignAmount;
+            }
+
+            $sheet->setCellValue('A' . $row, $entry->id);
+            $sheet->setCellValue('B' . $row, $entry->created_at->format('d/m/Y'));
+            $sheet->setCellValue('C' . $row, $entry->account_name);
+            $sheet->setCellValue('D' . $row, $entry->title_name . ' ' . ($entry->is_reverted_entry ? ' (R1)' : '') . ($entry->is_revert_entry ? ' (R2)' : ''));
+            $sheet->setCellValue('E' . $row, $entry->cash_title);
+            $sheet->setCellValue('F' . $row, number_format($entry->debit_amount, 2));
+            $sheet->setCellValue('G' . $row, number_format($entry->credit_amount, 2));
+            $sheet->setCellValue('H' . $row, number_format($runningBalance, 2));
+            $sheet->setCellValue('I' . $row, number_format($entry->debit_foreign_amount, 2));
+            $sheet->setCellValue('J' . $row, number_format($entry->credit_foreign_amount, 2));
+            $sheet->setCellValue('K' . $row, number_format($runningForeignBalance, 2));
+            $sheet->setCellValue('L' . $row, $entry->username);
+            $row++;
         }
+
+        foreach (range('A', 'L') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+    }
+
+    public static function getMixedEntries(array $accountIds, Carbon $from, Carbon $to, $search = null)
+    {
+        return JournalEntry::query()
+            ->join('entry_accounts', 'entry_accounts.journal_entry_id', '=', 'journal_entries.id')
+            ->join('accounts', 'accounts.id', '=', 'entry_accounts.account_id')
+            ->join('entry_titles', 'entry_titles.id', '=', 'journal_entries.entry_title_id')
+            ->join('users', 'users.id', '=', 'journal_entries.user_id')
+            ->whereIn('entry_accounts.account_id', $accountIds)
+            ->whereBetween('journal_entries.created_at', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('journal_entries.id', 'like', "%{$search}%")
+                        ->orWhere('entry_titles.name', 'like', "%{$search}%")
+                        ->orWhere('journal_entries.comment', 'like', "%{$search}%");
+                });
+            })
+            ->select(
+                'journal_entries.*',
+                'currency_rate', 'doc_url', 'users.username',
+                DB::raw('entry_titles.name as title_name'),
+                DB::raw('accounts.name as account_name'),
+                DB::raw('entry_accounts.nature as entry_nature'),
+                DB::raw('entry_accounts.amount as entry_amount'),
+                DB::raw('entry_accounts.currency_amount as entry_currency_amount'),
+                DB::raw('accounts.nature as account_nature')
+            )
+            ->selectRaw('IF(entry_accounts.nature = "debit", entry_accounts.amount, 0) as debit_amount')
+            ->selectRaw('IF(entry_accounts.nature = "credit", entry_accounts.amount, 0) as credit_amount')
+            ->selectRaw('IF(entry_accounts.nature = "debit", entry_accounts.currency_amount, 0) as debit_foreign_amount')
+            ->selectRaw('IF(entry_accounts.nature = "credit", entry_accounts.currency_amount, 0) as credit_foreign_amount')
+            ->orderBy('journal_entries.created_at')
+            ->orderBy('journal_entries.id')
+            ->orderBy('entry_accounts.account_id')
+            ->get();
     }
 
     public static function exportAllAccountsWithBalances($mode = 'balance', ?Carbon $from = null, ?Carbon $to = null, $main_accounts_only = false, $show_zero_balances = true, $included_levels = 999)
