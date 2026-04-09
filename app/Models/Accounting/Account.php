@@ -365,56 +365,25 @@ class Account extends Model
     }
 
     ////model functions
-    public function downloadAccountDetails(Carbon $from, Carbon $to, $search = null)
+    public function downloadAccountDetails(Carbon $from, Carbon $to, $search = null, bool $includeChildren = false, bool $sameSheet = false)
     {
-        // Get entries using the same method as the view
-        $entries = self::getEntries($this->id, $from, $to, $search);
-
-        // Create new spreadsheet
         $spreadsheet = new Spreadsheet();
+
         $activeSheet = $spreadsheet->getActiveSheet();
+        $activeSheet->setTitle(substr($this->name, 0, 31));
+        $this->fillAccountSheet($activeSheet, $this->id, $from, $to, $search);
 
-        // Set worksheet title
-        $activeSheet->setTitle('Account Details');
-
-        // Set headers matching the table columns
-        $activeSheet->setCellValue('A1', '#');
-        $activeSheet->setCellValue('B1', 'Date');
-        $activeSheet->setCellValue('C1', 'Title');
-        $activeSheet->setCellValue('D1', 'Comment');
-        $activeSheet->setCellValue('E1', 'Debit');
-        $activeSheet->setCellValue('F1', 'Credit');
-        $activeSheet->setCellValue('G1', 'Balance');
-        $activeSheet->setCellValue('H1', 'Debit $');
-        $activeSheet->setCellValue('I1', 'Credit $');
-        $activeSheet->setCellValue('J1', 'Balance $');
-        $activeSheet->setCellValue('K1', 'Creator');
-
-        // Style headers
-        $activeSheet->getStyle('A1:K1')->getFont()->setBold(true);
-        $activeSheet->getStyle('A1:K1')->getFill()->setFillType(Fill::FILL_SOLID);
-        $activeSheet->getStyle('A1:K1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
-
-        // Fill data rows
-        $row = 2;
-        foreach ($entries as $entry) {
-            $activeSheet->setCellValue('A' . $row, $entry->id);
-            $activeSheet->setCellValue('B' . $row, $entry->created_at->format('d/m/Y'));
-            $activeSheet->setCellValue('C' . $row, $entry->name . ' ' . ($entry->is_reverted_entry ? ' (R1)' : '') . ($entry->is_revert_entry ? ' (R2)' : ''));
-            $activeSheet->setCellValue('D' . $row, $entry->cash_title);
-            $activeSheet->setCellValue('E' . $row, number_format($entry->debit_amount, 2));
-            $activeSheet->setCellValue('F' . $row, number_format($entry->credit_amount, 2));
-            $activeSheet->setCellValue('G' . $row, number_format($entry->account_balance, 2));
-            $activeSheet->setCellValue('H' . $row, number_format($entry->debit_foreign_amount, 2));
-            $activeSheet->setCellValue('I' . $row, number_format($entry->credit_foreign_amount, 2));
-            $activeSheet->setCellValue('J' . $row, number_format($entry->account_foreign_balance, 2));
-            $activeSheet->setCellValue('K' . $row, $entry->username);
-            $row++;
-        }
-
-        // Auto-size columns
-        foreach (range('A', 'K') as $col) {
-            $activeSheet->getColumnDimension($col)->setAutoSize(true);
+        if ($includeChildren) {
+            foreach ($this->children_accounts as $child) {
+                if ($sameSheet) {
+                    $nextRow = $activeSheet->getHighestRow() + 2;
+                    $this->appendAccountSectionToSheet($activeSheet, $child, $from, $to, $search, $nextRow);
+                } else {
+                    $sheet = $spreadsheet->createSheet();
+                    $sheet->setTitle(substr($child->name, 0, 31));
+                    $this->fillAccountSheet($sheet, $child->id, $from, $to, $search);
+                }
+            }
         }
 
         $writer = new Xlsx($spreadsheet);
@@ -423,6 +392,87 @@ class Account extends Model
         $writer->save($public_file_path);
 
         return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    private function fillAccountSheet($sheet, int $accountId, Carbon $from, Carbon $to, $search = null): void
+    {
+        $entries = self::getEntries($accountId, $from, $to, $search);
+
+        $sheet->setCellValue('A1', '#');
+        $sheet->setCellValue('B1', 'Date');
+        $sheet->setCellValue('C1', 'Title');
+        $sheet->setCellValue('D1', 'Comment');
+        $sheet->setCellValue('E1', 'Debit');
+        $sheet->setCellValue('F1', 'Credit');
+        $sheet->setCellValue('G1', 'Balance');
+        $sheet->setCellValue('H1', 'Debit $');
+        $sheet->setCellValue('I1', 'Credit $');
+        $sheet->setCellValue('J1', 'Balance $');
+        $sheet->setCellValue('K1', 'Creator');
+
+        $sheet->getStyle('A1:K1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:K1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A1:K1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+
+        $row = 2;
+        foreach ($entries as $entry) {
+            $sheet->setCellValue('A' . $row, $entry->id);
+            $sheet->setCellValue('B' . $row, $entry->created_at->format('d/m/Y'));
+            $sheet->setCellValue('C' . $row, $entry->name . ' ' . ($entry->is_reverted_entry ? ' (R1)' : '') . ($entry->is_revert_entry ? ' (R2)' : ''));
+            $sheet->setCellValue('D' . $row, $entry->cash_title);
+            $sheet->setCellValue('E' . $row, number_format($entry->debit_amount, 2));
+            $sheet->setCellValue('F' . $row, number_format($entry->credit_amount, 2));
+            $sheet->setCellValue('G' . $row, number_format($entry->account_balance, 2));
+            $sheet->setCellValue('H' . $row, number_format($entry->debit_foreign_amount, 2));
+            $sheet->setCellValue('I' . $row, number_format($entry->credit_foreign_amount, 2));
+            $sheet->setCellValue('J' . $row, number_format($entry->account_foreign_balance, 2));
+            $sheet->setCellValue('K' . $row, $entry->username);
+            $row++;
+        }
+
+        foreach (range('A', 'K') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+    }
+
+    private function appendAccountSectionToSheet($sheet, self $account, Carbon $from, Carbon $to, $search, int $startRow): void
+    {
+        $entries = self::getEntries($account->id, $from, $to, $search);
+
+        // Section header with account name
+        $sheet->setCellValue('A' . $startRow, $account->name);
+        $sheet->mergeCells('A' . $startRow . ':K' . $startRow);
+        $sheet->getStyle('A' . $startRow)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $startRow)->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A' . $startRow)->getFill()->getStartColor()->setARGB('FF4472C4');
+        $sheet->getStyle('A' . $startRow)->getFont()->getColor()->setARGB('FFFFFFFF');
+        $startRow++;
+
+        // Column headers
+        $headers = ['#', 'Date', 'Title', 'Comment', 'Debit', 'Credit', 'Balance', 'Debit $', 'Credit $', 'Balance $', 'Creator'];
+        foreach (array_values($headers) as $i => $header) {
+            $sheet->setCellValueByColumnAndRow($i + 1, $startRow, $header);
+        }
+        $headerRange = 'A' . $startRow . ':K' . $startRow;
+        $sheet->getStyle($headerRange)->getFont()->setBold(true);
+        $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle($headerRange)->getFill()->getStartColor()->setARGB('FFCCCCCC');
+        $startRow++;
+
+        foreach ($entries as $entry) {
+            $sheet->setCellValue('A' . $startRow, $entry->id);
+            $sheet->setCellValue('B' . $startRow, $entry->created_at->format('d/m/Y'));
+            $sheet->setCellValue('C' . $startRow, $entry->name . ' ' . ($entry->is_reverted_entry ? ' (R1)' : '') . ($entry->is_revert_entry ? ' (R2)' : ''));
+            $sheet->setCellValue('D' . $startRow, $entry->cash_title);
+            $sheet->setCellValue('E' . $startRow, number_format($entry->debit_amount, 2));
+            $sheet->setCellValue('F' . $startRow, number_format($entry->credit_amount, 2));
+            $sheet->setCellValue('G' . $startRow, number_format($entry->account_balance, 2));
+            $sheet->setCellValue('H' . $startRow, number_format($entry->debit_foreign_amount, 2));
+            $sheet->setCellValue('I' . $startRow, number_format($entry->credit_foreign_amount, 2));
+            $sheet->setCellValue('J' . $startRow, number_format($entry->account_foreign_balance, 2));
+            $sheet->setCellValue('K' . $startRow, $entry->username);
+            $startRow++;
+        }
     }
 
     public static function exportAllAccountsWithBalances($mode = 'balance', ?Carbon $from = null, ?Carbon $to = null, $main_accounts_only = false, $show_zero_balances = true, $included_levels = 999)

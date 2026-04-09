@@ -43,6 +43,22 @@
                 </h4>
             </div>
             <div class="flex items-center gap-2">
+                <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-600 dark:text-slate-300 select-none">
+                    <div class="relative">
+                        <input type="checkbox" wire:model="includeChildren" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-200 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500"></div>
+                    </div>
+                    Include Children
+                </label>
+                @if ($includeChildren)
+                <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-600 dark:text-slate-300 select-none">
+                    <div class="relative">
+                        <input type="checkbox" wire:model="sameSheet" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-200 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500"></div>
+                    </div>
+                    Same Sheet
+                </label>
+                @endif
                 <button wire:click="downloadJournalEntries"
                     class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
                     <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="line-md:download-loop"></iconify-icon>

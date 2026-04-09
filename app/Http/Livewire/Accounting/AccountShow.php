@@ -23,6 +23,8 @@ class AccountShow extends Component
     protected $listeners = ['dateRangeSelected'];
 
     public $is_open_edit = true;
+    public $includeChildren = false;
+    public $sameSheet = false;
 
     // Opening balance modal
     public $isOpeningBalanceModalOpen = false;
@@ -58,7 +60,13 @@ class AccountShow extends Component
 
     public function downloadJournalEntries()
     {
-        $res = Account::findOrFail($this->accountId)->downloadAccountDetails(Carbon::parse($this->fromDate), Carbon::parse($this->toDate), $this->searchText);
+        $res = Account::findOrFail($this->accountId)->downloadAccountDetails(
+            Carbon::parse($this->fromDate),
+            Carbon::parse($this->toDate),
+            $this->searchText,
+            $this->includeChildren,
+            $this->sameSheet
+        );
         if ($res) {
             $this->alert('success', 'Account details downloaded!');
             return $res;
