@@ -372,7 +372,8 @@ class Account extends Model
         $activeSheet->setTitle(substr($this->name, 0, 31));
 
         if ($includeChildren && $sameSheet) {
-            $childIds = $this->children_accounts->pluck('id')->toArray();
+            $children = $this->children_accounts()->get();
+            $childIds = $children->pluck('id')->toArray();
             $allIds = array_merge([$this->id], $childIds);
             $this->fillMixedSheet($activeSheet, $allIds, $from, $to, $search);
         } else {
@@ -381,7 +382,7 @@ class Account extends Model
             if ($includeChildren) {
                 foreach ($this->children_accounts as $child) {
                     $entries = self::getEntries($child->id, $from, $to, $search);
-                    if ($entries->isEmpty()) continue; // Change 1: skip empty accounts
+                    if ($entries->isEmpty()) continue;
                     $sheet = $spreadsheet->createSheet();
                     $sheet->setTitle(substr($child->name, 0, 31));
                     $this->fillAccountSheet($sheet, $child->id, $from, $to, $search, $entries);
@@ -397,27 +398,56 @@ class Account extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
+    /** Get the balance snapshot of a single account just before $from */
+    private function getStartingBalance(int $accountId, Carbon $from): array
+    {
+        $row = DB::table('journal_entries')
+            ->join('entry_accounts', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->where('entry_accounts.account_id', $accountId)
+            ->where('journal_entries.created_at', '<', $from->format('Y-m-d H:i:s'))
+            ->orderByDesc('journal_entries.created_at')
+            ->orderByDesc('journal_entries.id')
+            ->select('entry_accounts.account_balance', 'entry_accounts.account_foreign_balance')
+            ->first();
+
+        return [
+            'balance'         => (float) ($row->account_balance ?? 0),
+            'foreign_balance' => (float) ($row->account_foreign_balance ?? 0),
+        ];
+    }
+
     private function fillAccountSheet($sheet, int $accountId, Carbon $from, Carbon $to, $search = null, $entries = null): void
     {
         $entries = $entries ?? self::getEntries($accountId, $from, $to, $search);
+        $starting = $this->getStartingBalance($accountId, $from);
 
-        $sheet->setCellValue('A1', '#');
-        $sheet->setCellValue('B1', 'Date');
-        $sheet->setCellValue('C1', 'Title');
-        $sheet->setCellValue('D1', 'Comment');
-        $sheet->setCellValue('E1', 'Debit');
-        $sheet->setCellValue('F1', 'Credit');
-        $sheet->setCellValue('G1', 'Balance');
-        $sheet->setCellValue('H1', 'Debit $');
-        $sheet->setCellValue('I1', 'Credit $');
-        $sheet->setCellValue('J1', 'Balance $');
-        $sheet->setCellValue('K1', 'Creator');
-
+        // Row 1 — Starting balance info row
+        $sheet->setCellValue('A1', 'Starting Balance');
+        $sheet->setCellValue('B1', $from->format('d/m/Y'));
+        $sheet->setCellValue('G1', number_format($starting['balance'], 2));
+        $sheet->setCellValue('J1', number_format($starting['foreign_balance'], 2));
         $sheet->getStyle('A1:K1')->getFont()->setBold(true);
         $sheet->getStyle('A1:K1')->getFill()->setFillType(Fill::FILL_SOLID);
-        $sheet->getStyle('A1:K1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+        $sheet->getStyle('A1:K1')->getFill()->getStartColor()->setARGB('FF4472C4');
+        $sheet->getStyle('A1:K1')->getFont()->getColor()->setARGB('FFFFFFFF');
 
-        $row = 2;
+        // Row 2 — Column headers
+        $sheet->setCellValue('A2', '#');
+        $sheet->setCellValue('B2', 'Date');
+        $sheet->setCellValue('C2', 'Title');
+        $sheet->setCellValue('D2', 'Comment');
+        $sheet->setCellValue('E2', 'Debit');
+        $sheet->setCellValue('F2', 'Credit');
+        $sheet->setCellValue('G2', 'Balance');
+        $sheet->setCellValue('H2', 'Debit $');
+        $sheet->setCellValue('I2', 'Credit $');
+        $sheet->setCellValue('J2', 'Balance $');
+        $sheet->setCellValue('K2', 'Creator');
+        $sheet->getStyle('A2:K2')->getFont()->setBold(true);
+        $sheet->getStyle('A2:K2')->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A2:K2')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+
+        $row = 3;
         foreach ($entries as $entry) {
             $sheet->setCellValue('A' . $row, $entry->id);
             $sheet->setCellValue('B' . $row, $entry->created_at->format('d/m/Y'));
@@ -442,25 +472,53 @@ class Account extends Model
     {
         $entries = self::getMixedEntries($accountIds, $from, $to, $search);
 
+        // Compute combined starting balance: each account's balance before $from,
+        // weighted by whether its nature matches the parent account's nature.
+        $runningBalance = 0.0;
+        $runningForeignBalance = 0.0;
+
+        $accountNatures = DB::table('accounts')
+            ->whereIn('id', $accountIds)
+            ->pluck('nature', 'id');
+
+        foreach ($accountIds as $aid) {
+            $snap = $this->getStartingBalance($aid, $from);
+            $accountNature = $accountNatures[$aid] ?? $this->nature;
+            if ($accountNature === $this->nature) {
+                $runningBalance         += $snap['balance'];
+                $runningForeignBalance  += $snap['foreign_balance'];
+            } else {
+                $runningBalance         -= $snap['balance'];
+                $runningForeignBalance  -= $snap['foreign_balance'];
+            }
+        }
+
+        // Row 1 — Starting balance info row
+        $sheet->setCellValue('A1', 'Starting Balance');
+        $sheet->setCellValue('B1', $from->format('d/m/Y'));
+        $sheet->setCellValue('H1', number_format($runningBalance, 2));
+        $sheet->setCellValue('K1', number_format($runningForeignBalance, 2));
+        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:L1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A1:L1')->getFill()->getStartColor()->setARGB('FF4472C4');
+        $sheet->getStyle('A1:L1')->getFont()->getColor()->setARGB('FFFFFFFF');
+
+        // Row 2 — Column headers
         $headers = ['#', 'Date', 'Account', 'Title', 'Comment', 'Debit', 'Credit', 'Balance', 'Debit $', 'Credit $', 'Balance $', 'Creator'];
         $cols = range('A', 'L');
         foreach ($headers as $i => $header) {
-            $sheet->setCellValue($cols[$i] . '1', $header);
+            $sheet->setCellValue($cols[$i] . '2', $header);
         }
-        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:L1')->getFill()->setFillType(Fill::FILL_SOLID);
-        $sheet->getStyle('A1:L1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+        $sheet->getStyle('A2:L2')->getFont()->setBold(true);
+        $sheet->getStyle('A2:L2')->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A2:L2')->getFill()->getStartColor()->setARGB('FFCCCCCC');
 
-        $runningBalance = 0.0;
-        $runningForeignBalance = 0.0;
-        $row = 2;
+        $row = 3;
 
         foreach ($entries as $entry) {
             $amount = (float) $entry->entry_amount;
             $foreignAmount = (float) ($entry->entry_currency_amount ?? 0);
 
-            // same logic as Account::updateBalance:
-            // if entry nature matches account nature → positive contribution, else negative
             if ($entry->entry_nature === $entry->account_nature) {
                 $runningBalance += $amount;
                 $runningForeignBalance += $foreignAmount;
