@@ -398,28 +398,34 @@ class Account extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    /** Get the balance snapshot of a single account just before $from */
-    private function getStartingBalance(int $accountId, Carbon $from): array
+    /**
+     * Derive starting balance from the first entry in the range,
+     * same logic as the blade: reverse the first entry's effect on account_balance.
+     * debit account: starting = account_balance + credit_amount - debit_amount
+     * credit account: starting = account_balance + debit_amount - credit_amount
+     */
+    private function deriveStartingBalance($firstEntry, string $accountNature): array
     {
-        $row = DB::table('journal_entries')
-            ->join('entry_accounts', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
-            ->where('entry_accounts.account_id', $accountId)
-            ->where('journal_entries.created_at', '<', $from->format('Y-m-d H:i:s'))
-            ->orderByDesc('journal_entries.created_at')
-            ->orderByDesc('journal_entries.id')
-            ->select('entry_accounts.account_balance', 'entry_accounts.account_foreign_balance')
-            ->first();
+        if (!$firstEntry) {
+            return ['balance' => 0.0, 'foreign_balance' => 0.0];
+        }
 
-        return [
-            'balance'         => (float) ($row->account_balance ?? 0),
-            'foreign_balance' => (float) ($row->account_foreign_balance ?? 0),
-        ];
+        if ($accountNature === 'debit') {
+            $balance         = (float) $firstEntry->account_balance + (float) $firstEntry->credit_amount - (float) $firstEntry->debit_amount;
+            $foreignBalance  = (float) $firstEntry->account_foreign_balance + (float) $firstEntry->credit_foreign_amount - (float) $firstEntry->debit_foreign_amount;
+        } else {
+            $balance         = (float) $firstEntry->account_balance + (float) $firstEntry->debit_amount - (float) $firstEntry->credit_amount;
+            $foreignBalance  = (float) $firstEntry->account_foreign_balance + (float) $firstEntry->debit_foreign_amount - (float) $firstEntry->credit_foreign_amount;
+        }
+
+        return ['balance' => $balance, 'foreign_balance' => $foreignBalance];
     }
 
     private function fillAccountSheet($sheet, int $accountId, Carbon $from, Carbon $to, $search = null, $entries = null): void
     {
-        $entries = $entries ?? self::getEntries($accountId, $from, $to, $search);
-        $starting = $this->getStartingBalance($accountId, $from);
+        $account  = $accountId === $this->id ? $this : self::findOrFail($accountId);
+        $entries  = $entries ?? self::getEntries($accountId, $from, $to, $search);
+        $starting = $this->deriveStartingBalance($entries->first(), $account->nature);
 
         // Row 1 — Starting balance info row
         $sheet->setCellValue('A1', 'Starting Balance');
@@ -472,8 +478,8 @@ class Account extends Model
     {
         $entries = self::getMixedEntries($accountIds, $from, $to, $search);
 
-        // Compute combined starting balance: each account's balance before $from,
-        // weighted by whether its nature matches the parent account's nature.
+        // Derive combined starting balance using the same formula as the blade:
+        // for each account, find its first entry in the range and reverse its effect.
         $runningBalance = 0.0;
         $runningForeignBalance = 0.0;
 
@@ -482,14 +488,49 @@ class Account extends Model
             ->pluck('nature', 'id');
 
         foreach ($accountIds as $aid) {
-            $snap = $this->getStartingBalance($aid, $from);
             $accountNature = $accountNatures[$aid] ?? $this->nature;
-            if ($accountNature === $this->nature) {
-                $runningBalance         += $snap['balance'];
-                $runningForeignBalance  += $snap['foreign_balance'];
-            } else {
-                $runningBalance         -= $snap['balance'];
-                $runningForeignBalance  -= $snap['foreign_balance'];
+            $firstEntry = $entries->firstWhere('entry_accounts_account_id', $aid)
+                       ?? $entries->first(fn($e) => (int)$e->account_name === $aid); // fallback
+
+            // Build a synthetic object matching what deriveStartingBalance expects
+            // using the mixed-entry fields for this account's first row
+            $firstForAccount = $entries->first(function ($e) use ($aid) {
+                return DB::table('entry_accounts')
+                    ->where('journal_entry_id', $e->id)
+                    ->where('account_id', $aid)
+                    ->exists();
+            });
+
+            if ($firstForAccount) {
+                // Fetch the actual pivot values for this account from the first entry
+                $pivot = DB::table('entry_accounts')
+                    ->where('journal_entry_id', $firstForAccount->id)
+                    ->where('account_id', $aid)
+                    ->select('account_balance', 'account_foreign_balance', 'nature', 'amount', 'currency_amount')
+                    ->first();
+
+                if ($pivot) {
+                    $isDebit = $accountNature === 'debit';
+                    $debitAmt   = $pivot->nature === 'debit'   ? (float) $pivot->amount : 0;
+                    $creditAmt  = $pivot->nature === 'credit'  ? (float) $pivot->amount : 0;
+                    $debitFgn   = $pivot->nature === 'debit'   ? (float) ($pivot->currency_amount ?? 0) : 0;
+                    $creditFgn  = $pivot->nature === 'credit'  ? (float) ($pivot->currency_amount ?? 0) : 0;
+
+                    $acctStartBal = $isDebit
+                        ? (float) $pivot->account_balance + $creditAmt - $debitAmt
+                        : (float) $pivot->account_balance + $debitAmt - $creditAmt;
+                    $acctStartFgn = $isDebit
+                        ? (float) $pivot->account_foreign_balance + $creditFgn - $debitFgn
+                        : (float) $pivot->account_foreign_balance + $debitFgn - $creditFgn;
+
+                    if ($accountNature === $this->nature) {
+                        $runningBalance        += $acctStartBal;
+                        $runningForeignBalance += $acctStartFgn;
+                    } else {
+                        $runningBalance        -= $acctStartBal;
+                        $runningForeignBalance -= $acctStartFgn;
+                    }
+                }
             }
         }
 
