@@ -1144,8 +1144,8 @@ class Offer extends Model
             $option->save();
             if ($state == OfferOption::STATUS_CLNT_ACPT) {
                 $this->selected_option_id = $option_id;
-                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
                 $this->generateSalesCommissions();
+                $this->assignTo(User::TYPE_OPERATIONS, bypassUserCheck: true);
                 $this->save();
                 $this->sendOfferNotifications("Offer option accepted", "Option accepted on Offer#$this->id");
                 $this->addComment("Offer option accepted", false);
