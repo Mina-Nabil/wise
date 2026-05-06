@@ -686,6 +686,12 @@ class CommProfileShow extends Component
             return;
         }
 
+        $oldSalesComm = collect($this->salesCommArray)->firstWhere('sales_comm_id', $salesComm->id);
+        if ($oldSalesComm) {
+            $this->alert('failed', 'This sales commission is already added to the invoice');
+            return;
+        }
+
         // Add the selected commission to the array
         $this->salesCommArray[] = [
             'sales_comm_id' => $salesComm->id,
