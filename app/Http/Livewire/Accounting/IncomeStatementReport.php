@@ -47,12 +47,10 @@ class IncomeStatementReport extends Component
 
             $filePath = Account::generateIncomeStatementReport($startDate, $endDate);
 
-            if ($filePath && file_exists($filePath)) {
+            if ($filePath) {
                 $filename = basename($filePath);
                 $this->alert('success', 'Report generated successfully!');
-                
-                // Trigger download
-                $this->emit('downloadReport', asset('storage/reports/' . $filename));
+                return $filePath;
             } else {
                 $this->alert('error', 'Failed to generate report. Please check permissions.');
             }

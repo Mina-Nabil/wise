@@ -1582,7 +1582,7 @@ class Account extends Model
             $writer = new Xlsx($spreadsheet);
             $writer->save($filePath);
             
-            return $filePath;
+            return response()->download($filePath)->deleteFileAfterSend(true);
             
         } catch (Exception $e) {
             Log::error('Failed to generate income statement: ' . $e->getMessage());
