@@ -1220,6 +1220,134 @@ class Account extends Model
         return $blnce + $this->last_entry_currency_balance;
     }
 
+    /**
+     * Get the EGP balance for this account at a given moment using the
+     * running balance snapshot stored on the latest journal entry up to
+     * (and including) the supplied date.
+     *
+     * The caller controls the time component of $date — pass
+     * `Carbon::parse(...)->endOfDay()` to include the whole day.
+     *
+     * @param Carbon $date            Cutoff timestamp.
+     * @param bool   $includeChildren Recursively add the balances of all
+     *                                descendant accounts.
+     * @return float
+     */
+    public function getBalanceAtDate(Carbon $date, bool $includeChildren = true): float
+    {
+        $latest = DB::table('entry_accounts')
+            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->where('entry_accounts.account_id', $this->id)
+            ->where('journal_entries.created_at', '<=', $date->format('Y-m-d H:i:s'))
+            ->orderByDesc('journal_entries.created_at')
+            ->orderByDesc('journal_entries.id')
+            ->select('entry_accounts.account_balance')
+            ->first();
+
+        $balance = $latest ? (float) $latest->account_balance : 0.0;
+
+        if ($includeChildren) {
+            $this->loadMissing('children_accounts');
+            foreach ($this->children_accounts as $child) {
+                $balance += $child->getBalanceAtDate($date, true);
+            }
+        }
+
+        return $balance;
+    }
+
+    /**
+     * Foreign-currency counterpart of getBalanceAtDate(). Reads the
+     * `account_foreign_balance` snapshot of the latest entry up to $date.
+     */
+    public function getForeignBalanceAtDate(Carbon $date, bool $includeChildren = true): float
+    {
+        $latest = DB::table('entry_accounts')
+            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->where('entry_accounts.account_id', $this->id)
+            ->where('journal_entries.created_at', '<=', $date->format('Y-m-d H:i:s'))
+            ->orderByDesc('journal_entries.created_at')
+            ->orderByDesc('journal_entries.id')
+            ->select('entry_accounts.account_foreign_balance')
+            ->first();
+
+        $balance = $latest ? (float) $latest->account_foreign_balance : 0.0;
+
+        if ($includeChildren) {
+            $this->loadMissing('children_accounts');
+            foreach ($this->children_accounts as $child) {
+                $balance += $child->getForeignBalanceAtDate($date, true);
+            }
+        }
+
+        return $balance;
+    }
+
+    /**
+     * Alternative balance-at-date method: ignores the per-entry snapshot
+     * and recomputes the balance from scratch by summing every debit and
+     * credit posted up to $date and applying the account's nature.
+     *
+     * Useful as a verification path when the running snapshots may have
+     * drifted, or for accounts whose snapshots are unreliable.
+     */
+    public function getBalanceAtDateFromEntries(Carbon $date, bool $includeChildren = true): float
+    {
+        $totals = DB::table('entry_accounts')
+            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->where('entry_accounts.account_id', $this->id)
+            ->where('journal_entries.created_at', '<=', $date->format('Y-m-d H:i:s'))
+            ->selectRaw('COALESCE(SUM(CASE WHEN entry_accounts.nature = "debit"  THEN entry_accounts.amount ELSE 0 END), 0) AS total_debit')
+            ->selectRaw('COALESCE(SUM(CASE WHEN entry_accounts.nature = "credit" THEN entry_accounts.amount ELSE 0 END), 0) AS total_credit')
+            ->first();
+
+        $debit  = (float) ($totals->total_debit  ?? 0);
+        $credit = (float) ($totals->total_credit ?? 0);
+
+        $balance = $this->nature === self::NATURE_DEBIT
+            ? $debit - $credit
+            : $credit - $debit;
+
+        if ($includeChildren) {
+            $this->loadMissing('children_accounts');
+            foreach ($this->children_accounts as $child) {
+                $balance += $child->getBalanceAtDateFromEntries($date, true);
+            }
+        }
+
+        return $balance;
+    }
+
+    /**
+     * Foreign-currency counterpart of getBalanceAtDateFromEntries().
+     */
+    public function getForeignBalanceAtDateFromEntries(Carbon $date, bool $includeChildren = true): float
+    {
+        $totals = DB::table('entry_accounts')
+            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->where('entry_accounts.account_id', $this->id)
+            ->where('journal_entries.created_at', '<=', $date->format('Y-m-d H:i:s'))
+            ->selectRaw('COALESCE(SUM(CASE WHEN entry_accounts.nature = "debit"  THEN entry_accounts.currency_amount ELSE 0 END), 0) AS total_debit')
+            ->selectRaw('COALESCE(SUM(CASE WHEN entry_accounts.nature = "credit" THEN entry_accounts.currency_amount ELSE 0 END), 0) AS total_credit')
+            ->first();
+
+        $debit  = (float) ($totals->total_debit  ?? 0);
+        $credit = (float) ($totals->total_credit ?? 0);
+
+        $balance = $this->nature === self::NATURE_DEBIT
+            ? $debit - $credit
+            : $credit - $debit;
+
+        if ($includeChildren) {
+            $this->loadMissing('children_accounts');
+            foreach ($this->children_accounts as $child) {
+                $balance += $child->getForeignBalanceAtDateFromEntries($date, true);
+            }
+        }
+
+        return $balance;
+    }
+
     public function getIsForeignAttribute()
     {
         return $this->default_currency !== JournalEntry::CURRENCY_EGP;
@@ -1312,11 +1440,85 @@ class Account extends Model
     }
 
     /**
-     * Generate Income Statement Report comparing two dates
-     * 
-     * @param Carbon $startDate Start date for comparison
-     * @param Carbon $endDate End date for comparison
-     * @return string Path to generated Excel file
+     * Build the per-key balance map for the income statement.
+     *
+     * For every key in AccountSetting::ACCOUNT_KEYS this returns the EGP
+     * balance at the start date, the EGP balance at the end date, and the
+     * activity (end - start) for the period. Each configured account's
+     * balance already includes the balances of all of its descendant
+     * accounts, and the calc_type (add/subtract) on the setting is applied
+     * when several accounts contribute to the same key.
+     *
+     * @return array<string, array{start: float, end: float, change: float}>
+     */
+    public static function buildIncomeStatementBalances(Carbon $startDate, Carbon $endDate): array
+    {
+        $settings = AccountSetting::getAllSettingsWithCalcType();
+
+        $accountIds = collect($settings)
+            ->flatten(1)
+            ->pluck('account_id')
+            ->filter()
+            ->unique()
+            ->all();
+
+        // Eager-load every involved account with its full descendant tree
+        // so each getBalanceAtDate() call avoids re-fetching children.
+        $accounts = self::with('children_accounts.children_accounts.children_accounts')
+            ->whereIn('id', $accountIds)
+            ->get()
+            ->keyBy('id');
+
+        $balances = [];
+        foreach (AccountSetting::ACCOUNT_KEYS as $key => $label) {
+            $startBalance = 0.0;
+            $endBalance   = 0.0;
+
+            foreach ($settings[$key] ?? [] as $row) {
+                $account = $accounts->get($row['account_id']);
+                if (!$account) {
+                    continue;
+                }
+
+                $accStart = $account->getBalanceAtDate($startDate, true);
+                $accEnd   = $account->getBalanceAtDate($endDate, true);
+
+                if (($row['calc_type'] ?? AccountSetting::CALC_TYPE_ADD) === AccountSetting::CALC_TYPE_SUBTRACT) {
+                    $startBalance -= $accStart;
+                    $endBalance   -= $accEnd;
+                } else {
+                    $startBalance += $accStart;
+                    $endBalance   += $accEnd;
+                }
+            }
+
+            $balances[$key] = [
+                'start'  => $startBalance,
+                'end'    => $endBalance,
+                'change' => $endBalance - $startBalance,
+            ];
+        }
+
+        return $balances;
+    }
+
+    /**
+     * Generate the income statement (قائمة الدخل) Excel report.
+     *
+     * The report shows three numeric columns for every line item:
+     *  - Balance at end date (cumulative through end date)
+     *  - Balance at start date (cumulative through start date)
+     *  - Period activity (end - start)
+     *
+     * Each configured account contributes its own balance plus the
+     * recursive balance of every descendant account. Accounts attached to
+     * the same setting key are aggregated using their calc_type (add or
+     * subtract) so contras (e.g. sales returns) reduce the corresponding
+     * total.
+     *
+     * @param Carbon $startDate Start of the comparison period.
+     * @param Carbon $endDate   End of the comparison period.
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|false
      */
     public static function generateIncomeStatementReport(Carbon $startDate, Carbon $endDate)
     {
@@ -1327,263 +1529,183 @@ class Account extends Model
         }
 
         try {
-            // Get account settings with calc_type
-            $settings = AccountSetting::getAllSettingsWithCalcType();
-            
-            // Helper function to get account balance at a specific date
-            $getAccountBalance = function($accountId, Carbon $date) {
-                if (!$accountId) return 0;
-                
-                $account = self::find($accountId);
-                if (!$account) return 0;
-                
-                // Get all entries up to the specified date
-                $balance = JournalEntry::join('entry_accounts', 'entry_accounts.journal_entry_id', '=', 'journal_entries.id')
-                    ->where('entry_accounts.account_id', $accountId)
-                    ->where('journal_entries.created_at', '<=', $date->format('Y-m-d 23:59:59'))
-                    ->selectRaw('
-                        SUM(CASE WHEN entry_accounts.nature = "debit" THEN entry_accounts.amount ELSE 0 END) as total_debit,
-                        SUM(CASE WHEN entry_accounts.nature = "credit" THEN entry_accounts.amount ELSE 0 END) as total_credit
-                    ')
-                    ->first();
-                
-                if ($account->nature === self::NATURE_DEBIT) {
-                    return ($balance->total_debit ?? 0) - ($balance->total_credit ?? 0);
-                } else {
-                    return ($balance->total_credit ?? 0) - ($balance->total_debit ?? 0);
-                }
-            };
+            // Use end-of-day boundaries so each date includes the full
+            // day's activity in its cumulative balance.
+            $startDate = $startDate->copy()->endOfDay();
+            $endDate   = $endDate->copy()->endOfDay();
 
-            // Create spreadsheet
+            $balances = self::buildIncomeStatementBalances($startDate, $endDate);
+
             $spreadsheet = new Spreadsheet();
             $activeSheet = $spreadsheet->getActiveSheet();
-            
-            // Set direction to RTL for Arabic
             $activeSheet->setRightToLeft(true);
-            
-            // Set title
+
+            // Title
             $activeSheet->setCellValue('A1', 'قائمة الدخل');
-            $activeSheet->mergeCells('A1:D1');
+            $activeSheet->mergeCells('A1:E1');
             $activeSheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
-            $activeSheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-            
-            // Set headers
-            $row = 3;
+            $activeSheet->getStyle('A1')->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+            // Period subtitle
+            $activeSheet->setCellValue('A2', 'الفترة من ' . $startDate->format('Y/m/d') . ' إلى ' . $endDate->format('Y/m/d'));
+            $activeSheet->mergeCells('A2:E2');
+            $activeSheet->getStyle('A2')->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+            // Column headers
+            $row = 4;
             $activeSheet->setCellValue('A' . $row, 'البيان');
             $activeSheet->setCellValue('B' . $row, 'رقم إيضاح');
-            $activeSheet->setCellValue('C' . $row, $endDate->format('Y/m/d') . ' جنيه مصري');
-            $activeSheet->setCellValue('D' . $row, $startDate->format('Y/m/d') . ' جنيه مصري');
-            
-            $activeSheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
-            $activeSheet->getStyle('A' . $row . ':D' . $row)->getFill()
+            $activeSheet->setCellValue('C' . $row, 'رصيد ' . $endDate->format('Y/m/d') . ' (ج.م)');
+            $activeSheet->setCellValue('D' . $row, 'رصيد ' . $startDate->format('Y/m/d') . ' (ج.م)');
+            $activeSheet->setCellValue('E' . $row, 'حركة الفترة (ج.م)');
+
+            $activeSheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
+            $activeSheet->getStyle('A' . $row . ':E' . $row)->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('FFE0E0E0');
-            
+
+            $headerRow = $row;
             $row++;
-            
-            // Get all balances (sum from multiple accounts per key, respecting calc_type)
-            $balances = [];
-            foreach (AccountSetting::ACCOUNT_KEYS as $key => $label) {
-                $accountsData = $settings[$key] ?? [];
-                $startBalance = 0;
-                $endBalance = 0;
-                
-                foreach ($accountsData as $data) {
-                    $accountId = $data['account_id'];
-                    $calcType = $data['calc_type'];
-                    
-                    $accountStartBalance = $getAccountBalance($accountId, $startDate);
-                    $accountEndBalance = $getAccountBalance($accountId, $endDate);
-                    
-                    // Apply calc_type: add or subtract
-                    if ($calcType === AccountSetting::CALC_TYPE_SUBTRACT) {
-                        $startBalance -= $accountStartBalance;
-                        $endBalance -= $accountEndBalance;
-                    } else {
-                        $startBalance += $accountStartBalance;
-                        $endBalance += $accountEndBalance;
-                    }
+
+            // Helper: write a value line for a configured key.
+            $writeLine = function (string $key, string $label, ?string $note = null) use ($activeSheet, &$row, $balances) {
+                $activeSheet->setCellValue('A' . $row, $label);
+                if ($note) {
+                    $activeSheet->setCellValue('B' . $row, $note);
                 }
-                
-                $balances[$key] = [
-                    'start' => $startBalance,
-                    'end' => $endBalance,
-                ];
-            }
-            
-            // SECTION 1: Revenue
-            $activeSheet->setCellValue('A' . $row, 'صافي الإيرادات');
-            $activeSheet->setCellValue('B' . $row, '(8)');
-            $activeSheet->setCellValue('C' . $row, $balances['net_revenues']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['net_revenues']['start']);
-            $netRevenuesRow = $row;
-            $row++;
-            
-            $activeSheet->setCellValue('A' . $row, 'تكلفة الحصول علي الايرادات');
-            $activeSheet->setCellValue('B' . $row, '(7)');
-            $activeSheet->setCellValue('C' . $row, $balances['cost_of_revenues']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['cost_of_revenues']['start']);
-            $row++;
-            
-            // Gross Profit
-            $activeSheet->setCellValue('A' . $row, 'مجمل ربح');
-            $activeSheet->setCellValue('C' . $row, '=C' . $netRevenuesRow . '+C' . ($row - 1));
-            $activeSheet->setCellValue('D' . $row, '=D' . $netRevenuesRow . '+D' . ($row - 1));
-            $activeSheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
-            $grossProfitRow = $row;
-            $row++;
-            
-            // Empty row
-            $row++;
-            
-            // SECTION 2: Expenses
+                $activeSheet->setCellValue('C' . $row, $balances[$key]['end']);
+                $activeSheet->setCellValue('D' . $row, $balances[$key]['start']);
+                $activeSheet->setCellValue('E' . $row, $balances[$key]['change']);
+                $row++;
+            };
+
+            // Helper: write a computed/total line that uses Excel formulas
+            // for C, D, and E (E always equals C-D).
+            $writeFormulaLine = function (string $label, string $cFormula, string $dFormula, bool $highlight = false) use ($activeSheet, &$row) {
+                $activeSheet->setCellValue('A' . $row, $label);
+                $activeSheet->setCellValue('C' . $row, $cFormula);
+                $activeSheet->setCellValue('D' . $row, $dFormula);
+                $activeSheet->setCellValue('E' . $row, '=C' . $row . '-D' . $row);
+                $activeSheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
+                if ($highlight) {
+                    $activeSheet->getStyle('A' . $row . ':E' . $row)->getFill()
+                        ->setFillType(Fill::FILL_SOLID)
+                        ->getStartColor()->setARGB('FFFFCCCC');
+                }
+                $thisRow = $row;
+                $row++;
+                return $thisRow;
+            };
+
+            // SECTION 1 — Revenue & cost of revenue
+            $writeLine('net_revenues', 'صافي الإيرادات', '(8)');
+            $netRevenuesRow = $row - 1;
+
+            $writeLine('cost_of_revenues', 'تكلفة الحصول علي الايرادات', '(7)');
+            $costRow = $row - 1;
+
+            $grossProfitRow = $writeFormulaLine(
+                'مجمل ربح',
+                '=C' . $netRevenuesRow . '+C' . $costRow,
+                '=D' . $netRevenuesRow . '+D' . $costRow,
+            );
+            $row++; // spacer
+
+            // SECTION 2 — Operating expenses (subtracted from gross profit)
             $activeSheet->setCellValue('A' . $row, 'يخصم:');
             $activeSheet->getStyle('A' . $row)->getFont()->setBold(true);
             $row++;
-            
+
             $expensesStartRow = $row;
-            
-            $activeSheet->setCellValue('A' . $row, 'اهلاك الأصول الثابته');
-            $activeSheet->setCellValue('C' . $row, $balances['fixed_assets_depreciation']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['fixed_assets_depreciation']['start']);
-            $row++;
-            
-            $activeSheet->setCellValue('A' . $row, 'مصروفات عمومية وإدارية');
-            $activeSheet->setCellValue('B' . $row, '(9)');
-            $activeSheet->setCellValue('C' . $row, $balances['general_administrative_expenses']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['general_administrative_expenses']['start']);
-            $row++;
-            
-            $activeSheet->setCellValue('A' . $row, 'مساهمة تكافلية');
-            $activeSheet->setCellValue('C' . $row, $balances['solidarity_contribution']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['solidarity_contribution']['start']);
-            $row++;
-            
-            $activeSheet->setCellValue('A' . $row, 'مصروفات تأسيس');
-            $activeSheet->setCellValue('C' . $row, $balances['establishment_expenses']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['establishment_expenses']['start']);
-            $row++;
-            
-            // Total Expenses
+            $writeLine('fixed_assets_depreciation', 'اهلاك الأصول الثابته');
+            $writeLine('general_administrative_expenses', 'مصروفات عمومية وإدارية', '(9)');
+            $writeLine('solidarity_contribution', 'مساهمة تكافلية');
+            $writeLine('establishment_expenses', 'مصروفات تأسيس');
             $expensesEndRow = $row - 1;
-            $activeSheet->setCellValue('A' . $row, 'إجمالي المصروفات');
-            $activeSheet->setCellValue('C' . $row, '=SUM(C' . $expensesStartRow . ':C' . $expensesEndRow . ')');
-            $activeSheet->setCellValue('D' . $row, '=SUM(D' . $expensesStartRow . ':D' . $expensesEndRow . ')');
-            $activeSheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
-            $totalExpensesRow = $row;
-            $row++;
-            
-            // Net Operating Profit
-            $activeSheet->setCellValue('A' . $row, 'صافي أرباح النشاط');
-            $activeSheet->setCellValue('C' . $row, '=C' . $grossProfitRow . '-C' . $totalExpensesRow);
-            $activeSheet->setCellValue('D' . $row, '=D' . $grossProfitRow . '-D' . $totalExpensesRow);
-            $activeSheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
-            $netOperatingProfitRow = $row;
-            $row++;
-            
-            // Empty row
-            $row++;
-            
-            // SECTION 3: Other Income/Expenses
+
+            $totalExpensesRow = $writeFormulaLine(
+                'إجمالي المصروفات',
+                '=SUM(C' . $expensesStartRow . ':C' . $expensesEndRow . ')',
+                '=SUM(D' . $expensesStartRow . ':D' . $expensesEndRow . ')',
+            );
+
+            $netOperatingProfitRow = $writeFormulaLine(
+                'صافي أرباح النشاط',
+                '=C' . $grossProfitRow . '-C' . $totalExpensesRow,
+                '=D' . $grossProfitRow . '-D' . $totalExpensesRow,
+            );
+            $row++; // spacer
+
+            // SECTION 3 — Other income / expenses (added to operating profit)
             $activeSheet->setCellValue('A' . $row, 'يضاف / يخصم:');
             $activeSheet->getStyle('A' . $row)->getFont()->setBold(true);
             $row++;
-            
+
             $otherStartRow = $row;
-            
-            $activeSheet->setCellValue('A' . $row, 'إيرادات أخرى');
-            $activeSheet->setCellValue('C' . $row, $balances['other_revenues']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['other_revenues']['start']);
-            $row++;
-            
-            $activeSheet->setCellValue('A' . $row, 'فوائد دائنة');
-            $activeSheet->setCellValue('C' . $row, $balances['interest_income']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['interest_income']['start']);
-            $row++;
-            
-            $activeSheet->setCellValue('A' . $row, 'أرباح (خسائر) ترجمة العملات الاجنبية');
-            $activeSheet->setCellValue('C' . $row, $balances['foreign_exchange']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['foreign_exchange']['start']);
-            $row++;
-            
-            $activeSheet->setCellValue('A' . $row, 'مخصصات');
-            $activeSheet->setCellValue('C' . $row, $balances['provisions']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['provisions']['start']);
-            $row++;
-            
+            $writeLine('other_revenues', 'إيرادات أخرى');
+            $writeLine('interest_income', 'فوائد دائنة');
+            $writeLine('foreign_exchange', 'أرباح (خسائر) ترجمة العملات الاجنبية');
+            $writeLine('provisions', 'مخصصات');
             $otherEndRow = $row - 1;
-            
-            // Empty row
-            $row++;
-            
-            // Profit Before Tax
-            $activeSheet->setCellValue('A' . $row, 'صافي أرباح العام قبل الضرائب');
-            $activeSheet->setCellValue('C' . $row, '=C' . $netOperatingProfitRow . '+SUM(C' . $otherStartRow . ':C' . $otherEndRow . ')');
-            $activeSheet->setCellValue('D' . $row, '=D' . $netOperatingProfitRow . '+SUM(D' . $otherStartRow . ':D' . $otherEndRow . ')');
-            $activeSheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
-            $profitBeforeTaxRow = $row;
-            $row++;
-            
+            $row++; // spacer
+
+            $profitBeforeTaxRow = $writeFormulaLine(
+                'صافي أرباح العام قبل الضرائب',
+                '=C' . $netOperatingProfitRow . '+SUM(C' . $otherStartRow . ':C' . $otherEndRow . ')',
+                '=D' . $netOperatingProfitRow . '+SUM(D' . $otherStartRow . ':D' . $otherEndRow . ')',
+            );
+
             // Taxes
-            $activeSheet->setCellValue('A' . $row, 'ضريبة الدخل المؤجله');
-            $activeSheet->setCellValue('C' . $row, $balances['deferred_income_tax']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['deferred_income_tax']['start']);
-            $deferredTaxRow = $row;
-            $row++;
-            
-            $activeSheet->setCellValue('A' . $row, 'ضريبة الدخل');
-            $activeSheet->setCellValue('C' . $row, $balances['income_tax']['end']);
-            $activeSheet->setCellValue('D' . $row, $balances['income_tax']['start']);
-            $incomeTaxRow = $row;
-            $row++;
-            
-            // Empty row
-            $row++;
-            
-            // Net Profit After Tax
-            $activeSheet->setCellValue('A' . $row, 'صافي ارباح /خسائر العام بعد الضرائب');
-            $activeSheet->setCellValue('C' . $row, '=C' . $profitBeforeTaxRow . '+C' . $deferredTaxRow . '+C' . $incomeTaxRow);
-            $activeSheet->setCellValue('D' . $row, '=D' . $profitBeforeTaxRow . '+D' . $deferredTaxRow . '+D' . $incomeTaxRow);
-            $activeSheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
-            $activeSheet->getStyle('A' . $row . ':D' . $row)->getFill()
-                ->setFillType(Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('FFFFCCCC');
-            
-            // Format numbers
-            $activeSheet->getStyle('C4:D' . $row)->getNumberFormat()
-                ->setFormatCode('#,##0');
-            
-            // Auto-size columns
-            $activeSheet->getColumnDimension('A')->setWidth(40);
-            $activeSheet->getColumnDimension('B')->setWidth(15);
-            $activeSheet->getColumnDimension('C')->setWidth(20);
-            $activeSheet->getColumnDimension('D')->setWidth(20);
-            
-            // Add borders
-            $styleArray = [
-                'borders' => [
-                    'allBorders' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+            $writeLine('deferred_income_tax', 'ضريبة الدخل المؤجله');
+            $deferredTaxRow = $row - 1;
+
+            $writeLine('income_tax', 'ضريبة الدخل');
+            $incomeTaxRow = $row - 1;
+            $row++; // spacer
+
+            $writeFormulaLine(
+                'صافي ارباح /خسائر العام بعد الضرائب',
+                '=C' . $profitBeforeTaxRow . '+C' . $deferredTaxRow . '+C' . $incomeTaxRow,
+                '=D' . $profitBeforeTaxRow . '+D' . $deferredTaxRow . '+D' . $incomeTaxRow,
+                highlight: true,
+            );
+
+            // Number formatting on the three numeric columns
+            $activeSheet->getStyle('C' . ($headerRow + 1) . ':E' . $row)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0.00;[Red](#,##0.00)');
+
+            // Column widths
+            $activeSheet->getColumnDimension('A')->setWidth(45);
+            $activeSheet->getColumnDimension('B')->setWidth(12);
+            $activeSheet->getColumnDimension('C')->setWidth(22);
+            $activeSheet->getColumnDimension('D')->setWidth(22);
+            $activeSheet->getColumnDimension('E')->setWidth(22);
+
+            // Borders around the data area
+            $activeSheet->getStyle('A' . $headerRow . ':E' . ($row - 1))
+                ->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
                     ],
-                ],
-            ];
-            $activeSheet->getStyle('A3:D' . $row)->applyFromArray($styleArray);
-            
-            // Generate filename
+                ]);
+
+            // Save & return as download
             $filename = 'income_statement_' . $startDate->format('Y-m-d') . '_to_' . $endDate->format('Y-m-d') . '.xlsx';
-            $filePath = storage_path('app/public/reports/' . $filename);
-            
-            // Ensure directory exists
-            if (!file_exists(storage_path('app/public/reports'))) {
-                mkdir(storage_path('app/public/reports'), 0777, true);
+            $directory = storage_path('app/public/reports');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0777, true);
             }
-            
-            // Save file
+            $filePath = $directory . DIRECTORY_SEPARATOR . $filename;
+
             $writer = new Xlsx($spreadsheet);
             $writer->save($filePath);
-            
+
             return response()->download($filePath)->deleteFileAfterSend(true);
-            
         } catch (Exception $e) {
             Log::error('Failed to generate income statement: ' . $e->getMessage());
             report($e);

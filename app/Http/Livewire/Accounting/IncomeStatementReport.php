@@ -32,7 +32,6 @@ class IncomeStatementReport extends Component
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
 
-        // Check if all settings are configured
         if (!AccountSetting::isFullyConfigured()) {
             $missing = AccountSetting::getMissingKeys();
             $this->alert('error', 'Please configure all account settings first. Missing: ' . implode(', ', $missing));
@@ -45,15 +44,14 @@ class IncomeStatementReport extends Component
             $startDate = Carbon::parse($this->startDate);
             $endDate = Carbon::parse($this->endDate);
 
-            $filePath = Account::generateIncomeStatementReport($startDate, $endDate);
+            $response = Account::generateIncomeStatementReport($startDate, $endDate);
 
-            if ($filePath) {
-                $filename = basename($filePath);
+            if ($response) {
                 $this->alert('success', 'Report generated successfully!');
-                return $filePath;
-            } else {
-                $this->alert('error', 'Failed to generate report. Please check permissions.');
+                return $response;
             }
+
+            $this->alert('error', 'Failed to generate report. Please check permissions.');
         } catch (\Exception $e) {
             $this->alert('error', 'Error generating report: ' . $e->getMessage());
         } finally {
