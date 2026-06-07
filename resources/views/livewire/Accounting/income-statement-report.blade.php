@@ -61,7 +61,7 @@
                     <div class="mt-6 p-4 bg-slate-50 dark:bg-slate-700 rounded-md">
                         <h5 class="text-sm font-semibold mb-2">Report Preview</h5>
                         <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">
-                            The report will compare account balances between:
+                            The report compares cumulative account balances at two cut-off dates and the period activity between them. Each line aggregates the configured account plus all of its child accounts, applying the add/subtract calc-type from your account settings.
                         </p>
                         <div class="grid grid-cols-2 gap-3 text-sm">
                             <div class="p-3 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-600">
@@ -73,20 +73,18 @@
                                 <div class="font-semibold">{{ $endDate ? \Carbon\Carbon::parse($endDate)->format('F d, Y') : 'Not set' }}</div>
                             </div>
                         </div>
-                        
+
                         <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
                             <div class="flex items-start">
                                 <iconify-icon icon="heroicons:information-circle" class="text-blue-500 text-xl mr-2 flex-shrink-0 mt-0.5"></iconify-icon>
                                 <div class="text-sm text-blue-700 dark:text-blue-300">
-                                    The report will include:
+                                    The report contains three numeric columns per line:
                                     <ul class="list-disc list-inside mt-2 space-y-1">
-                                        <li>Net Revenues (صافي الإيرادات)</li>
-                                        <li>Cost of Revenues (تكلفة الحصول علي الايرادات)</li>
-                                        <li>Operating Expenses (مصروفات التشغيل)</li>
-                                        <li>Other Income/Expenses (إيرادات ومصروفات أخرى)</li>
-                                        <li>Taxes (الضرائب)</li>
-                                        <li>Net Profit/Loss (صافي الربح/الخسارة)</li>
+                                        <li>Balance at end date (cumulative through end of day)</li>
+                                        <li>Balance at start date (cumulative through end of day)</li>
+                                        <li>Period activity (end &minus; start)</li>
                                     </ul>
+                                    <div class="mt-2">Sections: Net Revenues, Cost of Revenues, Operating Expenses, Other Income/Expenses, Taxes and the resulting Net Profit/Loss.</div>
                                 </div>
                             </div>
                         </div>
