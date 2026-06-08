@@ -514,7 +514,11 @@
                                                     $dueDate = $task->due;
                                                     $totalDuration = min(1, $startDate->diffInSeconds($dueDate));
                                                     $elapsedDuration = $startDate->diffInSeconds($currentDate);
-                                                    $percentagePassed = ($elapsedDuration / $totalDuration) * 100;
+                                                    if ($totalDuration == 0) {
+                                                        $percentagePassed = 0;
+                                                    } else {
+                                                        $percentagePassed = ($elapsedDuration / $totalDuration) * 100;
+                                                    }
                                                 @endphp
 
                                                 <div class="w-full bg-slate-200 h-2 m-1 rounded-xl overflow-hidden"
