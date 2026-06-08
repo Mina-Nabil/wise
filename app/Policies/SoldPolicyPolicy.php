@@ -31,7 +31,7 @@ class SoldPolicyPolicy
     public function view(User $user, SoldPolicy $soldPolicy)
     {
         $soldPolicy->load('sales_comms');
-        return $user->is_admin ||  $user->is_any_finance || $user->is_operations || $user->id == $soldPolicy->creator_id || $user->id == 12 || $user->id == $soldPolicy->main_sales_id || in_array($user->id, $soldPolicy->sales_comms->pluck('comm_profile.user_id')->toArray())
+        return $user->is_admin ||  $user->is_any_finance || $user->is_operations || $user->is_claims || $user->id == $soldPolicy->creator_id || $user->id == 12 || $user->id == $soldPolicy->main_sales_id || in_array($user->id, $soldPolicy->sales_comms->pluck('comm_profile.user_id')->toArray())
         || in_array($user->id, $soldPolicy->client_payments->pluck('comm_profile.assigned_to')->toArray());
     }
 
@@ -67,7 +67,7 @@ class SoldPolicyPolicy
      */
     public function updateClaim(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin || $user->is_operations;
+        return $user->is_admin || $user->is_operations || $user->is_claims;
     }
 
     /**
@@ -115,7 +115,7 @@ class SoldPolicyPolicy
      */
     public function review(User $user, SoldPolicy $soldPolicy = null)
     {
-        return $user->is_admin || $user->is_operations;
+        return $user->is_admin || $user->is_operations || $user->is_claims;
     }
 
     /**
@@ -187,7 +187,7 @@ class SoldPolicyPolicy
 
     public function generateRenewalOffer(User $user, SoldPolicy $soldPolicy)
     {
-        return $user->is_admin || $user->is_operations || $user->id == 12;
+        return $user->is_admin || $user->is_operations || $user->is_claims || $user->id == 12;
     }
 
     public function viewReports(User $user)
