@@ -84,6 +84,38 @@ class ReportController extends Controller
         return view('reports.sold-policy-income-index');
     }
 
+    public function customerDuplicates()
+    {
+        if (!auth()->user()?->is_admin) {
+            abort(403);
+        }
+        return view('reports.customer-duplicates-index');
+    }
+
+    public function corporateDuplicates()
+    {
+        if (!auth()->user()?->is_admin) {
+            abort(403);
+        }
+        return view('reports.corporate-duplicates-index');
+    }
+
+    public function customerMerge()
+    {
+        if (!auth()->user()?->is_admin) {
+            abort(403);
+        }
+        return view('reports.customer-merge-index', ['ids' => request('ids')]);
+    }
+
+    public function corporateMerge()
+    {
+        if (!auth()->user()?->is_admin) {
+            abort(403);
+        }
+        return view('reports.corporate-merge-index', ['ids' => request('ids')]);
+    }
+
     public function followupsIndex()
     {
         return view('reports.followups-index');

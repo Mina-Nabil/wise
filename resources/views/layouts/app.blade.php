@@ -338,6 +338,14 @@
                                         <a href="{{ url('/reports/income') }}"
                                             class="@yield('reports.income')">Income Report</a>
                                     </li>
+                                    <li>
+                                        <a href="{{ url('/reports/customer-duplicates') }}"
+                                            class="@yield('reports.customer-duplicates')">Customer Duplicates</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url('/reports/corporate-duplicates') }}"
+                                            class="@yield('reports.corporate-duplicates')">Corporate Duplicates</a>
+                                    </li>
                                 @endif
                             </ul>
                         </li>

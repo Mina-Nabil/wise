@@ -768,6 +768,88 @@ class Corporate extends Model
             });
     }
 
+    ///duplicates & merge
+
+    /**
+     * Paginated list of duplicate keys (same commercial_record shared by more
+     * than one corporate). Each row is a key with its duplicate count.
+     */
+    public static function duplicateGroups()
+    {
+        return self::query()
+            ->whereNotNull('commercial_record')
+            ->where('commercial_record', '!=', '')
+            ->select('commercial_record', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('commercial_record')
+            ->having('cnt', '>', 1)
+            ->orderByDesc('cnt')
+            ->paginate(15);
+    }
+
+    /**
+     * Merge the given source corporates into $this (the survivor). All related
+     * data from the sources is moved to the survivor, the sources are deleted,
+     * and the survivor's owner is set to $ownerId (controls who can access it).
+     *
+     * @param array $sourceIds ids of the corporates to merge in and delete
+     * @param int   $ownerId   user who will own (and can access) the survivor
+     */
+    public function mergeCorporates(array $sourceIds, int $ownerId): bool
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('merge', self::class)) return false;
+
+        // never merge the survivor into itself; cap at 2 sources (3 profiles total)
+        $sourceIds = collect($sourceIds)
+            ->map(fn ($id) => (int) $id)
+            ->reject(fn ($id) => $id === (int) $this->id)
+            ->unique()
+            ->take(2)
+            ->values()
+            ->all();
+
+        if (count($sourceIds) === 0) return false;
+
+        $sources = self::whereIn('id', $sourceIds)->get();
+        if ($sources->isEmpty()) return false;
+
+        try {
+            DB::transaction(function () use ($sources, $ownerId) {
+                foreach ($sources as $source) {
+                    // polymorphic relations (morph type constrained automatically)
+                    $source->offers()->update(['client_id' => $this->id]);
+                    $source->soldpolicies()->update(['client_id' => $this->id]);
+                    $source->tasks()->update(['taskable_id' => $this->id]);
+                    $source->followups()->update(['called_id' => $this->id]);
+
+                    // one-to-many children
+                    $source->phones()->update(['corporate_id' => $this->id, 'is_default' => 0]);
+                    $source->addresses()->update(['corporate_id' => $this->id]);
+                    $source->contacts()->update(['corporate_id' => $this->id]);
+                    $source->bank_accounts()->update(['corporate_id' => $this->id]);
+                    $source->interests()->update(['corporate_id' => $this->id]);
+
+                    // delete the emptied source (status & now-empty relations cleaned by delete())
+                    $source->delete();
+                }
+
+                $this->update(['owner_id' => $ownerId]);
+            });
+
+            AppLog::info(
+                'Corporates merged',
+                desc: 'Merged corporate(s) #' . implode(', #', $sources->pluck('id')->all()) . " into #{$this->id}; owner set to {$ownerId}",
+                loggable: $this
+            );
+            return true;
+        } catch (\Throwable $e) {
+            report($e);
+            AppLog::error('Unable to merge corporates', desc: $e->getMessage(), loggable: $this);
+            throw $e;
+        }
+    }
+
     ///relations
     public function status(): HasOne
     {

@@ -994,6 +994,97 @@ class Customer extends Model
         return $query->where('type', self::TYPE_CLIENT);
     }
 
+    ///duplicates & merge
+
+    /**
+     * Paginated list of duplicate keys (same id_type + id_number shared by
+     * more than one customer). Each row is a key with its duplicate count.
+     */
+    public static function duplicateGroups()
+    {
+        return self::query()
+            ->whereNotNull('id_number')
+            ->where('id_number', '!=', '')
+            ->whereNotNull('id_type')
+            ->select('id_type', 'id_number', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('id_type', 'id_number')
+            ->having('cnt', '>', 1)
+            ->orderByDesc('cnt')
+            ->paginate(15);
+    }
+
+    /**
+     * Merge the given source customers into $this (the survivor). All related
+     * data from the sources is moved to the survivor, the sources are deleted,
+     * and the survivor's owner is set to $ownerId (controls who can access it).
+     *
+     * @param array $sourceIds ids of the customers to merge in and delete
+     * @param int   $ownerId   user who will own (and can access) the survivor
+     */
+    public function mergeCustomers(array $sourceIds, int $ownerId): bool
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('merge', self::class)) return false;
+
+        // never merge the survivor into itself; cap at 2 sources (3 profiles total)
+        $sourceIds = collect($sourceIds)
+            ->map(fn ($id) => (int) $id)
+            ->reject(fn ($id) => $id === (int) $this->id)
+            ->unique()
+            ->take(2)
+            ->values()
+            ->all();
+
+        if (count($sourceIds) === 0) return false;
+
+        $sources = self::whereIn('id', $sourceIds)->get();
+        if ($sources->isEmpty()) return false;
+
+        try {
+            DB::transaction(function () use ($sources, $ownerId) {
+                foreach ($sources as $source) {
+                    // polymorphic relations (morph type constrained automatically)
+                    $source->offers()->update(['client_id' => $this->id]);
+                    $source->soldpolicies()->update(['client_id' => $this->id]);
+                    $source->tasks()->update(['taskable_id' => $this->id]);
+                    $source->followups()->update(['called_id' => $this->id]);
+
+                    // one-to-many children
+                    $source->phones()->update(['customer_id' => $this->id, 'is_default' => 0]);
+                    $source->addresses()->update(['customer_id' => $this->id]);
+                    $source->cars()->update(['customer_id' => $this->id]);
+                    $source->interests()->update(['customer_id' => $this->id]);
+                    $source->relatives()->update(['customer_id' => $this->id]);
+                    $source->bank_accounts()->update(['customer_id' => $this->id]);
+
+                    // self-referencing relatives pivot
+                    DB::table('cust_cust_relatives')->where('customer_id', $source->id)->update(['customer_id' => $this->id]);
+                    DB::table('cust_cust_relatives')->where('relative_id', $source->id)->update(['relative_id' => $this->id]);
+
+                    // delete the emptied source (status & now-empty relations cleaned by delete())
+                    $source->delete();
+                }
+
+                // drop self-references created by the pivot repointing
+                DB::table('cust_cust_relatives')->whereColumn('customer_id', 'relative_id')->delete();
+
+                $this->update(['owner_id' => $ownerId]);
+            });
+
+            AppLog::info(
+                'Customers merged',
+                desc: 'Merged customer(s) #' . implode(', #', $sources->pluck('id')->all()) . " into #{$this->id}; owner set to {$ownerId}",
+                loggable: $this
+            );
+            return true;
+        } catch (\Throwable $e) {
+            report($e);
+            AppLog::error('Unable to merge customers', desc: $e->getMessage(), loggable: $this);
+            throw $e;
+        }
+    }
+
     ///relations
     public function status(): HasOne
     {

@@ -118,6 +118,10 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/reports/sales-comm-totals-report', [ReportController::class, 'salesCommissionsTotals'])->name('reports.sales-comm-totals-report');
     Route::get('/reports/campaigns', [ReportController::class, 'campaignsIndex'])->name('reports.campaigns');
     Route::get('/reports/renewal-analysis', [ReportController::class, 'renewalAnalysis'])->name('reports.renewal-analysis');
+    Route::get('/reports/customer-duplicates', [ReportController::class, 'customerDuplicates'])->name('reports.customer-duplicates');
+    Route::get('/reports/corporate-duplicates', [ReportController::class, 'corporateDuplicates'])->name('reports.corporate-duplicates');
+    Route::get('/reports/customer-merge', [ReportController::class, 'customerMerge'])->name('reports.customer-merge');
+    Route::get('/reports/corporate-merge', [ReportController::class, 'corporateMerge'])->name('reports.corporate-merge');
 
     //Cars routes
     Route::get('/cars', [CarsController::class, 'index']);

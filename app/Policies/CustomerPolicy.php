@@ -46,6 +46,17 @@ class CustomerPolicy
     }
 
     /**
+     * Determine whether the user can merge duplicate customers.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function merge(User $user)
+    {
+        return $user->is_admin;
+    }
+
+    /**
      * Determine whether the user can create models.
      *
      * @param  \App\Models\Users\User  $user

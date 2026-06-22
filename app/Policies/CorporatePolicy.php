@@ -57,6 +57,17 @@ class CorporatePolicy
     }
 
     /**
+     * Determine whether the user can merge duplicate corporates.
+     *
+     * @param  \App\Models\Users\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function merge(User $user)
+    {
+        return $user->is_admin;
+    }
+
+    /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\Users\User  $user
