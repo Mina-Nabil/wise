@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
+use Illuminate\Support\Facades\Auth;
 
 class PoliciesController extends Controller
 {
@@ -47,6 +48,11 @@ class PoliciesController extends Controller
 
     public function soldPolicyIndex(){
         return view('policies.sold-policy-index');
+    }
+
+    public function soldPolicyBulkShow(){
+        abort_unless(Auth::user()?->is_admin, 403);
+        return view('policies.sold-policy-bulk-show');
     }
 
     public function expSoldPolicyIndex() {

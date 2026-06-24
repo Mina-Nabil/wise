@@ -14,6 +14,13 @@
                         Add Policy
                     </button>
                 @endcan
+                @if (auth()->user()?->is_admin)
+                    <a href="{{ route('sold.policy.bulk-show') }}"
+                        class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                        <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:eye-bold"></iconify-icon>
+                        Bulk Show
+                    </a>
+                @endif
             </div>
         </div>
         <div class="card-body px-6 pb-6">
