@@ -36,6 +36,7 @@ class TaskShow extends Component
     public $watchersList = [];
     public $setWatchersList;
     public $editedStatus;
+    public $editedSubStatus;
     public $statusComment;
     public $changeStatus = false;
     public $changeTitleDesc = false;
@@ -309,6 +310,7 @@ class TaskShow extends Component
         $this->taskStatus = $task->status;
         $this->watchersList = $task->watcher_ids;
         $this->editedStatus = $task->status;
+        $this->editedSubStatus = $task->sub_status;
 
         $this->actionsIds = [];
         foreach ($task->actions as $action) {
@@ -605,6 +607,9 @@ class TaskShow extends Component
         $task = Task::findOrFail($this->taskId);
         $t = $task->setStatus($this->editedStatus, $this->statusComment, $this->actionsIds);
         if ($t) {
+            if ($task->is_claim) {
+                $task->setSubStatus($this->editedSubStatus ?: null);
+            }
             $this->alert('success', 'Status Updated!');
             $this->toggleEditStatus();
         } else {

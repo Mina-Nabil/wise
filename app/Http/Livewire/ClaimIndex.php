@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Tasks\Task;
+use App\Models\Tasks\TaskField;
 use App\Models\Users\User;
 use App\Traits\AlertFrontEnd;
 use Carbon\Carbon;
@@ -24,6 +25,7 @@ class ClaimIndex extends Component
     public $searchText;
     public $myTasks;
     public $watcherTasks;
+    public $workshop; // filter by مكان الاصلاح
 
 
     protected $queryString = [
@@ -73,6 +75,11 @@ class ClaimIndex extends Component
         $this->resetPage();
     }
 
+    public function updatedWorkshop()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $statuses = Task::STATUSES;
@@ -88,6 +95,9 @@ class ClaimIndex extends Component
             })
             ->when($this->searchText, function ($query) {
                 return $query->searchByTitle($this->searchText);
+            })
+            ->when($this->workshop, function ($query) {
+                return $query->byFieldValue(TaskField::TITLE_WORKSHOP, $this->workshop);
             })
             ->when($this->filteredStatus, function ($query) {
                 return $query->byStates($this->filteredStatus);

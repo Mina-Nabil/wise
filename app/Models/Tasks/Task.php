@@ -31,7 +31,7 @@ class Task extends Model
     const FILES_DIRECTORY = 'tasks/';
     use HasFactory;
 
-    protected $fillable = ['taskable_type', 'taskable_id', 'title', 'desc', 'open_by_id', 'assigned_to_id', 'last_action_by_id', 'due', 'file_url', 'type', 'status'];
+    protected $fillable = ['taskable_type', 'taskable_id', 'title', 'desc', 'open_by_id', 'assigned_to_id', 'last_action_by_id', 'due', 'file_url', 'type', 'status', 'sub_status'];
 
     const STATUS_NEW = 'new'; //open but not assigned to anybode
     const STATUS_ASSIGNED = 'assigned'; //open and assigned
@@ -47,6 +47,35 @@ class Task extends Model
     const TYPE_ENDORSMENT = 'endorsement';
 
     const TYPES = [self::TYPE_TASK, self::TYPE_CLAIM, self::TYPE_ENDORSMENT];
+
+    // Claim-specific sub statuses (flat list, claims only)
+    const CLAIM_SUB_PENDING_DISCHARGE = 'pending_discharge_form';
+    const CLAIM_SUB_PENDING_CHEQUE = 'pending_cheque_issuance';
+    const CLAIM_SUB_SETTLED_WITH_RESERVATION = 'settled_with_reservation';
+    const CLAIM_SUB_REJECTED_BY_INSURANCE = 'rejected_by_insurance_company';
+
+    const CLAIM_SUB_STATUSES = [
+        self::CLAIM_SUB_PENDING_DISCHARGE => 'Pending Discharge Form',
+        self::CLAIM_SUB_PENDING_CHEQUE => 'Pending Cheque Issuance',
+        self::CLAIM_SUB_SETTLED_WITH_RESERVATION => 'Settled (With Reservation)',
+        self::CLAIM_SUB_REJECTED_BY_INSURANCE => 'Rejected by Insurance Company',
+    ];
+
+    // Claim-specific display labels for shared statuses (claims pages only)
+    const CLAIM_STATUS_LABELS = [
+        self::STATUS_COMPLETED => 'Settled',
+        self::STATUS_CLOSED => 'Closed by Customer',
+    ];
+
+    public function getClaimStatusLabelAttribute()
+    {
+        return self::CLAIM_STATUS_LABELS[$this->status] ?? ucwords(str_replace('_', ' ', $this->status));
+    }
+
+    public function getSubStatusLabelAttribute()
+    {
+        return $this->sub_status ? (self::CLAIM_SUB_STATUSES[$this->sub_status] ?? $this->sub_status) : null;
+    }
 
     /////model functions
     public function editTitleAndDesc($title, $desc = null)
@@ -327,6 +356,33 @@ class Task extends Model
             AppLog::error("Can't change task status", $e->getMessage(), $this);
             return false;
         }
+    }
+
+    public function setSubStatus(?string $sub_status): bool
+    {
+        if ($sub_status !== null && !array_key_exists($sub_status, self::CLAIM_SUB_STATUSES)) {
+            return false;
+        }
+
+        try {
+            $this->sub_status = $sub_status;
+            $this->save();
+            $label = $sub_status ? self::CLAIM_SUB_STATUSES[$sub_status] : 'none';
+            $this->addComment("Changed sub-status to $label", false);
+            AppLog::info('Sub-status changed', "Task#$this->id sub-status set to $label", $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't change task sub-status", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+    public function scopeByFieldValue($query, $title, $value)
+    {
+        return $query->whereHas('fields', function ($q) use ($title, $value) {
+            $q->where('title', $title)->where('value', 'LIKE', "%$value%");
+        });
     }
 
     public function sendTaskNotifications($title, $message)

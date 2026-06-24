@@ -48,6 +48,7 @@
 
         </div>
         <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model="searchText" placeholder="Search by title">
+        <input class="form-control py-2 w-auto ml-5" style="width:220px" value="" type="text" wire:model.debounce.500ms="workshop" placeholder="مكان الاصلاح">
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px" id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model="dateRange">
 
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
@@ -95,10 +96,6 @@
 
                                 <th scope="col" class=" table-th ">
                                     Title
-                                </th>
-
-                                <th scope="col" class=" table-th ">
-                                    Type
                                 </th>
 
                                 <th scope="col" class=" table-th ">
@@ -154,10 +151,6 @@
 
                                     <td class="table-td">
                                         {{ $task->title }}
-                                    </td>
-
-                                    <td class="table-td ">
-                                        {{ $task->taskable_type }}
                                         @if ($task->file_url)
                                             <iconify-icon icon="bx:file"></iconify-icon>
                                         @endif
@@ -182,11 +175,17 @@
                                             </div>
                                         @elseif($task->status === 'completed')
                                             <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
-                                                Completed
+                                                Settled
                                             </div>
                                         @elseif($task->status === 'closed')
                                             <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
-                                                Closed
+                                                Closed by Customer
+                                            </div>
+                                        @endif
+
+                                        @if ($task->sub_status)
+                                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                                {{ $task->sub_status_label }}
                                             </div>
                                         @endif
 

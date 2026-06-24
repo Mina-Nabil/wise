@@ -85,7 +85,7 @@
                             @elseif($task->status === 'completed')
                                 <div
                                     class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500 bg-success-500 text-xs">
-                                    Completed
+                                    {{ $task->is_claim ? 'Settled' : 'Completed' }}
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
@@ -93,10 +93,16 @@
                             @elseif($task->status === 'closed')
                                 <div
                                     class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
-                                    Closed
+                                    {{ $task->is_claim ? 'Closed by Customer' : 'Closed' }}
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
+                                </div>
+                            @endif
+
+                            @if ($task->is_claim && $task->sub_status)
+                                <div class="inline-block px-3 text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500 bg-warning-500 text-xs ml-1">
+                                    {{ $task->sub_status_label }}
                                 </div>
                             @endif
 
@@ -191,7 +197,7 @@
                                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                                             <span
-                                                class="text-secondary-500 text-sm leading-6 capitalize">Completed</span>
+                                                class="text-secondary-500 text-sm leading-6 capitalize">{{ $task->is_claim ? 'Settled' : 'Completed' }}</span>
                                         </label>
                                     </div>
                                     <div class="basicRadio">
@@ -202,11 +208,24 @@
                                             <span
                                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Closed</span>
+                                            <span class="text-secondary-500 text-sm leading-6 capitalize">{{ $task->is_claim ? 'Closed by Customer' : 'Closed' }}</span>
                                         </label>
                                     </div>
+
+                                    @if ($task->is_claim)
+                                        <div class="mt-3">
+                                            <label class="form-label text-sm">Sub-status</label>
+                                            <select wire:model="editedSubStatus" class="form-control w-full mt-1">
+                                                <option value="">None</option>
+                                                @foreach (\App\Models\Tasks\Task::CLAIM_SUB_STATUSES as $value => $label)
+                                                    <option value="{{ $value }}">{{ $label }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    @endif
+
                                     <input type="text" wire:model="statusComment" placeholder="Leave a note..."
-                                        class="form-control w-full">
+                                        class="form-control w-full mt-2">
 
                                     <button wire:click="saveStatuses"
                                         class="btn inline-flex justify-center btn-success btn-sm mt-2">
