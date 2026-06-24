@@ -168,7 +168,7 @@
             @if ($selected_policy_id)
                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                     <span wire:click="toggleSelectedPolicy">
-                        Selected Policy: {{ $POLICIES->firstWhere('id', $selected_policy_id)?->name ?? $selected_policy_id }}
+                        Selected Policy: {{ $selectedPolicyName ?? $selected_policy_id }}
                         &nbsp;&nbsp;
                     </span>
                     <span wire:click="clearSelectedPolicy">
@@ -180,7 +180,7 @@
             @if ($selected_company_id)
                 <button class="btn inline-flex justify-center btn-dark btn-sm">
                     <span wire:click="toggleSelectedCompany">
-                        Selected Company: {{ $COMPANIES->firstWhere('id', $selected_company_id)?->name ?? $selected_company_id }}
+                        Selected Company: {{ $selectedCompanyName ?? $selected_company_id }}
                         &nbsp;&nbsp;
                     </span>
                     <span wire:click="clearSelectedCompany">
@@ -1268,27 +1268,44 @@
                             </button>
                         </div>
                         <div class="p-6 space-y-4">
+                            @if ($selected_policy_id)
+                                <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-600 rounded-md px-3 py-2">
+                                    <span class="text-sm text-slate-700 dark:text-slate-200">
+                                        <b>Selected:</b> {{ $selectedPolicyName ?? $selected_policy_id }}
+                                    </span>
+                                    <span wire:click="clearSelectedPolicy"
+                                        class="cursor-pointer text-danger-500 text-sm">Clear</span>
+                                </div>
+                            @endif
                             <div class="from-group">
-                                <label for="Eselected_policy_id" class="form-label">Policy</label>
-                                <select name="Eselected_policy_id" id="Eselected_policy_id"
-                                    class="form-control w-full mt-2" wire:model.defer="Eselected_policy_id">
-                                    <option value="">Any</option>
-                                    @foreach ($POLICIES as $POLICY)
-                                        <option value="{{ $POLICY->id }}">
-                                            {{ $POLICY->name }} ({{ $POLICY->company?->name }})
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label class="form-label">
+                                    Search policy
+                                    <iconify-icon wire:loading wire:target="policySearchText" class="loading-icon text-lg"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </label>
+                                <input type="text" placeholder="Search by policy, company or business..."
+                                    class="form-control mt-2 w-full" wire:model="policySearchText">
+                            </div>
+                            <div class="text-sm space-y-1">
+                                @forelse ($policyResults as $policy)
+                                    <p>
+                                        <iconify-icon icon="iconoir:privacy-policy"></iconify-icon>
+                                        {{ $policy->name }} | {{ $policy->company?->name ?? 'N/A' }} |
+                                        <span wire:click="selectReportPolicy({{ $policy->id }})"
+                                            class="cursor-pointer text-primary-500">Select Policy</span>
+                                    </p>
+                                @empty
+                                    @if ($policySearchText)
+                                        <p class="text-slate-500">No policies found.</p>
+                                    @endif
+                                @endforelse
                             </div>
                         </div>
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setSelectedPolicy" data-bs-dismiss="modal"
+                            <button wire:click="toggleSelectedPolicy" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="setSelectedPolicy">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="setSelectedPolicy"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                Done
                             </button>
                         </div>
                     </div>
@@ -1324,25 +1341,44 @@
                             </button>
                         </div>
                         <div class="p-6 space-y-4">
+                            @if ($selected_company_id)
+                                <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-600 rounded-md px-3 py-2">
+                                    <span class="text-sm text-slate-700 dark:text-slate-200">
+                                        <b>Selected:</b> {{ $selectedCompanyName ?? $selected_company_id }}
+                                    </span>
+                                    <span wire:click="clearSelectedCompany"
+                                        class="cursor-pointer text-danger-500 text-sm">Clear</span>
+                                </div>
+                            @endif
                             <div class="from-group">
-                                <label for="Eselected_company_id" class="form-label">Company</label>
-                                <select name="Eselected_company_id" id="Eselected_company_id"
-                                    class="form-control w-full mt-2" wire:model.defer="Eselected_company_id">
-                                    <option value="">Any</option>
-                                    @foreach ($COMPANIES as $COMPANY)
-                                        <option value="{{ $COMPANY->id }}">{{ $COMPANY->name }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="form-label">
+                                    Search company
+                                    <iconify-icon wire:loading wire:target="companySearchText" class="loading-icon text-lg"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </label>
+                                <input type="text" placeholder="Search by company name..."
+                                    class="form-control mt-2 w-full" wire:model="companySearchText">
+                            </div>
+                            <div class="text-sm space-y-1">
+                                @forelse ($companyResults as $company)
+                                    <p>
+                                        <iconify-icon icon="mdi:company"></iconify-icon>
+                                        {{ $company->name }} |
+                                        <span wire:click="selectReportCompany({{ $company->id }})"
+                                            class="cursor-pointer text-primary-500">Select Company</span>
+                                    </p>
+                                @empty
+                                    @if ($companySearchText)
+                                        <p class="text-slate-500">No companies found.</p>
+                                    @endif
+                                @endforelse
                             </div>
                         </div>
                         <div
                             class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
-                            <button wire:click="setSelectedCompany" data-bs-dismiss="modal"
+                            <button wire:click="toggleSelectedCompany" data-bs-dismiss="modal"
                                 class="btn inline-flex justify-center text-white bg-black-500">
-                                <span wire:loading.remove wire:target="setSelectedCompany">Submit</span>
-                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
-                                    wire:loading wire:target="setSelectedCompany"
-                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                Done
                             </button>
                         </div>
                     </div>

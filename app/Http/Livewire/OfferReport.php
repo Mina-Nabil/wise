@@ -67,11 +67,15 @@ class OfferReport extends Component
 
     public $selectedPolicySection = false;
     public $selected_policy_id;
-    public $Eselected_policy_id;
+    public $selectedPolicyName;
+    public $policySearchText;
+    public $policyResults = [];
 
     public $selectedCompanySection = false;
     public $selected_company_id;
-    public $Eselected_company_id;
+    public $selectedCompanyName;
+    public $companySearchText;
+    public $companyResults = [];
 
     public $sortDueDir = 'asc';
 
@@ -84,39 +88,63 @@ class OfferReport extends Component
     public function toggleSelectedPolicy()
     {
         $this->toggle($this->selectedPolicySection);
-        if ($this->selectedPolicySection) {
-            $this->Eselected_policy_id = $this->selected_policy_id;
-        }
+        $this->policySearchText = null;
+        $this->policyResults = [];
     }
 
-    public function setSelectedPolicy()
+    public function updatedPolicySearchText()
     {
-        $this->selected_policy_id = $this->Eselected_policy_id;
-        $this->toggle($this->selectedPolicySection);
+        $this->policyResults = $this->policySearchText
+            ? Policy::searchBy($this->policySearchText)->with('company')->take(10)->get()
+            : [];
+    }
+
+    public function selectReportPolicy($id)
+    {
+        $policy = Policy::with('company')->find($id);
+        if (!$policy) return;
+        $this->selected_policy_id = $policy->id;
+        $this->selectedPolicyName = $policy->name . ' (' . $policy->company?->name . ')';
+        $this->policySearchText = null;
+        $this->policyResults = [];
+        $this->selectedPolicySection = false;
     }
 
     public function clearSelectedPolicy()
     {
         $this->selected_policy_id = null;
+        $this->selectedPolicyName = null;
     }
 
     public function toggleSelectedCompany()
     {
         $this->toggle($this->selectedCompanySection);
-        if ($this->selectedCompanySection) {
-            $this->Eselected_company_id = $this->selected_company_id;
-        }
+        $this->companySearchText = null;
+        $this->companyResults = [];
     }
 
-    public function setSelectedCompany()
+    public function updatedCompanySearchText()
     {
-        $this->selected_company_id = $this->Eselected_company_id;
-        $this->toggle($this->selectedCompanySection);
+        $this->companyResults = $this->companySearchText
+            ? Company::searchBy($this->companySearchText)->take(10)->get()
+            : [];
+    }
+
+    public function selectReportCompany($id)
+    {
+        $company = Company::find($id);
+        if (!$company) return;
+        $this->selected_company_id = $company->id;
+        $this->selectedCompanyName = $company->name;
+        $this->companySearchText = null;
+        $this->companyResults = [];
+        $this->selectedCompanySection = false;
     }
 
     public function clearSelectedCompany()
     {
         $this->selected_company_id = null;
+        $this->selectedCompanyName = null;
     }
 
     public function toggleProfiles()
@@ -391,8 +419,6 @@ class OfferReport extends Component
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $SUB_STATUSES = Offer::SUB_STATUSES;
         $COMM_PROFILES = CommProfile::select('title', 'id')->get();
-        $POLICIES = Policy::with('company')->orderBy('name')->get();
-        $COMPANIES = Company::orderBy('name')->get();
 
         if ($this->assignee_id) {
             $c = User::find($this->assignee_id);
@@ -402,6 +428,16 @@ class OfferReport extends Component
         if ($this->closed_by_id) {
             $c = User::find($this->closed_by_id);
             $this->closerName = ucwords($c->first_name) . ' ' . ucwords($c->last_name);
+        }
+
+        if ($this->selected_policy_id && !$this->selectedPolicyName) {
+            $p = Policy::with('company')->find($this->selected_policy_id);
+            $this->selectedPolicyName = $p ? $p->name . ' (' . $p->company?->name . ')' : $this->selected_policy_id;
+        }
+
+        if ($this->selected_company_id && !$this->selectedCompanyName) {
+            $co = Company::find($this->selected_company_id);
+            $this->selectedCompanyName = $co?->name ?? $this->selected_company_id;
         }
 
         if (!empty($this->FilteredCreators)) {
@@ -436,7 +472,7 @@ class OfferReport extends Component
             $this->sub_status,
             $this->selected_policy_id,
             $this->selected_company_id,
-        )->orderBy('offers.due', $this->sortDueDir === 'desc' ? 'desc' : 'asc')->paginate(30);
+        )->reorder('offers.due', $this->sortDueDir === 'desc' ? 'desc' : 'asc')->paginate(30);
 
         return view('livewire.offer-report', [
             'offers' => $offers,
@@ -446,8 +482,6 @@ class OfferReport extends Component
             'users' => $users,
             'types' => User::TYPES,
             'COMM_PROFILES' => $COMM_PROFILES,
-            'POLICIES' => $POLICIES,
-            'COMPANIES' => $COMPANIES,
         ]);
     }
 }
