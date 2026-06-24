@@ -1323,6 +1323,22 @@ class SoldPolicy extends Model
         try {
             $newSoldPolicy->save(['timestamps' => false]);
             AppLog::info("New Sold Policy", loggable: $newSoldPolicy);
+
+            // Keep the linked customer car's identity info in sync with the sold policy
+            if ($customer_car_id) {
+                $customerCar = Car::find($customer_car_id);
+                if ($customerCar) {
+                    $carUpdates = array_filter([
+                        'car_chassis'  => $car_chassis,
+                        'car_engine'   => $car_engine,
+                        'car_plate_no' => $car_plate_no,
+                    ], fn ($v) => !is_null($v) && $v !== '');
+                    if (!empty($carUpdates)) {
+                        $customerCar->update($carUpdates);
+                    }
+                }
+            }
+
             return $newSoldPolicy;
         } catch (Exception $e) {
             report($e);

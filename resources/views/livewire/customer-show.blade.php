@@ -1985,6 +1985,40 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                                 <hr class="mt-5">
+                                <p class="mt-3 text-lg"><b>Car Identity</b></p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div class="input-area">
+                                        <label class="form-label">Car Chassis</label>
+                                        <input type="text"
+                                            class="form-control @error('carChassis') !border-danger-500 @enderror"
+                                            wire:model="carChassis">
+                                        @error('carChassis')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="input-area">
+                                        <label class="form-label">Car Engine</label>
+                                        <input type="text"
+                                            class="form-control @error('carEngine') !border-danger-500 @enderror"
+                                            wire:model="carEngine">
+                                        @error('carEngine')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="input-area">
+                                        <label class="form-label">Car Plate No.</label>
+                                        <input type="text"
+                                            class="form-control @error('carPlateNo') !border-danger-500 @enderror"
+                                            wire:model="carPlateNo">
+                                        @error('carPlateNo')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <hr class="mt-5">
                                 <p class="mt-3 text-lg"><b>Insurance Info</b></p>
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     <div class="input-area">
@@ -2188,6 +2222,40 @@
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
+                                <hr class="mt-5">
+                                <p class="mt-3 text-lg"><b>Car Identity</b></p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div class="input-area">
+                                        <label class="form-label">Car Chassis</label>
+                                        <input type="text"
+                                            class="form-control @error('carChassis') !border-danger-500 @enderror"
+                                            wire:model="carChassis">
+                                        @error('carChassis')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="input-area">
+                                        <label class="form-label">Car Engine</label>
+                                        <input type="text"
+                                            class="form-control @error('carEngine') !border-danger-500 @enderror"
+                                            wire:model="carEngine">
+                                        @error('carEngine')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="input-area">
+                                        <label class="form-label">Car Plate No.</label>
+                                        <input type="text"
+                                            class="form-control @error('carPlateNo') !border-danger-500 @enderror"
+                                            wire:model="carPlateNo">
+                                        @error('carPlateNo')
+                                            <span
+                                                class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <hr class="mt-5">
                                 <p class="mt-3 text-lg"><b>Insurance Info</b></p>
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

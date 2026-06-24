@@ -14,6 +14,7 @@ use App\Models\Payments\PolicyComm;
 use App\Models\Tasks\TaskAction;
 use App\Models\Tasks\TaskField;
 use App\Models\Users\User;
+use App\Models\Customers\Car as CustomerCar;
 use App\Models\Payments\SalesComm;
 use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
@@ -75,6 +76,7 @@ class SoldPolicyShow extends Component
 
     public $actions = [];
     public $fields = [];
+    public $endorsementCarId; //selected customer car to load endorsement titles from
     public $newTaskType = 'claim';
     public $newTaskDesc;
     public $newTaskDue;
@@ -1379,6 +1381,78 @@ class SoldPolicyShow extends Component
     public function toggleNewEndorsementSection()
     {
         $this->toggle($this->newEndorsementSection);
+        if ($this->newEndorsementSection) {
+            // Start fresh: show only one empty title and clear the rest
+            $this->actions = [['column_name' => '', 'value' => '']];
+            $this->endorsementCarId = null;
+            $this->resetValidation();
+        }
+    }
+
+    public function updatedEndorsementCarId($value)
+    {
+        if (!$value) return;
+
+        $car = CustomerCar::find($value);
+        if (!$car) return;
+
+        // Map the customer car's identity fields to endorsement titles (column names)
+        $this->mergeActionTitles([
+            'car_chassis'  => $car->car_chassis,
+            'car_engine'   => $car->car_engine,
+            'car_plate_no' => $car->car_plate_no,
+        ]);
+    }
+
+    public function loadTitlesFromSoldPolicy()
+    {
+        // Map the sold policy's own car identity fields to endorsement titles
+        $this->mergeActionTitles([
+            'car_chassis'  => $this->soldPolicy->car_chassis,
+            'car_engine'   => $this->soldPolicy->car_engine,
+            'car_plate_no' => $this->soldPolicy->car_plate_no,
+        ]);
+    }
+
+    /**
+     * Merge a map of column_name => value into $this->actions:
+     * update the title if already present, reuse a blank row if available,
+     * otherwise append. Empty values are skipped.
+     */
+    private function mergeActionTitles(array $titles)
+    {
+        foreach ($titles as $column => $val) {
+            if (is_null($val) || $val === '') continue;
+
+            // Update the existing action if this title is already present
+            $existingIndex = null;
+            foreach ($this->actions as $i => $action) {
+                if (($action['column_name'] ?? null) === $column) {
+                    $existingIndex = $i;
+                    break;
+                }
+            }
+            if ($existingIndex !== null) {
+                $this->actions[$existingIndex]['value'] = (string) $val;
+                continue;
+            }
+
+            // Otherwise reuse a blank row if available, else append a new one
+            $blankIndex = null;
+            foreach ($this->actions as $i => $action) {
+                if (empty($action['column_name']) && empty($action['value'])) {
+                    $blankIndex = $i;
+                    break;
+                }
+            }
+            if ($blankIndex !== null) {
+                $this->actions[$blankIndex] = ['column_name' => $column, 'value' => (string) $val];
+            } else {
+                $this->actions[] = ['column_name' => $column, 'value' => (string) $val];
+            }
+        }
+
+        $this->actions = array_values($this->actions);
     }
 
     public function closeNewEndorsementSection()
@@ -1859,7 +1933,12 @@ class SoldPolicyShow extends Component
         $linkedCommProfiles = CommProfile::all();
         $salesOuts = CommProfile::salesOut()->get();
 
+        $endorsementCars = ($this->soldPolicy->client_type === 'customer')
+            ? $this->soldPolicy->client?->cars()->with('car.car_model.brand')->get() ?? collect()
+            : collect();
+
         return view('livewire.sold-policy-show', [
+            'endorsementCars' => $endorsementCars,
             'BENEFITS' => $BENEFITS,
             'PAYMENT_FREQS' => $PAYMENT_FREQS,
             'COLUMNS' => $COLUMNS,

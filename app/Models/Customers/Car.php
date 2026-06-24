@@ -29,6 +29,9 @@ class Car extends Model
     protected $table = 'customer_cars';
     protected $fillable = [
         "car_id",
+        "car_chassis",
+        "car_engine",
+        "car_plate_no",
         "sum_insured",
         "model_year",
         "insurance_payment",
@@ -40,11 +43,14 @@ class Car extends Model
 
 
     //model functions
-    public function editInfo($car_id, $model_year = null, $sum_insured = null, $insurance_payment = null, $payment_frequency = null,  $insurance_company_id = null, Carbon $renewal_date = null, $wise_insured = null)
+    public function editInfo($car_id, $model_year = null, $sum_insured = null, $insurance_payment = null, $payment_frequency = null,  $insurance_company_id = null, Carbon $renewal_date = null, $wise_insured = null, $car_chassis = null, $car_engine = null, $car_plate_no = null)
     {
         try {
             $this->update([
                 "car_id"        =>  $car_id,
+                "car_chassis"   =>  $car_chassis,
+                "car_engine"    =>  $car_engine,
+                "car_plate_no"  =>  $car_plate_no,
                 "model_year"    =>  $model_year,
                 "sum_insured"   =>  $sum_insured,
                 "insurance_payment"    =>  $insurance_payment,

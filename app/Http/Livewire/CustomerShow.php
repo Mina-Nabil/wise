@@ -77,6 +77,9 @@ class CustomerShow extends Component
     public $editedCarId = null;
     public $renewalDate;
     public $wiseInsured = false;
+    public $carChassis;
+    public $carEngine;
+    public $carPlateNo;
     public $insuranceCompanyId;
 
     //add Address
@@ -823,6 +826,9 @@ class CustomerShow extends Component
         $this->carBrand = $c->car->car_model->brand->id;
         $this->carModel =  $c->car->car_model->id;
         $this->CarCategory =  $c->car->id;
+        $this->carChassis = $c->car_chassis;
+        $this->carEngine = $c->car_engine;
+        $this->carPlateNo = $c->car_plate_no;
         $this->sumInsurance  =  $c->sum_insured;
         $this->modelYear = $c->model_year;
         $this->insurancePayment  =  $c->insurance_payment;
@@ -840,6 +846,9 @@ class CustomerShow extends Component
         $this->validate([
             'CarCategory' => 'required|integer|exists:cars,id',
             'modelYear' => 'required|integer',
+            'carChassis' => 'nullable|string|max:255',
+            'carEngine' => 'nullable|string|max:255',
+            'carPlateNo' => 'nullable|string|max:255',
             'sumInsurance' => 'nullable|integer',
             'insurancePayment' => 'nullable|integer',
             'paymentFreqs' => 'nullable|in:' . implode(',', CustomerCar::PAYMENT_FREQS),
@@ -860,7 +869,10 @@ class CustomerShow extends Component
             $this->paymentFreqs,
             $this->insuranceCompanyId,
             $renewalDate,
-            $this->wiseInsured
+            $this->wiseInsured,
+            $this->carChassis,
+            $this->carEngine,
+            $this->carPlateNo
         );
         if ($c) {
             $this->alert('success', 'Car Edited sucessfuly!');
@@ -878,6 +890,9 @@ class CustomerShow extends Component
             $this->insuranceCompanyId = null;
             $this->renewalDate = null;
             $this->wiseInsured = null;
+            $this->carChassis = null;
+            $this->carEngine = null;
+            $this->carPlateNo = null;
             $this->mount($this->customer->id);
         } else {
             $this->alert('failed', 'server error');
@@ -900,6 +915,9 @@ class CustomerShow extends Component
         $this->insuranceCompanyId = null;
         $this->renewalDate = null;
         $this->wiseInsured = null;
+        $this->carChassis = null;
+        $this->carEngine = null;
+        $this->carPlateNo = null;
     }
 
     public function dismissDeletePhone()
@@ -1043,6 +1061,9 @@ class CustomerShow extends Component
         $this->validate([
             'CarCategory' => 'required|integer|exists:cars,id',
             'modelYear' => 'required|integer',
+            'carChassis' => 'nullable|string|max:255',
+            'carEngine' => 'nullable|string|max:255',
+            'carPlateNo' => 'nullable|string|max:255',
             'sumInsurance' => 'nullable|integer',
             'insurancePayment' => 'nullable|integer',
             'paymentFreqs' => 'nullable|in:' . implode(',', CustomerCar::PAYMENT_FREQS),
@@ -1062,7 +1083,10 @@ class CustomerShow extends Component
             $this->paymentFreqs,
             $this->insuranceCompanyId,
             $renewalDate,
-            $this->wiseInsured
+            $this->wiseInsured,
+            $this->carChassis,
+            $this->carEngine,
+            $this->carPlateNo
         );
         if ($c) {
             $this->alert('success', 'Car added sucessfuly!');
@@ -1074,6 +1098,9 @@ class CustomerShow extends Component
             $this->insuranceCompanyId = null;
             $this->renewalDate = null;
             $this->wiseInsured = null;
+            $this->carChassis = null;
+            $this->carEngine = null;
+            $this->carPlateNo = null;
             $this->toggleAddCar();
             $this->mount($this->customer->id);
         } else {

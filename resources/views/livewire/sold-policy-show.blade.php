@@ -2387,6 +2387,40 @@
 
 
 
+                        @if ($endorsementCars->isNotEmpty())
+                            <div class="p-6 py-1">
+                                <div class="input-area">
+                                    <label class="form-label">Load titles from customer car</label>
+                                    <select class="form-control w-full mt-2" wire:model="endorsementCarId">
+                                        <option value="">Select a car...</option>
+                                        @foreach ($endorsementCars as $car)
+                                            <option value="{{ $car->id }}">
+                                                {{ $car->car?->car_model?->brand?->name }}
+                                                {{ $car->car?->car_model?->name }} {{ $car->car?->category }}
+                                                @if ($car->car_plate_no)
+                                                    · {{ $car->car_plate_no }}
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <span class="font-Inter text-xs text-slate-500 pt-1 inline-block">Selecting a car
+                                        fills its chassis, engine and plate number as titles below.</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($soldPolicy->car_chassis || $soldPolicy->car_engine || $soldPolicy->car_plate_no)
+                            <div class="p-6 py-1">
+                                <button wire:click="loadTitlesFromSoldPolicy" type="button"
+                                    class="btn btn-sm inline-flex justify-center btn-outline-dark">
+                                    <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="ph:car-bold"></iconify-icon>
+                                    Load car info from this sold policy
+                                </button>
+                                <span class="font-Inter text-xs text-slate-500 pt-1 block">Fills chassis, engine and
+                                    plate number from this policy's saved car info.</span>
+                            </div>
+                        @endif
+
                         <div class="p-6 py-1">
                             <p class="text-lg"><b>Enter Actions</b></p>
                         </div>
