@@ -8,12 +8,19 @@ use App\Models\Payments\CommProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class OfferController extends Controller
 {
     public function index()
     {
         return view('offers.index');
+    }
+
+    public function bulkAssign()
+    {
+        abort_unless(Auth::user()?->is_admin, 403);
+        return view('offers.bulk-assign');
     }
 
     public function commissionsIndex()

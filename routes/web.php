@@ -88,6 +88,7 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/followups', [CustomerController::class, 'followupsIndex'])->name('followups.index');
 
     Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
+    Route::get('/offers/bulk-assign', [OfferController::class, 'bulkAssign'])->name('offers.bulk-assign');
     Route::get('/offers/{id}', [OfferController::class, 'show'])->name('offers.show');
     Route::get('/commissions', [OfferController::class, 'commissionsIndex'])->name('comm.profile.index');
     Route::get('/commissions/{id}', [OfferController::class, 'commissionsShow'])->name('comm.profile.show');

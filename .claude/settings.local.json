@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/mina/Documents/BackEnd/wise/**)",
+      "Bash(ls routes *)",
+      "Bash(ls src/app)",
+      "Bash(ls app *)",
+      "Bash(php -l app/Http/Livewire/OfferBulkAssign.php)",
+      "Bash(php -l app/Http/Controllers/OfferController.php)",
+      "Bash(php artisan *)"
+    ]
+  }
+}

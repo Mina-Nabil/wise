@@ -12,6 +12,13 @@
                 <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:plus-bold"></iconify-icon>
                 Create Offer
             </button>
+            @if (auth()->user()?->is_admin)
+                <a href="{{ route('offers.bulk-assign') }}"
+                    class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:users-three-bold"></iconify-icon>
+                    Bulk Assign
+                </a>
+            @endif
         </div>
     </div>
 
