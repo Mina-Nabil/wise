@@ -444,10 +444,15 @@ class Offer extends Model
         try {
             $prof = CommProfile::findOrFail($profile_id);
             $this->comm_profiles()->attach($profile_id);
-            if ($prof->auto_override_id) $this->comm_profiles()->attach($prof->auto_override_id);
+            $addedTitles = [$prof->title];
+            if ($prof->auto_override_id) {
+                $this->comm_profiles()->attach($prof->auto_override_id);
+                $override = CommProfile::find($prof->auto_override_id);
+                if ($override) $addedTitles[] = $override->title;
+            }
             if ($this->selected_option_id)
                 $this->generateSalesCommissions();
-            $this->addComment("Added commission profiles", false);
+            $this->addComment("Added commission profile: " . implode(', ', $addedTitles), false);
             return true;
         } catch (Exception $e) {
             report($e);
@@ -463,10 +468,11 @@ class Offer extends Model
         if (!$loggedInUser->can('updateCommission', $this)) return false;
 
         try {
+            $prof = CommProfile::find($profile_id);
             $this->comm_profiles()->detach([$profile_id]);
             if ($this->selected_option_id)
                 $this->generateSalesCommissions();
-            $this->addComment("Removed commission profiles", false);
+            $this->addComment("Removed commission profile: " . ($prof?->title ?? "#$profile_id"), false);
             return true;
         } catch (Exception $e) {
             report($e);
