@@ -205,9 +205,20 @@ class CommProfile extends Model
         return false;
     }
 
-    public function editProfile($type, $per_policy, $title = null, $desc = null, $select_available = false, $auto_override_id = null, $available_for_id = null, $account_id = null)
+    public function editProfile($type, $per_policy, $title = null, $desc = null, $select_available = false, $auto_override_id = null, $available_for_id = null, $account_id = null, $user_id = null)
     {
         try {
+            $originalUserId = $this->user_id;
+            $this->user_id = $user_id;
+
+            // When the linked user changes, keep the auto-generated title convention in sync
+            if ($user_id && $user_id != $originalUserId) {
+                $linkedUser = User::find($user_id);
+                if ($linkedUser) {
+                    $title = "{$linkedUser->username}'s {$type}";
+                }
+            }
+
             if ($this->user_id && !$title) {
                 $title = $this->title;
             }

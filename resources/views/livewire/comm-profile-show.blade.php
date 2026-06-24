@@ -3112,18 +3112,24 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="input-area mt-3">
-                                        <label for="updatedUserId" class="form-label">User</label>
-                                        <select name="updatedUserId" id="updatedUserId" class="form-control w-full mt-2 @error('updatedUserId') !border-danger-500 @enderror" wire:model="updatedUserId">
-                                            <option value="">None</option>
-                                            @foreach ($users as $user)
-                                                <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                <div class="input-area mt-3">
+                                    <label for="updatedUserId" class="form-label">Linked User</label>
+                                    <select name="updatedUserId" id="updatedUserId"
+                                        class="form-control w-full mt-2 @error('updatedUserId') !border-danger-500 @enderror"
+                                        wire:model="updatedUserId">
+                                        <option value="">None</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->first_name }}
+                                                {{ $user->last_name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="font-Inter text-xs text-slate-500 pt-1 inline-block">Changing the
+                                        linked user will regenerate the title automatically.</span>
                                     @error('updatedUserId')
-                                        <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                    @enderror --}}
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
 
                                 <div class="input-area mt-3">
                                     <label for="updatedTitle" class="form-label">Title</label>

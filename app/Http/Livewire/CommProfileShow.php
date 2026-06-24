@@ -1133,6 +1133,7 @@ class CommProfileShow extends Component
         $this->updatedPerPolicy = $this->profile->per_policy;
         $this->updatedAvailableForId = $this->profile->updatedAvailableForId;
         $this->updatedAutomaticOverrideId = $this->profile->auto_override_id;
+        $this->updatedUserId = $this->profile->user_id;
         $this->updatedTitle = $this->profile->title;
         $this->updatedDesc = $this->profile->desc;
         $this->updatedSelectAvailable = $this->profile->select_available;
@@ -1153,7 +1154,8 @@ class CommProfileShow extends Component
 
     public function updateComm()
     {
-        if ($this->profile->user) {
+        // A title is required only when the profile is not linked to a user
+        if ($this->updatedUserId) {
             $this->validate([
                 'updatedTitle' => 'nullable|string|max:255',
             ]);
@@ -1166,6 +1168,7 @@ class CommProfileShow extends Component
             'updatedType' => 'required|in:' . implode(',', CommProfile::TYPES),
             'updatedAutomaticOverrideId' => 'nullable|exists:comm_profiles,id',
             'updatedAvailableForId' => 'nullable|exists:users,id',
+            'updatedUserId' => 'nullable|exists:users,id',
             'updatedPerPolicy' => 'boolean',
             'updatedSelectAvailable' => 'boolean',
             'updatedDesc' => 'nullable|string',
@@ -1180,11 +1183,13 @@ class CommProfileShow extends Component
             $this->updatedSelectAvailable,
             $this->updatedAutomaticOverrideId,
             $this->updatedAvailableForId,
-            $this->updatedAccountId
+            $this->updatedAccountId,
+            $this->updatedUserId
         );
 
         if ($res) {
             $this->updatedCommSec = false;
+            $this->mount($this->profile->id);
             $this->alert('success', 'Commission updated');
         } else {
             $this->alert('failed', 'server error!');

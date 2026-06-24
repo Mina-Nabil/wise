@@ -10,7 +10,9 @@
       "Bash(php artisan *)",
       "Bash(php -l app/Http/Livewire/SoldPolicyBulkShow.php)",
       "Bash(php -l app/Http/Controllers/PoliciesController.php)",
-      "Bash(php -l app/Models/Offers/Offer.php)"
+      "Bash(php -l app/Models/Offers/Offer.php)",
+      "Bash(php -l app/Models/Payments/CommProfile.php)",
+      "Bash(php -l app/Http/Livewire/CommProfileShow.php)"
     ]
   }
 }
