@@ -8,6 +8,7 @@ use Livewire\WithPagination;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use App\Models\Insurance\Policy;
+use App\Models\Insurance\Company;
 use App\Models\Payments\CommProfile;
 use App\Models\Users\User;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,60 @@ class OfferReport extends Component
     public $commProfilesSection;
     public $Eprofiles = [];
     public $profiles = [];
+
+    public $selectedPolicySection = false;
+    public $selected_policy_id;
+    public $Eselected_policy_id;
+
+    public $selectedCompanySection = false;
+    public $selected_company_id;
+    public $Eselected_company_id;
+
+    public $sortDueDir = 'asc';
+
+    public function sortByDue()
+    {
+        $this->sortDueDir = $this->sortDueDir === 'asc' ? 'desc' : 'asc';
+        $this->resetPage();
+    }
+
+    public function toggleSelectedPolicy()
+    {
+        $this->toggle($this->selectedPolicySection);
+        if ($this->selectedPolicySection) {
+            $this->Eselected_policy_id = $this->selected_policy_id;
+        }
+    }
+
+    public function setSelectedPolicy()
+    {
+        $this->selected_policy_id = $this->Eselected_policy_id;
+        $this->toggle($this->selectedPolicySection);
+    }
+
+    public function clearSelectedPolicy()
+    {
+        $this->selected_policy_id = null;
+    }
+
+    public function toggleSelectedCompany()
+    {
+        $this->toggle($this->selectedCompanySection);
+        if ($this->selectedCompanySection) {
+            $this->Eselected_company_id = $this->selected_company_id;
+        }
+    }
+
+    public function setSelectedCompany()
+    {
+        $this->selected_company_id = $this->Eselected_company_id;
+        $this->toggle($this->selectedCompanySection);
+    }
+
+    public function clearSelectedCompany()
+    {
+        $this->selected_company_id = null;
+    }
 
     public function toggleProfiles()
     {
@@ -313,10 +368,12 @@ class OfferReport extends Component
                 $this->value_to,
                 $this->search,
                 $this->is_renewal,
-                $this->profiles,
+                collect($this->profiles)->map(fn($profile) => json_decode($profile, true)['id'])->all(),
                 $this->expiryFrom,
                 $this->expiryTo,
                 $this->sub_status,
+                $this->selected_policy_id,
+                $this->selected_company_id,
             );
         }
     }
@@ -334,6 +391,8 @@ class OfferReport extends Component
         $LINES_OF_BUSINESS = Policy::LINES_OF_BUSINESS;
         $SUB_STATUSES = Offer::SUB_STATUSES;
         $COMM_PROFILES = CommProfile::select('title', 'id')->get();
+        $POLICIES = Policy::with('company')->orderBy('name')->get();
+        $COMPANIES = Company::orderBy('name')->get();
 
         if ($this->assignee_id) {
             $c = User::find($this->assignee_id);
@@ -375,8 +434,10 @@ class OfferReport extends Component
             $this->expiryFrom,
             $this->expiryTo,
             $this->sub_status,
-        )->paginate(30);
-        
+            $this->selected_policy_id,
+            $this->selected_company_id,
+        )->orderBy('offers.due', $this->sortDueDir === 'desc' ? 'desc' : 'asc')->paginate(30);
+
         return view('livewire.offer-report', [
             'offers' => $offers,
             'STATUSES' => $STATUSES,
@@ -385,7 +446,8 @@ class OfferReport extends Component
             'users' => $users,
             'types' => User::TYPES,
             'COMM_PROFILES' => $COMM_PROFILES,
-            'SUB_STATUSES' => $SUB_STATUSES
+            'POLICIES' => $POLICIES,
+            'COMPANIES' => $COMPANIES,
         ]);
     }
 }

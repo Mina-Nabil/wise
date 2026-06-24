@@ -82,6 +82,20 @@
                             Line of business</span>
                     </li>
 
+                    <li wire:click="toggleSelectedPolicy">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Selected option policy</span>
+                    </li>
+
+                    <li wire:click="toggleSelectedCompany">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                    dark:hover:text-white cursor-pointer">
+                            Selected option company</span>
+                    </li>
+
                     <li wire:click="toggleValues">
                         <span
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
@@ -146,6 +160,30 @@
                         &nbsp;&nbsp;
                     </span>
                     <span wire:click="clearLob">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($selected_policy_id)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleSelectedPolicy">
+                        Selected Policy: {{ $POLICIES->firstWhere('id', $selected_policy_id)?->name ?? $selected_policy_id }}
+                        &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearSelectedPolicy">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            @endif
+
+            @if ($selected_company_id)
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleSelectedCompany">
+                        Selected Company: {{ $COMPANIES->firstWhere('id', $selected_company_id)?->name ?? $selected_company_id }}
+                        &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearSelectedCompany">
                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
                     </span>
                 </button>
@@ -323,11 +361,17 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
-                                        Assignee
+                                        Selected Option
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Assignee
+                                    </th>
+
+                                    <th scope="col" class=" table-th cursor-pointer select-none" wire:click="sortByDue">
                                         Due
+                                        <iconify-icon
+                                            icon="{{ $sortDueDir === 'asc' ? 'heroicons:bars-arrow-up' : 'heroicons:bars-arrow-down' }}"></iconify-icon>
                                     </th>
 
                                     <th scope="col" class=" table-th ">
@@ -422,6 +466,21 @@
                                                     ? number_format($offer->selected_option?->net_premium, 0, '.', ',')
                                                     : 'N/A' }}
                                             </b>
+                                        </td>
+
+                                        <td class="table-td ">
+                                            @if ($offer->selected_option?->policy)
+                                                <div class="flex-1 text-start">
+                                                    <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                        {{ $offer->selected_option->policy->name }}
+                                                    </h4>
+                                                    <div class="text-xs font-normal text-slate-600 dark:text-slate-400">
+                                                        {{ $offer->selected_option->policy->company?->name }}
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <span class="text-xs text-slate-500">N/A</span>
+                                            @endif
                                         </td>
 
                                         <td class="table-td ">
@@ -1173,6 +1232,116 @@
                                 <span wire:loading.remove wire:target="setValues">Submit</span>
                                 <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
                                     wire:loading wire:target="setValues"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- selectedPolicySection --}}
+    @if ($selectedPolicySection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Selected Option Policy
+                            </h3>
+                            <button wire:click="toggleSelectedPolicy" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eselected_policy_id" class="form-label">Policy</label>
+                                <select name="Eselected_policy_id" id="Eselected_policy_id"
+                                    class="form-control w-full mt-2" wire:model.defer="Eselected_policy_id">
+                                    <option value="">Any</option>
+                                    @foreach ($POLICIES as $POLICY)
+                                        <option value="{{ $POLICY->id }}">
+                                            {{ $POLICY->name }} ({{ $POLICY->company?->name }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setSelectedPolicy" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setSelectedPolicy">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="setSelectedPolicy"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- selectedCompanySection --}}
+    @if ($selectedCompanySection)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+            style="display: block;">
+            <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                Selected Option Company
+                            </h3>
+                            <button wire:click="toggleSelectedCompany" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                data-bs-dismiss="modal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                    11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="from-group">
+                                <label for="Eselected_company_id" class="form-label">Company</label>
+                                <select name="Eselected_company_id" id="Eselected_company_id"
+                                    class="form-control w-full mt-2" wire:model.defer="Eselected_company_id">
+                                    <option value="">Any</option>
+                                    @foreach ($COMPANIES as $COMPANY)
+                                        <option value="{{ $COMPANY->id }}">{{ $COMPANY->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="setSelectedCompany" data-bs-dismiss="modal"
+                                class="btn inline-flex justify-center text-white bg-black-500">
+                                <span wire:loading.remove wire:target="setSelectedCompany">Submit</span>
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="setSelectedCompany"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                             </button>
                         </div>
