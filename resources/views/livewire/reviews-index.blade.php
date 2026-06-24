@@ -160,10 +160,10 @@
                 </button>
             @endif
 
-            @if ($need_manager_review)
+            @if (!is_null($need_manager_review))
                 <button class="btn inline-flex justify-center btn-warning btn-sm">
                     <span wire:click="toggleNeedManagerReview">
-                        Need Manager Review: Yes &nbsp;&nbsp;
+                        Need Manager Review: {{ $need_manager_review ? 'Yes' : 'No' }} &nbsp;&nbsp;
                     </span>
                     <span wire:click="clearNeedManagerReview">
                         <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>

@@ -479,7 +479,9 @@ class Review extends Model
     public function scopeByNoAnswer($query, $noAnswer)
     {
         if ($noAnswer !== null) {
-            $query->where('reviews.no_answer', $noAnswer ? 1 : 0);
+            // no_answer is a multi-value tinyint (0=no answer, 1=answered, 2=sent whatsapp,
+            // 3=wrong number, 4=callback) so it must be matched exactly, not cast to a boolean.
+            $query->where('reviews.no_answer', $noAnswer);
         }
         return $query;
     }

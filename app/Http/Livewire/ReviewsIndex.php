@@ -1018,6 +1018,14 @@ class ReviewsIndex extends Component
 
     public function render()
     {
+        // A review can only "need manager review" once it has been reviewed, so an explicit
+        // is_reviewed=false would contradict that filter and always return nothing. Drop the
+        // contradictory review-status constraint when filtering for reviews needing manager review.
+        $reviewStatusFilter = $this->is_reviewed;
+        if ($this->need_manager_review && $reviewStatusFilter === false) {
+            $reviewStatusFilter = null;
+        }
+
         $reviews = Review::with([
             'assignee',
             'reviewedBy'
@@ -1049,7 +1057,7 @@ class ReviewsIndex extends Component
             })
             ->when($this->reviewable_type, fn($q) => $q->byReviewableType($this->reviewable_type))
             ->createdBetween($this->created_from, $this->created_to)
-            ->byReviewStatus($this->is_reviewed)
+            ->byReviewStatus($reviewStatusFilter)
             ->reviewedBetween($this->reviewed_from, $this->reviewed_to)
             ->employeeRatingBetween($this->employee_rating_from, $this->employee_rating_to)
             ->policyConditionsRatingBetween($this->policy_conditions_rating_from, $this->policy_conditions_rating_to)
