@@ -29,6 +29,9 @@ class OfferBulkAssign extends Component
     public $selectedOffers = [];
     public $assignTo; //selected user id
 
+    //errors from the latest bulk assign call
+    public $lastErrors = [];
+
     protected $queryString = [
         'startDate' => ['except' => ''],
         'endDate' => ['except' => ''],
@@ -70,6 +73,11 @@ class OfferBulkAssign extends Component
         $this->selectedOffers = [];
     }
 
+    public function clearLastErrors()
+    {
+        $this->lastErrors = [];
+    }
+
     public function removeSelectedOffer($id)
     {
         $this->selectedOffers = array_values(array_filter($this->selectedOffers, fn ($v) => (int) $v !== (int) $id));
@@ -95,6 +103,7 @@ class OfferBulkAssign extends Component
         ]);
 
         $offers = Offer::whereIn('id', $this->selectedOffers)->get();
+        $assignee = User::find($this->assignTo);
 
         $success = 0;
         $failures = [];
@@ -103,15 +112,26 @@ class OfferBulkAssign extends Component
             if ($res === true) {
                 $success++;
             } else {
-                $failures[] = '#' . $offer->id . (is_string($res) ? " ($res)" : '');
+                $failures[] = [
+                    'offer_id' => $offer->id,
+                    'reason' => is_string($res) ? $res : 'Server error',
+                ];
             }
         }
+
+        $this->lastErrors = [
+            'at' => now()->format('Y-m-d H:i'),
+            'assignee' => $assignee ? trim($assignee->first_name . ' ' . $assignee->last_name) : null,
+            'total' => $offers->count(),
+            'success' => $success,
+            'failures' => $failures,
+        ];
 
         if ($success) {
             $this->alert('success', "$success offer(s) assigned successfully");
         }
         if (count($failures)) {
-            $this->alert('warning', 'Could not assign: ' . implode(', ', $failures));
+            $this->alert('warning', count($failures) . ' offer(s) could not be assigned');
         }
 
         $this->selectedOffers = [];

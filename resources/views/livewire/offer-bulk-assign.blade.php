@@ -51,6 +51,37 @@
         </div>
     </div>
 
+    {{-- Latest bulk assign errors card --}}
+    @if (!empty($lastErrors) && count($lastErrors['failures'] ?? []))
+        <div class="card mb-5 border border-danger-500">
+            <header class="card-header noborder">
+                <h4 class="card-title text-danger-500">
+                    <iconify-icon icon="heroicons:exclamation-triangle" class="mr-1"></iconify-icon>
+                    Latest Bulk Assign Errors
+                    <span class="badge bg-danger-500 text-white ml-2">{{ count($lastErrors['failures']) }}</span>
+                </h4>
+                <button wire:click="clearLastErrors" class="btn btn-sm btn-outline-danger">Dismiss</button>
+            </header>
+            <div class="card-body px-6 pb-6">
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">
+                    {{ $lastErrors['at'] }} —
+                    assigning to <b>{{ $lastErrors['assignee'] ?? 'N/A' }}</b>:
+                    {{ $lastErrors['success'] }} of {{ $lastErrors['total'] }} succeeded,
+                    {{ count($lastErrors['failures']) }} failed.
+                </p>
+                <div class="flex flex-col gap-2">
+                    @foreach ($lastErrors['failures'] as $failure)
+                        <div
+                            class="flex items-center bg-danger-500 bg-opacity-10 rounded-md px-3 py-2 text-sm text-slate-700 dark:text-slate-200">
+                            <b class="mr-2 whitespace-nowrap">Offer #{{ $failure['offer_id'] }}</b>
+                            <span class="text-danger-500">{{ $failure['reason'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Selected Offers card --}}
     <div class="card mb-5">
         <header class="card-header noborder">
