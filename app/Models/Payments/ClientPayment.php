@@ -82,12 +82,14 @@ class ClientPayment extends Model
         'closed_by_id',
         'assigned_to',
         'sales_out_id',
-        'collected_date'
+        'collected_date',
+        'is_checked'
     ];
 
 
     protected $casts = [
         'collected_date' => 'datetime',
+        'is_checked' => 'boolean',
         // 'payment_date' => 'datetime',
     ];
 
@@ -559,6 +561,28 @@ class ClientPayment extends Model
             $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
         }
         return $query->where('sold_policies.policy_number', "LIKE", "%$searchText%");
+    }
+
+    public function setChecked(bool $checked): bool
+    {
+        try {
+            $this->is_checked = $checked;
+            $this->save();
+            AppLog::info($checked ? 'Client payment checked' : 'Client payment unchecked', loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't update client payment check", $e->getMessage(), $this);
+            return false;
+        }
+    }
+
+    public function scopeByMainSales(Builder $query, $sales_id)
+    {
+        if (!Helpers::joined($query, 'sold_policies')) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        return $query->where('sold_policies.main_sales_id', '=', $sales_id);
     }
 
     public function scopeByCompany(Builder $query, $company_id)

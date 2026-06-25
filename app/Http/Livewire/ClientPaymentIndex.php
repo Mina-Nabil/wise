@@ -4,6 +4,8 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
+use App\Models\Insurance\Company;
+use App\Models\Users\User;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 
@@ -19,13 +21,60 @@ class ClientPaymentIndex extends Component
     public $endDate;
     public $types = [];
     public $section = 'all';
-    
+
+    // new filters
+    public $checkedFilter = 'all'; // all | checked | unchecked
+    public $companyFilter;
+    public $salesFilter;
+    public $dueRange;
+    public $dueStart;
+    public $dueEnd;
+
+    // sorting by collected date
+    public $sortCollectedDir = 'desc';
 
     protected $queryString = [
         'section',
         'startDate' => ['except' => ''],
         'endDate' => ['except' => ''],
     ];
+
+    public function sortByCollected()
+    {
+        $this->sortCollectedDir = $this->sortCollectedDir === 'asc' ? 'desc' : 'asc';
+        $this->resetPage();
+    }
+
+    public function toggleChecked($id)
+    {
+        $payment = ClientPayment::find($id);
+        if ($payment) {
+            $payment->setChecked(!$payment->is_checked);
+        }
+    }
+
+    public function updatedCheckedFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedCompanyFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSalesFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedDueRange()
+    {
+        if (strpos($this->dueRange, 'to') !== false) {
+            [$this->dueStart, $this->dueEnd] = explode(' to ', $this->dueRange);
+            $this->resetPage();
+        }
+    }
 
     public function getTypeIcon($type)
     {
@@ -92,16 +141,32 @@ class ClientPaymentIndex extends Component
                 $endDate = $this->endDate ? Carbon::parse($this->endDate) : null;
                 return $query->soldPolicyByDateRange($startDate, $endDate);
             })
-            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'assigned');
+            ->when($this->dueStart && $this->dueEnd, function ($query) {
+                $query->whereBetween('client_payments.due', [
+                    Carbon::parse($this->dueStart)->format('Y-m-d 00:00:00'),
+                    Carbon::parse($this->dueEnd)->format('Y-m-d 23:59:59'),
+                ]);
+            })
+            ->when($this->checkedFilter === 'checked', fn($q) => $q->where('client_payments.is_checked', true))
+            ->when($this->checkedFilter === 'unchecked', fn($q) => $q->where('client_payments.is_checked', false))
+            ->when($this->companyFilter, fn($q) => $q->byCompany($this->companyFilter))
+            ->when($this->salesFilter, fn($q) => $q->byMainSales($this->salesFilter))
+            ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'sold_policy.policy.company', 'sold_policy.main_sales', 'assigned')
+            ->orderBy('client_payments.collected_date', $this->sortCollectedDir === 'asc' ? 'asc' : 'desc');
 
         $totalPayments = $paymentsQuery->clone()->get()->sum('amount');
         $payments = $paymentsQuery->paginate(50);
+
+        $companies = Company::orderBy('name')->get();
+        $salesUsers = User::active()->orderBy('first_name')->get();
 
         return view('livewire.client-payment-index', [
             'statuses' => $statuses,
             'PYMT_TYPES' => $PYMT_TYPES,
             'payments' => $payments,
-            'totalPayments' => $totalPayments
+            'totalPayments' => $totalPayments,
+            'companies' => $companies,
+            'salesUsers' => $salesUsers,
         ]);
     }
 }

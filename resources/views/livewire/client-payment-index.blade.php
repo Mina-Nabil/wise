@@ -84,9 +84,33 @@
         <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text"
             wire:model="searchText" placeholder="Search by policy number">
 
-        <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px"
+        <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:240px"
             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
-            wire:model="dateRange">
+            wire:model="dateRange" placeholder="Policy start range">
+
+        <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:240px"
+            id="due-range-picker" data-mode="range" value="" type="text" readonly="readonly"
+            wire:model="dueRange" placeholder="Due range">
+
+        <select class="form-control py-2 w-auto ml-5" style="width:200px" wire:model="companyFilter">
+            <option value="">All Companies</option>
+            @foreach ($companies as $company)
+                <option value="{{ $company->id }}">{{ $company->name }}</option>
+            @endforeach
+        </select>
+
+        <select class="form-control py-2 w-auto ml-5" style="width:200px" wire:model="salesFilter">
+            <option value="">All Sales</option>
+            @foreach ($salesUsers as $salesUser)
+                <option value="{{ $salesUser->id }}">{{ $salesUser->first_name }} {{ $salesUser->last_name }}</option>
+            @endforeach
+        </select>
+
+        <select class="form-control py-2 w-auto ml-5" style="width:160px" wire:model="checkedFilter">
+            <option value="all">All ✅/❌</option>
+            <option value="checked">Checked ✅</option>
+            <option value="unchecked">Not Checked</option>
+        </select>
 
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
             <label
@@ -106,9 +130,9 @@
 
     <div class="card-body px-6 pb-6">
         <div class=" -mx-6">
-            <div class="inline-block min-w-full align-middle">
-                <div class="overflow-hidden ">
-                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+            <div class="block min-w-full align-middle">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
                         <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                             <tr>
 
@@ -122,6 +146,14 @@
 
                                 <th scope="col" class=" table-th ">
                                     Client
+                                </th>
+
+                                <th scope="col" class=" table-th ">
+                                    Insurance Company
+                                </th>
+
+                                <th scope="col" class=" table-th ">
+                                    Sales
                                 </th>
 
                                 <th scope="col" class=" table-th ">
@@ -153,8 +185,14 @@
                                     Closed by
                                 </th>
 
-                                <th scope="col" class=" table-th ">
+                                <th scope="col" class=" table-th cursor-pointer select-none" wire:click="sortByCollected">
                                     Collected
+                                    <iconify-icon
+                                        icon="{{ $sortCollectedDir === 'asc' ? 'heroicons:bars-arrow-up' : 'heroicons:bars-arrow-down' }}"></iconify-icon>
+                                </th>
+
+                                <th scope="col" class=" table-th ">
+                                    ✅
                                 </th>
 
                             </tr>
@@ -178,6 +216,19 @@
                                     </td>
                                     <td class="table-td">
                                         {{ $payment->sold_policy->client?->full_name }}
+                                    </td>
+
+                                    <td class="table-td">
+                                        {{ $payment->sold_policy->policy?->company?->name ?? '-' }}
+                                    </td>
+
+                                    <td class="table-td">
+                                        @if ($payment->sold_policy->main_sales)
+                                            {{ $payment->sold_policy->main_sales->first_name }}
+                                            {{ $payment->sold_policy->main_sales->last_name }}
+                                        @else
+                                            -
+                                        @endif
                                     </td>
 
                                     <td class="table-td">
@@ -239,6 +290,12 @@
 
                                     <td class="table-td">
                                         {{ $payment->collected_date ? \Carbon\Carbon::parse($payment->collected_date)->format('D d/m/Y') : 'Not set.' }}
+                                    </td>
+
+                                    <td class="table-td">
+                                        <input type="checkbox" class="cursor-pointer w-4 h-4"
+                                            wire:click="toggleChecked({{ $payment->id }})"
+                                            @checked($payment->is_checked)>
                                     </td>
 
                                 </tr>
