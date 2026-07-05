@@ -71,7 +71,14 @@ class SoldPolicyReport extends Component
     public $is_welcomed;
     public $is_penalized;
     public $is_cancelled;
+    public $is_reviewed;
     public $has_offer;
+
+    public $discountSection = false;
+    public $discount_from;
+    public $discount_to;
+    public $Ediscount_from;
+    public $Ediscount_to;
     public $cancel_time_from;
     public $cancel_time_to;
     public $bank_payment_time_from;
@@ -298,6 +305,11 @@ class SoldPolicyReport extends Component
         $this->is_cancelled = null;
     }
 
+    public function clearreviewed()
+    {
+        $this->is_reviewed = null;
+    }
+
     public function clearpenalized()
     {
         $this->is_penalized = null;
@@ -326,6 +338,11 @@ class SoldPolicyReport extends Component
     public function toggleCancelled()
     {
         $this->toggle($this->is_cancelled);
+    }
+
+    public function toggleReviewed()
+    {
+        $this->toggle($this->is_reviewed);
     }
 
     public function togglePenalized()
@@ -479,6 +496,28 @@ class SoldPolicyReport extends Component
     {
         $this->value_from = null;
         $this->value_to = null;
+    }
+
+    public function toggleDiscount()
+    {
+        $this->toggle($this->discountSection);
+        if ($this->discountSection) {
+            $this->Ediscount_from = $this->discount_from;
+            $this->Ediscount_to = $this->discount_to;
+        }
+    }
+
+    public function setDiscount()
+    {
+        $this->discount_from = $this->Ediscount_from;
+        $this->discount_to = $this->Ediscount_to;
+        $this->toggle($this->discountSection);
+    }
+
+    public function clearDiscount()
+    {
+        $this->discount_from = null;
+        $this->discount_to = null;
     }
 
     public function toggleLob()
@@ -692,7 +731,10 @@ class SoldPolicyReport extends Component
                 $this->cancel_time_to,
                 $this->bank_payment_time_from,
                 $this->bank_payment_time_to,
-                $this->has_offer
+                $this->has_offer,
+                $this->is_reviewed,
+                $this->discount_from,
+                $this->discount_to
             );
         }
     }
@@ -838,7 +880,10 @@ class SoldPolicyReport extends Component
             $this->cancel_time_to,
             $this->bank_payment_time_from,
             $this->bank_payment_time_to,
-            $this->has_offer
+            $this->has_offer,
+            $this->is_reviewed,
+            $this->discount_from,
+            $this->discount_to
         )->paginate(15);
         
         return view('livewire.sold-policy-report', [

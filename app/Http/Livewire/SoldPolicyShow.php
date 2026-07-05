@@ -662,6 +662,8 @@ class SoldPolicyShow extends Component
 
     public function addClientPayment()
     {
+        $this->authorize('create', ClientPayment::class);
+
         $this->validate(
             [
                 'paymentType' => 'required|in:' . implode(',', ClientPayment::PYMT_TYPES),

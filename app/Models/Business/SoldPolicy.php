@@ -256,7 +256,8 @@ class SoldPolicy extends Model
 
                     if (!$this->is_manual_penalty) {
                         if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
-                            $this->penalty_amount = (($conf->penalty_percent / 100) * $tmp_base_value);
+                            // Penalty is a percentage of the gross premium, not of the (possibly net-based) commission value
+                            $this->penalty_amount = (($conf->penalty_percent / 100) * $this->gross_premium);
                             $tmp_base_value = $tmp_base_value - $this->penalty_amount;
                             $this->is_penalized = true;
                             $this->save();
@@ -1165,11 +1166,34 @@ class SoldPolicy extends Model
                 $payment->setAsCancelled(Carbon::now(), true);
             });
             $this->client_payments()->notCollected()->delete();
-            $this->sales_comms()->notPaid()->get()->each(function ($comm) {
-                $comm->sold_policy_id = null;
-                $comm->save();
+
+            // "Wise payment" = the company's own commission from the insurer (company_comm_payments).
+            // If the company has been paid on this policy (at least one paid entry), any linked sales
+            // commission must be preserved (money already recognized/possibly paid out) and instead gets
+            // an offsetting negative entry. Same applies to any sales comm that was itself already paid
+            // out to the salesperson, regardless of the company's payment status. Only sales comms that
+            // are neither paid to the salesperson nor backed by a paid company payment can simply be
+            // cancelled outright, since no money has moved on either side yet.
+            $wisePaymentPaid = $this->company_comm_payments()->paid()->exists();
+            $this->sales_comms()->notCancelled()->get()->each(function ($comm) use ($wisePaymentPaid) {
+                if ($comm->is_paid || $wisePaymentPaid) {
+                    $this->sales_comms()->create([
+                        "title"             => "Cancellation Reversal",
+                        "from"              => $comm->from,
+                        "comm_percentage"   => 0,
+                        "amount"            => -1 * $comm->amount,
+                        "comm_profile_id"   => $comm->comm_profile_id,
+                        "user_id"           => $comm->user_id,
+                        "is_direct"         => $comm->is_direct,
+                        "note"              => "Reversal for Sold Policy #{$this->id} cancellation",
+                    ]);
+                    AppLog::info("Sales commission reversed", desc: "Added minus commission for comm#{$comm->id} after policy cancellation", loggable: $this);
+                    $comm->comm_profile?->refreshBalances();
+                } else {
+                    $comm->setAsCancelled(Carbon::now(), true);
+                }
             });
-            $this->sales_comms()->notPaid()->delete();
+            $this->calculateTotalSalesComm();
 
             $this->company_comm_payments()->notPaid()->get()->each(function ($comm) {
                 $comm->setAsCancelled(Carbon::now(), true);
@@ -1488,9 +1512,9 @@ class SoldPolicy extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
-    public static function exportReport(?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?array $line_of_business_ids = [], ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancel_time_from = null, ?Carbon $cancel_time_to = null, ?Carbon $bank_payment_time_from = null, ?Carbon $bank_payment_time_to = null, ?bool $has_offer = null)
+    public static function exportReport(?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?array $creator_ids = [], ?array $line_of_business_ids = [], ?float $value_from = null, ?float $value_to = null, ?float $net_premium_to = null, ?float $net_premium_from = null, ?array $brand_ids = null, ?array $company_ids = null,  ?array $policy_ids = null, ?bool $is_valid = null, ?bool $is_paid = null, ?string $searchText = null, ?bool $is_renewal = null, ?int $main_sales_id = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?array $comm_profile_ids = [], ?bool $is_welcomed = null, ?bool $is_penalized = null, ?bool $is_cancelled = null, ?Carbon $paid_from = null, ?Carbon $paid_to = null, ?Carbon $cancel_time_from = null, ?Carbon $cancel_time_to = null, ?Carbon $bank_payment_time_from = null, ?Carbon $bank_payment_time_to = null, ?bool $has_offer = null, ?bool $is_reviewed = null, ?float $discount_from = null, ?float $discount_to = null)
     {
-        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business_ids, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, $is_cancelled, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to, $bank_payment_time_from, $bank_payment_time_to, $has_offer)->get();
+        $policies = self::report($start_from, $start_to, $expiry_from, $expiry_to, $creator_ids, $line_of_business_ids, $value_from, $value_to, $net_premium_to, $net_premium_from, $brand_ids,  $company_ids,   $policy_ids, $is_valid, $is_paid, $searchText, $is_renewal, $main_sales_id, $issued_from, $issued_to, $comm_profile_ids, $is_welcomed, $is_penalized, $is_cancelled, $paid_from, $paid_to, $cancel_time_from, $cancel_time_to, $bank_payment_time_from, $bank_payment_time_to, $has_offer, $is_reviewed, $discount_from, $discount_to)->get();
 
         $template = IOFactory::load(resource_path('import/sold_policies_report.xlsx'));
         if (!$template) {
@@ -2138,7 +2162,10 @@ class SoldPolicy extends Model
         ?Carbon $cancel_time_to = null,
         ?Carbon $bank_payment_time_from = null,
         ?Carbon $bank_payment_time_to = null,
-        ?bool $has_offer = null
+        ?bool $has_offer = null,
+        ?bool $is_reviewed = null,
+        ?float $discount_from = null,
+        ?float $discount_to = null
     ) {
         $query->userData($searchText)
             ->when($start_from, function ($q, $v) {
@@ -2187,6 +2214,12 @@ class SoldPolicy extends Model
             })->when($is_cancelled !== null, function ($q) use ($is_cancelled) {
                 if ($is_cancelled) $q->whereNotNull('cancellation_time');
                 else $q->whereNull('cancellation_time');
+            })->when($is_reviewed !== null, function ($q) use ($is_reviewed) {
+                $q->where('sold_policies.is_reviewed', "=", $is_reviewed);
+            })->when($discount_from, function ($q, $v) {
+                $q->where('sold_policies.discount', ">=", $v);
+            })->when($discount_to, function ($q, $v) {
+                $q->where('sold_policies.discount', "<=", $v);
             })->when($is_welcomed !== null, function ($q, $v) use ($is_welcomed) {
                 if (!Helpers::joined($q, 'customers')) {
                     $q->join('customers', function ($qq) {

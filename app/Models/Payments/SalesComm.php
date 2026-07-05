@@ -307,9 +307,11 @@ class SalesComm extends Model
             /** @var User */
             $user = Auth::user();
             if (!$user->can('update', $this)) return false;
-        }
 
-        if (!$this->is_new) return false;
+            // Only forced/system cancellations (skip_check) may cancel comms that are
+            // already confirmed; normal user-triggered cancellation stays new-only.
+            if (!$this->is_new) return false;
+        }
         try {
             $date = $date ?? new Carbon();
 
@@ -345,7 +347,9 @@ class SalesComm extends Model
     public function delete()
     {
         $this->load('offer');
-        if ($this->offer->is_approved) $this->setAsCancelled();
+        // Target/manual/direct commissions (e.g. added via SoldPolicy::addSalesCommission) have no
+        // linked offer at all, so there's no approval risk in hard-deleting them.
+        if ($this->offer?->is_approved) $this->setAsCancelled();
         else {
             return parent::delete();
         }

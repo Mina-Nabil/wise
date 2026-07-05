@@ -315,19 +315,32 @@ class CommProfilePayment extends Model
         $activeSheet = $newFile->getSheet(0);
 
         $i = 3;
+        $accumulatedAmount = 0;
         foreach ($comms as $c) {
-            $activeSheet->getCell('A' . $i)->setValue($c->sold_policy->policy_number);
-            $activeSheet->getCell('B' . $i)->setValue($c->sold_policy?->created_at ?
-                Carbon::parse($c->sold_policy?->created_at)->format('D d/m/Y') :
-                'Not set.');
-            $activeSheet->getCell('C' . $i)->setValue($c->sold_policy?->policy?->company?->name . '-' . $c->sold_policy?->policy?->name);
-            $activeSheet->getCell('D' . $i)->setValue($c->sold_policy->client?->full_name);
-            $activeSheet->getCell('E' . $i)->setValue(number_format($c->pivot->amount));
-            $activeSheet->getCell('F' . $i)->setValue(number_format($c->comm_percentage, 2));
-            $activeSheet->getCell('G' . $i)->setValue(number_format($c->sold_policy->sales_out_comm));
-            $activeSheet->getCell('H' . $i)->setValue(number_format($c->sold_policy->insured_value));
+            $accumulatedAmount += $c->pivot->amount;
 
+            // Insert the row before writing to it (rather than after) so rows land in
+            // natural top-to-bottom order while still inheriting the bordered row style.
             $activeSheet->insertNewRowBefore($i);
+
+            $activeSheet->getCell('A' . $i)->setValue($c->sold_policy->policy_number);
+            $activeSheet->getCell('B' . $i)->setValue($c->sold_policy?->policy?->company?->name . '-' . $c->sold_policy?->policy?->name);
+            $activeSheet->getCell('C' . $i)->setValue($c->sold_policy->client?->full_name);
+            $activeSheet->getCell('D' . $i)->setValue(number_format($c->pivot->amount));
+            $activeSheet->getCell('E' . $i)->setValue(number_format($c->comm_percentage, 2));
+            $activeSheet->getCell('F' . $i)->setValue(number_format($c->sold_policy->insured_value));
+            $activeSheet->getCell('G' . $i)->setValue(number_format($c->sold_policy->net_premium));
+            $activeSheet->getCell('H' . $i)->setValue(number_format($c->sold_policy->gross_premium));
+            $activeSheet->getCell('I' . $i)->setValue($c->sold_policy?->client_payment_date ?
+                Carbon::parse($c->sold_policy->client_payment_date)->format('D d/m/Y') :
+                'Not set.');
+            $activeSheet->getCell('J' . $i)->setValue($c->sold_policy?->start ?
+                Carbon::parse($c->sold_policy->start)->format('D d/m/Y') :
+                'Not set.');
+            $activeSheet->getCell('K' . $i)->setValue(number_format($c->sold_policy->discount));
+            $activeSheet->getCell('L' . $i)->setValue(number_format($accumulatedAmount));
+
+            $i++;
         }
 
         $writer = new Xlsx($newFile);

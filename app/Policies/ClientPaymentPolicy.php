@@ -107,6 +107,6 @@ class ClientPaymentPolicy
      */
     public function delete(User $user, ClientPayment $clientPayment)
     {
-        return $user->is_admin || $user->is_any_finance || $user->id == 12;
+        return $user->is_admin;
     }
 }
