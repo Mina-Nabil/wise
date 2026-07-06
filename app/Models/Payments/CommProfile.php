@@ -207,6 +207,13 @@ class CommProfile extends Model
 
     public function editProfile($type, $per_policy, $title = null, $desc = null, $select_available = false, $auto_override_id = null, $available_for_id = null, $account_id = null, $user_id = null)
     {
+        // The blank "None" option on these selects binds as an empty string, not null;
+        // normalize so nullable foreign keys are actually set to NULL instead of ''.
+        $user_id = $user_id !== '' ? $user_id : null;
+        $auto_override_id = $auto_override_id !== '' ? $auto_override_id : null;
+        $available_for_id = $available_for_id !== '' ? $available_for_id : null;
+        $account_id = $account_id !== '' ? $account_id : null;
+
         try {
             $originalUserId = $this->user_id;
             $this->user_id = $user_id;
