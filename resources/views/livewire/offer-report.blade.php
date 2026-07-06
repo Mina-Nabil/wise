@@ -12,6 +12,14 @@
                     <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
                         wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
                 </button>
+                <a href="{{ route('offers.bulk-assign', ['selected' => $selectedOfferIds]) }}"
+                    class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:users-three-bold"></iconify-icon>
+                    Bulk Assign
+                    @if (count($selectedOfferIds))
+                        <span class="badge bg-primary-500 text-white ml-2">{{ count($selectedOfferIds) }}</span>
+                    @endif
+                </a>
             @endif
             <div class="dropdown relative ">
                 <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
@@ -328,6 +336,12 @@
                                 class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                                 <tr>
 
+                                    <th scope="col" class=" table-th " style="width: 40px;">
+                                        <input type="checkbox" class="cursor-pointer"
+                                            wire:click="toggleSelectAllOnPage"
+                                            @checked(count($currentPageOfferIds) > 0 && count(array_diff($currentPageOfferIds, $selectedOfferIds)) === 0)>
+                                    </th>
+
                                     <th scope="col" class=" table-th ">
                                         #
                                     </th>
@@ -393,6 +407,11 @@
                                 @foreach ($offers as $offer)
                                     <tr wire:click="redirectToShowPage({{ $offer->id }})"
                                         class="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+
+                                        <td class="table-td " wire:click.stop>
+                                            <input type="checkbox" class="cursor-pointer"
+                                                value="{{ $offer->id }}" wire:model="selectedOfferIds">
+                                        </td>
 
                                         <td class="table-td ">
                                             {{ $offer->id }}

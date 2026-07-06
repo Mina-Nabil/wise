@@ -122,6 +122,22 @@ class SoldPolicyReport extends Component
     public $Eprofiles = [];
     public $profiles = [];
 
+    // bulk-show selection
+    public $selectedPolicyIds = [];
+    public $currentPagePolicyIds = [];
+
+    public function toggleSelectAllOnPage()
+    {
+        $allSelected = count($this->currentPagePolicyIds) > 0
+            && count(array_diff($this->currentPagePolicyIds, $this->selectedPolicyIds)) === 0;
+
+        if ($allSelected) {
+            $this->selectedPolicyIds = array_values(array_diff($this->selectedPolicyIds, $this->currentPagePolicyIds));
+        } else {
+            $this->selectedPolicyIds = array_values(array_unique(array_merge($this->selectedPolicyIds, $this->currentPagePolicyIds)));
+        }
+    }
+
     public function selectChildrens()
     {
         $children = [];
@@ -885,7 +901,9 @@ class SoldPolicyReport extends Component
             $this->discount_from,
             $this->discount_to
         )->paginate(15);
-        
+
+        $this->currentPagePolicyIds = $policies->pluck('id')->all();
+
         return view('livewire.sold-policy-report', [
             'policies' => $policies,
             'users' => $users,

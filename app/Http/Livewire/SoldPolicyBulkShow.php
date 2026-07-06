@@ -41,6 +41,11 @@ class SoldPolicyBulkShow extends Component
         $this->startDate = null;
         $this->endDate = null;
         $this->dateRange = $this->startDate && $this->endDate ? $this->startDate . ' to ' . $this->endDate : 'N/A';
+
+        $preselected = request()->query('selected', []);
+        if (is_array($preselected)) {
+            $this->selectedPolicies = array_values(array_unique(array_map('intval', $preselected)));
+        }
     }
 
     public function updatingSearch()

@@ -79,6 +79,22 @@ class OfferReport extends Component
 
     public $sortDueDir = 'asc';
 
+    // bulk-assign selection
+    public $selectedOfferIds = [];
+    public $currentPageOfferIds = [];
+
+    public function toggleSelectAllOnPage()
+    {
+        $allSelected = count($this->currentPageOfferIds) > 0
+            && count(array_diff($this->currentPageOfferIds, $this->selectedOfferIds)) === 0;
+
+        if ($allSelected) {
+            $this->selectedOfferIds = array_values(array_diff($this->selectedOfferIds, $this->currentPageOfferIds));
+        } else {
+            $this->selectedOfferIds = array_values(array_unique(array_merge($this->selectedOfferIds, $this->currentPageOfferIds)));
+        }
+    }
+
     public function sortByDue()
     {
         $this->sortDueDir = $this->sortDueDir === 'asc' ? 'desc' : 'asc';
@@ -473,6 +489,8 @@ class OfferReport extends Component
             $this->selected_policy_id,
             $this->selected_company_id,
         )->reorder('offers.due', $this->sortDueDir === 'desc' ? 'desc' : 'asc')->paginate(30);
+
+        $this->currentPageOfferIds = $offers->pluck('id')->all();
 
         return view('livewire.offer-report', [
             'offers' => $offers,

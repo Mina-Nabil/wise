@@ -14,6 +14,14 @@
                         <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
                             wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
                     </button>
+                    <a href="{{ route('sold.policy.bulk-show', ['selected' => $selectedPolicyIds]) }}"
+                        class="btn inline-flex justify-center btn-outline-dark dark:bg-slate-700 dark:text-slate-300 m-1">
+                        <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="ph:eye-bold"></iconify-icon>
+                        Bulk Show
+                        @if (count($selectedPolicyIds))
+                            <span class="badge bg-primary-500 text-white ml-2">{{ count($selectedPolicyIds) }}</span>
+                        @endif
+                    </a>
                 @endif
                 @if ($issued_from && $issued_to)
                     @can('viewCommission', App\Models\Business\SoldPolicy::class)
@@ -641,6 +649,11 @@
                                                             class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 no-wrap">
                                                             <thead class="bg-slate-200 dark:bg-slate-700">
                                                                 <tr>
+                                                                    <th scope="col" class="table-th " style="width: 40px;">
+                                                                        <input type="checkbox" class="cursor-pointer"
+                                                                            wire:click="toggleSelectAllOnPage"
+                                                                            @checked(count($currentPagePolicyIds) > 0 && count(array_diff($currentPagePolicyIds, $selectedPolicyIds)) === 0)>
+                                                                    </th>
                                                                     @can('review',
                                                                         \App\Models\Business\SoldPolicy::class)
                                                                         <th scope="col" class="table-th ">
@@ -703,6 +716,11 @@
                                                                 @foreach ($policies as $policy)
                                                                     <tr
                                                                         class="even:bg-slate-50 dark:even:bg-slate-700">
+                                                                        <td class="table-td">
+                                                                            <input type="checkbox" class="cursor-pointer"
+                                                                                value="{{ $policy->id }}"
+                                                                                wire:model="selectedPolicyIds">
+                                                                        </td>
                                                                         @can('review', $policy)
                                                                             <td class="table-td">
                                                                                 <div class="flex flex-col gap-1">
