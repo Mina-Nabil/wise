@@ -53,18 +53,21 @@ class Task extends Model
     const CLAIM_SUB_PENDING_CHEQUE = 'pending_cheque_issuance';
     const CLAIM_SUB_SETTLED_WITH_RESERVATION = 'settled_with_reservation';
     const CLAIM_SUB_REJECTED_BY_INSURANCE = 'rejected_by_insurance_company';
+    const CLAIM_SUB_CLOSED_BY_CUSTOMER = 'closed_by_customer';
+    const CLAIM_SUB_CLOSED_BY_INSURANCE = 'closed_by_insurance_company';
 
     const CLAIM_SUB_STATUSES = [
         self::CLAIM_SUB_PENDING_DISCHARGE => 'Pending Discharge Form',
         self::CLAIM_SUB_PENDING_CHEQUE => 'Pending Cheque Issuance',
         self::CLAIM_SUB_SETTLED_WITH_RESERVATION => 'Settled (With Reservation)',
         self::CLAIM_SUB_REJECTED_BY_INSURANCE => 'Rejected by Insurance Company',
+        self::CLAIM_SUB_CLOSED_BY_CUSTOMER => 'Closed by Customer',
+        self::CLAIM_SUB_CLOSED_BY_INSURANCE => 'Closed by Insurance Company',
     ];
 
     // Claim-specific display labels for shared statuses (claims pages only)
     const CLAIM_STATUS_LABELS = [
         self::STATUS_COMPLETED => 'Settled',
-        self::STATUS_CLOSED => 'Closed by Customer',
     ];
 
     public function getClaimStatusLabelAttribute()

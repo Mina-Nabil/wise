@@ -263,7 +263,9 @@ class TaskShow extends Component
     {
         $this->validate([
             'newTitle' => 'required|in:' . implode(',', TaskField::TITLES),
-            'newValue' => 'required|string|max:255'
+            'newValue' => $this->newTitle === TaskField::TITLE_ACCIDENT_DESC
+                ? 'required|string|max:2000'
+                : 'required|string|max:255'
         ]);
 
         $res = Task::find($this->taskId)->addField($this->newTitle, $this->newValue);
@@ -337,11 +339,14 @@ class TaskShow extends Component
 
     public function editField()
     {
+        $field = TaskField::find($this->fieldId);
+
         $this->validate([
-            'editedFieldValue' => 'required|string|max:255'
+            'editedFieldValue' => $field->title === TaskField::TITLE_ACCIDENT_DESC
+                ? 'required|string|max:2000'
+                : 'required|string|max:255'
         ]);
 
-        $field = TaskField::find($this->fieldId);
         $res = $field->editInfo($field->title, $this->editedFieldValue);
 
         if ($res) {

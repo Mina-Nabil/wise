@@ -304,6 +304,8 @@ class CommProfilePayment extends Model
                 'sold_policy.client',
                 'sold_policy.policy',
                 'sold_policy.policy.company',
+                'sold_policy.offer',
+                'sold_policy.customer_car.car.car_model.brand',
             )
             ->get();
 
@@ -314,33 +316,54 @@ class CommProfilePayment extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getSheet(0);
 
-        $i = 3;
+        $i = 2;
         $accumulatedAmount = 0;
         foreach ($comms as $c) {
             $accumulatedAmount += $c->pivot->amount;
 
             // Insert the row before writing to it (rather than after) so rows land in
-            // natural top-to-bottom order while still inheriting the bordered row style.
+            // natural top-to-bottom order. insertNewRowBefore() does not reliably carry the
+            // bordered row style onto the fresh row, so it's applied explicitly below instead.
             $activeSheet->insertNewRowBefore($i);
+            $activeSheet->getStyle('A' . $i . ':P' . $i)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => ['argb' => 'FF000000'],
+                    ],
+                ],
+            ]);
 
-            $activeSheet->getCell('A' . $i)->setValue($c->sold_policy->policy_number);
-            $activeSheet->getCell('B' . $i)->setValue($c->sold_policy?->policy?->company?->name . '-' . $c->sold_policy?->policy?->name);
-            $activeSheet->getCell('C' . $i)->setValue($c->sold_policy->client?->full_name);
-            $activeSheet->getCell('D' . $i)->setValue(number_format($c->pivot->amount));
-            $activeSheet->getCell('E' . $i)->setValue(number_format($c->comm_percentage, 2));
-            $activeSheet->getCell('F' . $i)->setValue(number_format($c->sold_policy->insured_value));
-            $activeSheet->getCell('G' . $i)->setValue(number_format($c->sold_policy->net_premium));
-            $activeSheet->getCell('H' . $i)->setValue(number_format($c->sold_policy->gross_premium));
-            $activeSheet->getCell('I' . $i)->setValue($c->sold_policy?->client_payment_date ?
+            $activeSheet->getCell('A' . $i)->setValue($c->sold_policy?->offer?->is_renewal ? 'تجديد' : 'اصدار');
+            $activeSheet->getCell('B' . $i)->setValue($c->sold_policy->policy_number);
+            $activeSheet->getCell('C' . $i)->setValue($c->sold_policy?->policy?->company?->name . '-' . $c->sold_policy?->policy?->name);
+            $activeSheet->getCell('D' . $i)->setValue($c->sold_policy->client?->full_name);
+            $activeSheet->getCell('E' . $i)->setValue(number_format($c->pivot->amount));
+            $activeSheet->getCell('F' . $i)->setValue(number_format($c->comm_percentage, 2));
+            $activeSheet->getCell('G' . $i)->setValue(number_format($c->sold_policy->insured_value));
+            $activeSheet->getCell('H' . $i)->setValue(number_format($c->sold_policy->net_premium));
+            $activeSheet->getCell('I' . $i)->setValue(number_format($c->sold_policy->gross_premium));
+            $activeSheet->getCell('J' . $i)->setValue($c->sold_policy?->client_payment_date ?
                 Carbon::parse($c->sold_policy->client_payment_date)->format('D d/m/Y') :
                 'Not set.');
-            $activeSheet->getCell('J' . $i)->setValue($c->sold_policy?->start ?
+            $activeSheet->getCell('K' . $i)->setValue($c->sold_policy?->start ?
                 Carbon::parse($c->sold_policy->start)->format('D d/m/Y') :
                 'Not set.');
-            $activeSheet->getCell('K' . $i)->setValue(number_format($c->sold_policy->discount));
-            $activeSheet->getCell('L' . $i)->setValue(number_format($accumulatedAmount));
+            $activeSheet->getCell('L' . $i)->setValue(number_format($c->sold_policy->discount));
+            $activeSheet->getCell('M' . $i)->setValue(number_format($c->sold_policy->sales_out_comm));
+            $activeSheet->getCell('N' . $i)->setValue(number_format($accumulatedAmount));
+            $activeSheet->getCell('O' . $i)->setValue($c->sold_policy?->customer_car?->car?->car_model?->brand?->name);
+            $activeSheet->getCell('P' . $i)->setValue($c->status);
 
             $i++;
+        }
+
+        // Totals row: labels the accumulate row and sums the Comm. Discount column.
+        if ($comms->isNotEmpty()) {
+            $firstDataRow = 2;
+            $lastDataRow = $i - 1;
+            $activeSheet->getCell('E' . $i)->setValue('Accumulate');
+            $activeSheet->getCell('L' . $i)->setValue("=SUM(L{$firstDataRow}:L{$lastDataRow})");
         }
 
         $writer = new Xlsx($newFile);

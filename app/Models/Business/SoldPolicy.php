@@ -212,11 +212,13 @@ class SoldPolicy extends Model
         if (!$loggedInUser->can('updatePenalty', $this)) return false;
         try {
             if ($is_manual_penalty) {
-                return $this->update([
+                $this->update([
                     'is_manual_penalty' => $is_manual_penalty,
                     'is_penalized' => $is_penalized,
                     'penalty_amount' => $penalty_amount,
                 ]);
+                $this->generatePolicyCommissions();
+                return true;
             } else {
                 $this->update([
                     'is_manual_penalty' => false,
@@ -256,8 +258,7 @@ class SoldPolicy extends Model
 
                     if (!$this->is_manual_penalty) {
                         if ($conf->due_penalty && $dueDays > $conf->due_penalty) {
-                            // Penalty is a percentage of the gross premium, not of the (possibly net-based) commission value
-                            $this->penalty_amount = (($conf->penalty_percent / 100) * $this->gross_premium);
+                            $this->penalty_amount = (($conf->penalty_percent / 100) * $tmp_base_value);
                             $tmp_base_value = $tmp_base_value - $this->penalty_amount;
                             $this->is_penalized = true;
                             $this->save();
@@ -275,6 +276,13 @@ class SoldPolicy extends Model
                     $total_comm += $tmp_base_value;
                 }
                 $total_comm = $this->comms_details()->sum('amount');
+
+                // A manual penalty isn't tied to a specific commission config, so it isn't subtracted
+                // per-conf above like the automatic penalty is - deduct it from the total here instead.
+                if ($this->is_manual_penalty && $this->penalty_amount > 0) {
+                    $total_comm = max(0, $total_comm - $this->penalty_amount);
+                }
+
                 $clientPaidPercent = $this->client_payments()->whereIn('status', [ClientPayment::PYMT_STATE_PAID, ClientPayment::PYMT_STATE_PREM_COLLECTED])->sum('amount') / $this->gross_premium;
                 $this->total_policy_comm = $total_comm * $clientPaidPercent;
                 $this->after_tax_comm = $this->total_policy_comm * (1 - Invoice::TAX_RATE);

@@ -48,6 +48,12 @@ class SalesCommissionsReport extends Component
     public $Eclient_payment_date_from;
     public $Eclient_payment_date_to;
 
+    public $collectionDateSection = false;
+    public $collection_date_from;
+    public $collection_date_to;
+    public $Ecollection_date_from;
+    public $Ecollection_date_to;
+
     public $selectedCommissions = [];
 
     protected $paginationTheme = 'bootstrap';
@@ -187,6 +193,30 @@ class SalesCommissionsReport extends Component
         $this->Eclient_payment_date_to = null;
     }
 
+    public function toggleCollectionDates(): void
+    {
+        $this->toggle($this->collectionDateSection);
+        if ($this->collectionDateSection) {
+            $this->Ecollection_date_from = $this->collection_date_from ? Carbon::parse($this->collection_date_from)->toDateString() : null;
+            $this->Ecollection_date_to = $this->collection_date_to ? Carbon::parse($this->collection_date_to)->toDateString() : null;
+        }
+    }
+
+    public function setCollectionDates(): void
+    {
+        $this->collection_date_from = $this->Ecollection_date_from ? Carbon::parse($this->Ecollection_date_from) : null;
+        $this->collection_date_to = $this->Ecollection_date_to ? Carbon::parse($this->Ecollection_date_to) : null;
+        $this->toggleCollectionDates();
+    }
+
+    public function clearCollectionDates(): void
+    {
+        $this->collection_date_from = null;
+        $this->collection_date_to = null;
+        $this->Ecollection_date_from = null;
+        $this->Ecollection_date_to = null;
+    }
+
     public function exportReport()
     {
         return SalesComm::exportReport(
@@ -197,7 +227,9 @@ class SalesCommissionsReport extends Component
             $this->asCarbon($this->payment_date_to),
             $this->statuses,
             $this->asCarbon($this->client_payment_date_from),
-            $this->asCarbon($this->client_payment_date_to)
+            $this->asCarbon($this->client_payment_date_to),
+            $this->asCarbon($this->collection_date_from),
+            $this->asCarbon($this->collection_date_to)
         );
     }
 
@@ -243,7 +275,9 @@ class SalesCommissionsReport extends Component
             $this->asCarbon($this->payment_date_to),
             $this->statuses,
             $this->asCarbon($this->client_payment_date_from),
-            $this->asCarbon($this->client_payment_date_to)
+            $this->asCarbon($this->client_payment_date_to),
+            $this->asCarbon($this->collection_date_from),
+            $this->asCarbon($this->collection_date_to)
         );
         $totalCommissions = $commissionsQuery->clone()->get()->sum('amount');
         $commissions = $commissionsQuery->paginate(50);

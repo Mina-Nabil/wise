@@ -20,6 +20,7 @@ class CorporateMerge extends Component
     public $ownerOptions = [];   // [['id' => .., 'name' => ..], ..]
     public $confirmingMerge = false;
     public $errorMessage = '';   // shown inline so failures are never silent
+    public $confirmingDeleteId = null; // id of the candidate awaiting delete confirmation
 
     public function mount($ids = null)
     {
@@ -85,6 +86,50 @@ class CorporateMerge extends Component
     public function cancelMerge()
     {
         $this->confirmingMerge = false;
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->errorMessage = '';
+        $this->confirmingDeleteId = (string) $id;
+    }
+
+    public function cancelDelete()
+    {
+        $this->confirmingDeleteId = null;
+    }
+
+    public function deleteCandidate($id)
+    {
+        $this->errorMessage = '';
+
+        $candidate = Corporate::find($id);
+        if (!$candidate) {
+            $this->fail('Profile not found.');
+            return;
+        }
+        $this->authorize('delete', $candidate);
+
+        try {
+            $candidate->delete();
+        } catch (\Throwable $e) {
+            report($e);
+            AppLog::error('Corporate delete failed', desc: $e->getMessage(), loggable: $candidate);
+            $this->fail('Delete failed: ' . $e->getMessage());
+            return;
+        }
+
+        $this->confirmingDeleteId = null;
+        $this->candidateIds = array_values(array_diff($this->candidateIds, [(int) $id]));
+        $this->selectedIds = array_values(array_filter($this->selectedIds, fn ($v) => (string) $v !== (string) $id));
+        if ((string) $this->survivorId === (string) $id) {
+            $this->survivorId = '';
+        }
+        $this->alert('success', 'Profile deleted.');
+
+        if (count($this->candidateIds) < 2) {
+            return redirect()->route('reports.corporate-duplicates');
+        }
     }
 
     public function merge()

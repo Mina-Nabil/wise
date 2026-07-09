@@ -61,12 +61,35 @@
                             {{ $candidate->addresses_count }} • <b>Contacts:</b> {{ $candidate->contacts_count }}</li>
                     </ul>
 
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="survivor" value="{{ $cid }}"
-                            wire:click="setSurvivor('{{ $cid }}')" @checked((string) $survivorId === $cid)
-                            class="form-radio h-4 w-4">
-                        <span class="ml-2 text-sm font-medium">Keep this profile (master)</span>
-                    </label>
+                    <div class="flex items-center justify-between">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="survivor" value="{{ $cid }}"
+                                wire:click="setSurvivor('{{ $cid }}')" @checked((string) $survivorId === $cid)
+                                class="form-radio h-4 w-4">
+                            <span class="ml-2 text-sm font-medium">Keep this profile (master)</span>
+                        </label>
+                        <button wire:click="confirmDelete('{{ $cid }}')"
+                            class="btn btn-sm inline-flex items-center btn-outline-danger">
+                            <iconify-icon icon="mdi:trash-can-outline" class="mr-1"></iconify-icon> Delete
+                        </button>
+                    </div>
+
+                    @if ($confirmingDeleteId === $cid)
+                        <div class="mt-3 p-3 rounded-md border border-danger-500 bg-danger-500 bg-opacity-10">
+                            <p class="text-sm text-danger-500 mb-2">
+                                Permanently delete this profile? This cannot be undone.
+                            </p>
+                            <div class="flex justify-end space-x-2 rtl:space-x-reverse">
+                                <button wire:click="cancelDelete" class="btn btn-sm btn-outline-dark">
+                                    Cancel
+                                </button>
+                                <button wire:click="deleteCandidate('{{ $cid }}')" wire:loading.attr="disabled"
+                                    class="btn btn-sm bg-danger-500 text-white">
+                                    Yes, delete
+                                </button>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endforeach

@@ -22,6 +22,7 @@ class ClaimIndex extends Component
     public $startDate;
     public $endDate;
     public $filteredStatus;
+    public $filteredSubStatus;
     public $searchText;
     public $myTasks;
     public $watcherTasks;
@@ -42,6 +43,12 @@ class ClaimIndex extends Component
     public function filterByStatus($status)
     {
         $this->filteredStatus = [$status];
+    }
+
+    public function filterBySubStatus($subStatus = null)
+    {
+        $this->filteredSubStatus = $subStatus ?: null;
+        $this->resetPage();
     }
 
     public function mount($filters)
@@ -105,6 +112,9 @@ class ClaimIndex extends Component
             ->when($this->filteredStatus == null, function ($query) {
                 return $query->byStates(['active']);
             })
+            ->when($this->filteredSubStatus, function ($query) {
+                return $query->where('tasks.sub_status', $this->filteredSubStatus);
+            })
             ->claims()
             ->paginate(10);
 
@@ -113,6 +123,8 @@ class ClaimIndex extends Component
             'tasks' => $tasks,
             'statuses' => $statuses,
             'filteredStatus' => $this->filteredStatus,
+            'filteredSubStatus' => $this->filteredSubStatus,
+            'subStatuses' => Task::CLAIM_SUB_STATUSES,
             'users' => $users,
             'user_types' => $user_types,
         ]);

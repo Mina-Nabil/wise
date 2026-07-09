@@ -175,6 +175,28 @@
                         </ul>
                     </li>
 
+                    @php $myCommProfiles = Auth::user()?->comm_profiles ?? collect(); @endphp
+                    @if ($myCommProfiles->isNotEmpty())
+                        <li class="">
+                            <a href="javascript:void(0)" class="navItem">
+                                <span class="flex items-center">
+                                    <iconify-icon class=" nav-icon" icon="flowbite:sale-percent-outline"></iconify-icon>
+                                    <span>Comm Profiles</span>
+                                </span>
+                                <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
+                            </a>
+                            <ul class="sidebar-submenu">
+                                @foreach ($myCommProfiles as $myCommProfile)
+                                    <li>
+                                        <a href="{{ route('comm.profile.show', $myCommProfile->id) }}">
+                                            {{ str_replace('_', ' ', $myCommProfile->title) }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endif
+
 
                     <!-- Apps Area -->
                     <li class="sidebar-menu-title">CRM</li>

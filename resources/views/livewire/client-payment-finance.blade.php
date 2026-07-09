@@ -64,6 +64,12 @@
             <ul
                 class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
 
+                <li wire:click="filterByCompany(null)">
+                    <a href="#"
+                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        All
+                    </a>
+                </li>
                 @foreach ($companies as $company)
                     <li wire:click="filterByCompany('{{ $company->id }}')">
                         <a href="#"
@@ -76,6 +82,96 @@
 
 
 
+        </div>
+
+        <div class="dropdown relative ml-2">
+            <button class="btn inline-flex justify-center btn-dark items-center" type="button"
+                id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                @if ($selectedPolicy)
+                    Policy: {{ $selectedPolicy->name }}
+                @else
+                    Select Policy
+                @endif
+
+                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+            </button>
+            <ul
+                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                <li wire:click="filterByPolicy(null)">
+                    <a href="#"
+                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        All
+                    </a>
+                </li>
+                @foreach ($policies as $policy)
+                    <li wire:click="filterByPolicy('{{ $policy->id }}')">
+                        <a href="#"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                            {{ $policy->name }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
+        <div class="dropdown relative ml-2">
+            <button class="btn inline-flex justify-center btn-dark items-center" type="button"
+                id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                @if ($selectedMainSales)
+                    Main Sales: {{ $selectedMainSales->first_name }} {{ $selectedMainSales->last_name }}
+                @else
+                    Select Main Sales
+                @endif
+
+                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+            </button>
+            <ul
+                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                <li wire:click="filterByMainSales(null)">
+                    <a href="#"
+                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        All
+                    </a>
+                </li>
+                @foreach ($mainSalesUsers as $salesUser)
+                    <li wire:click="filterByMainSales('{{ $salesUser->id }}')">
+                        <a href="#"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                            {{ $salesUser->first_name }} {{ $salesUser->last_name }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
+        <div class="dropdown relative ml-2">
+            <button class="btn inline-flex justify-center btn-dark items-center" type="button"
+                id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                @if ($selectedCommProfile)
+                    Comm Profile: {{ $selectedCommProfile->title }}
+                @else
+                    Select Comm Profile
+                @endif
+
+                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+            </button>
+            <ul
+                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                <li wire:click="filterByCommProfile(null)">
+                    <a href="#"
+                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        All
+                    </a>
+                </li>
+                @foreach ($commProfiles as $profile)
+                    <li wire:click="filterByCommProfile('{{ $profile->id }}')">
+                        <a href="#"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                            {{ $profile->title }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
         </div>
 
         <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model="searchText"
@@ -115,9 +211,9 @@
 
     <div class="card-body px-6 pb-6">
         <div class=" -mx-6">
-            <div class="inline-block min-w-full align-middle">
-                <div class="overflow-hidden ">
-                    <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 no-wrap">
+            <div class="block min-w-full align-middle">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700 no-wrap">
                         <thead class=" border-t border-slate-100 dark:border-slate-800 bg-slate-200 dark:bg-slate-700">
                             <tr>
 
@@ -126,7 +222,19 @@
                                 </th>
 
                                 <th scope="col" class=" table-th ">
+                                    Policy
+                                </th>
+
+                                <th scope="col" class=" table-th ">
                                     Client
+                                </th>
+
+                                <th scope="col" class=" table-th ">
+                                    Main Sales
+                                </th>
+
+                                <th scope="col" class=" table-th ">
+                                    Comm Profiles
                                 </th>
 
                                 <th scope="col" class=" table-th cursor-pointer">
@@ -206,7 +314,24 @@
                                     </td>
 
                                     <td class="table-td">
+                                        {{ $payment->sold_policy->policy?->name }}
+                                    </td>
+
+                                    <td class="table-td">
                                         {{ $payment->sold_policy->client?->name }}
+                                    </td>
+
+                                    <td class="table-td">
+                                        @if ($payment->sold_policy->main_sales)
+                                            {{ $payment->sold_policy->main_sales->first_name }}
+                                            {{ $payment->sold_policy->main_sales->last_name }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+
+                                    <td class="table-td">
+                                        {{ $payment->sold_policy->sales_comms->pluck('comm_profile.title')->filter()->implode(', ') ?: '-' }}
                                     </td>
 
                                     <td class="table-td">

@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CommProfile extends Model
@@ -113,7 +112,12 @@ class CommProfile extends Model
     public function downloadAccountStatement(Carbon $start, Carbon $end)
     {
         $comms = $this->sales_comm()->bySoldPoliciesStartEnd($start, $end)
-            ->with('sold_policy', 'sold_policy.client', 'sold_policy.customer_car.car.car_model.brand')
+            ->with(
+                'sold_policy',
+                'sold_policy.client',
+                'sold_policy.customer_car.car.car_model.brand',
+                'sold_policy.sales_comms.comm_profile'
+            )
             ->notCancelled()
             // ->notPaid()
             ->notPolicyCancelled()
@@ -126,51 +130,65 @@ class CommProfile extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
 
-        $i = 3;
-
-        $activeSheet->getCell('N1')->setValue('Policy');
-        $activeSheet->getCell('O1')->setValue('Total Policy Comm');
-        $activeSheet->getCell('P1')->setValue('After Tax Comm');
-        $activeSheet->getCell('Q1')->setValue('Sales Out Comm');
-        $activeSheet->getCell('R1')->setValue('Total Comm Subtractions After Penalty');
-
-        // Apply consistent header styling: black background with white text
-        $headerStyle = [
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['argb' => 'FF000000'], // Black background
-            ],
-            'font' => [
-                'color' => ['argb' => 'FFFFFFFF'], // White text
-            ],
-        ];
-        $activeSheet->getStyle('A1:R1')->applyFromArray($headerStyle);
-
+        $i = 2;
         foreach ($comms as $comm) {
             $clientPayment = $comm->sold_policy->client_payments->first();
-            $activeSheet->getCell('A' . $i)->setValue($comm->sold_policy->offer?->is_renewal ? 'تجديد' : 'اصدار');
-            $activeSheet->getCell('B' . $i)->setValue($comm->sold_policy->policy_number);
-            $activeSheet->getCell('C' . $i)->setValue($comm->sold_policy->client?->full_name);
-            $activeSheet->getCell('D' . $i)->setValue($clientPayment?->type  . ' / ' .  $clientPayment?->status);
+            $salesOutNames = $comm->sold_policy->sales_comms
+                ->filter(fn ($sc) => $sc->comm_profile?->is_sales_out)
+                ->pluck('comm_profile.title')
+                ->filter()
+                ->unique()
+                ->implode(', ');
 
-            $activeSheet->getCell('E' . $i)->setValue((new Carbon($comm->sold_policy->start))->format('d-M-y'));
-            $activeSheet->getCell('F' . $i)->setValue($comm->sold_policy->net_premium);
-            $activeSheet->getCell('G' . $i)->setValue($comm->sold_policy->gross_premium);
-            $activeSheet->getCell('H' . $i)->setValue($comm->amount);
-            $activeSheet->getCell('I' . $i)->setValue($this->is_sales_out ?
-                ($comm->sold_policy->offer?->is_renewal ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN)) : '-');
-            $activeSheet->getCell('J' . $i)->setValue($comm->sold_policy->insured_value);
-            $activeSheet->getCell('L' . $i)->setValue($comm->sold_policy->customer_car?->car?->car_model?->brand?->name . ' - ' . $comm->sold_policy->customer_car?->car?->car_model?->name);
-            $activeSheet->getCell('M' . $i)->setValue($comm->status);
-            $activeSheet->getCell('N' . $i)->setValue($comm->sold_policy->policy->company->name . ' - ' . $comm->sold_policy->policy->name);
-            $activeSheet->getCell('N' . $i)->setValue($comm->sold_policy->total_policy_comm);
-            $activeSheet->getCell('O' . $i)->setValue($comm->sold_policy->total_policy_comm * .95);
-            $activeSheet->getCell('P' . $i)->setValue($comm->sold_policy->sales_out_comm);
-            $activeSheet->getCell('Q' . $i)->setValue($comm->sold_policy->total_policy_comm - $comm->sold_policy->total_comm_subtractions_after_penalty);
-
+            // Insert the row before writing to it (rather than after) so rows land in
+            // natural top-to-bottom order. insertNewRowBefore() does not reliably carry the
+            // bordered row style onto the fresh row, so it's applied explicitly below instead.
             $activeSheet->insertNewRowBefore($i);
+            $activeSheet->getStyle('A' . $i . ':W' . $i)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => ['argb' => 'FF000000'],
+                    ],
+                ],
+            ]);
+
+            $activeSheet->getCell('A' . $i)->setValue($comm->sold_policy->offer?->is_renewal ? 'تجديد' : 'اصدار');
+            $activeSheet->getCell('B' . $i)->setValue($comm->sold_policy->policy?->name);
+            $activeSheet->getCell('C' . $i)->setValue($comm->sold_policy->policy_number);
+            $activeSheet->getCell('D' . $i)->setValue($comm->sold_policy->client?->full_name);
+            $activeSheet->getCell('E' . $i)->setValue($clientPayment?->type  . ' / ' .  $clientPayment?->status);
+            $activeSheet->getCell('F' . $i)->setValue((new Carbon($comm->sold_policy->start))->format('d-M-y'));
+            $activeSheet->getCell('G' . $i)->setValue($comm->sold_policy->net_premium);
+            $activeSheet->getCell('H' . $i)->setValue($comm->sold_policy->gross_premium);
+            $activeSheet->getCell('I' . $i)->setValue($comm->amount);
+            $activeSheet->getCell('J' . $i)->setValue($this->is_sales_out ?
+                ($comm->sold_policy->offer?->is_renewal ? 'تجديد' :  round($comm->sold_policy->insured_value * 0.0005, 3, PHP_ROUND_HALF_DOWN)) : '-');
+            $activeSheet->getCell('K' . $i)->setValue($comm->sold_policy->insured_value);
+            $activeSheet->getCell('M' . $i)->setValue($comm->sold_policy->customer_car?->car?->car_model?->brand?->name . ' - ' . $comm->sold_policy->customer_car?->car?->car_model?->name);
+            $activeSheet->getCell('N' . $i)->setValue($comm->status);
+            $activeSheet->getCell('O' . $i)->setValue($salesOutNames);
+            $activeSheet->getCell('P' . $i)->setValue($comm->sold_policy->total_policy_comm);
+            $activeSheet->getCell('Q' . $i)->setValue($comm->sold_policy->total_policy_comm * .95);
+            $activeSheet->getCell('R' . $i)->setValue($comm->sold_policy->sales_out_comm);
+            $activeSheet->getCell('S' . $i)->setValue($comm->sold_policy->discount);
+            $activeSheet->getCell('T' . $i)->setValue($comm->amount - $comm->sold_policy->discount);
+            $activeSheet->getCell('U' . $i)->setValue($comm->comm_percentage);
+            $activeSheet->getCell('V' . $i)->setValue($comm->sold_policy->total_policy_comm - $comm->sold_policy->total_comm_subtractions_after_penalty);
+
+            $i++;
         }
 
+        // Totals row: sums for Gross Premium / عمولة معرض / عمولة بائع, a net figure, and a label.
+        if ($comms->isNotEmpty()) {
+            $firstDataRow = 2;
+            $lastDataRow = $i - 1;
+            $activeSheet->getCell('H' . $i)->setValue("=SUM(H{$firstDataRow}:H{$lastDataRow})");
+            $activeSheet->getCell('I' . $i)->setValue("=SUM(I{$firstDataRow}:I{$lastDataRow})");
+            $activeSheet->getCell('J' . $i)->setValue("=SUM(J{$firstDataRow}:J{$lastDataRow})");
+            $activeSheet->getCell('K' . $i)->setValue("=H{$i}-I{$i}-J{$i}");
+            $activeSheet->getCell('L' . $i)->setValue('صافي التحصيل');
+        }
 
         $writer = new Xlsx($newFile);
         $file_path = SoldPolicy::FILES_DIRECTORY . "profile_balance_{$this->title}.xlsx";

@@ -3,6 +3,7 @@
 namespace App\Models\Tasks;
 
 use App\Models\Business\SoldPolicy;
+use App\Models\Customers\Car as CustomerCar;
 use App\Models\Tasks\Task;
 use App\Models\Users\AppLog;
 use Carbon\Carbon;
@@ -52,7 +53,13 @@ class TaskAction extends Model
             'net_premium',
             'gross_premium',
             'cancellation_time',
+            'customer_car_id',
         ]
+    ];
+
+    // Columns whose value is picked from a list (e.g. a car id) rather than typed freely
+    const CUSTOM_INPUT_COLUMNS = [
+        'customer_car_id' => 'Car Change',
     ];
 
     const COLUMNS_IN_CHANGE_SOLD = ['gross_premium', 'insured_value', 'expiry', 'start', 'net_premium'];
@@ -167,6 +174,24 @@ class TaskAction extends Model
     public function getOldValueAttribute()
     {
         return $this->task->taskable?->{$this->column_name};
+    }
+
+    public function getDisplayValueAttribute()
+    {
+        return $this->column_name === 'customer_car_id' ? $this->carLabel($this->value) : $this->value;
+    }
+
+    public function getDisplayOldValueAttribute()
+    {
+        return $this->column_name === 'customer_car_id' ? $this->carLabel($this->old_value) : $this->old_value;
+    }
+
+    private function carLabel($customerCarId)
+    {
+        if (!$customerCarId) return 'N/A';
+        $car = CustomerCar::with('car.car_model.brand')->find($customerCarId);
+        if (!$car) return "#$customerCarId";
+        return trim("{$car->car?->car_model?->brand?->name} {$car->car?->car_model?->name} {$car->car?->category}");
     }
 
     ////relations

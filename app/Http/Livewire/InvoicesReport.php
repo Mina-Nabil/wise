@@ -154,7 +154,7 @@ class InvoicesReport extends Component
 
     public function exportReport()
     {
-        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin && !\Illuminate\Support\Facades\Auth::user()->is_finance) {
             abort(403);
         }
 

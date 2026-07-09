@@ -596,6 +596,28 @@ class ClientPayment extends Model
         return $query->where('policies.company_id', "=", $company_id);
     }
 
+    public function scopeByPolicyId(Builder $query, $policy_id)
+    {
+        if (!Helpers::joined($query, "sold_policies")) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        return $query->where('sold_policies.policy_id', "=", $policy_id);
+    }
+
+    public function scopeByCommProfileId(Builder $query, $comm_profile_id)
+    {
+        if (!Helpers::joined($query, "sold_policies")) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        if (!Helpers::joined($query, "sales_comms")) {
+            $query->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id');
+        }
+        if (!Helpers::joined($query, "comm_profiles")) {
+            $query->join('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id');
+        }
+        return $query->where('comm_profiles.id', "=", $comm_profile_id);
+    }
+
     public function scopeSoldPolicyByDateRange(Builder $query, $start_date = null, $end_date = null)
     {
         if (!Helpers::joined($query, 'sold_policies')) {

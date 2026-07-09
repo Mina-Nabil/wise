@@ -1277,6 +1277,14 @@ class CommProfileShow extends Component
     public function mount($id)
     {
         $this->profile = CommProfile::with('sales_comm', 'sales_comm.sold_policy', 'sales_comm.sold_policy.policy', 'sales_comm.sold_policy.policy.company')->find($id);
+        $this->authorize('view', $this->profile);
+
+        // Non-admin/finance viewers (e.g. a salesperson viewing their own profile) only get
+        // the Payments and Sales Commission tabs - force back if a stale section is requested.
+        if (!$this->canManageCommProfile() && !in_array($this->section, ['payments', 'salescomm'])) {
+            $this->section = 'payments';
+        }
+
         if (Session::has('commissions')) {
             foreach (Session::get('commissions') as $commission) {
                 $this->addToInvoice($commission->id);
@@ -1285,6 +1293,13 @@ class CommProfileShow extends Component
             Session::forget('commissions');
             $this->alert('success', 'Commissions loaded!');
         }
+    }
+
+    public function canManageCommProfile(): bool
+    {
+        /** @var \App\Models\Users\User */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        return (bool) ($user?->is_admin || $user?->is_any_finance);
     }
 
     public function render()
@@ -1362,7 +1377,8 @@ class CommProfileShow extends Component
             'SALES_COMM_STATUSES' => $SALES_COMM_STATUSES,
             'totalPaid' => $totalPaid,
             'totalIncome' => $totalIncome,
-            'totalSalesIncome' => $totalSalesIncome
+            'totalSalesIncome' => $totalSalesIncome,
+            'canManageCommProfile' => $this->canManageCommProfile(),
         ]);
     }
 

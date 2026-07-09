@@ -419,7 +419,9 @@ class SalesComm extends Model
         ?Carbon $paymentDateTo = null,
         array $statuses = [],
         ?Carbon $clientPaymentDateFrom = null,
-        ?Carbon $clientPaymentDateTo = null
+        ?Carbon $clientPaymentDateTo = null,
+        ?Carbon $collectionDateFrom = null,
+        ?Carbon $collectionDateTo = null
     ) {
         $commissions = self::report(
             $commProfileIds,
@@ -429,7 +431,9 @@ class SalesComm extends Model
             $paymentDateTo,
             $statuses,
             $clientPaymentDateFrom,
-            $clientPaymentDateTo
+            $clientPaymentDateTo,
+            $collectionDateFrom,
+            $collectionDateTo
         )->get();
 
         $spreadsheet = new Spreadsheet();
@@ -565,7 +569,9 @@ class SalesComm extends Model
         ?Carbon $paymentDateTo = null,
         array $statuses = [],
         ?Carbon $clientPaymentDateFrom = null,
-        ?Carbon $clientPaymentDateTo = null
+        ?Carbon $clientPaymentDateTo = null,
+        ?Carbon $collectionDateFrom = null,
+        ?Carbon $collectionDateTo = null
     ) {
         if (empty($query->getQuery()->columns)) {
             $query->select('sales_comms.*');
@@ -589,6 +595,16 @@ class SalesComm extends Model
                         $paymentQuery->where('client_payments.payment_date', '<=', $clientPaymentDateTo->format('Y-m-d 23:59:59'));
                     }
                 });
+            })
+            ->when($collectionDateFrom || $collectionDateTo, function ($q) use ($collectionDateFrom, $collectionDateTo) {
+                $q->whereHas('sold_policy.client_payments', function ($paymentQuery) use ($collectionDateFrom, $collectionDateTo) {
+                    if ($collectionDateFrom) {
+                        $paymentQuery->where('client_payments.collected_date', '>=', $collectionDateFrom->format('Y-m-d 00:00:00'));
+                    }
+                    if ($collectionDateTo) {
+                        $paymentQuery->where('client_payments.collected_date', '<=', $collectionDateTo->format('Y-m-d 23:59:59'));
+                    }
+                });
             });
 
         return $query;
@@ -602,7 +618,9 @@ class SalesComm extends Model
         ?Carbon $paymentDateTo = null,
         array $statuses = [],
         ?Carbon $clientPaymentDateFrom = null,
-        ?Carbon $clientPaymentDateTo = null
+        ?Carbon $clientPaymentDateTo = null,
+        ?Carbon $collectionDateFrom = null,
+        ?Carbon $collectionDateTo = null
     ): Builder {
         $query = self::query()
             ->select('sales_comms.comm_profile_id')
@@ -617,7 +635,9 @@ class SalesComm extends Model
             $paymentDateTo,
             $statuses,
             $clientPaymentDateFrom,
-            $clientPaymentDateTo
+            $clientPaymentDateTo,
+            $collectionDateFrom,
+            $collectionDateTo
         );
 
         return $query->groupBy('sales_comms.comm_profile_id', 'comm_profiles.title')

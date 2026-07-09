@@ -47,6 +47,33 @@
 
 
         </div>
+
+        <div class="dropdown relative ml-5">
+            <button class="btn inline-flex justify-center btn-dark items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @if ($filteredSubStatus)
+                    Sub-status: {{ $subStatuses[$filteredSubStatus] ?? $filteredSubStatus }}
+                @else
+                    Select Sub-status
+                @endif
+
+                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+            </button>
+            <ul class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                <li wire:click="filterBySubStatus(null)">
+                    <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        All
+                    </a>
+                </li>
+                @foreach ($subStatuses as $subStatusValue => $subStatusLabel)
+                    <li wire:click="filterBySubStatus('{{ $subStatusValue }}')">
+                        <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                            {{ $subStatusLabel }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
         <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model="searchText" placeholder="Search by title">
         <input class="form-control py-2 w-auto ml-5" style="width:220px" value="" type="text" wire:model.debounce.500ms="workshop" placeholder="مكان الاصلاح">
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px" id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model="dateRange">
@@ -179,7 +206,7 @@
                                             </div>
                                         @elseif($task->status === 'closed')
                                             <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
-                                                Closed by Customer
+                                                Closed
                                             </div>
                                         @endif
 

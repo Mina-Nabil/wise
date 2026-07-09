@@ -1915,7 +1915,7 @@
                     <div class="card-body px-6 pb-6">
                         <div class="overflow-x-auto -mx-6 ">
                             <div class="inline-block min-w-full align-middle">
-                                <div class="overflow-hidden ">
+                                <div>
                                     @if ($soldPolicy->sales_comms->isEmpty())
                                         <p class="text-sm text-center">
                                             No sales commissions found.
@@ -2438,15 +2438,32 @@
                                             @foreach ($COLUMNS as $COLUMN)
                                                 <option value="{{ $COLUMN }}"
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
-                                                    {{ ucwords(str_replace('_', ' ', $COLUMN)) }}</option>
+                                                    {{ \App\Models\Tasks\TaskAction::CUSTOM_INPUT_COLUMNS[$COLUMN] ?? ucwords(str_replace('_', ' ', $COLUMN)) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="from-group col-span-4">
                                         <label for="newExcValue" class="form-label">Value</label>
-                                        <input name="newExcValue" type="text"
-                                            class="form-control mt-2 w-full @error('actions.' . $index . '.value') !border-danger-500 @enderror"
-                                            wire:model="actions.{{ $index }}.value">
+                                        @if (($action['column_name'] ?? null) === 'customer_car_id')
+                                            <select name="newExcValue"
+                                                class="form-control mt-2 w-full @error('actions.' . $index . '.value') !border-danger-500 @enderror"
+                                                wire:model="actions.{{ $index }}.value">
+                                                <option value="">Select a car...</option>
+                                                @foreach ($endorsementCars as $car)
+                                                    <option value="{{ $car->id }}">
+                                                        {{ $car->car?->car_model?->brand?->name }}
+                                                        {{ $car->car?->car_model?->name }} {{ $car->car?->category }}
+                                                        @if ($car->car_plate_no)
+                                                            · {{ $car->car_plate_no }}
+                                                        @endif
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @else
+                                            <input name="newExcValue" type="text"
+                                                class="form-control mt-2 w-full @error('actions.' . $index . '.value') !border-danger-500 @enderror"
+                                                wire:model="actions.{{ $index }}.value">
+                                        @endif
                                         @error('actions.{{ $index }}.value')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

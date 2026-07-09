@@ -30,7 +30,7 @@ class CommProfilePolicy
      */
     public function view(User $user, CommProfile $commProfil)
     {
-        return $user->is_admin || $user->is_any_finance;
+        return $user->is_admin || $user->is_any_finance || $user->id === $commProfil->user_id;
     }
 
     /**

@@ -178,6 +178,7 @@
                             <iconify-icon class="mr-1" icon="mynaui:percentage-waves"></iconify-icon>
                             Sales Commission</a>
                     </li>
+                    @if ($canManageCommProfile)
                     @if ($profile->is_sales_out)
                         <li class="nav-item" role="presentation" wire:click='changeSection("clientpayments")'>
                             <a href="#tabs-messages-withIcon"
@@ -207,6 +208,7 @@
                             <iconify-icon class="mr-1" icon="grommet-icons:configure"></iconify-icon>
                             Direct Configurations</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </div>
@@ -404,6 +406,7 @@
                                                                 </button>
                                                                 <ul
                                                                     class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                    @if ($canManageCommProfile)
                                                                     @if ($payment->journal_entry_id)
                                                                         <li>
                                                                             <a href="{{ route('accounts.entries', $payment->journal_entry_id) }}"
@@ -513,6 +516,7 @@
                                                                                 <span>Approve</span></a>
                                                                         </li>
                                                                     @endcan
+                                                                    @endif
                                                                     <li>
                                                                         <a wire:click="downloadPaymentDetails({{ $payment->id }})"
                                                                             class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
@@ -541,20 +545,22 @@
                                                         </td>
                                                     </tr>
                                                 @endif
-                                                <tr>
-                                                    <td colspan="6" class="pt-3">
-                                                        <button wire:click="openNewPymtSection"
-                                                            class="btn inline-flex justify-center btn-light btn-sm">
-                                                            Add new payment
-                                                        </button>
-                                                        @if(Auth::user()->is_admin)
-                                                            <button wire:click="openNewNegPymtSection"
-                                                                class="btn inline-flex justify-center btn-outline-danger btn-sm ltr:ml-2 rtl:mr-2">
-                                                                Add negative payment
+                                                @if ($canManageCommProfile)
+                                                    <tr>
+                                                        <td colspan="6" class="pt-3">
+                                                            <button wire:click="openNewPymtSection"
+                                                                class="btn inline-flex justify-center btn-light btn-sm">
+                                                                Add new payment
                                                             </button>
-                                                        @endif
-                                                    </td>
-                                                </tr>
+                                                            @if(Auth::user()->is_admin)
+                                                                <button wire:click="openNewNegPymtSection"
+                                                                    class="btn inline-flex justify-center btn-outline-danger btn-sm ltr:ml-2 rtl:mr-2">
+                                                                    Add negative payment
+                                                                </button>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endif
                                             </tbody>
                                         </table>
                                     </div>
@@ -776,6 +782,7 @@
                                                         {{ number_format($comm->comm_percentage, 2, '.', ',') }}
                                                     </td>
 
+                                                    @if ($canManageCommProfile)
                                                     <td class="table-td ">
                                                         <div class="dropstart relative">
                                                             <button class="inline-flex justify-center items-center"
@@ -862,6 +869,7 @@
                                                             </div>
                                                         </td>
                                                     @endcan
+                                                    @endif
                                                 </tr>
                                             @endforeach
 

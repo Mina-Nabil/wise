@@ -93,7 +93,7 @@
                             @elseif($task->status === 'closed')
                                 <div
                                     class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-black-500 bg-black-500 text-xs">
-                                    {{ $task->is_claim ? 'Closed by Customer' : 'Closed' }}
+                                    Closed
                                     <span class="float-right cursor-pointer ml-3" wire:click="toggleEditStatus">
                                         <iconify-icon icon="carbon:edit"></iconify-icon>
                                     </span>
@@ -208,7 +208,7 @@
                                             <span
                                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                     duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
-                                            <span class="text-secondary-500 text-sm leading-6 capitalize">{{ $task->is_claim ? 'Closed by Customer' : 'Closed' }}</span>
+                                            <span class="text-secondary-500 text-sm leading-6 capitalize">Closed</span>
                                         </label>
                                     </div>
 
@@ -296,19 +296,29 @@
                                                 <td @if ($field->id !== $fieldId) wire:click="editThisField({{ $field->id }})" @endif
                                                     class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                     @if ($field->id === $fieldId)
-                                                        <input type="text" wire:model="editedFieldValue"
-                                                            @class([
-                                                                'form-control',
-                                                                'w-full',
-                                                                'h-full',
-                                                                'border-danger-500' => $errors->has('editedFieldValue'),
-                                                                'border-slate-300' => !$errors->has('editedFieldValue'),
-                                                            ]) list="claim_fields_1" />
-                                                            <datalist id="claim_fields_1">
-                                                                <option>Yes</option>
-                                                                <option>No</option>
-                                                                <option>N/A</option>
-                                                            </datalist>
+                                                        @if ($field->title === \App\Models\Tasks\TaskField::TITLE_ACCIDENT_DESC)
+                                                            <textarea wire:model="editedFieldValue"
+                                                                @class([
+                                                                    'form-control',
+                                                                    'w-full',
+                                                                    'border-danger-500' => $errors->has('editedFieldValue'),
+                                                                    'border-slate-300' => !$errors->has('editedFieldValue'),
+                                                                ]) rows="4"></textarea>
+                                                        @else
+                                                            <input type="text" wire:model="editedFieldValue"
+                                                                @class([
+                                                                    'form-control',
+                                                                    'w-full',
+                                                                    'h-full',
+                                                                    'border-danger-500' => $errors->has('editedFieldValue'),
+                                                                    'border-slate-300' => !$errors->has('editedFieldValue'),
+                                                                ]) list="claim_fields_1" />
+                                                                <datalist id="claim_fields_1">
+                                                                    <option>Yes</option>
+                                                                    <option>No</option>
+                                                                    <option>N/A</option>
+                                                                </datalist>
+                                                        @endif
                                                     @else
                                                         {{ $field->value }}
                                                     @endif
@@ -412,11 +422,11 @@
                                             </h4>
                                             <div class="text-sm font-medium text-slate-900 dark:text-white">
                                                 <span class="text-slate-500 dark:text-slate-300 font-normal">
-                                                    {{ $action->old_value }}
+                                                    {{ $action->display_old_value }}
                                                 </span>
                                                 <span>
                                                     <iconify-icon icon="maki:arrow"></iconify-icon>
-                                                    {{ $action->value }}
+                                                    {{ $action->display_value }}
                                                 </span>
 
                                             </div>
@@ -1041,13 +1051,19 @@
                                 </div>
                                 <div class="input-area mb-3">
                                     <label class="form-label">Value </label>
-                                    <input type="text"
-                                        class="form-control  @error('newValue') !border-danger-500 @enderror"
-                                        wire:model.defer="newValue" autocomplete="off" list="claim_fields" />
-                                    <datalist id="claim_fields">
-                                        <option>Yes</option>
-                                        <option>No</option>
-                                    </datalist>
+                                    @if ($newTitle === \App\Models\Tasks\TaskField::TITLE_ACCIDENT_DESC)
+                                        <textarea
+                                            class="form-control @error('newValue') !border-danger-500 @enderror"
+                                            wire:model.defer="newValue" rows="4"></textarea>
+                                    @else
+                                        <input type="text"
+                                            class="form-control  @error('newValue') !border-danger-500 @enderror"
+                                            wire:model.defer="newValue" autocomplete="off" list="claim_fields" />
+                                        <datalist id="claim_fields">
+                                            <option>Yes</option>
+                                            <option>No</option>
+                                        </datalist>
+                                    @endif
                                     @error('newValue')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1126,10 +1142,10 @@
                                         </h4>
                                         <div class="text-sm font-medium text-slate-900 dark:text-white">
                                             <span class="text-slate-500 dark:text-slate-300 font-normal">
-                                                {{ $action->old_value }}
+                                                {{ $action->display_old_value }}
                                             </span>
                                             <span>
-                                                <iconify-icon icon="maki:arrow"></iconify-icon> {{ $action->value }}
+                                                <iconify-icon icon="maki:arrow"></iconify-icon> {{ $action->display_value }}
                                             </span>
 
                                         </div>
