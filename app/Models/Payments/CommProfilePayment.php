@@ -317,15 +317,12 @@ class CommProfilePayment extends Model
         $activeSheet = $newFile->getSheet(0);
 
         $i = 3;
-        $accumulatedAmount = 0;
         foreach ($comms as $c) {
-            $accumulatedAmount += $c->pivot->amount;
-
             // Insert the row before writing to it (rather than after) so rows land in
             // natural top-to-bottom order. insertNewRowBefore() does not reliably carry the
             // bordered row style onto the fresh row, so it's applied explicitly below instead.
             $activeSheet->insertNewRowBefore($i);
-            $activeSheet->getStyle('A' . $i . ':P' . $i)->applyFromArray([
+            $activeSheet->getStyle('A' . $i . ':O' . $i)->applyFromArray([
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -338,7 +335,8 @@ class CommProfilePayment extends Model
             $activeSheet->getCell('B' . $i)->setValue($c->sold_policy->policy_number);
             $activeSheet->getCell('C' . $i)->setValue($c->sold_policy?->policy?->company?->name . '-' . $c->sold_policy?->policy?->name);
             $activeSheet->getCell('D' . $i)->setValue($c->sold_policy->client?->full_name);
-            $activeSheet->getCell('E' . $i)->setValue(number_format($c->pivot->amount));
+            $activeSheet->getCell('E' . $i)->setValue($c->pivot->amount);
+            $activeSheet->getCell('E' . $i)->getStyle()->getNumberFormat()->setFormatCode('#,##0');
             $activeSheet->getCell('F' . $i)->setValue(number_format($c->comm_percentage, 2));
             $activeSheet->getCell('G' . $i)->setValue(number_format($c->sold_policy->insured_value));
             $activeSheet->getCell('H' . $i)->setValue(number_format($c->sold_policy->net_premium));
@@ -349,21 +347,23 @@ class CommProfilePayment extends Model
             $activeSheet->getCell('K' . $i)->setValue($c->sold_policy?->start ?
                 Carbon::parse($c->sold_policy->start)->format('D d/m/Y') :
                 'Not set.');
-            $activeSheet->getCell('L' . $i)->setValue(number_format($c->sold_policy->discount));
+            $activeSheet->getCell('L' . $i)->setValue($c->sold_policy->discount);
+            $activeSheet->getCell('L' . $i)->getStyle()->getNumberFormat()->setFormatCode('#,##0');
             $activeSheet->getCell('M' . $i)->setValue(number_format($c->sold_policy->sales_out_comm));
-            $activeSheet->getCell('N' . $i)->setValue(number_format($accumulatedAmount));
-            $activeSheet->getCell('O' . $i)->setValue($c->sold_policy?->customer_car?->car?->car_model?->brand?->name);
-            $activeSheet->getCell('P' . $i)->setValue($c->status);
+            $activeSheet->getCell('N' . $i)->setValue($c->sold_policy?->customer_car?->car?->car_model?->brand?->name);
+            $activeSheet->getCell('O' . $i)->setValue($c->status);
 
             $i++;
         }
 
-        // Totals row: labels the accumulate row and sums the Comm. Discount column.
+        // Totals row: sums the Amount and Comm. Discount columns.
         if ($comms->isNotEmpty()) {
             $firstDataRow = 3;
             $lastDataRow = $i - 1;
-            $activeSheet->getCell('E' . $i)->setValue('Accumulate');
+            $activeSheet->getCell('E' . $i)->setValue("=SUM(E{$firstDataRow}:E{$lastDataRow})");
+            $activeSheet->getCell('E' . $i)->getStyle()->getNumberFormat()->setFormatCode('#,##0');
             $activeSheet->getCell('L' . $i)->setValue("=SUM(L{$firstDataRow}:L{$lastDataRow})");
+            $activeSheet->getCell('L' . $i)->getStyle()->getNumberFormat()->setFormatCode('#,##0');
         }
 
         $writer = new Xlsx($newFile);
