@@ -130,7 +130,7 @@ class CommProfile extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
 
-        $i = 2;
+        $i = 3;
         foreach ($comms as $comm) {
             $clientPayment = $comm->sold_policy->client_payments->first();
             $salesOutNames = $comm->sold_policy->sales_comms
@@ -181,7 +181,7 @@ class CommProfile extends Model
 
         // Totals row: sums for Gross Premium / عمولة معرض / عمولة بائع, a net figure, and a label.
         if ($comms->isNotEmpty()) {
-            $firstDataRow = 2;
+            $firstDataRow = 3;
             $lastDataRow = $i - 1;
             $activeSheet->getCell('H' . $i)->setValue("=SUM(H{$firstDataRow}:H{$lastDataRow})");
             $activeSheet->getCell('I' . $i)->setValue("=SUM(I{$firstDataRow}:I{$lastDataRow})");

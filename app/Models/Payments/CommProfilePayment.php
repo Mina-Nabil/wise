@@ -316,7 +316,7 @@ class CommProfilePayment extends Model
         $newFile = $template->copy();
         $activeSheet = $newFile->getSheet(0);
 
-        $i = 2;
+        $i = 3;
         $accumulatedAmount = 0;
         foreach ($comms as $c) {
             $accumulatedAmount += $c->pivot->amount;
@@ -360,7 +360,7 @@ class CommProfilePayment extends Model
 
         // Totals row: labels the accumulate row and sums the Comm. Discount column.
         if ($comms->isNotEmpty()) {
-            $firstDataRow = 2;
+            $firstDataRow = 3;
             $lastDataRow = $i - 1;
             $activeSheet->getCell('E' . $i)->setValue('Accumulate');
             $activeSheet->getCell('L' . $i)->setValue("=SUM(L{$firstDataRow}:L{$lastDataRow})");
