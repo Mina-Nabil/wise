@@ -2,6 +2,7 @@
 
 namespace App\Models\Marketing;
 
+use App\Helpers\Helpers;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Exception;
@@ -470,9 +471,36 @@ class Review extends Model
 
     public function scopeNeedsManagerReview($query, $needsManagerReview)
     {
-        if ($needsManagerReview !== null) {
-            $query->where('reviews.need_manager_review', $needsManagerReview ? 1 : 0);
+        if ($needsManagerReview === null) {
+            return $query;
         }
+
+        // Claim reviews (reviewable is a Task of type 'claim') track their manager-review
+        // requirement on need_claim_manager_review, not need_manager_review - join tasks so
+        // both kinds of reviews can be matched by this single filter.
+        if (!Helpers::joined($query, 'tasks')) {
+            $query->leftJoin('tasks', function ($j) {
+                $j->on('tasks.id', '=', 'reviews.reviewable_id')
+                    ->where('reviews.reviewable_type', '=', 'task');
+            });
+        }
+
+        $flag = $needsManagerReview ? 1 : 0;
+
+        $query->where(function ($q) use ($flag) {
+            $q->where(function ($claim) use ($flag) {
+                $claim->where('reviews.reviewable_type', 'task')
+                    ->where('tasks.type', 'claim')
+                    ->where('reviews.need_claim_manager_review', $flag);
+            })->orWhere(function ($nonClaim) use ($flag) {
+                $nonClaim->where(function ($notClaimTask) {
+                    $notClaimTask->where('reviews.reviewable_type', '!=', 'task')
+                        ->orWhere('tasks.type', '!=', 'claim')
+                        ->orWhereNull('tasks.type');
+                })->where('reviews.need_manager_review', $flag);
+            });
+        });
+
         return $query;
     }
 
