@@ -174,7 +174,7 @@ class CommProfile extends Model
             $activeSheet->getCell('S' . $i)->setValue($comm->sold_policy->discount);
             $activeSheet->getCell('T' . $i)->setValue($comm->amount - $comm->sold_policy->discount);
             $activeSheet->getCell('U' . $i)->setValue($comm->comm_percentage);
-            $activeSheet->getCell('V' . $i)->setValue($comm->sold_policy->total_policy_comm - $comm->sold_policy->total_comm_subtractions_after_penalty);
+            $activeSheet->getCell('V' . $i)->setValue($comm->sold_policy->total_policy_comm - $comm->sold_policy->total_comm_subtractions);
 
             $i++;
         }
