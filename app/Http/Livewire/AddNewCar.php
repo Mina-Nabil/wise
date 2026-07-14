@@ -7,6 +7,7 @@ use App\Models\Cars\Car;
 use App\Models\Cars\Brand;
 use App\Models\Cars\CarModel;
 use App\Models\Base\Country;
+use Illuminate\Validation\Rule;
 
 class AddNewCar extends Component
 {
@@ -59,7 +60,7 @@ class AddNewCar extends Component
             $this->validate(
                 [
                     'modelName' => 'required|unique:car_models,name',
-                    'categoryName' => 'required|unique:cars,category',
+                    'categoryName' => 'required',
                     'brandId' => 'required|exists:brands,id',
                 ],
                 [],
@@ -88,7 +89,10 @@ class AddNewCar extends Component
         } else {
             $this->validate(
                 [
-                    'categoryName' => 'required|unique:cars,category',
+                    'categoryName' => [
+                        'required',
+                        Rule::unique('cars', 'category')->where('car_model_id', $this->selectedCarModel),
+                    ],
                     'selectedCarModel' => 'required|exists:car_models,id',
                 ],
                 [],

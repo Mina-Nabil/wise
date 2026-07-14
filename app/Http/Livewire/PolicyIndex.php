@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Insurance\Policy;
 use App\Models\Insurance\Company;
 use App\Traits\AlertFrontEnd;
+use Illuminate\Validation\Rule;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
@@ -56,7 +57,11 @@ class PolicyIndex extends Component
     {
         $this->validate([
             'company' => 'required|exists:insurance_companies,id',
-            'policyName' => 'required|string|unique:policies,name',
+            'policyName' => [
+                'required',
+                'string',
+                Rule::unique('policies', 'name')->where('company_id', $this->company),
+            ],
             'policyBusiness' => 'required|in:' . implode(',', Policy::LINES_OF_BUSINESS),
             'note' => 'nullable|string',
             'medMinLimit' => 'nullable|integer',
