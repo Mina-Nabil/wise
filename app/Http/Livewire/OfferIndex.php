@@ -367,7 +367,7 @@ class OfferIndex extends Component
                 return $query->where('offers.type', $this->lineOfBusiness);
             })
             ->orderBy('due', 'asc')
-            ->with('selected_option.policy', 'comm_profiles')
+            ->with('selected_option.policy.company', 'comm_profiles')
             ->paginate(10);
 
         return view('livewire.offer-index', [

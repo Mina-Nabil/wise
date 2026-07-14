@@ -99,10 +99,10 @@
             @endforeach
         </select>
 
-        <select class="form-control py-2 w-auto ml-5" style="width:200px" wire:model="salesFilter">
-            <option value="">All Sales</option>
-            @foreach ($salesUsers as $salesUser)
-                <option value="{{ $salesUser->id }}">{{ $salesUser->first_name }} {{ $salesUser->last_name }}</option>
+        <select class="form-control py-2 w-auto ml-5" style="width:200px" wire:model="commProfileFilter">
+            <option value="">All Comm Profiles</option>
+            @foreach ($commProfiles as $commProfile)
+                <option value="{{ $commProfile->id }}">{{ $commProfile->title }}</option>
             @endforeach
         </select>
 

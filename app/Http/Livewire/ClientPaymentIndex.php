@@ -5,7 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
 use App\Models\Insurance\Company;
-use App\Models\Users\User;
+use App\Models\Payments\CommProfile;
 use Livewire\WithPagination;
 use Carbon\Carbon;
 
@@ -25,7 +25,7 @@ class ClientPaymentIndex extends Component
     // new filters
     public $checkedFilter = 'all'; // all | checked | unchecked
     public $companyFilter;
-    public $salesFilter;
+    public $commProfileFilter;
     public $dueRange;
     public $dueStart;
     public $dueEnd;
@@ -63,7 +63,7 @@ class ClientPaymentIndex extends Component
         $this->resetPage();
     }
 
-    public function updatedSalesFilter()
+    public function updatedCommProfileFilter()
     {
         $this->resetPage();
     }
@@ -150,7 +150,7 @@ class ClientPaymentIndex extends Component
             ->when($this->checkedFilter === 'checked', fn($q) => $q->where('client_payments.is_checked', true))
             ->when($this->checkedFilter === 'unchecked', fn($q) => $q->where('client_payments.is_checked', false))
             ->when($this->companyFilter, fn($q) => $q->byCompany($this->companyFilter))
-            ->when($this->salesFilter, fn($q) => $q->byMainSales($this->salesFilter))
+            ->when($this->commProfileFilter, fn($q) => $q->byCommProfileId($this->commProfileFilter))
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'sold_policy.policy.company', 'sold_policy.main_sales', 'assigned')
             ->orderBy('client_payments.collected_date', $this->sortCollectedDir === 'asc' ? 'asc' : 'desc');
 
@@ -158,7 +158,7 @@ class ClientPaymentIndex extends Component
         $payments = $paymentsQuery->paginate(50);
 
         $companies = Company::orderBy('name')->get();
-        $salesUsers = User::active()->orderBy('first_name')->get();
+        $commProfiles = CommProfile::orderBy('title')->get();
 
         return view('livewire.client-payment-index', [
             'statuses' => $statuses,
@@ -166,7 +166,7 @@ class ClientPaymentIndex extends Component
             'payments' => $payments,
             'totalPayments' => $totalPayments,
             'companies' => $companies,
-            'salesUsers' => $salesUsers,
+            'commProfiles' => $commProfiles,
         ]);
     }
 }

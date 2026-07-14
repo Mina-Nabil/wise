@@ -295,6 +295,10 @@
                                                     </h4>
                                                     <div
                                                         class="text-xs font-normal text-slate-600 dark:text-slate-400">
+                                                        {{ $offer->selected_option?->policy?->company?->name }}
+                                                    </div>
+                                                    <div
+                                                        class="text-xs font-normal text-slate-600 dark:text-slate-400">
                                                         Gross: {{ $offer->selected_option?->gross_premium }}
                                                     </div>
                                                     <div
