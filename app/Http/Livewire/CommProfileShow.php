@@ -1352,7 +1352,10 @@ class CommProfileShow extends Component
 
 
         $totalIncome = SoldPolicy::byProfileId($this->profile->id)->sum('after_tax_comm');
-        $totalSalesIncome = $this->profile->sales_comm()->sum('amount');
+        $totalSalesIncome = $this->profile->sales_comm()
+            ->notCancelled()
+            ->whereNull('sales_comms.deleted_at')
+            ->sum('amount');
 
         $SALES_COMM_STATUSES = SalesComm::PYMT_STATES;
 

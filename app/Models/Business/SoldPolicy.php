@@ -2290,7 +2290,10 @@ class SoldPolicy extends Model
     public function scopeByProfileId($query, $profile_id)
     {
         return $query->join('sales_comms', 'sales_comms.sold_policy_id', '=', 'sold_policies.id')
-            ->where('sales_comms.comm_profile_id', $profile_id);
+            ->where('sales_comms.comm_profile_id', $profile_id)
+            ->where('sales_comms.status', '!=', SalesComm::PYMT_STATE_CANCELLED)
+            ->whereNull('sales_comms.deleted_at')
+            ->whereNull('sold_policies.cancellation_time');
     }
 
     public function scopeWithTableRelations($query)
