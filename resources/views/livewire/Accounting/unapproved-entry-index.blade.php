@@ -129,6 +129,24 @@
                                                                 <span>Approve</span></span>
                                                         </li>
                                                     @endcan
+                                                    @if ($entry->credit_doc_url)
+                                                        <li wire:click="downloadCreditDoc({{ $entry->id }})">
+                                                            <span
+                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                <iconify-icon
+                                                                    icon="material-symbols:download"></iconify-icon>
+                                                                <span>Download credit document</span></span>
+                                                        </li>
+                                                    @endif
+                                                    @if ($entry->debit_doc_url)
+                                                        <li wire:click="downloadDebitDoc({{ $entry->id }})">
+                                                            <span
+                                                                class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
+                                                                <iconify-icon
+                                                                    icon="material-symbols:download"></iconify-icon>
+                                                                <span>Download debit document</span></span>
+                                                        </li>
+                                                    @endif
                                                     <li wire:click="$emit('showConfirmation', 'Are you sure you want to delete this entry?','danger','deleteEntry' , {{ $entry->id }})">
                                                         <span
                                                             class="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center capitalize  rtl:space-x-reverse">
@@ -164,7 +182,35 @@
                                                 <td class="table-td"><b>{{ number_format($childAccount->pivot->amount, 2) }}{{ $childAccount->pivot->currency_amount ? ' (' . number_format($childAccount->pivot->currency_amount, 2) . ')' : '' }}</b></td>
                                                 <td class="table-td">{{ number_format($childAccount->pivot->account_balance, 2) }}{{ $childAccount->pivot->account_foreign_balance ? ' (' . number_format($childAccount->pivot->account_foreign_balance, 2) . ')' : '' }}</td>
                                                 <td class="table-td">{{ $childAccount->pivot->currency_rate }}</td>
-                                                <td class="table-td"></td>
+                                                <td class="table-td">
+                                                    @if ($childAccount->pivot->doc_url)
+                                                        <button
+                                                            wire:click='downloadAccountDoc({{ $entry->id }} , {{ $childAccount->id }})'
+                                                            class="btn inline-flex justify-center btn-outline-light btn-sm">
+                                                            <span wire:loading.remove
+                                                                wire:target="downloadAccountDoc({{ $entry->id }} , {{ $childAccount->id }})">Download</span>
+                                                            <iconify-icon
+                                                                class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                                                wire:loading
+                                                                wire:target="downloadAccountDoc({{ $entry->id }} , {{ $childAccount->id }})"
+                                                                icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                        </button>
+                                                    @endif
+                                                    <label
+                                                        class="btn inline-flex justify-center btn-outline-primary btn-sm cursor-pointer">
+                                                        <span wire:loading.remove
+                                                            wire:target="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})">Upload
+                                                            File</span>
+                                                        <iconify-icon
+                                                            class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                                            wire:loading
+                                                            wire:target="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})"
+                                                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                                                        <input type="file" class="hidden"
+                                                            wire:model="accountDoc"
+                                                            wire:change="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})">
+                                                    </label>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     @endif

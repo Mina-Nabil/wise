@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -19,6 +20,7 @@ class UnapprovedEntry extends Model
 {
     use HasFactory;
     const MORPH_TYPE = 'unapproved_entry';
+    const FILES_DIRECTORY = JournalEntry::FILES_DIRECTORY;
 
     protected $table = 'unapp_entries';
     protected $fillable = [
@@ -154,6 +156,31 @@ class UnapprovedEntry extends Model
         $this->accounts()->sync([]);
         $this->delete();
         return true;
+    }
+
+    public function uploadDoc($account_id, $file_url)
+    {
+        return $this->accounts()->updateExistingPivot($account_id, ['doc_url' => $file_url]);
+    }
+
+    public function downloadDoc($account_id)
+    {
+        $account_entry = $this->accounts()->where('accounts.id', $account_id)->first();
+        $fileContents = Storage::disk('s3')->get($account_entry->pivot->doc_url);
+        $fileExtension = last(explode('.', $account_entry->pivot->doc_url));
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+        ];
+        if ($fileExtension)
+            $headers['Content-Disposition'] = 'attachment; filename="' . $account_entry->name . "_" . $this->id . "_doc." . $fileExtension . '"';
+
+        return response()->stream(
+            function () use ($fileContents) {
+                echo $fileContents;
+            },
+            200,
+            $headers,
+        );
     }
 
     public function accounts(): BelongsToMany
