@@ -552,7 +552,8 @@
                                                                 class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                                 @foreach ($policies as $policy)
                                                                     @php
-                                                                        $income = ($policy->after_tax_comm ?? 0) - ($policy->total_sales_comm ?? 0);
+                                                                        $liveSalesComm = $policy->live_sales_comm_sum ?? 0;
+                                                                        $income = ($policy->after_tax_comm ?? 0) - $liveSalesComm;
                                                                         $incomePercent = ($policy->after_tax_comm > 0)
                                                                             ? round(($income / $policy->after_tax_comm) * 100, 1)
                                                                             : 0;
@@ -602,7 +603,7 @@
                                                                             <b>{{ number_format($policy->after_tax_comm, 0, '.', ',') }}</b>
                                                                         </td>
                                                                         <td class="table-td">
-                                                                            <b>{{ number_format($policy->total_sales_comm, 0, '.', ',') }}</b>
+                                                                            <b>{{ number_format($liveSalesComm, 0, '.', ',') }}</b>
                                                                         </td>
                                                                         <td class="table-td">
                                                                             <b class="{{ $income >= 0 ? 'text-success-500' : 'text-danger-500' }}">

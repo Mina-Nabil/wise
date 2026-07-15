@@ -183,6 +183,11 @@ class UnapprovedEntry extends Model
         );
     }
 
+    public function getIsRevertEntryAttribute()
+    {
+        return $this->revert_entry_id !== null;
+    }
+
     public function accounts(): BelongsToMany
     {
         return $this->belongsToMany(Account::class, 'unapp_entry_accounts')->withPivot([

@@ -115,6 +115,7 @@ class CommProfile extends Model
             ->with(
                 'sold_policy',
                 'sold_policy.client',
+                'sold_policy.policy.company',
                 'sold_policy.customer_car.car.car_model.brand',
                 'sold_policy.sales_comms.comm_profile'
             )
@@ -154,7 +155,7 @@ class CommProfile extends Model
             ]);
 
             $activeSheet->getCell('A' . $i)->setValue($comm->sold_policy->offer?->is_renewal ? 'تجديد' : 'اصدار');
-            $activeSheet->getCell('B' . $i)->setValue($comm->sold_policy->policy?->name);
+            $activeSheet->getCell('B' . $i)->setValue($comm->sold_policy->policy?->company?->name . '-' . $comm->sold_policy->policy?->name);
             $activeSheet->getCell('C' . $i)->setValue($comm->sold_policy->policy_number);
             $activeSheet->getCell('D' . $i)->setValue($comm->sold_policy->client?->full_name);
             $activeSheet->getCell('E' . $i)->setValue($clientPayment?->type  . ' / ' .  $clientPayment?->status);

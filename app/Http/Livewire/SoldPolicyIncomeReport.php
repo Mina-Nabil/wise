@@ -672,7 +672,8 @@ class SoldPolicyIncomeReport extends Component
             $this->bank_payment_time_from,
             $this->bank_payment_time_to,
             $this->has_offer
-        )->paginate(15);
+        )->withSum(['sales_comms as live_sales_comm_sum' => fn($q) => $q->notCancelled()], 'amount')
+            ->paginate(15);
 
         return view('livewire.sold-policy-income-report', [
             'policies' => $policies,

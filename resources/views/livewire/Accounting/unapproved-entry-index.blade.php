@@ -72,9 +72,15 @@
 
                                         <td class="table-td"><b>{{ $entry->creator?->username }}</b></td>
 
-                                        <td class="table-td ">{{ \Carbon\Carbon::parse($entry->created_at)->format('Y-m-d H:i') }}</td>
+                                        <td class="table-td ">
+                                            @if ($entry->entry_date)
+                                                {{ \Carbon\Carbon::parse($entry->entry_date)->format('Y-m-d') }}
+                                            @else
+                                                {{ \Carbon\Carbon::parse($entry->created_at)->format('Y-m-d H:i') }}
+                                            @endif
+                                        </td>
 
-                                        <td class="table-td ">{{ $entry->entry_title->name }}</td>
+                                        <td class="table-td ">{{ $entry->entry_title->name }} {{ $entry->is_revert_entry ? ' (R2)' : '' }}</td>
 
                                         <td class="table-td ">
                                             @if ($entry->is_reviewed)
