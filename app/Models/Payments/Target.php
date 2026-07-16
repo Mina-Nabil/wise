@@ -98,10 +98,8 @@ class Target extends Model
         //return false if the target is not acheived
         if ($totalWiseIncome < $this->min_income_target) return false;
 
-        foreach ($soldPolicies as $sp) {
-            $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalSalesIncome;
-
-            Log::info("SP#$sp->id paidAmountsPercent", ["paidAmountsPercent" => $paidAmountsPercent[$sp->id]]);
+        foreach ($paidAmounts as $sp_id => $amount) {
+            $paidAmountsPercent[$sp_id] = $paidAmounts[$sp_id] / $totalSalesIncome;
         }
 
         $balance_update = $totalSalesIncome;
