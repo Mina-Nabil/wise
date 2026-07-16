@@ -58,7 +58,8 @@ class Target extends Model
         $start_date = $end_date->clone()->subMonths($this->each_month)->setTime(0, 0, 0);
         $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
-        $totalIncome = 0;
+        $totalSalesIncome = 0;
+        $totalWiseIncome = 0;
         $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
         $paidAmounts = [];
         $paidAmountsPercent = [];
@@ -72,47 +73,39 @@ class Target extends Model
             $totalClientPaid = $sp->total_client_paid;
             if ($totalClientPaidBetween < $totalClientPaid) {
                 $tmpAmount = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
+                if (!$this->is_full_amount && (($totalWiseIncome + $tmpAmount) >= $this->max_income_target)) break;
+                if ($totalWiseIncome < $this->min_income_target) continue;
                 $commPercentage = $this->calculateCommissionPercentage($sp);
+                $totalWiseIncome += $tmpAmount;
                 $incomeAmount = $commPercentage * $tmpAmount;
-                $totalIncome += $incomeAmount;
+                $totalSalesIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
                 $commPercentages[$sp->id] = $commPercentage;
             } else {
 
                 $tmpAmount = ($sp->tax_amount > 0 ? $sp->after_tax_comm : ($sp->after_tax_comm * .95)) - $sp->total_comm_subtractions;
+                if (!$this->is_full_amount && (($totalWiseIncome + $tmpAmount) >= $this->max_income_target)) break;
+                $totalWiseIncome += $tmpAmount;
+                if ($totalWiseIncome < $this->min_income_target) continue;
                 $commPercentage = $this->calculateCommissionPercentage($sp);
                 $incomeAmount = $commPercentage * $tmpAmount;
-                $totalIncome += $incomeAmount;
+                $totalSalesIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
                 $commPercentages[$sp->id] = $commPercentage;
             }
-
-
         }
+
+        //return false if the target is not acheived
+        if ($totalWiseIncome < $this->min_income_target) return false;
+
         foreach ($soldPolicies as $sp) {
-            $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalIncome;
+            $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalSalesIncome;
 
             Log::info("SP#$sp->id paidAmountsPercent", ["paidAmountsPercent" => $paidAmountsPercent[$sp->id]]);
         }
 
-
-        //return false if the target is not acheived
-        if ($totalIncome < $this->min_income_target) return false;
-
-        $max_income_target = $this->max_income_target > 0 ? $this->max_income_target : null;
-
-        $balance_update =  (($this->is_full_amount ? $totalIncome :
-            min(
-                $totalIncome,
-                ($max_income_target ?? $totalIncome)
-            )) - $this->min_income_target) *  ($this->add_to_balance / 100);
-
-        Log::info("Target#$this->id balance update", ["balance_update" => $balance_update, 'max_income_target' => $max_income_target]);
-
-        $original_payment = (($this->add_as_payment / 100) * $balance_update);
-
-        Log::info("Target#$this->id payment to add", ["original_payment" => $original_payment]);
-
+        $balance_update = $totalSalesIncome;
+        $original_payment = $balance_update;
         $payment_to_add = max($this->base_payment, $original_payment);
 
         DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmountsPercent, &$linkedComms, $original_payment, $end_date, $commPercentages) {
@@ -140,6 +133,11 @@ class Target extends Model
 
             $this->addRun($balance_update - $payment_to_add, $payment_to_add);
         });
+    }
+
+    private function calculateBalanceUpdate($totalWiseIncome, $totalSalesIncome): float
+    {
+        if ($this->is_full_amount || $totalWiseIncome >= $this->max_income_target) return $totalSalesIncome;
     }
 
     private function calculateCommissionPercentage(SoldPolicy $sp): float
