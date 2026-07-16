@@ -111,6 +111,7 @@ class Target extends Model
 
             /** @var SalesComm */
             foreach ($salesCommissions as $s) {
+                if(!isset($paidAmountsPercent[$s->sold_policy_id])) continue;
                 $s->updatePaymentByTarget($this, $original_payment * $paidAmountsPercent[$s->sold_policy_id], $is_manual, $commPercentages[$s->sold_policy_id] * 100);
                 if ($s->amount > 0)
                     $linkedComms[$s->id] = [
