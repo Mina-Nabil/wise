@@ -59,6 +59,7 @@ class Target extends Model
         $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
+        $commPercentage = 0;
         $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
         $paidAmounts = [];
         $paidAmountsPercent = [];
@@ -97,9 +98,10 @@ class Target extends Model
 
 
         //return false if the target is not acheived
-        if ($totalIncome < $this->min_income_target) return false;
+        if ($totalIncome < ($this->min_income_target * $commPercentage)) return false;
 
         $max_income_target = $this->max_income_target > 0 ? $this->max_income_target : null;
+        $max_income_target = $max_income_target * $commPercentage;
 
         $balance_update =  (($this->is_full_amount ? $totalIncome :
             min(
