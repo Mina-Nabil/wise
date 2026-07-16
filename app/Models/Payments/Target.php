@@ -107,7 +107,7 @@ class Target extends Model
             min(
                 $totalIncome,
                 ($max_income_target ?? $totalIncome)
-            )) - $this->min_income_target) *  ($this->add_to_balance / 100);
+            )) - ($this->min_income_target * $commPercentage)) *  ($this->add_to_balance / 100);
 
         Log::info("Target#$this->id balance update", ["balance_update" => $balance_update, 'max_income_target' => $max_income_target]);
 
