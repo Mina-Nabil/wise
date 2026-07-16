@@ -59,7 +59,6 @@ class Target extends Model
         $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
         $totalIncome = 0;
-        $totalWiseIncome = 0;
         $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
         $paidAmounts = [];
         $paidAmountsPercent = [];
@@ -74,7 +73,6 @@ class Target extends Model
             if ($totalClientPaidBetween < $totalClientPaid) {
                 $tmpAmount = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
                 $commPercentage = $this->calculateCommissionPercentage($sp);
-                $totalWiseIncome += $tmpAmount;
                 $incomeAmount = $commPercentage * $tmpAmount;
                 $totalIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
@@ -83,7 +81,6 @@ class Target extends Model
 
                 $tmpAmount = ($sp->tax_amount > 0 ? $sp->after_tax_comm : ($sp->after_tax_comm * .95)) - $sp->total_comm_subtractions;
                 $commPercentage = $this->calculateCommissionPercentage($sp);
-                $totalWiseIncome += $tmpAmount;
                 $incomeAmount = $commPercentage * $tmpAmount;
                 $totalIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
@@ -94,21 +91,21 @@ class Target extends Model
         }
         foreach ($soldPolicies as $sp) {
             $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalIncome;
-
-            Log::info("SP#$sp->id paidAmountsPercent", ["paidAmountsPercent" => $paidAmountsPercent[$sp->id]]);
         }
+
+        $avgSalesPercentage = array_sum($paidAmountsPercent) / count($paidAmountsPercent);
+        $min_income_target = $this->min_income_target * $avgSalesPercentage;
+        $max_income_target = $this->max_income_target > 0 ? $this->max_income_target * $avgSalesPercentage : null;
 
 
         //return false if the target is not acheived
-        if ($totalWiseIncome < $this->min_income_target) return false;
+        if ($totalIncome < $min_income_target) return false;
 
-        $max_income_target = $this->max_income_target > 0 ? $this->max_income_target : null;
-
-        $balance_update =  (($this->is_full_amount ? $totalWiseIncome :
+        $balance_update =  (($this->is_full_amount ? $totalIncome :
             min(
-                $totalWiseIncome,
-                ($max_income_target ?? $totalWiseIncome)
-            )) - $this->min_income_target) *  ($this->add_to_balance / 100);
+                $totalIncome,
+                ($max_income_target ?? $totalIncome)
+            )) - $min_income_target) *  ($this->add_to_balance / 100);
 
         Log::info("Target#$this->id balance update", ["balance_update" => $balance_update, 'max_income_target' => $max_income_target]);
 
