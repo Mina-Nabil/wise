@@ -135,11 +135,6 @@ class Target extends Model
         });
     }
 
-    private function calculateBalanceUpdate($totalWiseIncome, $totalSalesIncome): float
-    {
-        if ($this->is_full_amount || $totalWiseIncome >= $this->max_income_target) return $totalSalesIncome;
-    }
-
     private function calculateCommissionPercentage(SoldPolicy $sp): float
     {
         $commPercentage = $this->comm_percentage / 100;
