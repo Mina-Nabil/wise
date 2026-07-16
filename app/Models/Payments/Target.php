@@ -92,6 +92,13 @@ class Target extends Model
                 $totalSalesIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
                 $commPercentages[$sp->id] = $commPercentage;
+                Log::info("SP#$sp->id details", [
+                    "tmpAmount" => $tmpAmount,
+                    "totalWiseIncome" => $totalWiseIncome,
+                    "totalSalesIncome" => $totalSalesIncome,
+                    "paidAmounts" => $paidAmounts,
+                    "commPercentages" => $commPercentages,
+                ]);
             }
         }
 
