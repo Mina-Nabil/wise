@@ -91,21 +91,21 @@ class Target extends Model
         }
         foreach ($soldPolicies as $sp) {
             $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalIncome;
-        }
 
-        $avgSalesPercentage = array_sum($paidAmountsPercent) / count($paidAmountsPercent);
-        $min_income_target = $this->min_income_target * $avgSalesPercentage;
-        $max_income_target = $this->max_income_target > 0 ? $this->max_income_target * $avgSalesPercentage : null;
+            Log::info("SP#$sp->id paidAmountsPercent", ["paidAmountsPercent" => $paidAmountsPercent[$sp->id]]);
+        }
 
 
         //return false if the target is not acheived
-        if ($totalIncome < $min_income_target) return false;
+        if ($totalIncome < $this->min_income_target) return false;
+
+        $max_income_target = $this->max_income_target > 0 ? $this->max_income_target : null;
 
         $balance_update =  (($this->is_full_amount ? $totalIncome :
             min(
                 $totalIncome,
                 ($max_income_target ?? $totalIncome)
-            )) - $min_income_target) *  ($this->add_to_balance / 100);
+            )) - $this->min_income_target) *  ($this->add_to_balance / 100);
 
         Log::info("Target#$this->id balance update", ["balance_update" => $balance_update, 'max_income_target' => $max_income_target]);
 
