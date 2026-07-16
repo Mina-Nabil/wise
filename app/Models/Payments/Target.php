@@ -58,8 +58,7 @@ class Target extends Model
         $start_date = $end_date->clone()->subMonths($this->each_month)->setTime(0, 0, 0);
         $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
         $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
-        $totalSalesIncome = 0;
-        $totalWiseIncome = 0;
+        $totalIncome = 0;
         $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
         $paidAmounts = [];
         $paidAmountsPercent = [];
@@ -73,44 +72,47 @@ class Target extends Model
             $totalClientPaid = $sp->total_client_paid;
             if ($totalClientPaidBetween < $totalClientPaid) {
                 $tmpAmount = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
-                if (!$this->is_full_amount && (($totalWiseIncome + $tmpAmount) >= $this->max_income_target)) break;
-                if ($totalWiseIncome < $this->min_income_target) continue;
                 $commPercentage = $this->calculateCommissionPercentage($sp);
-                $totalWiseIncome += $tmpAmount;
                 $incomeAmount = $commPercentage * $tmpAmount;
-                $totalSalesIncome += $incomeAmount;
+                $totalIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
                 $commPercentages[$sp->id] = $commPercentage;
             } else {
 
                 $tmpAmount = ($sp->tax_amount > 0 ? $sp->after_tax_comm : ($sp->after_tax_comm * .95)) - $sp->total_comm_subtractions;
-                if (!$this->is_full_amount && (($totalWiseIncome + $tmpAmount) >= $this->max_income_target)) break;
-                $totalWiseIncome += $tmpAmount;
-                if ($totalWiseIncome < $this->min_income_target) continue;
                 $commPercentage = $this->calculateCommissionPercentage($sp);
                 $incomeAmount = $commPercentage * $tmpAmount;
-                $totalSalesIncome += $incomeAmount;
+                $totalIncome += $incomeAmount;
                 $paidAmounts[$sp->id] = $incomeAmount;
                 $commPercentages[$sp->id] = $commPercentage;
-                Log::info("SP#$sp->id details", [
-                    "tmpAmount" => $tmpAmount,
-                    "totalWiseIncome" => $totalWiseIncome,
-                    "totalSalesIncome" => $totalSalesIncome,
-                    "paidAmounts" => $paidAmounts,
-                    "commPercentages" => $commPercentages,
-                ]);
             }
+
+
         }
+        foreach ($soldPolicies as $sp) {
+            $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalIncome;
+
+            Log::info("SP#$sp->id paidAmountsPercent", ["paidAmountsPercent" => $paidAmountsPercent[$sp->id]]);
+        }
+
 
         //return false if the target is not acheived
-        if ($totalWiseIncome < $this->min_income_target) return false;
+        if ($totalIncome < $this->min_income_target) return false;
 
-        foreach ($paidAmounts as $sp_id => $amount) {
-            $paidAmountsPercent[$sp_id] = $paidAmounts[$sp_id] / $totalSalesIncome;
-        }
+        $max_income_target = $this->max_income_target > 0 ? $this->max_income_target : null;
 
-        $balance_update = $totalSalesIncome;
-        $original_payment = $balance_update;
+        $balance_update =  (($this->is_full_amount ? $totalIncome :
+            min(
+                $totalIncome,
+                ($max_income_target ?? $totalIncome)
+            )) - $this->min_income_target) *  ($this->add_to_balance / 100);
+
+        Log::info("Target#$this->id balance update", ["balance_update" => $balance_update, 'max_income_target' => $max_income_target]);
+
+        $original_payment = (($this->add_as_payment / 100) * $balance_update);
+
+        Log::info("Target#$this->id payment to add", ["original_payment" => $original_payment]);
+
         $payment_to_add = max($this->base_payment, $original_payment);
 
         DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmountsPercent, &$linkedComms, $original_payment, $end_date, $commPercentages) {
@@ -118,7 +120,6 @@ class Target extends Model
 
             /** @var SalesComm */
             foreach ($salesCommissions as $s) {
-                if(!isset($paidAmountsPercent[$s->sold_policy_id])) continue;
                 $s->updatePaymentByTarget($this, $original_payment * $paidAmountsPercent[$s->sold_policy_id], $is_manual, $commPercentages[$s->sold_policy_id] * 100);
                 if ($s->amount > 0)
                     $linkedComms[$s->id] = [
