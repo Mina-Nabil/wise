@@ -205,11 +205,116 @@ class CommProfile extends Model
         $user = Auth::user();
         if (!$user->can('update', $this)) return false;
 
-        $this->load('targets');
+        return $this->processTargetPayments($end_date, true);
+    }
+
+    /** Should be called periodically (once per profile) to check the profile's targets.
+     * Targets act as marginal income brackets ordered by min_income_target: each target's
+     * percentage is applied only to the income portion falling inside its bracket.
+     * Achieved portions are stored as sub sales comms (and comm_target_runs) per sales comm. */
+    public function processTargetPayments(?Carbon $end_date = null, $is_manual = false)
+    {
+        $targets = $this->targets()->reorder()->orderBy('min_income_target')->get();
+        if ($targets->isEmpty()) return false;
+
         /** @var Target */
-        foreach ($this->targets as $t) {
-            $t->processTargetPayments($end_date, true);
+        $firstTarget = $targets->first();
+        if ($targets->pluck('each_month')->unique()->count() > 1)
+            AppLog::warning("Profile targets have different each_month values, using first target's", loggable: $this);
+
+        $end_date = $end_date ? $end_date->setTime(0, 0, 1) : Carbon::now()->setTime(0, 0, 1);
+        $start_date = $end_date->clone()->subMonths($firstTarget->each_month)->setTime(0, 0, 0);
+        $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
+
+        // deterministic order so the bracket-straddling policy is stable across re-runs
+        $soldPolicies = $this->getPaidSoldPolicies($start_date, $end_date)->sortBy('id')->values();
+        if ($soldPolicies->isEmpty()) return false;
+
+        //per-policy raw wise income (percentage-independent)
+        $incomes = []; //sold_policy_id => income
+        $totalIncome = 0;
+        /** @var SoldPolicy */
+        foreach ($soldPolicies as $sp) {
+            $sp->generatePolicyCommissions();
+            $sp->calculateTotalSalesOutComm();
+            $totalClientPaidBetween = $sp->getTotalClientPaidBetween($start_date, $end_date);
+            if ($totalClientPaidBetween < $sp->total_client_paid) {
+                $incomes[$sp->id] = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
+            } else {
+                $incomes[$sp->id] = ($sp->tax_amount > 0 ? $sp->after_tax_comm : ($sp->after_tax_comm * .95)) - $sp->total_comm_subtractions;
+            }
+            $totalIncome += $incomes[$sp->id];
         }
+
+        if ($totalIncome <= 0) return false;
+        //return false if the lowest target is not acheived
+        if ($totalIncome < $firstTarget->min_income_target) return false;
+
+        //allocate each policy's income sequentially into the target brackets
+        $portions = []; //sold_policy_id => [target_id => ['amount','percentage','title']]
+        $bracketPayouts = []; //target_id => payout
+        $cumulative = 0;
+        foreach ($soldPolicies as $sp) {
+            $policyStart = $cumulative;
+            $policyEnd = $cumulative + $incomes[$sp->id];
+            $cumulative = $policyEnd;
+
+            /** @var Target */
+            foreach ($targets as $t) {
+                $bracketStart = $t->min_income_target;
+                $bracketEnd = $t->max_income_target > 0 ? $t->max_income_target : INF;
+                $portionIncome = min($policyEnd, $bracketEnd) - max($policyStart, $bracketStart);
+                if ($portionIncome <= 0) continue;
+
+                $commPercentage = $t->effectivePercentage($sp);
+                $portionAmount = $portionIncome * $commPercentage;
+                $portions[$sp->id][$t->id] = [
+                    'amount'        =>  $portionAmount,
+                    'percentage'    =>  $commPercentage * 100,
+                    'title'         =>  "Target#$t->id (" . number_format($bracketStart) . " - " . ($bracketEnd === INF ? "∞" : number_format($bracketEnd)) . ")",
+                ];
+                $bracketPayouts[$t->id] = ($bracketPayouts[$t->id] ?? 0) + $portionAmount;
+            }
+        }
+        $totalPayout = array_sum($bracketPayouts);
+
+        //base_payment floor: strongest guarantee among achieved targets
+        $achievedBasePayment = $targets
+            ->filter(fn($t) => $totalIncome > $t->min_income_target)
+            ->max('base_payment') ?? 0;
+        $payment_to_add = max($achievedBasePayment, $totalPayout);
+
+        Log::info("Profile#$this->id targets run", ["totalIncome" => $totalIncome, "totalPayout" => $totalPayout, "payment_to_add" => $payment_to_add]);
+
+        DB::transaction(function () use ($soldPolicies, $targets, $portions, $bracketPayouts, $totalPayout, $payment_to_add, $end_date) {
+            $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
+            $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->id, $soldPolicies->pluck('id')->toArray());
+
+            /** @var SalesComm */
+            foreach ($salesCommissions as $s) {
+                $policyPortions = $portions[$s->sold_policy_id] ?? [];
+                $s->applyTargetPortions($policyPortions);
+                $commTotal = array_sum(array_column($policyPortions, 'amount'));
+                if ($s->amount > 0 && $commTotal > 0)
+                    $linkedComms[$s->id] = [
+                        'paid_percentage'   =>  ($commTotal / $s->amount) * 100,
+                        'amount'            =>  $commTotal
+                    ];
+            }
+
+            $this->refreshBalances();
+
+            if ($payment_to_add)
+                $this->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Profile#$this->id targets run", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
+
+            if ($payment_to_add > $totalPayout)
+                $this->addPayment($totalPayout - $payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Profile#$this->id targets run difference", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
+
+            // every target advances together (TargetRun.created_at drives the next run date),
+            // so brackets that earned nothing this run still record a zero-amount run
+            foreach ($targets as $t)
+                $t->addRun(0, $bracketPayouts[$t->id] ?? 0);
+        });
         return true;
     }
 
@@ -399,13 +504,10 @@ class CommProfile extends Model
         $prem_target,
         $min_income_target,
         $comm_percentage,
-        $add_to_balance = 100,
-        $add_as_payment = 100,
         $base_payment = null,
         $max_income_target = null,
         Carbon $next_run_date = null,
         $is_end_of_month = false,
-        $is_full_amount = false,
         $renewal_percentage = null,
         $sales_out_percentage = null,
     ) {
@@ -420,12 +522,9 @@ class CommProfile extends Model
                 "renewal_percentage" =>  $renewal_percentage,
                 "sales_out_percentage" =>  $sales_out_percentage,
                 "min_income_target" =>  $min_income_target,
-                "add_to_balance"    =>  $add_to_balance,
-                "add_as_payment"    =>  $add_as_payment,
                 "base_payment"      =>  $base_payment,
                 "max_income_target" =>  $max_income_target,
                 "is_end_of_month"   =>  $is_end_of_month,
-                "is_full_amount"   =>  $is_full_amount ?? false,
                 "next_run_date"     =>  $next_run_date?->format('Y-m-d') ?? null,
                 "order"             =>  $order
             ]);

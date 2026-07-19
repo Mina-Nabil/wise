@@ -23,10 +23,14 @@ class Kernel extends ConsoleKernel
         $schedule->call(fn() => Offer::cleanOffersDirectory())
             ->environments(['production'])->dailyAt('4:00');
         $schedule->call(function () {
+            // targets are processed once per profile (marginal brackets across the profile's targets)
+            $ranProfiles = [];
             /** @var Target */
-            foreach (Target::onlyToday()->get() as $t) {
+            foreach (Target::onlyToday()->with('comm_profile')->get() as $t) {
+                if (in_array($t->comm_profile_id, $ranProfiles)) continue;
                 if ($t->is_due) {
-                    $t->processTargetPayments();
+                    $ranProfiles[] = $t->comm_profile_id;
+                    $t->comm_profile->processTargetPayments();
                 }
             }
         })

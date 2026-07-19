@@ -873,6 +873,42 @@
                                                     @endcan
                                                     @endif
                                                 </tr>
+
+                                                @foreach ($comm->sub_sales_comms as $sub)
+                                                    <tr class="bg-slate-50 dark:bg-slate-900">
+                                                        <td class="table-td" colspan="4">
+                                                            <div class="flex items-center pl-4">
+                                                                <iconify-icon class="text-slate-400 mr-2"
+                                                                    icon="material-symbols:subdirectory-arrow-right"></iconify-icon>
+                                                                <span class="text-slate-500 dark:text-slate-400 text-sm">
+                                                                    {{ $sub->title }}
+                                                                </span>
+                                                                &nbsp;
+                                                                @if ($sub->source === \App\Models\Payments\SubSalesComm::SOURCE_MANUAL)
+                                                                    <span class="badge bg-info-500 text-white h-auto text-[10px]">Manual</span>
+                                                                @elseif ($sub->source === \App\Models\Payments\SubSalesComm::SOURCE_TARGET)
+                                                                    <span class="badge bg-primary-500 text-white h-auto text-[10px]">Target</span>
+                                                                @else
+                                                                    <span class="badge bg-secondary-500 text-white h-auto text-[10px]">Installment</span>
+                                                                @endif
+                                                            </div>
+                                                        </td>
+                                                        <td class="table-td">
+                                                            <span class="text-sm text-success-500">
+                                                                {{ number_format($sub->amount, 2, '.', ',') }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="table-td" colspan="5">
+                                                            <span class="text-xs text-slate-400">
+                                                                {{ $sub->created_at?->format('d/m/Y') }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="table-td text-sm">
+                                                            {{ $sub->percentage ? round($sub->percentage, 2) . '%' : '' }}
+                                                        </td>
+                                                        <td class="table-td"></td>
+                                                    </tr>
+                                                @endforeach
                                             @endforeach
 
                                         </tbody>
@@ -1116,9 +1152,6 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
-                                                        Payment / Balance
-                                                    </th>
-                                                    <th scope="col" class=" table-th ">
                                                         Base?
                                                     </th>
 
@@ -1166,10 +1199,6 @@
                                                         </td>
 
 
-                                                        <td class="table-td ">
-                                                            {{ $target->add_as_payment }}% /
-                                                            {{ $target->add_to_balance }}%
-                                                        </td>
                                                         <td class="table-td ">
                                                             {{ $target->base_payment ?? 'N/A' }}
                                                         </td>
@@ -2308,34 +2337,16 @@
                                     <input type="date" class="form-control" wire:model.defer="nextRunDate">
                                 </div>
 
-                                <div class="flex justify-between items-start space-x-6">
-                                    <div class="input-area mt-3">
-                                        <label for="commPercentage" class="form-label">Comm. Percentage</label>
-                                        <div class="relative">
-                                            <input type="number" name="commPercentage"
-                                                class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
-                                                wire:model.defer="commPercentage">
-                                            <span
-                                                class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
-                                                %
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="input-area mt-3 flex flex-col">
-                                        <label for="checkBox" class="form-label no-wrap">Full Amount?</label>
-                                        <div class="checkbox-area mt-2">
-                                            <label class="inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" class="hidden row-checkbox"
-                                                    wire:model="isFullAmount">
-                                                <span
-                                                    class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                                        alt=""
-                                                        class="h-[10px] w-[10px] block m-auto opacity-0">
-                                                </span>
-                                            </label>
-                                        </div>
+                                <div class="input-area mt-3">
+                                    <label for="commPercentage" class="form-label">Comm. Percentage</label>
+                                    <div class="relative">
+                                        <input type="number" name="commPercentage"
+                                            class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="commPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
                                     </div>
                                 </div>
                                 @error('commPercentage')
@@ -2420,26 +2431,6 @@
                                         Leave empty if there is no max limit</small>
                                 </div>
                                 @error('maxIncomeTarget')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-
-                                <div class="input-area mt-3">
-                                    <label for="addToBalance" class="form-label">Add To Balance %</label>
-                                    <input id="addToBalance" type="number" class="form-control"
-                                        wire:model="addToBalance">
-                                </div>
-                                @error('addToBalance')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-
-                                <div class="input-area mt-3">
-                                    <label for="addAsPayment" class="form-label">Add as Payment %</label>
-                                    <input id="addAsPayment" type="number" class="form-control"
-                                        wire:model="addAsPayment">
-                                </div>
-                                @error('addAsPayment')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
@@ -2543,34 +2534,16 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
-                                <div class="flex justify-between items-start space-x-6">
-                                    <div class="input-area mt-3">
-                                        <label for="commPercentage" class="form-label">Comm. Percentage</label>
-                                        <div class="relative">
-                                            <input type="number" name="commPercentage"
-                                                class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
-                                                wire:model.defer="commPercentage">
-                                            <span
-                                                class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
-                                                %
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="input-area mt-3 flex flex-col">
-                                        <label for="checkBox" class="form-label no-wrap">Full Amount?</label>
-                                        <div class="checkbox-area mt-2">
-                                            <label class="inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" class="hidden row-checkbox"
-                                                    wire:model="isFullAmount">
-                                                <span
-                                                    class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                                    <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
-                                                        alt=""
-                                                        class="h-[10px] w-[10px] block m-auto opacity-0">
-                                                </span>
-                                            </label>
-                                        </div>
+                                <div class="input-area mt-3">
+                                    <label for="commPercentage" class="form-label">Comm. Percentage</label>
+                                    <div class="relative">
+                                        <input type="number" name="commPercentage"
+                                            class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
+                                            wire:model.defer="commPercentage">
+                                        <span
+                                            class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
+                                            %
+                                        </span>
                                     </div>
                                 </div>
 
@@ -2657,26 +2630,6 @@
                                         Leave empty if there is no max limit</small>
                                 </div>
                                 @error('maxIncomeTarget')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-
-                                <div class="input-area mt-3">
-                                    <label for="addToBalance" class="form-label">Add To Balance %</label>
-                                    <input id="addToBalance" type="number" class="form-control"
-                                        wire:model="addToBalance">
-                                </div>
-                                @error('addToBalance')
-                                    <span
-                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
-                                @enderror
-
-                                <div class="input-area mt-3">
-                                    <label for="addAsPayment" class="form-label">Add as Payment %</label>
-                                    <input id="addAsPayment" type="number" class="form-control"
-                                        wire:model="addAsPayment">
-                                </div>
-                                @error('addAsPayment')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

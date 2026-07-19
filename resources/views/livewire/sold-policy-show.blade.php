@@ -1907,6 +1907,14 @@
                                     class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add
                                     commission</button>
                             @endcan
+
+                            @if ($soldPolicy->sales_comms->isNotEmpty())
+                                @can('create', \App\Models\Payments\SalesComm::class)
+                                    <button wire:click="toggleAddSubSales"
+                                        class="btn btn-sm inline-flex justify-center btn-outline-dark rounded-[25px]">Add
+                                        sub sales</button>
+                                @endcan
+                            @endif
                         </div>
 
                         <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
@@ -2111,6 +2119,59 @@
                                                             </td>
                                                         @endcan
                                                     </tr>
+
+                                                    @foreach ($comm->sub_sales_comms as $sub)
+                                                        <tr class="bg-slate-50 dark:bg-slate-900">
+                                                            <td class="table-td">
+                                                                <div class="flex items-center pl-4">
+                                                                    <iconify-icon class="text-slate-400 mr-2"
+                                                                        icon="material-symbols:subdirectory-arrow-right"></iconify-icon>
+                                                                    <span class="text-slate-500 dark:text-slate-400 text-sm">
+                                                                        {{ $sub->title }}
+                                                                    </span>
+                                                                    &nbsp;
+                                                                    @if ($sub->source === \App\Models\Payments\SubSalesComm::SOURCE_MANUAL)
+                                                                        <span class="badge bg-info-500 text-white h-auto text-[10px]">Manual</span>
+                                                                    @elseif ($sub->source === \App\Models\Payments\SubSalesComm::SOURCE_TARGET)
+                                                                        <span class="badge bg-primary-500 text-white h-auto text-[10px]">Target</span>
+                                                                    @else
+                                                                        <span class="badge bg-secondary-500 text-white h-auto text-[10px]">Installment</span>
+                                                                    @endif
+                                                                </div>
+                                                            </td>
+                                                            <td class="table-td">
+                                                                <div class="text-sm text-success-500">
+                                                                    {{ number_format($sub->amount, 2, '.', ',') }} EGP
+                                                                </div>
+                                                            </td>
+                                                            <td class="table-td"></td>
+                                                            <td class="table-td text-sm">
+                                                                {{ $sub->percentage ? round($sub->percentage, 2) . '%' : '' }}
+                                                            </td>
+                                                            <td class="table-td text-sm">
+                                                                {{ $sub->created_at?->format('D d/m/Y') }}
+                                                            </td>
+                                                            <td class="table-td"></td>
+                                                            <td class="table-td px-0">
+                                                                @if ($sub->note)
+                                                                    <iconify-icon class="cursor-pointer" title="{{ $sub->note }}"
+                                                                        icon="gravity-ui:comment" width="1.2em"
+                                                                        height="1.2em"></iconify-icon>
+                                                                @endif
+                                                            </td>
+                                                            @can('update', $comm)
+                                                                <td class="table-td">
+                                                                    @if ($sub->is_manual)
+                                                                        <button
+                                                                            wire:click="confirmDeleteSubSales({{ $sub->id }})"
+                                                                            class="action-btn text-danger-500" type="button">
+                                                                            <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                                                        </button>
+                                                                    @endif
+                                                                </td>
+                                                            @endcan
+                                                        </tr>
+                                                    @endforeach
                                                 @endforeach
 
                                             </tbody>
@@ -4469,6 +4530,110 @@
         @endif
     @endcan
 
+    {{-- addSubSalesSec --}}
+    @can('create', \App\Models\Payments\SalesComm::class)
+        @if ($addSubSalesSec)
+            <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+                tabindex="-1" aria-labelledby="vertically_center" aria-modal="true" role="dialog"
+                style="display: block;">
+                <div class="modal-dialog top-1/2 !-translate-y-1/2 relative w-auto pointer-events-none">
+                    <div
+                        class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                        <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                            <!-- Modal header -->
+                            <div
+                                class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                                <h3 class="text-xl font-medium text-white dark:text-white capitalize">
+                                    Add Sub Sales Commission
+                                </h3>
+                                <button wire:click="toggleAddSubSales" type="button"
+                                    class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white"
+                                    data-bs-dismiss="modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                                                                        11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6 space-y-4">
+
+                                <div class="from-group">
+                                    <label for="subSalesCommId" class="form-label">Commission Profile</label>
+                                    <select name="subSalesCommId" id="subSalesCommId" class="form-control w-full mt-2"
+                                        wire:model="subSalesCommId">
+                                        <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
+                                            value="">
+                                            Select Profile</option>
+                                        @foreach ($soldPolicy->sales_comms as $comm)
+                                            @if ($comm->status !== \App\Models\Payments\SalesComm::PYMT_STATE_CANCELLED)
+                                                <option value="{{ $comm->id }}"
+                                                    class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
+                                                    {{ $comm->comm_profile?->title }} ({{ $comm->title }})
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    @error('subSalesCommId')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="from-group">
+                                    <label for="subSalesTitle" class="form-label">Title</label>
+                                    <input type="text" name="subSalesTitle"
+                                        class="form-control mt-2 w-full @error('subSalesTitle') !border-danger-500 @enderror"
+                                        wire:model.defer="subSalesTitle">
+                                    @error('subSalesTitle')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="from-group">
+                                    <label for="subSalesAmount" class="form-label">Amount</label>
+                                    <input type="number" min="0" step="any" name="subSalesAmount"
+                                        class="form-control mt-2 w-full @error('subSalesAmount') !border-danger-500 @enderror"
+                                        wire:model.defer="subSalesAmount">
+                                    @error('subSalesAmount')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="from-group">
+                                    <label for="subSalesNote" class="form-label">Note</label>
+                                    <textarea class="form-control mt-2 w-full @error('subSalesNote') !border-danger-500 @enderror"
+                                        wire:model.defer="subSalesNote"></textarea>
+                                    @error('subSalesNote')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <!-- Modal footer -->
+                            <div
+                                class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                <button wire:click="addSubSales" data-bs-dismiss="modal"
+                                    class="btn inline-flex justify-center text-white bg-black-500">
+                                    <span wire:loading.remove wire:target="addSubSales">Submit</span>
+                                    <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                        wire:loading wire:target="addSubSales"
+                                        icon="line-md:loading-twotone-loop"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endcan
+
     @can('updatePayments', $soldPolicy)
         @if ($adjustCommSec)
             <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
@@ -5128,5 +5293,36 @@
         </div>
     @endif
     {{-- END: Delete Sales Comm Confirmation Modal --}}
+
+    {{-- BEGIN: Delete Sub Sales Comm Confirmation Modal --}}
+    @if ($deleteSubSalesId)
+        <div class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-sm mx-4">
+                <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-600">
+                    <h5 class="text-base font-semibold text-slate-900 dark:text-white">Delete Sub Sales Commission</h5>
+                    <button wire:click="dismissDeleteSubSales" class="text-slate-400 hover:text-slate-600">
+                        <iconify-icon icon="heroicons:x-mark"></iconify-icon>
+                    </button>
+                </div>
+                <div class="p-5">
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Are you sure you want to delete this sub sales commission? The parent commission amount will be recalculated.</p>
+                </div>
+                <div class="flex items-center justify-end p-5 space-x-2 border-t border-slate-200 dark:border-slate-600">
+                    <button wire:click="dismissDeleteSubSales" type="button"
+                        class="btn inline-flex justify-center btn-white dark:bg-slate-700 dark:text-slate-300">
+                        Cancel
+                    </button>
+                    <button wire:click="deleteSubSales" type="button"
+                        class="btn inline-flex justify-center text-white bg-danger-500 hover:bg-danger-600">
+                        <span wire:loading.remove wire:target="deleteSubSales">Delete</span>
+                        <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                            wire:loading wire:target="deleteSubSales"
+                            icon="line-md:loading-twotone-loop"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+    {{-- END: Delete Sub Sales Comm Confirmation Modal --}}
 
 </div>

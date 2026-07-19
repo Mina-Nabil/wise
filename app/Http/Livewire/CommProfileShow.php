@@ -77,11 +77,8 @@ class CommProfileShow extends Component
     public $commPercentage; //
     public $renewalPercentage; //
     public $salesOutPercentage; //
-    public $addToBalance;
-    public $addAsPayment;
     public $basePayment;
     public $isEndOfMonth;
-    public $isFullAmount;
 
     public $deleteTargetId;
     public $editTargetId;
@@ -818,11 +815,8 @@ class CommProfileShow extends Component
         $this->commPercentage = null;
         $this->renewalPercentage = null;
         $this->salesOutPercentage = null;
-        $this->addToBalance = 100;
-        $this->addAsPayment = 100;
         $this->basePayment = null;
         $this->isEndOfMonth = false;
-        $this->isFullAmount = false;
     }
 
     public function openNewTargetSection()
@@ -837,7 +831,6 @@ class CommProfileShow extends Component
         $this->premTarget = $t->prem_target;
         $this->dayOfMonth = $t->day_of_month;
         $this->isEndOfMonth = $t->is_end_of_month;
-        $this->isFullAmount = $t->is_full_amount;
         $this->eachMonth = $t->each_month;
         $this->premTarget = $t->prem_target;
         $this->minIncomeTarget = $t->min_income_target;
@@ -846,8 +839,6 @@ class CommProfileShow extends Component
         $this->commPercentage = $t->comm_percentage;
         $this->renewalPercentage = $t->renewal_percentage;
         $this->salesOutPercentage = $t->sales_out_percentage;
-        $this->addToBalance = $t->add_to_balance;
-        $this->addAsPayment = $t->add_as_payment;
         $this->basePayment = $t->base_payment;
     }
 
@@ -863,11 +854,8 @@ class CommProfileShow extends Component
         $this->commPercentage = null;
         $this->renewalPercentage = null;
         $this->salesOutPercentage = null;
-        $this->addToBalance = 100;
-        $this->addAsPayment = 100;
         $this->basePayment = null;
         $this->isEndOfMonth = false;
-        $this->isFullAmount = false;
     }
 
     public function editarget()
@@ -881,14 +869,11 @@ class CommProfileShow extends Component
             'renewalPercentage' => 'nullable|numeric|between:0,100',
             'salesOutPercentage' => 'nullable|numeric|between:0,100',
             'maxIncomeTarget' => 'nullable|numeric',
-            'addToBalance' => 'required|numeric',
-            'addAsPayment' => 'required|numeric',
             'basePayment' => 'nullable|numeric',
             'nextRunDate' => 'nullable|date',
-            'isFullAmount' => 'nullable|boolean',
         ]);
 
-        $res = Target::find($this->editTargetId)->editInfo($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount, $this->renewalPercentage, $this->salesOutPercentage);
+        $res = Target::find($this->editTargetId)->editInfo($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->renewalPercentage, $this->salesOutPercentage);
         if ($res) {
             $this->closeEditTargetSection();
             $this->mount($this->profile->id);
@@ -931,13 +916,10 @@ class CommProfileShow extends Component
             'renewalPercentage' => 'nullable|numeric|between:0,100',
             'salesOutPercentage' => 'nullable|numeric|between:0,100',
             'maxIncomeTarget' => 'nullable|numeric|gt:minIncomeTarget',
-            'addToBalance' => 'required|numeric|between:0,100',
-            'addAsPayment' => 'required|numeric|between:0,100',
             'basePayment' => 'nullable|numeric',
-            'isFullAmount' => 'nullable|boolean',
         ]);
 
-        $res = $this->profile->addTarget($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->addToBalance, $this->addAsPayment, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->isFullAmount, $this->renewalPercentage, $this->salesOutPercentage);
+        $res = $this->profile->addTarget($this->isEndOfMonth ? 28 : $this->dayOfMonth, $this->eachMonth, $this->premTarget, $this->minIncomeTarget, $this->commPercentage, $this->basePayment, $this->maxIncomeTarget, $this->nextRunDate ? new Carbon($this->nextRunDate) : null, $this->isEndOfMonth, $this->renewalPercentage, $this->salesOutPercentage);
 
         if ($res) {
             $this->closeNewTargetSection();
@@ -1328,7 +1310,7 @@ class CommProfileShow extends Component
             ->first()->paid_amount ?? 0;
 
         $sales_comm = $this->profile
-            ->sales_comm()->filterByStatus($this->salesCommStatus)
+            ->sales_comm()->with('sub_sales_comms')->filterByStatus($this->salesCommStatus)
             ->only2025()
             ->when($this->isSortLatest, function ($query) {
                 return $query->latest(); // Sort sales commissions by latest

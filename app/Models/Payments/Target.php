@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class Target extends Model
 {
@@ -29,11 +28,8 @@ class Target extends Model
         "max_income_target",
         "day_of_month",
         "each_month",
-        "add_to_balance",
-        "add_as_payment",
         "next_run_date",
         "is_end_of_month",
-        "is_full_amount",
         "renewal_percentage", //percentage of the target to be paid for renewal policies only
         "sales_out_percentage" //percentage of the target to be paid for sales out policies only
     ];
@@ -49,100 +45,9 @@ class Target extends Model
     }
 
     ///model functions
-    /** Should be called periodically to check target. It will check if target if acheived. 
-     * If yes it will update the related sales commissions */
-    public function processTargetPayments(?Carbon $end_date = null, $is_manual = false)
-    {
-        $this->load('comm_profile');
-        $end_date = $end_date ? $end_date->setTime(0, 0, 1) : Carbon::now()->setTime(0, 0, 1);
-        $start_date = $end_date->clone()->subMonths($this->each_month)->setTime(0, 0, 0);
-        $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
-        $soldPolicies = $this->comm_profile->getPaidSoldPolicies($start_date, $end_date);
-        $totalIncome = 0;
-        $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
-        $paidAmounts = [];
-        $paidAmountsPercent = [];
-        $commPercentages = [];
-
-        /** @var SoldPolicy */
-        foreach ($soldPolicies as $sp) {
-            $sp->generatePolicyCommissions();
-            $sp->calculateTotalSalesOutComm();
-            $totalClientPaidBetween = $sp->getTotalClientPaidBetween($start_date, $end_date);
-            $totalClientPaid = $sp->total_client_paid;
-            if ($totalClientPaidBetween < $totalClientPaid) {
-                $tmpAmount = $sp->calculateSalesCommissionForCertainAmount($totalClientPaidBetween) * .95;
-                $commPercentage = $this->calculateCommissionPercentage($sp);
-                $incomeAmount = $commPercentage * $tmpAmount;
-                $totalIncome += $incomeAmount;
-                $paidAmounts[$sp->id] = $incomeAmount;
-                $commPercentages[$sp->id] = $commPercentage;
-            } else {
-
-                $tmpAmount = ($sp->tax_amount > 0 ? $sp->after_tax_comm : ($sp->after_tax_comm * .95)) - $sp->total_comm_subtractions;
-                $commPercentage = $this->calculateCommissionPercentage($sp);
-                $incomeAmount = $commPercentage * $tmpAmount;
-                $totalIncome += $incomeAmount;
-                $paidAmounts[$sp->id] = $incomeAmount;
-                $commPercentages[$sp->id] = $commPercentage;
-            }
-
-
-        }
-        foreach ($soldPolicies as $sp) {
-            $paidAmountsPercent[$sp->id] = $paidAmounts[$sp->id] / $totalIncome;
-
-            Log::info("SP#$sp->id paidAmountsPercent", ["paidAmountsPercent" => $paidAmountsPercent[$sp->id]]);
-        }
-
-
-        //return false if the target is not acheived
-        if ($totalIncome < $this->min_income_target) return false;
-
-        $max_income_target = $this->max_income_target > 0 ? $this->max_income_target : null;
-
-        $balance_update =  (($this->is_full_amount ? $totalIncome :
-            min(
-                $totalIncome,
-                ($max_income_target ?? $totalIncome)
-            )) - $this->min_income_target) *  ($this->add_to_balance / 100);
-
-        Log::info("Target#$this->id balance update", ["balance_update" => $balance_update, 'max_income_target' => $max_income_target]);
-
-        $original_payment = (($this->add_as_payment / 100) * $balance_update);
-
-        Log::info("Target#$this->id payment to add", ["original_payment" => $original_payment]);
-
-        $payment_to_add = max($this->base_payment, $original_payment);
-
-        DB::transaction(function () use ($soldPolicies, $balance_update, $payment_to_add, $is_manual, $paidAmountsPercent, &$linkedComms, $original_payment, $end_date, $commPercentages) {
-            $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->comm_profile->id, $soldPolicies->pluck('id')->toArray());
-
-            /** @var SalesComm */
-            foreach ($salesCommissions as $s) {
-                $s->updatePaymentByTarget($this, $original_payment * $paidAmountsPercent[$s->sold_policy_id], $is_manual, $commPercentages[$s->sold_policy_id] * 100);
-                if ($s->amount > 0)
-                    $linkedComms[$s->id] = [
-                        'paid_percentage'   => (($original_payment * $paidAmountsPercent[$s->sold_policy_id]) / $s->amount) * 100,
-                        'amount'            =>  $original_payment * $paidAmountsPercent[$s->sold_policy_id]
-                    ];
-            }
-
-            if ($balance_update)
-                $this->comm_profile->refreshBalances();
-
-            if ($payment_to_add)
-                $this->comm_profile->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id payment", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
-
-            if ($payment_to_add > $original_payment) {
-                $this->comm_profile->addPayment($original_payment - $payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Target#$this->id difference", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
-            }
-
-            $this->addRun($balance_update - $payment_to_add, $payment_to_add);
-        });
-    }
-
-    private function calculateCommissionPercentage(SoldPolicy $sp): float
+    /** Effective commission percentage (0-1) for a sold policy, applying renewal/sales-out multipliers.
+     * Used by CommProfile::processTargetPayments while allocating income across target brackets. */
+    public function effectivePercentage(SoldPolicy $sp): float
     {
         $commPercentage = $this->comm_percentage / 100;
         $commPercentage *= ($sp->renewal_policy_id && $this->renewal_percentage > 0) ? ($this->renewal_percentage / 100) : 1;
@@ -170,13 +75,10 @@ class Target extends Model
         $prem_target,
         $min_income_target,
         $comm_percentage,
-        $add_to_balance = null,
-        $add_as_payment = null,
         $base_payment = null,
         $max_income_target = null,
         $next_run_date = null,
         $is_end_of_month = false,
-        $is_full_amount = false,
         $renewal_percentage = null,
         $sales_out_percentage = null,
     ) {
@@ -189,11 +91,8 @@ class Target extends Model
                 "comm_percentage"   =>  $comm_percentage,
                 "min_income_target" =>  $min_income_target,
                 "prem_target"   =>  $prem_target,
-                "add_to_balance"   =>  $add_to_balance,
-                "add_as_payment"   =>  $add_as_payment,
                 "max_income_target"   =>  $max_income_target,
                 "is_end_of_month"   =>  $is_end_of_month,
-                "is_full_amount"   =>  $is_full_amount ?? false,
                 "renewal_percentage"   =>  $renewal_percentage,
                 "sales_out_percentage"   =>  $sales_out_percentage,
             ];

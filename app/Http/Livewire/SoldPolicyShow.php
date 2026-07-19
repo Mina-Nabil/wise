@@ -21,6 +21,7 @@ use App\Models\Payments\CommProfile;
 use App\Models\Payments\CompanyCommPayment;
 use App\Models\Payments\CommProfileConf;
 use App\Models\Payments\Invoice;
+use App\Models\Payments\SubSalesComm;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
@@ -114,6 +115,13 @@ class SoldPolicyShow extends Component
     public $commStatus;
     public $deleteCommId;
     public $commId;
+    //sub sales comm
+    public $addSubSalesSec = false;
+    public $subSalesCommId;
+    public $subSalesTitle;
+    public $subSalesAmount;
+    public $subSalesNote;
+    public $deleteSubSalesId;
 
     public $deletePolComSec;
     public $updatePolComSec;
@@ -893,6 +901,72 @@ class SoldPolicyShow extends Component
 
         if (!$this->adjustCommSec) {
             $this->reset(['commFrom', 'commAmount', 'commProfile', 'newcommNote']);
+        }
+    }
+
+    public function toggleAddSubSales()
+    {
+        $this->toggle($this->addSubSalesSec);
+
+        if (!$this->addSubSalesSec) {
+            $this->reset(['subSalesCommId', 'subSalesTitle', 'subSalesAmount', 'subSalesNote']);
+        }
+    }
+
+    public function addSubSales()
+    {
+        $this->validate([
+            'subSalesCommId' => 'required|integer|exists:sales_comms,id',
+            'subSalesTitle' => 'required|string|max:255',
+            'subSalesAmount' => 'required|numeric|min:0.01',
+            'subSalesNote' => 'nullable|string',
+        ]);
+
+        /** @var SalesComm */
+        $comm = $this->soldPolicy->sales_comms()->whereNot('status', SalesComm::PYMT_STATE_CANCELLED)->find($this->subSalesCommId);
+        if (!$comm) {
+            $this->throwError('subSalesCommId', 'This commission is not linked to this policy.');
+            return;
+        }
+        $this->authorize('update', $comm);
+
+        $res = $comm->addManualSub($this->subSalesTitle, $this->subSalesAmount, $this->subSalesNote);
+        if ($res) {
+            $this->toggleAddSubSales();
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Sub sales commission added!');
+        } else {
+            $this->alert('failed', 'Server error');
+        }
+    }
+
+    public function confirmDeleteSubSales($id)
+    {
+        $this->deleteSubSalesId = $id;
+    }
+
+    public function dismissDeleteSubSales()
+    {
+        $this->deleteSubSalesId = null;
+    }
+
+    public function deleteSubSales()
+    {
+        $sub = SubSalesComm::find($this->deleteSubSalesId);
+        $this->deleteSubSalesId = null;
+
+        if (!$sub || $sub->sales_comm->sold_policy_id != $this->soldPolicy->id) {
+            $this->alert('failed', 'Sub sales commission not found');
+            return;
+        }
+        $this->authorize('update', $sub->sales_comm);
+
+        $res = $sub->deleteSub();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Sub sales commission deleted!');
+        } else {
+            $this->alert('failed', 'Server error');
         }
     }
 
@@ -1898,7 +1972,7 @@ class SoldPolicyShow extends Component
 
     public function mount($id)
     {
-        $this->soldPolicy = SoldPolicy::with('company_comm_payments', 'sales_comms')->find($id);
+        $this->soldPolicy = SoldPolicy::with('company_comm_payments', 'sales_comms', 'sales_comms.sub_sales_comms')->find($id);
         $this->authorize('view', $this->soldPolicy);
         $this->offer = $this->soldPolicy->offer;
         $this->insured_value = $this->soldPolicy->insured_value;

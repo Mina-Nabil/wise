@@ -312,10 +312,12 @@ class ClientPayment extends Model
                 $updates['collected_date'] = $date->format('Y-m-d H:i');
                 if ($this->update($updates)) {
                     $this->load('sold_policy');
+                    $amountsBefore = $this->sold_policy->sales_comms()->notCancelled()->pluck('amount', 'id')->toArray();
                     $this->sold_policy->setClientPaymentDate($date);
                     $this->sold_policy->generatePolicyCommissions(true);
                     $this->sold_policy->calculateTotalClientPayments();
                     $this->sold_policy->updateSalesCommsPaymentInfo();
+                    $this->createInstallmentSubComms($amountsBefore);
                     $this->sold_policy->unsetClientPaymentDate();
                     Review::createReview($this->sold_policy, "New Policy Review", "Policy# {$this->sold_policy->policy_number} premium collected");
                 }
@@ -345,10 +347,12 @@ class ClientPayment extends Model
 
             if ($this->update($updates)) {
                 $this->load('sold_policy');
+                $amountsBefore = $this->sold_policy->sales_comms()->notCancelled()->pluck('amount', 'id')->toArray();
                 $this->sold_policy->setClientPaymentDate($date);
                 $this->sold_policy->generatePolicyCommissions(true);
                 $this->sold_policy->calculateTotalClientPayments();
                 $this->sold_policy->updateSalesCommsPaymentInfo();
+                $this->createInstallmentSubComms($amountsBefore);
                 Review::createReview($this->sold_policy, "New Policy Review", "Policy# {$this->sold_policy->policy_number} premium collected");
             }
             return true;
@@ -393,9 +397,36 @@ class ClientPayment extends Model
                 $this->sold_policy->calculateTotalClientPayments();
                 // $this->sold_policy->updateSalesCommsPaymentInfo();
             }
+            if ($res)
+                SubSalesComm::where('client_payment_id', $this->id)->delete();
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Client Payment info failed", desc: $e->getMessage(), loggable: $this);
+        }
+    }
+
+    /** Installment breakdown: when a policy is paid over multiple client payments, each collected
+     * payment records the incremental sales commission it produced as a sub sales comm. */
+    private function createInstallmentSubComms(array $amountsBefore)
+    {
+        try {
+            //installments only - single-payment policies keep no breakdown
+            $paymentsCount = $this->sold_policy->client_payments()
+                ->where('status', '!=', self::PYMT_STATE_CANCELLED)
+                ->count();
+            if ($paymentsCount <= 1) return true;
+
+            /** @var SalesComm */
+            foreach ($this->sold_policy->sales_comms()->notCancelled()->get() as $comm) {
+                $delta = $comm->amount - ($amountsBefore[$comm->id] ?? 0);
+                if ($delta > 0.01)
+                    $comm->addClientPaymentSub($this, round($delta, 2));
+            }
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't create installment sub sales comms", desc: $e->getMessage(), loggable: $this);
+            return false;
         }
     }
 

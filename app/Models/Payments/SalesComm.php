@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -135,31 +136,46 @@ class SalesComm extends Model
         }
     }
 
-    /** Should be used while target calculation only */
-    public function updatePaymentByTarget(Target $t, $paid_amount, $is_manual = false, $comm_percentage = null)
+    /** Should be used while target calculation only.
+     * @param array $portions target_id => ['amount' => float, 'percentage' => float(0-100), 'title' => string] */
+    public function applyTargetPortions(array $portions)
     {
-
-        if ($is_manual) {
-            /** @var User */
-            $user = Auth::user();
-            if (!$user->can('update', $this)) return false;
-        }
-        $this->clearPreviousPaymentTargetInfo();
-
         try {
-            $this->comm_target_runs()->firstOrCreate([
-                'target_id' =>  $t->id
-            ], [
-                'percentage'    =>  $comm_percentage ?? $t->comm_percentage,
-                'amount'    =>  $paid_amount,
-            ]);
+            // replace-on-rerun semantics: rows older than a minute belong to a previous run
+            $prev = Carbon::now()->subMinute()->format('Y-m-d H:i:s');
+            $this->comm_target_runs()->where('created_at', '<=', $prev)->delete();
+            $this->sub_sales_comms()
+                ->where('source', SubSalesComm::SOURCE_TARGET)
+                ->where('created_at', '<=', $prev)
+                ->delete();
 
-            $this->load('comm_target_runs');
+            foreach ($portions as $target_id => $portion) {
+                $this->comm_target_runs()->firstOrCreate([
+                    'target_id' =>  $target_id
+                ], [
+                    'percentage'    =>  $portion['percentage'],
+                    'amount'        =>  $portion['amount'],
+                ]);
+
+                $this->sub_sales_comms()->firstOrCreate([
+                    'target_id' =>  $target_id
+                ], [
+                    'source'        =>  SubSalesComm::SOURCE_TARGET,
+                    'title'         =>  $portion['title'],
+                    'percentage'    =>  $portion['percentage'],
+                    'amount'        =>  $portion['amount'],
+                ]);
+            }
+
+            $this->load('sub_sales_comms');
+            $targetSubs = $this->sub_sales_comms->where('source', SubSalesComm::SOURCE_TARGET);
+            $manualSubs = $this->sub_sales_comms->where('source', SubSalesComm::SOURCE_MANUAL);
 
             $this->update([
-                "comm_percentage"   =>  $this->comm_target_runs->average('percentage'),
-                "amount"   =>  $this->comm_target_runs->sum('amount'),
+                "comm_percentage"   =>  $targetSubs->count() ? $targetSubs->avg('percentage') : 0,
+                "amount"            =>  $targetSubs->sum('amount') + $manualSubs->sum('amount'),
             ]);
+            return true;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Setting Sales Comm info failed", desc: $e->getMessage(), loggable: $this);
@@ -167,16 +183,74 @@ class SalesComm extends Model
         }
     }
 
-    private function clearPreviousPaymentTargetInfo()
+    /** amount = base + manual subs; base = target subs sum when the comm is target-driven */
+    public function recalculateAmount()
     {
-        $prev = Carbon::now()->subMinute();
-        $this->comm_target_runs()
-            ->where('created_at', '<=', $prev->format('Y-m-d H:i:s'))
-            ->delete();
-        $this->load('comm_target_runs');
-        $this->comm_percentage =  $this->comm_target_runs->sum('percentage');
-        $this->amount = $this->comm_target_runs->sum('amount');
-        $this->save();
+        try {
+            $this->load('sub_sales_comms');
+            $manualSubsTotal = $this->sub_sales_comms->where('source', SubSalesComm::SOURCE_MANUAL)->sum('amount');
+            $targetSubs = $this->sub_sales_comms->where('source', SubSalesComm::SOURCE_TARGET);
+
+            if ($targetSubs->count() || $this->comm_target_runs()->exists()) {
+                $base = $targetSubs->sum('amount');
+                $this->update(["amount" => $base + $manualSubsTotal]);
+                $this->load('sold_policy');
+                $this->sold_policy->calculateTotalSalesComm();
+                return true;
+            }
+
+            // config-driven comms: refreshPaymentInfo already adds manual subs on top of its base
+            return $this->refreshPaymentInfo(false);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Recalculating Sales Comm amount failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    public function addManualSub($title, $amount, $note = null)
+    {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user->can('update', $this)) return false;
+        if ($this->is_cancelled) return false;
+
+        try {
+            DB::transaction(function () use ($title, $amount, $note) {
+                $this->sub_sales_comms()->create([
+                    'source'    =>  SubSalesComm::SOURCE_MANUAL,
+                    'title'     =>  $title,
+                    'amount'    =>  $amount,
+                    'note'      =>  $note,
+                ]);
+                $this->recalculateAmount();
+            });
+            AppLog::info("Manual sub sales comm added", desc: "Title: $title, Amount: $amount", loggable: $this);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add manual sub sales comm", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
+    /** Breakdown of the base amount per client payment installment. Doesn't affect the comm amount. */
+    public function addClientPaymentSub(ClientPayment $client_payment, float $amount)
+    {
+        try {
+            $this->sub_sales_comms()->firstOrCreate([
+                'client_payment_id' =>  $client_payment->id
+            ], [
+                'source'    =>  SubSalesComm::SOURCE_CLIENT_PAYMENT,
+                'title'     =>  "Installment " . ($client_payment->payment_date ? (new Carbon($client_payment->payment_date))->format('d/m/Y') : "#" . $client_payment->id),
+                'amount'    =>  $amount,
+            ]);
+            return true;
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't add client payment sub sales comm", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
     }
 
     public function refreshPaymentInfo($check_user = true, $increment_amount = false, $update_soldpolicy = true)
@@ -230,6 +304,14 @@ class SalesComm extends Model
         }
 
         $amount = max(0, (($this->comm_percentage / 100) * $from_amount) - $comm_disc);
+
+        //target-driven comms: the target machinery owns the base amount, config computation is skipped
+        $targetSubsTotal = $this->sub_sales_comms()->where('source', SubSalesComm::SOURCE_TARGET)->sum('amount');
+        if ($targetSubsTotal > 0 || $this->comm_target_runs()->exists()) {
+            $amount = $targetSubsTotal;
+        }
+        //manual subs are always added on top of the base amount
+        $amount += $this->sub_sales_comms()->where('source', SubSalesComm::SOURCE_MANUAL)->sum('amount');
 
         try {
             if ($increment_amount) {
@@ -404,6 +486,10 @@ class SalesComm extends Model
     public function getIsNewAttribute()
     {
         return $this->status == self::PYMT_STATE_NOT_CONFIRMED;
+    }
+    public function getIsCancelledAttribute()
+    {
+        return $this->status == self::PYMT_STATE_CANCELLED;
     }
     public function getIsSalesOutAttribute()
     {
@@ -679,6 +765,11 @@ class SalesComm extends Model
     public function comm_target_runs(): HasMany
     {
         return $this->hasMany(CommTargetRun::class);
+    }
+
+    public function sub_sales_comms(): HasMany
+    {
+        return $this->hasMany(SubSalesComm::class);
     }
 
     public function sales_commissions(): BelongsToMany
