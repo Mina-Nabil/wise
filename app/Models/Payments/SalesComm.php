@@ -533,20 +533,21 @@ class SalesComm extends Model
             'D1' => 'Policy Start',
             'E1' => 'Commission Profile',
             'F1' => 'Amount',
-            'G1' => 'Status',
-            'H1' => 'From',
-            'I1' => 'Percentage',
+            'G1' => 'Sub Amount',
+            'H1' => 'Status',
+            'I1' => 'From',
+            'J1' => 'Percentage',
         ];
 
         foreach ($headers as $cell => $value) {
             $activeSheet->setCellValue($cell, $value);
         }
 
-        $activeSheet->getStyle('A1:I1')->getFont()->setBold(true);
-        $activeSheet->getStyle('A1:I1')->getFill()->setFillType(Fill::FILL_SOLID);
-        $activeSheet->getStyle('A1:I1')->getFill()->getStartColor()->setARGB('FFD3D3D3');
+        $activeSheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:J1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:J1')->getFill()->getStartColor()->setARGB('FFD3D3D3');
 
-        foreach (range('A', 'I') as $column) {
+        foreach (range('A', 'J') as $column) {
             $activeSheet->getColumnDimension($column)->setAutoSize(true);
         }
 
@@ -565,15 +566,16 @@ class SalesComm extends Model
             $activeSheet->setCellValue('D' . $row, $policy?->start ? Carbon::parse($policy->start)->format('d/m/Y') : 'N/A');
             $activeSheet->setCellValue('E' . $row, $profileTitle);
             $activeSheet->setCellValue('F' . $row, number_format((float) $commission->amount, 2, '.', ','));
-            $activeSheet->setCellValue('G' . $row, ucwords(str_replace('_', ' ', $commission->status ?? '')));
-            $activeSheet->setCellValue('H' . $row, ucwords(str_replace('_', ' ', $commission->from ?? '')));
-            $activeSheet->setCellValue('I' . $row, number_format((float) $commission->comm_percentage, 2, '.', ',') . '%');
+            $activeSheet->setCellValue('G' . $row, number_format((float) ($commission->sub_amount ?? 0), 2, '.', ','));
+            $activeSheet->setCellValue('H' . $row, ucwords(str_replace('_', ' ', $commission->status ?? '')));
+            $activeSheet->setCellValue('I' . $row, ucwords(str_replace('_', ' ', $commission->from ?? '')));
+            $activeSheet->setCellValue('J' . $row, number_format((float) $commission->comm_percentage, 2, '.', ',') . '%');
 
             $row++;
         }
 
         if ($row > 2) {
-            $activeSheet->getStyle('A1:I' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $activeSheet->getStyle('A1:J' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
         }
 
         $writer = new Xlsx($spreadsheet);
@@ -646,6 +648,36 @@ class SalesComm extends Model
         }
     }
 
+    /** Builds the SQL expression (and bindings) summing a comm's sub sales comms created inside
+     * every active date range. Without active date filters it sums all of the comm's subs. */
+    public static function subAmountSql(
+        ?Carbon $paymentDateFrom = null,
+        ?Carbon $paymentDateTo = null,
+        ?Carbon $clientPaymentDateFrom = null,
+        ?Carbon $clientPaymentDateTo = null,
+        ?Carbon $collectionDateFrom = null,
+        ?Carbon $collectionDateTo = null
+    ): array {
+        $subConditions = '';
+        $subBindings = [];
+        foreach ([$paymentDateFrom, $clientPaymentDateFrom, $collectionDateFrom] as $from) {
+            if ($from) {
+                $subConditions .= ' AND ssc_in.created_at >= ?';
+                $subBindings[] = $from->format('Y-m-d 00:00:00');
+            }
+        }
+        foreach ([$paymentDateTo, $clientPaymentDateTo, $collectionDateTo] as $to) {
+            if ($to) {
+                $subConditions .= ' AND ssc_in.created_at <= ?';
+                $subBindings[] = $to->format('Y-m-d 23:59:59');
+            }
+        }
+
+        $sql = '(SELECT COALESCE(SUM(ssc_in.amount), 0) FROM sub_sales_comms ssc_in WHERE ssc_in.sales_comm_id = sales_comms.id' . $subConditions . ')';
+
+        return [$sql, $subBindings];
+    }
+
     public function scopeReport(
         Builder $query,
         array $commProfileIds = [],
@@ -660,7 +692,16 @@ class SalesComm extends Model
         ?Carbon $collectionDateTo = null
     ) {
         if (empty($query->getQuery()->columns)) {
-            $query->select('sales_comms.*');
+            [$subSql, $subBindings] = self::subAmountSql(
+                $paymentDateFrom,
+                $paymentDateTo,
+                $clientPaymentDateFrom,
+                $clientPaymentDateTo,
+                $collectionDateFrom,
+                $collectionDateTo
+            );
+            $query->select('sales_comms.*')
+                ->selectRaw($subSql . ' as sub_amount', $subBindings);
         }
 
         $query->join('sold_policies', 'sold_policies.id', '=', 'sales_comms.sold_policy_id')
@@ -669,27 +710,63 @@ class SalesComm extends Model
             ->when(!empty($commProfileIds), fn($q) => $q->whereIn('sales_comms.comm_profile_id', $commProfileIds))
             ->when($policyStartFrom, fn($q, $date) => $q->where('sold_policies.start', '>=', $date->format('Y-m-d 00:00:00')))
             ->when($policyStartTo, fn($q, $date) => $q->where('sold_policies.start', '<=', $date->format('Y-m-d 23:59:59')))
-            ->when($paymentDateFrom, fn($q, $date) => $q->where('sales_comms.payment_date', '>=', $date->format('Y-m-d 00:00:00')))
-            ->when($paymentDateTo, fn($q, $date) => $q->where('sales_comms.payment_date', '<=', $date->format('Y-m-d 23:59:59')))
+            ->when($paymentDateFrom || $paymentDateTo, function ($q) use ($paymentDateFrom, $paymentDateTo) {
+                //a comm matches on its own payment date, or through a sub sales comm created in the range
+                $q->where(function ($w) use ($paymentDateFrom, $paymentDateTo) {
+                    $w->where(function ($own) use ($paymentDateFrom, $paymentDateTo) {
+                        if ($paymentDateFrom) {
+                            $own->where('sales_comms.payment_date', '>=', $paymentDateFrom->format('Y-m-d 00:00:00'));
+                        }
+                        if ($paymentDateTo) {
+                            $own->where('sales_comms.payment_date', '<=', $paymentDateTo->format('Y-m-d 23:59:59'));
+                        }
+                    })->orWhereHas('sub_sales_comms', function ($sq) use ($paymentDateFrom, $paymentDateTo) {
+                        if ($paymentDateFrom) {
+                            $sq->where('sub_sales_comms.created_at', '>=', $paymentDateFrom->format('Y-m-d 00:00:00'));
+                        }
+                        if ($paymentDateTo) {
+                            $sq->where('sub_sales_comms.created_at', '<=', $paymentDateTo->format('Y-m-d 23:59:59'));
+                        }
+                    });
+                });
+            })
             ->when(!empty($statuses), fn($q) => $q->whereIn('sales_comms.status', $statuses))
             ->when($clientPaymentDateFrom || $clientPaymentDateTo, function ($q) use ($clientPaymentDateFrom, $clientPaymentDateTo) {
-                $q->whereHas('sold_policy.client_payments', function ($paymentQuery) use ($clientPaymentDateFrom, $clientPaymentDateTo) {
-                    if ($clientPaymentDateFrom) {
-                        $paymentQuery->where('client_payments.payment_date', '>=', $clientPaymentDateFrom->format('Y-m-d 00:00:00'));
-                    }
-                    if ($clientPaymentDateTo) {
-                        $paymentQuery->where('client_payments.payment_date', '<=', $clientPaymentDateTo->format('Y-m-d 23:59:59'));
-                    }
+                $q->where(function ($w) use ($clientPaymentDateFrom, $clientPaymentDateTo) {
+                    $w->whereHas('sold_policy.client_payments', function ($paymentQuery) use ($clientPaymentDateFrom, $clientPaymentDateTo) {
+                        if ($clientPaymentDateFrom) {
+                            $paymentQuery->where('client_payments.payment_date', '>=', $clientPaymentDateFrom->format('Y-m-d 00:00:00'));
+                        }
+                        if ($clientPaymentDateTo) {
+                            $paymentQuery->where('client_payments.payment_date', '<=', $clientPaymentDateTo->format('Y-m-d 23:59:59'));
+                        }
+                    })->orWhereHas('sub_sales_comms', function ($sq) use ($clientPaymentDateFrom, $clientPaymentDateTo) {
+                        if ($clientPaymentDateFrom) {
+                            $sq->where('sub_sales_comms.created_at', '>=', $clientPaymentDateFrom->format('Y-m-d 00:00:00'));
+                        }
+                        if ($clientPaymentDateTo) {
+                            $sq->where('sub_sales_comms.created_at', '<=', $clientPaymentDateTo->format('Y-m-d 23:59:59'));
+                        }
+                    });
                 });
             })
             ->when($collectionDateFrom || $collectionDateTo, function ($q) use ($collectionDateFrom, $collectionDateTo) {
-                $q->whereHas('sold_policy.client_payments', function ($paymentQuery) use ($collectionDateFrom, $collectionDateTo) {
-                    if ($collectionDateFrom) {
-                        $paymentQuery->where('client_payments.collected_date', '>=', $collectionDateFrom->format('Y-m-d 00:00:00'));
-                    }
-                    if ($collectionDateTo) {
-                        $paymentQuery->where('client_payments.collected_date', '<=', $collectionDateTo->format('Y-m-d 23:59:59'));
-                    }
+                $q->where(function ($w) use ($collectionDateFrom, $collectionDateTo) {
+                    $w->whereHas('sold_policy.client_payments', function ($paymentQuery) use ($collectionDateFrom, $collectionDateTo) {
+                        if ($collectionDateFrom) {
+                            $paymentQuery->where('client_payments.collected_date', '>=', $collectionDateFrom->format('Y-m-d 00:00:00'));
+                        }
+                        if ($collectionDateTo) {
+                            $paymentQuery->where('client_payments.collected_date', '<=', $collectionDateTo->format('Y-m-d 23:59:59'));
+                        }
+                    })->orWhereHas('sub_sales_comms', function ($sq) use ($collectionDateFrom, $collectionDateTo) {
+                        if ($collectionDateFrom) {
+                            $sq->where('sub_sales_comms.created_at', '>=', $collectionDateFrom->format('Y-m-d 00:00:00'));
+                        }
+                        if ($collectionDateTo) {
+                            $sq->where('sub_sales_comms.created_at', '<=', $collectionDateTo->format('Y-m-d 23:59:59'));
+                        }
+                    });
                 });
             });
 
@@ -708,10 +785,20 @@ class SalesComm extends Model
         ?Carbon $collectionDateFrom = null,
         ?Carbon $collectionDateTo = null
     ): Builder {
+        [$subSql, $subBindings] = self::subAmountSql(
+            $paymentDateFrom,
+            $paymentDateTo,
+            $clientPaymentDateFrom,
+            $clientPaymentDateTo,
+            $collectionDateFrom,
+            $collectionDateTo
+        );
+
         $query = self::query()
             ->select('sales_comms.comm_profile_id')
             ->selectRaw('COALESCE(comm_profiles.title, "N/A") as profile_title')
-            ->selectRaw('SUM(sales_comms.amount) as total_amount');
+            ->selectRaw('SUM(sales_comms.amount) as total_amount')
+            ->selectRaw('SUM(' . $subSql . ') as total_sub_amount', $subBindings);
 
         $query->report(
             $commProfileIds,

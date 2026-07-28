@@ -301,7 +301,7 @@ class SoldPolicy extends Model
     {
         $amountPercent = $amount / $this->gross_premium;
 
-        return ($amountPercent * $this->after_tax_comm) - ($amountPercent * $this->total_comm_subtractions);
+        return ($amountPercent * ($this->tax_amount > 0 ? $this->after_tax_comm : ($this->after_tax_comm * .95))) - ($amountPercent * $this->total_comm_subtractions);
     }
 
     public function addPolicyCommission($title, $amount)

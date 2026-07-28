@@ -10,7 +10,7 @@
     <div class="flex justify-between flex-wrap items-center">
         <div class="md:mb-6 mb-4 flex space-x-3 rtl:space-x-reverse">
             <h4 class="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-                Sales Commissions -- Total: {{ number_format((float) $totalCommissions, 2, '.', ',') }}
+                Sales Commissions -- Total: {{ number_format((float) $totalCommissions, 2, '.', ',') }} -- Sub Total: {{ number_format((float) $totalSubAmount, 2, '.', ',') }}
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
@@ -179,6 +179,7 @@
                                         <th scope="col" class="table-th">From</th>
                                         <th scope="col" class="table-th text-right">Percentage</th>
                                         <th scope="col" class="table-th text-right">Amount</th>
+                                        <th scope="col" class="table-th text-right">Sub Amount</th>
                                         <th scope="col" class="table-th">Client</th>
                                         <th scope="col" class="table-th">Policy Start</th>
                                         <th scope="col" class="table-th">Status</th>
@@ -208,6 +209,9 @@
                                             </td>
                                             <td class="table-td text-right">
                                                 {{ number_format((float) $commission->amount, 2, '.', ',') }}
+                                            </td>
+                                            <td class="table-td text-right">
+                                                {{ number_format((float) ($commission->sub_amount ?? 0), 2, '.', ',') }}
                                             </td>
                                             <td class="table-td">
                                                 {{ $commission->sold_policy?->client?->full_name ?? ($commission->sold_policy?->client?->name ?? 'N/A') }}
@@ -246,7 +250,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="10" class="table-td text-center">
+                                            <td colspan="11" class="table-td text-center">
                                                 No sales commissions found for the selected filters.
                                             </td>
                                         </tr>

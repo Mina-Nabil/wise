@@ -279,7 +279,9 @@ class SalesCommissionsReport extends Component
             $this->asCarbon($this->collection_date_from),
             $this->asCarbon($this->collection_date_to)
         );
-        $totalCommissions = $commissionsQuery->clone()->get()->sum('amount');
+        $reportRows = $commissionsQuery->clone()->get();
+        $totalCommissions = $reportRows->sum('amount');
+        $totalSubAmount = $reportRows->sum('sub_amount');
         $commissions = $commissionsQuery->paginate(50);
 
         $selectedProfiles = $this->selectedProfiles();
@@ -299,6 +301,7 @@ class SalesCommissionsReport extends Component
             'STATUSES' => $STATUSES,
             'commissions' => $commissions,
             'totalCommissions' => $totalCommissions,
+            'totalSubAmount' => $totalSubAmount,
             'selectedProfiles' => $selectedProfiles,
             'modalSelectedProfiles' => $modalSelectedProfiles,
             'commProfiles' => $commProfiles,

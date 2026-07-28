@@ -154,6 +154,7 @@
                                     <tr>
                                         <th scope="col" class="table-th">Commission Profile</th>
                                         <th scope="col" class="table-th text-right">Total Amount</th>
+                                        <th scope="col" class="table-th text-right">Sub Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-slate-100 ">
@@ -165,10 +166,13 @@
                                             <td class="table-td text-right">
                                                 {{ number_format((float) $row->total_amount, 2, '.', ',') }}
                                             </td>
+                                            <td class="table-td text-right">
+                                                {{ number_format((float) ($row->total_sub_amount ?? 0), 2, '.', ',') }}
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="2" class="table-td text-center">
+                                            <td colspan="3" class="table-td text-center">
                                                 No sales commission totals found for the selected filters.
                                             </td>
                                         </tr>
