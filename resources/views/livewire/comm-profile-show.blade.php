@@ -675,6 +675,9 @@
                                                     Policy
                                                 </th>
                                                 <th scope="col" class=" table-th ">
+                                                    Profile
+                                                </th>
+                                                <th scope="col" class=" table-th ">
                                                     Type
                                                 </th>
                                                 <th scope="col" class=" table-th ">
@@ -751,6 +754,10 @@
                                                                 </span>
                                                             </span>
                                                         </div>
+                                                    </td>
+
+                                                    <td class="table-td ">
+                                                        <span class="text-slate-600 dark:text-slate-300">{{ $comm->title }}</span>
                                                     </td>
 
                                                     <td class="table-td ">
@@ -911,7 +918,7 @@
 
                                                 @foreach ($comm->sub_sales_comms as $sub)
                                                     <tr class="bg-slate-50 dark:bg-slate-900">
-                                                        <td class="table-td" colspan="5">
+                                                        <td class="table-td" colspan="6">
                                                             <div class="flex items-center pl-4">
                                                                 <iconify-icon class="text-slate-400 mr-2"
                                                                     icon="material-symbols:subdirectory-arrow-right"></iconify-icon>
