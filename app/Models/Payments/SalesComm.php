@@ -255,6 +255,9 @@ class SalesComm extends Model
 
     public function refreshPaymentInfo($check_user = true, $increment_amount = false, $update_soldpolicy = true)
     {
+
+        if($this->status == self::PYMT_STATE_PAID) return false;
+
         if ($check_user) {
             /** @var User */
             $user = Auth::user();
