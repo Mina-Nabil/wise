@@ -1939,6 +1939,10 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
+                                                        Type
+                                                    </th>
+
+                                                    <th scope="col" class=" table-th ">
                                                         Amount
                                                     </th>
 
@@ -1984,6 +1988,14 @@
                                                                     </span>
                                                                 </span>
                                                             </div>
+                                                        </td>
+
+                                                        <td class="table-td ">
+                                                            @if ($comm->is_direct)
+                                                                <span class="badge bg-success-500 text-white h-auto text-[10px]">Direct</span>
+                                                            @else
+                                                                <span class="badge bg-primary-500 text-white h-auto text-[10px]">Target</span>
+                                                            @endif
                                                         </td>
 
                                                         <td class="table-td ">
@@ -2139,6 +2151,7 @@
                                                                     @endif
                                                                 </div>
                                                             </td>
+                                                            <td class="table-td"></td>
                                                             <td class="table-td">
                                                                 <div class="text-sm text-success-500">
                                                                     {{ number_format($sub->amount, 2, '.', ',') }} EGP

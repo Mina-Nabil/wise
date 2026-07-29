@@ -290,9 +290,9 @@ class SalesComm extends Model
 
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->is_sales_out) {
-                $comm_disc = $this->sold_policy->discount;
+                $comm_disc = $this->sold_policy->discount + $this->sold_policy->penalty_amount;
             } else {
-                $from_amount -= $this->sold_policy->sales_out_comm;
+                $from_amount -= $this->sold_policy->total_comm_subtractions;
             }
         } else {
             $this->sold_policy->calculateTotalPolicyComm();

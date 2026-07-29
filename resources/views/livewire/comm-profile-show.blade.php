@@ -675,6 +675,9 @@
                                                     Policy
                                                 </th>
                                                 <th scope="col" class=" table-th ">
+                                                    Type
+                                                </th>
+                                                <th scope="col" class=" table-th ">
                                                     Client
                                                 </th>
                                                 <th scope="col" class=" table-th ">
@@ -748,6 +751,14 @@
                                                                 </span>
                                                             </span>
                                                         </div>
+                                                    </td>
+
+                                                    <td class="table-td ">
+                                                        @if ($comm->is_direct)
+                                                            <span class="badge bg-success-500 text-white h-auto text-[10px]">Direct</span>
+                                                        @else
+                                                            <span class="badge bg-primary-500 text-white h-auto text-[10px]">Target</span>
+                                                        @endif
                                                     </td>
 
                                                     <td class="table-td ">
@@ -900,7 +911,7 @@
 
                                                 @foreach ($comm->sub_sales_comms as $sub)
                                                     <tr class="bg-slate-50 dark:bg-slate-900">
-                                                        <td class="table-td" colspan="4">
+                                                        <td class="table-td" colspan="5">
                                                             <div class="flex items-center pl-4">
                                                                 <iconify-icon class="text-slate-400 mr-2"
                                                                     icon="material-symbols:subdirectory-arrow-right"></iconify-icon>
