@@ -277,11 +277,7 @@ class SalesComm extends Model
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
                 $comm_disc = $this->sold_policy->discount + $this->sold_policy->penalty_amount;
             } else {
-                if ($this->sold_policy->has_sales_out) {
-                    $from_amount -= $this->sold_policy->sales_out_comm;
-                } else {
-                    $from_amount -= $this->sold_policy->total_comm_subtractions;
-                }
+                $from_amount -= $this->sold_policy->total_comm_subtractions;
             }
         } else if ($valid_conf) {
             //update comm info then calc same as direct
