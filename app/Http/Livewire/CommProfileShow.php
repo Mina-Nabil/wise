@@ -129,6 +129,7 @@ class CommProfileShow extends Component
     public $downloadAccountEndDate;
 
     public $salesCommStatus;
+    public $salesCommPolicySearch = ''; //filters the sales comm tab by sold policy number
 
     public $isSortLatest = true;
 
@@ -157,6 +158,7 @@ class CommProfileShow extends Component
     {
         $this->section = $section;
         $this->isSortLatest = true;
+        $this->salesCommPolicySearch = '';
         $this->resetPage();
         $this->mount($this->profile->id);
     }
@@ -171,6 +173,18 @@ class CommProfileShow extends Component
         } else {
             $this->salesCommStatus = null;
         }
+        $this->resetPage();
+    }
+
+    public function updatedSalesCommPolicySearch()
+    {
+        $this->resetPage();
+    }
+
+    public function clearSalesCommPolicySearch()
+    {
+        $this->salesCommPolicySearch = '';
+        $this->resetPage();
     }
 
     public function changeSortDirection()
@@ -1311,6 +1325,7 @@ class CommProfileShow extends Component
 
         $sales_comm = $this->profile
             ->sales_comm()->with('sub_sales_comms')->filterByStatus($this->salesCommStatus)
+            ->filterByPolicyNumber($this->salesCommPolicySearch)
             ->only2025()
             ->when($this->isSortLatest, function ($query) {
                 return $query->latest(); // Sort sales commissions by latest

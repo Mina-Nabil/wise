@@ -590,6 +590,25 @@
                     </div>
 
                     <div class="flex gap-2">
+                        <div class="relative">
+                            <input type="text" wire:model.debounce.400ms="salesCommPolicySearch"
+                                class="form-control form-control-sm !py-1.5 !pr-8 w-56"
+                                placeholder="Search by policy number...">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+                                <iconify-icon wire:loading wire:target="salesCommPolicySearch"
+                                    class="text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
+                                @if ($salesCommPolicySearch)
+                                    <iconify-icon wire:loading.remove wire:target="salesCommPolicySearch"
+                                        wire:click="clearSalesCommPolicySearch"
+                                        class="text-lg cursor-pointer text-slate-400 hover:text-slate-600"
+                                        icon="heroicons:x-mark"></iconify-icon>
+                                @else
+                                    <iconify-icon wire:loading.remove wire:target="salesCommPolicySearch"
+                                        class="text-lg text-slate-400" icon="heroicons:magnifying-glass"></iconify-icon>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="dropdown relative">
                             <button class="btn inline-flex justify-center btn-light items-center btn-sm"
                                 type="button" id="lightDropdownMenuButton" data-bs-toggle="dropdown"
@@ -636,7 +655,12 @@
                             <div class="overflow-hidden ">
                                 @if ($sales_comm->isEmpty())
                                     <p class="text-sm text-center">
-                                        No sales commissions found.
+                                        @if ($salesCommPolicySearch)
+                                            No sales commissions found for policy number
+                                            "{{ $salesCommPolicySearch }}".
+                                        @else
+                                            No sales commissions found.
+                                        @endif
                                     </p>
                                 @else
                                     <table

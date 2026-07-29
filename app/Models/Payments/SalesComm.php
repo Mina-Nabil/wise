@@ -648,6 +648,16 @@ class SalesComm extends Model
         }
     }
 
+    public function scopeFilterByPolicyNumber(Builder $query, ?string $policy_number = null)
+    {
+        $policy_number = trim((string) $policy_number);
+        if ($policy_number === '') return;
+
+        $query->whereHas('sold_policy', function ($q) use ($policy_number) {
+            $q->where('sold_policies.policy_number', 'like', '%' . $policy_number . '%');
+        });
+    }
+
     /** Builds the SQL expression (and bindings) summing a comm's sub sales comms created inside
      * every active date range. Without active date filters it sums all of the comm's subs. */
     public static function subAmountSql(
