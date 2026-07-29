@@ -364,6 +364,28 @@ class CommProfileShow extends Component
         }
     }
 
+    public function toggleCommType($id)
+    {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            $this->alert('failed', 'Unauthorized. Only admins can change commission type.');
+            return;
+        }
+
+        $comm = $this->profile->sales_comm()->find($id);
+        if (!$comm) {
+            $this->alert('failed', 'Commission not found.');
+            return;
+        }
+
+        $res = $comm->toggleCommType();
+        if ($res) {
+            $this->mount($this->profile->id);
+            $this->alert('success', 'Commission type updated.');
+        } else {
+            $this->alert('failed', 'Cannot change commission type.');
+        }
+    }
+
     public function downloadCommDoc($id)
     {
         $comm = SalesComm::find($id);

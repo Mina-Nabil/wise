@@ -1099,6 +1099,28 @@ class SoldPolicyShow extends Component
         }
     }
 
+    public function toggleCommType($id)
+    {
+        if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            $this->alert('failed', 'Unauthorized. Only admins can change commission type.');
+            return;
+        }
+
+        $comm = $this->soldPolicy->sales_comms()->find($id);
+        if (!$comm) {
+            $this->alert('failed', 'Commission not found.');
+            return;
+        }
+
+        $res = $comm->toggleCommType();
+        if ($res) {
+            $this->mount($this->soldPolicy->id);
+            $this->alert('success', 'Commission type updated.');
+        } else {
+            $this->alert('failed', 'Cannot change commission type.');
+        }
+    }
+
     public function confirmDeleteSalesComm($id)
     {
         if (!\Illuminate\Support\Facades\Auth::user()->is_admin) {

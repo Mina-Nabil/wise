@@ -422,6 +422,23 @@ class SalesComm extends Model
         }
     }
 
+    public function toggleCommType(): bool
+    {
+        /** @var User */
+        $user = Auth::user();
+        if (!$user?->is_admin || !$this->can_change_type) return false;
+
+        try {
+            AppLog::info("Toggling sales comm type", desc: ($this->is_direct ? 'Direct' : 'Target') . ' -> ' . ($this->is_direct ? 'Target' : 'Direct'), loggable: $this);
+            $this->update(['is_direct' => !$this->is_direct]);
+            return $this->refreshPaymentInfo(false);
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Toggling sales comm type failed", desc: $e->getMessage(), loggable: $this);
+            return false;
+        }
+    }
+
     public function delete()
     {
         $this->load('offer');
@@ -482,6 +499,10 @@ class SalesComm extends Model
     public function getIsNewAttribute()
     {
         return $this->status == self::PYMT_STATE_NOT_CONFIRMED;
+    }
+    public function getCanChangeTypeAttribute(): bool
+    {
+        return $this->is_new;
     }
     public function getIsCancelledAttribute()
     {
