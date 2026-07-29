@@ -1888,7 +1888,7 @@
         </div>
         @can('viewCommission', $soldPolicy)
             {{-- Sales Commission --}}
-            <div class="card rounded-md bg-white dark:bg-slate-800  shadow-base mt-5">
+            <div class="card rounded-md bg-white dark:bg-slate-800 shadow-base mt-5 relative z-10">
                 <div class="card-body flex flex-col p-6 active justify-center">
                     <header class="card-header noborder flex justify-between">
                         <h4 class="card-title">
@@ -1920,10 +1920,10 @@
                         <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
                             wire:target="updatedCommDoc" icon="line-md:loading-twotone-loop"></iconify-icon>
                     </header>
-                    <div class="card-body px-6 pb-6">
-                        <div class="overflow-x-auto -mx-6 ">
-                            <div class="inline-block min-w-full align-middle">
-                                <div>
+                    <div class="card-body px-6 pb-6 overflow-visible">
+                        <div class="overflow-x-auto overflow-y-visible -mx-6">
+                            <div class="inline-block min-w-full align-middle overflow-visible">
+                                <div class="overflow-visible">
                                     @if ($soldPolicy->sales_comms->isEmpty())
                                         <p class="text-sm text-center">
                                             No sales commissions found.
@@ -2060,15 +2060,16 @@
 
                                                         @can('update', $comm)
                                                             <td class="table-td ">
-                                                                <div class="dropstart relative">
+                                                                <div class="dropstart relative z-20">
                                                                     <button class="inline-flex justify-center items-center"
                                                                         type="button" data-bs-toggle="dropdown"
+                                                                        data-bs-popper-config='{"strategy":"fixed"}'
                                                                         aria-expanded="false">
                                                                         <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
                                                                             icon="heroicons-outline:dots-vertical"></iconify-icon>
                                                                     </button>
                                                                     <ul
-                                                                        class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                                                        class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-50 float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
                                                                         @if ($comm->is_new)
                                                                             <li>
                                                                                 <a wire:click="setCommPaid({{ $comm->id }})"
