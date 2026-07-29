@@ -429,7 +429,7 @@ class SalesComm extends Model
         if (!$user?->is_admin || !$this->can_change_type) return false;
 
         try {
-            AppLog::info("Toggling sales comm type", desc: ($this->is_direct ? 'Direct' : 'Target') . ' -> ' . ($this->is_direct ? 'Target' : 'Direct'), loggable: $this);
+            AppLog::info("Toggling sales comm type", desc: ($this->is_direct ? 'Direct' : 'Default') . ' -> ' . ($this->is_direct ? 'Default' : 'Direct'), loggable: $this);
             $this->update(['is_direct' => !$this->is_direct]);
             return $this->refreshPaymentInfo(false);
         } catch (Exception $e) {
