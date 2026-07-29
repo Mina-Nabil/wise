@@ -1744,11 +1744,6 @@
                                         <input type="text" wire:model.debounce.300ms="salesCommSearch"
                                             wire:keyup="searchSalesComm" class="form-control w-full"
                                             placeholder="Type to search...">
-                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                            <iconify-icon wire:loading wire:target="searchSalesComm"
-                                                class="loading-icon text-lg"
-                                                icon="line-md:loading-twotone-loop"></iconify-icon>
-                                        </div>
                                     </div>
 
                                     <!-- Search Results -->
