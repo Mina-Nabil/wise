@@ -1119,7 +1119,7 @@ class Account extends Model
                 AppLog::info('Set opening balance', loggable: $this);
 
                 // Refresh all balances to recalculate all entry snapshots
-                $result = JournalEntry::refreshAllBalances();
+                $result = JournalEntry::refreshAllBalances([$this->id => ['balance' => $balance, 'foreign_balance' => $foreignBalance]]);
 
                 return $result;
             });

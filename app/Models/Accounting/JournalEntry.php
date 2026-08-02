@@ -226,10 +226,10 @@ class JournalEntry extends Model
      * 
      * @return array ['success' => bool, 'message' => string, 'accounts_processed' => int]
      */
-    public static function refreshAllBalances(): array
+    public static function refreshAllBalances(array $initialBalances = []): array
     {
         try {
-            return DB::transaction(function () {
+            return DB::transaction(function () use ($initialBalances) {
                 $accounts = Account::all();
                 $accountsProcessed = 0;
                 $errors = [];
@@ -244,8 +244,13 @@ class JournalEntry extends Model
 
                         if ($entries->isEmpty()) {
                             // No entries for this account, reset to 0
-                            $account->balance = 0;
-                            $account->foreign_balance = 0;
+                            if(array_key_exists($account->id, $initialBalances)) {
+                                $account->balance = $initialBalances[$account->id]['balance'] ?? 0;
+                                $account->foreign_balance = $initialBalances[$account->id]['foreign_balance'] ?? 0;
+                            } else {
+                                $account->balance = 0;
+                                $account->foreign_balance = 0;
+                            }   
                             $account->save();
                             $accountsProcessed++;
                             continue;
