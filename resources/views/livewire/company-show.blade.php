@@ -960,7 +960,7 @@
                                         $printed_arr = [];
                                     @endphp
                                     @foreach ($accounts_list as $account)
-                                        {{ $helper->printAccountChildren('', $account, $printed_arr) }}
+                                        {{ $helper->printAccountChildren('', $account, $printed_arr, true) }}
                                     @endforeach
                                 </select>
                                 @error('companyInfoAccountId')
@@ -1393,7 +1393,7 @@
                                 $printed_arr = [];
                             @endphp
                             @foreach ($bankAccountsParent as $account)
-                                {{ $helper->printAccountChildren('', $account, $printed_arr) }}
+                                {{ $helper->printAccountChildren('', $account, $printed_arr, true) }}
                             @endforeach
                         </select>
                         @error('bankAccountId')

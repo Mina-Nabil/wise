@@ -140,6 +140,20 @@ class JournalEntry extends Model
                 return "Debit not equal to credit. Debit is $total_debit & Credit is $total_credit";
             }
 
+            // Only leaf accounts take entries - a parent account carries its children's
+            // totals. Reversals are exempt so historical entries stay revertible.
+            if (!$revert_entry_id) {
+                $blockedAccounts = Account::whereIn('id', array_keys($accounts))
+                    ->blocksEntries()
+                    ->pluck('name')
+                    ->toArray();
+
+                if (count($blockedAccounts)) {
+                    $lock->release();
+                    return "Parent accounts don't accept entries, please use a sub-account instead: " . implode(', ', $blockedAccounts);
+                }
+            }
+
 
             //////////////////////////////loading & checking data//////////////////////////////
 

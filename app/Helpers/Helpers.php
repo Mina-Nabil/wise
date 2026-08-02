@@ -41,15 +41,23 @@ class Helpers
         }
     }
 
-    public static function printAccountChildren($indentation, $account, &$printed_arr = [])
+    /**
+     * @param bool $leaf_only Show accounts that have children as disabled options - they
+     *                        stay visible for hierarchy, but can't be picked. Used by the
+     *                        selects that choose an account to post journal entries to.
+     */
+    public static function printAccountChildren($indentation, $account, &$printed_arr = [], $leaf_only = false)
     {
         if (in_array($account->id, $printed_arr)) return;
 
-        echo "<option value='$account->id'>$indentation$account->name</option>";
+        $children = $account->children_accounts;
+        $disabled = $leaf_only && $children->count() ? ' disabled' : '';
+
+        echo "<option value='$account->id'$disabled>$indentation$account->name</option>";
         array_push($printed_arr, $account->id);
 
-        foreach ($account->children_accounts as $ac) {
-            self::printAccountChildren($indentation . "* ", $ac, $printed_arr);
+        foreach ($children as $ac) {
+            self::printAccountChildren($indentation . "* ", $ac, $printed_arr, $leaf_only);
         }
     }
 }

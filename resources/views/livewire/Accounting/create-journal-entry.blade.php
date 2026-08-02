@@ -69,7 +69,7 @@
                                                         <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="debit_accounts.{{ $index }}.account_id">
                                                             <option value="">Select Debit Account</option>
                                                             @foreach ($debit_accounts_list as $account)
-                                                                {{ $helper->printAccountChildren('', $account, $debit_printed_arr) }}
+                                                                {{ $helper->printAccountChildren('', $account, $debit_printed_arr, true) }}
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -142,7 +142,7 @@
                                                         <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="credit_accounts.{{ $index }}.account_id">
                                                             <option value="">Select Credit Account</option>
                                                             @foreach ($credit_accounts_list as $account)
-                                                                {{ $helper->printAccountChildren('', $account, $credit_printed_arr) }}
+                                                                {{ $helper->printAccountChildren('', $account, $credit_printed_arr, true) }}
                                                             @endforeach
                                                         </select>
                                                     </div>

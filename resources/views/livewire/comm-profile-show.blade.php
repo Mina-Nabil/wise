@@ -3190,7 +3190,7 @@
                                             $printed_arr = [];
                                         @endphp
                                         @foreach ($accounts_list as $account)
-                                            {{ $helper->printAccountChildren('', $account, $printed_arr) }}
+                                            {{ $helper->printAccountChildren('', $account, $printed_arr, true) }}
                                         @endforeach
                                     </select>
                                     @error('updatedAccountId')

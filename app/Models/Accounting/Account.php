@@ -646,7 +646,7 @@ class Account extends Model
 
             // Entries mode carries the balance at the start of the period and the
             // closing balance around the period movements
-            $lastColumn = $mode == 'entries' ? 'K' : 'G';
+            $lastColumn = $mode == 'entries' ? 'I' : 'G';
 
             // Set headers
             $activeSheet->setCellValue('A1', 'Account Code');
@@ -657,10 +657,8 @@ class Account extends Model
                 $activeSheet->setCellValue('E1', 'Nature');
                 $activeSheet->setCellValue('F1', 'Debit');
                 $activeSheet->setCellValue('G1', 'Credit');
-                $activeSheet->setCellValue('H1', 'Debit Foreign');
-                $activeSheet->setCellValue('I1', 'Credit Foreign');
-                $activeSheet->setCellValue('J1', 'Balance- Debit');
-                $activeSheet->setCellValue('K1', 'Balance- Credit');
+                $activeSheet->setCellValue('H1', 'Balance- Debit');
+                $activeSheet->setCellValue('I1', 'Balance- Credit');
             } else {
                 $activeSheet->setCellValue('C1', 'Nature');
                 $activeSheet->setCellValue('D1', 'Debit');
@@ -894,33 +892,29 @@ class Account extends Model
      * Reads the running balance snapshot of the latest entry strictly before $from for
      * every account in one query, then rolls the values up the tree in memory.
      *
-     * @return array [account_id => ['balance' => float, 'foreign' => float]]
+     * @return array [account_id => float]
      */
     private static function getStartBalanceTotals($accounts, Carbon $from): array
     {
         $ownBalances = [];
         foreach (self::includeBalanceBefore($from)->get() as $account) {
-            $ownBalances[$account->id] = [
-                'balance' => (float) ($account->start_entry_balance ?? 0),
-                'foreign' => (float) ($account->start_entry_currency_balance ?? 0),
-            ];
+            $ownBalances[$account->id] = (float) ($account->start_entry_balance ?? 0);
         }
 
         $parents = [];
         $totals = [];
         foreach ($accounts as $account) {
             $parents[$account->id] = $account->parent_account_id;
-            $totals[$account->id] = ['balance' => 0.0, 'foreign' => 0.0];
+            $totals[$account->id] = 0.0;
         }
 
         // Add every account's own balance to itself and to each of its ancestors
         foreach ($accounts as $account) {
-            $own = $ownBalances[$account->id] ?? ['balance' => 0.0, 'foreign' => 0.0];
+            $own = $ownBalances[$account->id] ?? 0.0;
             $id = $account->id;
             $depth = 0;
             while ($id !== null && isset($totals[$id]) && $depth++ < 100) {
-                $totals[$id]['balance'] += $own['balance'];
-                $totals[$id]['foreign'] += $own['foreign'];
+                $totals[$id] += $own;
                 $id = $parents[$id] ?? null;
             }
         }
@@ -961,8 +955,8 @@ class Account extends Model
         $accountName = $indent . $account->name;
 
         // Calculate balance placement based on nature and sign
-        $totalBalance = $account->getTotalLastEntryBalance($to);
-        $totalCurrencyBalance = $account->getTotalLastEntryCurrencyBalance($to);
+        $totalBalance = $mode == 'balance' ? $account->getTotalLastEntryBalance($to) : 0;
+        $totalCurrencyBalance = $mode == 'balance' ? $account->getTotalLastEntryCurrencyBalance($to) : 0;
         $debitAmount = '';
         $creditAmount = '';
         $debitForeignAmount = '';
@@ -996,11 +990,9 @@ class Account extends Model
             $creditTotal = $account->sumChildrenEntries('credit', $from, $to);
             $debitAmount = number_format($debitTotal, 2);
             $creditAmount = number_format($creditTotal, 2);
-            $debitForeignAmount = number_format($account->sumChildrenEntries('foreign_debit', $from, $to), 2);
-            $creditForeignAmount = number_format($account->sumChildrenEntries('foreign_credit', $from, $to), 2);
 
             // Balance before the period, and the closing balance it adds up to
-            $startBalance = $startTotals[$account->id]['balance'] ?? 0;
+            $startBalance = $startTotals[$account->id] ?? 0;
             $movement = $account->nature == self::NATURE_DEBIT
                 ? $debitTotal - $creditTotal
                 : $creditTotal - $debitTotal;
@@ -1019,11 +1011,9 @@ class Account extends Model
                 $activeSheet->setCellValue('E' . $row, ucfirst($account->nature));
                 $activeSheet->setCellValue('F' . $row, $debitAmount);
                 $activeSheet->setCellValue('G' . $row, $creditAmount);
-                $activeSheet->setCellValue('H' . $row, $debitForeignAmount);
-                $activeSheet->setCellValue('I' . $row, $creditForeignAmount);
-                $activeSheet->setCellValue('J' . $row, $closingDebit);
-                $activeSheet->setCellValue('K' . $row, $closingCredit);
-                $lastColumn = 'K';
+                $activeSheet->setCellValue('H' . $row, $closingDebit);
+                $activeSheet->setCellValue('I' . $row, $closingCredit);
+                $lastColumn = 'I';
             } else {
                 $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
                 $activeSheet->setCellValue('D' . $row, $debitAmount);
@@ -1581,6 +1571,19 @@ class Account extends Model
     public function scopeParentAccounts($query)
     {
         return $query->whereNull('parent_account_id');
+    }
+
+    /**
+     * Accounts that have children, and so don't take entries themselves - a parent
+     * account carries its children's totals, posting to it directly double counts.
+     */
+    public function scopeBlocksEntries($query)
+    {
+        return $query->whereExists(
+            fn($q) => $q->select(DB::raw(1))
+                ->from('accounts as child_accounts')
+                ->whereColumn('child_accounts.parent_account_id', 'accounts.id')
+        );
     }
 
     public function scopeIncludeLastEntryBalance($query, Carbon $date)
