@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -1057,64 +1058,7 @@ class Account extends Model
     {
         try {
             return DB::transaction(function () use ($balance, $foreignBalance) {
-                // Get the first entry for this account
-                $firstEntry = JournalEntry::byAccount($this->id)
-                    ->orderBy('created_at', 'asc')
-                    ->orderBy('id', 'asc')
-                    ->first();
-
-                if ($firstEntry) {
-                    // Get the first entry's pivot data
-                    $firstPivot = DB::table('entry_accounts')
-                        ->where('journal_entry_id', $firstEntry->id)
-                        ->where('account_id', $this->id)
-                        ->first();
-
-                    if ($firstPivot) {
-                        // Calculate what the first entry's account_balance should be
-                        // based on the new opening balance
-                        $entryAmount = $firstPivot->amount;
-                        $entryNature = $firstPivot->nature;
-
-                        // Apply the entry effect to the opening balance
-                        if ($entryNature == $this->nature) {
-                            // Same nature increases balance
-                            $newFirstEntryBalance = $balance + $entryAmount;
-                        } else {
-                            // Opposite nature decreases balance
-                            $newFirstEntryBalance = $balance - $entryAmount;
-                        }
-
-                        // Update the first entry's account_balance in pivot table
-                        DB::table('entry_accounts')
-                            ->where('journal_entry_id', $firstEntry->id)
-                            ->where('account_id', $this->id)
-                            ->update(['account_balance' => $newFirstEntryBalance]);
-
-                        // Handle foreign balance if provided
-                        if ($foreignBalance !== null && $firstPivot->currency && $firstPivot->currency != JournalEntry::CURRENCY_EGP && $firstPivot->currency == $this->default_currency) {
-                            $entryForeignAmount = $firstPivot->currency_amount ?? 0;
-
-                            if ($entryNature == $this->nature) {
-                                $newFirstEntryForeignBalance = $foreignBalance + $entryForeignAmount;
-                            } else {
-                                $newFirstEntryForeignBalance = $foreignBalance - $entryForeignAmount;
-                            }
-
-                            DB::table('entry_accounts')
-                                ->where('journal_entry_id', $firstEntry->id)
-                                ->where('account_id', $this->id)
-                                ->update(['account_foreign_balance' => $newFirstEntryForeignBalance]);
-                        }
-                    }
-                } else {
-                    // No entries exist, just update the account balance directly
-                    $this->balance = $balance;
-                    if ($foreignBalance !== null) {
-                        $this->foreign_balance = $foreignBalance;
-                    }
-                    $this->save();
-                }
+                $this->applyOpeningBalance($balance, $foreignBalance);
 
                 AppLog::info('Set opening balance', loggable: $this);
 
@@ -1132,6 +1076,143 @@ class Account extends Model
                 'accounts_processed' => 0,
                 'errors' => [$e->getMessage()]
             ];
+        }
+    }
+
+    /**
+     * Set the opening balance of this account and every account below it to zero,
+     * then refresh all entry balances
+     *
+     * @return array ['success' => bool, 'message' => string, 'accounts_processed' => int, 'errors' => array]
+     */
+    public function clearBalanceWithChildren(): array
+    {
+        try {
+            return DB::transaction(function () {
+                $accounts = $this->getSelfAndDescendants();
+                $initialBalances = [];
+
+                foreach ($accounts as $account) {
+                    // Same per-account work setOpeningBalance() does, with a zero opening balance
+                    $account->applyOpeningBalance(0, 0);
+                    $initialBalances[$account->id] = ['balance' => 0, 'foreign_balance' => 0];
+                }
+
+                AppLog::info('Cleared balances of account and its children (' . $accounts->count() . ' accounts)', loggable: $this);
+
+                // A single refresh pass rebuilds the snapshots for every account
+                $result = JournalEntry::refreshAllBalances($initialBalances);
+
+                if ($result['success']) {
+                    $result['message'] = 'Cleared balances for ' . $accounts->count() . ' account(s). ' . $result['message'];
+                }
+
+                return $result;
+            });
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't clear balances", desc: $e->getMessage(), loggable: $this);
+            return [
+                'success' => false,
+                'message' => 'Failed to clear balances: ' . $e->getMessage(),
+                'accounts_processed' => 0,
+                'errors' => [$e->getMessage()]
+            ];
+        }
+    }
+
+    /**
+     * This account plus every descendant account, at any depth
+     *
+     * @return Collection<self>
+     */
+    public function getSelfAndDescendants(): Collection
+    {
+        $accounts = collect([$this]);
+        $parentIds = [$this->id];
+
+        while (count($parentIds)) {
+            $children = self::whereIn('parent_account_id', $parentIds)
+                ->whereNotIn('id', $accounts->pluck('id')->toArray()) //guard against a cyclic parent reference
+                ->get();
+
+            if ($children->isEmpty()) {
+                break;
+            }
+
+            $accounts = $accounts->concat($children);
+            $parentIds = $children->pluck('id')->toArray();
+        }
+
+        return $accounts;
+    }
+
+    /**
+     * Rebase this account on a new opening balance by rewriting the snapshot of its
+     * first entry - the caller is responsible for refreshing the following entries
+     *
+     * @param float $balance The opening balance amount (balance BEFORE any entries)
+     * @param float|null $foreignBalance The opening foreign balance amount (optional)
+     */
+    private function applyOpeningBalance(float $balance, ?float $foreignBalance = null): void
+    {
+        // Get the first entry for this account
+        $firstEntry = JournalEntry::byAccount($this->id)
+            ->orderBy('created_at', 'asc')
+            ->orderBy('id', 'asc')
+            ->first();
+
+        if ($firstEntry) {
+            // Get the first entry's pivot data
+            $firstPivot = DB::table('entry_accounts')
+                ->where('journal_entry_id', $firstEntry->id)
+                ->where('account_id', $this->id)
+                ->first();
+
+            if ($firstPivot) {
+                // Calculate what the first entry's account_balance should be
+                // based on the new opening balance
+                $entryAmount = $firstPivot->amount;
+                $entryNature = $firstPivot->nature;
+
+                // Apply the entry effect to the opening balance
+                if ($entryNature == $this->nature) {
+                    // Same nature increases balance
+                    $newFirstEntryBalance = $balance + $entryAmount;
+                } else {
+                    // Opposite nature decreases balance
+                    $newFirstEntryBalance = $balance - $entryAmount;
+                }
+
+                // Update the first entry's account_balance in pivot table
+                DB::table('entry_accounts')
+                    ->where('journal_entry_id', $firstEntry->id)
+                    ->where('account_id', $this->id)
+                    ->update(['account_balance' => $newFirstEntryBalance]);
+
+                // Handle foreign balance if provided
+                if ($foreignBalance !== null && $firstPivot->currency && $firstPivot->currency != JournalEntry::CURRENCY_EGP && $firstPivot->currency == $this->default_currency) {
+                    $entryForeignAmount = $firstPivot->currency_amount ?? 0;
+
+                    if ($entryNature == $this->nature) {
+                        $newFirstEntryForeignBalance = $foreignBalance + $entryForeignAmount;
+                    } else {
+                        $newFirstEntryForeignBalance = $foreignBalance - $entryForeignAmount;
+                    }
+
+                    DB::table('entry_accounts')
+                        ->where('journal_entry_id', $firstEntry->id)
+                        ->where('account_id', $this->id)
+                        ->update(['account_foreign_balance' => $newFirstEntryForeignBalance]);
+                }
+            }
+        } else {
+            // No entries exist, just update the account balance directly
+            $this->balance = $balance;
+            if ($foreignBalance !== null) {
+                $this->foreign_balance = $foreignBalance;
+            }
+            $this->save();
         }
     }
 

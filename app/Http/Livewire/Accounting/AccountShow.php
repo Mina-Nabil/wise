@@ -7,6 +7,7 @@ use App\Models\Accounting\JournalEntry;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -30,6 +31,9 @@ class AccountShow extends Component
     public $isOpeningBalanceModalOpen = false;
     public $openingBalance;
     public $openingForeignBalance;
+
+    // Clear parent & children balances confirmation modal
+    public $isClearBalancesModalOpen = false;
 
     public function openOpeningBalanceModal()
     {
@@ -93,6 +97,38 @@ class AccountShow extends Component
             $this->alert('success', 'Opening balance set successfully! ' . $result['accounts_processed'] . ' accounts processed.');
             $this->account = $account->fresh();
             $this->closeOpeningBalanceModal();
+        } else {
+            $this->alert('failed', $result['message']);
+        }
+    }
+
+    public function openClearBalancesModal()
+    {
+        $this->isClearBalancesModalOpen = true;
+    }
+
+    public function closeClearBalancesModal()
+    {
+        $this->isClearBalancesModalOpen = false;
+    }
+
+    public function clearBalancesWithChildren()
+    {
+        $account = Account::findOrFail($this->accountId);
+
+        /** @var \App\Models\Users\User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser?->can('setOpeningBalance', $account)) {
+            $this->alert('failed', 'You are not allowed to clear balances');
+            return;
+        }
+
+        $result = $account->clearBalanceWithChildren();
+
+        if ($result['success']) {
+            $this->alert('success', $result['message']);
+            $this->account = $account->fresh();
+            $this->closeClearBalancesModal();
         } else {
             $this->alert('failed', $result['message']);
         }
