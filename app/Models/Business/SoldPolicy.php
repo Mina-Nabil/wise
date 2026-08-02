@@ -973,7 +973,7 @@ class SoldPolicy extends Model
     public function addEndorsement($due = null, $desc = null, $actions = [])
     {
 
-    $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement - " . $this->client?->other_name, $desc, $due);
+        $newEndors = $this->addTask(Task::TYPE_ENDORSMENT, "Policy# $this->policy_number endorsement - " . $this->client?->other_name, $desc, $due);
         if (!$newEndors) return false;
         $this->sendPolicyNotifications("Policy#$this->id endorsement added", Auth::user()->username . " added a endorsement");
         foreach ($actions as $a) {
@@ -1198,7 +1198,9 @@ class SoldPolicy extends Model
                     AppLog::info("Sales commission reversed", desc: "Added minus commission for comm#{$comm->id} after policy cancellation", loggable: $this);
                     $comm->comm_profile?->refreshBalances();
                 } else {
-                    $comm->setAsCancelled(Carbon::now(), true);
+                    if ($comm->status !== SalesComm::PYMT_STATE_CANCELLED) {
+                        $comm->update(['sold_policy_id' => null]);
+                    }
                 }
             });
             $this->calculateTotalSalesComm();
@@ -1219,7 +1221,7 @@ class SoldPolicy extends Model
 
     public function deleteSoldPolicy()
     {
-        if($this->company_comm_payments()->whereNotNull('invoice_id')->count() > 0) {
+        if ($this->company_comm_payments()->whereNotNull('invoice_id')->count() > 0) {
             return "Sold policy has an invoice, can't delete";
         }
 
@@ -1364,7 +1366,7 @@ class SoldPolicy extends Model
                         'car_chassis'  => $car_chassis,
                         'car_engine'   => $car_engine,
                         'car_plate_no' => $car_plate_no,
-                    ], fn ($v) => !is_null($v) && $v !== '');
+                    ], fn($v) => !is_null($v) && $v !== '');
                     if (!empty($carUpdates)) {
                         $customerCar->update($carUpdates);
                     }
@@ -1596,7 +1598,7 @@ class SoldPolicy extends Model
         $i = 2;
         foreach ($policies as $policy) {
             $colIndex = 1; // Start at column A (index 1)
-            
+
             // REVIEW column (if can review)
             if ($canReview) {
                 $reviewStatus = $policy->is_reviewed ? "Reviewed" : "Not Reviewed";
@@ -1614,32 +1616,32 @@ class SoldPolicy extends Model
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . $i)->setValue($policy->policy->company->name);
             $colIndex++;
-            
+
             // POLICY Name
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . $i)->setValue($policy->policy->name);
             $colIndex++;
-            
+
             // START
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             $colIndex++;
-            
+
             // END
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . $i)->setValue(Carbon::parse($policy->expiry)->format('d-m-Y'));
             $colIndex++;
-            
+
             // PYMT (client_payment_date)
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . $i)->setValue($policy->client_payment_date ? Carbon::parse($policy->client_payment_date)->format('d-m-Y') : '');
             $colIndex++;
-            
+
             // NUMBER (policy_number)
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . $i)->setValue($policy->policy_number);
             $colIndex++;
-            
+
             // CLIENT NAME
             $clientName = '';
             if ($policy->client_type === 'customer') {
@@ -1650,12 +1652,12 @@ class SoldPolicy extends Model
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . $i)->setValue($clientName);
             $colIndex++;
-            
+
             // NET PREM.
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . $i)->setValue($policy->net_premium);
             $colIndex++;
-            
+
             // Commission columns (if can viewCommission)
             if ($canViewCommission) {
                 // Sales Out Profiles
@@ -1667,33 +1669,33 @@ class SoldPolicy extends Model
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $activeSheet->getCell($colLetter . $i)->setValue($policy->sales_out_comm ?? 0);
                 $colIndex++;
-                
+
                 // SalesOut Paid
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $activeSheet->getCell($colLetter . $i)->setValue($policy->sales_out_comm_paid ?? 0);
                 $colIndex++;
-                
+
                 // SalesOut Paid Date
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $activeSheet->getCell($colLetter . $i)->setValue($policy->sales_out_comm_paid_date ?? '');
                 $colIndex++;
-                
+
                 // Expected (total_policy_comm)
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $activeSheet->getCell($colLetter . $i)->setValue($policy->total_policy_comm ?? 0);
                 $colIndex++;
-                
+
                 // Invoice (invoiced_amount)
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $activeSheet->getCell($colLetter . $i)->setValue($policy->invoiced_amount ?? 0);
                 $colIndex++;
-                
+
                 // Collected (total_comp_paid + tax_amount)
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $activeSheet->getCell($colLetter . $i)->setValue(($policy->total_comp_paid ?? 0) + ($policy->tax_amount ?? 0));
                 $colIndex++;
             }
-            
+
             // STATUS (combine all status flags)
             $statuses = [];
             if ($policy->is_valid) {
@@ -1810,7 +1812,7 @@ class SoldPolicy extends Model
             $activeSheet->getCell('J' . $i)->setValue(OfferOption::PAYMENT_FREQS_ARBC[$policy->payment_frequency]);
             $activeSheet->getCell('K' . $i)->setValue(Carbon::parse($policy->start)->format('d-m-Y'));
             if ($user->can('viewCommission', self::class)) {
-                $activeSheet->getCell('L' . $i)->setValue($policy->editted ? 0 :round($policy->totalPaidBetween($issued_from, $issued_to) + $policy->totalTaxBetween($issued_from, $issued_to), 2)); //total_policy_comm
+                $activeSheet->getCell('L' . $i)->setValue($policy->editted ? 0 : round($policy->totalPaidBetween($issued_from, $issued_to) + $policy->totalTaxBetween($issued_from, $issued_to), 2)); //total_policy_comm
                 // $activeSheet->getCell('J' . $i)->setValue($policy->total_comp_paid);
             }
             $activeSheet->getCell('M' . $i)->setValue($policy->editted ? "ملحق تعديل" : "");
