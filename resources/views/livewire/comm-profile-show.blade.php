@@ -3460,9 +3460,9 @@
 
                                 @if ($targetRunMessage)
                                     <div
-                                        class="mt-4 rounded-md p-3 text-sm border
-                                        @if ($targetRunMessageType === 'failed') bg-danger-500 bg-opacity-10 border-danger-500 text-danger-500
-                                        @else bg-info-500 bg-opacity-10 border-info-500 text-info-500 @endif">
+                                        class="mt-4 rounded-md p-3 text-sm text-white
+                                        @if ($targetRunMessageType === 'failed') bg-danger-500
+                                        @else bg-info-500 @endif">
                                         <div class="flex items-start gap-2">
                                             <iconify-icon class="text-lg shrink-0 relative top-[2px]"
                                                 icon="{{ $targetRunMessageType === 'failed' ? 'ph:warning' : 'material-symbols:info-outline' }}"></iconify-icon>
