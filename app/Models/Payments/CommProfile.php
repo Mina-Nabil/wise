@@ -38,6 +38,15 @@ class CommProfile extends Model
         self::TYPE_OVERRIDE,
     ];
 
+    //outcomes of processTargetPayments / startManualTargetsRun
+    const TARGET_RUN_SUCCESS = 'success';
+    const TARGET_RUN_NO_PERMISSION = 'no_permission';
+    const TARGET_RUN_NO_TARGETS = 'no_targets';
+    const TARGET_RUN_NO_POLICIES = 'no_policies';
+    const TARGET_RUN_NO_INCOME = 'no_income';
+    const TARGET_RUN_BELOW_TARGET = 'below_target';
+    const TARGET_RUN_FAILED = 'failed';
+
     protected $fillable = [
         'title',
         'type',
@@ -199,36 +208,72 @@ class CommProfile extends Model
         return response()->download($public_file_path)->deleteFileAfterSend(true);
     }
 
+    /** @return array{success: bool, code: string, message: string} */
     public function startManualTargetsRun(Carbon $end_date)
     {
         /** @var User */
         $user = Auth::user();
-        if (!$user->can('update', $this)) return false;
+        if (!$user->can('update', $this))
+            return $this->targetRunResult(self::TARGET_RUN_NO_PERMISSION, "You don't have permission to run targets for this commission profile.");
 
         return $this->processTargetPayments($end_date, true);
+    }
+
+    private function targetRunResult(string $code, string $message): array
+    {
+        $success = $code === self::TARGET_RUN_SUCCESS;
+
+        if ($success) {
+            AppLog::info("Target run completed", desc: $message, loggable: $this);
+        } elseif ($code !== self::TARGET_RUN_FAILED) {
+            //TARGET_RUN_FAILED is logged as an error by the caller with the exception details
+            AppLog::warning("Target run skipped ($code)", desc: $message, loggable: $this);
+        }
+
+        return [
+            'success'   =>  $success,
+            'code'      =>  $code,
+            'message'   =>  $message,
+        ];
     }
 
     /** Should be called periodically (once per profile) to check the profile's targets.
      * Targets act as marginal income brackets ordered by min_income_target: each target's
      * percentage is applied only to the income portion falling inside its bracket.
-     * Achieved portions are stored as sub sales comms (and comm_target_runs) per sales comm. */
+     * Achieved portions are stored as sub sales comms (and comm_target_runs) per sales comm.
+     * @return array{success: bool, code: string, message: string} */
     public function processTargetPayments(?Carbon $end_date = null, $is_manual = false)
     {
         $targets = $this->targets()->reorder()->orderBy('min_income_target')->get();
-        if ($targets->isEmpty()) return false;
+        if ($targets->isEmpty())
+            return $this->targetRunResult(
+                self::TARGET_RUN_NO_TARGETS,
+                "This profile has no targets configured. Add at least one target before running."
+            );
 
         /** @var Target */
         $firstTarget = $targets->first();
         if ($targets->pluck('each_month')->unique()->count() > 1)
             AppLog::warning("Profile targets have different each_month values, using first target's", loggable: $this);
 
+        if (!$firstTarget->each_month)
+            return $this->targetRunResult(
+                self::TARGET_RUN_NO_TARGETS,
+                "Target #{$firstTarget->id} has no 'each month' period set, so the run window can't be calculated. Edit the target and set it."
+            );
+
         $end_date = $end_date ? $end_date->setTime(0, 0, 1) : Carbon::now()->setTime(0, 0, 1);
         $start_date = $end_date->clone()->subMonths($firstTarget->each_month)->setTime(0, 0, 0);
         $end_date = $end_date->clone()->subDay()->setTime(23, 59, 59);
+        $window = $start_date->format('d/m/Y') . ' - ' . $end_date->format('d/m/Y');
 
         // deterministic order so the bracket-straddling policy is stable across re-runs
         $soldPolicies = $this->getPaidSoldPolicies($start_date, $end_date)->sortBy('id')->values();
-        if ($soldPolicies->isEmpty()) return false;
+        if ($soldPolicies->isEmpty())
+            return $this->targetRunResult(
+                self::TARGET_RUN_NO_POLICIES,
+                "No policies with client payments collected between $window. Nothing to calculate for this period."
+            );
 
         //per-policy raw wise income (percentage-independent)
         $incomes = []; //sold_policy_id => income
@@ -246,9 +291,21 @@ class CommProfile extends Model
             $totalIncome += $incomes[$sp->id];
         }
 
-        if ($totalIncome <= 0) return false;
-        //return false if the lowest target is not acheived
-        if ($totalIncome < $firstTarget->min_income_target) return false;
+        $policiesCount = $soldPolicies->count();
+        if ($totalIncome <= 0)
+            return $this->targetRunResult(
+                self::TARGET_RUN_NO_INCOME,
+                "Wise income for $window is " . number_format($totalIncome, 2) . " EGP across $policiesCount policy(ies), so there is nothing to pay. Check the policies' commissions and sales-out deductions."
+            );
+
+        //the lowest target is the entry point - below it nothing is acheived
+        if ($totalIncome < $firstTarget->min_income_target)
+            return $this->targetRunResult(
+                self::TARGET_RUN_BELOW_TARGET,
+                "Target not achieved for $window: wise income is " . number_format($totalIncome, 2)
+                    . " EGP from $policiesCount policy(ies), but the lowest target starts at " . number_format($firstTarget->min_income_target, 2)
+                    . " EGP (short by " . number_format($firstTarget->min_income_target - $totalIncome, 2) . " EGP)."
+            );
 
         //allocate each policy's income sequentially into the target brackets
         $portions = []; //sold_policy_id => [target_id => ['amount','percentage','title']]
@@ -286,36 +343,51 @@ class CommProfile extends Model
 
         Log::info("Profile#$this->id targets run", ["totalIncome" => $totalIncome, "totalPayout" => $totalPayout, "payment_to_add" => $payment_to_add]);
 
-        DB::transaction(function () use ($soldPolicies, $targets, $portions, $bracketPayouts, $totalPayout, $payment_to_add, $end_date) {
-            $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
-            $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->id, $soldPolicies->pluck('id')->toArray());
+        try {
+            DB::transaction(function () use ($soldPolicies, $targets, $portions, $bracketPayouts, $totalPayout, $payment_to_add, $end_date) {
+                $linkedComms = [];  //$sales_comm_id => [ 'paid_percentage' => $perct , "amount" => $amount  ]
+                $salesCommissions = SalesComm::getBySoldPoliciesIDs($this->id, $soldPolicies->pluck('id')->toArray());
 
-            /** @var SalesComm */
-            foreach ($salesCommissions as $s) {
-                $policyPortions = $portions[$s->sold_policy_id] ?? [];
-                $s->applyTargetPortions($policyPortions);
-                $commTotal = array_sum(array_column($policyPortions, 'amount'));
-                if ($s->amount > 0 && $commTotal > 0)
-                    $linkedComms[$s->id] = [
-                        'paid_percentage'   =>  ($commTotal / $s->amount) * 100,
-                        'amount'            =>  $commTotal
-                    ];
-            }
+                /** @var SalesComm */
+                foreach ($salesCommissions as $s) {
+                    $policyPortions = $portions[$s->sold_policy_id] ?? [];
+                    $s->applyTargetPortions($policyPortions);
+                    $commTotal = array_sum(array_column($policyPortions, 'amount'));
+                    if ($s->amount > 0 && $commTotal > 0)
+                        $linkedComms[$s->id] = [
+                            'paid_percentage'   =>  ($commTotal / $s->amount) * 100,
+                            'amount'            =>  $commTotal
+                        ];
+                }
 
-            $this->refreshBalances();
+                $this->refreshBalances();
 
-            if ($payment_to_add)
-                $this->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Profile#$this->id targets run", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
+                if ($payment_to_add)
+                    $this->addPayment($payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Profile#$this->id targets run", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
 
-            if ($payment_to_add > $totalPayout)
-                $this->addPayment($totalPayout - $payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Profile#$this->id targets run difference", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
+                if ($payment_to_add > $totalPayout)
+                    $this->addPayment($totalPayout - $payment_to_add, CommProfilePayment::PYMT_TYPE_BANK_TRNSFR, note: "Profile#$this->id targets run difference", must_add: true, linked_sales_comms: $linkedComms, target_date: $end_date);
 
-            // every target advances together (TargetRun.created_at drives the next run date),
-            // so brackets that earned nothing this run still record a zero-amount run
-            foreach ($targets as $t)
-                $t->addRun(0, $bracketPayouts[$t->id] ?? 0);
-        });
-        return true;
+                // every target advances together (TargetRun.created_at drives the next run date),
+                // so brackets that earned nothing this run still record a zero-amount run
+                foreach ($targets as $t)
+                    $t->addRun(0, $bracketPayouts[$t->id] ?? 0);
+            });
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Target run failed", desc: $e->getMessage(), loggable: $this);
+            return $this->targetRunResult(
+                self::TARGET_RUN_FAILED,
+                "Target run failed while saving and no changes were applied: " . $e->getMessage()
+            );
+        }
+
+        $achievedCount = count($bracketPayouts);
+        return $this->targetRunResult(
+            self::TARGET_RUN_SUCCESS,
+            "Target run completed for $window: " . number_format($payment_to_add, 2) . " EGP added from "
+                . number_format($totalIncome, 2) . " EGP income across $achievedCount achieved target(s) and $policiesCount policy(ies)."
+        );
     }
 
     public function getValidDirectCommissionConf(OfferOption|Policy $option): CommProfileConf|false

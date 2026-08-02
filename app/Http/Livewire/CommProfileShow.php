@@ -123,6 +123,8 @@ class CommProfileShow extends Component
     public $runs;
     public $startTargetRunSection;
     public $startTargetRunEndDate;
+    public $targetRunMessage; //persistent outcome message inside the target run modal
+    public $targetRunMessageType = 'info';
 
     public $downloadAccountStatementSec;
     public $downloadAccountStartDate;
@@ -260,28 +262,45 @@ class CommProfileShow extends Component
     public function openStartTargetRunSec()
     {
         $this->startTargetRunSection = true;
+        $this->reset(['targetRunMessage', 'targetRunMessageType']);
     }
 
     public function closeStartTargetRunSec()
     {
-        $this->reset(['startTargetRunSection', 'startTargetRunEndDate']);
+        $this->reset(['startTargetRunSection', 'startTargetRunEndDate', 'targetRunMessage', 'targetRunMessageType']);
     }
 
     public function startManualTargetsRun()
     {
         $this->validate([
             'startTargetRunEndDate' => 'required|date',
+        ], [
+            'startTargetRunEndDate.required' => 'Please select the end date of the period you want to run.',
+            'startTargetRunEndDate.date' => 'Please enter a valid end date.',
         ]);
+
+        $this->reset(['targetRunMessage', 'targetRunMessageType']);
 
         $res = $this->profile->startManualTargetsRun(Carbon::parse($this->startTargetRunEndDate));
 
-        if ($res) {
+        if ($res['success']) {
             $this->mount($this->profile->id);
             $this->closeStartTargetRunSec();
-            $this->alert('success', 'Target Run Intiated');
-        } else {
-            $this->alert('failed', 'server error');
+            $this->alert('success', $res['message']);
+            return;
         }
+
+        // outcomes that just mean "nothing to pay this period" are informational, not errors
+        $expected = in_array($res['code'], [
+            CommProfile::TARGET_RUN_NO_POLICIES,
+            CommProfile::TARGET_RUN_NO_INCOME,
+            CommProfile::TARGET_RUN_BELOW_TARGET,
+        ], true);
+
+        //keep the modal open with a persistent message - the toast hides after 3 seconds
+        $this->targetRunMessage = $res['message'];
+        $this->targetRunMessageType = $expected ? 'info' : 'failed';
+        $this->alert($expected ? 'info' : 'failed', $res['message']);
     }
 
     public function showTagetRuns($id)
