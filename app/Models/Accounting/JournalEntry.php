@@ -40,6 +40,7 @@ class JournalEntry extends Model
         'entry_title_id',
         'comment',
         'is_reviewed',
+        'review_comment',
         'day_serial',
         'receiver_name',
         'cash_entry_type',
@@ -430,19 +431,30 @@ class JournalEntry extends Model
     }
 
     ////model functions
-    public function reviewEntry()
+    public function reviewEntry($comment = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('review', $this)) return false;
 
         $this->is_reviewed = 1;
-        return $this->save();
+        $this->review_comment = $comment;
+        $res = $this->save();
+
+        if ($res) {
+            AppLog::info('Reviewed entry', desc: $comment, loggable: $this);
+        }
+
+        return $res;
     }
 
-    public function revertEntry()
+    /**
+     * @param string|null $comment Reason for the reversal - kept as the comment of the
+     *                             reversal entry. Falls back to the original entry's comment.
+     */
+    public function revertEntry($comment = null)
     {
-        return DB::transaction(function () {
+        return DB::transaction(function () use ($comment) {
             // Lock this entry to prevent concurrent reversals
             $entry = self::where('id', $this->id)->lockForUpdate()->first();
 
@@ -489,6 +501,8 @@ class JournalEntry extends Model
             /** @var \App\Models\Users\User */
             $loggedInUser = Auth::user();
 
+            $reversalComment = $comment ?: $entry->comment;
+
             // Only admins create the reversal entry directly;
             // all other users (including finance) submit for a second user's approval
             if ($loggedInUser->is_admin) {
@@ -497,7 +511,7 @@ class JournalEntry extends Model
                     cash_entry_type: null,
                     receiver_name: null,
                     revert_entry_id: $entry->id,
-                    comment: $entry->comment,
+                    comment: $reversalComment,
                     accounts: $accounts,
                     entry_date: $effectiveDate,
                 );
@@ -506,7 +520,7 @@ class JournalEntry extends Model
                     $entry->entry_title_id,
                     null,
                     null,
-                    $entry->comment,
+                    $reversalComment,
                     $accounts,
                     null,
                     $effectiveDate,

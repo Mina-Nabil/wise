@@ -41,6 +41,11 @@ class JournalEntryIndex extends Component
     public $entryInfo;
     public $entryId;
 
+    // shared comment modal for review / revert
+    public $commentModalAction;
+    public $commentModalEntryId;
+    public $actionComment;
+
     //for download daily transactions
     public $isOpenDailyTrans = false;
     public $tranactionsDay;
@@ -189,7 +194,42 @@ class JournalEntryIndex extends Component
             ->get();
     }
 
-    public function reviewSelectedEntries()
+    /**
+     * Review and revert both ask for a comment first - $actionComment is filled in the
+     * shared modal, then handed to the model call.
+     */
+    public function openCommentModal($action, $id = null)
+    {
+        $this->commentModalAction = $action;
+        $this->commentModalEntryId = $id;
+        $this->actionComment = null;
+    }
+
+    public function closeCommentModal()
+    {
+        $this->reset(['commentModalAction', 'commentModalEntryId', 'actionComment']);
+    }
+
+    public function confirmCommentModal()
+    {
+        $this->validate(['actionComment' => 'nullable|string|max:1000']);
+
+        switch ($this->commentModalAction) {
+            case 'review':
+                $this->reviewEntry($this->commentModalEntryId, $this->actionComment);
+                break;
+            case 'reviewSelected':
+                $this->reviewSelectedEntries($this->actionComment);
+                break;
+            case 'revert':
+                $this->revertEntry($this->commentModalEntryId, $this->actionComment);
+                break;
+        }
+
+        $this->closeCommentModal();
+    }
+
+    public function reviewSelectedEntries($comment = null)
     {
         $journalEntries = JournalEntry::whereIn('id', $this->selectedEntries)->get();
         foreach ($journalEntries as $entry) {
@@ -197,7 +237,7 @@ class JournalEntryIndex extends Component
         }
 
         foreach ($journalEntries as $entry) {
-            $entry->reviewEntry();
+            $entry->reviewEntry($comment);
         }
 
         $this->selectedEntries = [];
@@ -205,12 +245,12 @@ class JournalEntryIndex extends Component
         $this->alert('success', 'Entries reviewed');
     }
 
-    public function reviewEntry($id)
+    public function reviewEntry($id, $comment = null)
     {
         $entry = JournalEntry::findOrFail($id);
         $this->authorize('review', $entry);
 
-        $res = $entry->reviewEntry();
+        $res = $entry->reviewEntry($comment);
         if ($res) {
             $this->alert('success', 'Entry Successfuly Reviewed!');
         } else {
@@ -296,14 +336,14 @@ class JournalEntryIndex extends Component
         $this->isNewJournalEntryModalOpen = false;
     }
 
-    public function revertEntry($id)
+    public function revertEntry($id, $comment = null)
     {
 
         $e = JournalEntry::findOrFail($id);
 
         $this->authorize('update', $e);
 
-        $res = $e->revertEntry();
+        $res = $e->revertEntry($comment);
 
         if (is_string($res)) {
             $this->alert('failed', $res);
