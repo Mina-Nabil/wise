@@ -65,7 +65,10 @@
                                                     $debit_printed_arr = [];
                                                 @endphp
                                                 <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
-                                                    <div class="input-area col-span-2">
+                                                    <div class="input-area col-span-2 account-picker">
+                                                        <input type="text" autocomplete="off" wire:ignore
+                                                            class="form-control mt-1 block w-full p-2 border border-gray-300 rounded-md account-search"
+                                                            placeholder="Search debit account...">
                                                         <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="debit_accounts.{{ $index }}.account_id">
                                                             <option value="">Select Debit Account</option>
                                                             @foreach ($debit_accounts_list as $account)
@@ -138,7 +141,10 @@
                                                     $credit_printed_arr = [];
                                                 @endphp
                                                 <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
-                                                    <div class="input-area col-span-2">
+                                                    <div class="input-area col-span-2 account-picker">
+                                                        <input type="text" autocomplete="off" wire:ignore
+                                                            class="form-control mt-1 block w-full p-2 border border-gray-300 rounded-md account-search"
+                                                            placeholder="Search credit account...">
                                                         <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="credit_accounts.{{ $index }}.account_id">
                                                             <option value="">Select Credit Account</option>
                                                             @foreach ($credit_accounts_list as $account)
@@ -280,6 +286,52 @@
         </div>
     </div>
 
+    {{-- Filters the options of the account select next to each search box --}}
+    <script>
+        if (!window.accountSearchBound) {
+            window.accountSearchBound = true;
 
+            window.applyAccountFilter = function (input) {
+                var picker = input.closest('.account-picker');
+                var select = picker ? picker.querySelector('select') : null;
+                if (!select) return;
+
+                var term = input.value.trim().toLowerCase();
+
+                Array.prototype.forEach.call(select.options, function (option) {
+                    // Always keep the placeholder and the current selection reachable
+                    var keep = !term ||
+                        option.value === '' ||
+                        option.value === select.value ||
+                        option.text.toLowerCase().indexOf(term) !== -1;
+
+                    option.hidden = !keep;
+                    option.style.display = keep ? '' : 'none';
+                });
+            };
+
+            document.addEventListener('input', function (e) {
+                if (e.target.classList && e.target.classList.contains('account-search')) {
+                    window.applyAccountFilter(e.target);
+                }
+            });
+
+            // Livewire re-renders the selects with every option back in place, so the
+            // active searches have to be applied again
+            var bindLivewireHook = function () {
+                Livewire.hook('message.processed', function () {
+                    document.querySelectorAll('.account-search').forEach(function (input) {
+                        if (input.value.trim()) window.applyAccountFilter(input);
+                    });
+                });
+            };
+
+            if (window.Livewire) {
+                bindLivewireHook();
+            } else {
+                document.addEventListener('livewire:load', bindLivewireHook);
+            }
+        }
+    </script>
 
 </div>
