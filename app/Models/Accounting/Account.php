@@ -644,19 +644,36 @@ class Account extends Model
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $activeSheet = $spreadsheet->getActiveSheet();
 
+            // Entries mode carries the balance at the start of the period and the
+            // closing balance around the period movements
+            $lastColumn = $mode == 'entries' ? 'K' : 'G';
+
             // Set headers
             $activeSheet->setCellValue('A1', 'Account Code');
             $activeSheet->setCellValue('B1', 'Account Name');
-            $activeSheet->setCellValue('C1', 'Nature');
-            $activeSheet->setCellValue('D1', 'Debit');
-            $activeSheet->setCellValue('E1', 'Credit');
-            $activeSheet->setCellValue('F1', 'Debit Foreign');
-            $activeSheet->setCellValue('G1', 'Credit Foreign');
+            if ($mode == 'entries') {
+                $activeSheet->setCellValue('C1', 'Start Balance- Debit');
+                $activeSheet->setCellValue('D1', 'Start Balance- Credit');
+                $activeSheet->setCellValue('E1', 'Nature');
+                $activeSheet->setCellValue('F1', 'Debit');
+                $activeSheet->setCellValue('G1', 'Credit');
+                $activeSheet->setCellValue('H1', 'Debit Foreign');
+                $activeSheet->setCellValue('I1', 'Credit Foreign');
+                $activeSheet->setCellValue('J1', 'Balance- Debit');
+                $activeSheet->setCellValue('K1', 'Balance- Credit');
+            } else {
+                $activeSheet->setCellValue('C1', 'Nature');
+                $activeSheet->setCellValue('D1', 'Debit');
+                $activeSheet->setCellValue('E1', 'Credit');
+                $activeSheet->setCellValue('F1', 'Debit Foreign');
+                $activeSheet->setCellValue('G1', 'Credit Foreign');
+            }
 
             // Style headers
-            $activeSheet->getStyle('A1:G1')->getFont()->setBold(true);
-            $activeSheet->getStyle('A1:G1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
-            $activeSheet->getStyle('A1:G1')->getFill()->getStartColor()->setARGB('FFCCCCCC');
+            $headerRange = 'A1:' . $lastColumn . '1';
+            $activeSheet->getStyle($headerRange)->getFont()->setBold(true);
+            $activeSheet->getStyle($headerRange)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+            $activeSheet->getStyle($headerRange)->getFill()->getStartColor()->setARGB('FFCCCCCC');
 
             // Get all accounts with their relationships
             Log::info($to);
@@ -665,6 +682,8 @@ class Account extends Model
                 ->when($mode == 'entries' && $from && $to, fn($q) => $q->totalEntries($from, $to));
             $accounts = $accounts->get();
 
+            // Balance of every account (including its children) right before the period starts
+            $startTotals = $mode == 'entries' && $from ? self::getStartBalanceTotals($accounts, $from) : [];
 
             // Get parent accounts (accounts with no parent)
             $parentAccounts = $accounts->whereNull('parent_account_id');
@@ -686,12 +705,13 @@ class Account extends Model
                     $main_accounts_only,
                     $from,
                     $to,
-                    $included_levels
+                    $included_levels,
+                    $startTotals
                 );
             }
 
             // Auto-size columns
-            foreach (range('A', 'E') as $col) {
+            foreach (range('A', $lastColumn) as $col) {
                 $activeSheet->getColumnDimension($col)->setAutoSize(true);
             }
 
@@ -868,7 +888,65 @@ class Account extends Model
         return $row;
     }
 
-    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false, Carbon $from = null, Carbon $to = null, $included_levels)
+    /**
+     * Balance of each account - plus every account below it - right before $from
+     *
+     * Reads the running balance snapshot of the latest entry strictly before $from for
+     * every account in one query, then rolls the values up the tree in memory.
+     *
+     * @return array [account_id => ['balance' => float, 'foreign' => float]]
+     */
+    private static function getStartBalanceTotals($accounts, Carbon $from): array
+    {
+        $ownBalances = [];
+        foreach (self::includeBalanceBefore($from)->get() as $account) {
+            $ownBalances[$account->id] = [
+                'balance' => (float) ($account->start_entry_balance ?? 0),
+                'foreign' => (float) ($account->start_entry_currency_balance ?? 0),
+            ];
+        }
+
+        $parents = [];
+        $totals = [];
+        foreach ($accounts as $account) {
+            $parents[$account->id] = $account->parent_account_id;
+            $totals[$account->id] = ['balance' => 0.0, 'foreign' => 0.0];
+        }
+
+        // Add every account's own balance to itself and to each of its ancestors
+        foreach ($accounts as $account) {
+            $own = $ownBalances[$account->id] ?? ['balance' => 0.0, 'foreign' => 0.0];
+            $id = $account->id;
+            $depth = 0;
+            while ($id !== null && isset($totals[$id]) && $depth++ < 100) {
+                $totals[$id]['balance'] += $own['balance'];
+                $totals[$id]['foreign'] += $own['foreign'];
+                $id = $parents[$id] ?? null;
+            }
+        }
+
+        return $totals;
+    }
+
+    /**
+     * Place a balance in the debit or the credit column depending on the account
+     * nature and the sign of the balance
+     *
+     * @return array [debit cell value, credit cell value]
+     */
+    private static function splitBalanceByNature($balance, $nature): array
+    {
+        if (round($balance, 2) == 0) {
+            return ['', ''];
+        }
+
+        $onDebitSide = ($nature == self::NATURE_DEBIT) === ($balance > 0);
+        $formatted = number_format(abs($balance), 2);
+
+        return $onDebitSide ? [$formatted, ''] : ['', $formatted];
+    }
+
+    private static function addAccountToExport($activeSheet, $account, $row, &$processedAccounts, $allAccounts, $indentLevel = 0, $mode = 'balance', $show_zero = true, $main_accounts_only = false, Carbon $from = null, Carbon $to = null, $included_levels, array $startTotals = [])
     {
         // Skip if already processed
         if (in_array($account->id, $processedAccounts) || $indentLevel > $included_levels) {
@@ -889,6 +967,10 @@ class Account extends Model
         $creditAmount = '';
         $debitForeignAmount = '';
         $creditForeignAmount = '';
+        $startDebit = '';
+        $startCredit = '';
+        $closingDebit = '';
+        $closingCredit = '';
         if ($mode == 'balance') {
             if ($totalBalance != 0) {
                 if ($account->nature == self::NATURE_DEBIT) {
@@ -910,25 +992,50 @@ class Account extends Model
                 }
             }
         } else {
-            $debitAmount = number_format($account->sumChildrenEntries('debit', $from, $to), 2);
-            $creditAmount = number_format($account->sumChildrenEntries('credit', $from, $to), 2);
+            $debitTotal = $account->sumChildrenEntries('debit', $from, $to);
+            $creditTotal = $account->sumChildrenEntries('credit', $from, $to);
+            $debitAmount = number_format($debitTotal, 2);
+            $creditAmount = number_format($creditTotal, 2);
             $debitForeignAmount = number_format($account->sumChildrenEntries('foreign_debit', $from, $to), 2);
             $creditForeignAmount = number_format($account->sumChildrenEntries('foreign_credit', $from, $to), 2);
+
+            // Balance before the period, and the closing balance it adds up to
+            $startBalance = $startTotals[$account->id]['balance'] ?? 0;
+            $movement = $account->nature == self::NATURE_DEBIT
+                ? $debitTotal - $creditTotal
+                : $creditTotal - $debitTotal;
+            [$startDebit, $startCredit] = self::splitBalanceByNature($startBalance, $account->nature);
+            [$closingDebit, $closingCredit] = self::splitBalanceByNature($startBalance + $movement, $account->nature);
         }
 
         // Add account to spreadsheet
         if (($show_zero || $debitAmount || $creditAmount || $debitForeignAmount || $creditForeignAmount) && (!$main_accounts_only || $indentLevel == 0)) {
             $activeSheet->setCellValue('A' . $row, $account->full_code);
             $activeSheet->setCellValue('B' . $row, $accountName);
-            $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
-            $activeSheet->setCellValue('D' . $row, $debitAmount);
-            $activeSheet->setCellValue('E' . $row, $creditAmount);
-            $activeSheet->setCellValue('F' . $row, $debitForeignAmount);
-            $activeSheet->setCellValue('G' . $row, $creditForeignAmount);
+
+            if ($mode == 'entries') {
+                $activeSheet->setCellValue('C' . $row, $startDebit);
+                $activeSheet->setCellValue('D' . $row, $startCredit);
+                $activeSheet->setCellValue('E' . $row, ucfirst($account->nature));
+                $activeSheet->setCellValue('F' . $row, $debitAmount);
+                $activeSheet->setCellValue('G' . $row, $creditAmount);
+                $activeSheet->setCellValue('H' . $row, $debitForeignAmount);
+                $activeSheet->setCellValue('I' . $row, $creditForeignAmount);
+                $activeSheet->setCellValue('J' . $row, $closingDebit);
+                $activeSheet->setCellValue('K' . $row, $closingCredit);
+                $lastColumn = 'K';
+            } else {
+                $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
+                $activeSheet->setCellValue('D' . $row, $debitAmount);
+                $activeSheet->setCellValue('E' . $row, $creditAmount);
+                $activeSheet->setCellValue('F' . $row, $debitForeignAmount);
+                $activeSheet->setCellValue('G' . $row, $creditForeignAmount);
+                $lastColumn = 'G';
+            }
 
             // Style parent accounts differently
             if ($indentLevel == 0) {
-                $activeSheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
+                $activeSheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
             }
 
             $row++;
@@ -937,7 +1044,7 @@ class Account extends Model
         // Process children recursively
         $children = $allAccounts->where('parent_account_id', $account->id);
         foreach ($children as $child) {
-            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero, $main_accounts_only, $from, $to, $included_levels);
+            $row = self::addAccountToExport($activeSheet, $child, $row, $processedAccounts, $allAccounts, $indentLevel + 1, $mode, $show_zero, $main_accounts_only, $from, $to, $included_levels, $startTotals);
         }
 
         return $row;
@@ -1481,6 +1588,18 @@ class Account extends Model
         return $query->select('accounts.*')
             ->selectRaw('(SELECT entry_accounts.account_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at <= ? ORDER BY journal_entries.created_at DESC, journal_entries.id DESC LIMIT 1 ) as last_entry_balance', [$date->format('Y-m-d H:i')])
             ->selectRaw('(SELECT entry_accounts.account_foreign_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at <= ? ORDER BY journal_entries.created_at DESC, journal_entries.id DESC LIMIT 1 ) as last_entry_currency_balance', [$date->format('Y-m-d H:i')]);
+    }
+
+    /**
+     * Running balance snapshot of the latest entry strictly BEFORE $date - the balance
+     * an account starts a period with. Complements totalEntries(), which counts the
+     * entries from $date onwards.
+     */
+    public function scopeIncludeBalanceBefore($query, Carbon $date)
+    {
+        return $query->select('accounts.*')
+            ->selectRaw('(SELECT entry_accounts.account_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at < ? ORDER BY journal_entries.created_at DESC, journal_entries.id DESC LIMIT 1 ) as start_entry_balance', [$date->format('Y-m-d H:i')])
+            ->selectRaw('(SELECT entry_accounts.account_foreign_balance FROM entry_accounts JOIN journal_entries ON journal_entries.id = entry_accounts.journal_entry_id WHERE entry_accounts.account_id = accounts.id AND journal_entries.created_at < ? ORDER BY journal_entries.created_at DESC, journal_entries.id DESC LIMIT 1 ) as start_entry_currency_balance', [$date->format('Y-m-d H:i')]);
     }
 
     public function scopeTotalEntries($query, Carbon $from, Carbon $to)
