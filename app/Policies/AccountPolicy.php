@@ -72,4 +72,14 @@ class AccountPolicy
     {
         return $user->is_admin;
     }
+
+    public function deleteWithEntries(User $user, Account $account)
+    {
+        return $user->is_admin;
+    }
+
+    public function merge(User $user, Account $account)
+    {
+        return $user->is_admin;
+    }
 }

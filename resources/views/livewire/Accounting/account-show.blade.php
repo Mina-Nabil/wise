@@ -10,20 +10,34 @@
                     @endif
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ ucwords($account->nature) }}</p>
                 </div>
-                @can('setOpeningBalance', $account)
-                <div class="flex items-center space-x-2">
-                    <button wire:click="openOpeningBalanceModal"
-                        class="btn inline-flex justify-center btn-outline-primary btn-sm">
-                        <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="lucide:settings-2"></iconify-icon>
-                        Set Opening Balance
-                    </button>
-                    <button wire:click="openClearBalancesModal"
-                        class="btn inline-flex justify-center btn-outline-danger btn-sm">
-                        <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="lucide:eraser"></iconify-icon>
-                        Clear Parent &amp; Children Balances
-                    </button>
+                <div class="flex flex-wrap items-center gap-2 justify-end">
+                    @can('setOpeningBalance', $account)
+                        <button wire:click="openOpeningBalanceModal"
+                            class="btn inline-flex justify-center btn-outline-primary btn-sm">
+                            <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="lucide:settings-2"></iconify-icon>
+                            Set Opening Balance
+                        </button>
+                        <button wire:click="openClearBalancesModal"
+                            class="btn inline-flex justify-center btn-outline-danger btn-sm">
+                            <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="lucide:eraser"></iconify-icon>
+                            Clear Parent &amp; Children Balances
+                        </button>
+                    @endcan
+                    @can('merge', $account)
+                        <button wire:click="openMergeModal"
+                            class="btn inline-flex justify-center btn-outline-warning btn-sm">
+                            <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="lucide:git-merge"></iconify-icon>
+                            دمج الحساب
+                        </button>
+                    @endcan
+                    @can('deleteWithEntries', $account)
+                        <button wire:click="openDeleteAccountModal"
+                            class="btn inline-flex justify-center btn-danger btn-sm">
+                            <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="lucide:trash-2"></iconify-icon>
+                            حذف الحساب
+                        </button>
+                    @endcan
                 </div>
-                @endcan
             </div>
         </div>
     </div>
@@ -163,6 +177,236 @@
 
 
     @if ($is_open_edit)
+    @endif
+
+    {{-- حذف الحساب مع كل قيوده --}}
+    @if ($isDeleteAccountModalOpen)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="delete_account_modal" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 600px;">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700" dir="rtl">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white">
+                                حذف الحساب مع كل قيوده
+                            </h3>
+
+                            <button wire:click="closeDeleteAccountModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">إغلاق</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4 text-right">
+                            <div
+                                class="bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg p-4">
+                                <p class="text-sm text-danger-700 dark:text-danger-300 font-medium mb-2">
+                                    سيتم حذف حساب «{{ $account->name }}» نهائيًا، وهذه العملية لا يمكن التراجع عنها.
+                                </p>
+                                <p class="text-sm text-danger-700 dark:text-danger-300">
+                                    عدد القيود التي ستُحذف: <b>{{ $deleteImpact['entries'] ?? 0 }}</b> قيد،
+                                    وتؤثر على <b>{{ $deleteImpact['accounts'] ?? 0 }}</b> حساب آخر.
+                                </p>
+                            </div>
+
+                            <p class="text-sm text-slate-700 dark:text-slate-300 font-medium">ماذا سيحدث بالضبط؟</p>
+                            <ul class="text-sm text-slate-600 dark:text-slate-300 space-y-2 list-disc pr-5">
+                                <li>
+                                    كل قيد يومية يظهر فيه هذا الحساب سيُحذف <b>بالكامل</b>، أي أن الطرف المقابل في
+                                    الحسابات الأخرى سيُحذف أيضًا، حتى يظل مجموع المدين مساويًا لمجموع الدائن.
+                                </li>
+                                <li>
+                                    لذلك <b>ستتغير أرصدة الحسابات الأخرى</b> التي شاركت في هذه القيود، لأن القيد لم يعد
+                                    موجودًا.
+                                </li>
+                                <li>
+                                    <b>الأرصدة الافتتاحية</b> لتلك الحسابات (المرحّلة من القيود المؤرشفة) لن تتغير، يتم
+                                    حفظها قبل الحذف وإعادة تطبيقها بعده.
+                                </li>
+                                @if (($deleteImpact['pending'] ?? 0) > 0)
+                                    <li>
+                                        سيتم حذف <b>{{ $deleteImpact['pending'] }}</b> قيد معلّق (في انتظار الاعتماد)
+                                        يخص هذا الحساب.
+                                    </li>
+                                @endif
+                                @if (($deleteImpact['archived'] ?? 0) > 0)
+                                    <li>
+                                        سيتم حذف <b>{{ $deleteImpact['archived'] }}</b> سطر من القيود المؤرشفة تخص هذا
+                                        الحساب فقط، وسجلات باقي الحسابات لن تتأثر.
+                                    </li>
+                                @endif
+                                <li>
+                                    أي فاتورة أو دفعة عمولة مرتبطة بقيد محذوف سيتم فك ارتباطها بالقيد.
+                                </li>
+                                <li>
+                                    بعد الحذف يتم إعادة حساب كل الأرصدة من جديد.
+                                </li>
+                            </ul>
+
+                            <div class="form-group pt-2">
+                                <label for="deleteConfirmation" class="form-label">
+                                    للتأكيد، اكتب اسم الحساب: <b>{{ $account->name }}</b>
+                                </label>
+                                <input type="text" id="deleteConfirmation"
+                                    class="form-control mt-2 w-full text-right" wire:model.defer="deleteConfirmation"
+                                    placeholder="اكتب اسم الحساب هنا">
+                            </div>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-start p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="deleteAccountWithEntries"
+                                class="btn inline-flex justify-center btn-danger">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="deleteAccountWithEntries"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove wire:target="deleteAccountWithEntries">حذف نهائي</span>
+                            </button>
+                            <button wire:click="closeDeleteAccountModal"
+                                class="btn inline-flex justify-center btn-outline-dark">
+                                إلغاء
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- دمج الحساب في حساب آخر --}}
+    @if ($isMergeModalOpen)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="merge_account_modal" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 600px;">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700" dir="rtl">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white">
+                                دمج الحساب في حساب آخر
+                            </h3>
+
+                            <button wire:click="closeMergeModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">إغلاق</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-4 text-right">
+                            <div class="form-group">
+                                <label for="mergeSearchText" class="form-label">ابحث عن الحساب الذي سيتم الدمج
+                                    فيه</label>
+                                @if ($mergeTarget)
+                                    <div
+                                        class="flex items-center justify-between bg-slate-100 dark:bg-slate-600 rounded-md p-3 mt-2">
+                                        <div>
+                                            <p class="text-sm font-medium text-slate-800 dark:text-white">
+                                                {{ $mergeTarget->name }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-300">
+                                                {{ $mergeTarget->full_code }}</p>
+                                        </div>
+                                        <button wire:click="clearMergeTarget"
+                                            class="btn btn-sm btn-outline-dark">تغيير</button>
+                                    </div>
+                                @else
+                                    <input type="text" id="mergeSearchText" class="form-control mt-2 w-full text-right"
+                                        wire:model.debounce.400ms="mergeSearchText" placeholder="اسم الحساب أو الكود">
+                                    @error('mergeTargetId')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                    <div class="mt-2 max-h-48 overflow-y-auto">
+                                        @foreach ($mergeSearchResults as $result)
+                                            <div wire:click="selectMergeTarget({{ $result->id }})"
+                                                class="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 rounded-md p-2 border-b border-slate-100 dark:border-slate-600">
+                                                <p class="text-sm text-slate-800 dark:text-white">{{ $result->name }}
+                                                </p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-300">
+                                                    {{ $result->full_code }}</p>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div
+                                class="bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-lg p-4">
+                                <p class="text-sm text-warning-700 dark:text-warning-300">
+                                    سيتم دمج حساب «{{ $account->name }}» في
+                                    @if ($mergeTarget)
+                                        حساب «{{ $mergeTarget->name }}»، ثم حذف حساب «{{ $account->name }}».
+                                    @else
+                                        الحساب الذي تختاره، ثم حذف هذا الحساب.
+                                    @endif
+                                </p>
+                            </div>
+
+                            <p class="text-sm text-slate-700 dark:text-slate-300 font-medium">ماذا سيحدث بالضبط؟</p>
+                            <ul class="text-sm text-slate-600 dark:text-slate-300 space-y-2 list-disc pr-5">
+                                <li>
+                                    كل القيود (الحالية والمعلّقة والمؤرشفة) تنتقل إلى الحساب الآخر، ولا يُحذف أي قيد.
+                                </li>
+                                <li>
+                                    الحساب الآخر <b>يحتفظ باسمه وكوده ومكانه</b> في شجرة الحسابات.
+                                </li>
+                                <li>
+                                    <b>الرصيد الافتتاحي</b> للحسابين يُجمع معًا (مع عكس الإشارة إذا اختلفت طبيعة
+                                    الحسابين مدين/دائن)، ثم يُعاد حساب كل الأرصدة، فلا يضيع أي رصيد.
+                                </li>
+                                <li>
+                                    إذا وُجد قيد يحتوي على الحسابين معًا، يتم دمج الطرفين في سطر واحد، وإذا ألغى أحدهما
+                                    الآخر يُحذف السطر من القيد.
+                                </li>
+                                <li>
+                                    الحسابات الفرعية التابعة لهذا الحساب تصبح تابعة للحساب الآخر. وانتبه: الحساب الذي
+                                    يصبح له حسابات فرعية لا يقبل قيودًا جديدة.
+                                </li>
+                                <li>
+                                    الارتباطات الأخرى (بروفايلات العمولة، شركات التأمين، إعدادات الحساب، عناوين القيود)
+                                    تنتقل إلى الحساب الآخر.
+                                </li>
+                                <li>
+                                    لا يمكن الدمج إذا اختلفت عملة الحسابين.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center justify-start p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="mergeAccount" @disabled(!$mergeTargetId)
+                                class="btn inline-flex justify-center btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="mergeAccount"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove wire:target="mergeAccount">تنفيذ الدمج</span>
+                            </button>
+                            <button wire:click="closeMergeModal" class="btn inline-flex justify-center btn-outline-dark">
+                                إلغاء
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
 
     {{-- Clear Parent & Children Balances Modal --}}

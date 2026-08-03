@@ -1177,6 +1177,367 @@ class Account extends Model
     }
 
     /**
+     * Delete this account together with every journal entry it takes part in.
+     *
+     * Entries are removed whole - both sides - so total debits keep matching total
+     * credits. That changes the balance of every other account those entries touched,
+     * which is correct: the entry no longer exists. What must NOT change is their
+     * opening balance (the balance carried in from archived history), so it is captured
+     * before the delete and re-applied to whatever entry becomes their first one.
+     *
+     * @return array ['success' => bool, 'message' => string, 'accounts_processed' => int, 'errors' => array]
+     */
+    public function deleteWithEntries(): array
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('deleteWithEntries', $this)) {
+            return $this->failedResult('You are not allowed to delete accounts');
+        }
+
+        if ($this->children_accounts()->count()) {
+            return $this->failedResult('This account has sub accounts. Delete or move them first.');
+        }
+
+        if ($blocker = $this->findExternalReferences()) {
+            return $this->failedResult($blocker);
+        }
+
+        try {
+            return DB::transaction(function () {
+                $entryIds = DB::table('entry_accounts')
+                    ->where('account_id', $this->id)
+                    ->distinct()
+                    ->pluck('journal_entry_id')
+                    ->toArray();
+
+                // Every other account standing on the other side of those entries
+                $affected = self::whereIn(
+                    'id',
+                    DB::table('entry_accounts')
+                        ->whereIn('journal_entry_id', $entryIds)
+                        ->where('account_id', '!=', $this->id)
+                        ->distinct()
+                        ->pluck('account_id')
+                        ->toArray()
+                )->get();
+
+                $openings = [];
+                foreach ($affected as $account) {
+                    $openings[$account->id] = $account->getOpeningBalance();
+                }
+
+                // Live entries - both sides
+                DB::table('entry_accounts')->whereIn('journal_entry_id', $entryIds)->delete();
+                JournalEntry::whereIn('id', $entryIds)->delete();
+
+                // Entries still waiting for approval
+                $pendingEntries = UnapprovedEntry::whereHas('accounts', fn($q) => $q->where('accounts.id', $this->id))->get();
+                foreach ($pendingEntries as $pendingEntry) {
+                    $pendingEntry->accounts()->sync([]);
+                    $pendingEntry->delete();
+                }
+
+                // Archived entries aren't replayed, so only this account's side is dropped -
+                // other accounts keep their history
+                $archivedEntryIds = DB::table('archived_entry_accounts')
+                    ->where('account_id', $this->id)
+                    ->distinct()
+                    ->pluck('archived_entry_id')
+                    ->toArray();
+                $archivedCount = DB::table('archived_entry_accounts')->where('account_id', $this->id)->delete();
+                DB::table('archived_entries')
+                    ->whereIn('id', $archivedEntryIds)
+                    ->whereNotExists(
+                        fn($q) => $q->select(DB::raw(1))
+                            ->from('archived_entry_accounts')
+                            ->whereColumn('archived_entry_accounts.archived_entry_id', 'archived_entries.id')
+                    )
+                    ->delete();
+
+                DB::table('titles_accounts')->where('account_id', $this->id)->delete();
+
+                $name = $this->name;
+                $entryCount = count($entryIds);
+                $this->delete();
+
+                // Restore each affected account to the opening balance it had, then replay
+                $initialBalances = [];
+                foreach ($affected as $account) {
+                    $account->applyOpeningBalance($openings[$account->id]['balance'], $openings[$account->id]['foreign']);
+                    $initialBalances[$account->id] = [
+                        'balance' => $openings[$account->id]['balance'],
+                        'foreign_balance' => $openings[$account->id]['foreign'],
+                    ];
+                }
+
+                AppLog::info(
+                    "Deleted account $name",
+                    desc: "Removed $entryCount journal entries, $archivedCount archived rows and "
+                        . count($pendingEntries) . ' pending entries'
+                );
+
+                $result = JournalEntry::refreshAllBalances($initialBalances);
+
+                if ($result['success']) {
+                    $result['message'] = "Deleted account \"$name\" with $entryCount journal entries. " . $result['message'];
+                }
+
+                return $result;
+            });
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't delete account", desc: $e->getMessage(), loggable: $this);
+            return $this->failedResult('Failed to delete account: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Merge this account into $target. The target keeps its own name, code and place in
+     * the tree; this account's entries, pending entries, history and children move over,
+     * then this account is deleted.
+     *
+     * Balances: the running snapshots moving across belong to this account's history, so
+     * they can't be trusted on the target. Both opening balances are captured first,
+     * added together (flipped when the two natures differ, since a balance is stored
+     * relative to its account's nature) and applied to the target before the replay.
+     *
+     * @return array ['success' => bool, 'message' => string, 'accounts_processed' => int, 'errors' => array]
+     */
+    public function mergeInto(self $target): array
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('merge', $this)) {
+            return $this->failedResult('You are not allowed to merge accounts');
+        }
+
+        if ($target->id == $this->id) {
+            return $this->failedResult('Cannot merge an account into itself');
+        }
+
+        if ($this->default_currency != $target->default_currency) {
+            return $this->failedResult(
+                "The two accounts hold different currencies ($this->default_currency and $target->default_currency), "
+                    . 'their foreign balances cannot be added together'
+            );
+        }
+
+        // An entry holding both accounts collapses into a single row on the target, which
+        // only works when the two rows share a currency
+        $conflict = DB::table('entry_accounts as source')
+            ->join('entry_accounts as destination', function ($join) use ($target) {
+                $join->on('destination.journal_entry_id', '=', 'source.journal_entry_id')
+                    ->where('destination.account_id', $target->id);
+            })
+            ->where('source.account_id', $this->id)
+            ->whereColumn('source.currency', '!=', 'destination.currency')
+            ->value('source.journal_entry_id');
+
+        if ($conflict) {
+            return $this->failedResult(
+                "Journal entry #$conflict holds both accounts with different currencies, it has to be fixed first"
+            );
+        }
+
+        try {
+            return DB::transaction(function () use ($target) {
+                $sourceOpening = $this->getOpeningBalance();
+                $targetOpening = $target->getOpeningBalance();
+
+                $movedEntries = DB::table('entry_accounts')->where('account_id', $this->id)->count();
+
+                // Entries holding both accounts: net the two rows into one on the target
+                $this->netPivotRowsInto('entry_accounts', 'journal_entry_id', $target);
+                DB::table('entry_accounts')->where('account_id', $this->id)->update(['account_id' => $target->id]);
+
+                $this->netPivotRowsInto('unapp_entry_accounts', 'unapproved_entry_id', $target);
+                DB::table('unapp_entry_accounts')->where('account_id', $this->id)->update(['account_id' => $target->id]);
+
+                DB::table('archived_entry_accounts')->where('account_id', $this->id)->update(['account_id' => $target->id]);
+
+                // Titles the source is attached to, skipping the ones the target already has
+                DB::table('titles_accounts')
+                    ->where('account_id', $this->id)
+                    ->whereIn(
+                        'entry_title_id',
+                        DB::table('titles_accounts')->where('account_id', $target->id)->pluck('entry_title_id')->toArray()
+                    )
+                    ->delete();
+                DB::table('titles_accounts')->where('account_id', $this->id)->update(['account_id' => $target->id]);
+
+                DB::table('account_settings')->where('account_id', $this->id)->update(['account_id' => $target->id]);
+                DB::table('comm_profiles')->where('account_id', $this->id)->update(['account_id' => $target->id]);
+                DB::table('insurance_companies')->where('account_id', $this->id)->update(['account_id' => $target->id]);
+
+                // Children move under the target. If the target is one of them it takes
+                // this account's own place instead, so the tree keeps its shape.
+                foreach ($this->children_accounts()->get() as $child) {
+                    $child->parent_account_id = $child->id == $target->id ? $this->parent_account_id : $target->id;
+                    $child->save();
+                }
+
+                $name = $this->name;
+                $this->delete();
+
+                // Both histories now sit on the target, so both opening balances do too
+                $sourceSign = $this->nature == $target->nature ? 1 : -1;
+                $openingBalance = $targetOpening['balance'] + $sourceSign * $sourceOpening['balance'];
+                $openingForeign = $targetOpening['foreign'] + $sourceSign * $sourceOpening['foreign'];
+
+                $target->applyOpeningBalance($openingBalance, $openingForeign);
+
+                AppLog::info("Merged account $name into $target->name", loggable: $target);
+
+                $result = JournalEntry::refreshAllBalances([
+                    $target->id => ['balance' => $openingBalance, 'foreign_balance' => $openingForeign],
+                ]);
+
+                if ($result['success']) {
+                    $result['message'] = "Merged \"$name\" into \"$target->name\" with $movedEntries entry rows. " . $result['message'];
+                }
+
+                return $result;
+            });
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't merge account", desc: $e->getMessage(), loggable: $this);
+            return $this->failedResult('Failed to merge account: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * What deleting this account would take with it, so the confirmation can spell it out
+     *
+     * @return array ['entries' => int, 'accounts' => int, 'pending' => int, 'archived' => int]
+     */
+    public function deletionImpact(): array
+    {
+        $entryIds = DB::table('entry_accounts')
+            ->where('account_id', $this->id)
+            ->distinct()
+            ->pluck('journal_entry_id')
+            ->toArray();
+
+        return [
+            'entries' => count($entryIds),
+            'accounts' => DB::table('entry_accounts')
+                ->whereIn('journal_entry_id', $entryIds)
+                ->where('account_id', '!=', $this->id)
+                ->distinct()
+                ->count('account_id'),
+            'pending' => UnapprovedEntry::whereHas('accounts', fn($q) => $q->where('accounts.id', $this->id))->count(),
+            'archived' => DB::table('archived_entry_accounts')->where('account_id', $this->id)->count(),
+        ];
+    }
+
+    /**
+     * The balance this account carried before its first live entry - everything archived
+     * or set as an opening balance. Derived the same way refreshAllBalances() derives it,
+     * by reversing the first entry off its own snapshot.
+     *
+     * @return array ['balance' => float, 'foreign' => float]
+     */
+    private function getOpeningBalance(): array
+    {
+        $firstEntry = JournalEntry::byAccount($this->id)
+            ->orderBy('created_at', 'asc')
+            ->orderBy('id', 'asc')
+            ->first();
+
+        $pivot = $firstEntry ? DB::table('entry_accounts')
+            ->where('journal_entry_id', $firstEntry->id)
+            ->where('account_id', $this->id)
+            ->first() : null;
+
+        if (!$pivot) {
+            // No entries to reverse - whatever sits on the account is the opening balance
+            return ['balance' => (float) $this->balance, 'foreign' => (float) $this->foreign_balance];
+        }
+
+        $sign = $pivot->nature == $this->nature ? 1 : -1;
+        $balance = $pivot->account_balance - $sign * $pivot->amount;
+
+        $foreign = 0.0;
+        if ($pivot->currency && $pivot->currency != JournalEntry::CURRENCY_EGP && $pivot->currency == $this->default_currency) {
+            $foreign = ($pivot->account_foreign_balance ?? 0) - $sign * ($pivot->currency_amount ?? 0);
+        }
+
+        return ['balance' => (float) $balance, 'foreign' => (float) $foreign];
+    }
+
+    /**
+     * Collapse rows that would leave the target holding two rows on the same entry - the
+     * balance replay only ever reads one row per (entry, account) pair. Amounts are netted
+     * on the debit side; a pair that cancels out drops off the entry entirely.
+     */
+    private function netPivotRowsInto($table, $entryColumn, self $target)
+    {
+        $shared = DB::table($table . ' as source')
+            ->join($table . ' as destination', function ($join) use ($entryColumn, $target) {
+                $join->on('destination.' . $entryColumn, '=', 'source.' . $entryColumn)
+                    ->where('destination.account_id', $target->id);
+            })
+            ->where('source.account_id', $this->id)
+            ->select('source.id as source_id', 'destination.id as destination_id')
+            ->get();
+
+        foreach ($shared as $pair) {
+            $source = DB::table($table)->where('id', $pair->source_id)->first();
+            $destination = DB::table($table)->where('id', $pair->destination_id)->first();
+
+            $signed = fn($row, $field) => ($row->nature == self::NATURE_DEBIT ? 1 : -1) * ($row->$field ?? 0);
+
+            $amount = $signed($source, 'amount') + $signed($destination, 'amount');
+            $currencyAmount = $signed($source, 'currency_amount') + $signed($destination, 'currency_amount');
+
+            DB::table($table)->where('id', $pair->source_id)->delete();
+
+            if (round($amount, 2) == 0 && round($currencyAmount, 2) == 0) {
+                // The two sides cancel out - the entry no longer touches this account
+                DB::table($table)->where('id', $pair->destination_id)->delete();
+                continue;
+            }
+
+            DB::table($table)->where('id', $pair->destination_id)->update([
+                'nature' => $amount >= 0 ? self::NATURE_DEBIT : self::NATURE_CREDIT,
+                'amount' => abs($amount),
+                'currency_amount' => abs($currencyAmount),
+                'currency_rate' => $currencyAmount ? abs($amount / $currencyAmount) : $destination->currency_rate,
+            ]);
+        }
+    }
+
+    /** Tables that would silently lose their link if this account went away */
+    private function findExternalReferences(): ?string
+    {
+        $references = [
+            'comm_profiles' => 'commission profile',
+            'insurance_companies' => 'insurance company',
+            'account_settings' => 'account setting',
+        ];
+
+        foreach ($references as $table => $label) {
+            $count = DB::table($table)->where('account_id', $this->id)->count();
+            if ($count) {
+                return "This account is linked to $count $label record(s). Unlink or merge it instead.";
+            }
+        }
+
+        return null;
+    }
+
+    private function failedResult($message): array
+    {
+        return [
+            'success' => false,
+            'message' => $message,
+            'accounts_processed' => 0,
+            'errors' => [$message],
+        ];
+    }
+
+    /**
      * Set the opening balance of this account and every account below it to zero,
      * then refresh all entry balances
      *

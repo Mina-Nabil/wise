@@ -7,13 +7,14 @@ use App\Models\Accounting\JournalEntry;
 use App\Traits\AlertFrontEnd;
 use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class AccountShow extends Component
 {
-    use WithPagination, ToggleSectionLivewire, AlertFrontEnd;
+    use WithPagination, ToggleSectionLivewire, AlertFrontEnd, AuthorizesRequests;
     public $page_title = 'Account';
     public $searchText;
 
@@ -34,6 +35,18 @@ class AccountShow extends Component
 
     // Clear parent & children balances confirmation modal
     public $isClearBalancesModalOpen = false;
+
+    // Delete account (with its entries) confirmation modal
+    public $isDeleteAccountModalOpen = false;
+    public $deleteConfirmation;
+    public $deleteImpact = [];
+
+    // Merge account into another one
+    public $isMergeModalOpen = false;
+    public $mergeSearchText;
+    public $mergeSearchResults = [];
+    public $mergeTargetId;
+    public $mergeTarget;
 
     public function openOpeningBalanceModal()
     {
@@ -132,6 +145,89 @@ class AccountShow extends Component
         } else {
             $this->alert('failed', $result['message']);
         }
+    }
+
+    public function openDeleteAccountModal()
+    {
+        $this->deleteImpact = Account::findOrFail($this->accountId)->deletionImpact();
+        $this->isDeleteAccountModalOpen = true;
+        $this->deleteConfirmation = null;
+    }
+
+    public function closeDeleteAccountModal()
+    {
+        $this->reset(['isDeleteAccountModalOpen', 'deleteConfirmation', 'deleteImpact']);
+    }
+
+    public function deleteAccountWithEntries()
+    {
+        $account = Account::findOrFail($this->accountId);
+        $this->authorize('deleteWithEntries', $account);
+
+        // Typing the account name is the last guard before the entries go
+        if (trim((string) $this->deleteConfirmation) !== trim($account->name)) {
+            $this->alert('failed', 'اسم الحساب غير مطابق');
+            return;
+        }
+
+        $result = $account->deleteWithEntries();
+
+        if ($result['success']) {
+            $this->alert('success', $result['message']);
+            return redirect(url('/accounts'));
+        }
+
+        $this->alert('failed', $result['message']);
+    }
+
+    public function openMergeModal()
+    {
+        $this->isMergeModalOpen = true;
+    }
+
+    public function closeMergeModal()
+    {
+        $this->reset(['isMergeModalOpen', 'mergeSearchText', 'mergeSearchResults', 'mergeTargetId', 'mergeTarget']);
+    }
+
+    public function updatedMergeSearchText()
+    {
+        $this->mergeSearchResults = $this->mergeSearchText
+            ? Account::searchBy($this->mergeSearchText)
+                ->where('id', '!=', $this->accountId)
+                ->limit(10)
+                ->get()
+            : [];
+    }
+
+    public function selectMergeTarget($id)
+    {
+        $this->mergeTarget = Account::findOrFail($id);
+        $this->mergeTargetId = $id;
+        $this->mergeSearchText = null;
+        $this->mergeSearchResults = [];
+    }
+
+    public function clearMergeTarget()
+    {
+        $this->reset(['mergeTargetId', 'mergeTarget']);
+    }
+
+    public function mergeAccount()
+    {
+        $this->validate(['mergeTargetId' => 'required|exists:accounts,id']);
+
+        $account = Account::findOrFail($this->accountId);
+        $this->authorize('merge', $account);
+
+        $result = $account->mergeInto(Account::findOrFail($this->mergeTargetId));
+
+        if ($result['success']) {
+            $this->alert('success', $result['message']);
+            return redirect(url('/accounts/' . $this->mergeTargetId));
+        }
+
+        $this->alert('failed', $result['message']);
     }
 
     public function render()
