@@ -1591,6 +1591,9 @@ class SoldPolicy extends Model
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->getCell($colLetter . '1')->setValue("Collected");
             $colIndex++;
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $activeSheet->getCell($colLetter . '1')->setValue("Comm Discount");
+            $colIndex++;
         }
         $colLetter = Coordinate::stringFromColumnIndex($colIndex);
         $activeSheet->getCell($colLetter . '1')->setValue("STATUS");
@@ -1693,6 +1696,11 @@ class SoldPolicy extends Model
                 // Collected (total_comp_paid + tax_amount)
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $activeSheet->getCell($colLetter . $i)->setValue(($policy->total_comp_paid ?? 0) + ($policy->tax_amount ?? 0));
+                $colIndex++;
+
+                // Comm Discount
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $activeSheet->getCell($colLetter . $i)->setValue($policy->discount ?? 0);
                 $colIndex++;
             }
 

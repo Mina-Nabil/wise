@@ -527,7 +527,8 @@ class SalesComm extends Model
         ?Carbon $clientPaymentDateFrom = null,
         ?Carbon $clientPaymentDateTo = null,
         ?Carbon $collectionDateFrom = null,
-        ?Carbon $collectionDateTo = null
+        ?Carbon $collectionDateTo = null,
+        ?bool $isRenewal = null
     ) {
         $commissions = self::report(
             $commProfileIds,
@@ -539,7 +540,8 @@ class SalesComm extends Model
             $clientPaymentDateFrom,
             $clientPaymentDateTo,
             $collectionDateFrom,
-            $collectionDateTo
+            $collectionDateTo,
+            $isRenewal
         )->get();
 
         $spreadsheet = new Spreadsheet();
@@ -719,7 +721,8 @@ class SalesComm extends Model
         ?Carbon $clientPaymentDateFrom = null,
         ?Carbon $clientPaymentDateTo = null,
         ?Carbon $collectionDateFrom = null,
-        ?Carbon $collectionDateTo = null
+        ?Carbon $collectionDateTo = null,
+        ?bool $isRenewal = null
     ) {
         if (empty($query->getQuery()->columns)) {
             [$subSql, $subBindings] = self::subAmountSql(
@@ -738,6 +741,7 @@ class SalesComm extends Model
             ->join('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'comm_profile')
             ->when(!empty($commProfileIds), fn($q) => $q->whereIn('sales_comms.comm_profile_id', $commProfileIds))
+            ->when($isRenewal !== null, fn($q) => $q->where('sold_policies.is_renewal', $isRenewal))
             ->when($policyStartFrom, fn($q, $date) => $q->where('sold_policies.start', '>=', $date->format('Y-m-d 00:00:00')))
             ->when($policyStartTo, fn($q, $date) => $q->where('sold_policies.start', '<=', $date->format('Y-m-d 23:59:59')))
             ->when($paymentDateFrom || $paymentDateTo, function ($q) use ($paymentDateFrom, $paymentDateTo) {
@@ -813,7 +817,8 @@ class SalesComm extends Model
         ?Carbon $clientPaymentDateFrom = null,
         ?Carbon $clientPaymentDateTo = null,
         ?Carbon $collectionDateFrom = null,
-        ?Carbon $collectionDateTo = null
+        ?Carbon $collectionDateTo = null,
+        ?bool $isRenewal = null
     ): Builder {
         [$subSql, $subBindings] = self::subAmountSql(
             $paymentDateFrom,
@@ -840,11 +845,81 @@ class SalesComm extends Model
             $clientPaymentDateFrom,
             $clientPaymentDateTo,
             $collectionDateFrom,
-            $collectionDateTo
+            $collectionDateTo,
+            $isRenewal
         );
 
         return $query->groupBy('sales_comms.comm_profile_id', 'comm_profiles.title')
             ->orderBy('profile_title');
+    }
+
+    public static function exportTotalsReport(
+        array $commProfileIds = [],
+        ?Carbon $policyStartFrom = null,
+        ?Carbon $policyStartTo = null,
+        ?Carbon $paymentDateFrom = null,
+        ?Carbon $paymentDateTo = null,
+        array $statuses = [],
+        ?Carbon $clientPaymentDateFrom = null,
+        ?Carbon $clientPaymentDateTo = null,
+        ?Carbon $collectionDateFrom = null,
+        ?Carbon $collectionDateTo = null,
+        ?bool $isRenewal = null
+    ) {
+        $totals = self::totalsReport(
+            $commProfileIds,
+            $policyStartFrom,
+            $policyStartTo,
+            $paymentDateFrom,
+            $paymentDateTo,
+            $statuses,
+            $clientPaymentDateFrom,
+            $clientPaymentDateTo,
+            $collectionDateFrom,
+            $collectionDateTo,
+            $isRenewal
+        )->get();
+
+        $spreadsheet = new Spreadsheet();
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $activeSheet->setTitle('Sales Commissions Totals');
+
+        $headers = [
+            'A1' => 'Commission Profile',
+            'B1' => 'Total Amount',
+            'C1' => 'Sub Amount',
+        ];
+
+        foreach ($headers as $cell => $value) {
+            $activeSheet->setCellValue($cell, $value);
+        }
+
+        $activeSheet->getStyle('A1:C1')->getFont()->setBold(true);
+        $activeSheet->getStyle('A1:C1')->getFill()->setFillType(Fill::FILL_SOLID);
+        $activeSheet->getStyle('A1:C1')->getFill()->getStartColor()->setARGB('FFD3D3D3');
+
+        foreach (range('A', 'C') as $column) {
+            $activeSheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        $row = 2;
+        foreach ($totals as $total) {
+            $activeSheet->setCellValue('A' . $row, $total->profile_title ?? 'N/A');
+            $activeSheet->setCellValue('B' . $row, number_format((float) $total->total_amount, 2, '.', ','));
+            $activeSheet->setCellValue('C' . $row, number_format((float) ($total->total_sub_amount ?? 0), 2, '.', ','));
+            $row++;
+        }
+
+        if ($row > 2) {
+            $activeSheet->getStyle('A1:C' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filePath = 'sales_commissions_totals_report.xlsx';
+        $publicPath = storage_path('app/' . $filePath);
+        $writer->save($publicPath);
+
+        return response()->download($publicPath)->deleteFileAfterSend(true);
     }
 
     public function scopeNotTotalyPaid(Builder $query, $profile_id)

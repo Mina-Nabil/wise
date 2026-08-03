@@ -6,6 +6,12 @@
             </h4>
         </div>
         <div class="flex sm:space-x-4 space-x-2 sm:justify-end items-center md:mb-6 mb-4 rtl:space-x-reverse">
+            <button wire:click="exportReport" class="btn inline-flex justify-center btn-outline-dark rounded-[25px]">
+                <span wire:loading.remove wire:target="exportReport">Export</span>
+                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]" wire:loading
+                    wire:target="exportReport" icon="line-md:loading-twotone-loop"></iconify-icon>
+            </button>
+
             <div class="dropdown relative ">
                 <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14"
                     type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -47,6 +53,11 @@
                         <span
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 cursor-pointer">
                             Status</span>
+                    </li>
+                    <li wire:click="toggleRenewal">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 cursor-pointer">
+                            is Renewal</span>
                     </li>
                 </ul>
             </div>
@@ -140,6 +151,23 @@
                                     &nbsp;&nbsp;
                                 </span>
                                 <span wire:click="clearStatuses">
+                                    <iconify-icon icon="material-symbols:close" width="1.2em"
+                                        height="1.2em"></iconify-icon>
+                                </span>
+                            </button>
+                        @endif
+
+                        @if (!is_null($is_renewal))
+                            <button class="btn inline-flex justify-center btn-dark btn-sm">
+                                <span wire:click="toggleRenewal">
+                                    @if ($is_renewal)
+                                        Renewal:&nbsp;Yes
+                                    @else
+                                        Renewal:&nbsp;No
+                                    @endif
+                                    &nbsp;&nbsp;
+                                </span>
+                                <span wire:click="clearrenewal">
                                     <iconify-icon icon="material-symbols:close" width="1.2em"
                                         height="1.2em"></iconify-icon>
                                 </span>

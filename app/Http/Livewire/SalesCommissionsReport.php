@@ -54,6 +54,8 @@ class SalesCommissionsReport extends Component
     public $Ecollection_date_from;
     public $Ecollection_date_to;
 
+    public $is_renewal;
+
     public $selectedCommissions = [];
 
     protected $paginationTheme = 'bootstrap';
@@ -217,6 +219,16 @@ class SalesCommissionsReport extends Component
         $this->Ecollection_date_to = null;
     }
 
+    public function toggleRenewal(): void
+    {
+        $this->toggle($this->is_renewal);
+    }
+
+    public function clearrenewal(): void
+    {
+        $this->is_renewal = null;
+    }
+
     public function exportReport()
     {
         return SalesComm::exportReport(
@@ -229,7 +241,8 @@ class SalesCommissionsReport extends Component
             $this->asCarbon($this->client_payment_date_from),
             $this->asCarbon($this->client_payment_date_to),
             $this->asCarbon($this->collection_date_from),
-            $this->asCarbon($this->collection_date_to)
+            $this->asCarbon($this->collection_date_to),
+            $this->is_renewal
         );
     }
 
@@ -277,7 +290,8 @@ class SalesCommissionsReport extends Component
             $this->asCarbon($this->client_payment_date_from),
             $this->asCarbon($this->client_payment_date_to),
             $this->asCarbon($this->collection_date_from),
-            $this->asCarbon($this->collection_date_to)
+            $this->asCarbon($this->collection_date_to),
+            $this->is_renewal
         );
         $reportRows = $commissionsQuery->clone()->get();
         $totalCommissions = $reportRows->sum('amount');

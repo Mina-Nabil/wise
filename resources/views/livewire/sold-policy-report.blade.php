@@ -705,6 +705,9 @@
                                                                         <th scope="col" class="table-th ">
                                                                             Collected
                                                                         </th>
+                                                                        <th scope="col" class="table-th ">
+                                                                            Comm Discount
+                                                                        </th>
                                                                     @endcan
                                                                     <th scope="col" class="table-th ">
                                                                         STATUS
@@ -851,6 +854,9 @@
                                                                             <td class="table-td ">
                                                                                 <b>
                                                                                     {{ number_format($policy->total_comp_paid + $policy->tax_amount, 0, '.', ',') }}</b>
+                                                                            </td>
+                                                                            <td class="table-td ">
+                                                                                <b>{{ number_format($policy->discount, 0, '.', ',') }}</b>
                                                                             </td>
                                                                         @endcan
                                                                         <td class="table-td">

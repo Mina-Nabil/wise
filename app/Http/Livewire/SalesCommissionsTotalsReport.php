@@ -54,6 +54,8 @@ class SalesCommissionsTotalsReport extends Component
     public $Ecollection_date_from;
     public $Ecollection_date_to;
 
+    public $is_renewal;
+
     public function mount(): void
     {
         $this->authorize('viewAny', SalesComm::class);
@@ -213,6 +215,33 @@ class SalesCommissionsTotalsReport extends Component
         $this->Ecollection_date_to = null;
     }
 
+    public function toggleRenewal(): void
+    {
+        $this->toggle($this->is_renewal);
+    }
+
+    public function clearrenewal(): void
+    {
+        $this->is_renewal = null;
+    }
+
+    public function exportReport()
+    {
+        return SalesComm::exportTotalsReport(
+            $this->selectedProfileIds(),
+            $this->asCarbon($this->start_from),
+            $this->asCarbon($this->start_to),
+            $this->asCarbon($this->payment_date_from),
+            $this->asCarbon($this->payment_date_to),
+            $this->statuses,
+            $this->asCarbon($this->client_payment_date_from),
+            $this->asCarbon($this->client_payment_date_to),
+            $this->asCarbon($this->collection_date_from),
+            $this->asCarbon($this->collection_date_to),
+            $this->is_renewal
+        );
+    }
+
     public function render()
     {
         $STATUSES = SalesComm::PYMT_STATES;
@@ -227,7 +256,8 @@ class SalesCommissionsTotalsReport extends Component
             $this->asCarbon($this->client_payment_date_from),
             $this->asCarbon($this->client_payment_date_to),
             $this->asCarbon($this->collection_date_from),
-            $this->asCarbon($this->collection_date_to)
+            $this->asCarbon($this->collection_date_to),
+            $this->is_renewal
         )->paginate(50);
 
         $selectedProfiles = $this->selectedProfiles();
