@@ -1734,7 +1734,7 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Amount</label>
                                     <input type="number" name="pymtAmount" class="form-control mt-2 w-full"
-                                        wire:model.defer="pymtAmount" min="1">
+                                        wire:model.defer="pymtAmount" step="0.01">
                                     @error('pymtAmount')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

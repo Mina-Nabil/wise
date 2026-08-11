@@ -473,7 +473,7 @@ class CommProfileShow extends Component
         // }
 
         $this->validate([
-            'pymtAmount' => 'required|numeric|gt:0',
+            'pymtAmount' => 'required|numeric|not_in:0',
             'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
             'pymtNote' => 'nullable|string',
         ]);
@@ -641,13 +641,13 @@ class CommProfileShow extends Component
     {
         $this->validate(
             [
-                'pymtAmount' => 'required|numeric|gt:0',
+                'pymtAmount' => 'required|numeric|not_in:0',
                 'pymtType' => 'required|in:' . implode(',', CommProfilePayment::PYMT_TYPES),
                 'pymtDoc' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,bmp,gif,svg,webp|max:33000',
                 'pymtNote' => 'nullable|string',
                 'salesCommArray.*.sales_comm_id' => 'required',
                 'salesCommArray.*.paid_percentage' => 'required|numeric|min:0|max:100',
-                'salesCommArray.*.amount' => 'required|numeric|min:0',
+                'salesCommArray.*.amount' => 'required|numeric',
             ],
             attributes: [
                 'pymtAmount' => 'amount',
