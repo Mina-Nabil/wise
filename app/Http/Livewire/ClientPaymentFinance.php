@@ -23,11 +23,13 @@ class ClientPaymentFinance extends Component
     public $selectedPolicy = null;
     public $selectedMainSales = null;
     public $selectedCommProfile = null;
+    public $selectedLineOfBusiness = null;
     public $isDuePassed = false;
     public $dueDays;
     public $searchConfiguration;
     public $myPayments = false;
     public $searchText;
+    public $searchPolicy;
 
     public $sortColomn;
     public $sortDirection = 'asc';
@@ -85,6 +87,11 @@ class ClientPaymentFinance extends Component
         else $this->selectedCommProfile = null;
     }
 
+    public function filterByLineOfBusiness($business = null)
+    {
+        $this->selectedLineOfBusiness = $business ?: null;
+    }
+
     //reseting page while searching
     public function updatingSearchText()
     {
@@ -133,7 +140,14 @@ class ClientPaymentFinance extends Component
         $this->authorize('viewReports', SoldPolicy::class);
         $statuses = ClientPayment::PYMT_STATES;
         $companies = Company::all();
-        $policies = Policy::all();
+        $policies = Policy::with('company')
+            ->when($this->searchPolicy, function ($q) {
+                $q->where(function ($qq) {
+                    $qq->where('name', 'like', '%' . $this->searchPolicy . '%')
+                        ->orWhereHas('company', fn($cq) => $cq->where('name', 'like', '%' . $this->searchPolicy . '%'));
+                });
+            })
+            ->get();
         $mainSalesUsers = User::active()->get();
         $commProfiles = CommProfile::select('id', 'title')->get();
         $payments = ClientPayment::userData(states: $this->filteredStatus, searchText: $this->searchText)->includeDue($this->searchConfiguration)
@@ -141,6 +155,7 @@ class ClientPaymentFinance extends Component
             ->when($this->selectedPolicy, fn($q) => $q->byPolicyId($this->selectedPolicy->id))
             ->when($this->selectedMainSales, fn($q) => $q->byMainSales($this->selectedMainSales->id))
             ->when($this->selectedCommProfile, fn($q) => $q->byCommProfileId($this->selectedCommProfile->id))
+            ->when($this->selectedLineOfBusiness, fn($q) => $q->byLineOfBusiness($this->selectedLineOfBusiness))
             ->when($this->dueDays && !$this->isDuePassed, fn($q) => $q->dueAfter($this->dueDays))
             ->when($this->dueDays && $this->isDuePassed, fn($q) => $q->duePassed($this->dueDays))
             ->when($this->sortColomn === 'due' , fn($q) => $q->SortByDue(sort:$this->sortDirection))
@@ -154,6 +169,7 @@ class ClientPaymentFinance extends Component
             'policies' => $policies,
             'mainSalesUsers' => $mainSalesUsers,
             'commProfiles' => $commProfiles,
+            'LINES_OF_BUSINESS' => Policy::LINES_OF_BUSINESS,
             'payments' => $payments
         ]);
     }

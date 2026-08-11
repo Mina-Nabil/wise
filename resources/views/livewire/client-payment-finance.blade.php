@@ -88,7 +88,7 @@
             <button class="btn inline-flex justify-center btn-dark items-center" type="button"
                 id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 @if ($selectedPolicy)
-                    Policy: {{ $selectedPolicy->name }}
+                    Policy: {{ $selectedPolicy->company?->name }} - {{ $selectedPolicy->name }}
                 @else
                     Select Policy
                 @endif
@@ -96,7 +96,11 @@
                 <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
             </button>
             <ul
-                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none max-h-80 overflow-y-auto">
+                <li class="px-4 py-2" onclick="event.stopPropagation()">
+                    <input type="text" class="form-control form-control-sm" placeholder="Search policies..."
+                        wire:model="searchPolicy">
+                </li>
                 <li wire:click="filterByPolicy(null)">
                     <a href="#"
                         class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
@@ -107,7 +111,7 @@
                     <li wire:click="filterByPolicy('{{ $policy->id }}')">
                         <a href="#"
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
-                            {{ $policy->name }}
+                            {{ $policy->company?->name }} - {{ $policy->name }}
                         </a>
                     </li>
                 @endforeach
@@ -168,6 +172,36 @@
                         <a href="#"
                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
                             {{ $profile->title }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
+        <div class="dropdown relative ml-2">
+            <button class="btn inline-flex justify-center btn-dark items-center" type="button"
+                id="darkDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                @if ($selectedLineOfBusiness)
+                    Line of Business: {{ ucwords(str_replace('_', ' ', $selectedLineOfBusiness)) }}
+                @else
+                    Select Line of Business
+                @endif
+
+                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+            </button>
+            <ul
+                class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                <li wire:click="filterByLineOfBusiness(null)">
+                    <a href="#"
+                        class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                        All
+                    </a>
+                </li>
+                @foreach ($LINES_OF_BUSINESS as $line)
+                    <li wire:click="filterByLineOfBusiness('{{ $line }}')">
+                        <a href="#"
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                            {{ ucwords(str_replace('_', ' ', $line)) }}
                         </a>
                     </li>
                 @endforeach

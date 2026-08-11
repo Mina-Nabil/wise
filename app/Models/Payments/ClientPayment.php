@@ -635,6 +635,17 @@ class ClientPayment extends Model
         return $query->where('sold_policies.policy_id', "=", $policy_id);
     }
 
+    public function scopeByLineOfBusiness(Builder $query, $business)
+    {
+        if (!Helpers::joined($query, "sold_policies")) {
+            $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
+        }
+        if (!Helpers::joined($query, "policies")) {
+            $query->join('policies', 'sold_policies.policy_id', '=', 'policies.id');
+        }
+        return $query->where('policies.business', "=", $business);
+    }
+
     public function scopeByCommProfileId(Builder $query, $comm_profile_id)
     {
         if (!Helpers::joined($query, "sold_policies")) {
