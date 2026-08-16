@@ -370,7 +370,7 @@ class Account extends Model
     {
         $spreadsheet = new Spreadsheet();
         $activeSheet = $spreadsheet->getActiveSheet();
-        $activeSheet->setTitle(substr($this->name, 0, 31));
+        $activeSheet->setTitle(self::excelSheetTitle($this->name));
 
         if ($includeChildren && $sameSheet) {
             $children = $this->children_accounts()->get();
@@ -385,7 +385,7 @@ class Account extends Model
                     $entries = self::getEntries($child->id, $from, $to, $search);
                     if ($entries->isEmpty()) continue;
                     $sheet = $spreadsheet->createSheet();
-                    $sheet->setTitle(substr($child->name, 0, 31));
+                    $sheet->setTitle(self::excelSheetTitle($child->name));
                     $this->fillAccountSheet($sheet, $child->id, $from, $to, $search, $entries);
                 }
             }
@@ -397,6 +397,18 @@ class Account extends Model
         $writer->save($public_file_path);
 
         return response()->download($public_file_path)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Excel sheet titles must be valid UTF-8, max 31 characters, and cannot
+     * contain \ / ? * [ ] :
+     */
+    private static function excelSheetTitle(string $name): string
+    {
+        $title = mb_substr($name, 0, 31);
+        $title = str_replace(['\\', '/', '?', '*', '[', ']', ':'], '', $title);
+
+        return $title !== '' ? $title : 'Account';
     }
 
     /**
