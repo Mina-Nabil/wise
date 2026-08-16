@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Insurance\Company;
+use App\Models\Insurance\Policy;
 use Livewire\Component;
 use App\Models\Payments\ClientPayment;
 use App\Models\Payments\CommProfile;
@@ -75,6 +76,10 @@ class ClientPaymentsReport extends Component
     public $collection_date_to;
     public $Ecollection_date_from;
     public $Ecollection_date_to;
+
+    public $lobSection = false;
+    public $line_of_business_ids = [];
+    public $Eline_of_business_ids = [];
 
 
     public function toggleCollectionDateFilter()
@@ -328,6 +333,31 @@ class ClientPaymentsReport extends Component
     {
         $this->is_renewal = null;
     }
+
+    public function toggleLob()
+    {
+        $this->toggle($this->lobSection);
+        if ($this->lobSection) {
+            $this->Eline_of_business_ids = $this->line_of_business_ids;
+        }
+    }
+
+    public function pushLob($lob)
+    {
+        $this->Eline_of_business_ids[] = $lob;
+    }
+
+    public function setLob()
+    {
+        $this->line_of_business_ids = $this->Eline_of_business_ids;
+        $this->toggle($this->lobSection);
+    }
+
+    public function clearLob()
+    {
+        $this->line_of_business_ids = [];
+    }
+
     public function toggleRenewal()
     {
         $this->toggle($this->is_renewal);
@@ -351,10 +381,11 @@ class ClientPaymentsReport extends Component
             $this->sortColomn,
             $this->sortDirection,
             $this->types,
-            $this->payment_date_from,
-            $this->payment_date_to,
+            $this->date_from,
+            $this->date_to,
             $this->collection_date_from,
             $this->collection_date_to,
+            $this->line_of_business_ids,
         );
     }
 
@@ -421,6 +452,7 @@ class ClientPaymentsReport extends Component
             $this->date_to,
             $this->collection_date_from,
             $this->collection_date_to,
+            $this->line_of_business_ids,
         )
             ->when($this->date_from || $this->date_to, fn($q) => $q->byDateRange($this->date_from, $this->date_to))
             ->when($this->collection_date_from || $this->collection_date_to, fn($q) => $q->byDateRange($this->collection_date_from, $this->collection_date_to))
@@ -437,6 +469,7 @@ class ClientPaymentsReport extends Component
             'STATUSES' => $STATUSES,
             'COMM_PROFILES' => $COMM_PROFILES,
             'Alltypes' => $Alltypes,
+            'LINES_OF_BUSINESS' => Policy::LINES_OF_BUSINESS,
             'payments' => $payments
         ]);
     }

@@ -30,6 +30,13 @@
                             دمج الحساب
                         </button>
                     @endcan
+                    @can('move', $account)
+                        <button wire:click="openMoveModal"
+                            class="btn inline-flex justify-center btn-outline-secondary btn-sm">
+                            <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2" icon="lucide:folder-tree"></iconify-icon>
+                            نقل الحساب
+                        </button>
+                    @endcan
                     @can('deleteWithEntries', $account)
                         <button wire:click="openDeleteAccountModal"
                             class="btn inline-flex justify-center btn-danger btn-sm">
@@ -277,6 +284,148 @@
                             </button>
                             <button wire:click="closeDeleteAccountModal"
                                 class="btn inline-flex justify-center btn-outline-dark">
+                                إلغاء
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- نقل الحساب (مع الحسابات الفرعية) تحت حساب أب جديد --}}
+    @if ($isMoveModalOpen)
+        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto show"
+            tabindex="-1" aria-labelledby="move_account_modal" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog relative w-auto pointer-events-none" style="max-width: 600px;">
+                <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-slate-700" dir="rtl">
+                        <div
+                            class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-black-500">
+                            <h3 class="text-xl font-medium text-white dark:text-white">
+                                نقل الحساب في شجرة الحسابات
+                            </h3>
+
+                            <button wire:click="closeMoveModal" type="button"
+                                class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-slate-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">إغلاق</span>
+                            </button>
+                        </div>
+
+                        <div class="p-6 space-y-4 text-right">
+                            <div class="form-group">
+                                <label class="form-label">اختر الحساب الأب الجديد</label>
+                                @if ($moveToRoot)
+                                    <div
+                                        class="flex items-center justify-between bg-slate-100 dark:bg-slate-600 rounded-md p-3 mt-2">
+                                        <div>
+                                            <p class="text-sm font-medium text-slate-800 dark:text-white">المستوى
+                                                الأعلى (بدون حساب أب)</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-300">ضمن نفس الحساب
+                                                الرئيسي</p>
+                                        </div>
+                                        <button wire:click="clearMoveParent"
+                                            class="btn btn-sm btn-outline-dark">تغيير</button>
+                                    </div>
+                                @elseif ($moveParent)
+                                    <div
+                                        class="flex items-center justify-between bg-slate-100 dark:bg-slate-600 rounded-md p-3 mt-2">
+                                        <div>
+                                            <p class="text-sm font-medium text-slate-800 dark:text-white">
+                                                {{ $moveParent->name }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-300">
+                                                {{ $moveParent->full_code }}</p>
+                                        </div>
+                                        <button wire:click="clearMoveParent"
+                                            class="btn btn-sm btn-outline-dark">تغيير</button>
+                                    </div>
+                                @else
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <button wire:click="chooseMoveToRoot" type="button"
+                                            class="btn btn-sm btn-outline-dark">
+                                            نقل إلى المستوى الأعلى
+                                        </button>
+                                    </div>
+                                    <input type="text" class="form-control mt-3 w-full text-right"
+                                        wire:model.debounce.400ms="moveSearchText"
+                                        placeholder="اسم الحساب أو الكود">
+                                    @error('moveParentId')
+                                        <span
+                                            class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                    @enderror
+                                    <div class="mt-2 max-h-48 overflow-y-auto">
+                                        @foreach ($moveSearchResults as $result)
+                                            <div wire:click="selectMoveParent({{ $result->id }})"
+                                                class="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 rounded-md p-2 border-b border-slate-100 dark:border-slate-600">
+                                                <p class="text-sm text-slate-800 dark:text-white">{{ $result->name }}
+                                                </p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-300">
+                                                    {{ $result->full_code }}</p>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div
+                                class="bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-lg p-4">
+                                <p class="text-sm text-warning-700 dark:text-warning-300">
+                                    سيتم نقل حساب «{{ $account->name }}» ({{ $account->full_code }}) مع
+                                    <b>كل الحسابات الفرعية التابعة له</b>
+                                    @if ($moveToRoot)
+                                        إلى المستوى الأعلى في نفس الحساب الرئيسي.
+                                    @elseif ($moveParent)
+                                        ليصبح تابعًا لحساب «{{ $moveParent->name }}».
+                                    @else
+                                        إلى الحساب الأب الذي تختاره.
+                                    @endif
+                                </p>
+                            </div>
+
+                            <p class="text-sm text-slate-700 dark:text-slate-300 font-medium">ماذا سيحدث بالضبط؟</p>
+                            <ul class="text-sm text-slate-600 dark:text-slate-300 space-y-2 list-disc pr-5">
+                                <li>
+                                    الحساب وكل حساباته الفرعية ينتقلون معًا؛ <b>القيود تبقى على نفس الحسابات</b> ولا
+                                    تُحذف ولا تُنقل إلى حساب آخر.
+                                </li>
+                                <li>
+                                    <b>الأرصدة لا تتغير</b> — القيود مربوطة بمعرّف الحساب وليس بمكانه في الشجرة، لذلك
+                                    لا حاجة لإعادة حساب الأرصدة.
+                                </li>
+                                <li>
+                                    <b>كود الحساب</b> يُمواءَم مع مكانه الجديد في شجرة الحسابات.
+                                </li>
+                                <li>
+                                    إذا كان آخر رقم في كود الحساب المنقول <b>مستخدمًا بالفعل</b> عند الحساب الأب
+                                    الجديد، يُعيَّن رقم تالي تلقائيًا لتجنّب التعارض.
+                                </li>
+                                <li>
+                                    لا يمكن اختيار حساب أب <b>له قيود يومية</b> — الحساب الذي يصبح له حسابات فرعية لا
+                                    يقبل قيودًا جديدة.
+                                </li>
+                                <li>
+                                    لا يمكن نقل الحساب تحت <b>أحد حساباته الفرعية</b> (لتجنّب حلقة في الشجرة).
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-start p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                            <button wire:click="moveAccount" @disabled(!$moveToRoot && !$moveParentId)
+                                class="btn inline-flex justify-center btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                <iconify-icon class="text-xl spin-slow ltr:mr-2 rtl:ml-2 relative top-[1px]"
+                                    wire:loading wire:target="moveAccount"
+                                    icon="line-md:loading-twotone-loop"></iconify-icon>
+                                <span wire:loading.remove wire:target="moveAccount">تنفيذ النقل</span>
+                            </button>
+                            <button wire:click="closeMoveModal" class="btn inline-flex justify-center btn-outline-dark">
                                 إلغاء
                             </button>
                         </div>

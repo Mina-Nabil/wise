@@ -269,12 +269,30 @@
                             </button>
                         </div>
                         <div class="p-6 space-y-4">
-                            <div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comment</p>
-                                <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
-                                    {{ $entryInfo->comment ?? 'No comment added.' }}
+                            @if ($entryInfo->is_revert_entry)
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Reversal reason</p>
+                                    <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                        {{ $entryInfo->comment ?? 'No reversal reason added.' }}
+                                    </div>
+                                    @if ($entryInfo->reverted_entry)
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                            Reverts entry
+                                            <a href="{{ route('accounts.entries', $entryInfo->reverted_entry->id) }}" target="_blank"
+                                                class="text-blue-500 hover:text-blue-700 underline">
+                                                #{{ $entryInfo->reverted_entry->id }}
+                                            </a>
+                                        </p>
+                                    @endif
                                 </div>
-                            </div>
+                            @else
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comment</p>
+                                    <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                        {{ $entryInfo->comment ?? 'No comment added.' }}
+                                    </div>
+                                </div>
+                            @endif
                             <div>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Extra Note</p>
                                 <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">

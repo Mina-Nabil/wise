@@ -219,7 +219,7 @@
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
-                                                        Confirmation at
+                                                        Payment date
                                                     </th>
 
                                                     <th scope="col" class=" table-th ">
@@ -264,7 +264,7 @@
                                                             {{ $invoice->created_at->format('d/m/Y') }}
                                                         </td>
                                                         <td class="table-td ">
-                                                            {{ $invoice->commissions->first()?->payment_date ? \Carbon\Carbon::parse($invoice->commissions->first()?->payment_date)->format('d/m/Y') : 'N/A' }}
+                                                            {{ $invoice->resolvedPaymentDateFormatted() ?? 'N/A' }}
                                                         </td>
                                                         <td class="table-td ">
                                                             {{ 'EGP ' . number_format($invoice->gross_total, 2) }}</td>
@@ -563,6 +563,16 @@
                                         Perm is 95% of the gross total.
                                     </small>
                                 </div>
+                            </div>
+
+                            <div class="input-area mt-3">
+                                <label for="invoice_payment_date" class="form-label">Payment date</label>
+                                <input type="date" id="invoice_payment_date" wire:model="invoice_payment_date"
+                                    class="form-control @error('invoice_payment_date') !border-danger-500 @enderror">
+                                @error('invoice_payment_date')
+                                    <span
+                                        class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <div class="input-area mt-3">

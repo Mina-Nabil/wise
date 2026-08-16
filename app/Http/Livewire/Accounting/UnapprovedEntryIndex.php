@@ -111,7 +111,7 @@ class UnapprovedEntryIndex extends Component
     public function showEntry($id)
     {
         $this->entryId = $id;
-        $this->entryInfo = UnapprovedEntry::with('creator')->findOrFail($id);
+        $this->entryInfo = UnapprovedEntry::with(['creator', 'reverted_entry'])->findOrFail($id);
     }
 
     public function closeShowInfo()

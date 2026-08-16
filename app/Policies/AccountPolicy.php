@@ -82,4 +82,9 @@ class AccountPolicy
     {
         return $user->is_admin;
     }
+
+    public function move(User $user, Account $account)
+    {
+        return $user->is_admin;
+    }
 }

@@ -113,6 +113,7 @@ class ClientPayment extends Model
         ?Carbon $payment_date_to = null,
         ?Carbon $collection_date_from = null,
         ?Carbon $collection_date_to = null,
+        ?array $line_of_business_ids = [],
     ) {
         $payments = self::report(
             $is_renewal,
@@ -133,6 +134,7 @@ class ClientPayment extends Model
             $payment_date_to,
             $collection_date_from,
             $collection_date_to,
+            $line_of_business_ids,
         )->get();
 
         $template = IOFactory::load(resource_path('import/client_payment_report.xlsx'));
@@ -458,7 +460,7 @@ class ClientPayment extends Model
     }
 
     ///scopes
-    public function scopeReport($query, $is_renewal = null, ?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?Company $selectedCompany = null, ?string $searchText = null, ?array $sales_out_ids = null, ?array $filteredStatus = null, ?string $sortColomn = null, ?string $sortDirection = 'asc', ?array $types = [], ?Carbon $payment_date_from = null, ?Carbon $payment_date_to = null, ?Carbon $collection_date_from = null, ?Carbon $collection_date_to = null)
+    public function scopeReport($query, $is_renewal = null, ?Carbon $start_from = null, ?Carbon $start_to = null, ?Carbon $expiry_from = null, ?Carbon $expiry_to = null, ?Carbon $issued_from = null, ?Carbon $issued_to = null, ?Company $selectedCompany = null, ?string $searchText = null, ?array $sales_out_ids = null, ?array $filteredStatus = null, ?string $sortColomn = null, ?string $sortDirection = 'asc', ?array $types = [], ?Carbon $payment_date_from = null, ?Carbon $payment_date_to = null, ?Carbon $collection_date_from = null, ?Carbon $collection_date_to = null, ?array $line_of_business_ids = [])
     {
         $query->userData(states: $filteredStatus, searchText: $searchText)
             ->when($is_renewal, function ($q, $v) {
@@ -486,6 +488,7 @@ class ClientPayment extends Model
                 $q->where('client_payments.collected_date', "<=", $v->format('Y-m-d 23:59:59'));
             })
             ->when($selectedCompany, fn($q) => $q->byCompany($selectedCompany->id))
+            ->when(count($line_of_business_ids), fn($q) => $q->byLineOfBusinessIn($line_of_business_ids))
             ->when($sales_out_ids, fn($q) => $q->bySalesOut($sales_out_ids))
             ->when(count($filteredStatus), fn($q) => $q->FilterByStates($filteredStatus))
             ->when(count($types), fn($q) => $q->byTypes($types))
@@ -637,13 +640,23 @@ class ClientPayment extends Model
 
     public function scopeByLineOfBusiness(Builder $query, $business)
     {
+        return $query->byLineOfBusinessIn([$business]);
+    }
+
+    public function scopeByLineOfBusinessIn(Builder $query, array $businesses)
+    {
+        if (!count($businesses)) {
+            return $query;
+        }
+
         if (!Helpers::joined($query, "sold_policies")) {
             $query->join('sold_policies', 'sold_policies.id', '=', 'client_payments.sold_policy_id');
         }
         if (!Helpers::joined($query, "policies")) {
             $query->join('policies', 'sold_policies.policy_id', '=', 'policies.id');
         }
-        return $query->where('policies.business', "=", $business);
+
+        return $query->whereIn('policies.business', $businesses);
     }
 
     public function scopeByCommProfileId(Builder $query, $comm_profile_id)
