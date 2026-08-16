@@ -45,12 +45,17 @@ class Invoice extends Model
         'paid_journal_entry_id',
         'trans_fees',
         'trans_fees_notes',
-        'is_declare_debit'
+        'is_declare_debit',
+        'payment_date',
+    ];
+
+    protected $casts = [
+        'payment_date' => 'date',
     ];
 
     ///static functions
     /** @param  array $sold_policies_entries should contain an array of associated arrays [ 'id' => ? , 'amount' => ?, 'pymnt_perm' => ? ]  */
-    public static function newInvoice($company_id, $serial, $gross_total, $sold_policies_entries = [], $extras_ids = [], $is_declare_debit = null)
+    public static function newInvoice($company_id, $serial, $gross_total, $sold_policies_entries = [], $extras_ids = [], $is_declare_debit = null, $payment_date = null)
     {
         $newInvoice = new self([
             "company_id"    =>  $company_id,
@@ -61,6 +66,7 @@ class Invoice extends Model
             "net_total"     => ($gross_total * (1 - self::TAX_RATE)),
             "trans_fees"    => 0,
             "is_declare_debit" => $is_declare_debit,
+            "payment_date"  => $payment_date,
         ]);
         try {
 
@@ -364,7 +370,7 @@ class Invoice extends Model
             $activeSheet->setCellValue('F' . $i, $invoice->gross_total);
             $activeSheet->setCellValue('G' . $i, $invoice->tax_total);
             $activeSheet->setCellValue('H' . $i, $invoice->net_total);
-            $activeSheet->setCellValue('I' . $i, $invoice->payment_date ?? 'Not Paid');
+            $activeSheet->setCellValue('I' . $i, $invoice->resolvedPaymentDateFormatted('Y-m-d') ?? 'Not Paid');
             $i++;
         }
 
@@ -442,12 +448,20 @@ class Invoice extends Model
         }
     }
 
-    public function getPaymentDateAttribute()
+    public function resolvedPaymentDate(): ?Carbon
     {
-        if ($this->commissions()->exists()) {
-            return $this->commissions()->first()->payment_date ? Carbon::parse($this->commissions()->first()->payment_date)->format('d-M-y') : null;
+        if ($this->payment_date) {
+            return $this->payment_date;
         }
-        return null;
+
+        $commissionPaymentDate = $this->commissions->first()?->payment_date;
+
+        return $commissionPaymentDate ? Carbon::parse($commissionPaymentDate) : null;
+    }
+
+    public function resolvedPaymentDateFormatted(string $format = 'd/m/Y'): ?string
+    {
+        return $this->resolvedPaymentDate()?->format($format);
     }
 
     public function getDeclareDebitDisplayAttribute()

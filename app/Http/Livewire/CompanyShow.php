@@ -28,6 +28,7 @@ class CompanyShow extends Component
     public $tax_total;
     public $net_total;
     public $is_declare_debit = null;
+    public $invoice_payment_date;
 
     public $seachAllSoldPolicies; // for sold policy tab
     public $seachAvailablePoliciesText;
@@ -431,14 +432,16 @@ class CompanyShow extends Component
     public function openNewInvoiceSec()
     {
         $this->newInvoiceSection = true;
-        $this->selectedExtras = []; // Reset selected extras when opening new invoice
+        $this->selectedExtras = [];
+        $this->invoice_payment_date = Carbon::now()->toDateString();
     }
 
     public function closeNewInvoiceSec()
     {
         $this->newInvoiceSection = false;
-        $this->selectedExtras = []; // Reset selected extras when closing
+        $this->selectedExtras = [];
         $this->is_declare_debit = null;
+        $this->invoice_payment_date = null;
     }
 
     protected $rules = [
@@ -474,6 +477,7 @@ class CompanyShow extends Component
                 'sold_policies_entries.*.amount' => 'required|numeric',
                 'sold_policies_entries.*.pymnt_perm' => 'string',
                 'is_declare_debit' => 'nullable|in:,0,1',
+                'invoice_payment_date' => 'nullable|date',
             ],
             attributes: [
                 'sold_policies_entries.*.amount' => 'amount',
@@ -487,10 +491,18 @@ class CompanyShow extends Component
             $is_declare_debit = (bool) (int) $this->is_declare_debit;
         }
 
-        $res = Invoice::newInvoice($this->company->id, $this->serial, $this->gross_total, $this->sold_policies_entries, $this->selectedExtras, $is_declare_debit);
+        $res = Invoice::newInvoice(
+            $this->company->id,
+            $this->serial,
+            $this->gross_total,
+            $this->sold_policies_entries,
+            $this->selectedExtras,
+            $is_declare_debit,
+            $this->invoice_payment_date ? Carbon::parse($this->invoice_payment_date) : null,
+        );
 
         if ($res) {
-            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries', 'selectedExtras', 'is_declare_debit']);
+            $this->reset(['serial', 'gross_total', 'tax_total', 'sold_policies_entries', 'selectedExtras', 'is_declare_debit', 'invoice_payment_date']);
             $this->closeNewInvoiceSec();
             $this->alert('success', 'invoice added');
             $this->mount($this->company->id, false);

@@ -130,7 +130,7 @@
                                         <td class="table-td">{{ number_format($invoice->trans_fees, 2) }}</td>
                                         <td class="table-td">{{ number_format($invoice->net_total - $invoice->trans_fees, 2) }}</td>
                                         <td class="table-td">
-                                            {{ $invoice->payment_date ?? 'Not Paid' }}
+                                            {{ $invoice->resolvedPaymentDateFormatted() ?? 'Not Paid' }}
                                         </td>
                                         @if (Auth::user()->is_admin)
                                             <td class="table-td">

@@ -2085,6 +2085,14 @@ class SoldPolicy extends Model
         });
     }
 
+    /**
+     * Limit outstanding reports to policies whose coverage start date is 2025 or later.
+     */
+    public function scopeFrom2025PolicyStart($query)
+    {
+        return $query->where('sold_policies.start', '>=', '2025-01-01');
+    }
+
     public function scopeOutstandingPolicies(
         $query,
         $search = null,
@@ -2141,6 +2149,7 @@ class SoldPolicy extends Model
                 });
             })
             ->when($company_ids, fn($q) => $q->byCompanyIDs($company_ids))
+            ->from2025PolicyStart()
             ->with('last_company_comm_payment', 'last_company_comm_payment.invoice', 'active_sales_comms', 'active_sales_comms.comm_profile')
             ->withCount(['client_payments as not_cancelled_client_payments_count' => function ($q) {
                 $q->whereIn('status', ClientPayment::NOT_CANCELLED_STATES);
