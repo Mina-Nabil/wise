@@ -209,4 +209,9 @@ class UnapprovedEntry extends Model
     {
         return $this->belongsTo(EntryTitle::class);
     }
+
+    public function reverted_entry(): BelongsTo
+    {
+        return $this->belongsTo(JournalEntry::class, 'revert_entry_id');
+    }
 }

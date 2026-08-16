@@ -62,7 +62,13 @@ class JournalEntryIndex extends Component
     {
         $this->entryId  = $id;
 
-        $this->entryInfo = JournalEntry::findOrFail($id);
+        $this->entryInfo = JournalEntry::with([
+            'revert_entry',
+            'reverted_entry',
+            'pending_revert_entry',
+            'approver',
+            'creator',
+        ])->findOrFail($id);
 
         $this->authorize('view', $this->entryInfo);
     }

@@ -960,4 +960,9 @@ class JournalEntry extends Model
     {
         return $this->hasOne(self::class, 'revert_entry_id');
     }
+
+    public function pending_revert_entry(): HasOne
+    {
+        return $this->hasOne(UnapprovedEntry::class, 'revert_entry_id');
+    }
 }
