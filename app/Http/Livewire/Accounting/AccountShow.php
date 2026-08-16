@@ -9,6 +9,7 @@ use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -47,6 +48,14 @@ class AccountShow extends Component
     public $mergeSearchResults = [];
     public $mergeTargetId;
     public $mergeTarget;
+
+    // Move account (with children) under a new parent
+    public $isMoveModalOpen = false;
+    public $moveSearchText;
+    public $moveSearchResults = [];
+    public $moveParentId;
+    public $moveParent;
+    public $moveToRoot = false;
 
     public function openOpeningBalanceModal()
     {
@@ -228,6 +237,86 @@ class AccountShow extends Component
         }
 
         $this->alert('failed', $result['message']);
+    }
+
+    public function openMoveModal()
+    {
+        $this->isMoveModalOpen = true;
+    }
+
+    public function closeMoveModal()
+    {
+        $this->reset([
+            'isMoveModalOpen',
+            'moveSearchText',
+            'moveSearchResults',
+            'moveParentId',
+            'moveParent',
+            'moveToRoot',
+        ]);
+    }
+
+    public function updatedMoveSearchText()
+    {
+        if (!$this->moveSearchText) {
+            $this->moveSearchResults = [];
+            return;
+        }
+
+        $account = Account::findOrFail($this->accountId);
+        $excludedIds = $account->getSelfAndDescendants()->pluck('id')->all();
+
+        $this->moveSearchResults = Account::searchBy($this->moveSearchText)
+            ->where('main_account_id', $account->main_account_id)
+            ->whereNotIn('id', $excludedIds)
+            ->whereNotExists(
+                fn($q) => $q->select(DB::raw(1))
+                    ->from('entry_accounts')
+                    ->whereColumn('entry_accounts.account_id', 'accounts.id')
+            )
+            ->limit(10)
+            ->get();
+    }
+
+    public function selectMoveParent($id)
+    {
+        $this->moveParent = Account::findOrFail($id);
+        $this->moveParentId = $id;
+        $this->moveToRoot = false;
+        $this->moveSearchText = null;
+        $this->moveSearchResults = [];
+    }
+
+    public function clearMoveParent()
+    {
+        $this->reset(['moveParentId', 'moveParent', 'moveToRoot']);
+    }
+
+    public function chooseMoveToRoot()
+    {
+        $this->moveToRoot = true;
+        $this->reset(['moveParentId', 'moveParent', 'moveSearchText', 'moveSearchResults']);
+    }
+
+    public function moveAccount()
+    {
+        if (!$this->moveToRoot) {
+            $this->validate(['moveParentId' => 'required|exists:accounts,id']);
+        }
+
+        $account = Account::findOrFail($this->accountId);
+        $this->authorize('move', $account);
+
+        $newParent = $this->moveToRoot ? null : Account::findOrFail($this->moveParentId);
+        $result = $account->moveTo($newParent);
+
+        if ($result['success']) {
+            $this->alert('success', $result['message']);
+            $this->account = $account->fresh();
+            $this->closeMoveModal();
+        } else {
+            $this->alert('failed', $result['message']);
+        }
     }
 
     public function render()

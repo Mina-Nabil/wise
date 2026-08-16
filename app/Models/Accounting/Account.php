@@ -1407,6 +1407,120 @@ class Account extends Model
     }
 
     /**
+     * Move this account and its entire subtree under a new parent.
+     *
+     * Only the root account's parent_account_id changes; children keep pointing at
+     * their existing parent inside the moved subtree. Relative account codes are kept,
+     * and the root code is reassigned only when it would collide with a sibling under
+     * the new parent. saved_full_code is rebuilt for the whole subtree afterwards.
+     *
+     * Journal entry balances are tied to account IDs, not tree position, so a reparent
+     * does not require refreshAllBalances().
+     *
+     * @return array ['success' => bool, 'message' => string, 'accounts_processed' => int, 'errors' => array]
+     */
+    public function moveTo(?self $newParent): array
+    {
+        /** @var User */
+        $loggedInUser = Auth::user();
+        if (!$loggedInUser->can('move', $this)) {
+            return $this->failedResult('You are not allowed to move accounts');
+        }
+
+        $newParentId = $newParent?->id;
+        if ($this->parent_account_id == $newParentId) {
+            return $this->failedResult('Account is already under this parent');
+        }
+
+        $subtree = $this->getSelfAndDescendants();
+        $subtreeIds = $subtree->pluck('id')->all();
+
+        if ($newParent && in_array($newParent->id, $subtreeIds, true)) {
+            return $this->failedResult('Cannot move an account under one of its descendants');
+        }
+
+        if ($newParent && $newParent->main_account_id != $this->main_account_id) {
+            return $this->failedResult('The new parent must belong to the same main account');
+        }
+
+        if ($newParent && DB::table('entry_accounts')->where('account_id', $newParent->id)->exists()) {
+            return $this->failedResult(
+                'The target parent account has journal entries and cannot have sub-accounts'
+            );
+        }
+
+        try {
+            return DB::transaction(function () use ($newParent, $newParentId, $subtree) {
+                $oldFullCode = $this->saved_full_code ?: $this->full_code;
+                $oldCode = $this->code;
+
+                $codeTaken = self::where('main_account_id', $this->main_account_id)
+                    ->where('parent_account_id', $newParentId)
+                    ->where('code', $this->code)
+                    ->whereNotIn('id', $subtreeIds)
+                    ->exists();
+
+                if ($codeTaken) {
+                    $this->code = self::getNextCode($this->main_account_id, $newParentId);
+                }
+
+                $this->parent_account_id = $newParentId;
+                $this->save();
+
+                $this->rebuildSubtreeFullCodes();
+
+                $moved = $this->fresh();
+                $newFullCode = $moved->saved_full_code;
+                $codeNote = $oldCode == $moved->code
+                    ? "code {$moved->code} kept"
+                    : "code changed from {$oldCode} to {$moved->code} to avoid a sibling collision";
+
+                AppLog::info(
+                    "Moved account {$moved->name} from {$oldFullCode} to {$newFullCode} ({$codeNote})",
+                    loggable: $moved
+                );
+
+                return [
+                    'success' => true,
+                    'message' => "Moved \"{$moved->name}\" and {$subtree->count()} account(s) under "
+                        . ($newParent ? "\"{$newParent->name}\"" : 'the top level')
+                        . ". New code path: {$newFullCode}. {$codeNote}.",
+                    'accounts_processed' => $subtree->count(),
+                    'errors' => [],
+                ];
+            });
+        } catch (Exception $e) {
+            report($e);
+            AppLog::error("Can't move account", desc: $e->getMessage(), loggable: $this);
+            return $this->failedResult('Failed to move account: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Rebuild saved_full_code for this account and every descendant.
+     */
+    private function rebuildSubtreeFullCodes(): void
+    {
+        $this->loadMissing(['main_account', 'parent_account']);
+
+        if (!$this->parent_account_id) {
+            $fullCode = $this->main_account->code . '-' . $this->code;
+        } else {
+            $parentFullCode = $this->parent_account->saved_full_code ?: $this->parent_account->full_code;
+            $fullCode = $parentFullCode . '-' . $this->code;
+        }
+
+        if ($this->saved_full_code !== $fullCode) {
+            $this->saved_full_code = $fullCode;
+            $this->saveQuietly();
+        }
+
+        foreach ($this->children_accounts()->get() as $child) {
+            $child->rebuildSubtreeFullCodes();
+        }
+    }
+
+    /**
      * What deleting this account would take with it, so the confirmation can spell it out
      *
      * @return array ['entries' => int, 'accounts' => int, 'pending' => int, 'archived' => int]
