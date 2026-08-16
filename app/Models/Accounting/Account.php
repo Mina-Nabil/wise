@@ -715,7 +715,7 @@ class Account extends Model
             $accounts = $accounts->get();
 
             // Balance of every account (including its children) right before the period starts
-            $startTotals = $mode == 'entries' && $from ? self::getStartBalanceTotals($accounts, $from) : [];
+            $startTotals = $mode == 'entries' && $from ? self::getStartBalanceTotals($accounts, $from, $to) : [];
 
             // Get parent accounts (accounts with no parent)
             $parentAccounts = $accounts->whereNull('parent_account_id');
@@ -932,11 +932,15 @@ class Account extends Model
      *
      * @return array [account_id => float]
      */
-    private static function getStartBalanceTotals($accounts, Carbon $from): array
+    private static function getStartBalanceTotals($accounts, Carbon $from, Carbon $to): array
     {
         $ownBalances = [];
         foreach (self::includeBalanceBefore($from)->get() as $account) {
-            $ownBalances[$account->id] = (float) ($account->start_entry_balance ?? 0);
+            $startBalance = (float) ($account->start_entry_balance ?? 0);
+            if (round($startBalance, 2) === 0.0) {
+                $startBalance = $account->getStartBalanceForPeriod($from, $to);
+            }
+            $ownBalances[$account->id] = $startBalance;
         }
 
         $parents = [];
@@ -1643,6 +1647,56 @@ class Account extends Model
         }
 
         return ['balance' => (float) $balance, 'foreign' => (float) $foreign];
+    }
+
+    /**
+     * Balance an account starts a period with. Uses the latest entry before $from when
+     * available; otherwise derives from the first live entry or first in-period entry.
+     */
+    public function getStartBalanceForPeriod(Carbon $from, Carbon $to): float
+    {
+        $startBalance = $this->getBalanceAtDate($from->copy()->startOfDay()->subSecond(), false);
+
+        if (round($startBalance, 2) !== 0.0) {
+            return $startBalance;
+        }
+
+        $firstLiveEntryId = $this->getFirstLiveEntryId();
+        if (!$firstLiveEntryId) {
+            return 0.0;
+        }
+
+        $firstEntryCreatedAt = DB::table('journal_entries')->where('id', $firstLiveEntryId)->value('created_at');
+        if (!$firstEntryCreatedAt || Carbon::parse($firstEntryCreatedAt)->gte($from->copy()->startOfDay())) {
+            return $this->getOpeningBalance()['balance'];
+        }
+
+        $firstInPeriod = DB::table('entry_accounts')
+            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->where('entry_accounts.account_id', $this->id)
+            ->whereBetween('journal_entries.created_at', [$from->format('Y-m-d H:i'), $to->format('Y-m-d H:i')])
+            ->orderBy('journal_entries.created_at', 'asc')
+            ->orderBy('journal_entries.id', 'asc')
+            ->select('entry_accounts.*')
+            ->first();
+
+        if ($firstInPeriod) {
+            $beforeFirst = self::balanceBeforePivotSnapshot($firstInPeriod, $this);
+            if (round($beforeFirst, 2) !== 0.0) {
+                return $beforeFirst;
+            }
+        }
+
+        return 0.0;
+    }
+
+    private static function balanceBeforePivotSnapshot(object $pivot, self $account): float
+    {
+        return self::balanceBeforeEntrySnapshot((object) [
+            'account_balance' => $pivot->account_balance,
+            'debit_amount' => $pivot->nature === self::NATURE_DEBIT ? $pivot->amount : 0,
+            'credit_amount' => $pivot->nature === self::NATURE_CREDIT ? $pivot->amount : 0,
+        ], $account);
     }
 
     /**
