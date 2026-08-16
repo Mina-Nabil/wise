@@ -234,8 +234,23 @@ class AccountShow extends Component
     {
         $fromDate = Carbon::parse($this->fromDate);
         $toDate = Carbon::parse($this->toDate);
-        $entries = collect(Account::getEntries($this->accountId, Carbon::parse($fromDate), Carbon::parse($toDate),$this->searchText));
+        $entries = collect(Account::getEntries($this->accountId, $fromDate, $toDate, $this->searchText));
 
-        return view('livewire.Accounting.account-show', ['entries' => $entries])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
+        $periodStartBalance = $this->account->getBalanceAtDate($fromDate->copy()->startOfDay()->subSecond());
+
+        $periodEndBalance = $entries->isNotEmpty()
+            ? (float) $entries->last()->account_balance
+            : $periodStartBalance;
+
+        $openingBalance = $this->account->getOpeningBalance()['balance'];
+        $currentBalance = (float) $this->account->balance;
+
+        return view('livewire.Accounting.account-show', [
+            'entries' => $entries,
+            'periodStartBalance' => $periodStartBalance,
+            'periodEndBalance' => $periodEndBalance,
+            'openingBalance' => $openingBalance,
+            'currentBalance' => $currentBalance,
+        ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }
 }

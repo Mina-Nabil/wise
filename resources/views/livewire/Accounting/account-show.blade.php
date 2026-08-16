@@ -47,21 +47,17 @@
 
 
         <header class=" card-header noborder">
-            <div>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Start Balance</p>
-                <h4 class="card-title">
-                    {{ $entries->first()
-                        ? ($account->nature == 'debit'
-                            ? number_format(
-                                $entries->first()->account_balance + $entries->first()->credit_amount - $entries->first()->debit_amount,
-                                2,
-                            )
-                            : number_format(
-                                $entries->first()->account_balance + $entries->first()->debit_amount - $entries->first()->credit_amount,
-                                2,
-                            ))
-                        : number_format($account->balance, 2) }}
-                </h4>
+            <div class="flex flex-wrap gap-8">
+                <div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Balance at period start</p>
+                    <h4 class="card-title">{{ number_format($periodStartBalance, 2) }}</h4>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">As of {{ \Carbon\Carbon::parse($fromDate)->format('d/m/Y') }}</p>
+                </div>
+                <div class="border-l border-slate-200 dark:border-slate-600 pl-8">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Opening balance</p>
+                    <h4 class="card-title text-slate-600 dark:text-slate-300">{{ number_format($openingBalance, 2) }}</h4>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Before first entry</p>
+                </div>
             </div>
             <div class="flex items-center gap-2">
                 <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-600 dark:text-slate-300 select-none">
@@ -164,15 +160,22 @@
                 @endif
             </div>
         </div>
-        @if (!$entries->isEmpty())
-            <header class=" card-header noborder">
+        <header class=" card-header noborder">
+            <div class="flex flex-wrap gap-8">
                 <div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">End Balance</p>
-                    <h4 class="card-title">{{ number_format($entries->last()->account_balance, 2) }}
-                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Balance at period end</p>
+                    <h4 class="card-title">{{ number_format($periodEndBalance, 2) }}</h4>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">As of {{ \Carbon\Carbon::parse($toDate)->format('d/m/Y') }}</p>
                 </div>
-            </header>
-        @endif
+                <div class="border-l border-slate-200 dark:border-slate-600 pl-8">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Current balance</p>
+                    <h4 class="card-title {{ round($periodEndBalance, 2) != round($currentBalance, 2) ? 'text-primary-600 dark:text-primary-400' : '' }}">
+                        {{ number_format($currentBalance, 2) }}
+                    </h4>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Latest entry</p>
+                </div>
+            </div>
+        </header>
     </div>
 
 

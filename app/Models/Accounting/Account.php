@@ -1438,7 +1438,7 @@ class Account extends Model
      *
      * @return array ['balance' => float, 'foreign' => float]
      */
-    private function getOpeningBalance(): array
+    public function getOpeningBalance(): array
     {
         $firstEntry = JournalEntry::byAccount($this->id)
             ->orderBy('created_at', 'asc')
