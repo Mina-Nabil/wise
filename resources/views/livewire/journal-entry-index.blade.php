@@ -84,6 +84,24 @@
                     Download Journal Entries
                 </button>
             @endcan
+            <div class="dropdown relative">
+                <button class="btn inline-flex justify-center btn-dark items-center cursor-default relative !pr-14 m-1"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add filter
+                    <span
+                        class="cursor-pointer absolute ltr:border-l rtl:border-r border-slate-100 h-full ltr:right-0 rtl:left-0 px-2 flex items-center justify-center leading-none">
+                        <iconify-icon class="leading-none text-xl" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                    </span>
+                </button>
+                <ul
+                    class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                    <li wire:click="toggleReviewed">
+                        <span
+                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white cursor-pointer">
+                            Reviewed</span>
+                    </li>
+                </ul>
+            </div>
             @can('create', \App\Models\Accounting\JournalEntry::class)
                 <a href="{{ url('/accounts/entries/new') }}">
                     <button wire:click="openAddNewModal"
@@ -173,10 +191,23 @@
     @endif
 
     <div class="card">
-        {{-- <header class=" card-header noborder">
-            <h4 class="card-title">Table Head
-            </h4>
-        </header> --}}
+        @if (!is_null($is_reviewed))
+            <header class="card-header cust-card-header noborder">
+                <button class="btn inline-flex justify-center btn-dark btn-sm">
+                    <span wire:click="toggleReviewed">
+                        @if ($is_reviewed)
+                            Reviewed: Yes
+                        @else
+                            Reviewed: No
+                        @endif
+                        &nbsp;&nbsp;
+                    </span>
+                    <span wire:click="clearReviewed">
+                        <iconify-icon icon="material-symbols:close" width="1.2em" height="1.2em"></iconify-icon>
+                    </span>
+                </button>
+            </header>
+        @endif
 
         <div class="card-body px-6 pb-6">
             <div class="overflow-x-auto overflow-y-hidden -mx-6">

@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\JournalEntry;
 use App\Traits\AlertFrontEnd;
+use App\Traits\ToggleSectionLivewire;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -15,7 +16,7 @@ use Livewire\WithFileUploads;
 
 class JournalEntryIndex extends Component
 {
-    use AlertFrontEnd, WithPagination, AuthorizesRequests, WithFileUploads;
+    use AlertFrontEnd, WithPagination, AuthorizesRequests, WithFileUploads, ToggleSectionLivewire;
     protected $paginationTheme = 'bootstrap';
 
     public $page_title = '• Journal Entry';
@@ -54,6 +55,8 @@ class JournalEntryIndex extends Component
     public $isOpenJournalEntries = false;
     public $journalEntriesFrom;
     public $journalEntriesTo;
+
+    public $is_reviewed = null;
 
     public function showEntry($id)
     {
@@ -264,6 +267,18 @@ class JournalEntryIndex extends Component
         $this->AccountId = null;
     }
 
+    public function toggleReviewed()
+    {
+        $this->toggle($this->is_reviewed);
+        $this->resetPage();
+    }
+
+    public function clearReviewed()
+    {
+        $this->is_reviewed = null;
+        $this->resetPage();
+    }
+
     public function downloadCreditDoc($id)
     {
         $entry = JournalEntry::find($id);
@@ -389,16 +404,12 @@ class JournalEntryIndex extends Component
 
     public function render()
     {
-        $entries = JournalEntry::when($this->selectedAccount, function ($q) {
-            return $q->byAccount($this->selectedAccount->id);
-        })->latest()->paginate(20);
+        $entries = $this->entriesQuery()->latest()->paginate(20);
         $page1 = 1;
         Log::info('mainSelectedJournalEntry: ' . $this->mainSelectedJournalEntry);
         if ($this->mainSelectedJournalEntry) {
             while (!$this->findMainSelectedJournalEntry($entries->items())) {
-                $entries = JournalEntry::when($this->selectedAccount, function ($q) {
-                    return $q->byAccount($this->selectedAccount->id);
-                })->latest()->paginate(20, ['*'], 'page', $page1++);
+                $entries = $this->entriesQuery()->latest()->paginate(20, ['*'], 'page', $page1++);
             }
         }
 
@@ -424,5 +435,11 @@ class JournalEntryIndex extends Component
             }
         }
         return false;
+    }
+
+    private function entriesQuery()
+    {
+        return JournalEntry::when($this->selectedAccount, fn($q) => $q->byAccount($this->selectedAccount->id))
+            ->when($this->is_reviewed !== null, fn($q) => $q->where('is_reviewed', $this->is_reviewed));
     }
 }
