@@ -325,7 +325,10 @@ class AccountShow extends Component
         $toDate = Carbon::parse($this->toDate);
         $entries = collect(Account::getEntries($this->accountId, $fromDate, $toDate, $this->searchText));
 
-        $periodStartBalance = $this->account->getBalanceAtDate($fromDate->copy()->startOfDay()->subSecond());
+        $periodStartBalance = $this->account->getBalanceAtDate(
+            $fromDate->copy()->startOfDay()->subSecond(),
+            false
+        );
 
         $periodEndBalance = $entries->isNotEmpty()
             ? (float) $entries->last()->account_balance
@@ -333,6 +336,19 @@ class AccountShow extends Component
 
         $openingBalance = $this->account->getOpeningBalance()['balance'];
         $currentBalance = (float) $this->account->balance;
+
+        if ($entries->isNotEmpty()) {
+            $firstInRange = $entries->first();
+            $beforeFirstInRange = Account::balanceBeforeEntrySnapshot($firstInRange, $this->account);
+            $isFirstLiveEntry = $firstInRange->id === $this->account->getFirstLiveEntryId();
+
+            if ($isFirstLiveEntry) {
+                $openingBalance = $beforeFirstInRange;
+                $periodStartBalance = $beforeFirstInRange;
+            } elseif (round($periodStartBalance, 2) === 0.0 && round($beforeFirstInRange, 2) !== 0.0) {
+                $periodStartBalance = $beforeFirstInRange;
+            }
+        }
 
         return view('livewire.Accounting.account-show', [
             'entries' => $entries,

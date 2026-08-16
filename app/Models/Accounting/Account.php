@@ -1584,6 +1584,28 @@ class Account extends Model
     }
 
     /**
+     * Balance immediately before a journal entry row, derived from its stored snapshot.
+     */
+    public static function balanceBeforeEntrySnapshot(object $entry, self $account): float
+    {
+        if ($account->nature === self::NATURE_DEBIT) {
+            return (float) $entry->account_balance + (float) $entry->credit_amount - (float) $entry->debit_amount;
+        }
+
+        return (float) $entry->account_balance + (float) $entry->debit_amount - (float) $entry->credit_amount;
+    }
+
+    public function getFirstLiveEntryId(): ?int
+    {
+        return DB::table('entry_accounts')
+            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->where('entry_accounts.account_id', $this->id)
+            ->orderBy('journal_entries.created_at', 'asc')
+            ->orderBy('journal_entries.id', 'asc')
+            ->value('journal_entries.id');
+    }
+
+    /**
      * The balance this account carried before its first live entry - everything archived
      * or set as an opening balance. Derived the same way refreshAllBalances() derives it,
      * by reversing the first entry off its own snapshot.
@@ -1592,27 +1614,32 @@ class Account extends Model
      */
     public function getOpeningBalance(): array
     {
-        $firstEntry = JournalEntry::byAccount($this->id)
-            ->orderBy('created_at', 'asc')
-            ->orderBy('id', 'asc')
+        $pivot = DB::table('entry_accounts')
+            ->join('journal_entries', 'journal_entries.id', '=', 'entry_accounts.journal_entry_id')
+            ->where('entry_accounts.account_id', $this->id)
+            ->orderBy('journal_entries.created_at', 'asc')
+            ->orderBy('journal_entries.id', 'asc')
+            ->select('entry_accounts.*')
             ->first();
-
-        $pivot = $firstEntry ? DB::table('entry_accounts')
-            ->where('journal_entry_id', $firstEntry->id)
-            ->where('account_id', $this->id)
-            ->first() : null;
 
         if (!$pivot) {
             // No entries to reverse - whatever sits on the account is the opening balance
             return ['balance' => (float) $this->balance, 'foreign' => (float) $this->foreign_balance];
         }
 
-        $sign = $pivot->nature == $this->nature ? 1 : -1;
-        $balance = $pivot->account_balance - $sign * $pivot->amount;
+        if ($pivot->nature == $this->nature) {
+            $balance = (float) $pivot->account_balance - (float) $pivot->amount;
+        } else {
+            $balance = (float) $pivot->account_balance + (float) $pivot->amount;
+        }
 
         $foreign = 0.0;
         if ($pivot->currency && $pivot->currency != JournalEntry::CURRENCY_EGP && $pivot->currency == $this->default_currency) {
-            $foreign = ($pivot->account_foreign_balance ?? 0) - $sign * ($pivot->currency_amount ?? 0);
+            if ($pivot->nature == $this->nature) {
+                $foreign = ($pivot->account_foreign_balance ?? 0) - ($pivot->currency_amount ?? 0);
+            } else {
+                $foreign = ($pivot->account_foreign_balance ?? 0) + ($pivot->currency_amount ?? 0);
+            }
         }
 
         return ['balance' => (float) $balance, 'foreign' => (float) $foreign];
