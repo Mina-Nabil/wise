@@ -259,8 +259,8 @@ class OutstandingSoldPolicyIndex extends Component
     public function mount()
     {
         $this->authorize('viewReports', SoldPolicy::class);
-        $this->start_from = Carbon::now()->startOfMonth();
-        $this->start_to = Carbon::now()->endOfMonth();
+        $this->payment_from = Carbon::now()->startOfMonth();
+        $this->payment_to = Carbon::now()->endOfMonth();
         $this->statuses = ClientPayment::NOT_CANCELLED_STATES;
     }
 
@@ -308,8 +308,10 @@ class OutstandingSoldPolicyIndex extends Component
             $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('left_to_pay');
             $totalTitle = 'Total Left: ';
         } else {
-            $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum('total_policy_comm');
-            $totalTitle = 'Total Comm Gross: ';
+            $totalSoldPolicies = $soldPoliciesQuery->clone()->get()->sum(function ($policy) {
+                return $policy->total_policy_comm - ($policy->total_comp_paid + $policy->company_comm_payments_sum_tax_amount);
+            });
+            $totalTitle = 'Total Diff: ';
         }
 
         $soldPolicies = $soldPoliciesQuery->simplePaginate(10);
