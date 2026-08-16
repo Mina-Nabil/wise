@@ -284,7 +284,7 @@ class SalesComm extends Model
             }
         } else if ($valid_conf) {
             //update comm info then calc same as direct
-            $isRenewal = $this->sold_policy->is_renewal;
+            $isRenewal = (bool) ($this->sold_policy->offer?->is_renewal ?? false);
             $hasSalesOut = $this->sold_policy->has_sales_out;
             $this->comm_percentage = $this->calculatePercentageForConfiguration($isRenewal, $hasSalesOut, $valid_conf);
             $this->from = $valid_conf->from;
@@ -741,7 +741,10 @@ class SalesComm extends Model
             ->join('comm_profiles', 'comm_profiles.id', '=', 'sales_comms.comm_profile_id')
             ->with('sold_policy', 'sold_policy.client', 'sold_policy.creator', 'comm_profile')
             ->when(!empty($commProfileIds), fn($q) => $q->whereIn('sales_comms.comm_profile_id', $commProfileIds))
-            ->when($isRenewal !== null, fn($q) => $q->where('sold_policies.is_renewal', $isRenewal))
+            ->when($isRenewal !== null, function ($q) use ($isRenewal) {
+                $q->leftJoin('offers', 'sold_policies.offer_id', '=', 'offers.id')
+                    ->where('offers.is_renewal', $isRenewal);
+            })
             ->when($policyStartFrom, fn($q, $date) => $q->where('sold_policies.start', '>=', $date->format('Y-m-d 00:00:00')))
             ->when($policyStartTo, fn($q, $date) => $q->where('sold_policies.start', '<=', $date->format('Y-m-d 23:59:59')))
             ->when($paymentDateFrom || $paymentDateTo, function ($q) use ($paymentDateFrom, $paymentDateTo) {

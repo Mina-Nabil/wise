@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -411,6 +412,21 @@ class Account extends Model
         return $title !== '' ? $title : 'Account';
     }
 
+    private static function writeExcelDate($sheet, string $coordinate, $date): void
+    {
+        $sheet->setCellValue($coordinate, ExcelDate::PHPToExcel(Carbon::parse($date)));
+    }
+
+    private static function applyExcelDateFormat($sheet, string $range): void
+    {
+        $sheet->getStyle($range)->getNumberFormat()->setFormatCode('dd/mm/yyyy');
+    }
+
+    private static function applyExcelNumberFormat($sheet, string $range): void
+    {
+        $sheet->getStyle($range)->getNumberFormat()->setFormatCode('#,##0.00;[Red](#,##0.00)');
+    }
+
     /**
      * Derive starting balance from the first entry in the range,
      * same logic as the blade: reverse the first entry's effect on account_balance.
@@ -442,7 +458,7 @@ class Account extends Model
 
         // Row 1 — Starting balance info row
         $sheet->setCellValue('A1', 'Starting Balance');
-        $sheet->setCellValue('B1', $from->format('d/m/Y'));
+        self::writeExcelDate($sheet, 'B1', $from);
         $sheet->setCellValue('G1', number_format($starting['balance'], 2));
         $sheet->setCellValue('J1', number_format($starting['foreign_balance'], 2));
         $sheet->getStyle('A1:K1')->getFont()->setBold(true);
@@ -469,7 +485,7 @@ class Account extends Model
         $row = 3;
         foreach ($entries as $entry) {
             $sheet->setCellValue('A' . $row, $entry->id);
-            $sheet->setCellValue('B' . $row, $entry->created_at->format('d/m/Y'));
+            self::writeExcelDate($sheet, 'B' . $row, $entry->created_at);
             $sheet->setCellValue('C' . $row, $entry->name . ' ' . ($entry->is_reverted_entry ? ' (R1)' : '') . ($entry->is_revert_entry ? ' (R2)' : ''));
             $sheet->setCellValue('D' . $row, $entry->cash_title);
             $sheet->setCellValue('E' . $row, number_format($entry->debit_amount, 2));
@@ -481,6 +497,8 @@ class Account extends Model
             $sheet->setCellValue('K' . $row, $entry->username);
             $row++;
         }
+
+        self::applyExcelDateFormat($sheet, 'B1:B' . max(1, $row - 1));
 
         foreach (range('A', 'K') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
@@ -549,7 +567,7 @@ class Account extends Model
 
         // Row 1 — Starting balance info row
         $sheet->setCellValue('A1', 'Starting Balance');
-        $sheet->setCellValue('B1', $from->format('d/m/Y'));
+        self::writeExcelDate($sheet, 'B1', $from);
         $sheet->setCellValue('H1', number_format($runningBalance, 2));
         $sheet->setCellValue('K1', number_format($runningForeignBalance, 2));
         $sheet->getStyle('A1:L1')->getFont()->setBold(true);
@@ -582,7 +600,7 @@ class Account extends Model
             }
 
             $sheet->setCellValue('A' . $row, $entry->id);
-            $sheet->setCellValue('B' . $row, $entry->created_at->format('d/m/Y'));
+            self::writeExcelDate($sheet, 'B' . $row, $entry->created_at);
             $sheet->setCellValue('C' . $row, $entry->account_name);
             $sheet->setCellValue('D' . $row, $entry->title_name . ' ' . ($entry->is_reverted_entry ? ' (R1)' : '') . ($entry->is_revert_entry ? ' (R2)' : ''));
             $sheet->setCellValue('E' . $row, $entry->cash_title);
@@ -595,6 +613,8 @@ class Account extends Model
             $sheet->setCellValue('L' . $row, $entry->username);
             $row++;
         }
+
+        self::applyExcelDateFormat($sheet, 'B1:B' . max(1, $row - 1));
 
         foreach (range('A', 'L') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
@@ -832,6 +852,10 @@ class Account extends Model
                 $activeSheet->getColumnDimension($col)->setAutoSize(true);
             }
 
+            if ($row > 2) {
+                self::applyExcelNumberFormat($activeSheet, 'D2:E' . ($row - 1));
+            }
+
             // Create writer and save file
             $writer = new Xlsx($spreadsheet);
             $filename = 'accounts_opening_balances_' . $year . '_' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx';
@@ -878,8 +902,8 @@ class Account extends Model
             $activeSheet->setCellValue('A' . $row, $account->full_code);
             $activeSheet->setCellValue('B' . $row, $accountName);
             $activeSheet->setCellValue('C' . $row, ucfirst($account->nature));
-            $activeSheet->setCellValue('D' . $row, number_format($balance, 2));
-            $activeSheet->setCellValue('E' . $row, number_format($foreignBalance, 2));
+            $activeSheet->setCellValue('D' . $row, (float) $balance);
+            $activeSheet->setCellValue('E' . $row, (float) $foreignBalance);
 
             // Style parent accounts differently
             if ($indentLevel == 0) {
