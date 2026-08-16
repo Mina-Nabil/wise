@@ -48,7 +48,12 @@
 
 
         </div>
-        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model="searchText" placeholder="Search by title">
+
+        <button wire:click="toggleLob" class="btn inline-flex justify-center btn-dark items-center ml-5" type="button">
+            Line of Business
+        </button>
+
+        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model="searchText" placeholder="Search by title & description">
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px" id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model="dateRange">
 
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
@@ -74,6 +79,28 @@
             {{-- <span class="text-sm text-primary-600 font-Inter font-normal capitalize ml-5 pb-2">My Tasks</span> --}}
         </div>
     </div>
+
+    @if ($line_of_business_ids)
+        <div class="flex flex-wrap gap-2 mb-2">
+            <button class="btn inline-flex justify-center btn-dark btn-sm">
+                <span wire:click="toggleLob">
+                    Line of Business(
+                    @foreach ($line_of_business_ids as $lob)
+                        {{ ucwords(str_replace('_', ' ', $lob)) }}
+                        @if (!$loop->last)
+                            ,
+                        @endif
+                    @endforeach
+                    )
+                    &nbsp;&nbsp;
+                </span>
+                <span wire:click="clearLob">
+                    <iconify-icon icon="material-symbols:close" width="1.2em"
+                        height="1.2em"></iconify-icon>
+                </span>
+            </button>
+        </div>
+    @endif
 
     <div class="card-body px-6 pb-6">
         <div class=" -mx-6">
@@ -231,6 +258,7 @@
         </div>
     </div>
 
+    @include('livewire.partials.lob-filter-modal')
 
     <script>
         document.addEventListener('livewire:load', function() {

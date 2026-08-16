@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
+use App\Models\Insurance\Policy;
 use App\Models\Tasks\Task;
 use App\Models\Tasks\TaskField;
 use App\Models\Users\User;
@@ -28,6 +29,9 @@ class ClaimIndex extends Component
     public $watcherTasks;
     public $workshop; // filter by مكان الاصلاح
 
+    public $line_of_business_ids = [];
+    public $Eline_of_business_ids = [];
+    public $lobSection = false;
 
     protected $queryString = [
         'startDate' => ['except' => ''],
@@ -87,6 +91,32 @@ class ClaimIndex extends Component
         $this->resetPage();
     }
 
+    public function toggleLob()
+    {
+        $this->toggle($this->lobSection);
+        if ($this->lobSection) {
+            $this->Eline_of_business_ids = $this->line_of_business_ids;
+        }
+    }
+
+    public function pushLob($lob)
+    {
+        $this->Eline_of_business_ids[] = $lob;
+    }
+
+    public function setLob()
+    {
+        $this->line_of_business_ids = $this->Eline_of_business_ids;
+        $this->toggle($this->lobSection);
+        $this->resetPage();
+    }
+
+    public function clearLob()
+    {
+        $this->line_of_business_ids = [];
+        $this->resetPage();
+    }
+
     public function render()
     {
         $statuses = Task::STATUSES;
@@ -115,6 +145,9 @@ class ClaimIndex extends Component
             ->when($this->filteredSubStatus, function ($query) {
                 return $query->where('tasks.sub_status', $this->filteredSubStatus);
             })
+            ->when(count($this->line_of_business_ids), function ($query) {
+                return $query->byLineOfBusinessIn($this->line_of_business_ids);
+            })
             ->claims()
             ->paginate(10);
 
@@ -127,6 +160,7 @@ class ClaimIndex extends Component
             'subStatuses' => Task::CLAIM_SUB_STATUSES,
             'users' => $users,
             'user_types' => $user_types,
+            'LINES_OF_BUSINESS' => Policy::LINES_OF_BUSINESS,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
+use App\Models\Insurance\Policy;
 use App\Models\Tasks\Task;
 use App\Models\Users\User;
 use App\Traits\AlertFrontEnd;
@@ -24,7 +25,9 @@ class EndorsementIndex extends Component
     public $myTasks;
     public $watcherTasks;
 
-
+    public $line_of_business_ids = [];
+    public $Eline_of_business_ids = [];
+    public $lobSection = false;
 
     protected $queryString = [
         'startDate' => ['except' => ''],
@@ -73,6 +76,31 @@ class EndorsementIndex extends Component
         $this->resetPage();
     }
 
+    public function toggleLob()
+    {
+        $this->toggle($this->lobSection);
+        if ($this->lobSection) {
+            $this->Eline_of_business_ids = $this->line_of_business_ids;
+        }
+    }
+
+    public function pushLob($lob)
+    {
+        $this->Eline_of_business_ids[] = $lob;
+    }
+
+    public function setLob()
+    {
+        $this->line_of_business_ids = $this->Eline_of_business_ids;
+        $this->toggle($this->lobSection);
+        $this->resetPage();
+    }
+
+    public function clearLob()
+    {
+        $this->line_of_business_ids = [];
+        $this->resetPage();
+    }
 
     public function render()
     {
@@ -96,6 +124,9 @@ class EndorsementIndex extends Component
             ->when($this->filteredStatus == null, function ($query) {
                 return $query->byStates(['active']);
             })
+            ->when(count($this->line_of_business_ids), function ($query) {
+                return $query->byLineOfBusinessIn($this->line_of_business_ids);
+            })
             ->endorsments()
             ->paginate(10);
 
@@ -105,6 +136,7 @@ class EndorsementIndex extends Component
             'filteredStatus' => $this->filteredStatus,
             'users' => $users,
             'user_types' => $user_types,
+            'LINES_OF_BUSINESS' => Policy::LINES_OF_BUSINESS,
         ]);
     }
 }

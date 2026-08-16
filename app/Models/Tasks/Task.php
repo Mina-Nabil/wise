@@ -3,6 +3,7 @@
 namespace App\Models\Tasks;
 
 use App\Exceptions\NoManagerException;
+use App\Models\Business\SoldPolicy;
 use App\Models\Marketing\Review;
 use App\Models\Users\AppLog;
 use App\Models\Users\User;
@@ -656,7 +657,23 @@ class Task extends Model
 
     public function scopeSearchByTitle($query, $text)
     {
-        return $query->where('tasks.title', 'LIKE', '%' . $text . '%');
+        return $query->where(function ($q) use ($text) {
+            $q->where('tasks.title', 'LIKE', '%' . $text . '%')
+                ->orWhere('tasks.desc', 'LIKE', '%' . $text . '%');
+        });
+    }
+
+    public function scopeByLineOfBusinessIn($query, array $lineOfBusinessIds)
+    {
+        if (empty($lineOfBusinessIds)) {
+            return $query;
+        }
+
+        return $query->whereHasMorph('taskable', [SoldPolicy::class], function ($soldPolicyQuery) use ($lineOfBusinessIds) {
+            $soldPolicyQuery->whereHas('policy', function ($policyQuery) use ($lineOfBusinessIds) {
+                $policyQuery->whereIn('business', $lineOfBusinessIds);
+            });
+        });
     }
 
     public function scopeOpenBy($query, $user_id)
