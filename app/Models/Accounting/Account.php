@@ -77,6 +77,8 @@ class Account extends Model
             ->selectRaw('IF(entry_accounts.nature = "credit" , entry_accounts.amount , 0 ) as credit_amount')
             ->selectRaw('IF(entry_accounts.nature = "debit" , entry_accounts.currency_amount , 0 ) as debit_foreign_amount')
             ->selectRaw('IF(entry_accounts.nature = "credit" , entry_accounts.currency_amount , 0 ) as credit_foreign_amount')
+            ->orderBy('journal_entries.created_at', 'asc')
+            ->orderBy('journal_entries.id', 'asc')
             ->get();
     }
 
