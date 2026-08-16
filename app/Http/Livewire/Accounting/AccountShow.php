@@ -325,10 +325,7 @@ class AccountShow extends Component
         $toDate = Carbon::parse($this->toDate);
         $entries = collect(Account::getEntries($this->accountId, $fromDate, $toDate, $this->searchText));
 
-        $periodStartBalance = $this->account->getBalanceAtDate(
-            $fromDate->copy()->startOfDay()->subSecond(),
-            false
-        );
+        $periodStartBalance = $this->account->getStartBalanceForPeriod($fromDate, $toDate);
 
         $periodEndBalance = $entries->isNotEmpty()
             ? (float) $entries->last()->account_balance
@@ -344,9 +341,6 @@ class AccountShow extends Component
 
             if ($isFirstLiveEntry) {
                 $openingBalance = $beforeFirstInRange;
-                $periodStartBalance = $beforeFirstInRange;
-            } elseif (round($periodStartBalance, 2) === 0.0 && round($beforeFirstInRange, 2) !== 0.0) {
-                $periodStartBalance = $beforeFirstInRange;
             }
         }
 
