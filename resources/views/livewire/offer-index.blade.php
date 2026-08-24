@@ -736,7 +736,7 @@
 
                                         </label>
                                         @if ($selectedPolicy)
-                                            {{ $selectedPolicy->policy_number . ' | ' . $selectedpolicy->client?->name }}
+                                            {{ $selectedPolicy->policy_number . ' | ' . $selectedPolicy->client?->name }}
                                             <Span wire:click="clearSelectedPolicy"
                                                 class="cursor-pointer text-primary-500">clear</Span></p>
                                         @else

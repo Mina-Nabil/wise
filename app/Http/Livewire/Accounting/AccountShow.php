@@ -331,7 +331,7 @@ class AccountShow extends Component
             ? (float) $entries->last()->account_balance
             : $periodStartBalance;
 
-        $openingBalance = $this->account->getOpeningBalance()['balance'];
+        $openingBalance = (float) $this->account->getOpeningBalance()['balance'];
         $currentBalance = (float) $this->account->balance;
 
         if ($entries->isNotEmpty()) {
