@@ -258,15 +258,17 @@ class JournalEntry extends Model
                             ->get();
 
                         if ($entries->isEmpty()) {
-                            // No entries for this account, reset to 0
-                            if(array_key_exists($account->id, $initialBalances)) {
+                            // No entries for this account. Its balance is purely its (manually set)
+                            // opening balance, which lives in the accounts table - there is nothing
+                            // to recompute from entries. Only overwrite it when an explicit initial
+                            // balance was passed in for THIS account; otherwise leave the stored
+                            // balance untouched. Zeroing it here would wipe the opening balances of
+                            // every other entry-less account whenever one account's opening is set.
+                            if (array_key_exists($account->id, $initialBalances)) {
                                 $account->balance = $initialBalances[$account->id]['balance'] ?? 0;
                                 $account->foreign_balance = $initialBalances[$account->id]['foreign_balance'] ?? 0;
-                            } else {
-                                $account->balance = 0;
-                                $account->foreign_balance = 0;
-                            }   
-                            $account->save();
+                                $account->save();
+                            }
                             $accountsProcessed++;
                             continue;
                         }
