@@ -324,35 +324,36 @@ class Task extends Model
 
         $this->addComment("Changing status from $this->status to $status", false);
         $this->status = $status;
-        DB::transaction(function () use ($status, $loggedInUser, $accepted_actions_ids, $comment) {
-
-            $this->save();
-            if ($status == self::STATUS_COMPLETED) {
-                foreach ($this->actions as $a) {
-                    if (in_array($a->id, $accepted_actions_ids)) {
-                        if (!$a->confirmAction()) throw new Exception('Unauthorized');
-                    } else {
-                        $a->rejectAction();
-                    }
-                }
-            }
-            if ($comment) {
-                $this->addComment($comment, false);
-            }
-            $this->last_action_by()->associate($loggedInUser);
-            if (($status == self::STATUS_COMPLETED || $status == self::STATUS_CLOSED) && $this->type == self::TYPE_CLAIM) {
-                try {
-                    Review::createReview($this, "Claim Review", "Claim# $this->id completed");
-                } catch (Exception $e) {
-                    report($e);
-                    AppLog::error("Can't create claim review", $e->getMessage(), $this);
-                }
-            }
-            $this->sendTaskNotifications('Status changed', "Task#$this->id is set to $status");
-            return true;
-        });
 
         try {
+            DB::transaction(function () use ($status, $loggedInUser, $accepted_actions_ids, $comment) {
+
+                $this->save();
+                if ($status == self::STATUS_COMPLETED) {
+                    foreach ($this->actions as $a) {
+                        if (in_array($a->id, $accepted_actions_ids)) {
+                            if (!$a->confirmAction()) throw new Exception('Unauthorized');
+                        } else {
+                            $a->rejectAction();
+                        }
+                    }
+                }
+                if ($comment) {
+                    $this->addComment($comment, false);
+                }
+                $this->last_action_by()->associate($loggedInUser);
+                if (($status == self::STATUS_COMPLETED || $status == self::STATUS_CLOSED) && $this->type == self::TYPE_CLAIM) {
+                    try {
+                        Review::createReview($this, "Claim Review", "Claim# $this->id completed");
+                    } catch (Exception $e) {
+                        report($e);
+                        AppLog::error("Can't create claim review", $e->getMessage(), $this);
+                    }
+                }
+                $this->sendTaskNotifications('Status changed', "Task#$this->id is set to $status");
+                return true;
+            });
+
             AppLog::info('Status changed', "Task#$this->id state changed to $status", $this);
             return $this->save();
         } catch (Exception $e) {
