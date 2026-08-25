@@ -331,7 +331,9 @@ class AccountShow extends Component
             ? (float) $entries->last()->account_balance
             : $periodStartBalance;
 
-        $openingBalance = (float) $this->account->getOpeningBalance()['balance'];
+        // NOTE: named distinctly from the public $openingBalance property (the modal input),
+        // otherwise that property shadows this value in the Blade view and the header renders 0.
+        $headerOpeningBalance = (float) $this->account->getOpeningBalance()['balance'];
         $currentBalance = (float) $this->account->balance;
 
         if ($entries->isNotEmpty()) {
@@ -340,7 +342,7 @@ class AccountShow extends Component
             $isFirstLiveEntry = $firstInRange->id === $this->account->getFirstLiveEntryId();
 
             if ($isFirstLiveEntry) {
-                $openingBalance = $beforeFirstInRange;
+                $headerOpeningBalance = $beforeFirstInRange;
             }
         }
 
@@ -348,7 +350,7 @@ class AccountShow extends Component
             'entries' => $entries,
             'periodStartBalance' => $periodStartBalance,
             'periodEndBalance' => $periodEndBalance,
-            'openingBalance' => $openingBalance,
+            'headerOpeningBalance' => $headerOpeningBalance,
             'currentBalance' => $currentBalance,
         ])->layout('layouts.accounting', ['page_title' => $this->page_title, 'accounts' => 'active']);
     }

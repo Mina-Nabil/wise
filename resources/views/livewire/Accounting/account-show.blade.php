@@ -62,7 +62,7 @@
                 </div>
                 <div class="border-l border-slate-200 dark:border-slate-600 pl-8">
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Opening balance</p>
-                    <h4 class="card-title text-slate-600 dark:text-slate-300">{{ number_format($openingBalance, 2) }}</h4>
+                    <h4 class="card-title text-slate-600 dark:text-slate-300">{{ number_format($headerOpeningBalance, 2) }}</h4>
                     <p class="text-xs text-slate-400 dark:text-slate-500">Before first entry</p>
                 </div>
             </div>
