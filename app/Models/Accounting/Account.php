@@ -1663,7 +1663,10 @@ class Account extends Model
 
         $firstLiveEntryId = $this->getFirstLiveEntryId();
         if (!$firstLiveEntryId) {
-            return 0.0;
+            // No entries at all: the account holds only its opening balance, which is
+            // constant across every period. Report it as the start balance so reports
+            // show start == end for entry-less accounts that have an opening balance set.
+            return $this->getOpeningBalance()['balance'];
         }
 
         $firstEntryCreatedAt = DB::table('journal_entries')->where('id', $firstLiveEntryId)->value('created_at');
