@@ -253,10 +253,10 @@ class SalesComm extends Model
         }
     }
 
-    public function refreshPaymentInfo($check_user = true, $increment_amount = false, $update_soldpolicy = true)
+    public function refreshPaymentInfo($check_user = true, $increment_amount = false, $update_soldpolicy = true, $force_paid = false)
     {
 
-        if($this->status == self::PYMT_STATE_PAID) return false;
+        if($this->status == self::PYMT_STATE_PAID && !$force_paid) return false;
 
         if ($check_user) {
             /** @var User */
@@ -275,7 +275,11 @@ class SalesComm extends Model
         $comm_disc = 0;
 
         if ($this->is_direct) {
-            $this->comm_percentage = $valid_conf->percentage ?? $this->comm_percentage;
+            if ($valid_conf) {
+                $isRenewal = (bool) ($this->sold_policy->offer?->is_renewal ?? false);
+                $hasSalesOut = $this->sold_policy->has_sales_out;
+                $this->comm_percentage = $this->calculatePercentageForConfiguration($isRenewal, $hasSalesOut, $valid_conf);
+            }
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
                 $comm_disc = $this->sold_policy->discount + $this->sold_policy->penalty_amount;
@@ -333,12 +337,13 @@ class SalesComm extends Model
 
         $percentage = $valid_conf->percentage;
 
+        //renewal/sales out percentages are stored as 0-100, they modify the base percentage
         if ($isRenewal && $valid_conf->renewal_percentage > 0) {
-            $percentage *= $valid_conf->renewal_percentage;
+            $percentage *= $valid_conf->renewal_percentage / 100;
         }
 
         if ($hasSalesOut && $valid_conf->sales_out_percentage > 0) {
-            $percentage *= $valid_conf->sales_out_percentage;
+            $percentage *= $valid_conf->sales_out_percentage / 100;
         }
 
         return $percentage;
