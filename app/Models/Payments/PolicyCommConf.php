@@ -23,6 +23,11 @@ class PolicyCommConf extends Model
         'sales_out_only', 'is_main_penalty'
     ];
 
+    protected $casts = [
+        'sales_out_only' => 'boolean',
+        'is_main_penalty' => 'boolean',
+    ];
+
     ///model functions
     public function editInfo($title, $calculation_type, $value, $due_penalty = null, $penalty_percent = null, $sales_out_only = false, $is_main_penalty = false)
     {

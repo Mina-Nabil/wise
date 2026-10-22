@@ -1018,7 +1018,9 @@ class OfferShow extends Component
             if ($this->conditionData) {
                 $this->netPremium = round($this->offer->item_value * ($this->conditionData->rate / 100), 2);
             }
-            if ($this->policyData && $this->netPremium) {
+            if ($this->conditionData && $this->netPremium) {
+                $this->grossPremium = round($this->conditionData->grossPremium($this->netPremium, $this->offer->item_value), 2);
+            } elseif ($this->policyData && $this->netPremium) {
                 $this->grossPremium = round($this->policyData->calculateGrossValue($this->netPremium), 2);
             }
         }

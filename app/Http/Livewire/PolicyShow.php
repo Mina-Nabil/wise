@@ -24,6 +24,7 @@ class PolicyShow extends Component
     public $editedOperator;
     public $editedValue;
     public $editedRate;
+    public $editedGrossRate;
     public $editedNote;
 
     public $policyName;
@@ -37,6 +38,7 @@ class PolicyShow extends Component
     public $addedOperator = 'e';
     public $addedValue;
     public $addedRate;
+    public $addedGrossRate;
     public $addedNote;
 
     public $newConditionSection = false;
@@ -120,7 +122,8 @@ class PolicyShow extends Component
             'eConfPen' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        $res = PolicyCommConf::find($this->editConfId)->editInfo($this->eConfTitle, $this->eConfType, $this->eConfValue, $this->eConfDue, $this->eConfPen, $this->eSalesOut, $this->eMainPenalty);
+        $conf = PolicyCommConf::find($this->editConfId);
+        $res = $conf ? $conf->editInfo($this->eConfTitle, $this->eConfType, $this->eConfValue, $this->eConfDue, $this->eConfPen, (bool) $this->eSalesOut, (bool) $this->eMainPenalty) : false;
         if ($res) {
             $this->mount();
             $this->editConfId = null;
@@ -149,7 +152,8 @@ class PolicyShow extends Component
 
     public function deleteConf()
     {
-        $res = PolicyCommConf::find($this->deleteConfId)->delete();
+        $conf = PolicyCommConf::find($this->deleteConfId);
+        $res = $conf ? $conf->delete() : false;
         if ($res) {
             $this->mount();
             $this->deleteConfId = null;
@@ -180,6 +184,8 @@ class PolicyShow extends Component
         $this->eConfValue = null;
         $this->eConfDue = null;
         $this->eConfPen = null;
+        $this->eSalesOut = false;
+        $this->eMainPenalty = false;
     }
 
     public function addCalc()
@@ -210,7 +216,8 @@ class PolicyShow extends Component
             'eValue' => 'required|numeric',
         ]);
 
-        $res = GrossCalculation::find($this->editCalcId)->editInfo($this->eTitle, $this->eType, $this->eValue);
+        $calc = GrossCalculation::find($this->editCalcId);
+        $res = $calc ? $calc->editInfo($this->eTitle, $this->eType, $this->eValue) : false;
         if ($res) {
             $this->mount();
             $this->editCalcId = null;
@@ -235,7 +242,8 @@ class PolicyShow extends Component
 
     public function deleteCalc()
     {
-        $res = GrossCalculation::find($this->deleteCalcId)->delete();
+        $calc = GrossCalculation::find($this->deleteCalcId);
+        $res = $calc ? $calc->delete() : false;
         if ($res) {
             $this->mount();
             $this->deleteCalcId = null;
@@ -281,7 +289,8 @@ class PolicyShow extends Component
 
     public function editBenefit()
     {
-        $res = PolicyBenefit::find($this->editBenefitId)->editInfo($this->ebenefit, $this->benefitValue);
+        $benefit = PolicyBenefit::find($this->editBenefitId);
+        $res = $benefit ? $benefit->editInfo($this->ebenefit, $this->benefitValue) : false;
         if ($res) {
             $this->mount();
             $this->ebenefit = null;
@@ -305,7 +314,8 @@ class PolicyShow extends Component
 
     public function deleteBenefit()
     {
-        $res = PolicyBenefit::find($this->deleteBenefitId)->delete();
+        $benefit = PolicyBenefit::find($this->deleteBenefitId);
+        $res = $benefit ? $benefit->delete() : false;
         if ($res) {
             $this->mount();
             $this->deleteBenefitId = null;
@@ -379,6 +389,7 @@ class PolicyShow extends Component
         $this->addedOperator = 'e';
         $this->addedValue = null;
         $this->addedRate = null;
+        $this->addedGrossRate = null;
         $this->addedNote = null;
     }
 
@@ -426,6 +437,7 @@ class PolicyShow extends Component
             $this->editedOperator = $con->operator;
             $this->editedValue = $con->value;
             $this->editedRate = $con->rate;
+            $this->editedGrossRate = $con->gross_rate;
             $this->editedNote = $con->note;
 
             $this->editedRowId = $id;
@@ -445,17 +457,19 @@ class PolicyShow extends Component
             'editedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
             'editedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
             'editedValue' => 'required',
-            'editedRate' => 'required|numeric'
+            'editedRate' => 'required|numeric',
+            'editedGrossRate' => 'nullable|numeric',
         ], [], [
             'editedScope' => 'Scope',
             'editedOperator' => 'operator',
             'editedValue' => 'Value',
             'editedRate' => 'Rate',
+            'editedGrossRate' => 'Gross rate',
         ]);
 
         /** @var PolicyCondition */
         $policyCondition = PolicyCondition::findOrFail($id);
-        $p = $policyCondition->editInfo($this->editedScope, $this->editedOperator, $this->editedValue, $this->editedRate, $this->editedNote);
+        $p = $policyCondition->editInfo($this->editedScope, $this->editedOperator, $this->editedValue, $this->editedRate, $this->editedNote, $this->editedGrossRate);
 
         if ($p) {
             $this->alert('success', 'Condition Updated!');
@@ -471,12 +485,13 @@ class PolicyShow extends Component
             'addedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
             'addedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
             'addedValue' => 'required|numeric',
-            'addedRate' => 'required|numeric'
+            'addedRate' => 'required|numeric',
+            'addedGrossRate' => 'nullable|numeric',
         ]);
 
         /** @var Policy */
         $pol = Policy::findOrFail($this->policyId);
-        $p = $pol->addCondition($this->addedScope, $this->addedOperator, $this->addedValue, $this->addedRate, $this->addedNote);
+        $p = $pol->addCondition($this->addedScope, $this->addedOperator, $this->addedValue, $this->addedRate, $this->addedNote, $this->addedGrossRate);
 
         if ($p) {
             $this->alert('success', 'Condition Added!');

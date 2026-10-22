@@ -59,11 +59,12 @@ class PolicyCondition extends Model
         'value', //condition limit
         'order', //condition order between other conditions - more specific cases should be calculated first
         'rate', //condition result - end value
+        'gross_rate', //optional gross rate; when set it replaces the policy gross calculation
         'note', // extra note for users
     ];
 
     //model functions
-    public function editInfo($scope, $op, $value, $rate, $note = null)
+    public function editInfo($scope, $op, $value, $rate, $note = null, $gross_rate = null)
     {
         try {
             $this->update([
@@ -71,6 +72,7 @@ class PolicyCondition extends Model
                 'operator' => $op,
                 'value' => $value,
                 'rate' => $rate,
+                'gross_rate' => $gross_rate === '' ? null : $gross_rate,
                 'note' => $note,
             ]);
             AppLog::info('Policy condition update done', loggable: $this);
@@ -248,5 +250,23 @@ class PolicyCondition extends Model
     public function policy(): BelongsTo
     {
         return $this->belongsTo(Policy::class);
+    }
+
+    /**
+     * Gross premium for this condition.
+     * A set gross rate replaces the policy gross calculation.
+     * Age rates are amounts. Other rates are percentages of the insured value.
+     */
+    public function grossPremium($netPremium, $insuredValue = null)
+    {
+        if ($this->gross_rate === null || $this->gross_rate === '') {
+            return $this->policy->calculateGrossValue($netPremium);
+        }
+
+        if ($this->scope === self::SCOPE_AGE || $insuredValue === null) {
+            return (float) $this->gross_rate;
+        }
+
+        return ($this->gross_rate / 100) * $insuredValue;
     }
 }

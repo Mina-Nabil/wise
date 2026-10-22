@@ -985,7 +985,7 @@ class Offer extends Model
             $cond = $policy->getConditionByAge($age);
             $activeSheet->getCell('D' . $i)->setValue($cond->rate);
             $totalPrem += $cond->rate;
-            $gross = $policy->calculateGrossValue($cond->rate);
+            $gross = $cond->grossPremium($cond->rate);
             $totalGross += $gross;
             $activeSheet->getCell('E' . $i)->setValue($gross);
             $i++;

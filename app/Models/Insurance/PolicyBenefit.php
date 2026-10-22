@@ -31,6 +31,12 @@ class PolicyBenefit extends Model
     const BENEFIT_CAR_KEYS_LOSS = 'تغطية مفتاح السيارة';
     const BENEFIT_MARKET_PRICE_DIFF = 'فرق القيمة السوقية';
     const BENEFIT_SPARE_CAR = 'السيارة البديله';
+    const BENEFIT_AIRBAG = 'تغطية الإيرباج';
+    const BENEFIT_ROOF_PANORAMA = 'تغطية السقف والبانوراما';
+    const BENEFIT_EV_BATTERY = 'للسيارات الكهربائية) شروط تحمل البطارية)';
+    const BENEFIT_SPECIAL_CONDITIONS = 'شروط خاصة';
+    const BENEFIT_OTHER = 'اخرى';
+    const BENEFIT_OTHER_2 = 'اخرى 2';
 
     const BENEFITS = [
         self::BENEFIT_RISKS,
@@ -46,7 +52,13 @@ class PolicyBenefit extends Model
         self::BENEFIT_STRIKES,
         self::BENEFIT_CAR_KEYS_LOSS,
         self::BENEFIT_MARKET_PRICE_DIFF,
-        self::BENEFIT_SPARE_CAR
+        self::BENEFIT_SPARE_CAR,
+        self::BENEFIT_AIRBAG,
+        self::BENEFIT_ROOF_PANORAMA,
+        self::BENEFIT_EV_BATTERY,
+        self::BENEFIT_SPECIAL_CONDITIONS,
+        self::BENEFIT_OTHER,
+        self::BENEFIT_OTHER_2,
     ];
 
     ///model function
@@ -81,7 +93,9 @@ class PolicyBenefit extends Model
         try {
             if (parent::delete()) {
                 AppLog::info("Deleted benefit");
+                return true;
             }
+            return false;
         } catch (Exception $e) {
             report($e);
             AppLog::error("Benefit Deletion failed", loggable: $this, desc: $e->getMessage());

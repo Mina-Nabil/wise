@@ -160,7 +160,7 @@ class Policy extends Model
                 $cond = $pol->getConditionByCarOrValue($car, $offerValue);
                 if ($cond) {
                     $net_value = ($cond->rate / 100) * $offerValue;
-                    $gross_value = $pol->calculateGrossValue($net_value);
+                    $gross_value = $cond->grossPremium($net_value, $offerValue);
                     $valid_policies->push([
                         "policy"        => $pol,
                         "cond"          => $cond,
@@ -177,7 +177,7 @@ class Policy extends Model
                     $cond = $pol->getConditionByAge($age);
                     if ($cond) {
                         $net_value += $cond->rate;
-                        $gross_value += $pol->calculateGrossValue($cond->rate);
+                        $gross_value += $cond->grossPremium($cond->rate);
                     }
                 }
                 if (isset($cond) && $cond) {
@@ -709,7 +709,8 @@ class Policy extends Model
         $operator,
         $value,
         $rate,
-        $note = null
+        $note = null,
+        $gross_rate = null
     ): false|PolicyCondition {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -723,6 +724,7 @@ class Policy extends Model
                 "value" =>  $value,
                 "order" =>  $order,
                 "rate" =>  $rate,
+                "gross_rate" =>  $gross_rate === '' ? null : $gross_rate,
                 "note" =>  $note,
             ]);
             AppLog::info('Condition Added', "New condition added for $this->name", $this);

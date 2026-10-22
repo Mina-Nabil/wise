@@ -275,11 +275,8 @@ class SalesComm extends Model
         $comm_disc = 0;
 
         if ($this->is_direct) {
-            if ($valid_conf) {
-                $isRenewal = (bool) ($this->sold_policy->offer?->is_renewal ?? false);
-                $hasSalesOut = $this->sold_policy->has_sales_out;
-                $this->comm_percentage = $this->calculatePercentageForConfiguration($isRenewal, $hasSalesOut, $valid_conf);
-            }
+            //direct comms use the configured percentage as is, renewal/sales out modifiers don't apply to them
+            $this->comm_percentage = $valid_conf->percentage ?? $this->comm_percentage;
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
                 $comm_disc = $this->sold_policy->discount + $this->sold_policy->penalty_amount;

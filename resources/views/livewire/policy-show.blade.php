@@ -144,6 +144,10 @@
                                                         </th>
 
                                                         <th scope="col" class=" table-th ">
+                                                            Gross rate
+                                                        </th>
+
+                                                        <th scope="col" class=" table-th ">
                                                             Note
                                                         </th>
 
@@ -157,8 +161,8 @@
                                                     class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
 
                                                     @foreach ($policy->conditions as $condition)
-                                                        @if ($editedRowId != $condition->id)
-                                                            <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                        @if ((int) $editedRowId !== (int) $condition->id)
+                                                            <tr wire:key="condition-view-{{ $condition->id }}" class="hover:bg-slate-200 dark:hover:bg-slate-700">
 
                                                                 <td class="table-td">
                                                                     {{ $condition->scope }}
@@ -185,6 +189,10 @@
 
                                                                 <td class="table-td">
                                                                     {{ $condition->rate }}
+                                                                </td>
+
+                                                                <td class="table-td">
+                                                                    {{ $condition->gross_rate }}
                                                                 </td>
 
                                                                 <td class="table-td" style="word-wrap: break-word;">
@@ -226,7 +234,7 @@
                                                                 </td>
                                                             </tr>
                                                         @else
-                                                            <tr>
+                                                            <tr wire:key="condition-edit-{{ $condition->id }}">
                                                                 <td class="p-1">
                                                                     <select name="scope" wire:model="editedScope"
                                                                         class="form-control w-full text-center @error('editedScope') !border-danger-500 @else !border-success-500 @enderror">
@@ -316,6 +324,12 @@
                                                                         value="{{ $condition->rate }}">
                                                                 </td>
 
+                                                                <td class="p-1">
+                                                                    <input type="number" wire:model="editedGrossRate"
+                                                                        class="form-control text-center @error('editedGrossRate') !border-danger-500 @else !border-success-500 @enderror"
+                                                                        value="{{ $condition->gross_rate }}">
+                                                                </td>
+
                                                                 <td class="table-td p-1" style="max-width: 50px;">
                                                                     <input type="text" wire:model="editedNote"
                                                                         class="form-control text-center"
@@ -345,13 +359,13 @@
                                                     @endforeach
                                                     @if ($policy->conditions->isEmpty())
                                                         <tr>
-                                                            <td colspan="6" class="text-center p-5">No Conditions
+                                                            <td colspan="7" class="text-center p-5">No Conditions
                                                                 added to this Policy</td>
                                                         </tr>
                                                     @endif
                                                     @if (!$newConditionSection)
                                                         <tr>
-                                                            <td colspan="6" class="pt-3">
+                                                            <td colspan="7" class="pt-3">
                                                                 @can('update', $policy)
                                                                     <button wire:click="openNewConditionSection"
                                                                         class="btn inline-flex justify-center btn-light btn-sm">
@@ -454,6 +468,13 @@
                                                                     class="form-control text-center @error('addedRate') !border-danger-500 @else !border-success-500 @enderror">
                                                             </td>
 
+                                                            <td class="p-1">
+                                                                <input type="number" wire:model="addedGrossRate"
+                                                                    style="max-width: 70px"
+                                                                    placeholder="Optional"
+                                                                    class="form-control text-center @error('addedGrossRate') !border-danger-500 @else !border-success-500 @enderror">
+                                                            </td>
+
                                                             <td class="table-td p-1">
                                                                 <input
                                                                     class="form-control text-center @error('addedNote') !border-danger-500 @else !border-success-500 @enderror"
@@ -522,8 +543,8 @@
                                                 <tbody
                                                     class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                     @foreach ($policy->gross_calculations as $calc)
-                                                        @if ($editCalcId && $calc->id === $editCalcId)
-                                                            <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                        @if ($editCalcId && (int) $calc->id === (int) $editCalcId)
+                                                            <tr wire:key="calc-edit-{{ $calc->id }}" class="hover:bg-slate-200 dark:hover:bg-slate-700">
                                                                 <td class="table-td">
                                                                     <input type="text"
                                                                         class="form-control text-center @error('eTitle') !border-danger-500 @else !border-success-500 @enderror"
@@ -555,13 +576,19 @@
                                                                             <iconify-icon
                                                                                 icon="material-symbols:save"></iconify-icon>
                                                                         </button>
+                                                                        <button
+                                                                            class="bg-slate-900 text-white action-btn m-1"
+                                                                            wire:click="closeEditCalc" type="button">
+                                                                            <iconify-icon
+                                                                                icon="material-symbols:close"></iconify-icon>
+                                                                        </button>
                                                                     </div>
 
                                                                 </td>
 
                                                             </tr>
                                                         @else
-                                                            <tr class="">
+                                                            <tr wire:key="calc-view-{{ $calc->id }}">
 
                                                                 <td class="table-td">
                                                                     {{ $calc->title }}
@@ -702,8 +729,8 @@
                                                 <tbody
                                                     class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                     @foreach ($policy->comm_confs as $conf)
-                                                        @if ($editConfId && $conf->id === $editConfId)
-                                                            <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                        @if ($editConfId && (int) $conf->id === (int) $editConfId)
+                                                            <tr wire:key="conf-edit-{{ $conf->id }}" class="hover:bg-slate-200 dark:hover:bg-slate-700">
                                                                 <td class="table-td">
                                                                     <input type="text"
                                                                         class="form-control text-center @error('eConfTitle') !border-danger-500 @else !border-success-500 @enderror"
@@ -740,13 +767,11 @@
                                                                 </td>
 
                                                                 <td class="table-td">
-                                                                    <input type="checkbox" name="checkbox"
-                                                                        checked="checked" wire:model="eMainPenalty">
+                                                                    <input type="checkbox" wire:model="eMainPenalty">
                                                                 </td>
 
                                                                 <td class="table-td">
-                                                                    <input type="checkbox" name="checkbox"
-                                                                        checked="checked" wire:model="eSalesOut">
+                                                                    <input type="checkbox" wire:model="eSalesOut">
                                                                 </td>
 
 
@@ -758,13 +783,19 @@
                                                                             <iconify-icon
                                                                                 icon="material-symbols:save"></iconify-icon>
                                                                         </button>
+                                                                        <button
+                                                                            class="bg-slate-900 text-white action-btn m-1"
+                                                                            wire:click="closeEditConf" type="button">
+                                                                            <iconify-icon
+                                                                                icon="material-symbols:close"></iconify-icon>
+                                                                        </button>
                                                                     </div>
 
                                                                 </td>
 
                                                             </tr>
                                                         @else
-                                                            <tr class="">
+                                                            <tr wire:key="conf-view-{{ $conf->id }}">
 
                                                                 <td class="table-td">
                                                                     {{ $conf->title }}
@@ -852,13 +883,11 @@
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <input type="checkbox" name="checkbox" checked="checked"
-                                                                wire:model="newMainPenalty">
+                                                            <input type="checkbox" wire:model="newMainPenalty">
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <input type="checkbox" name="checkbox" checked="checked"
-                                                                wire:model="newSalesOut">
+                                                            <input type="checkbox" wire:model="newSalesOut">
                                                         </td>
 
                                                         <td class="table-td  p-1">
@@ -927,8 +956,8 @@
                                                 <tbody
                                                     class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
                                                     @foreach ($policy->benefits as $benefit)
-                                                        @if ($editBenefitId && $benefit->id === $editBenefitId)
-                                                            <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                        @if ($editBenefitId && (int) $benefit->id === (int) $editBenefitId)
+                                                            <tr wire:key="benefit-edit-{{ $benefit->id }}" class="hover:bg-slate-200 dark:hover:bg-slate-700">
                                                                 <td class="table-td">
                                                                     {{ $ebenefit }}
                                                                 </td>
@@ -964,7 +993,7 @@
 
                                                             </tr>
                                                         @else
-                                                            <tr class="">
+                                                            <tr wire:key="benefit-view-{{ $benefit->id }}">
 
                                                                 <td class="table-td">
                                                                     {{ $benefit->benefit }}

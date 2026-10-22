@@ -44,9 +44,10 @@ class GrossCalculation extends Model
         if (parent::delete()) {
             AppLog::info("Gross calculation deleted");
             return true;
-        } else {
-            AppLog::error("Gross calculation deletetion failed");
         }
+
+        AppLog::error("Gross calculation deletetion failed");
+        return false;
     }
 
     ///relations
