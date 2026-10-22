@@ -142,6 +142,20 @@
 
         @endif
 
+        <div class="input-area">
+            <label for="engine_type" class="form-label">Engine type</label>
+            <select id="engine_type" wire:model="engineType"
+                class="form-control w-full mt-2 @if ($errors->has('engineType')) !border-danger-500 @endif">
+                <option value="">Select an option</option>
+                @foreach (\App\Models\Cars\Car::ENGINE_TYPES as $engineType)
+                    <option value="{{ $engineType }}">{{ $engineType }}</option>
+                @endforeach
+            </select>
+            @if ($errors->has('engineType'))
+                <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $errors->first('engineType') }}</span>
+            @endif
+        </div>
+
         @if ($selectedCarModel)
             <div class="input-area">
                 <label for="name" class="form-label">Category</label>

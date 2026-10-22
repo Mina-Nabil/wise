@@ -18,6 +18,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -438,6 +439,12 @@ class Policy extends Model
 
         $newFile = $template->copy();
         $activeSheet = $newFile->getActiveSheet();
+        $activeSheet->getCell('I1')->setValue('Gross rate');
+        $scopeValidation = $activeSheet->getDataValidation('D2:D1000');
+        $scopeValidation->setType(DataValidation::TYPE_LIST);
+        $scopeValidation->setAllowBlank(true);
+        $scopeValidation->setShowErrorMessage(true);
+        $scopeValidation->setFormula1('"' . implode(',', PolicyCondition::SCOPES) . '"');
 
         $allPolicies = self::orderBy('company_id')->with('conditions')->get();
         $companies = Company::all();
@@ -452,9 +459,9 @@ class Policy extends Model
                         $activeSheet->getCell('B' . $i)->setValue($company->name . ' - ' . $policy->name);
                         $activeSheet->getCell('C' . $i)->setValue($policy->id);
                         $activeSheet->getCell('D' . $i)->setValue('Leave this row empty');
-                        $activeSheet->getStyle("D$i:H$i")
+                        $activeSheet->getStyle("D$i:I$i")
                             ->getFill()->setFillType(Fill::FILL_SOLID);
-                        $activeSheet->getStyle("D$i:H$i")
+                        $activeSheet->getStyle("D$i:I$i")
                             ->getFill()->getStartColor()->setARGB('00FAFAFA');
                         $i++;
 
@@ -465,12 +472,13 @@ class Policy extends Model
                             $activeSheet->getCell('F' . $i)->setValue($cond->value_name);
                             $activeSheet->getCell('G' . $i)->setValue($cond->rate);
                             $activeSheet->getCell('H' . $i)->setValue($cond->id);
+                            $activeSheet->getCell('I' . $i)->setValue($cond->gross_rate);
                             $i++;
                         }
                         $i++;
-                        $activeSheet->getStyle("A$i:H$i")
+                        $activeSheet->getStyle("A$i:I$i")
                             ->getFill()->setFillType(Fill::FILL_SOLID);
-                        $activeSheet->getStyle("A$i:H$i")
+                        $activeSheet->getStyle("A$i:I$i")
                             ->getFill()->getStartColor()->setARGB('00000000');
                         $i++;
                     }
@@ -521,13 +529,15 @@ class Policy extends Model
 
                     $cond_rate           =  $activeSheet->getCell('G' . $i)->getValue();
                     $cond_id           =  $activeSheet->getCell('H' . $i)->getValue();
+                    $cond_gross        =  $activeSheet->getCell('I' . $i)->getValue();
+                    $cond_gross        = ($cond_gross === null || $cond_gross === '') ? null : $cond_gross;
                     if ($cond_id) {
                         /** @var PolicyCondition */
                         $cond = PolicyCondition::find($cond_id);
                         if (!$cond) continue;
-                        $cond->editInfo($cond_scope, $cond_op, $cond_value, $cond_rate);
+                        $cond->editInfo($cond_scope, $cond_op, $cond_value, $cond_rate, $cond->note, $cond_gross);
                     } else {
-                        $policy->addCondition($cond_scope, $cond_op, $cond_value, $cond_rate);
+                        $policy->addCondition($cond_scope, $cond_op, $cond_value, $cond_rate, null, $cond_gross);
                     }
                 }
             }
@@ -548,6 +558,11 @@ class Policy extends Model
             switch ($cond->scope) {
                 case PolicyCondition::SCOPE_MODEL:
                     if ($customer_car->car->car_model_id == $cond->value)
+                        return $cond;
+                    break;
+                case PolicyCondition::SCOPE_ENGINE:
+                    $customer_car->loadMissing('car');
+                    if ($customer_car->car && $customer_car->car->engine_type === $cond->value)
                         return $cond;
                     break;
                 case PolicyCondition::SCOPE_BRAND:

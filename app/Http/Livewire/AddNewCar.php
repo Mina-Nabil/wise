@@ -21,6 +21,7 @@ class AddNewCar extends Component
     public $brandName;
     public $modelName;
     public $categoryName;
+    public $engineType;
 
     public function saveCar()
     {
@@ -30,6 +31,7 @@ class AddNewCar extends Component
                     'brandName' => 'required|unique:brands,name',
                     'modelName' => 'required',
                     'categoryName' => 'required',
+                    'engineType' => 'required|in:' . implode(',', Car::ENGINE_TYPES),
                     'country' => 'required|exists:countries,id',
                 ],
                 [],
@@ -37,13 +39,14 @@ class AddNewCar extends Component
                     'brandName' => 'Brand Name',
                     'modelName' => 'Model Name',
                     'categoryName' => 'Category',
+                    'engineType' => 'Engine type',
                     'country' => 'Country',
                 ],
             );
 
             $newBrand = Brand::newBrand($this->brandName, $this->country);
             $newCarModel = CarModel::newCarModel($this->modelName, $newBrand->id);
-            $c = Car::newCar($newCarModel->id, $this->categoryName, ' ');
+            $c = Car::newCar($newCarModel->id, $this->categoryName, ' ', $this->engineType);
 
             if ($c) {
                 $this->dispatchBrowserEvent('toastalert', [
@@ -61,19 +64,21 @@ class AddNewCar extends Component
                 [
                     'modelName' => 'required|unique:car_models,name',
                     'categoryName' => 'required',
+                    'engineType' => 'required|in:' . implode(',', Car::ENGINE_TYPES),
                     'brandId' => 'required|exists:brands,id',
                 ],
                 [],
                 [
                     'modelName' => 'Model Name',
                     'categoryName' => 'Category',
+                    'engineType' => 'Engine type',
                     'brandId' => 'Brand',
                 ],
             );
 
             $brandId = $this->brandId;
             $newCarModel = CarModel::newCarModel($this->modelName, $brandId);
-            $c = Car::newCar($newCarModel->id, $this->categoryName, ' ');
+            $c = Car::newCar($newCarModel->id, $this->categoryName, ' ', $this->engineType);
 
             if ($c) {
                 $this->dispatchBrowserEvent('toastalert', [
@@ -93,17 +98,19 @@ class AddNewCar extends Component
                         'required',
                         Rule::unique('cars', 'category')->where('car_model_id', $this->selectedCarModel),
                     ],
+                    'engineType' => 'required|in:' . implode(',', Car::ENGINE_TYPES),
                     'selectedCarModel' => 'required|exists:car_models,id',
                 ],
                 [],
                 [
                     'categoryName' => 'Category',
+                    'engineType' => 'Engine type',
                     'selectedCarModel' => 'Model',
                 ],
             );
 
             $modelId = $this->selectedCarModel;
-            $c = Car::newCar($modelId, $this->categoryName, ' ');
+            $c = Car::newCar($modelId, $this->categoryName, ' ', $this->engineType);
 
             if ($c) {
                 $this->dispatchBrowserEvent('toastalert', [

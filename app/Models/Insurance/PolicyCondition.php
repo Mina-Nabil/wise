@@ -3,6 +3,7 @@
 namespace App\Models\Insurance;
 
 use App\Models\Cars\Brand;
+use App\Models\Cars\Car;
 use App\Models\Cars\CarModel;
 use App\Models\Base\Country;
 use App\Models\Users\AppLog;
@@ -40,6 +41,7 @@ class PolicyCondition extends Model
     const SCOPE_MODEL = 'car_model';
     const SCOPE_BRAND = 'brand';
     const SCOPE_COUNTRY = 'country';
+    const SCOPE_ENGINE = 'engine_type';
     //default scope for all
     const SCOPE_VALUE = 'value';
 
@@ -48,6 +50,7 @@ class PolicyCondition extends Model
         self::SCOPE_MODEL,
         self::SCOPE_BRAND,
         self::SCOPE_COUNTRY,
+        self::SCOPE_ENGINE,
         self::SCOPE_YEAR,
         self::SCOPE_VALUE
     ];
@@ -181,6 +184,9 @@ class PolicyCondition extends Model
             case self::SCOPE_MODEL:
                 $model = CarModel::byName($value)->first();
                 return $model?->id ?? null;
+
+            case self::SCOPE_ENGINE:
+                return in_array($value, Car::ENGINE_TYPES, true) ? $value : null;
 
             default:
                 return $value;

@@ -299,6 +299,15 @@
                                                                                 </option>
                                                                             @endforeach
                                                                         </select>
+                                                                    @elseif($editedScope === 'engine_type')
+                                                                        <select wire:model="editedValue"
+                                                                            class="form-control w-full text-center @error('editedValue') !border-danger-500 @else !border-success-500 @enderror">
+                                                                            @foreach ($engineTypes as $engineType)
+                                                                                <option value="{{ $engineType }}">
+                                                                                    {{ $engineType }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
                                                                     @elseif($editedScope === 'country')
                                                                         <select wire:model="editedValue"
                                                                             class="select2 @error('editedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
@@ -389,7 +398,7 @@
                                                             </td>
 
                                                             <td class="p-1 text-center">
-                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand' || $addedScope === 'country')
+                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand' || $addedScope === 'country' || $addedScope === 'engine_type')
                                                                     <input type="hidden" value="="
                                                                         wire:model="addedOperator" />
                                                                     =
@@ -416,8 +425,17 @@
                                                             </td>
 
                                                             <td class="p-1">
-                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand' || $addedScope === 'country')
-                                                                    @if ($addedScope === 'car_model')
+                                                                @if ($addedScope === 'car_model' || $addedScope === 'brand' || $addedScope === 'country' || $addedScope === 'engine_type')
+                                                                    @if ($addedScope === 'engine_type')
+                                                                        <select wire:model="addedValue"
+                                                                            class="form-control w-full text-center @error('addedValue') !border-danger-500 @else !border-success-500 @enderror">
+                                                                            @foreach ($engineTypes as $engineType)
+                                                                                <option value="{{ $engineType }}">
+                                                                                    {{ $engineType }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    @elseif($addedScope === 'car_model')
                                                                         <select name="select2basic"
                                                                             wire:model="addedValue"
                                                                             class="select2 @error('addedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">

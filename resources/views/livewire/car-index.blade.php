@@ -29,6 +29,9 @@
                                                     </div>
                                                 @else
                                                     {{ $car->category }}
+                                                    @if ($car->engine_type)
+                                                        · {{ $car->engine_type }}
+                                                    @endif
                                                 @endif
                                             </li>
                                         </ul>
@@ -36,6 +39,19 @@
                                         @error('editCarName')
                                             <span class="font-Inter text-sm text-danger-500 pt-2">{{ $message }}</span>
                                         @enderror
+                                        @if ($editCarField)
+                                            <div class="mt-2">
+                                                <select wire:model="editEngineType" class="form-control @error('editEngineType') !border-danger-500 @enderror">
+                                                    <option value="">Engine type</option>
+                                                    @foreach (\App\Models\Cars\Car::ENGINE_TYPES as $engineType)
+                                                        <option value="{{ $engineType }}">{{ $engineType }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('editEngineType')
+                                                    <span class="font-Inter text-sm text-danger-500 pt-2">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        @endif
                                     </h3>
                                 @endif
 
@@ -429,6 +445,10 @@
                                     </th>
 
                                     <th scope="col" class=" table-th ">
+                                        Engine type
+                                    </th>
+
+                                    <th scope="col" class=" table-th ">
                                         Description
                                     </th>
 
@@ -461,6 +481,7 @@
                                             {{ $car->car_model->name }}</td>
                                         <td class="table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" wire:click="showPrices({{ $car->id }})">
                                             {{ $car->category }}</td>
+                                        <td class="table-td ">{{ $car->engine_type }}</td>
                                         <td class="table-td ">{{ $car->desc }}</td>
                                         <td class="table-td ">
 

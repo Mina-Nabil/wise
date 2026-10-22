@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Insurance\Policy;
 use App\Models\Cars\Brand;
+use App\Models\Cars\Car;
 use App\Models\Cars\CarModel;
 use App\Models\Base\Country;
 use App\Models\Insurance\PolicyBenefit;
@@ -452,11 +453,16 @@ class PolicyShow extends Component
 
     public function editCondition($id)
     {
+        if ($this->editedScope === PolicyCondition::SCOPE_ENGINE) {
+            $this->editedOperator = PolicyCondition::OP_EQUAL;
+        }
 
         $this->validate([
             'editedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
             'editedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
-            'editedValue' => 'required',
+            'editedValue' => $this->editedScope === PolicyCondition::SCOPE_ENGINE
+                ? 'required|in:' . implode(',', Car::ENGINE_TYPES)
+                : 'required',
             'editedRate' => 'required|numeric',
             'editedGrossRate' => 'nullable|numeric',
         ], [], [
@@ -481,10 +487,16 @@ class PolicyShow extends Component
 
     public function addCondition()
     {
+        if ($this->addedScope === PolicyCondition::SCOPE_ENGINE) {
+            $this->addedOperator = PolicyCondition::OP_EQUAL;
+        }
+
         $this->validate([
             'addedScope' => 'required|in:' . implode(",", PolicyCondition::SCOPES),
             'addedOperator' => 'required|in:' . implode(",", PolicyCondition::OPERATORS),
-            'addedValue' => 'required|numeric',
+            'addedValue' => $this->addedScope === PolicyCondition::SCOPE_ENGINE
+                ? 'required|in:' . implode(',', Car::ENGINE_TYPES)
+                : 'required|numeric',
             'addedRate' => 'required|numeric',
             'addedGrossRate' => 'nullable|numeric',
         ]);
@@ -565,7 +577,8 @@ class PolicyShow extends Component
             'brands' => $this->brands,
             'models' => $this->models,
             'countries' => $this->countries,
-            'calcTypes' => $calcTypes
+            'calcTypes' => $calcTypes,
+            'engineTypes' => Car::ENGINE_TYPES,
         ]);
     }
 }

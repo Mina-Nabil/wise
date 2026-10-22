@@ -21,12 +21,23 @@ class Car extends Model
 {
     const MORPH_TYPE = 'car';
 
+    const ENGINE_PETROL = 'Petrol';
+    const ENGINE_BATTERY = 'Battery';
+    const ENGINE_REEV = 'REEV';
+    const ENGINE_HYBIRD = 'Hybird';
+    const ENGINE_TYPES = [
+        self::ENGINE_PETROL,
+        self::ENGINE_BATTERY,
+        self::ENGINE_REEV,
+        self::ENGINE_HYBIRD,
+    ];
+
     use HasFactory, SoftDeletes;
     public $timestamps = false;
-    protected $fillable = ['car_model_id', 'category', 'desc'];
+    protected $fillable = ['car_model_id', 'category', 'desc', 'engine_type'];
 
     ///static functions
-    public static function newCar(int $car_model_id, string $category, string $desc = null)
+    public static function newCar(int $car_model_id, string $category, string $desc = null, $engine_type = null)
     {
         /** @var User */
         $loggedInUser = Auth::user();
@@ -36,6 +47,7 @@ class Car extends Model
             'car_model_id' => $car_model_id,
             'category' => $category,
             'desc' => $desc,
+            'engine_type' => $engine_type,
         ]);
         try {
             $newCar->save();
@@ -232,18 +244,23 @@ class Car extends Model
     }
 
     ///model functions
-    public function editInfo(int $car_model_id, string $category, string $desc = null)
+    public function editInfo(int $car_model_id, string $category, string $desc = null, $engine_type = false)
     {
 
         /** @var User */
         $loggedInUser = Auth::user();
         if (!$loggedInUser->can('update', $this)) throw new UnauthorizedException();
 
-        $this->update([
+        $attributes = [
             'car_model_id' => $car_model_id,
             'category' => $category,
             'desc' => $desc,
-        ]);
+        ];
+        if ($engine_type !== false) {
+            $attributes['engine_type'] = $engine_type === '' ? null : $engine_type;
+        }
+
+        $this->update($attributes);
         try {
             return $this->save();
         } catch (Exception $e) {

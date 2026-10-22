@@ -27,6 +27,7 @@ class CarIndex extends Component
     public $newPrice = null;
     public $editCarField;
     public $editCarName;
+    public $editEngineType;
     public $deleteThisCar = false;
     public $deleteThisPriceId;
     public $updateThisPriceId;
@@ -182,14 +183,15 @@ class CarIndex extends Component
     public function saveCarName()
     {
         $this->validate([
-            'editCarName' => 'required|string'
+            'editCarName' => 'required|string',
+            'editEngineType' => 'nullable|in:' . implode(',', Car::ENGINE_TYPES),
         ]);
         /** @var Car */
         $car = Car::find($this->carPriceListId);
 
         if ($car) {
             try{
-                $car->editInfo($car->car_model->id, $this->editCarName, 'Edited');
+                $car->editInfo($car->car_model->id, $this->editCarName, 'Edited', $this->editEngineType);
             } catch (UnauthorizedException $e)
             {
                 $this->alert('danger', 'Unauthorized');
@@ -307,6 +309,7 @@ class CarIndex extends Component
         if ($this->car) {
             $this->editCarField = true;
             $this->editCarName = $this->car->category;
+            $this->editEngineType = $this->car->engine_type;
         } else {
             $this->alert('failed', 'Server Error');
         }
