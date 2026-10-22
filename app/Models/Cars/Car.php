@@ -22,12 +22,12 @@ class Car extends Model
     const MORPH_TYPE = 'car';
 
     const ENGINE_PETROL = 'Petrol';
-    const ENGINE_BATTERY = 'Battery';
+    const ENGINE_ELECTRIC = 'Electric';
     const ENGINE_REEV = 'REEV';
     const ENGINE_HYBIRD = 'Hybird';
     const ENGINE_TYPES = [
         self::ENGINE_PETROL,
-        self::ENGINE_BATTERY,
+        self::ENGINE_ELECTRIC,
         self::ENGINE_REEV,
         self::ENGINE_HYBIRD,
     ];
